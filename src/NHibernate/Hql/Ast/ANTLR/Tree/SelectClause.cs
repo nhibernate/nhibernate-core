@@ -150,7 +150,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				else 
 				{
 					IType type = expr.DataType;
-					if ( type == null ) 
+                    if (type == null && !(expr is ParameterNode))
 					{
 						throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode)expr, "" ) );
 					}

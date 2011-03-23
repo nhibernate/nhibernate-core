@@ -119,9 +119,10 @@ echo.
 echo --- GRAMMAR ---
 echo A.  Regenerate HqlLexer.cs and HqlParser.cs from Hql.g.
 echo B.  Regenerate HqlSqlWalker.cs from HqlSqlWalker.g.
-echo C.  Regenerate Hql.g in debug mode.
-echo D.  Regenerate HqlSqlWalker.g in debug mode.
-echo E.  Quick instructions on using debug mode.
+echo C.  Regenerate SqlGenerator.cs from SqlGenerator.g.
+echo D.  Regenerate Hql.g in debug mode.
+echo E.  Regenerate HqlSqlWalker.g in debug mode.
+echo H.  Quick instructions on using debug mode.
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto grammar-prompt-choice )
@@ -139,13 +140,14 @@ if errorlevel 1 goto antlr-hql
 if errorlevel 0 goto end
 
 :grammar-prompt-set
-set /p OPT=[A, B, C, D, E]? 
+set /p OPT=[A, B, C, D, E, H]? 
 
 if /I "%OPT%"=="A" goto antlr-hql
 if /I "%OPT%"=="B" goto antlr-hqlsqlwalker
-if /I "%OPT%"=="C" goto antlr-hql-debug
-if /I "%OPT%"=="D" goto antlr-hqlsqlwalker-debug
-if /I "%OPT%"=="E" goto antlr-debug
+if /I "%OPT%"=="C" goto antlr-sqlgenerator
+if /I "%OPT%"=="D" goto antlr-hql-debug
+if /I "%OPT%"=="E" goto antlr-hqlsqlwalker-debug
+if /I "%OPT%"=="H" goto antlr-debug
 goto grammar-prompt-set
 
 :antlr-hql
@@ -154,6 +156,10 @@ goto end
 
 :antlr-hqlsqlwalker
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
+goto end
+
+:antlr-sqlgenerator
+call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
 goto end
 
 :antlr-hql-debug

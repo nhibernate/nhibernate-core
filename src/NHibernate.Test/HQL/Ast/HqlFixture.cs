@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NHibernate.Criterion;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
@@ -281,6 +282,32 @@ namespace NHibernate.Test.HQL.Ast
 						s.CreateQuery("from Zoo z inner join fetch z.classification").List();
 					},
 					"Incorrect path not caught during parsing");
+			}
+		}
+
+		[Test]
+		public void InsertIntoFromSelect_WithSelectClauseParameters()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (s.BeginTransaction())
+				{
+					// arrange
+					s.Save(new Animal() {Description = "cat1", BodyWeight = 2.1f});
+					s.Save(new Animal() {Description = "cat2", BodyWeight = 2.5f});
+					s.Save(new Animal() {Description = "cat3", BodyWeight = 2.7f});
+
+					// act
+					s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a")
+						.SetParameter<float>("weight", 5.7f).ExecuteUpdate();
+
+					// assert
+					Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
+					                   	.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
+
+					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					s.Transaction.Commit();
+				}
 			}
 		}
 	}

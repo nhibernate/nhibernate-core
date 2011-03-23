@@ -176,6 +176,7 @@ selectExpr
 	| ^(OBJECT ar3=aliasRef)		{ ResolveSelectExpression($ar3.tree); $selectExpr.tree = $ar3.tree; }
 	| con=constructor 				{ ProcessConstructor($con.tree); }
 	| functionCall
+	| parameter
 	| count
 	| collectionFunction			// elements() or indices()
 	| literal

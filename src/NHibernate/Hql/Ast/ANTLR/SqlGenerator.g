@@ -137,7 +137,8 @@ selectExpr
 	| aggregate
 	| c=constant { Out($c.start); }
 	| arithmeticExpr
-	| param=PARAM { Out($param); }
+	| parameter
+//	| param=PARAM { Out($param); }
 //	| sn=SQL_NODE { Out(sn); }
 	| { Out("("); } selectStatement { Out(")"); }
 	;
