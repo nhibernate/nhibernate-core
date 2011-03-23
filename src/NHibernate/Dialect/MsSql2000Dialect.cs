@@ -59,6 +59,9 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDefaultProperties()
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+			DefaultProperties[Environment.BatchSize] = "20";
+			DefaultProperties[Environment.CommandTimeout] = "10";
+			DefaultProperties[Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
 		}
 
 		protected virtual void RegisterKeywords()
