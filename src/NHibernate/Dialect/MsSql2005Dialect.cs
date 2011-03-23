@@ -12,10 +12,15 @@ namespace NHibernate.Dialect
 	{
 		public MsSql2005Dialect()
 		{
+			RegisterColumnType(DbType.Xml, "XML");
+		}
+
+		protected override void RegisterCharacterTypeMappings()
+		{
+			base.RegisterCharacterTypeMappings();
 			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
 			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
 			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
-			RegisterColumnType(DbType.Xml, "XML");
 		}
 
 		/// <summary>

@@ -43,34 +43,34 @@ namespace NHibernate.Dialect
 	{
 		public MsSql2000Dialect()
 		{
-			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
-			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "TEXT");
-			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "IMAGE");
-			RegisterColumnType(DbType.Boolean, "BIT");
-			RegisterColumnType(DbType.Byte, "TINYINT");
-			RegisterColumnType(DbType.Currency, "MONEY");
-			RegisterColumnType(DbType.Date, "DATETIME");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
-			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
-			RegisterColumnType(DbType.Int16, "SMALLINT");
-			RegisterColumnType(DbType.Int32, "INT");
-			RegisterColumnType(DbType.Int64, "BIGINT");
-			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
-			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, SqlClientDriver.MaxSizeForLengthLimitedString, "NCHAR($l)");
-			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForLengthLimitedString, "NVARCHAR($l)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NTEXT");
-			RegisterColumnType(DbType.Time, "DATETIME");
+			RegisterCharacterTypeMappings();
+			RegisterNumericTypeMappings();
+			RegisterDateTimeTypeMappings();
+			RegisterLargeObjectTypeMappings();
+			RegisterGuidTypeMapping();
 
+			RegisterFunctions();
+
+			RegisterKeywords();
+
+			RegisterDefaultProperties();
+		}
+
+		protected virtual void RegisterDefaultProperties()
+		{
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+		}
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeyword("top");
+			RegisterKeyword("integer");
+			RegisterKeyword("int");
+			RegisterKeyword("datetime");
+		}
+
+		protected virtual void RegisterFunctions()
+		{
 			RegisterFunction("count", new CountBigQueryFunction());
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
@@ -116,8 +116,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
-            RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
-            RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
@@ -130,13 +130,53 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+		}
 
-			RegisterKeyword("top");
-			RegisterKeyword("integer");
-			RegisterKeyword("int");
-			RegisterKeyword("datetime");
+		protected virtual void RegisterGuidTypeMapping()
+		{
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+		}
 
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlClientDriver";
+		protected virtual void RegisterLargeObjectTypeMappings()
+		{
+			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
+			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "IMAGE");
+		}
+
+		protected virtual void RegisterDateTimeTypeMappings()
+		{
+			RegisterColumnType(DbType.Time, "DATETIME");
+		}
+
+		protected virtual void RegisterNumericTypeMappings()
+		{
+			RegisterColumnType(DbType.Boolean, "BIT");
+			RegisterColumnType(DbType.Byte, "TINYINT");
+			RegisterColumnType(DbType.Currency, "MONEY");
+			RegisterColumnType(DbType.Date, "DATETIME");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INT");
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
+		}
+
+		protected virtual void RegisterCharacterTypeMappings()
+		{
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
+			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "TEXT");
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
+			RegisterColumnType(DbType.StringFixedLength, SqlClientDriver.MaxSizeForLengthLimitedString, "NCHAR($l)");
+			RegisterColumnType(DbType.String, "NVARCHAR(255)");
+			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForLengthLimitedString, "NVARCHAR($l)");
+			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NTEXT");
 		}
 
 		/// <summary></summary>
