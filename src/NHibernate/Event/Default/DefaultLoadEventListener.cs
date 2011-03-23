@@ -41,7 +41,13 @@ namespace NHibernate.Event.Default
 
 			if (persister == null)
 			{
-				throw new HibernateException("Unable to locate persister: " + @event.EntityClassName);
+
+				var message = new StringBuilder(512);
+				message.AppendLine(string.Format("Unable to locate persister for the entity named '{0}'.", @event.EntityClassName));
+				message.AppendLine("The persister define the persistence strategy for an entity.");
+				message.AppendLine("Possible causes:");
+				message.AppendLine(string.Format(" - The mapping for '{0}' was not added to the NHibernate configuration.", @event.EntityClassName));
+				throw new HibernateException(message.ToString());
 			}
 
 			if (persister.IdentifierType.IsComponentType)
