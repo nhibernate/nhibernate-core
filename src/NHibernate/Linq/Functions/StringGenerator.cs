@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -193,4 +195,31 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
+        public class ToStringRuntimeMethodHqlGenerator : IRuntimeMethodHqlGenerator
+        {
+            private readonly ToStringHqlGeneratorForMethod generator = new ToStringHqlGeneratorForMethod();
+
+            public bool SupportsMethod(MethodInfo method)
+            {
+                return method != null && method.Name == "ToString" && method.GetBaseDefinition().DeclaringType == typeof(object);
+            }
+
+            public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+            {
+                return generator;
+            }
+        }
+
+        public class ToStringHqlGeneratorForMethod : IHqlGeneratorForMethod
+        {
+            public IEnumerable<MethodInfo> SupportedMethods
+            {
+                get { throw new NotSupportedException(); }
+            }
+
+            public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                return treeBuilder.MethodCall("str", visitor.Visit(targetObject).AsExpression());
+            }
+        }
 }

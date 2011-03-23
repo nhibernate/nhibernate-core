@@ -90,5 +90,25 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(query);
 		}
-	}
+
+        [Test]
+        public void ToStringFunction()
+        {
+            var query = from ol in db.OrderLines
+                        where ol.Quantity.ToString() == "4"
+                        select ol;
+
+            Assert.AreEqual(55, query.Count());
+        }
+
+        [Test]
+        public void ToStringWithContains()
+        {
+            var query = from ol in db.OrderLines
+                        where ol.Quantity.ToString().Contains("5")
+                        select ol;
+
+            Assert.AreEqual(498, query.Count());
+        }
+    }
 }

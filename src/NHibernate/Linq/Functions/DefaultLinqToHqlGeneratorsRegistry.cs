@@ -18,6 +18,7 @@ namespace NHibernate.Linq.Functions
 			RegisterGenerator(new DictionaryContainsKeyRuntimeHqlGenerator());
 			RegisterGenerator(new GenericDictionaryItemRuntimeHqlGenerator());
 			RegisterGenerator(new GenericDictionaryContainsKeyRuntimeHqlGenerator());
+            RegisterGenerator(new ToStringRuntimeMethodHqlGenerator());
 
 			this.Merge(new StartsWithGenerator());
 			this.Merge(new EndsWithGenerator());
