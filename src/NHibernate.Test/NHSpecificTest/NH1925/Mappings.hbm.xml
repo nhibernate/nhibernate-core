@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.NH1925">
+
+  <class name="Customer" >
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+    <property name="Name" type="String" />
+
+    <set name="Invoices" inverse="true" >
+      <key column="CustomerID"/>
+      <one-to-many class="Invoice"/>
+    </set>
+  </class>
+
+  <class name="Invoice">
+    <id name="ID" type="Int32">
+      <generator class="hilo" />
+    </id>
+
+    <property name="Number" type="Int32" />
+    <many-to-one name="Customer" column="CustomerID" class="Customer" />
+  </class>
+
+</hibernate-mapping>
