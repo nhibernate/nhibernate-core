@@ -5,6 +5,7 @@ using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
+using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -26,6 +27,11 @@ namespace NHibernate.Test.Insertordering
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsSqlBatches;
 		}
 
 		protected override void Configure(Configuration configuration)
