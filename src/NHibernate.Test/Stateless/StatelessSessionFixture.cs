@@ -183,6 +183,9 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
 		{
+            if (!Dialect.SupportsSqlBatches)
+                Assert.Ignore("Dialect does not support sql batches.");
+
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
 			{
 				ss.SetBatchSize(37);

@@ -14,6 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 			configuration.SetProperty(Environment.BatchSize, "1");
 		}
 
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return dialect.SupportsSqlBatches;
+        }
+
 		[Test]
 		public void CanGetQueryDurationForDelete()
 		{
