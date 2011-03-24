@@ -120,7 +120,10 @@ namespace NHibernate.Test
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
-			DropSchema();
+            if (!AppliesTo(Dialect))
+                return;
+
+            DropSchema();
 			Cleanup();
 		}
 
