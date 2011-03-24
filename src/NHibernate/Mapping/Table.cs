@@ -804,7 +804,7 @@ namespace NHibernate.Mapping
 
 		public string UniqueColumnString(IEnumerable iterator, string referencedEntityName)
 		{
-			// NH Different implementation (NH-1339)
+			// NH Different implementation (NH-1399)
 			int result = 37;
 			if (referencedEntityName != null)
 			{
