@@ -16,10 +16,6 @@ namespace NHibernate.Dialect
 	///			<description>Default Value</description>
 	///		</listheader>
 	///		<item>
-	///			<term>use_outer_join</term>
-	///			<description><see langword="true" /></description>
-	///		</item>
-	///		<item>
 	///			<term>connection.driver_class</term>
 	///			<description><see cref="NHibernate.Driver.OracleLiteDataClientDriver" /></description>
 	///		</item>

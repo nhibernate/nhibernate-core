@@ -1,4 +1,6 @@
 ** Known BREAKING CHANGES from NH3.1.0.GA to NH3.2.0.GA
+	##### Design time #####
+		* removed obsolete "use_outer_join" property from nhibernate-configuration.xsd (simply remove it from your xml configuration)
 
 	##### Possible Breaking Changes #####
 		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
