@@ -8,7 +8,10 @@ using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Engine.Query.Sql;
 using NHibernate.Hql;
+using NHibernate.Loader.Custom;
+using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transform;
@@ -21,9 +24,9 @@ namespace NHibernate.Impl
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
-		private readonly List<IQueryTranslator> translators = new List<IQueryTranslator>(); 
-		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>(); 
-		private readonly List<QueryParameters> parameters = new List<QueryParameters>(); 
+		private readonly List<ITranslator> translators = new List<ITranslator>();
+		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
 		private string cacheRegion;
@@ -50,6 +53,8 @@ namespace NHibernate.Impl
 			dialect = session.Factory.Dialect;
 			this.session = session;
 		}
+
+		#region Parameters setting
 
 		public IMultiQuery SetResultTransformer(IResultTransformer transformer)
 		{
@@ -267,6 +272,9 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+
+		#endregion
+
 		public IMultiQuery AddNamedQuery<T>(string key, string namedQuery)
 		{
 			ThrowIfKeyAlreadyExists(key);
@@ -439,8 +447,8 @@ namespace NHibernate.Impl
 		{
 			// TODO : we need a test to check the behavior when the query has a 'new' istead a trasformer
 			// we should take the HolderInstantiator directly from QueryTranslator... taking care with Parameters.
-			return Parameters[queryPosition].ResultTransformer != null ? 
-				new HolderInstantiator(Parameters[queryPosition].ResultTransformer, translators[queryPosition].ReturnAliases) 
+			return Parameters[queryPosition].ResultTransformer != null ?
+				new HolderInstantiator(Parameters[queryPosition].ResultTransformer, translators[queryPosition].ReturnAliases)
 				: HolderInstantiator.NoopInstantiator;
 		}
 
@@ -480,10 +488,12 @@ namespace NHibernate.Impl
 			try
 			{
 				if (log.IsDebugEnabled)
+				{
 					log.DebugFormat("Executing {0} queries", translators.Count);
+				}
 				for (int i = 0; i < translators.Count; i++)
 				{
-					IQueryTranslator translator = Translators[i];
+					ITranslator translator = Translators[i];
 					QueryParameters parameter = Parameters[i];
 					IList tempResults;
 					if (resultCollectionGenericType[i] == typeof(object))
@@ -529,13 +539,13 @@ namespace NHibernate.Impl
 
 						object result =
 							translator.Loader.GetRowFromResultSet(reader,
-														   session,
-														   parameter,
-														   lockModeArray,
-														   optionalObjectKey,
-														   hydratedObjects[i],
-														   keys,
-														   true);
+															 session,
+															 parameter,
+															 lockModeArray,
+															 optionalObjectKey,
+															 hydratedObjects[i],
+															 keys,
+															 true);
 
 						tempResults.Add(result);
 
@@ -572,7 +582,7 @@ namespace NHibernate.Impl
 			}
 			for (int i = 0; i < translators.Count; i++)
 			{
-				IQueryTranslator translator = translators[i];
+				ITranslator translator = translators[i];
 				QueryParameters parameter = parameters[i];
 
 				translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
@@ -614,9 +624,7 @@ namespace NHibernate.Impl
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
 				query.VerifyParameters();
-				IQueryTranslator[] queryTranslators =
-					session.GetQueries(query.ExpandParameterLists(queryParameters.NamedParameters), false);
-				foreach (IQueryTranslator translator in queryTranslators)
+				foreach (var translator in GetTranslators(query, queryParameters))
 				{
 					translators.Add(translator);
 					parameters.Add(queryParameters);
@@ -628,12 +636,30 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static QueryParameters GetFilteredQueryParameters(QueryParameters queryParameters, IQueryTranslator translator)
+		private IEnumerable<ITranslator> GetTranslators(AbstractQueryImpl query, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryString = query.ExpandParameterLists(queryParameters.NamedParameters);
+
+			var sqlQuery = query as ISQLQuery;
+			if (sqlQuery != null)
+			{
+				yield return new SqlTranslator(sqlQuery, session.Factory);
+				yield break;
+			}
+
+			foreach (var queryTranslator in session.GetQueries(queryString, false))
+			{
+				yield return new HqlTranslatorWrapper(queryTranslator);
+			}
+		}
+
+		private static QueryParameters GetFilteredQueryParameters(QueryParameters queryParameters, ITranslator translator)
 		{
 			QueryParameters filteredQueryParameters = queryParameters;
 			Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
 			filteredQueryParameters.NamedParameters.Clear();
-			foreach (string paramName in translator.GetParameterTranslations().GetNamedParameterNames())
+			foreach (string paramName in translator.GetNamedParameterNames())
 			{
 				TypedValue v;
 				if (namedParameters.TryGetValue(paramName, out v))
@@ -723,9 +749,9 @@ namespace NHibernate.Impl
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
-				IQueryTranslator queryTranslator = Translators[i];
+				ITranslator queryTranslator = Translators[i];
 				querySpaces.AddAll(queryTranslator.QuerySpaces);
-				resultTypesList.Add(queryTranslator.ActualReturnTypes);
+				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
 			int[] maxRows = new int[Parameters.Count];
@@ -755,12 +781,14 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private IList<IQueryTranslator> Translators
+		private IList<ITranslator> Translators
 		{
 			get
 			{
 				if (sqlString == null)
+				{
 					AggregateQueriesInformation();
+				}
 				return translators;
 			}
 		}
@@ -808,18 +836,94 @@ namespace NHibernate.Impl
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)
 		{
-			ThrowNotSupportedIfSqlQuery(query);
 			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
 			queries.Add(query);
 			resultCollectionGenericType.Add(resultGenericListType);
 			return queries.Count - 1;
 		}
-		protected void ThrowNotSupportedIfSqlQuery(IQuery query)
-		{
-			if (query is ISQLQuery)
-				throw new NotSupportedException("Sql queries in MultiQuery are currently not supported.");
-		}
 
 		#endregion
+
+		private interface ITranslator
+		{
+			Loader.Loader Loader { get; }
+			IType[] ReturnTypes { get; }
+			string[] ReturnAliases { get; }
+			ICollection<string> QuerySpaces { get; }
+			IEnumerable<string> GetNamedParameterNames();
+		}
+
+		private class HqlTranslatorWrapper : ITranslator
+		{
+			private readonly IQueryTranslator innerTranslator;
+
+			public HqlTranslatorWrapper(IQueryTranslator translator)
+			{
+				innerTranslator = translator;
+			}
+
+			public Loader.Loader Loader
+			{
+				get { return innerTranslator.Loader; }
+			}
+
+			public IType[] ReturnTypes
+			{
+				get { return innerTranslator.ActualReturnTypes; }
+			}
+
+			public ICollection<string> QuerySpaces
+			{
+				get { return innerTranslator.QuerySpaces; }
+			}
+
+			public string[] ReturnAliases
+			{
+				get { return innerTranslator.ReturnAliases; }
+			}
+
+			public IEnumerable<string> GetNamedParameterNames()
+			{
+				return innerTranslator.GetParameterTranslations().GetNamedParameterNames();
+			}
+		}
+
+		private class SqlTranslator : ITranslator
+		{
+			private readonly CustomLoader loader;
+
+			public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
+			{
+				var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
+				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
+				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
+				loader = new CustomLoader(sqlCustomQuery, sessionFactory);
+			}
+
+			public IType[] ReturnTypes
+			{
+				get { return loader.ResultTypes; }
+			}
+
+			public Loader.Loader Loader
+			{
+				get { return loader; }
+			}
+
+			public ICollection<string> QuerySpaces
+			{
+				get { return loader.QuerySpaces; }
+			}
+
+			public string[] ReturnAliases
+			{
+				get { return loader.ReturnAliases; }
+			}
+
+			public IEnumerable<string> GetNamedParameterNames()
+			{
+				return loader.NamedParameters;
+			}
+		}
 	}
 }

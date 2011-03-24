@@ -667,6 +667,7 @@
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="PropertyTest\NoSetterCamelCaseMUnderscoreFixture.cs" />
+    <Compile Include="QueryTest\MultipleMixedQueriesFixture.cs" />
     <Compile Include="ReadOnly\AbstractReadOnlyTest.cs" />
     <Compile Include="ReadOnly\Container.cs" />
     <Compile Include="ReadOnly\Course.cs" />

@@ -402,6 +402,21 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
+		public IType[] ResultTypes
+		{
+			get { return resultTypes; }
+		}
+
+		public string[] ReturnAliases
+		{
+			get { return transformerAliases; }
+		}
+
+		public IEnumerable<string> NamedParameters
+		{
+			get { return namedParameterBindPoints.Keys; }
+		}
+
 		public interface IResultColumnProcessor
 		{
 			object Extract(object[] data, IDataReader resultSet, ISessionImplementor session);

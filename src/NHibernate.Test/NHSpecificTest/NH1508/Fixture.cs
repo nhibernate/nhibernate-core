@@ -1,6 +1,7 @@
 ﻿using System;
 using NHibernate.Driver;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
@@ -66,28 +67,27 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 		}
 
 		[Test]
-		public void ThrowsExceptionWhenSqlQueryIsGiven()
+		public void DoesntThrowsExceptionWhenSqlQueryIsGiven()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				ISQLQuery sqlQuery = session.CreateSQLQuery("select * from Document");
-				Assert.Throws<NotSupportedException>(() => session.CreateMultiQuery().Add(sqlQuery));
+				var multiquery = session.CreateMultiQuery();
+				multiquery.Executing(x => x.Add(sqlQuery)).NotThrows();
 			}
 		}
 
 		[Test]
-		public void ThrowsExceptionWhenNamedSqlQueryIsGiven()
+		public void DoesntThrowsExceptionWhenNamedSqlQueryIsGiven()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 
-				Assert.Throws<NotSupportedException>(() =>session
-					.CreateMultiQuery()
-					.AddNamedQuery("SampleSqlQuery"));
+				var multiquery = session.CreateMultiQuery();
+				multiquery.Executing(x => x.AddNamedQuery("SampleSqlQuery")).NotThrows();
 			}
 		}
-
 	}
 }
