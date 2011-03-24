@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+		xmlns="urn:nhibernate-mapping-2.2"
+		assembly="NHibernate.Test"
+		namespace="NHibernate.Test.NHSpecificTest.NH2554">
+
+	<class name="Student">
+		
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+		
+		<property name="FullName">
+			<column name="full_name" sql-type="nvarchar(255)" not-null="true" />
+		</property>
+		
+		<property name="FullNameAsVarBinary" formula="CONVERT(varbinary, full_name)" />
+		
+		<property name="FullNameAsVarBinary512" formula="CONVERT(varbinary(512), full_name)" />
+		
+		<property name="FullNameAsBinary" formula="CONVERT(binary, full_name)" />
+		
+		<property name="FullNameAsBinary256" formula="CONVERT(binary(256), full_name)" />
+		
+		<property name="FullNameAsVarChar" formula="CONVERT(varchar, full_name)" />
+		
+		<property name="FullNameAsVarChar125" formula="CONVERT(varchar(125), 'Julian Maughan')" />
+
+	</class>
+
+</hibernate-mapping>

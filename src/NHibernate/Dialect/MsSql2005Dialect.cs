@@ -22,6 +22,12 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
 			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
 		}
+		
+		protected override void RegisterKeywords()
+		{
+			base.RegisterKeywords();
+			RegisterKeyword("xml");
+		}
 
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
@@ -63,7 +69,7 @@ namespace NHibernate.Dialect
 			SqlString fromAndWhere;
 			SqlString[] sortExpressions;
 
-			//don't use the order index if it is contained within a larger statement(assuming 
+			//don't use the order index if it is contained within a larger statement(assuming
 			//a statement with non matching parenthesis is part of a larger block)
 			if (orderIndex > 0 && HasMatchingParens(querySqlString.Substring(orderIndex).ToString()))
 			{
@@ -76,7 +82,7 @@ namespace NHibernate.Dialect
 				fromAndWhere = querySqlString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
-			}				
+			}
 				
 			result
 				.Add("SELECT TOP (")
@@ -156,7 +162,7 @@ namespace NHibernate.Dialect
 				return 6;
 			}
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
-		}		
+		}
 
 		/// <summary>
 		/// Indicates whether the string fragment contains matching parenthesis
@@ -206,17 +212,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 		
-		public override bool BindLimitParametersInReverseOrder 
+		public override bool BindLimitParametersInReverseOrder
 		{
 			get { return true; }
 		}
 		
-		public override bool SupportsVariableLimit 
-		{ 
-			get { return true; } 
+		public override bool SupportsVariableLimit
+		{
+			get { return true; }
 		}
 		
-		public override bool BindLimitParametersFirst 
+		public override bool BindLimitParametersFirst
 		{
 			get { return true; }
 		}

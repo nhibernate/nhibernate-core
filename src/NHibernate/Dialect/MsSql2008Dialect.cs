@@ -24,8 +24,11 @@ namespace NHibernate.Dialect
 		protected override void RegisterKeywords()
 		{
 			base.RegisterKeywords();
-			RegisterKeyword("datetime2");
+			RegisterKeyword("date");
 			RegisterKeyword("datetimeoffset");
+			RegisterKeyword("datetime2");
+			RegisterKeyword("time");
+			RegisterKeyword("hierarchyid");
 		}
 	}
 }

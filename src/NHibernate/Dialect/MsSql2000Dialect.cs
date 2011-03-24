@@ -21,22 +21,22 @@ namespace NHibernate.Dialect
 	/// <remarks>
 	/// The MsSql2000Dialect defaults the following configuration properties:
 	/// <list type="table">
-	///		<listheader>
-	///			<term>Property</term>
-	///			<description>Default Value</description>
-	///		</listheader>
-	///		<item>
-	///			<term>use_outer_join</term>
-	///			<description><see langword="true" /></description>
-	///		</item>
-	///		<item>
-	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.SqlClientDriver" /></description>
-	///		</item>
-	///		<item>
-	///			<term>prepare_sql</term>
-	///			<description><see langword="false" /></description>
-	///		</item>
+	///	<listheader>
+	///		<term>Property</term>
+	///		<description>Default Value</description>
+	///	</listheader>
+	///	<item>
+	///		<term>connection.driver_class</term>
+	///		<description><see cref="NHibernate.Driver.SqlClientDriver" /></description>
+	///	</item>
+	///	<item>
+	///		<term>adonet.batch_size</term>
+	///		<description>10</description>
+	///	</item>
+	///	<item>
+	///		<term>query.substitutions</term>
+	///		<description>true 1, false 0, yes 'Y', no 'N'</description>
+	///	</item>
 	/// </list>
 	/// </remarks>
 	public class MsSql2000Dialect : Dialect
@@ -66,9 +66,34 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterKeywords()
 		{
 			RegisterKeyword("top");
-			RegisterKeyword("integer");
 			RegisterKeyword("int");
+			RegisterKeyword("integer"); // a commonly-used alias for 'int'
+			RegisterKeyword("tinyint");
+			RegisterKeyword("smallint");
+			RegisterKeyword("bigint");
+			RegisterKeyword("numeric");
+			RegisterKeyword("decimal");
+			RegisterKeyword("bit");
+			RegisterKeyword("money");
+			RegisterKeyword("smallmoney");
+			RegisterKeyword("float");
+			RegisterKeyword("real");
 			RegisterKeyword("datetime");
+			RegisterKeyword("smalldatetime");
+			RegisterKeyword("char");
+			RegisterKeyword("varchar");
+			RegisterKeyword("text");
+			RegisterKeyword("nchar");
+			RegisterKeyword("nvarchar");
+			RegisterKeyword("ntext");
+			RegisterKeyword("binary");
+			RegisterKeyword("varbinary");
+			RegisterKeyword("image");
+			RegisterKeyword("cursor");
+			RegisterKeyword("timestamp");
+			RegisterKeyword("uniqueidentifier");
+			RegisterKeyword("sql_variant");
+			RegisterKeyword("table");
 		}
 
 		protected virtual void RegisterFunctions()
@@ -110,7 +135,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "right(?1, ?2)"));
 			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 
-
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
@@ -149,6 +173,8 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDateTimeTypeMappings()
 		{
 			RegisterColumnType(DbType.Time, "DATETIME");
+			RegisterColumnType(DbType.Date, "DATETIME");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
 		}
 
 		protected virtual void RegisterNumericTypeMappings()
@@ -156,15 +182,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "BIT");
 			RegisterColumnType(DbType.Byte, "TINYINT");
 			RegisterColumnType(DbType.Currency, "MONEY");
-			RegisterColumnType(DbType.Date, "DATETIME");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
 			RegisterColumnType(DbType.Int64, "BIGINT");
-			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
+			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24)
 		}
 
 		protected virtual void RegisterCharacterTypeMappings()
@@ -181,13 +205,11 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NTEXT");
 		}
 
-		/// <summary></summary>
 		public override string AddColumnString
 		{
 			get { return "add"; }
 		}
 
-		/// <summary></summary>
 		public override string NullColumnString
 		{
 			get { return " null"; }
@@ -213,7 +235,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool QualifyIndexName
 		{
 			get { return false; }
@@ -253,7 +274,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary></summary>
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }
@@ -264,25 +284,21 @@ namespace NHibernate.Dialect
 			get { return "select SCOPE_IDENTITY()"; }
 		}
 
-		/// <summary></summary>
 		public override string IdentityColumnString
 		{
 			get { return "IDENTITY NOT NULL"; }
 		}
 
-		/// <summary></summary>
 		public override string NoColumnsInsertString
 		{
 			get { return "DEFAULT VALUES"; }
 		}
 
-		/// <summary></summary>
 		public override char CloseQuote
 		{
 			get { return ']'; }
 		}
 
-		/// <summary></summary>
 		public override char OpenQuote
 		{
 			get { return '['; }
@@ -359,9 +375,7 @@ namespace NHibernate.Dialect
 			return true;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
+		/// <summary />
 		/// <param name="name"></param>
 		/// <returns></returns>
 		/// <remarks>
@@ -373,11 +387,6 @@ namespace NHibernate.Dialect
 			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2)) + CloseQuote;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="quoted"></param>
-		/// <returns></returns>
 		public override string UnQuote(string quoted)
 		{
 			if (IsQuoted(quoted))
@@ -505,13 +514,11 @@ namespace NHibernate.Dialect
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
+		
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
-			public CountBigQueryFunction()
-				: base("count_big", true)
-			{
-			}
+			public CountBigQueryFunction() : base("count_big", true) { }
 
 			public override IType ReturnType(IType columnType, IMapping mapping)
 			{
@@ -542,15 +549,12 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsSqlBatches
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		public override bool IsKnownToken(string currentToken, string nextToken)
 		{
-			return currentToken == "n" && nextToken == "'"; // unicode character 
+			return currentToken == "n" && nextToken == "'"; // unicode character
 		}
 	}
 }
