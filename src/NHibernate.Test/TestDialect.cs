@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Test
 {
@@ -17,9 +19,16 @@ namespace NHibernate.Test
 			string testDialectTypeName = "NHibernate.Test.TestDialects." + dialect.GetType().Name.Replace("Dialect", "TestDialect");
 			System.Type testDialectType = System.Type.GetType(testDialectTypeName);
 			if (testDialectType != null)
-				return (TestDialect)Activator.CreateInstance(testDialectType);
-			return new TestDialect();
+				return (TestDialect)Activator.CreateInstance(testDialectType, dialect);
+			return new TestDialect(dialect);
 		}
+
+	    private Dialect.Dialect dialect;
+
+        public TestDialect(Dialect.Dialect dialect)
+        {
+            this.dialect = dialect;
+        }
 
 		public virtual bool SupportsOperatorAll { get { return true; } }
 		public virtual bool SupportsOperatorSome { get { return true; } }
@@ -35,5 +44,18 @@ namespace NHibernate.Test
 		public virtual bool SupportsConcurrentTransactions { get { return true; } }
 
 		public virtual bool SupportsFullJoin { get { return true; } }
+
+	    public bool SupportsSqlType(SqlType sqlType)
+	    {
+            try
+            {
+                dialect.GetTypeName(sqlType);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+	    }
 	}
 }

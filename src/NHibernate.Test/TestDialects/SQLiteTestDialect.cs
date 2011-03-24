@@ -7,6 +7,11 @@ namespace NHibernate.Test.TestDialects
 {
 	public class SQLiteTestDialect : TestDialect
 	{
+        public SQLiteTestDialect(Dialect.Dialect dialect)
+            : base(dialect)
+        {
+        }
+
 		public override bool SupportsOperatorAll
 		{
 			get { return false; }

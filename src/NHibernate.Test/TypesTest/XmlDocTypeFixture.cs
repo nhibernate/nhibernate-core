@@ -1,4 +1,6 @@
+using System.Data;
 using System.Xml;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -11,6 +13,11 @@ namespace NHibernate.Test.TypesTest
 		{
 			get { return "XmlDoc"; }
 		}
+
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+        }
 
 		[Test]
 		public void ReadWrite()
