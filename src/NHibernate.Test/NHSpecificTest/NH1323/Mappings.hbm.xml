@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1323" 
+                   assembly="NHibernate.Test">
+  <class name="MyClass">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Description" />
+    <bag name="Children" inverse="true" cascade="all,delete-orphan">
+      <key column="ParentId" on-delete="cascade" />
+      <one-to-many class="MyChild" />
+    </bag>
+    <bag name="Components" table="MyClassComponents">
+      <key column="MyClassId" />
+      <composite-element class="MyComponent">
+        <property name="Something" />
+      </composite-element>
+    </bag>
+    <bag name="Elements" table="MyClassElements">
+      <key column="MyClassId" />
+      <element column="ElementsElement" type="String" />
+    </bag>
+  </class>
+  <class name="MyChild">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <many-to-one name="Parent" column="ParentId" />
+  </class>
+</hibernate-mapping>
