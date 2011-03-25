@@ -29,4 +29,16 @@
       <property name="LongContent" lazy="true" not-null="true" />
     </join>
   </subclass>
+
+  <class name="Base3" abstract="true">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="ShortContent"/>
+  </class>
+  <joined-subclass name="Derived3" extends="Base3">
+      <key column="Id" />
+      <property name="LongContent" lazy="true" not-null="true" />
+  </joined-subclass>
+
 </hibernate-mapping>

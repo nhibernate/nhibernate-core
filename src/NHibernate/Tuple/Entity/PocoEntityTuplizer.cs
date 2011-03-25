@@ -78,9 +78,11 @@ namespace NHibernate.Tuple.Entity
 		public override bool IsInstrumented
 		{
 			get 
-			{ 
-				return (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties) 
-						&& FieldInterceptionHelper.IsInstrumented(MappedClass);
+			{
+				// NH: we can't really check for EntityMetamodel.HasLazyProperties and/or EntityMetamodel.HasUnwrapProxyForProperties here
+				// because this property is used even where subclasses has lazy-properties.
+				// Checking it here, where the root-entity has no lazy properties we will eager-load/double-load those properties.
+				return FieldInterceptionHelper.IsInstrumented(MappedClass);
 			}
 		}
 
@@ -224,7 +226,7 @@ namespace NHibernate.Tuple.Entity
 
 		public override void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
-			if (IsInstrumented)
+			if (IsInstrumented && (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties))
 			{
 				HashedSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
 				//TODO: if we support multiple fetch groups, we would need

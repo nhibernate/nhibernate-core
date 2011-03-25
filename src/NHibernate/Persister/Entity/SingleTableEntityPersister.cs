@@ -138,12 +138,7 @@ namespace NHibernate.Persister.Entity
 																		 ??
 																		 ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[j], deleteCallable[j]);
 
-				IEnumerable<Column> enumerableKeyCol = new SafetyEnumerable<Column>(join.Key.ColumnIterator);
-				List<string> kcName = new List<string>(join.Key.ColumnSpan);
-				foreach (Column col in enumerableKeyCol)
-					kcName.Add(col.GetQuotedName(factory.Dialect));
-
-				keyColumnNames[j] = kcName.ToArray();
+				keyColumnNames[j] = join.Key.ColumnIterator.OfType<Column>().Select(col => col.GetQuotedName(factory.Dialect)).ToArray();
 
 				j++;
 			}
@@ -156,7 +151,7 @@ namespace NHibernate.Persister.Entity
 				constraintOrderedKeyColumnNames[position] = keyColumnNames[i];
 			}
 
-			spaces = ArrayHelper.Join(qualifiedTableNames, ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
+			spaces = qualifiedTableNames.Concat(persistentClass.SynchronizedTables).ToArray();
 
 			bool lazyAvailable = IsInstrumented(EntityMode.Poco);
 
@@ -185,12 +180,9 @@ namespace NHibernate.Persister.Entity
 				if (join.IsSequentialSelect && !persistentClass.IsClassOrSuperclassJoin(join))
 					hasDeferred = true;
 				subclassTables.Add(join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
-				IEnumerable<Column> enumerableKeyCol = new SafetyEnumerable<Column>(join.Key.ColumnIterator);
-				List<string> keyCols = new List<string>(join.Key.ColumnSpan);
-				foreach (Column col in enumerableKeyCol)
-					keyCols.Add(col.GetQuotedName(factory.Dialect));
 
-				joinKeyColumns.Add(keyCols.ToArray());
+				var keyCols = join.Key.ColumnIterator.OfType<Column>().Select(col => col.GetQuotedName(factory.Dialect)).ToArray();
+				joinKeyColumns.Add(keyCols);
 			}
 
 			subclassTableSequentialSelect = isDeferreds.ToArray();
@@ -297,7 +289,6 @@ namespace NHibernate.Persister.Entity
 				int join = persistentClass.GetJoinNumber(prop);
 				propertyJoinNumbers.Add(join);
 
-				//propertyTableNumbersByName.put( prop.getName(), join );
 				propertyTableNumbersByNameAndSubclass[prop.PersistentClass.EntityName + '.' + prop.Name] = join;
 				foreach (ISelectable thing in prop.ColumnIterator)
 				{
@@ -643,11 +634,10 @@ possible solutions:
 			var tableNumbers = new HashSet<int>();
 			string[] props = subclassPersister.PropertyNames;
 			string[] classes = subclassPersister.PropertySubclassNames;
-			bool[] propertyLazies = subclassPersister.PropertyLaziness;
 			for (int i = 0; i < props.Length; i++)
 			{
 				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
-				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber) && propertyLazies[i] == false)
+				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
 				{
 					tableNumbers.Add(propTableNumber);
 				}
@@ -658,10 +648,9 @@ possible solutions:
 			//figure out which columns are needed (excludes lazy-properties)
 			List<int> columnNumbers = new List<int>();
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
-			bool[] subclassColumnLaziness = SubclassColumnLaziness;
 			for (int i = 0; i < SubclassColumnClosure.Length; i++)
 			{
-				if (tableNumbers.Contains(columnTableNumbers[i]) && !subclassColumnLaziness[i])
+				if (tableNumbers.Contains(columnTableNumbers[i]))
 				{
 					columnNumbers.Add(i);
 				}
@@ -670,10 +659,9 @@ possible solutions:
 			//figure out which formulas are needed (excludes lazy-properties)
 			List<int> formulaNumbers = new List<int>();
 			int[] formulaTableNumbers = SubclassColumnTableNumberClosure;
-			bool[] subclassFormulaLaziness = SubclassFormulaLaziness;
 			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
 			{
-				if (tableNumbers.Contains(formulaTableNumbers[i]) && !subclassFormulaLaziness[i])
+				if (tableNumbers.Contains(formulaTableNumbers[i]))
 				{
 					formulaNumbers.Add(i);
 				}

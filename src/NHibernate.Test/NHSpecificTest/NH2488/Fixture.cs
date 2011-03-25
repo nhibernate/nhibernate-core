@@ -77,10 +77,44 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 				}
 			}
 		}
+		private class JoinedSubclassScenario : IDisposable
+		{
+			private readonly ISessionFactory factory;
+
+			public JoinedSubclassScenario(ISessionFactory factory)
+			{
+				this.factory = factory;
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						var entity = new Derived3
+						{
+							ShortContent = "Short",
+							LongContent = "LongLongLongLongLong",
+						};
+						s.Save(entity);
+						t.Commit();
+					}
+				}
+			}
+
+			public void Dispose()
+			{
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						s.Delete("from Derived3");
+						t.Commit();
+					}
+				}
+			}
+		}
 
 		#endregion
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void ShouldNotQueryLazyProperties_FetchJoin()
 		{
 			using (new FetchJoinScenario(Sfi))
@@ -108,9 +142,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 		[Test]
 		public void ShouldNotQueryLazyProperties_FetchSelect()
 		{
-			// this is the real meat of the test
-			// for most edifying results, run this with show_sql enabled
-
 			using (new FetchSelectScenario(Sfi))
 			{
 				using (ISession s = OpenSession())
@@ -124,6 +155,31 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 							ls.GetWholeLog().Should().Not.Contain("LongContent");
 						}
 						var item = (Derived1) items[0];
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						string lc = item.LongContent;
+						lc.Should().Not.Be.NullOrEmpty();
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void ShouldNotQueryLazyProperties_Joinedsubclass()
+		{
+			using (new JoinedSubclassScenario(Sfi))
+			{
+				using (ISession s = OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						IList<Base3> items;
+						using (var ls = new SqlLogSpy())
+						{
+							items = s.CreateQuery("from Base3").List<Base3>();
+							ls.GetWholeLog().Should().Not.Contain("LongContent");
+						}
+						var item = (Derived3)items[0];
 						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
 						string lc = item.LongContent;
 						lc.Should().Not.Be.NullOrEmpty();
