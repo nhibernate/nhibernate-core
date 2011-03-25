@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Driver;
 using NUnit.Framework;
 
@@ -66,6 +67,9 @@ namespace NHibernate.Test.ProjectionFixtures
         [Test]
         public void ErrorFromDBWillGiveTheActualSQLExecuted()
         {
+            if (!(Dialect is MsSql2000Dialect))
+                Assert.Ignore("Test checks for exact sql and expects an error to occur in a case which is not erroneous on all databases.");
+
         	string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
         	string expectedMessage =
         		string.Format(
