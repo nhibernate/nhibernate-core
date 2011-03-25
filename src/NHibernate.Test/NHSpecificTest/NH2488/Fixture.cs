@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+using SharpTestsEx;
+
+namespace NHibernate.Test.NHSpecificTest.NH2488
+{
+	public class Fixture : BugTestCase
+	{
+		#region Scenarios
+
+		private class FetchSelectScenario: IDisposable
+		{
+			private readonly ISessionFactory factory;
+
+			public FetchSelectScenario(ISessionFactory factory)
+			{
+				this.factory = factory;
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						var entity = new Derived1
+						             {
+						             	ShortContent = "Short",
+						             	LongContent = "LongLongLongLongLong",
+						             };
+						s.Save(entity);
+						t.Commit();
+					}
+				}
+			}
+
+			public void Dispose()
+			{
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						s.Delete("from Derived1");
+						t.Commit();
+					}
+				}
+			}
+		}
+		private class FetchJoinScenario : IDisposable
+		{
+			private readonly ISessionFactory factory;
+
+			public FetchJoinScenario(ISessionFactory factory)
+			{
+				this.factory = factory;
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						var entity = new Derived2
+						             {
+						             	ShortContent = "Short",
+						             	LongContent = "LongLongLongLongLong",
+						             };
+						s.Save(entity);
+						t.Commit();
+					}
+				}
+			}
+
+			public void Dispose()
+			{
+				using (ISession s = factory.OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						s.Delete("from Derived2");
+						t.Commit();
+					}
+				}
+			}
+		}
+
+		#endregion
+
+		[Test, Ignore("Not fixed yet")]
+		public void ShouldNotQueryLazyProperties_FetchJoin()
+		{
+			using (new FetchJoinScenario(Sfi))
+			{
+				using (ISession s = OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						IList<Base2> items;
+						using (var ls = new SqlLogSpy())
+						{
+							items = s.CreateQuery("from Base2").List<Base2>();
+							ls.GetWholeLog().Should().Not.Contain("LongContent");
+						}
+						var item = (Derived2) items[0];
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						string lc = item.LongContent;
+						lc.Should().Not.Be.NullOrEmpty();
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void ShouldNotQueryLazyProperties_FetchSelect()
+		{
+			// this is the real meat of the test
+			// for most edifying results, run this with show_sql enabled
+
+			using (new FetchSelectScenario(Sfi))
+			{
+				using (ISession s = OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						IList<Base1> items;
+						using(var ls = new SqlLogSpy())
+						{
+							items = s.CreateQuery("from Base1").List<Base1>();
+							ls.GetWholeLog().Should().Not.Contain("LongContent");
+						}
+						var item = (Derived1) items[0];
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.False();
+						string lc = item.LongContent;
+						lc.Should().Not.Be.NullOrEmpty();
+						NHibernateUtil.IsPropertyInitialized(item, "LongContent").Should().Be.True();
+					}
+				}
+			}
+		}
+	}
+}

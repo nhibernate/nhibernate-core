@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.NH2488"
+           assembly="NHibernate.Test"
+>
+  <class name="Base1" abstract="true">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <discriminator column="Discriminator" type="String" />
+    <property name="ShortContent"/>
+  </class>
+  <subclass name="Derived1" extends="Base1" discriminator-value="Derived1">
+    <join table="Derived1" fetch="select">
+      <key column="Id" />
+      <property name="LongContent" lazy="true" not-null="true" />
+    </join>
+  </subclass>
+  <class name="Base2" abstract="true">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <discriminator column="Discriminator" type="String" />
+    <property name="ShortContent"/>
+  </class>
+  <subclass name="Derived2" extends="Base2" discriminator-value="Derived2">
+    <join table="Derived2" fetch="join">
+      <key column="Id" />
+      <property name="LongContent" lazy="true" not-null="true" />
+    </join>
+  </subclass>
+</hibernate-mapping>

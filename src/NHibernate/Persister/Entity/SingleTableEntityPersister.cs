@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -638,15 +638,16 @@ possible solutions:
 			//note that this method could easily be moved up to BasicEntityPersister,
 			//if we ever needed to reuse it from other subclasses
 
-			//figure out which tables need to be fetched
+			//figure out which tables need to be fetched (only those that contains at least a no-lazy-property)
 			AbstractEntityPersister subclassPersister = (AbstractEntityPersister)persister;
-			HashedSet<int> tableNumbers = new HashedSet<int>();
+			var tableNumbers = new HashSet<int>();
 			string[] props = subclassPersister.PropertyNames;
 			string[] classes = subclassPersister.PropertySubclassNames;
+			bool[] propertyLazies = subclassPersister.PropertyLaziness;
 			for (int i = 0; i < props.Length; i++)
 			{
 				int propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
-				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
+				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber) && propertyLazies[i] == false)
 				{
 					tableNumbers.Add(propTableNumber);
 				}
@@ -654,26 +655,32 @@ possible solutions:
 			if ((tableNumbers.Count == 0))
 				return null;
 
-			//figure out which columns are needed
+			//figure out which columns are needed (excludes lazy-properties)
 			List<int> columnNumbers = new List<int>();
 			int[] columnTableNumbers = SubclassColumnTableNumberClosure;
+			bool[] subclassColumnLaziness = SubclassColumnLaziness;
 			for (int i = 0; i < SubclassColumnClosure.Length; i++)
 			{
-				if (tableNumbers.Contains(columnTableNumbers[i]))
+				if (tableNumbers.Contains(columnTableNumbers[i]) && !subclassColumnLaziness[i])
+				{
 					columnNumbers.Add(i);
+				}
 			}
 
-			//figure out which formulas are needed
+			//figure out which formulas are needed (excludes lazy-properties)
 			List<int> formulaNumbers = new List<int>();
 			int[] formulaTableNumbers = SubclassColumnTableNumberClosure;
+			bool[] subclassFormulaLaziness = SubclassFormulaLaziness;
 			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
 			{
-				if (tableNumbers.Contains(formulaTableNumbers[i]))
+				if (tableNumbers.Contains(formulaTableNumbers[i]) && !subclassFormulaLaziness[i])
+				{
 					formulaNumbers.Add(i);
+				}
 			}
 
 			//render the SQL
-			return RenderSelect(ArrayHelper.ToIntArray(tableNumbers), columnNumbers.ToArray(), formulaNumbers.ToArray());
+			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
 		protected override string[] GetSubclassTableKeyColumns(int j)
