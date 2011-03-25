@@ -2,6 +2,7 @@
 using log4net;
 using log4net.Appender;
 using log4net.Repository.Hierarchy;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2386 {
@@ -9,6 +10,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2386 {
     public class Test : BugTestCase {
         private MemoryAppender memoryAppender;
 
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            // This test uses the automatically generated timestamp type, which is a MSSQL feature.
+            return dialect is MsSql2000Dialect;
+        }
 
         protected override void OnTearDown() {
             if (memoryAppender != null) {
