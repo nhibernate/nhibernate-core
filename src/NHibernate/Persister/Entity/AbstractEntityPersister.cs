@@ -662,12 +662,12 @@ namespace NHibernate.Persister.Entity
 			get { return GetTableName(0); }
 		}
 
-		protected internal bool[] SubclassColumnLazyiness
+		protected internal bool[] SubclassColumnLaziness
 		{
 			get { return subclassColumnLazyClosure; }
 		}
 
-		protected internal bool[] SubclassFormulaLazyiness
+		protected internal bool[] SubclassFormulaLaziness
 		{
 			get { return subclassFormulaLazyClosure; }
 		}

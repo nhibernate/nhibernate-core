@@ -263,8 +263,8 @@ namespace NHibernate.Persister.Entity
 				.SetLockMode(lockMode)
 				.SetTableName(TableName)
 				.AddColumns(IdentifierColumnNames)
-				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure, SubclassColumnLazyiness)
-				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure, SubclassFormulaLazyiness);
+				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure, SubclassColumnLaziness)
+				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure, SubclassFormulaLaziness);
 			//TODO: include the rowids!!!!
 			if (HasSubclasses)
 			{
