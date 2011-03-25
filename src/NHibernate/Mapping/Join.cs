@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -90,7 +90,7 @@ namespace NHibernate.Mapping
 			pk.Name = PK_ALIAS.ToAliasString(table.Name, dialect);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
+			pk.AddColumns(Key.ColumnIterator.OfType<Column>());
 		}
 
 		public int PropertySpan
@@ -149,13 +149,8 @@ namespace NHibernate.Mapping
 			{
 				if (!isLazy.HasValue)
 				{
-					IEnumerator<Property> iter = PropertyIterator.GetEnumerator();
-					while (iter.MoveNext() && !isLazy.HasValue)
-					{
-						if (!iter.Current.IsLazy)
-							isLazy = false;
-					}
-					isLazy = true;
+					var hasAllLazyProperties = !PropertyIterator.Any(property=> property.IsLazy == false);
+					isLazy = hasAllLazyProperties;
 				}
 				return isLazy.Value;
 			}
