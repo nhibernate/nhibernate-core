@@ -74,7 +74,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
-			Assert.That(GetColumnByName(culs, "Column").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 
@@ -92,7 +91,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(GetColumnByName(culs, "From").IsQuoted);
 			Assert.That(GetColumnByName(culs, "And").IsQuoted);
 			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
-			Assert.That(GetColumnByName(culs, "Column").IsQuoted);
 			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
 		}
 
