@@ -695,6 +695,8 @@
     <Compile Include="ReadOnly\StudentDto.cs" />
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
+    <Compile Include="Subselect\ClassSubselectFixture.cs" />
+    <Compile Include="Subselect\Domain.cs" />
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
@@ -2494,6 +2496,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Subselect\Beings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2488\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2490\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1925\Mappings.hbm.xml" />

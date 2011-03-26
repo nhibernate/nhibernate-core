@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+
+  This mapping demonstrates 
+
+     (1) use of a class-to-subselect mapping, that allows data
+         defined in other classes to be exposed as a read-only
+         entity (you would do this if you really wanted a view,
+         but didn't or couldn't define one for some reason)
+         This is a "derived entity" mapping.
+     
+     (2) use of <synchronize/> to ensure that auto-flush happens
+         correctly, and that queries against the derived entity
+         do not return stale data
+     
+-->
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Subselect"
+				   assembly="NHibernate.Test">
+
+  <class name="Human" table="Humans">
+    <id name="Id" column="bid">
+      <generator class="hilo"/>
+    </id>
+
+    <property name="Name" not-null="true"/>
+    <property name="Sex" not-null="true" update="false"/>
+    <property name="Address"/>
+  </class>
+
+  <class name="Alien" table="Aliens">
+    <id name="Id" column="bid">
+      <generator class="hilo"/>
+    </id>
+    <property name="Identity" not-null="true" column="ident"/>
+    <property name="Planet"/>
+    <property name="Species" not-null="true" update="false"/>
+
+  </class>
+
+  <class name="Being" mutable="false">
+    <subselect>
+      select bid, name as ident, address as loc, 'human' as species
+      from humans
+      union
+      select bid, ident, planet as loc, species
+      from aliens
+    </subselect>
+
+    <synchronize table="Humans"/>
+    <synchronize table="Aliens"/>
+
+    <id name="Id" column="bid">
+      <generator class="native"/>
+    </id>
+
+    <property name="Identity" column="ident"/>
+    <property name="Location" column="loc"/>
+    <property name="Species"/>
+  </class>
+
+</hibernate-mapping>
