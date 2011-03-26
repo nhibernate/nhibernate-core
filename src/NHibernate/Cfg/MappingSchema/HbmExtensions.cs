@@ -72,5 +72,15 @@ namespace NHibernate.Cfg.MappingSchema
 					throw new ArgumentOutOfRangeException("cacheMode");
 			}
 		}
+
+		public static string JoinString(this string[] source)
+		{
+			if (source != null)
+			{
+				string result = string.Join(System.Environment.NewLine, source).Trim();
+				return result.Length == 0 ? null : result;
+			}
+			return null;
+		}
 	}
 }

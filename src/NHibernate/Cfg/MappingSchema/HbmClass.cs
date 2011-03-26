@@ -156,6 +156,14 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return sqldelete; }
 		}
 
+		public string Subselect
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(subselect1) ? subselect1 : (subselect != null ? subselect.Text.JoinString() : null);
+			}
+		}
+
 		#endregion
 
 		#region Implementation of IPropertiesContainerMapping

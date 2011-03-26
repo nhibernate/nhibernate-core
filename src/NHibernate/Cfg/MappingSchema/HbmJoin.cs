@@ -31,6 +31,14 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
+		public string Subselect
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(subselect1) ? subselect1 : (subselect != null ? subselect.Text.JoinString() : null);
+			}
+		}
+
 		#region Implementation of IPropertiesContainerMapping
 
 		[XmlIgnore]

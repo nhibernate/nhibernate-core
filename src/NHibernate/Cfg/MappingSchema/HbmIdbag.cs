@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -72,6 +73,14 @@ namespace NHibernate.Cfg.MappingSchema
 		public HbmCustomSQL SqlDeleteAll
 		{
 			get { return sqldeleteall; }
+		}
+
+		public string Subselect
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(subselect1) ? subselect1 : (subselect != null ? subselect.Text.JoinString() : null);
+			}
 		}
 
 		#endregion

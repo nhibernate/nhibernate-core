@@ -7,5 +7,6 @@ namespace NHibernate.Cfg.MappingSchema
 		HbmCustomSQL SqlUpdate { get; }
 		HbmCustomSQL SqlDelete { get; }
 		HbmCustomSQL SqlDeleteAll { get; }
+		string Subselect { get; }
 	}
 }

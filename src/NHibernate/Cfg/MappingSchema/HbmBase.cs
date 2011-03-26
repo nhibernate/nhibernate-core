@@ -24,13 +24,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		protected static string JoinString(string[] text)
 		{
-			if (text != null)
-			{
-				string result = string.Join(System.Environment.NewLine, text).Trim();
-				return result.Length == 0 ? null : result;
-			}
-			else
-				return null;
+			return text.JoinString();
 		}
 	}
 }
