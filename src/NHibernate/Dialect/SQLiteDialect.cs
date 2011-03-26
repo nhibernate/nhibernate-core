@@ -261,6 +261,23 @@ namespace NHibernate.Dialect
 			get { return "select randomblob(16)"; }
 		}
 
+        /// <summary>
+        /// SQLite does not currently support dropping foreign key constraints by alter statements.
+        /// This means that tables cannot be dropped if there are any rows that depend on those.
+        /// If there are cycles between tables, it would even be excessively difficult to delete
+        /// the data in the right order first.  Because of this, we just turn off the foreign
+        /// constraints before we drop the schema and hope that we're not going to break anything. :(
+        /// </summary>
+        public override string BeforeDropSchemaCommand
+        {
+            get { return "PRAGMA foreign_keys = OFF"; }
+        }
+
+        public override string AfterDropSchemaCommand
+        {
+            get { return "PRAGMA foreign_keys = ON"; }
+        }
+
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{

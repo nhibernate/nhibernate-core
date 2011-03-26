@@ -813,7 +813,10 @@ namespace NHibernate.Cfg
 
 			var script = new List<string>();
 
-			// drop them in reverse order in case db needs it done that way...
+            if (!string.IsNullOrEmpty(dialect.BeforeDropSchemaCommand))
+                script.Add(dialect.BeforeDropSchemaCommand);
+
+			// drop them in reverse order in case db needs it done that way...););
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
 			{
 				IAuxiliaryDatabaseObject auxDbObj = auxiliaryDatabaseObjects[i];
@@ -860,6 +863,9 @@ namespace NHibernate.Cfg
 					}
 				}
 			}
+
+            if (!string.IsNullOrEmpty(dialect.AfterDropSchemaCommand))
+                script.Add(dialect.AfterDropSchemaCommand);
 
 			return script.ToArray();
 		}

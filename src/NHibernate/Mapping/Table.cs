@@ -427,6 +427,17 @@ namespace NHibernate.Mapping
 				}
 			}
 
+            if (!dialect.SupportsForeignKeyConstraintInAlterTable)
+            {
+                foreach (ForeignKey foreignKey in ForeignKeyIterator)
+                {
+                    if (foreignKey.HasPhysicalConstraint)
+                    {
+                        buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
+                    }
+                }
+            }
+
 			buf.Append(StringHelper.ClosedParen);
 
 			if (string.IsNullOrEmpty(comment) == false)

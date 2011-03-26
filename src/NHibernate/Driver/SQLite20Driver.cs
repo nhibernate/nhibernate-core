@@ -1,4 +1,6 @@
 using System;
+using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -32,6 +34,28 @@ namespace NHibernate.Driver
 			"System.Data.SQLite.SQLiteCommand")
 		{
 		}
+
+        public override IDbConnection CreateConnection()
+        {
+            DbConnection connection = (DbConnection)base.CreateConnection();
+            connection.StateChange += Connection_StateChange;
+            return connection;
+        }
+
+        private static void Connection_StateChange(object sender, StateChangeEventArgs e)
+        {
+            if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
+                e.CurrentState == ConnectionState.Open)
+            {
+                DbConnection connection = (DbConnection)sender;
+                using (DbCommand command = connection.CreateCommand())
+                {
+                    // Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
+                    command.CommandText = "PRAGMA foreign_keys = ON";
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
 		public override bool UseNamedPrefixInSql
 		{

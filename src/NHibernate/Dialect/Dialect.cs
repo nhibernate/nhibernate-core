@@ -645,7 +645,10 @@ namespace NHibernate.Dialect
 		{
 			var res = new StringBuilder(200);
 
-			res.Append(" add constraint ")
+            if (SupportsForeignKeyConstraintInAlterTable)
+                res.Append(" add");
+
+			res.Append(" constraint ")
 				.Append(constraintName)
 				.Append(" foreign key (")
 				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
@@ -2413,5 +2416,15 @@ namespace NHibernate.Dialect
 		{
 			return false;
 		}
-	}
+
+	    public virtual string BeforeDropSchemaCommand
+	    {
+            get { return null; }
+	    }
+
+        public virtual string AfterDropSchemaCommand
+        {
+            get { return null; }
+        }
+    }
 }
