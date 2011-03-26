@@ -154,6 +154,12 @@ namespace NHibernate
 		/// for the default query cache</param>
 		IQueryOver<TRoot> CacheRegion(string cacheRegion);
 
+		/// <summary>
+		/// Set the read-only mode for entities (and proxies) loaded by this QueryOver.
+		/// (see <see cref="ICriteria.SetReadOnly" />).
+		/// </summary>
+		IQueryOver<TRoot> ReadOnly();
+
 	}
 
 	/// <summary>
@@ -431,8 +437,30 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
+
+		/// <summary>
+		/// Creates a new NHibernate.IQueryOver&lt;TRoot, U&gt;, "rooted" at the associated entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType);
+
+		/// <summary>
+		/// Creates a new NHibernate.IQueryOver&lt;TRoot, U&gt;, "rooted" at the associated entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
 
 		/// <summary>
 		/// Creates a new NHibernate.IQueryOver&lt;TRoot, U&gt;, "rooted" at the associated entity
@@ -511,8 +539,32 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
+
+		/// <summary>
+		/// Creates a new NHibernate.IQueryOver&lt;TRoot, U&gt;, "rooted" at the associated entity
+		/// specifying a collection for the join.
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>The created "sub criteria"</returns>
 		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType);
+
+		/// <summary>
+		/// Creates a new NHibernate.IQueryOver&lt;TRoot, U&gt;, "rooted" at the associated entity
+		/// specifying a collection for the join.
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>The created "sub criteria"</returns>
+		IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
 
 		/// <summary>
 		/// Join an association, assigning an alias to the joined entity
@@ -545,8 +597,50 @@ namespace NHibernate
 		/// <param name="path">Lambda expression returning association path</param>
 		/// <param name="alias">Lambda expression returning alias reference</param>
 		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
 		/// <returns>criteria instance</returns>
 		IQueryOver<TRoot,TSubType> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
+
+		/// <summary>
+		/// Join an association, assigning an alias to the joined entity
+		/// </summary>
+		/// <typeparam name="U">Type of sub-criteria (type of the collection)</typeparam>
+		/// <param name="path">Lambda expression returning association path</param>
+		/// <param name="alias">Lambda expression returning alias reference</param>
+		/// <param name="joinType">Type of join</param>
+		/// <param name="withClause">Additional criterion for the SQL on clause</param>
+		/// <returns>criteria instance</returns>
+		IQueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause);
 
 		IQueryOverJoinBuilder<TRoot,TSubType> Inner { get; }
 		IQueryOverJoinBuilder<TRoot,TSubType> Left	{ get; }

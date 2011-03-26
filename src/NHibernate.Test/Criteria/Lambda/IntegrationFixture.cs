@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
+using SharpTestsEx;
 
 using NHibernate.Criterion;
 using NHibernate.Transform;
@@ -177,6 +178,79 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(actual[0].Count, Is.EqualTo(2));
 				Assert.That(actual[1].Name, Is.EqualTo("test person 2"));
 				Assert.That(actual[1].Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void OnClause()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "John" }
+						.AddChild(new Child() { Nickname = "John"})
+						.AddChild(new Child() { Nickname = "Judy"}));
+
+				s.Save(new Person() { Name = "Jean" });
+				s.Save(new Child() { Nickname = "James" });
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Child childAlias = null;
+				Person parentAlias = null;
+				var children =
+					s.QueryOver(() => childAlias)
+						.Left.JoinQueryOver(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
+							.WhereRestrictionOn(p => p.Name).IsNotNull
+							.List();
+
+				children.Should().Have.Count.EqualTo(1);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Child childAlias = null;
+				Person parentAlias = null;
+				var parentNames =
+					s.QueryOver<Child>(() => childAlias)
+						.Left.JoinAlias(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
+						.Select(c => parentAlias.Name)
+						.List<string>();
+
+				parentNames
+					.Where(n => !string.IsNullOrEmpty(n))
+					.Should().Have.Count.EqualTo(1);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person personAlias = null;
+				Child childAlias = null;
+				var people =
+					s.QueryOver<Person>(() => personAlias)
+						.Left.JoinQueryOver(p => p.Children, () => childAlias, c => c.Nickname == personAlias.Name)
+						.WhereRestrictionOn(c => c.Nickname).IsNotNull
+						.List();
+
+				people.Should().Have.Count.EqualTo(1);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Person personAlias = null;
+				Child childAlias = null;
+				var childNames =
+					s.QueryOver<Person>(() => personAlias)
+						.Left.JoinAlias(p => p.Children, () => childAlias, c => c.Nickname == personAlias.Name)
+						.Select(p => childAlias.Nickname)
+						.List<string>();
+
+				childNames
+					.Where(n => !string.IsNullOrEmpty(n))
+					.Should().Have.Count.EqualTo(1);
 			}
 		}
 

@@ -28,9 +28,39 @@ namespace NHibernate.Criterion.Lambda
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
+		}
+
 		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
 
 		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
@@ -48,9 +78,39 @@ namespace NHibernate.Criterion.Lambda
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
+		}
+
 		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
 
 	}
@@ -74,9 +134,39 @@ namespace NHibernate.Criterion.Lambda
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
+		}
+
 		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
 
 		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
@@ -94,9 +184,39 @@ namespace NHibernate.Criterion.Lambda
 			return root.JoinQueryOver<U>(path, alias, joinType);
 		}
 
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
+		}
+
 		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
 			return root.JoinQueryOver<U>(path, alias, joinType);
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public IQueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return root.JoinQueryOver<U>(path, alias, joinType, withClause);
 		}
 
 	}
@@ -118,9 +238,69 @@ namespace NHibernate.Criterion.Lambda
 			return (TReturn)root.JoinAlias(path, alias, joinType);
 		}
 
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, withClause);
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, withClause);
+		}
+
 		public TReturn JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{
 			return (TReturn)root.JoinAlias(path, alias, joinType);
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, withClause);
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<U,bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, Expression<Func<bool>> withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, ExpressionProcessor.ProcessExpression(withClause));
+		}
+
+		public TReturn JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, ICriterion withClause)
+		{
+			return (TReturn)root.JoinAlias(path, alias, joinType, withClause);
 		}
 
 	}

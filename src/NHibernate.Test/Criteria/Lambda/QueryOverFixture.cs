@@ -412,6 +412,198 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void OnClause_SubCriteria()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
+					.CreateCriteria("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
+					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
+					.CreateCriteria("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
+					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
+					.CreateCriteria("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
+					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
+					.CreateCriteria("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
+
+			Person alias1 = null;
+			Person alias2 = null;
+			Person alias3 = null;
+			Person alias4 = null;
+			Person alias5 = null;
+			Person alias6 = null;
+			Person alias7 = null;
+			Person alias8 = null;
+			Person alias9 = null;
+			Person alias10 = null;
+			Person alias11 = null;
+			Person alias12 = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Left.JoinQueryOver(p => p.PersonList, () => alias1, p => p.Name == "many func t,bool")
+					.Left.JoinQueryOver(p => p.PersonList, () => alias2, () => alias1.Name == "many func bool")
+					.Left.JoinQueryOver(p => p.PersonList, () => alias3, Restrictions.Eq("Name", "many private"))
+					.Left.JoinQueryOver(p => p.Father, () => alias4, p => p.Name == "one func t,bool")
+					.Left.JoinQueryOver(p => p.Father, () => alias5, () => alias4.Name == "one func bool")
+					.Left.JoinQueryOver(p => p.Father, () => alias6, p => p.Name == "one private")
+					.Left.JoinQueryOver(() => alias1.PersonList, () => alias7, p => p.Name == "a many func t,bool")
+					.Left.JoinQueryOver(() => alias2.PersonList, () => alias8, () => alias1.Name == "a many func bool")
+					.Left.JoinQueryOver(() => alias3.PersonList, () => alias9, Restrictions.Eq("Name", "a many private"))
+					.Left.JoinQueryOver(() => alias4.Father, () => alias10, p => p.Name == "a one func t,bool")
+					.Left.JoinQueryOver(() => alias5.Father, () => alias11, () => alias4.Name == "a one func bool")
+					.Left.JoinQueryOver(() => alias6.Father, () => alias12, p => p.Name == "a one private");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void OnClauseDetached_SubCriteria()
+		{
+			DetachedCriteria expected =
+				DetachedCriteria.For<Person>()
+					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
+					.CreateCriteria("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
+					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
+					.CreateCriteria("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
+					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
+					.CreateCriteria("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
+					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
+					.CreateCriteria("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
+
+			Person alias1 = null;
+			Person alias2 = null;
+			Person alias3 = null;
+			Person alias4 = null;
+			Person alias5 = null;
+			Person alias6 = null;
+			Person alias7 = null;
+			Person alias8 = null;
+			Person alias9 = null;
+			Person alias10 = null;
+			Person alias11 = null;
+			Person alias12 = null;
+			QueryOver<Person> actual =
+				QueryOver.Of<Person>()
+					.Left.JoinQueryOver(p => p.PersonList, () => alias1, p => p.Name == "many func t,bool")
+					.Left.JoinQueryOver(p => p.PersonList, () => alias2, () => alias1.Name == "many func bool")
+					.Left.JoinQueryOver(p => p.PersonList, () => alias3, Restrictions.Eq("Name", "many private"))
+					.Left.JoinQueryOver(p => p.Father, () => alias4, p => p.Name == "one func t,bool")
+					.Left.JoinQueryOver(p => p.Father, () => alias5, () => alias4.Name == "one func bool")
+					.Left.JoinQueryOver(p => p.Father, () => alias6, p => p.Name == "one private")
+					.Left.JoinQueryOver(() => alias1.PersonList, () => alias7, p => p.Name == "a many func t,bool")
+					.Left.JoinQueryOver(() => alias2.PersonList, () => alias8, () => alias1.Name == "a many func bool")
+					.Left.JoinQueryOver(() => alias3.PersonList, () => alias9, Restrictions.Eq("Name", "a many private"))
+					.Left.JoinQueryOver(() => alias4.Father, () => alias10, p => p.Name == "a one func t,bool")
+					.Left.JoinQueryOver(() => alias5.Father, () => alias11, () => alias4.Name == "a one func bool")
+					.Left.JoinQueryOver(() => alias6.Father, () => alias12, p => p.Name == "a one private");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void OnClause_Alias()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
+					.CreateAlias("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
+					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
+					.CreateAlias("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
+					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
+					.CreateAlias("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
+					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
+					.CreateAlias("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
+
+			Person alias1 = null;
+			Person alias2 = null;
+			Person alias3 = null;
+			Person alias4 = null;
+			Person alias5 = null;
+			Person alias6 = null;
+			Person alias7 = null;
+			Person alias8 = null;
+			Person alias9 = null;
+			Person alias10 = null;
+			Person alias11 = null;
+			Person alias12 = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Left.JoinAlias(p => p.PersonList, () => alias1, p => p.Name == "many func t,bool")
+					.Left.JoinAlias(p => p.PersonList, () => alias2, () => alias1.Name == "many func bool")
+					.Left.JoinAlias(p => p.PersonList, () => alias3, Restrictions.Eq("Name", "many private"))
+					.Left.JoinAlias(p => p.Father, () => alias4, p => p.Name == "one func t,bool")
+					.Left.JoinAlias(p => p.Father, () => alias5, () => alias4.Name == "one func bool")
+					.Left.JoinAlias(p => p.Father, () => alias6, p => p.Name == "one private")
+					.Left.JoinAlias(() => alias1.PersonList, () => alias7, p => p.Name == "a many func t,bool")
+					.Left.JoinAlias(() => alias2.PersonList, () => alias8, () => alias1.Name == "a many func bool")
+					.Left.JoinAlias(() => alias3.PersonList, () => alias9, Restrictions.Eq("Name", "a many private"))
+					.Left.JoinAlias(() => alias4.Father, () => alias10, p => p.Name == "a one func t,bool")
+					.Left.JoinAlias(() => alias5.Father, () => alias11, () => alias4.Name == "a one func bool")
+					.Left.JoinAlias(() => alias6.Father, () => alias12, p => p.Name == "a one private");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void OnClauseDetached_Alias()
+		{
+			DetachedCriteria expected =
+				DetachedCriteria.For<Person>()
+					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
+					.CreateAlias("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
+					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
+					.CreateAlias("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
+					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
+					.CreateAlias("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
+					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
+					.CreateAlias("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
+
+			Person alias1 = null;
+			Person alias2 = null;
+			Person alias3 = null;
+			Person alias4 = null;
+			Person alias5 = null;
+			Person alias6 = null;
+			Person alias7 = null;
+			Person alias8 = null;
+			Person alias9 = null;
+			Person alias10 = null;
+			Person alias11 = null;
+			Person alias12 = null;
+			QueryOver<Person> actual =
+				QueryOver.Of<Person>()
+					.Left.JoinAlias(p => p.PersonList, () => alias1, p => p.Name == "many func t,bool")
+					.Left.JoinAlias(p => p.PersonList, () => alias2, () => alias1.Name == "many func bool")
+					.Left.JoinAlias(p => p.PersonList, () => alias3, Restrictions.Eq("Name", "many private"))
+					.Left.JoinAlias(p => p.Father, () => alias4, p => p.Name == "one func t,bool")
+					.Left.JoinAlias(p => p.Father, () => alias5, () => alias4.Name == "one func bool")
+					.Left.JoinAlias(p => p.Father, () => alias6, p => p.Name == "one private")
+					.Left.JoinAlias(() => alias1.PersonList, () => alias7, p => p.Name == "a many func t,bool")
+					.Left.JoinAlias(() => alias2.PersonList, () => alias8, () => alias1.Name == "a many func bool")
+					.Left.JoinAlias(() => alias3.PersonList, () => alias9, Restrictions.Eq("Name", "a many private"))
+					.Left.JoinAlias(() => alias4.Father, () => alias10, p => p.Name == "a one func t,bool")
+					.Left.JoinAlias(() => alias5.Father, () => alias11, () => alias4.Name == "a one func bool")
+					.Left.JoinAlias(() => alias6.Father, () => alias12, p => p.Name == "a one private");
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void OrderBy()
 		{
 			ICriteria expected =
@@ -566,6 +758,20 @@ namespace NHibernate.Test.Criteria.Lambda
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.Lock(() => personAlias).UpgradeNoWait;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void Readonly()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetReadOnly(true);
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.ReadOnly();
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
