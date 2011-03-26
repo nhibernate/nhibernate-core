@@ -99,7 +99,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
-		public AbstractPersistentCollection() {}
+		protected AbstractPersistentCollection() {}
 
 		protected AbstractPersistentCollection(ISessionImplementor session)
 		{
@@ -134,12 +134,13 @@ namespace NHibernate.Collection
 		protected int CachedSize
 		{
 			get { return cachedSize; }
+			set { cachedSize = value; }
 		}
 
 		/// <summary>
 		/// Is the collection currently connected to an open session?
 		/// </summary>
-		private bool IsConnectedToSession
+		protected bool IsConnectedToSession
 		{
 			get { return session != null && session.IsOpen && session.PersistenceContext.ContainsCollection(this); }
 		}
@@ -171,7 +172,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary> Is this the "inverse" end of a bidirectional association?</summary>
-		private bool IsInverseCollection
+		protected bool IsInverseCollection
 		{
 			get
 			{
@@ -184,7 +185,7 @@ namespace NHibernate.Collection
 		/// Is this the "inverse" end of a bidirectional association with
 		/// no orphan delete enabled?
 		/// </summary>
-		private bool InverseCollectionNoOrphanDelete
+		protected bool InverseCollectionNoOrphanDelete
 		{
 			get
 			{
@@ -197,7 +198,7 @@ namespace NHibernate.Collection
 		/// Is this the "inverse" end of a bidirectional one-to-many, or 
 		/// of a collection with no orphan delete?
 		/// </summary>
-		private bool InverseOneToManyOrNoOrphanDelete
+		protected bool InverseOneToManyOrNoOrphanDelete
 		{
 			get
 			{
@@ -228,12 +229,12 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary></summary>
-		protected ISessionImplementor Session
+		protected virtual ISessionImplementor Session
 		{
 			get { return session; }
 		}
 
-		public object Owner
+		public virtual object Owner
 		{
 			get { return owner; }
 			set { owner = value; }
@@ -257,13 +258,13 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Called by any read-only method of the collection interface
 		/// </summary>
-		public void Read()
+		public virtual void Read()
 		{
 			Initialize(false);
 		}
 
 		/// <summary> Called by the <tt>Count</tt> property</summary>
-		protected bool ReadSize()
+		protected virtual bool ReadSize()
 		{
 			if (!initialized)
 			{
@@ -291,7 +292,7 @@ namespace NHibernate.Collection
 			return false;
 		}
 
-		protected bool? ReadIndexExistence(object index)
+		protected virtual bool? ReadIndexExistence(object index)
 		{
 			if (!initialized)
 			{
@@ -311,7 +312,7 @@ namespace NHibernate.Collection
 			return null;
 		}
 
-		protected bool? ReadElementExistence(object element)
+		protected virtual bool? ReadElementExistence(object element)
 		{
 			if (!initialized)
 			{
@@ -331,7 +332,7 @@ namespace NHibernate.Collection
 			return null;
 		}
 
-		protected object ReadElementByIndex(object index)
+		protected virtual object ReadElementByIndex(object index)
 		{
 			if (!initialized)
 			{
@@ -354,7 +355,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Called by any writer method of the collection interface
 		/// </summary>
-		protected void Write()
+		protected virtual void Write()
 		{
 			Initialize(true);
 			Dirty();
@@ -363,7 +364,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Queue an addition, delete etc. if the persistent collection supports it
 		/// </summary>
-		protected void QueueOperation(IDelayedOperation element)
+		protected virtual void QueueOperation(IDelayedOperation element)
 		{
 			if (operationQueue == null)
 			{
@@ -377,7 +378,7 @@ namespace NHibernate.Collection
 		/// After reading all existing elements from the database,
 		/// add the queued elements to the underlying collection.
 		/// </summary>
-		protected void PerformQueuedOperations()
+		protected virtual void PerformQueuedOperations()
 		{
 			for (int i = 0; i < operationQueue.Count; i++)
 			{
@@ -451,7 +452,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="writing">currently obsolete</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected void Initialize(bool writing)
+		protected virtual void Initialize(bool writing)
 		{
 			if (!initialized)
 			{
@@ -464,7 +465,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		private void ThrowLazyInitializationExceptionIfNotConnected()
+		protected void ThrowLazyInitializationExceptionIfNotConnected()
 		{
 			if (!IsConnectedToSession)
 			{
@@ -476,7 +477,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		private void ThrowLazyInitializationException(string message)
+		protected void ThrowLazyInitializationException(string message)
 		{
 			var ownerEntityName = role == null ? "Unavailable" : StringHelper.Qualifier(role);
 			throw new LazyInitializationException(ownerEntityName, key, "failed to lazily initialize a collection"
@@ -486,7 +487,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Mark the collection as initialized.
 		/// </summary>
-		protected void SetInitialized()
+		protected virtual void SetInitialized()
 		{
 			initializing = false;
 			initialized = true;
@@ -535,7 +536,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session"></param>
 		/// <returns>false if the collection was already associated with the session</returns>
-		public bool SetCurrentSession(ISessionImplementor session)
+		public virtual bool SetCurrentSession(ISessionImplementor session)
 		{
 			if (session == this.session // NH: added to fix NH-704
 			    && session.PersistenceContext.ContainsCollection(this))
@@ -587,7 +588,7 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
-		public void ForceInitialization()
+		public virtual void ForceInitialization()
 		{
 			if (!initialized)
 			{
@@ -610,7 +611,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Gets the Snapshot from the current session the collection is in.
 		/// </summary>
-		protected object GetSnapshot()
+		protected virtual object GetSnapshot()
 		{
 			return session.PersistenceContext.GetSnapshot(this);
 		}
@@ -688,7 +689,7 @@ namespace NHibernate.Collection
 		/// belong to the collection, and a collection of instances
 		/// that currently belong, return a collection of orphans
 		/// </summary>
-		protected static ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName,
+		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName,
 		                                        ISessionImplementor session)
 		{
 			// short-circuit(s)
@@ -732,7 +733,7 @@ namespace NHibernate.Collection
 			return res;
 		}
 
-		public static void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
+		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
 			if (obj != null && ForeignKeys.IsNotTransient(entityName, obj, null, session))
 			{
