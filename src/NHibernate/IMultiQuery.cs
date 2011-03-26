@@ -243,6 +243,11 @@ namespace NHibernate
 		/// <returns>The instance for method chain.</returns>
 		IMultiQuery SetDateTime(string name, DateTime val);
 
+		IMultiQuery SetDateTime2(string name, DateTime val);
+		IMultiQuery SetTimeSpan(string name, TimeSpan val);
+		IMultiQuery SetTimeAsTimeSpan(string name, TimeSpan val);
+		IMultiQuery SetDateTimeOffset(string name, DateTimeOffset val);
+
 		/// <summary>
 		/// Bind an instance of a <see cref="Decimal" /> to a named parameter
 		/// using an NHibernate <see cref="DecimalType"/>.

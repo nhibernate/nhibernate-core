@@ -164,6 +164,42 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IMultiQuery SetDateTime2(string name, DateTime val)
+		{
+			foreach (IQuery query in queries)
+			{
+				query.SetParameter(name, val, NHibernateUtil.DateTime2);
+			}
+			return this;
+		}
+
+		public IMultiQuery SetTimeSpan(string name, TimeSpan val)
+		{
+			foreach (IQuery query in queries)
+			{
+				query.SetParameter(name, val, NHibernateUtil.TimeSpan);
+			}
+			return this;
+		}
+
+		public IMultiQuery SetTimeAsTimeSpan(string name, TimeSpan val)
+		{
+			foreach (IQuery query in queries)
+			{
+				query.SetParameter(name, val, NHibernateUtil.TimeAsTimeSpan);
+			}
+			return this;
+		}
+
+		public IMultiQuery SetDateTimeOffset(string name, DateTimeOffset val)
+		{
+			foreach (IQuery query in queries)
+			{
+				query.SetParameter(name, val, NHibernateUtil.DateTimeOffset);
+			}
+			return this;
+		}
+
 		public IMultiQuery SetDecimal(string name, decimal val)
 		{
 			foreach (IQuery query in queries)

@@ -437,6 +437,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IQuery SetDateTimeOffset(string name, DateTimeOffset val)
+		{
+			SetParameter(name, val, NHibernateUtil.DateTimeOffset);
+			return this;
+		}
+
 		public IQuery SetDecimal(int position, decimal val)
 		{
 			SetParameter(position, val, NHibernateUtil.Decimal);
@@ -548,6 +554,48 @@ namespace NHibernate.Impl
 		public IQuery SetDateTime(string name, DateTime val)
 		{
 			SetParameter(name, val, NHibernateUtil.DateTime);
+			return this;
+		}
+
+		public IQuery SetDateTime2(int position, DateTime val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTime2);
+			return this;
+		}
+
+		public IQuery SetDateTime2(string name, DateTime val)
+		{
+			SetParameter(name, val, NHibernateUtil.DateTime2);
+			return this;
+		}
+
+		public IQuery SetTimeSpan(int position, TimeSpan val)
+		{
+			SetParameter(position, val, NHibernateUtil.TimeSpan);
+			return this;
+		}
+
+		public IQuery SetTimeSpan(string name, TimeSpan val)
+		{
+			SetParameter(name, val, NHibernateUtil.TimeSpan);
+			return this;
+		}
+
+		public IQuery SetTimeAsTimeSpan(int position, TimeSpan val)
+		{
+			SetParameter(position, val, NHibernateUtil.TimeAsTimeSpan);
+			return this;
+		}
+
+		public IQuery SetTimeAsTimeSpan(string name, TimeSpan val)
+		{
+			SetParameter(name, val, NHibernateUtil.TimeAsTimeSpan);
+			return this;
+		}
+
+		public IQuery SetDateTimeOffset(int position, DateTimeOffset val)
+		{
+			SetParameter(position, val, NHibernateUtil.DateTimeOffset);
 			return this;
 		}
 

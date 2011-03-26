@@ -412,6 +412,15 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		IQuery SetDateTime(string name, DateTime val);
 
+		IQuery SetDateTime2(int position, DateTime val);
+		IQuery SetDateTime2(string name, DateTime val);
+		IQuery SetTimeSpan(int position, TimeSpan val);
+		IQuery SetTimeSpan(string name, TimeSpan val);
+		IQuery SetTimeAsTimeSpan(int position, TimeSpan val);
+		IQuery SetTimeAsTimeSpan(string name, TimeSpan val);
+		IQuery SetDateTimeOffset(int position, DateTimeOffset val);
+		IQuery SetDateTimeOffset(string name, DateTimeOffset val);
+
 		/// <summary>
 		/// Bind an instance of a <see cref="Decimal" /> to an indexed parameter
 		/// using an NHibernate <see cref="DecimalType"/>.
