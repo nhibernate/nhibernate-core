@@ -76,10 +76,11 @@ namespace NHibernate.Test.TypeParameters
 			              "Default value should have been mapped to null");
 			reader.Close();
 
-			DeleteData();
 			t.Commit();
 			s.Close();
-		}
+
+            DeleteData();
+        }
 
 		[Test]
 		public void Loading()
@@ -103,10 +104,11 @@ namespace NHibernate.Test.TypeParameters
 			Assert.AreEqual(obj.ValueThree, -1, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueFour, -5, "Default value incorrectly loaded");
 
-			DeleteData();
 			t.Commit();
 			s.Close();
-		}
+
+            DeleteData();
+        }
 
 		private void InitData()
 		{
