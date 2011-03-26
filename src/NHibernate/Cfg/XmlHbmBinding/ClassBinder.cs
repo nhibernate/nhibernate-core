@@ -189,7 +189,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string action = "all"; // joinMapping.schemaaction ?? "all";
 
 			string tableName = joinMapping.table;
-			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, tableName), null, false, action);
+			Table table = mappings.AddTable(schema, catalog, GetClassTableName(persistentClass, tableName), joinMapping.Subselect, false, action);
 			join.Table = table;
 
 			join.IsSequentialSelect = joinMapping.fetch == HbmJoinFetch.Select;

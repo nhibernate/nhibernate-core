@@ -43,7 +43,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			//string action = actionNode == null ? "all" : actionNode.Value;
 			string action = "all";
 
-			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), null, false, action);
+			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, action);
 			((ITableOwner)subclass).Table = mytable;
 
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);

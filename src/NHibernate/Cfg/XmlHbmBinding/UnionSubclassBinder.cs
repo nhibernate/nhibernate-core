@@ -41,7 +41,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table denormalizedSuperTable = unionSubclass.Superclass.Table;
 			Table mytable =
 				mappings.AddDenormalizedTable(schema, catalog, GetClassTableName(unionSubclass, unionSubclassMapping.table),
-				                              unionSubclass.IsAbstract.GetValueOrDefault(), null, denormalizedSuperTable);
+				                              unionSubclass.IsAbstract.GetValueOrDefault(), unionSubclassMapping.Subselect, denormalizedSuperTable);
 			((ITableOwner)unionSubclass).Table = mytable;
 
 			log.InfoFormat("Mapping union-subclass: {0} -> {1}", unionSubclass.EntityName, unionSubclass.Table.Name);
