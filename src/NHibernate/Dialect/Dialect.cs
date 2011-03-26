@@ -621,6 +621,14 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+        /// <summary>
+        /// Does this dialect support adding foreign key constraints via alter table?  If not, it's assumed they can only be added through create table.
+        /// </summary>
+	    public virtual bool SupportsForeignKeyConstraintInAlterTable
+	    {
+            get { return HasAlterTable; }
+	    }
+
 		/// <summary> 
 		/// The syntax used to add a foreign key constraint to a table. 
 		/// </summary>

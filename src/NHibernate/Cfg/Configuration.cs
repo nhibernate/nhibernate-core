@@ -912,7 +912,7 @@ namespace NHibernate.Cfg
 						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
 
-					if (dialect.HasAlterTable)
+                    if (dialect.SupportsForeignKeyConstraintInAlterTable)
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
@@ -2320,7 +2320,7 @@ namespace NHibernate.Cfg
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
 																				 table.IsQuoted);
 
-					if (dialect.HasAlterTable)
+                    if (dialect.SupportsForeignKeyConstraintInAlterTable)
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
