@@ -45,6 +45,8 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsFullJoin { get { return true; } }
 
+        public virtual bool HasBrokenDecimalType { get { return false; } }
+
 	    public bool SupportsSqlType(SqlType sqlType)
 	    {
             try

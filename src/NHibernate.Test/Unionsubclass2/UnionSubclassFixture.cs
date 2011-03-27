@@ -114,11 +114,14 @@ namespace NHibernate.Test.Unionsubclass2
 				result = s.CreateQuery("from Person p where p.salary > 100 or p.name like 'E%'").List();
 				Assert.AreEqual(2, result.Count);
 
-				result = s.CreateCriteria(typeof(Person)).Add(Property.ForName("salary").Gt(100m)).List();
-				Assert.AreEqual(1, result.Count);
-				Assert.AreSame(q, result[0]);
+                if (!TestDialect.HasBrokenDecimalType)
+                {
+                    result = s.CreateCriteria(typeof (Person)).Add(Property.ForName("salary").Gt(100m)).List();
+                    Assert.AreEqual(1, result.Count);
+                    Assert.AreSame(q, result[0]);
+                }
 
-				result = s.CreateQuery("select p.salary from Person p where p.salary > 100").List();
+			    result = s.CreateQuery("select p.salary from Person p where p.salary > 100").List();
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(1000m, (decimal)result[0]);
 
