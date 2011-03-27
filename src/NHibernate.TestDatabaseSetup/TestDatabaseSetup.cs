@@ -103,6 +103,23 @@ namespace NHibernate.TestDatabaseSetup
 					cmd.ExecuteNonQuery();
 				}
 			}
+
+            // Install the GUID generator function that uses the most common "random" algorithm.
+            using (var conn = new NpgsqlConnection(connStr))
+            {
+                conn.Open();
+
+				using (var cmd = conn.CreateCommand())
+				{
+                    cmd.CommandText =
+                        @"CREATE OR REPLACE FUNCTION uuid_generate_v4()
+                        RETURNS uuid
+                        AS '$libdir/uuid-ossp', 'uuid_generate_v4'
+                        VOLATILE STRICT LANGUAGE C;";
+
+					cmd.ExecuteNonQuery();
+				}
+            }
 		}
 
 		private static void SetupSQLite(Cfg.Configuration cfg)

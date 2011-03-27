@@ -211,5 +211,10 @@ namespace NHibernate.Dialect
 		{
 			return value ? "TRUE" : "FALSE";
 		}
+
+        public override string SelectGUIDString
+        {
+            get { return "select uuid_generate_v4()"; }
+        }
 	}
 }
