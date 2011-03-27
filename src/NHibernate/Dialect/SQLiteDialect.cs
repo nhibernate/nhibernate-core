@@ -124,11 +124,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override bool HasAlterTable
-		{
-			get { return false; }
-		}
-
 		public override bool DropConstraints
 		{
 			get { return false; }
@@ -293,15 +288,21 @@ namespace NHibernate.Dialect
         /// If there are cycles between tables, it would even be excessively difficult to delete
         /// the data in the right order first.  Because of this, we just turn off the foreign
         /// constraints before we drop the schema and hope that we're not going to break anything. :(
+        /// We could theoretically check for data consistency afterwards, but we don't currently.
         /// </summary>
-        public override string BeforeDropSchemaCommand
+        public override string DisableForeignKeyConstraintsString
         {
             get { return "PRAGMA foreign_keys = OFF"; }
         }
 
-        public override string AfterDropSchemaCommand
+        public override string EnableForeignKeyConstraintsString
         {
             get { return "PRAGMA foreign_keys = ON"; }
+        }
+
+        public override bool SupportsForeignKeyConstraintInAlterTable
+        {
+            get { return false; }
         }
 
 		[Serializable]

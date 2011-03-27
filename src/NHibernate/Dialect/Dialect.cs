@@ -584,14 +584,6 @@ namespace NHibernate.Dialect
 		#region DDL support
 
 		/// <summary>
-		/// Does this dialect support the <c>ALTER TABLE</c> syntax?
-		/// </summary>
-		public virtual bool HasAlterTable
-		{
-			get { return true; }
-		}
-
-		/// <summary>
 		/// Do we need to drop constraints before dropping tables in the dialect?
 		/// </summary>
 		public virtual bool DropConstraints
@@ -626,11 +618,11 @@ namespace NHibernate.Dialect
         /// </summary>
 	    public virtual bool SupportsForeignKeyConstraintInAlterTable
 	    {
-            get { return HasAlterTable; }
+            get { return true; }
 	    }
 
 		/// <summary> 
-		/// The syntax used to add a foreign key constraint to a table. 
+		/// The syntax used to add a foreign key constraint to a table.  If SupportsForeignKeyConstraintInAlterTable is false, the returned string will be added to the create table statement instead.  In this case, extra strings, like "add", that apply when using alter table should be omitted.
 		/// </summary>
 		/// <param name="constraintName">The FK constraint name. </param>
 		/// <param name="foreignKey">The names of the columns comprising the FK </param>
@@ -2427,12 +2419,18 @@ namespace NHibernate.Dialect
 			return false;
 		}
 
-	    public virtual string BeforeDropSchemaCommand
+        /// <summary>
+        /// Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable.
+        /// </summary>
+	    public virtual string DisableForeignKeyConstraintsString
 	    {
             get { return null; }
 	    }
 
-        public virtual string AfterDropSchemaCommand
+        /// <summary>
+        /// Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable.
+        /// </summary>
+        public virtual string EnableForeignKeyConstraintsString
         {
             get { return null; }
         }

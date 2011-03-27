@@ -813,8 +813,8 @@ namespace NHibernate.Cfg
 
 			var script = new List<string>();
 
-            if (!string.IsNullOrEmpty(dialect.BeforeDropSchemaCommand))
-                script.Add(dialect.BeforeDropSchemaCommand);
+            if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.DisableForeignKeyConstraintsString))
+                script.Add(dialect.DisableForeignKeyConstraintsString);
 
 			// drop them in reverse order in case db needs it done that way...););
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
@@ -864,8 +864,8 @@ namespace NHibernate.Cfg
 				}
 			}
 
-            if (!string.IsNullOrEmpty(dialect.AfterDropSchemaCommand))
-                script.Add(dialect.AfterDropSchemaCommand);
+            if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.EnableForeignKeyConstraintsString))
+                script.Add(dialect.EnableForeignKeyConstraintsString);
 
 			return script.ToArray();
 		}
