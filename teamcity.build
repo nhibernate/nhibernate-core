@@ -72,8 +72,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlite/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-sqlite64">
