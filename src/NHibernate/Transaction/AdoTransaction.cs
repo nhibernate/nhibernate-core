@@ -75,6 +75,9 @@ namespace NHibernate.Transaction
 				}
 				log.Debug("Enlist Command");
 
+                // If you try to assign a disposed transaction to a command with MSSQL, it will leave the command's
+                // transaction as null and not throw an error.  With SQLite, for example, it will throw an exception
+                // here instead.  Because of this, we set the trans field to null in when Dispose is called.
 				command.Transaction = trans;
 			}
 		}
@@ -363,6 +366,7 @@ namespace NHibernate.Transaction
 					if (trans != null)
 					{
 						trans.Dispose();
+					    trans = null;
 						log.Debug("IDbTransaction disposed.");
 					}
 
