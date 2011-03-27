@@ -844,16 +844,28 @@ namespace NHibernate.Persister.Collection
 
 		private SqlString GenerateSelectSizeString(ISessionImplementor sessionImplementor)
 		{
-			string selectValue = isCollectionIntegerIndex
-			                     	? "max(" + IndexColumnNames[0] + ") + 1"
-			                     	: "count(" + ElementColumnNames[0] + ")"; //sets, maps, bags
+			string selectValue = GetCountSqlSelectClause();
 
-		    return new SqlSimpleSelectBuilder(dialect, factory)
+			return new SqlSimpleSelectBuilder(dialect, factory)
 		        .SetTableName(TableName)
 		        .AddWhereFragment(KeyColumnNames, KeyType, "=")
 		        .AddColumn(selectValue)
 		        .ToSqlString()
 		        .Append(FilterFragment(TableName, sessionImplementor.EnabledFilters));
+		}
+
+		protected virtual string GetCountSqlSelectClause()
+		{
+			// NH: too many "if" when each collection can have its persister
+			return isCollectionIntegerIndex
+			       	? (string.Format("max({0}) + 1", IndexColumnNames[0]))
+							: (HasIndex ? string.Format("count({0})", GetIndexCountExpression()) : string.Format("count({0})", ElementColumnNames[0]));
+		}
+
+		private string GetIndexCountExpression()
+		{
+			// when the index has at least one column then use that column to perform the count, otherwise it will use the formula.
+			return IndexColumnNames[0] ?? IndexFormulas[0];
 		}
 
 		private SqlString GenerateDetectRowByIndexString()

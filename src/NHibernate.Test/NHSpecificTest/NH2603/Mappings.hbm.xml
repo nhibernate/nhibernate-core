@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.NH2603"
+           assembly="NHibernate.Test"
+>
+  <class name="Parent" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <list name="ListChildren" lazy="extra" cascade="all" table="ListChildren">
+      <key column="listparentid"/>
+      <!-- sqlite doesn't like a column named index -->
+      <index column="childindex"/>
+      <many-to-many class="Child" column="childid"/>
+    </list>
+    <map name="MapChildren" lazy="extra" cascade="all" table="MapChildren">
+      <key column="mapparentid" />
+      <map-key column="childindex" type="int" />
+      <many-to-many class="Child">
+        <column name="childid" not-null="false" />
+      </many-to-many>
+    </map>
+  </class>
+
+  <class name="Child">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+  </class>
+
+  <sql-query name="ListMemberSpy">
+    select listparentid, childindex, childid
+    from ListChildren
+    where listparentid = :parentid
+  </sql-query>
+
+  <sql-query name="MapMemberSpy">
+    select mapparentid, childindex, childid
+    from MapChildren
+    where mapparentid = :parentid
+  </sql-query>
+
+</hibernate-mapping>
