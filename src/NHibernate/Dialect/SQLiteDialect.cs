@@ -77,6 +77,12 @@ namespace NHibernate.Dialect
             RegisterKeyword("int"); // Used in our function templates.
 		}
 
+        protected virtual void RegisterDefaultProperties()
+        {
+            DefaultProperties[Cfg.Environment.ConnectionDriver] = "NHibernate.Driver.SQLite20Driver";
+            DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
+        }
+
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new Schema.SQLiteDataBaseMetaData(connection);
