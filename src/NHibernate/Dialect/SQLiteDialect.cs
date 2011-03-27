@@ -23,59 +23,72 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public SQLiteDialect()
 		{
-			RegisterColumnType(DbType.Binary, "BLOB");
+            RegisterColumnTypes();
+            RegisterFunctions();
+            RegisterKeywords();
+            RegisterDefaultProperties();
+		}
+
+        protected virtual void RegisterColumnTypes()
+        {
+            RegisterColumnType(DbType.Binary, "BLOB");
             RegisterColumnType(DbType.Byte, "TINYINT");
             RegisterColumnType(DbType.Int16, "SMALLINT");
-			RegisterColumnType(DbType.Int32, "INT");
-			RegisterColumnType(DbType.Int64, "BIGINT");
-			RegisterColumnType(DbType.SByte, "INTEGER");
-			RegisterColumnType(DbType.UInt16, "INTEGER");
-			RegisterColumnType(DbType.UInt32, "INTEGER");
-			RegisterColumnType(DbType.UInt64, "INTEGER");
-			RegisterColumnType(DbType.Currency, "NUMERIC");
-			RegisterColumnType(DbType.Decimal, "NUMERIC");
-			RegisterColumnType(DbType.Double, "DOUBLE");
-			RegisterColumnType(DbType.Single, "DOUBLE");
-			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
-			RegisterColumnType(DbType.AnsiString, "TEXT");
-			RegisterColumnType(DbType.String, "TEXT");
-			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
-			RegisterColumnType(DbType.StringFixedLength, "TEXT");
+            RegisterColumnType(DbType.Int32, "INT");
+            RegisterColumnType(DbType.Int64, "BIGINT");
+            RegisterColumnType(DbType.SByte, "INTEGER");
+            RegisterColumnType(DbType.UInt16, "INTEGER");
+            RegisterColumnType(DbType.UInt32, "INTEGER");
+            RegisterColumnType(DbType.UInt64, "INTEGER");
+            RegisterColumnType(DbType.Currency, "NUMERIC");
+            RegisterColumnType(DbType.Decimal, "NUMERIC");
+            RegisterColumnType(DbType.Double, "DOUBLE");
+            RegisterColumnType(DbType.Single, "DOUBLE");
+            RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+            RegisterColumnType(DbType.AnsiString, "TEXT");
+            RegisterColumnType(DbType.String, "TEXT");
+            RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
+            RegisterColumnType(DbType.StringFixedLength, "TEXT");
 
-			RegisterColumnType(DbType.Date, "DATE"); 
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-			RegisterColumnType(DbType.Time, "TIME");
-			RegisterColumnType(DbType.Boolean, "BOOL");
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+            RegisterColumnType(DbType.Date, "DATE");
+            RegisterColumnType(DbType.DateTime, "DATETIME");
+            RegisterColumnType(DbType.Time, "TIME");
+            RegisterColumnType(DbType.Boolean, "BOOL");
+            RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+        }
 
+        protected virtual void RegisterFunctions()
+        {
             // Using strftime returns 0-padded strings.  '07' <> 7, so it is better to convert to an integer.
-			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%S', ?1) as int)"));
+            RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%S', ?1) as int)"));
             RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%M', ?1) as int)"));
             RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%H', ?1) as int)"));
             RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%d', ?1) as int)"));
             RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
             RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
-			// Uses local time like MSSQL and PostgreSQL.
-			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
-			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
-			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
-			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
-			// 'YYYY-MM-DD 00:00:00' format for the date function.
-			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
+            // Uses local time like MSSQL and PostgreSQL.
+            RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+            // The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
+            // The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
+            // as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
+            // 'YYYY-MM-DD 00:00:00' format for the date function.
+            RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
 
-			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
-			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
-			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+            RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+            RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
+            RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+            RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+            RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-			RegisterFunction("cast", new SQLiteCastFunction());
+            RegisterFunction("cast", new SQLiteCastFunction());
+        }
 
-
+        protected virtual void RegisterKeywords()
+        {
             RegisterKeyword("int"); // Used in our function templates.
-		}
+        }
 
         protected virtual void RegisterDefaultProperties()
         {
