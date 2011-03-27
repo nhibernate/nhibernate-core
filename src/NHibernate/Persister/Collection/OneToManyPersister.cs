@@ -321,6 +321,22 @@ namespace NHibernate.Persister.Collection
 				.ToString();
 		}
 
+		// NH-1747 FIX
+		//protected override SelectFragment GenerateSelectFragment(string alias, string columnSuffix)
+		//{
+		//  var ojl = (IOuterJoinLoadable)ElementPersister;
+		//  var selectFragment = new SelectFragment(Dialect).SetSuffix(columnSuffix);
+		//  var columnNames = KeyColumnNames;
+		//  var columnAliases = KeyColumnAliases;
+		//  for (int i = 0; i < columnNames.Length; i++)
+		//  {
+		//    var column = columnNames[i];
+		//    var tableAlias = ojl.GenerateTableAliasForColumn(alias, column);
+		//    selectFragment.AddColumn(tableAlias, column, columnAliases[i]);
+		//  }
+		//  return selectFragment;
+		//}
+
 		/// <summary>
 		/// Create the <see cref="OneToManyLoader" />
 		/// </summary>

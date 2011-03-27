@@ -1817,7 +1817,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public string GenerateTableAliasForColumn(string rootAlias, string column)
+		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
 			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
 

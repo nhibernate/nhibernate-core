@@ -13,6 +13,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyLoader" />
 	public class OneToManyJoinWalker : CollectionJoinWalker
 	{
+		private readonly IOuterJoinLoadable elementPersister;
 		private readonly IQueryableCollection oneToManyPersister;
 
 		protected override bool IsDuplicateAssociation(string foreignKeyTable, string[] foreignKeyColumns)
@@ -28,7 +29,7 @@ namespace NHibernate.Loader.Collection
 			: base(factory, enabledFilters)
 		{
 			this.oneToManyPersister = oneToManyPersister;
-			IOuterJoinLoadable elementPersister = (IOuterJoinLoadable) oneToManyPersister.ElementPersister;
+			elementPersister = (IOuterJoinLoadable)oneToManyPersister.ElementPersister;
 			string alias = GenerateRootAlias(oneToManyPersister.Role);
 
 			WalkEntityTree(elementPersister, alias);
@@ -41,6 +42,12 @@ namespace NHibernate.Loader.Collection
 			InitPersisters(allAssociations, LockMode.None);
 			InitStatementString(elementPersister, alias, batchSize, subquery);
 		}
+
+		// NH-1747 FIX
+		//protected override string GenerateAliasForColumn(string rootAlias, string column)
+		//{
+		//  return elementPersister.GenerateTableAliasForColumn(rootAlias, column);
+		//}
 
 		private void InitStatementString(IOuterJoinLoadable elementPersister, string alias, int batchSize, SqlString subquery)
 		{

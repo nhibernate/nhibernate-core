@@ -1752,6 +1752,11 @@ namespace NHibernate.Persister.Collection
 			get { return keyColumnNames; }
 		}
 
+		protected string[] KeyColumnAliases
+		{
+			get { return keyColumnAliases; }
+		}
+
 		public bool IsLazy
 		{
 			get { return isLazy; }

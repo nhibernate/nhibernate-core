@@ -712,6 +712,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					throw new MappingException("Association references unmapped class: " + associatedEntityName);
 				oneToMany.AssociatedClass = persistentClass;
 				model.CollectionTable = persistentClass.Table;
+				if (model.IsInverse && persistentClass.JoinClosureSpan > 0)
+				{
+					// NH: bidirectional one-to-many with a class splitted in more tables; have to find in which table is the inverse side
+					foreach (var joined in persistentClass.JoinClosureIterator)
+					{
+						if (collectionMapping.Key.Columns.Select(x=> x.name).All(x => joined.Table.ColumnIterator.Select(jc=> jc.Name).Contains(x)))
+						{
+							model.CollectionTable = joined.Table;
+							break;
+						}
+					}
+				}
 
 				if (log.IsInfoEnabled)
 					log.Info("mapping collection: " + model.Role + " -> " + model.CollectionTable.Name);

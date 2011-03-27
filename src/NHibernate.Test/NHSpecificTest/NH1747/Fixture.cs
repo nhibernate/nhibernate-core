@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
-	[TestFixture,Ignore]
+	[TestFixture]
 	public class JoinTraversalTest : BugTestCase
 	{
 		[Test]
@@ -43,14 +43,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 			}
 		}
 
-		[Test]
+		[Test, Ignore("The fix was commented in the code. Look for NH-1747")]
 		public void TraversingBagToJoinChildElementShouldWork()
 		{
 			using (ISession session = OpenSession())
 			{
 				var paymentBatch = session.Get<PaymentBatch>(3);
 				Assert.AreEqual(1, paymentBatch.Payments.Count);
-
 			}
 		}
 	}
