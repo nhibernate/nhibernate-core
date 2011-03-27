@@ -409,7 +409,7 @@ namespace NHibernate.Mapping
 					buf.Append(dialect.GetColumnComment(col.Comment));
 				}
 			}
-			if (HasPrimaryKey)
+			if (HasPrimaryKey && (dialect.GenerateTablePrimaryKeyConstraintForIdentityColumn || !identityColumn))
 			{
 				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
 			}

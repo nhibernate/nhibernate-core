@@ -1187,6 +1187,16 @@ namespace NHibernate.Dialect
 		{
 			get { throw new MappingException("Dialect does not support identity key generation"); }
 		}
+
+        /// <summary>
+        /// Set this to false if no table-level primary key constraint should be generated when an identity column has been specified for the table.
+        /// This is used as a work-around for SQLite so it doesn't tell us we have "more than one primary key".
+        /// </summary>
+	    public virtual bool GenerateTablePrimaryKeyConstraintForIdentityColumn
+	    {
+            get { return true; }
+	    }
+
 		#endregion
 
 		#region SEQUENCE support

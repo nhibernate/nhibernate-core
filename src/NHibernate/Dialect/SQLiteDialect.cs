@@ -154,12 +154,19 @@ namespace NHibernate.Dialect
 		{
 			get
 			{
-				// identity columns in sqlite are marked as being integer primary key
-				// the primary key part will be put in at the end of the create table,
-				// so just the integer part is needed here
-				return "integer";
+                // Adding the "autoincrement" keyword ensures that the same id will
+                // not be generated twice.  When just utilizing "integer primary key",
+                // SQLite just takes the max value currently in the table and adds one.
+                // This causes problems with caches that use primary keys of deleted
+                // entities.
+				return "integer primary key autoincrement";
 			}
 		}
+
+        public override bool GenerateTablePrimaryKeyConstraintForIdentityColumn
+        {
+            get { return false; }
+        }
 
 		public override string Qualify(string catalog, string schema, string table)
 		{
