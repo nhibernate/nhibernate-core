@@ -34,6 +34,7 @@ namespace NHibernate.Persister.Collection
 	public abstract class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
 	                                                    IPostInsertIdentityPersister
 	{
+		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
 
 		#region SQL statements
@@ -1617,7 +1618,7 @@ namespace NHibernate.Persister.Collection
 						}
 						else
 						{
-							return null;
+							return NotFoundObject;
 						}
 					}
 					finally
@@ -1636,6 +1637,11 @@ namespace NHibernate.Persister.Collection
 				                                 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
 				                                 GenerateSelectSizeString(session));
 			}
+		}
+
+		public object NotFoundObject
+		{
+			get { return NotFoundPlaceHolder; }
 		}
 
 		public abstract bool ConsumesEntityAlias();

@@ -339,7 +339,7 @@ namespace NHibernate.Collection
 			}
 			else
 			{
-				QueueOperation(new RemoveDelayedOperation(this, index, old));
+				QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
 			}
 		}
 
@@ -352,7 +352,20 @@ namespace NHibernate.Collection
 					throw new IndexOutOfRangeException("negative index");
 				}
 				object result = ReadElementByIndex(index);
-				return result == Unknown ? list[index] : result;
+				if (result == Unknown)
+				{
+					return list[index];
+				}
+				if(NotFound == result)
+				{
+					// check if the index is valid
+					if(index >= Count)
+					{
+						throw new ArgumentOutOfRangeException("index");
+					}
+					return null;
+				}
+				return result;
 			}
 			set
 			{
@@ -360,7 +373,19 @@ namespace NHibernate.Collection
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
+				object old;
+				if (PutQueueEnabled)
+				{
+					old = ReadElementByIndex(index);
+					if(old == NotFound)
+					{
+						old = null;
+					}
+				}
+				else
+				{
+					old = Unknown;
+				}
 				if (old == Unknown)
 				{
 					Write();

@@ -273,6 +273,20 @@ namespace NHibernate.Persister.Collection
 		int GetSize(object key, ISessionImplementor session);
 		bool IndexExists(object key, object index, ISessionImplementor session);
 		bool ElementExists(object key, object element, ISessionImplementor session);
+		
+		/// <summary>
+		/// Try to find an element by a given index.
+		/// </summary>
+		/// <param name="key">The key of the collection (collection-owner identifier)</param>
+		/// <param name="index">The given index.</param>
+		/// <param name="session">The active <see cref="ISession"/>.</param>
+		/// <param name="owner">The owner of the collection.</param>
+		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
 		object GetElementByIndex(object key, object index, ISessionImplementor session, object owner);
+		
+		/// <summary>
+		/// A place-holder to inform that the data-reader was empty.
+		/// </summary>
+		object NotFoundObject { get; }
 	}
 }

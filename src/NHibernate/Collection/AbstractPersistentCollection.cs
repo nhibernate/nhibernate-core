@@ -19,6 +19,7 @@ namespace NHibernate.Collection
 	public abstract class AbstractPersistentCollection : IPersistentCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
+		protected internal static readonly object NotFound = new object(); //place holder
 
 		protected interface IDelayedOperation
 		{
@@ -345,7 +346,8 @@ namespace NHibernate.Collection
 					{
 						session.Flush();
 					}
-					return persister.GetElementByIndex(entry.LoadedKey, index, session, owner);
+					var elementByIndex = persister.GetElementByIndex(entry.LoadedKey, index, session, owner);
+					return persister.NotFoundObject == elementByIndex ? NotFound : elementByIndex;
 				}
 			}
 			Read();

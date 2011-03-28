@@ -242,7 +242,7 @@ namespace NHibernate.Collection
 				object old = ReadElementByIndex(key);
 				if (old != Unknown)
 				{
-					QueueOperation(new PutDelayedOperation(this, key, value, old));
+					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 					return;
 				}
 			}
@@ -280,7 +280,10 @@ namespace NHibernate.Collection
 			if (PutQueueEnabled)
 			{
 				object old = ReadElementByIndex(key);
-				QueueOperation(new RemoveDelayedOperation(this, key, old));
+				if (old != NotFound)
+				{
+					QueueOperation(new RemoveDelayedOperation(this, key, old));
+				}
 				return;
 			}
 			else
@@ -302,7 +305,7 @@ namespace NHibernate.Collection
 			get
 			{
 				object result = ReadElementByIndex(key);
-				return result == Unknown ? map[key] : result;
+				return result == Unknown ? map[key] : (result == NotFound ? null : result);
 			}
 			set
 			{
@@ -310,7 +313,7 @@ namespace NHibernate.Collection
 				if (PutQueueEnabled)
 				{
 					object old = ReadElementByIndex(key);
-					if (old != Unknown)
+					if (old != Unknown && old != NotFound)
 					{
 						QueueOperation(new PutDelayedOperation(this, key, value, old));
 						return;

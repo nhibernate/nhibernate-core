@@ -656,6 +656,8 @@
     <Compile Include="NHSpecificTest\NH2484\Model.cs" />
     <Compile Include="NHSpecificTest\NH2488\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2488\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2489\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2489\Model.cs" />
     <Compile Include="NHSpecificTest\NH2490\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2490\Model.cs" />
     <Compile Include="NHSpecificTest\NH2491\Fixture.cs" />
@@ -2498,6 +2500,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2489\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2603\Mappings.hbm.xml" />
     <EmbeddedResource Include="Subselect\Beings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2488\Mappings.hbm.xml" />

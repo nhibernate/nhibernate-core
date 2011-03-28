@@ -343,6 +343,11 @@ namespace NHibernate.Test.NHSpecificTest
 			throw new NotImplementedException();
 		}
 
+		public object NotFoundObject
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return null; }

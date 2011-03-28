@@ -125,7 +125,7 @@ namespace NHibernate.Collection.Generic
 				object old = ReadElementByIndex(key);
 				if (old != Unknown)
 				{
-					QueueOperation(new PutDelayedOperation(this, key, value, old));
+					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 					return;
 				}
 			}
@@ -139,7 +139,7 @@ namespace NHibernate.Collection.Generic
 			if (PutQueueEnabled)
 			{
 				object old = ReadElementByIndex(key);
-				QueueOperation(new RemoveDelayedOperation(this, key, old));
+				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
 				return true;
 			}
 			else
@@ -161,11 +161,13 @@ namespace NHibernate.Collection.Generic
 			{
 				return gmap.TryGetValue(key, out value);
 			}
-			else
+			if(result == NotFound)
 			{
-				value = (TValue)result;
-				return true;
+				value = default(TValue);
+				return false;
 			}
+			value = (TValue)result;
+			return true;
 		}
 
 		TValue IDictionary<TKey, TValue>.this[TKey key]
@@ -173,7 +175,15 @@ namespace NHibernate.Collection.Generic
 			get
 			{
 				object result = ReadElementByIndex(key);
-				return result == Unknown ? gmap[key] : (TValue)result;
+				if (result == Unknown)
+				{
+					return gmap[key];
+				}
+				if (result == NotFound)
+				{
+					throw new KeyNotFoundException();
+				}
+				return (TValue) result;
 			}
 			set
 			{
@@ -183,7 +193,7 @@ namespace NHibernate.Collection.Generic
 					object old = ReadElementByIndex(key);
 					if (old != Unknown)
 					{
-						QueueOperation(new PutDelayedOperation(this, key, value, old));
+						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 						return;
 					}
 				}

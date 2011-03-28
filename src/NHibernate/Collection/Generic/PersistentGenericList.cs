@@ -88,10 +88,16 @@ namespace NHibernate.Collection.Generic
 				{
 					return glist[index];
 				}
-				else
+				if (result == NotFound)
 				{
-					return (T) result;
+					// check if the index is valid
+					if (index >= Count)
+					{
+						throw new ArgumentOutOfRangeException("index");
+					}
+					return default(T);
 				}
+				return (T) result;
 			}
 			set
 			{
@@ -107,7 +113,7 @@ namespace NHibernate.Collection.Generic
 				}
 				else
 				{
-					QueueOperation(new SetDelayedOperation(this, index, value, old));
+					QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
 				}
 			}
 		}
