@@ -70,7 +70,7 @@ namespace NHibernate.Test.Linq
 		{
 			var file = new FileInfo(scripFileName);
 			string script = file.OpenText().ReadToEnd().Replace("GO", "");
-			var connectionProvider = ConnectionProviderFactory.NewConnectionProvider(configuration.Properties);
+			var connectionProvider = ConnectionProviderFactory.NewConnectionProvider(configuration.GetDerivedProperties());
 			using (var conn = connectionProvider.GetConnection())
 			{
 				if (conn.State == ConnectionState.Closed)

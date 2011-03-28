@@ -29,28 +29,15 @@ namespace NHibernate.Cfg
 		{
 			Settings settings = new Settings();
 
-			Dialect.Dialect dialect;
 			try
 			{
-				dialect = Dialect.Dialect.GetDialect(properties);
-				Dictionary<string, string> temp = new Dictionary<string, string>();
-
-				foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
-				{
-					temp[de.Key] = de.Value;
-				}
-				foreach (KeyValuePair<string, string> de in properties)
-				{
-					temp[de.Key] = de.Value;
-				}
-				properties = temp;
+                settings.Dialect = Dialect.Dialect.GetDialect(properties);
 			}
 			catch (HibernateException he)
 			{
 				log.Warn("No dialect set - using GenericDialect: " + he.Message);
-				dialect = new GenericDialect();
+                settings.Dialect = new GenericDialect();
 			}
-			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
 

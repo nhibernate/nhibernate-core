@@ -1276,6 +1276,27 @@ namespace NHibernate.Cfg
 			set { properties = value; }
 		}
 
+        /// <summary>
+        /// Returns the set of properties computed from the default properties in the dialect combined with the other properties in the configuration.
+        /// </summary>
+        /// <returns></returns>
+	    public IDictionary<string, string> GetDerivedProperties()
+	    {
+	        IDictionary<string, string> derivedProperties = new Dictionary<string, string>();
+
+			if (Properties.ContainsKey(Environment.Dialect))
+			{
+			    Dialect.Dialect dialect = Dialect.Dialect.GetDialect(Properties);
+                foreach (KeyValuePair<string, string> pair in dialect.DefaultProperties)
+                    derivedProperties[pair.Key] = pair.Value;
+			}
+
+            foreach (KeyValuePair<string, string> pair in Properties)
+                derivedProperties[pair.Key] = pair.Value;
+
+	        return derivedProperties;
+	    }
+
 		/// <summary>
 		/// Set the default assembly to use for the mappings added to the configuration
 		/// afterwards.
@@ -1692,7 +1713,7 @@ namespace NHibernate.Cfg
 		//protected Settings BuildSettings()
 		private Settings BuildSettings()
 		{
-			var result = settingsFactory.BuildSettings(properties);
+			var result = settingsFactory.BuildSettings(GetDerivedProperties());
 			// NH : Set configuration for IdGenerator SQL logging
 			PersistentIdGeneratorParmsNames.SqlStatementLogger.FormatSql = result.SqlStatementLogger.FormatSql;
 			PersistentIdGeneratorParmsNames.SqlStatementLogger.LogToStdout = result.SqlStatementLogger.LogToStdout;
