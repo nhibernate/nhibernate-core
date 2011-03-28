@@ -36,24 +36,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1734
 			using (var session = this.OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
+			    double delta = 0.0000000000001;
+
 				var query=session.CreateQuery("select sum(Amount*Price) from Product");
 				var result=query.UniqueResult();
 				Assert.That(result, Is.InstanceOf(typeof (double)));
-				Assert.That(result, Is.EqualTo(43.2*3*2));
+                Assert.AreEqual(43.2 * 3 * 2, (double)result, delta);
 				query = session.CreateQuery("select sum(Price*Amount) from Product");
 				result = query.UniqueResult();
 				Assert.That(result, Is.InstanceOf(typeof(double)));
-				Assert.That(result, Is.EqualTo(43.2 * 3 * 2));
+                Assert.AreEqual(43.2 * 3 * 2, (double)result, delta);
 
 				query = session.CreateQuery("select sum(Price) from Product");
 				result = query.UniqueResult();
 				Assert.That(result, Is.InstanceOf(typeof(double)));
-				Assert.That(result, Is.EqualTo(43.2 * 2));
+                Assert.AreEqual(43.2 * 2, (double)result, delta);
 
 				query = session.CreateQuery("select sum(Amount) from Product");
 				result = query.UniqueResult();
 				Assert.That(result, Is.InstanceOf(typeof(Int64)));
-				Assert.That(result, Is.EqualTo(6.0));
+				Assert.That(result, Is.EqualTo(6));
 			}
 		}
 	}
