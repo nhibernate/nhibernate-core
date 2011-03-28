@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 			ISQLExceptionConverter sqlExceptionConverter;
 			try
 			{
-				sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(dialect, properties);
+                sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(settings.Dialect, properties);
 			}
 			catch (HibernateException)
 			{
