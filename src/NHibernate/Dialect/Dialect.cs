@@ -2375,6 +2375,11 @@ namespace NHibernate.Dialect
 			return insertString;
 		}
 
+        public virtual InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
+	    {
+            get { return InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter; }
+	    }
+
 		/// <summary> 
 		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
 		/// which acts as this dialects identity-style generation strategy.
@@ -2434,5 +2439,23 @@ namespace NHibernate.Dialect
         {
             get { return null; }
         }
+    }
+
+    public enum InsertGeneratedIdentifierRetrievalMethod
+    {
+        /// <summary>
+        /// Use a parameter with ParameterDirection.Output
+        /// </summary>
+        OutputParameter,
+
+        /// <summary>
+        /// Use a parameter with ParameterDirection.ReturnValue
+        /// </summary>
+        ReturnValueParameter,
+
+        // <summary>
+        // Get the result from the statment as if it were a query, using ExecuteScalar() or ExecuteDataReader().
+        // </summary>
+        // QueryResult
     }
 }

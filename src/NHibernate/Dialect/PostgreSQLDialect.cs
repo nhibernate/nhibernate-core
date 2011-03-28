@@ -111,6 +111,11 @@ namespace NHibernate.Dialect
 			return insertString.Append(" returning " + identifierColumnName);
 		}
 
+        public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
+        {
+            get { return InsertGeneratedIdentifierRetrievalMethod.OutputParameter; }
+        }
+
 		public override bool SupportsSequences
 		{
 			get { return true; }

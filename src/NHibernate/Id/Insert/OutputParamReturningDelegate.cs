@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -45,7 +46,13 @@ namespace NHibernate.Id.Insert
 			IDbDataParameter idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
 			                                                                                         paramType);
 			driveGeneratedParamName = idParameter.ParameterName;
-			idParameter.Direction = ParameterDirection.ReturnValue;
+
+            if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.OutputParameter)
+                idParameter.Direction = ParameterDirection.Output;
+            else if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter)
+                idParameter.Direction = ParameterDirection.ReturnValue;
+            else
+                throw new System.NotImplementedException("Unsupported InsertGeneratedIdentifierRetrievalMethod: " + factory.Dialect.InsertGeneratedIdentifierRetrievalMethod);
 
 			command.Parameters.Add(idParameter);
 			return command;
