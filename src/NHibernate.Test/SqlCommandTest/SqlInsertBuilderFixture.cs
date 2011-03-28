@@ -32,8 +32,9 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
 			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
 
+		    string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
 			string expectedSql =
-				"INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, 0, 5)";
+                "INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, " + falseString + ", 5)";
 			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
 			Assert.AreEqual(2, actualParameterTypes.Length);
@@ -78,8 +79,9 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
 			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
 
-			string expectedSql =
-				"INSERT INTO test_insert_builder (literalColumn, intColumn, stringColumn, longColumn) VALUES (0, ?, 5, ?)";
+            string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
+            string expectedSql =
+                "INSERT INTO test_insert_builder (literalColumn, intColumn, stringColumn, longColumn) VALUES (" + falseString + ", ?, 5, ?)";
 			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
 			Assert.AreEqual(2, actualParameterTypes.Length);

@@ -38,8 +38,9 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlCommandInfo sqlCommand = update.ToSqlCommandInfo();
 
 			Assert.AreEqual(CommandType.Text, sqlCommand.CommandType);
-			string expectedSql =
-				"UPDATE test_update_builder SET intColumn = ?, longColumn = ?, literalColumn = 0, stringColumn = 5 WHERE decimalColumn = ? AND versionColumn = ? AND a=b";
+            string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
+            string expectedSql =
+                "UPDATE test_update_builder SET intColumn = ?, longColumn = ?, literalColumn = " + falseString + ", stringColumn = 5 WHERE decimalColumn = ? AND versionColumn = ? AND a=b";
 			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
 			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
