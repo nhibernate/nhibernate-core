@@ -20,7 +20,8 @@ namespace NHibernate.Criterion
 		protected bool ascending;
 		protected string propertyName;
 		protected IProjection projection;
-		
+		private bool ignoreCase;
+
 		public Order(IProjection projection, bool ascending)
 		{
 			this.projection = projection;
@@ -38,7 +39,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public virtual SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (projection!=null)
+			if (projection != null)
 			{
 				SqlString sb = new SqlString();
 				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery, new Dictionary<string, IFilter>());
@@ -49,14 +50,14 @@ namespace NHibernate.Criterion
 			}
 
 			string[] columns = criteriaQuery.GetColumnAliasesUsingProjection(criteria, propertyName);
+			Type.IType type = criteriaQuery.GetTypeUsingProjection(criteria, propertyName);
 
 			StringBuilder fragment = new StringBuilder();
-
 			ISessionFactoryImplementor factory = criteriaQuery.Factory;
 			for (int i = 0; i < columns.Length; i++)
 			{
-				// TODO H3: bool lower = _ignoreCase && type.SqlTypes( factory )[ i ] == Types.VARCHAR
-				bool lower = false;
+				bool lower = ignoreCase && IsStringType(type.SqlTypes(factory)[i]);
+
 				if (lower)
 				{
 					fragment.Append(factory.Dialect.LowercaseFunction)
@@ -82,7 +83,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (projection!=null?projection.ToString():propertyName) + (ascending ? " asc" : " desc");
+			return (projection != null ? projection.ToString() : propertyName) + (ascending ? " asc" : " desc");
 		}
 
 		/// <summary>
@@ -124,13 +125,36 @@ namespace NHibernate.Criterion
 		{
 			return new Order(propertyName, false);
 		}
-		
+
 		public TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (projection != null)
 				return projection.GetTypedValues(criteria, criteriaQuery);
-			
+
 			return new TypedValue[0]; // not using parameters for ORDER BY columns
+		}
+
+		public Order IgnoreCase()
+		{
+			ignoreCase = true;
+			return this;
+		}
+
+		private bool IsStringType(SqlTypes.SqlType propertyType)
+		{
+			switch (propertyType.DbType)
+			{
+				case System.Data.DbType.AnsiString:
+					return true;
+				case System.Data.DbType.AnsiStringFixedLength:
+					return true;
+				case System.Data.DbType.String:
+					return true;
+				case System.Data.DbType.StringFixedLength:
+					return true;
+				default:
+					return false;
+			}
 		}
 	}
 }

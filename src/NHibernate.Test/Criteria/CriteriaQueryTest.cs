@@ -2901,5 +2901,60 @@ namespace NHibernate.Test.Criteria
 				}
 			}
 		}
+
+		[Test]
+		public void IgnoreCase()
+		{
+			//SqlServer collation set to Latin1_General_BIN
+			//when database created to validate this test
+			Course c1 = new Course();
+			c1.CourseCode = "course-1";
+			c1.Description = "Advanced NHibernate";
+			Course c2 = new Course();
+			c2.CourseCode = "course-2";
+			c2.Description = "advanced csharp";
+			Course c3 = new Course();
+			c3.CourseCode = "course-3";
+			c3.Description = "advanced UnitTesting";
+
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Save(c1);
+				session.Save(c2);
+				session.Save(c3);
+				t.Commit();
+			}
+
+			// this particular selection is commented out if collation is not Latin1_General_BIN
+			//using (ISession session = OpenSession())
+			//{
+			//    // order the courses in binary order - assumes collation Latin1_General_BIN
+			//    IList result =
+			//        session.CreateCriteria(typeof(Course)).AddOrder(Order.Asc("Description")).List();
+			//    Assert.AreEqual(3, result.Count);
+			//    Course firstResult = (Course)result[0];
+			//    Assert.IsTrue(firstResult.Description.Contains("Advanced NHibernate"), "Description should have 'Advanced NHibernate', but has " + firstResult.Description);
+			//}
+
+			using (ISession session = OpenSession())
+			{
+				// order the courses after all descriptions have been converted to lower case
+				IList result =
+					session.CreateCriteria(typeof (Course)).AddOrder(Order.Asc("Description").IgnoreCase()).List();
+				Assert.AreEqual(3, result.Count);
+				Course firstResult = (Course) result[0];
+				Assert.IsTrue(firstResult.Description.Contains("advanced csharp"), "Description should have 'advanced csharp', but has " + firstResult.Description);
+			}
+
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
+				session.Delete(c1);
+				session.Delete(c2);
+				session.Delete(c3);
+				t.Commit();
+			}
+		}
 	}
 }
