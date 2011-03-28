@@ -293,7 +293,14 @@ namespace NHibernate.Linq.Visitors
                     return _hqlTreeBuilder.BooleanOr(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
 
                 case ExpressionType.Add:
-                    return _hqlTreeBuilder.Add(lhs, rhs);
+                    if (expression.Left.Type == typeof(string) && expression.Right.Type == typeof(string))
+                    {
+                        return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
+                    }
+                    else
+                    {
+                        return _hqlTreeBuilder.Add(lhs, rhs);
+                    }
 
                 case ExpressionType.Subtract:
                     return _hqlTreeBuilder.Subtract(lhs, rhs);
