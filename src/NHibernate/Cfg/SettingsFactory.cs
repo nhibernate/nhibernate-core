@@ -29,15 +29,28 @@ namespace NHibernate.Cfg
 		{
 			Settings settings = new Settings();
 
+			Dialect.Dialect dialect;
 			try
 			{
-                settings.Dialect = Dialect.Dialect.GetDialect(properties);
+				dialect = Dialect.Dialect.GetDialect(properties);
+				Dictionary<string, string> temp = new Dictionary<string, string>();
+
+				foreach (KeyValuePair<string, string> de in dialect.DefaultProperties)
+				{
+					temp[de.Key] = de.Value;
+				}
+				foreach (KeyValuePair<string, string> de in properties)
+				{
+					temp[de.Key] = de.Value;
+				}
+				properties = temp;
 			}
 			catch (HibernateException he)
 			{
 				log.Warn("No dialect set - using GenericDialect: " + he.Message);
-                settings.Dialect = new GenericDialect();
+				dialect = new GenericDialect();
 			}
+			settings.Dialect = dialect;
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
 
@@ -46,7 +59,7 @@ namespace NHibernate.Cfg
 			ISQLExceptionConverter sqlExceptionConverter;
 			try
 			{
-                sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(settings.Dialect, properties);
+				sqlExceptionConverter = SQLExceptionConverterFactory.BuildSQLExceptionConverter(dialect, properties);
 			}
 			catch (HibernateException)
 			{
