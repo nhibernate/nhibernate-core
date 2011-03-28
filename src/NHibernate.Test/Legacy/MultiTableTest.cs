@@ -344,7 +344,8 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) s.Load(typeof(Top), mid, LockMode.Upgrade);
+            if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
+                multi = (Multi)s.Load(typeof(Top), mid, LockMode.Upgrade);
 			simp = (Top) s.Load(typeof(Top), sid);
 			s.Lock(simp, LockMode.UpgradeNoWait);
 			t.Commit();
@@ -459,7 +460,8 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) s.Load(typeof(Top), multiId, LockMode.Upgrade);
+            if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
+			    multi = (Multi) s.Load(typeof(Top), multiId, LockMode.Upgrade);
 			simp = (Top) s.Load(typeof(Top), simpId);
 			s.Lock(simp, LockMode.UpgradeNoWait);
 			t.Commit();
