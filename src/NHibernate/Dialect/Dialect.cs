@@ -1764,6 +1764,10 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual bool IsQuoted(string name)
 		{
+			if (string.IsNullOrEmpty(name))
+			{
+				return false;
+			}
 			return (name[0] == OpenQuote && name[name.Length - 1] == CloseQuote);
 		}
 

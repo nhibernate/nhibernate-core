@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
+using SharpTestsEx;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest
@@ -59,6 +60,13 @@ namespace NHibernate.Test.DialectTest
 		public void IsQuotedFalse()
 		{
 			Assert.IsFalse(d.IsQuoted(tableThatNeedsToBeQuoted[BeforeQuoteIndex]));
+		}
+
+		[Test]
+		public void WhenNullOrEmptyIsQuotedFalse()
+		{
+			d.IsQuoted(null).Should().Be.False();
+			d.IsQuoted("").Should().Be.False();
 		}
 
 		[Test]
