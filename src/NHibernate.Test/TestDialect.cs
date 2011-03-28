@@ -47,6 +47,8 @@ namespace NHibernate.Test
 
         public virtual bool HasBrokenDecimalType { get { return false; } }
 
+        public virtual bool SupportsSelectForUpdateOnOuterJoin { get { return true; } }
+
 	    public bool SupportsSqlType(SqlType sqlType)
 	    {
             try
