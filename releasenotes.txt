@@ -6,6 +6,7 @@
 		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
 		* [NH-2593] - Form Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
 		* - ICollectionPersister added property to fix [NH-2489]
+		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
 
 Build 3.1.0.GA (rev5425)
 =============================

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -11,7 +10,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -27,8 +25,6 @@ namespace NHibernate.Impl
 		private readonly ISessionFactoryImplementor factory;
 		private readonly List<CriteriaQueryTranslator> translators = new List<CriteriaQueryTranslator>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
-		private readonly List<SqlType> types = new List<SqlType>();
-		private SqlString sqlString = new SqlString();
 		private readonly List<CriteriaLoader> loaders = new List<CriteriaLoader>();
 		private readonly Dialect.Dialect dialect;
 		private IList criteriaResults;
@@ -38,6 +34,7 @@ namespace NHibernate.Impl
 		private string cacheRegion;
 		private IResultTransformer resultTransformer;
 		private readonly Dictionary<CriteriaLoader, int> loaderToResultIndex = new Dictionary<CriteriaLoader, int>();
+		private readonly IResultSetsCommand resultSetsCommand;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MultiCriteriaImpl"/> class.
@@ -47,20 +44,18 @@ namespace NHibernate.Impl
 		internal MultiCriteriaImpl(SessionImpl session, ISessionFactoryImplementor factory)
 		{
 			IDriver driver = session.Factory.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-			{
-				throw new NotSupportedException(
-					string.Format("The driver {0} does not support multiple queries.", driver.GetType().FullName));
-			}
 			dialect = session.Factory.Dialect;
+			resultSetsCommand = driver.GetResultSetsCommand(session);
 			this.session = session;
 			this.factory = factory;
 		}
 
-
 		public SqlString SqlString
 		{
-			get { return sqlString; }
+			get
+			{
+				return resultSetsCommand.Sql;
+			}
 		}
 
 		public IList List()
@@ -179,11 +174,8 @@ namespace NHibernate.Impl
 				translators.Add(translator);
 				QueryParameters queryParameters = translator.GetQueryParameters();
 				parameters.Add(queryParameters);
-				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters, types.Count);
-				sqlString = sqlString.Append(commandInfo.Text)
-					.Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator)
-					.Append(Environment.NewLine);
-				types.AddRange(commandInfo.ParameterTypes);
+				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters, resultSetsCommand.ParametersCount);
+				resultSetsCommand.Append(commandInfo);
 			}
 		}
 
@@ -197,15 +189,11 @@ namespace NHibernate.Impl
 			}
 			int rowCount = 0;
 
-			using (
-				IDbCommand command =
-					session.Batcher.PrepareCommand(CommandType.Text, sqlString, types.ToArray()))
+			using (var reader = resultSetsCommand.GetReader(parameters.ToArray(), null))
 			{
-				BindParameters(command);
 				ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
 				List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
 				bool[] createSubselects = new bool[loaders.Count];
-				IDataReader reader = session.Batcher.ExecuteReader(command);
 				try
 				{
 					for (int i = 0; i < loaders.Count; i++)
@@ -254,12 +242,9 @@ namespace NHibernate.Impl
 				}
 				catch (Exception e)
 				{
-					log.Error("Error executing multi criteria : [" + command.CommandText + "]");
-					throw new HibernateException("Error executing multi criteria : [" + command.CommandText + "]", e);
-				}
-				finally
-				{
-					session.Batcher.CloseCommand(command, reader);
+					var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
+					log.Error(message, e);
+					throw new HibernateException(message, e);
 				}
 				for (int i = 0; i < loaders.Count; i++)
 				{
@@ -308,48 +293,6 @@ namespace NHibernate.Impl
 				loaders.AddRange(tmpLoaders);
 				criteriaIndex += 1;
 			}
-		}
-
-		private void BindParameters(IDbCommand command)
-		{
-			int colIndex = 0;
-
-			for (int queryIndex = 0; queryIndex < loaders.Count; queryIndex++)
-			{
-				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryIndex, colIndex);
-				colIndex = BindQueryParameters(command, queryIndex, colIndex + limitParameterSpan);
-				colIndex += BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
-			}
-		}
-
-		private int BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
-		{
-			QueryParameters parameter = parameters[queryIndex];
-			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
-			{
-				return Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-			}
-			return 0;
-		}
-
-		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
-		{
-			QueryParameters parameter = parameters[queryIndex];
-			colIndex += parameter.BindParameters(command, colIndex, session);
-			return colIndex;
-		}
-
-		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
-		{
-			int limitParametersSpan = 0;
-			QueryParameters parameter = parameters[queryIndex];
-			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
-			{
-				limitParametersSpan += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-			}
-			return limitParametersSpan;
 		}
 
 		public IMultiCriteria Add(System.Type resultGenericListType, ICriteria criteria)

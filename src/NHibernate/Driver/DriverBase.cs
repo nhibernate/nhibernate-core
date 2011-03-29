@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -166,9 +166,14 @@ namespace NHibernate.Driver
 
 		private void SetCommandText(IDbCommand cmd, SqlString sqlString)
 		{
-			SqlStringFormatter formatter = new SqlStringFormatter(this, MultipleQueriesSeparator);
+			SqlStringFormatter formatter = GetSqlStringFormatter();
 			formatter.Format(sqlString);
 			cmd.CommandText = formatter.GetFormattedText();
+		}
+
+		protected virtual SqlStringFormatter GetSqlStringFormatter()
+		{
+			return new SqlStringFormatter(this, ";");
 		}
 
 		private void SetCommandParameters(IDbCommand cmd, SqlType[] sqlTypes)
@@ -229,6 +234,16 @@ namespace NHibernate.Driver
 				cmd.Parameters.Add(parameter);
 		}
 
+		public virtual IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
+		{
+			throw new NotSupportedException(string.Format("The driver {0} does not support multiple queries.", GetType().FullName));
+		}
+
+		public virtual bool SupportsMultipleQueries
+		{
+			get { return false; }
+		}
+
 		protected virtual IDbDataParameter CloneParameter(IDbCommand cmd, IDbDataParameter originalParameter)
 		{
 			var clone = cmd.CreateParameter();
@@ -262,16 +277,6 @@ namespace NHibernate.Driver
 			IDbDataParameter param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);
 			param.Direction = ParameterDirection.Output;
 			return param;
-		}
-
-		public virtual bool SupportsMultipleQueries
-		{
-			get { return false; }
-		}
-
-		public virtual string MultipleQueriesSeparator
-		{
-			get { return ";"; }
 		}
 	}
 }

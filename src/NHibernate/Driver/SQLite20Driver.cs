@@ -76,7 +76,12 @@ namespace NHibernate.Driver
 		{
 			get { return false; }
 		}
-		
+
+		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
+		{
+			return new BasicResultSetsCommand(session);
+		}
+
 		public override bool SupportsMultipleQueries
 		{
 			get { return true; }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
+using System.Linq;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
@@ -13,7 +13,6 @@ using NHibernate.Hql;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -34,23 +33,18 @@ namespace NHibernate.Impl
 		private bool isCacheable;
 		private readonly ISessionImplementor session;
 		private IResultTransformer resultTransformer;
-		private readonly List<SqlType> types = new List<SqlType>();
-		private SqlString sqlString;
 		private readonly Dialect.Dialect dialect;
 		private bool forceCacheRefresh;
 		private QueryParameters combinedParameters;
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
+		private readonly IResultSetsCommand resultSetsCommand;
 
 		public MultiQueryImpl(ISessionImplementor session)
 		{
 			IDriver driver = session.Factory.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-			{
-				throw new NotSupportedException(
-					string.Format("The driver {0} does not support multiple queries.", driver.GetType().FullName));
-			}
 			dialect = session.Factory.Dialect;
+			resultSetsCommand = driver.GetResultSetsCommand(session);
 			this.session = session;
 		}
 
@@ -508,126 +502,121 @@ namespace NHibernate.Impl
 			}
 			int rowCount = 0;
 
-			IDbCommand command = PrepareQueriesCommand();
-
-			BindParameters(command);
-
 			ArrayList results = new ArrayList();
 
-			log.Info(command.CommandText);
-			if (commandTimeout != RowSelection.NoValue)
-				command.CommandTimeout = commandTimeout;
 			ArrayList[] hydratedObjects = new ArrayList[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
-			IDataReader reader = session.Batcher.ExecuteReader(command);
-			try
+
+			using (var reader = resultSetsCommand.GetReader(Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
 			{
-				if (log.IsDebugEnabled)
+				try
 				{
-					log.DebugFormat("Executing {0} queries", translators.Count);
-				}
-				for (int i = 0; i < translators.Count; i++)
-				{
-					ITranslator translator = Translators[i];
-					QueryParameters parameter = Parameters[i];
-					IList tempResults;
-					if (resultCollectionGenericType[i] == typeof(object))
-					{
-						tempResults = new ArrayList();
-					}
-					else
-					{
-						tempResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i]));
-					}
-					int entitySpan = translator.Loader.EntityPersisters.Length;
-					hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
-					RowSelection selection = parameter.RowSelection;
-					int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-					if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
-					{
-						Loader.Loader.Advance(reader, selection);
-					}
-
-					LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
-					EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
-
-					createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
-					subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
-
-					translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
-					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
-
 					if (log.IsDebugEnabled)
 					{
-						log.Debug("processing result set");
+						log.DebugFormat("Executing {0} queries", translators.Count);
 					}
-
-					int count;
-					for (count = 0; count < maxRows && reader.Read(); count++)
+					for (int i = 0; i < translators.Count; i++)
 					{
+						ITranslator translator = Translators[i];
+						QueryParameters parameter = Parameters[i];
+						IList tempResults;
+						if (resultCollectionGenericType[i] == typeof (object))
+						{
+							tempResults = new ArrayList();
+						}
+						else
+						{
+							tempResults = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(resultCollectionGenericType[i]));
+						}
+						int entitySpan = translator.Loader.EntityPersisters.Length;
+						hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
+						RowSelection selection = parameter.RowSelection;
+						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
+						if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
+						{
+							Loader.Loader.Advance(reader, selection);
+						}
+
+						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
+						EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
+
+						createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
+						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
+
+						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
+						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
+
 						if (log.IsDebugEnabled)
 						{
-							log.Debug("result set row: " + count);
+							log.Debug("processing result set");
 						}
 
-						rowCount++;
-
-						object result =
-							translator.Loader.GetRowFromResultSet(reader,
-															 session,
-															 parameter,
-															 lockModeArray,
-															 optionalObjectKey,
-															 hydratedObjects[i],
-															 keys,
-															 true);
-
-						tempResults.Add(result);
-
-						if (createSubselects[i])
+						int count;
+						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
-							subselectResultKeys[i].Add(keys);
-							keys = new EntityKey[entitySpan]; //can't reuse in this case
+							if (log.IsDebugEnabled)
+							{
+								log.Debug("result set row: " + count);
+							}
+
+							rowCount++;
+
+							object result =
+								translator.Loader.GetRowFromResultSet(reader,
+								                                      session,
+								                                      parameter,
+								                                      lockModeArray,
+								                                      optionalObjectKey,
+								                                      hydratedObjects[i],
+								                                      keys,
+								                                      true);
+
+							tempResults.Add(result);
+
+							if (createSubselects[i])
+							{
+								subselectResultKeys[i].Add(keys);
+								keys = new EntityKey[entitySpan]; //can't reuse in this case
+							}
 						}
+
+						if (log.IsDebugEnabled)
+						{
+							log.Debug(string.Format("done processing result set ({0} rows)", count));
+						}
+
+						results.Add(tempResults);
+
+						if (log.IsDebugEnabled)
+						{
+							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+						}
+
+						reader.NextResult();
 					}
-
-					if (log.IsDebugEnabled)
-					{
-						log.Debug(string.Format("done processing result set ({0} rows)", count));
-					}
-
-					results.Add(tempResults);
-
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
-					}
-
-					reader.NextResult();
 				}
-			}
-			catch (Exception ex)
-			{
-				log.Error("Failed to execute multi query: [" + command.CommandText + "]", ex);
-				throw new HibernateException("Failed to execute multi query: [" + command.CommandText + "]", ex);
-			}
-			finally
-			{
-				session.Batcher.CloseCommand(command, reader);
-			}
-			for (int i = 0; i < translators.Count; i++)
-			{
-				ITranslator translator = translators[i];
-				QueryParameters parameter = parameters[i];
-
-				translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
-
-				if (createSubselects[i])
+				catch (Exception ex)
 				{
-					translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+					var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
+					log.Error(message, ex);
+					throw new HibernateException(message, ex);
+				}
+
+				for (int i = 0; i < translators.Count; i++)
+				{
+					ITranslator translator = translators[i];
+					QueryParameters parameter = parameters[i];
+
+					translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+
+					if (createSubselects[i])
+					{
+						translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+					}
 				}
 			}
+
 			if (statsEnabled)
 			{
 				stopWatch.Stop();
@@ -636,25 +625,18 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		private IDbCommand PrepareQueriesCommand()
-		{
-			SqlType[] sqlTypes = types.ToArray();
-			return session.Batcher.PrepareQueryCommand(CommandType.Text, SqlString, sqlTypes);
-		}
-
 		protected SqlString SqlString
 		{
 			get
 			{
-				if (sqlString == null)
+				if (!resultSetsCommand.HasQueries)
 					AggregateQueriesInformation();
-				return sqlString;
+				return resultSetsCommand.Sql;
 			}
 		}
 
 		private void AggregateQueriesInformation()
 		{
-			sqlString = new SqlString();
 			foreach (AbstractQueryImpl query in queries)
 			{
 				QueryParameters queryParameters = query.GetQueryParameters();
@@ -665,9 +647,8 @@ namespace NHibernate.Impl
 					translators.Add(translator);
 					parameters.Add(queryParameters);
 					queryParameters = GetFilteredQueryParameters(queryParameters, translator);
-					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters, types.Count);
-					sqlString = sqlString.Append(commandInfo.Text).Append(session.Factory.ConnectionProvider.Driver.MultipleQueriesSeparator).Append(Environment.NewLine);
-					types.AddRange(commandInfo.ParameterTypes);
+					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters, resultSetsCommand.ParametersCount);
+					resultSetsCommand.Append(commandInfo);
 				}
 			}
 		}
@@ -706,36 +687,6 @@ namespace NHibernate.Impl
 			return filteredQueryParameters;
 		}
 
-		private void BindParameters(IDbCommand command)
-		{
-			int colIndex = 0;
-
-			for (int queryIndex = 0; queryIndex < queries.Count; queryIndex++)
-			{
-				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryIndex, colIndex);
-				colIndex = BindQueryParameters(command, queryIndex, colIndex + limitParameterSpan);
-				colIndex += BindLimitParametersLastIfNeccesary(command, queryIndex, colIndex);
-			}
-		}
-
-		private int BindLimitParametersLastIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
-		{
-			QueryParameters parameter = parameters[queryIndex];
-			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
-			{
-				return Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-			}
-			return 0;
-		}
-
-		private int BindQueryParameters(IDbCommand command, int queryIndex, int colIndex)
-		{
-			QueryParameters parameter = Parameters[queryIndex];
-			colIndex += parameter.BindParameters(command, colIndex, session);
-			return colIndex;
-		}
-
 		public object GetResult(string key)
 		{
 			if (queryResults == null)
@@ -749,18 +700,6 @@ namespace NHibernate.Impl
 			}
 
 			return queryResults[queryResultPositions[key]];
-		}
-
-		private int BindLimitParametersFirstIfNeccesary(IDbCommand command, int queryIndex, int colIndex)
-		{
-			int limitParameterSpan = 0;
-			QueryParameters parameter = Parameters[queryIndex];
-			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
-			{
-				limitParameterSpan += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
-			}
-			return limitParameterSpan;
 		}
 
 		public override string ToString()
@@ -821,7 +760,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (sqlString == null)
+				if (!resultSetsCommand.HasQueries)
 				{
 					AggregateQueriesInformation();
 				}
@@ -856,7 +795,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				if (sqlString == null)
+				if (!resultSetsCommand.HasQueries)
 					AggregateQueriesInformation();
 				return parameters;
 			}

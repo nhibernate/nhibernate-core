@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -60,17 +61,6 @@ namespace NHibernate.Driver
 		bool SupportsMultipleOpenReaders { get; }
 
 		/// <summary>
-		/// Can we issue several select queries in a single query, and get
-		/// several result sets back?
-		/// </summary>
-		bool SupportsMultipleQueries { get; }
-
-		/// <summary>
-		/// How we separate the queries when we use multiply queries.
-		/// </summary>
-		string MultipleQueriesSeparator { get; }
-
-		/// <summary>
 		/// Generates an IDbCommand from the SqlString according to the requirements of the DataProvider.
 		/// </summary>
 		/// <param name="type">The <see cref="CommandType"/> of the command to generate.</param>
@@ -106,5 +96,8 @@ namespace NHibernate.Driver
 		/// 'select ... from MyTable t where t.Col1 = ? and t.Col2 = ?'
 		/// </remarks>
 		void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString);
+
+		IResultSetsCommand GetResultSetsCommand(ISessionImplementor session);
+		bool SupportsMultipleQueries { get; }
 	}
 }

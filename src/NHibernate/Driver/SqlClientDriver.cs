@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -89,11 +90,6 @@ namespace NHibernate.Driver
 		public override bool SupportsMultipleOpenReaders
 		{
 			get { return false; }
-		}
-
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
 		}
 
 		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
@@ -189,5 +185,15 @@ namespace NHibernate.Driver
 		}
 
 		#endregion
+
+		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
+		{
+			return new BasicResultSetsCommand(session);
+		}
+
+		public override bool SupportsMultipleQueries
+		{
+			get { return true; }
+		}
 	}
 }

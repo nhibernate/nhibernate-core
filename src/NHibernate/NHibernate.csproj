@@ -146,6 +146,7 @@
     <Compile Include="Driver\DriverBase.cs" />
     <Compile Include="Driver\FirebirdDriver.cs" />
     <Compile Include="Driver\IDriver.cs" />
+    <Compile Include="Driver\IResultSetsCommand.cs" />
     <Compile Include="Driver\MySqlDataDriver.cs" />
     <Compile Include="Driver\NDataReader.cs" />
     <Compile Include="Driver\NHybridDataReader.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Driver\OracleClientDriver.cs" />
     <Compile Include="Driver\OracleDataClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
+    <Compile Include="Driver\BasicResultSetsCommand.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
