@@ -1,0 +1,110 @@
+﻿using System;
+using System.Data;
+using System.Data.Common;
+using Iesi.Collections.Generic;
+
+namespace NHibernate.Dialect.Schema
+{
+	public class PostgreSQLDataBaseMetadata : AbstractDataBaseSchema
+	{
+		public PostgreSQLDataBaseMetadata(DbConnection connection) : base(connection) {}
+
+		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
+		{
+			return new PostgreSQLTableMetadata(rs, this, extras);
+		}
+		
+		public override ISet<string> GetReservedWords()
+		{
+			// NpgsqlDriver does not currently (2011/03/30) support this feature, so the 
+			// base class implementation has to be overriden
+			return new HashedSet<string>();
+		}
+	}
+
+	public class PostgreSQLTableMetadata : AbstractTableMetadata
+	{
+		public PostgreSQLTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) {}
+
+		protected override IColumnMetadata GetColumnMetadata(DataRow rs)
+		{
+			return new PostgreSQLColumnMetadata(rs);
+		}
+
+		protected override string GetColumnName(DataRow rs)
+		{
+			return Convert.ToString(rs["COLUMN_NAME"]);
+		}
+
+		protected override string GetConstraintName(DataRow rs)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override IForeignKeyMetadata GetForeignKeyMetadata(DataRow rs)
+		{
+			return new PostgreSQLForeignKeyMetadata(rs);
+		}
+
+		protected override IIndexMetadata GetIndexMetadata(DataRow rs)
+		{
+			return new PostgreSQLIndexMetadata(rs);
+		}
+
+		protected override string GetIndexName(DataRow rs)
+		{
+			return Convert.ToString(rs["INDEX_NAME"]);
+		}
+
+		protected override void ParseTableInfo(DataRow rs)
+		{
+			Catalog = Convert.ToString(rs["TABLE_CATALOG"]);
+			Schema = Convert.ToString(rs["TABLE_SCHEMA"]);
+			if (string.IsNullOrEmpty(Catalog))
+			{
+				Catalog = null;
+			}
+			if (string.IsNullOrEmpty(Schema))
+			{
+				Schema = null;
+			}
+			Name = Convert.ToString(rs["TABLE_NAME"]);
+		}
+	}
+
+	public class PostgreSQLColumnMetadata : AbstractColumnMetaData
+	{
+		public PostgreSQLColumnMetadata(DataRow rs) : base(rs)
+		{
+			Name = Convert.ToString(rs["COLUMN_NAME"]);
+			object objValue = rs["CHARACTER_MAXIMUM_LENGTH"];
+			if (objValue != DBNull.Value)
+			{
+				ColumnSize = Convert.ToInt32(objValue);
+			}
+			objValue = rs["NUMERIC_PRECISION"];
+			if (objValue != DBNull.Value)
+			{
+				NumericalPrecision = Convert.ToInt32(objValue);
+			}
+			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
+			TypeName = Convert.ToString(rs["DATA_TYPE"]);
+		}
+	}
+
+	public class PostgreSQLIndexMetadata : AbstractIndexMetadata
+	{
+		public PostgreSQLIndexMetadata(DataRow rs) : base(rs)
+		{
+			Name = Convert.ToString(rs["INDEX_NAME"]);
+		}
+	}
+
+	public class PostgreSQLForeignKeyMetadata : AbstractForeignKeyMetadata
+	{
+		public PostgreSQLForeignKeyMetadata(DataRow rs) : base(rs)
+		{
+			Name = Convert.ToString(rs["CONSTRAINT_NAME"]);
+		}
+	}
+}

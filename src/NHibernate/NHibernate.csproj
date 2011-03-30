@@ -138,6 +138,7 @@
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
+    <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />

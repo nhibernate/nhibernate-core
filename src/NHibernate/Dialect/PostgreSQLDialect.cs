@@ -1,6 +1,8 @@
 using System.Data;
+using System.Data.Common;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -12,21 +14,22 @@ namespace NHibernate.Dialect
 	/// <remarks>
 	/// The PostgreSQLDialect defaults the following configuration properties:
 	/// <list type="table">
-	///		<listheader>
-	///			<term>Property</term>
-	///			<description>Default Value</description>
-	///		</listheader>
-	///		<item>
-	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.NpgsqlDriver" /></description>
-	///		</item>
+	///	<listheader>
+	///		<term>Property</term>
+	///		<description>Default Value</description>
+	///	</listheader>
+	///	<item>
+	///		<term>connection.driver_class</term>
+	///		<description><see cref="NHibernate.Driver.NpgsqlDriver" /></description>
+	///	</item>
 	/// </list>
 	/// </remarks>
 	public class PostgreSQLDialect : Dialect
 	{
-		/// <summary></summary>
 		public PostgreSQLDialect()
 		{
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
+			
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "char($l)");
 			RegisterColumnType(DbType.AnsiString, "varchar(255)");
@@ -51,7 +54,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.StringFixedLength, 4000, "char($l)");
 			RegisterColumnType(DbType.String, "varchar(255)");
 			RegisterColumnType(DbType.String, 4000, "varchar($l)");
-			RegisterColumnType(DbType.String, 1073741823, "text"); //
+			RegisterColumnType(DbType.String, 1073741823, "text");
 			RegisterColumnType(DbType.Time, "time");
 
 			// Override standard HQL function
@@ -59,23 +62,17 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
 			RegisterFunction("locate", new PositionSubstringFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
-			
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
-
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
-
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
 		}
 
-		/// <summary></summary>
 		public override string AddColumnString
 		{
 			get { return "add column"; }
 		}
 
-		/// <summary></summary>
 		public override bool DropConstraints
 		{
 			get { return false; }
@@ -111,10 +108,10 @@ namespace NHibernate.Dialect
 			return insertString.Append(" returning " + identifierColumnName);
 		}
 
-        public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
-        {
-            get { return InsertGeneratedIdentifierRetrievalMethod.OutputParameter; }
-        }
+		public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
+		{
+			get { return InsertGeneratedIdentifierRetrievalMethod.OutputParameter; }
+		}
 
 		public override bool SupportsSequences
 		{
@@ -192,13 +189,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/*public override bool DropTemporaryTableAfterUse()
-		{
-			//we have to, because postgres sets current tx
-			//to rollback only after a failed create table
-			return true;
-		}*/
-
 		public override string CreateTemporaryTableString
 		{
 			get { return "create temporary table"; }
@@ -206,10 +196,7 @@ namespace NHibernate.Dialect
 
 		public override string CreateTemporaryTablePostfix
 		{
-			get
-			{
-				return "on commit drop";
-			}
+			get { return "on commit drop"; }
 		}
 
 		public override string ToBooleanValueString(bool value)
@@ -217,9 +204,14 @@ namespace NHibernate.Dialect
 			return value ? "TRUE" : "FALSE";
 		}
 
-        public override string SelectGUIDString
-        {
-            get { return "select uuid_generate_v4()"; }
-        }
+		public override string SelectGUIDString
+		{
+			get { return "select uuid_generate_v4()"; }
+		}
+		
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new PostgreSQLDataBaseMetadata(connection);
+		}
 	}
 }
