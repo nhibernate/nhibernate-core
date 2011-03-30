@@ -179,10 +179,12 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private bool IsProxiable(MethodInfo method)
 		{
-			return (((method.IsPublic || method.IsFamily || method.IsAssembly || method.IsFamilyOrAssembly)
-			         && (method.IsVirtual || method.IsAbstract))
-			        && (method.DeclaringType != typeof(MarshalByRefObject)))
-			       && (method.DeclaringType != typeof(object) || !"finalize".Equals(method.Name.ToLowerInvariant()));
+			return (
+				((method.IsPublic || method.IsFamily || method.IsAssembly || method.IsFamilyOrAssembly) && (method.IsVirtual || method.IsAbstract))
+				&& !method.IsFinal
+			  && (method.DeclaringType != typeof (MarshalByRefObject)))
+			  && (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name.ToLowerInvariant())
+				);
 		}
 
 		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder)
