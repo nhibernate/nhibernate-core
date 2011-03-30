@@ -677,6 +677,9 @@
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
+    <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
+    <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
+    <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
@@ -2500,6 +2503,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\SqlConverterAndMultiQuery\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2489\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2603\Mappings.hbm.xml" />
     <EmbeddedResource Include="Subselect\Beings.hbm.xml" />

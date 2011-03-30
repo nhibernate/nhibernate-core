@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using Iesi.Collections;
@@ -9,6 +10,7 @@ using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
@@ -508,9 +510,9 @@ namespace NHibernate.Impl
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
 
-			using (var reader = resultSetsCommand.GetReader(Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+			try
 			{
-				try
+				using (var reader = resultSetsCommand.GetReader(Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -521,13 +523,13 @@ namespace NHibernate.Impl
 						ITranslator translator = Translators[i];
 						QueryParameters parameter = Parameters[i];
 						IList tempResults;
-						if (resultCollectionGenericType[i] == typeof (object))
+						if (resultCollectionGenericType[i] == typeof(object))
 						{
 							tempResults = new ArrayList();
 						}
 						else
 						{
-							tempResults = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(resultCollectionGenericType[i]));
+							tempResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i]));
 						}
 						int entitySpan = translator.Loader.EntityPersisters.Length;
 						hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
@@ -564,13 +566,13 @@ namespace NHibernate.Impl
 
 							object result =
 								translator.Loader.GetRowFromResultSet(reader,
-								                                      session,
-								                                      parameter,
-								                                      lockModeArray,
-								                                      optionalObjectKey,
-								                                      hydratedObjects[i],
-								                                      keys,
-								                                      true);
+																											session,
+																											parameter,
+																											lockModeArray,
+																											optionalObjectKey,
+																											hydratedObjects[i],
+																											keys,
+																											true);
 
 							tempResults.Add(result);
 
@@ -595,26 +597,26 @@ namespace NHibernate.Impl
 
 						reader.NextResult();
 					}
-				}
-				catch (Exception ex)
-				{
-					var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-					log.Error(message, ex);
-					throw new HibernateException(message, ex);
-				}
 
-				for (int i = 0; i < translators.Count; i++)
-				{
-					ITranslator translator = translators[i];
-					QueryParameters parameter = parameters[i];
-
-					translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
-
-					if (createSubselects[i])
+					for (int i = 0; i < translators.Count; i++)
 					{
-						translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+						ITranslator translator = translators[i];
+						QueryParameters parameter = parameters[i];
+
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+
+						if (createSubselects[i])
+						{
+							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+						}
 					}
 				}
+			}
+			catch (Exception sqle)
+			{
+				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
+				log.Error(message, sqle);
+				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
 			if (statsEnabled)

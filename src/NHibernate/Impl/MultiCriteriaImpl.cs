@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -8,6 +9,7 @@ using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using NHibernate.Loader.Criteria;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -189,13 +191,13 @@ namespace NHibernate.Impl
 			}
 			int rowCount = 0;
 
-			using (var reader = resultSetsCommand.GetReader(parameters.ToArray(), null))
+			try
 			{
-				ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
-				List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
-				bool[] createSubselects = new bool[loaders.Count];
-				try
+				using (var reader = resultSetsCommand.GetReader(parameters.ToArray(), null))
 				{
+					ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
+					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
+					bool[] createSubselects = new bool[loaders.Count];
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
@@ -217,7 +219,7 @@ namespace NHibernate.Impl
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-						if (!dialect.SupportsLimitOffset || !NHibernate.Loader.Loader.UseLimit(selection, dialect))
+						if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
 						{
 							Loader.Loader.Advance(reader, selection);
 						}
@@ -228,7 +230,7 @@ namespace NHibernate.Impl
 
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-														   null, hydratedObjects[i], keys, true);
+																					 null, hydratedObjects[i], keys, true);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -239,23 +241,24 @@ namespace NHibernate.Impl
 						results.Add(tmpResults);
 						reader.NextResult();
 					}
-				}
-				catch (Exception e)
-				{
-					var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
-					log.Error(message, e);
-					throw new HibernateException(message, e);
-				}
-				for (int i = 0; i < loaders.Count; i++)
-				{
-					CriteriaLoader loader = loaders[i];
-					loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
 
-					if (createSubselects[i])
+					for (int i = 0; i < loaders.Count; i++)
 					{
-						loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
+						CriteriaLoader loader = loaders[i];
+						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+
+						if (createSubselects[i])
+						{
+							loader.CreateSubselects(subselectResultKeys[i], parameters[i], session);
+						}
 					}
 				}
+			}
+			catch (Exception sqle)
+			{
+				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
+				log.Error(message, sqle);
+				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
 			if (statsEnabled)
 			{
