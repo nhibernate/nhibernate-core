@@ -506,6 +506,9 @@
     <Compile Include="Linq\ByMethod\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="MappingByCode\BasicMappingOfSimpleClass.cs" />
+    <Compile Include="MappingByCode\ColumnsNamingConvetions.cs" />
+    <Compile Include="MappingByCode\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Fixture.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
