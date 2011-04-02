@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<System.Type> tablePerClassHierarchyJoinEntities = new HashSet<System.Type>();
 		private readonly HashSet<System.Type> tablePerConcreteClassEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> versionProperties = new HashSet<MemberInfo>();
-		private Dictionary<System.Type, Action<System.Type>> delayedTypeRegistration = new Dictionary<System.Type, Action<System.Type>>();
+		private readonly Dictionary<System.Type, Action<System.Type>> delayedEntityRegistrations = new Dictionary<System.Type, Action<System.Type>>();
 
 		#region IModelExplicitDeclarationsHolder Members
 
@@ -544,14 +544,15 @@ namespace NHibernate.Mapping.ByCode
 
 		private void EnlistTypeRegistration(System.Type type, Action<System.Type> registration)
 		{
-			delayedTypeRegistration.Add(type, registration);
+			delayedEntityRegistrations.Add(type, registration);
 		}
 
 		private void ExecuteDelayedTypeRegistration(System.Type type)
 		{
 			Action<System.Type> registration;
-			if(delayedTypeRegistration.TryGetValue(type, out registration))
+			if(delayedEntityRegistrations.TryGetValue(type, out registration))
 			{
+				delayedEntityRegistrations.Remove(type);
 				registration(type);
 			}
 		}
