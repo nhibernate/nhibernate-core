@@ -510,6 +510,7 @@
     <Compile Include="MappingByCode\ColumnsNamingConvetions.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\ComponentMappingRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassMappingStrategyTests.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\RootClassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassJoinMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassMappingStrategyTests.cs" />

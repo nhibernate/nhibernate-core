@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,6 +29,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<System.Type> tablePerClassHierarchyJoinEntities = new HashSet<System.Type>();
 		private readonly HashSet<System.Type> tablePerConcreteClassEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> versionProperties = new HashSet<MemberInfo>();
+		private Dictionary<System.Type, Action<System.Type>> delayedTypeRegistration = new Dictionary<System.Type, Action<System.Type>>();
 
 		#region IModelExplicitDeclarationsHolder Members
 
@@ -157,14 +159,19 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassEntity(System.Type type)
 		{
+			AddAsTablePerClassEntity(type, false);
+		}
+
+		public void AddAsTablePerClassEntity(System.Type type, bool rootEntityMustExists)
+		{
 			if (IsComponent(type))
 			{
 				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			var rootEntity = GetRootEntityOrNull(type);
-			if(rootEntity != null)
+			if (rootEntity != null)
 			{
-				if(rootEntity.Equals(type))
+				if (rootEntity.Equals(type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
 				}
@@ -173,6 +180,14 @@ namespace NHibernate.Mapping.ByCode
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerClassEntities.Add(rootEntity);
+			}
+			else
+			{
+				if(rootEntityMustExists)
+				{
+					throw new MappingException(string.Format("The root entity for {0} was never registered", type.FullName));
+				}
+				EnlistTypeRegistration(type, t => AddAsTablePerClassEntity(t, true));
 			}
 		}
 
@@ -355,6 +370,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerClass(System.Type type)
 		{
+			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerClassEntities, type);
 		}
 
@@ -482,6 +498,20 @@ namespace NHibernate.Mapping.ByCode
 				}
 			}
 			return isExplicitMapped || isDerived;
+		}
+
+		private void EnlistTypeRegistration(System.Type type, Action<System.Type> registration)
+		{
+			delayedTypeRegistration.Add(type, registration);
+		}
+
+		private void ExecuteDelayedTypeRegistration(System.Type type)
+		{
+			Action<System.Type> registration;
+			if(delayedTypeRegistration.TryGetValue(type, out registration))
+			{
+				registration(type);
+			}
 		}
 	}
 }
