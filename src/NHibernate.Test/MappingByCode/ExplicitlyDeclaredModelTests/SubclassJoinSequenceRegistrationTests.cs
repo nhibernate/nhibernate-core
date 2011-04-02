@@ -4,7 +4,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
-	public class SubclassSequenceRegistrationTests
+	public class SubclassJoinSequenceRegistrationTests
 	{
 		private class MyClass
 		{
@@ -16,22 +16,22 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		}
 
 		[Test]
-		public void WhenRegisterSubclassBeforeRootThenIsRegistered()
+		public void WhenRegisterSubclassJoinBeforeRootThenIsRegistered()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
+			inspector.AddAsTablePerClassHierarchyJoinEntity(typeof(Inherited1));
 
 			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.IsTablePerClassHierarchy(typeof(Inherited1)).Should().Be.True();
+			inspector.IsTablePerClassHierarchyJoin(typeof(Inherited1)).Should().Be.True();
 		}
 
 		[Test]
 		public void WhenRegisterSubclassWithNoRootThenThrows()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
+			inspector.AddAsTablePerClassHierarchyJoinEntity(typeof(Inherited1));
 
-			inspector.Executing(x => x.IsTablePerClassHierarchy(typeof(Inherited1))).Throws<MappingException>();
+			inspector.Executing(x => x.IsTablePerClassHierarchyJoin(typeof(Inherited1))).Throws<MappingException>();
 		}
 	}
 }

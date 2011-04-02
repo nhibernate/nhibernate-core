@@ -227,6 +227,11 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type)
 		{
+			AddAsTablePerClassHierarchyJoinEntity(type, false);
+		}
+
+		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type, bool rootEntityMustExists)
+		{
 			if (IsComponent(type))
 			{
 				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
@@ -243,8 +248,16 @@ namespace NHibernate.Mapping.ByCode
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerClassHierarchyEntities.Add(rootEntity);
+				tablePerClassHierarchyJoinEntities.Add(type);
 			}
-			tablePerClassHierarchyJoinEntities.Add(type);
+			else
+			{
+				if (rootEntityMustExists)
+				{
+					throw new MappingException(string.Format("The root entity for {0} was never registered", type.FullName));
+				}
+				EnlistTypeRegistration(type, t => AddAsTablePerClassHierarchyJoinEntity(t, true));
+			}
 		}
 
 		public void AddAsTablePerConcreteClassEntity(System.Type type)
@@ -395,6 +408,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerClassHierarchyJoin(System.Type type)
 		{
+			ExecuteDelayedTypeRegistration(type);
 			return tablePerClassHierarchyJoinEntities.Contains(type);
 		}
 

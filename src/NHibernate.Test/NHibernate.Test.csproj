@@ -513,6 +513,7 @@
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\RootClassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassJoinMappingStrategyTests.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassJoinSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassMappingStrategyTests.cs" />
