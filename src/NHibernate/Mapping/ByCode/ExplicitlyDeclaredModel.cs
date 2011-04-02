@@ -172,7 +172,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
-				if(IsMappedFor(tablePerClassEntities, type))
+				if (IsMappedFor(tablePerClassEntities, type) || tablePerClassHierarchyJoinEntities.Contains(type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
