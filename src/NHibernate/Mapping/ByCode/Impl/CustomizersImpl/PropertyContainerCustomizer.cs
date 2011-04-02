@@ -64,6 +64,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}
 
+		public void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : class
+		{
+			ManyToOne(property, x => { });
+		}
+
 		public void OneToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IOneToOneMapper> mapping)
 			where TProperty : class
 		{

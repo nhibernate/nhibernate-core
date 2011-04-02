@@ -63,6 +63,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
 		}
 
+		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property)
+		{
+			Property(property, x => { });
+		}
+
 		public void Component<TNestedComponent>(Expression<Func<TComponent, TNestedComponent>> property, Action<IComponentElementMapper<TNestedComponent>> mapping)
 			where TNestedComponent : class
 		{
@@ -78,6 +83,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
+		}
+
+		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property) where TProperty : class
+		{
+			ManyToOne(property, x => { });
 		}
 
 		public void Access(Accessor accessor)

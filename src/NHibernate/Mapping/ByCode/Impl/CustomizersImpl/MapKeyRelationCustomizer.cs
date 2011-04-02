@@ -21,10 +21,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		#region IMapKeyRelation<TKey> Members
 
+		public void Element()
+		{
+			Element(x => { });
+		}
+
 		public void Element(Action<IMapKeyMapper> mapping)
 		{
 			var mapKeyCustomizer = new MapKeyCustomizer(propertyPath, customizersHolder);
 			mapping(mapKeyCustomizer);
+		}
+
+		public void ManyToMany()
+		{
+			ManyToMany(x => { });
 		}
 
 		public void ManyToMany(Action<IMapKeyManyToManyMapper> mapping)

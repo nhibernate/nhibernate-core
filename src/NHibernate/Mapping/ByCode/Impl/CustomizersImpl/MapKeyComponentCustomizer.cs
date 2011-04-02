@@ -23,6 +23,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
 		}
 
+		public void Property<TProperty>(Expression<Func<TKey, TProperty>> property)
+		{
+			Property(property, x => { });
+		}
+
 		public void ManyToOne<TProperty>(Expression<Func<TKey, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);

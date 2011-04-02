@@ -21,16 +21,31 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		#region ICollectionElementRelation<TElement> Members
 
+		public void Element()
+		{
+			Element(x => { });
+		}
+
 		public void Element(Action<IElementMapper> mapping)
 		{
 			var collectionElementCustomizer = new CollectionElementCustomizer(propertyPath, customizersHolder);
 			mapping(collectionElementCustomizer);
 		}
 
+		public void OneToMany()
+		{
+			OneToMany(x => { });
+		}
+
 		public void OneToMany(Action<IOneToManyMapper> mapping)
 		{
 			var oneToManyCustomizer = new OneToManyCustomizer(explicitDeclarationsHolder, propertyPath, customizersHolder);
 			mapping(oneToManyCustomizer);
+		}
+
+		public void ManyToMany()
+		{
+			ManyToMany(x => { });
 		}
 
 		public void ManyToMany(Action<IManyToManyMapper> mapping)

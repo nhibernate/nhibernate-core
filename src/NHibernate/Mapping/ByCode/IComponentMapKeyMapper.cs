@@ -14,6 +14,7 @@ namespace NHibernate.Mapping.ByCode
 	public interface IComponentMapKeyMapper<TComponent>
 	{
 		void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping);
+		void Property<TProperty>(Expression<Func<TComponent, TProperty>> property);
 
 		void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class;
 	}

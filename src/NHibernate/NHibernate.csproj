@@ -363,7 +363,7 @@
     <Compile Include="Mapping\ByCode\Impl\ElementMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\FilterMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\GeneratorMapper.cs" />
-    <Compile Include="Mapping\ByCode\Impl\Generators.cs" />
+    <Compile Include="Mapping\ByCode\Generators.cs" />
     <Compile Include="Mapping\ByCode\Impl\ICandidatePersistentMembersProvider.cs" />
     <Compile Include="Mapping\ByCode\Impl\ICustomizersHolder.cs" />
     <Compile Include="Mapping\ByCode\Impl\IdMapper.cs" />
@@ -404,6 +404,7 @@
     <Compile Include="Mapping\ByCode\IVersionMapper.cs" />
     <Compile Include="Mapping\ByCode\Lazy.cs" />
     <Compile Include="Mapping\ByCode\ModelMapper.cs" />
+    <Compile Include="Mapping\ByCode\MappingsExtensions.cs" />
     <Compile Include="Mapping\ByCode\NotFoundMode.cs" />
     <Compile Include="Mapping\ByCode\SchemaAction.cs" />
     <Compile Include="Mapping\ByCode\TypeExtensions.cs" />
