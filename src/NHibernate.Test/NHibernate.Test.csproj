@@ -508,6 +508,7 @@
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="MappingByCode\BasicMappingOfSimpleClass.cs" />
     <Compile Include="MappingByCode\ColumnsNamingConvetions.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\RootClassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Fixture.cs" />

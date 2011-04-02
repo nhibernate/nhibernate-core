@@ -168,6 +168,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
+				if(IsMappedFor(tablePerClassEntities, type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
+				}
 				tablePerClassHierarchyEntities.Add(rootEntity);
 			}
 		}
@@ -180,6 +184,10 @@ namespace NHibernate.Mapping.ByCode
 				if (rootEntity.Equals(type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
+				}
+				if (IsMappedFor(tablePerClassEntities, type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerClassHierarchyEntities.Add(rootEntity);
 			}
@@ -194,6 +202,10 @@ namespace NHibernate.Mapping.ByCode
 				if (rootEntity.Equals(type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-concrete-class strategy", type.FullName));
+				}
+				if (IsMappedFor(tablePerClassEntities, type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerConcreteClassEntities.Add(rootEntity);
 			}
@@ -314,7 +326,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerClass(System.Type type)
 		{
-			return tablePerClassEntities.Contains(type);
+			return IsMappedFor(tablePerClassEntities, type);
 		}
 
 		public bool IsTablePerClassHierarchy(System.Type type)
@@ -425,6 +437,22 @@ namespace NHibernate.Mapping.ByCode
 				return entityType;
 			}
 			return entityType.GetBaseTypes().SingleOrDefault(IsRootEntity);
+		}
+
+		protected bool IsMappedFor(ICollection<System.Type> explicitMappedEntities, System.Type type)
+		{
+			bool isExplicitMapped = explicitMappedEntities.Contains(type);
+			bool isDerived = false;
+
+			if (!isExplicitMapped)
+			{
+				isDerived = type.GetBaseTypes().Any(explicitMappedEntities.Contains);
+				if (isDerived)
+				{
+					explicitMappedEntities.Add(type);
+				}
+			}
+			return isExplicitMapped || isDerived;
 		}
 	}
 }
