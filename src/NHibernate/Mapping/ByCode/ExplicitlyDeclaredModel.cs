@@ -155,6 +155,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
 				}
+				if (IsMappedFor(tablePerClassHierarchyEntities, type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
+				}
 				tablePerClassEntities.Add(rootEntity);
 			}
 		}
@@ -185,7 +189,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassEntities, type))
+				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -203,7 +207,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-concrete-class strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassEntities, type))
+				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -331,7 +335,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerClassHierarchy(System.Type type)
 		{
-			return tablePerClassHierarchyEntities.Contains(type);
+			return IsMappedFor(tablePerClassHierarchyEntities, type);
 		}
 
 		public bool IsTablePerClassHierarchyJoin(System.Type type)
