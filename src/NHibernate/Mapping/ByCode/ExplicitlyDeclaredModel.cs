@@ -262,6 +262,11 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerConcreteClassEntity(System.Type type)
 		{
+			AddAsTablePerConcreteClassEntity(type, false);
+		}
+
+		public void AddAsTablePerConcreteClassEntity(System.Type type, bool rootEntityMustExists)
+		{
 			if (IsComponent(type))
 			{
 				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
@@ -278,6 +283,14 @@ namespace NHibernate.Mapping.ByCode
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerConcreteClassEntities.Add(rootEntity);
+			}
+			else
+			{
+				if (rootEntityMustExists)
+				{
+					throw new MappingException(string.Format("The root entity for {0} was never registered", type.FullName));
+				}
+				EnlistTypeRegistration(type, t => AddAsTablePerConcreteClassEntity(t, true));
 			}
 		}
 
@@ -414,6 +427,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerConcreteClass(System.Type type)
 		{
+			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerConcreteClassEntities, type);
 		}
 
