@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
@@ -147,22 +148,55 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassEntity(System.Type type)
 		{
-			tablePerClassEntities.Add(type);
+			var rootEntity = GetRootEntityOrNull(type);
+			if(rootEntity != null)
+			{
+				if(rootEntity.Equals(type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
+				}
+				tablePerClassEntities.Add(rootEntity);
+			}
 		}
 
 		public void AddAsTablePerClassHierarchyEntity(System.Type type)
 		{
-			tablePerClassHierarchyEntities.Add(type);
+			var rootEntity = GetRootEntityOrNull(type);
+			if (rootEntity != null)
+			{
+				if (rootEntity.Equals(type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
+				}
+				tablePerClassHierarchyEntities.Add(rootEntity);
+			}
 		}
 
 		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type)
 		{
+			var rootEntity = GetRootEntityOrNull(type);
+			if (rootEntity != null)
+			{
+				if (rootEntity.Equals(type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
+				}
+				tablePerClassHierarchyEntities.Add(rootEntity);
+			}
 			tablePerClassHierarchyJoinEntities.Add(type);
 		}
 
 		public void AddAsTablePerConcreteClassEntity(System.Type type)
 		{
-			tablePerConcreteClassEntities.Add(type);
+			var rootEntity = GetRootEntityOrNull(type);
+			if (rootEntity != null)
+			{
+				if (rootEntity.Equals(type))
+				{
+					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-concrete-class strategy", type.FullName));
+				}
+				tablePerConcreteClassEntities.Add(rootEntity);
+			}
 		}
 
 		public void AddAsOneToOneRelation(MemberInfo member)
@@ -379,5 +413,18 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		#endregion
+
+		private System.Type GetRootEntityOrNull(System.Type entityType)
+		{
+			if (entityType == null)
+			{
+				return null;
+			}
+			if (IsRootEntity(entityType))
+			{
+				return entityType;
+			}
+			return entityType.GetBaseTypes().SingleOrDefault(IsRootEntity);
+		}
 	}
 }
