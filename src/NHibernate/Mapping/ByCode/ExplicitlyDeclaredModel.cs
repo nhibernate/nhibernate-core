@@ -404,7 +404,9 @@ namespace NHibernate.Mapping.ByCode
 			       tablePerClassEntities.Contains(type) ||
 			       tablePerClassHierarchyEntities.Contains(type) ||
 			       tablePerClassHierarchyJoinEntities.Contains(type) ||
-			       tablePerConcreteClassEntities.Contains(type);
+						 tablePerConcreteClassEntities.Contains(type) || 
+						 HasDelayedEntityRegistration(type)
+						 ;
 		}
 
 		public bool IsTablePerClass(System.Type type)
@@ -555,6 +557,11 @@ namespace NHibernate.Mapping.ByCode
 				delayedEntityRegistrations.Remove(type);
 				registration(type);
 			}
+		}
+
+		private bool HasDelayedEntityRegistration(System.Type type)
+		{
+			return delayedEntityRegistrations.ContainsKey(type);
 		}
 	}
 }

@@ -33,5 +33,14 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.Executing(x => x.IsTablePerClass(typeof(Inherited1))).Throws<MappingException>();
 		}
+
+		[Test]
+		public void WhenRegisterJoinedSubclassWithNoRootThenCanAskForIsEntity()
+		{
+			var inspector = new ExplicitlyDeclaredModel();
+			inspector.AddAsTablePerClassEntity(typeof(Inherited1));
+
+			inspector.IsEntity(typeof(Inherited1)).Should().Be.True();
+		}
 	}
 }
