@@ -138,16 +138,29 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsRootEntity(System.Type type)
 		{
+			if (IsComponent(type))
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			rootEntities.Add(type);
 		}
 
 		public void AddAsComponent(System.Type type)
 		{
+			var rootEntity = GetRootEntityOrNull(type);
+			if (rootEntity != null)
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			components.Add(type);
 		}
 
 		public void AddAsTablePerClassEntity(System.Type type)
 		{
+			if (IsComponent(type))
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if(rootEntity != null)
 			{
@@ -165,6 +178,10 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassHierarchyEntity(System.Type type)
 		{
+			if (IsComponent(type))
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
@@ -182,6 +199,10 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type)
 		{
+			if (IsComponent(type))
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
@@ -200,6 +221,10 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerConcreteClassEntity(System.Type type)
 		{
+			if (IsComponent(type))
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
