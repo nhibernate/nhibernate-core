@@ -155,7 +155,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassHierarchyEntities, type))
+				if (IsMappedFor(tablePerClassHierarchyEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -172,7 +172,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassEntities, type) || tablePerClassHierarchyJoinEntities.Contains(type))
+				if (IsMappedFor(tablePerClassEntities, type) || tablePerClassHierarchyJoinEntities.Contains(type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -189,7 +189,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type))
+				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -345,7 +345,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerConcreteClass(System.Type type)
 		{
-			return tablePerConcreteClassEntities.Contains(type);
+			return IsMappedFor(tablePerConcreteClassEntities, type);
 		}
 
 		public bool IsOneToOne(MemberInfo member)

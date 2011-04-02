@@ -512,6 +512,7 @@
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\RootClassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassJoinMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassMappingStrategyTests.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Fixture.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
