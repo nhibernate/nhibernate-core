@@ -74,6 +74,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Version<TProperty>(Expression<Func<TEntity, TProperty>> versionProperty, Action<IVersionMapper> versionMapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(versionProperty);
+			ExplicitDeclarationsHolder.AddAsVersionProperty(member);
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Version(member, versionMapping));
 		}
 
