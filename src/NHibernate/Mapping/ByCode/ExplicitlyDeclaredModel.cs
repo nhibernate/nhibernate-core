@@ -400,13 +400,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsEntity(System.Type type)
 		{
-			return rootEntities.Contains(type) ||
-			       tablePerClassEntities.Contains(type) ||
-			       tablePerClassHierarchyEntities.Contains(type) ||
-			       tablePerClassHierarchyJoinEntities.Contains(type) ||
-						 tablePerConcreteClassEntities.Contains(type) || 
-						 HasDelayedEntityRegistration(type)
-						 ;
+			return rootEntities.Contains(type) || type.GetBaseTypes().Any(t => rootEntities.Contains(t)) || HasDelayedEntityRegistration(type);
 		}
 
 		public bool IsTablePerClass(System.Type type)

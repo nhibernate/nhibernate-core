@@ -154,5 +154,14 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.Executing(x => x.AddAsTablePerClassEntity(typeof(MyClass))).Throws<MappingException>();
 		}
+
+		[Test]
+		public void WhenRegisteredAsRootThenIsEntity()
+		{
+			var inspector = new ExplicitlyDeclaredModel();
+			inspector.AddAsRootEntity(typeof(MyClass));
+
+			inspector.IsEntity(typeof(MyClass)).Should().Be.True();
+		}
 	}
 }
