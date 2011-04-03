@@ -4,7 +4,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace NHibernate.Test.MappingByCode
+namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
 	public class ColumnsNamingConvetions
 	{
