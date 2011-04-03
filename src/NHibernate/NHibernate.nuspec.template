@@ -4,12 +4,10 @@
     <id>NHibernate</id>
     <version>x.y.z</version>
     <authors>NHibernate community, Hibernate community</authors>
-    <summary>DONT INSTALL IT DIRECTLY. Use only as reference for others frameworks.</summary>
+    <summary>
+      NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.
+    </summary>
     <description>
-      DONT INSTALL IT DIRECTLY
-      Only as reference for others frameworks.
-      see NHibernate.Castle, NHibernate.LinFu, NHibernate.Spring.
-      
       NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.
     </description>
     <language>en-US</language>
