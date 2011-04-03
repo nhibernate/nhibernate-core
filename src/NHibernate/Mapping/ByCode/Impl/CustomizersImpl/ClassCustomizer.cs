@@ -27,11 +27,13 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
+			ExplicitDeclarationsHolder.AddAsPoid(member);
 			CustomizersHolder.AddCustomizer(typeof (TEntity), m => m.Id(member, idMapper));
 		}
 
 		public void Id(FieldInfo idProperty, Action<IIdMapper> idMapper)
 		{
+			ExplicitDeclarationsHolder.AddAsPoid(idProperty);
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(idProperty, idMapper));
 		}
 
