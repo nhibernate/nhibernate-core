@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 					cm.Lazy(CollectionLazy.NoLazy);
 					cm.Sort();
 				}, cer => { });
-				jsc.Map(human => human.Addresses, cm => { }, mk => { }, rel => rel.Component(comp =>
+				jsc.Map(human => human.Addresses, cm => { }, rel => rel.Component(comp =>
 				{
 					comp.Property(address => address.Street);
 					comp.Property(address => address.City);
