@@ -19,7 +19,16 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 		{
 			var mapper = new ModelMapper();
 
-			mapper.Class<Animal>(rc=> 
+			mapper.Component<Address>(comp =>
+			{
+				comp.Property(address => address.Street);
+				comp.Property(address => address.City);
+				comp.Property(address => address.PostalCode);
+				comp.Property(address => address.Country);
+				comp.ManyToOne(address => address.StateProvince);
+			});
+
+			mapper.Class<Animal>(rc => 
 			{
 				rc.Id(x => x.Id, map => map.Generator(Generators.Native));
 
@@ -73,14 +82,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 					cm.Lazy(CollectionLazy.NoLazy);
 					cm.Sort();
 				}, cer => { });
-				jsc.Map(human => human.Addresses, cm => { }, rel => rel.Component(comp =>
-				{
-					comp.Property(address => address.Street);
-					comp.Property(address => address.City);
-					comp.Property(address => address.PostalCode);
-					comp.Property(address => address.Country);
-					comp.ManyToOne(address => address.StateProvince);
-				}));
+				jsc.Map(human => human.Addresses, cm => { }, rel => rel.Component(comp => { }));
 			});
 
 			mapper.Class<User>(rc =>
@@ -99,14 +101,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 				rc.Property(zoo => zoo.Classification);
 				rc.Map(zoo => zoo.Mammals, cm => { }, rel => rel.OneToMany());
 				rc.Map(zoo => zoo.Animals, cm => { cm.Inverse(true); }, rel => rel.OneToMany());
-				rc.Component(zoo => zoo.Address, comp =>
-				{
-					comp.Property(address => address.Street);
-					comp.Property(address => address.City);
-					comp.Property(address => address.PostalCode);
-					comp.Property(address => address.Country);
-					comp.ManyToOne(address => address.StateProvince);
-				});
+				rc.Component(zoo => zoo.Address, comp => { });
 			});
 
 			mapper.Subclass<PettingZoo>(sc => { });
@@ -119,6 +114,5 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 			});
 			return mapper.CompileMappingFor(typeof (Animal).Assembly.GetTypes().Where(t => t.Namespace == typeof (Animal).Namespace));
 		}
-
 	}
 }
