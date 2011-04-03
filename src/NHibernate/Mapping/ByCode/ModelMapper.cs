@@ -1040,7 +1040,10 @@ namespace NHibernate.Mapping.ByCode
 
 		private IMapKeyRelationMapper DetermineMapKeyRelationType(MemberInfo member, PropertyPath propertyPath, System.Type dictionaryKeyType)
 		{
-			if (modelInspector.IsManyToMany(member) || modelInspector.IsOneToMany(member))
+			// Perhaps we have to change IModelInspector with IsDictionaryKeyManyToMany(member), IsDictionaryKeyComponent(member) and so on
+
+			//if (modelInspector.IsManyToMany(member) || modelInspector.IsOneToMany(member))
+			if (modelInspector.IsEntity(dictionaryKeyType))
 			{
 				// OneToMany is not possible as map-key so we map it as many-to-many instead ignore the case
 				return new KeyManyToManyRelationMapper(propertyPath, customizerHolder, this);
