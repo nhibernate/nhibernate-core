@@ -730,7 +730,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				MapProperty(member, memberPath, naturalIdMapper);
 			}
-			else if (modelInspector.IsHeterogeneousAssociation(member))
+			else if (modelInspector.IsAny(member))
 			{
 				MapAny(member, memberPath, naturalIdMapper);
 			}
@@ -774,7 +774,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					MapProperty(member, memberPath, propertiesContainer);
 				}
-				else if (modelInspector.IsHeterogeneousAssociation(member))
+				else if (modelInspector.IsAny(member))
 				{
 					MapAny(member, memberPath, propertiesContainer);
 				}

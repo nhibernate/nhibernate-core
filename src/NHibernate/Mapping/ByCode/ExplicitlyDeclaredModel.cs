@@ -447,7 +447,7 @@ namespace NHibernate.Mapping.ByCode
 			return oneToManyRelations.Contains(member);
 		}
 
-		public bool IsHeterogeneousAssociation(MemberInfo member)
+		public bool IsAny(MemberInfo member)
 		{
 			return any.Contains(member);
 		}
