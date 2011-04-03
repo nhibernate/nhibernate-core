@@ -22,13 +22,17 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected ICustomizersHolder CustomizersHolder { get; private set; }
 		protected PropertyPath PropertyPath { get; private set; }
+		protected IModelExplicitDeclarationsHolder ExplicitDeclarationsHolder
+		{
+			get { return explicitDeclarationsHolder; }
+		}
 
 		public void Property<TProperty>(Expression<Func<TEntity, TProperty>> property)
 		{
 			Property(property, x => { });
 		}
 
-		public void Property<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IPropertyMapper> mapping)
+		public virtual void Property<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
@@ -38,13 +42,13 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
 
-		public void Property(FieldInfo member, Action<IPropertyMapper> mapping)
+		public virtual void Property(FieldInfo member, Action<IPropertyMapper> mapping)
 		{
 			CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
 			explicitDeclarationsHolder.AddAsProperty(member);
 		}
 
-		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property,
+		public virtual void Component<TComponent>(Expression<Func<TEntity, TComponent>> property,
 		                                  Action<IComponentMapper<TComponent>> mapping) where TComponent : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
@@ -53,7 +57,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, memberOf)));
 		}
 
-		public void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IManyToOneMapper> mapping)
+		public virtual void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IManyToOneMapper> mapping)
 			where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
@@ -64,7 +68,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}
 
-		public void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : class
+		public virtual void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : class
 		{
 			ManyToOne(property, x => { });
 		}
@@ -80,7 +84,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsOneToOneRelation(memberOf);
 		}
 
-		public void Any<TProperty>(Expression<Func<TEntity, TProperty>> property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
+		public virtual void Any<TProperty>(Expression<Func<TEntity, TProperty>> property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
 			where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);

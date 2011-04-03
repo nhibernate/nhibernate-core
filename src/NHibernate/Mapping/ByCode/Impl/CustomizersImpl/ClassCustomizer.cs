@@ -75,9 +75,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Version(member, versionMapping));
 		}
 
-		public void NaturalId(Action<INaturalIdAttributesMapper> naturalIdMapping)
+		public void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping, Action<INaturalIdAttributesMapper> naturalIdMapping)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.NaturalId(nidm => naturalIdMapping(nidm)));
+			naturalIdPropertiesMapping(new NaturalIdCustomizer<TEntity>(ExplicitDeclarationsHolder, CustomizersHolder));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassAttributesMapper m) => m.NaturalId(nidm => naturalIdMapping(nidm)));
+		}
+
+		public void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping)
+		{
+			NaturalId(naturalIdPropertiesMapping, mapAttr => { });
 		}
 
 		public void Cache(Action<ICacheMapper> cacheMapping)

@@ -353,6 +353,7 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\MapKeyManyToManyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\MapKeyRelationCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\MapPropertiesCustomizer.cs" />
+    <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\NaturalIdCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\OneToManyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\PropertyContainerCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\SetPropertiesCustomizer.cs" />

@@ -36,7 +36,8 @@ namespace NHibernate.Mapping.ByCode
 		void Schema(string schemaName);
 		void Mutable(bool isMutable);
 		void Version<TProperty>(Expression<Func<TEntity, TProperty>> versionProperty, Action<IVersionMapper> versionMapping);
-		void NaturalId(Action<INaturalIdAttributesMapper> naturalIdMapping);
+		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping, Action<INaturalIdAttributesMapper> naturalIdMapping);
+		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping);
 		void Cache(Action<ICacheMapper> cacheMapping);
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Where(string whereClause);

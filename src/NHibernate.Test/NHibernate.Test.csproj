@@ -519,6 +519,8 @@
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\NaturalIdTests.cs" />
+    <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Address.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Animal.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Classification.cs" />
