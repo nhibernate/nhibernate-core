@@ -39,5 +39,8 @@ namespace NHibernate.Mapping.ByCode
 		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 		                         Action<IMapKeyRelation<TKey>> keyMapping,
 		                         Action<ICollectionElementRelation<TElement>> mapping);
+		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+														 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+														 Action<ICollectionElementRelation<TElement>> mapping);
 	}
 }

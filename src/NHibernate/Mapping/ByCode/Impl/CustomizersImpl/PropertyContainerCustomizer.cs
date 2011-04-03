@@ -149,5 +149,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			keyMapping(new MapKeyRelationCustomizer<TKey>(explicitDeclarationsHolder, memberOfPath, CustomizersHolder));
 			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, memberOfPath, CustomizersHolder));
 		}
+
+		public void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+																		Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+																		Action<ICollectionElementRelation<TElement>> mapping)
+		{
+			Map(property, collectionMapping, keyMapping => { }, mapping);
+		}
 	}
 }

@@ -66,7 +66,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 				jsc.Property(human => human.BigDecimalValue);
 				jsc.Property(human => human.BigIntegerValue);
 				jsc.Bag(human => human.Friends, cm => { }, rel => rel.ManyToMany());
-				jsc.Map(human => human.Family, cm => { }, km=> { }, rel => rel.ManyToMany());
+				jsc.Map(human => human.Family, cm => { }, rel => rel.ManyToMany());
 				jsc.Bag(human => human.Pets, cm => { cm.Inverse(true); }, rel => rel.OneToMany());
 				jsc.Set(human => human.NickNames, cm =>
 				{
@@ -97,8 +97,8 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 				rc.Id(x => x.Id, map => map.Generator(Generators.Native));
 				rc.Property(zoo => zoo.Name);
 				rc.Property(zoo => zoo.Classification);
-				rc.Map(zoo => zoo.Mammals, cm => { }, km => { km.Element(); }, rel => rel.OneToMany());
-				rc.Map(zoo => zoo.Animals, cm => { cm.Inverse(true); }, km => { km.Element(); }, rel => rel.OneToMany());
+				rc.Map(zoo => zoo.Mammals, cm => { }, rel => rel.OneToMany());
+				rc.Map(zoo => zoo.Animals, cm => { cm.Inverse(true); }, rel => rel.OneToMany());
 				rc.Component(zoo => zoo.Address, comp =>
 				{
 					comp.Property(address => address.Street);
