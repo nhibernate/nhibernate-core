@@ -28,7 +28,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.IsTablePerClass(typeof(Inherited1)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(Inherited1)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(Inherited1)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(Inherited1)).Should().Be.True();
 		}
 
@@ -41,7 +40,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.IsTablePerClass(typeof(Inherited2)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(Inherited2)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(Inherited2)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(Inherited2)).Should().Be.True();
 		}
 
@@ -53,16 +51,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerConcreteClassEntity(typeof(Inherited1));
 
 			inspector.Executing(x => x.AddAsTablePerClassHierarchyEntity(typeof(Inherited1))).Throws<MappingException>();
-		}
-
-		[Test]
-		public void WhenRegisteredAsUnionSubclassThenCantRegisterAsSubclassJoin()
-		{
-			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.AddAsTablePerConcreteClassEntity(typeof(Inherited1));
-
-			inspector.Executing(x => x.AddAsTablePerClassHierarchyJoinEntity(typeof(Inherited1))).Throws<MappingException>();
 		}
 
 		[Test]

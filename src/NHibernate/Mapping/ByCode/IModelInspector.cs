@@ -10,7 +10,6 @@ namespace NHibernate.Mapping.ByCode
 
 		bool IsTablePerClass(System.Type type);
 		bool IsTablePerClassHierarchy(System.Type type);
-		bool IsTablePerClassHierarchyJoin(System.Type type);
 		bool IsTablePerConcreteClass(System.Type type);
 
 		bool IsOneToOne(MemberInfo member);

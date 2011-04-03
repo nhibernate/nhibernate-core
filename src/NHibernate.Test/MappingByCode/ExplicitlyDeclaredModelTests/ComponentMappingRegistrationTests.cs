@@ -57,15 +57,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		}
 
 		[Test]
-		public void WhenRegisteredAsComponetThenCantRegisterAsSubclassJoin()
-		{
-			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsComponent(typeof(MyComponent));
-
-			inspector.Executing(x => x.AddAsTablePerClassHierarchyJoinEntity(typeof(MyComponent))).Throws<MappingException>();
-		}
-
-		[Test]
 		public void WhenRegisteredAsComponetThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();

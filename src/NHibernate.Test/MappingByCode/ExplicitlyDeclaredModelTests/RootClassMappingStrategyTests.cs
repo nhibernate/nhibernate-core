@@ -26,7 +26,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
 		}
 
@@ -38,7 +37,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerClassEntity(typeof(Inherited1));
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.True();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
 		}
 
@@ -50,7 +48,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerClassEntity(typeof(Inherited2));
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.True();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
 		}
 
@@ -62,7 +59,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.True();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
 		}
 
@@ -75,35 +71,9 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.True();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
 		}
 
-		[Test]
-		public void WhenRegisteredSubclassJoinThenTheStrategyIsDefinedEvenForRoot()
-		{
-			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.AddAsTablePerClassHierarchyJoinEntity(typeof(Inherited1));
-
-			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.True();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
-		}
-
-		[Test]
-		public void WhenRegisteredDeepSubclassJoinThenTheStrategyIsDefinedEvenForRoot()
-		{
-			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.AddAsTablePerClassHierarchyJoinEntity(typeof(Inherited2));
-
-			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.True();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.False();
-		}
 
 		[Test]
 		public void WhenRegisteredConcreteClassThenTheStrategyIsDefinedEvenForRoot()
@@ -114,7 +84,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.True();
 		}
 
@@ -127,7 +96,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			inspector.IsTablePerClass(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerClassHierarchy(typeof(MyClass)).Should().Be.False();
-			inspector.IsTablePerClassHierarchyJoin(typeof(MyClass)).Should().Be.False();
 			inspector.IsTablePerConcreteClass(typeof(MyClass)).Should().Be.True();
 		}
 

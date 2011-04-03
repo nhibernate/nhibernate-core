@@ -9,7 +9,6 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<System.Type> Components { get; }
 		IEnumerable<System.Type> TablePerClassEntities { get; }
 		IEnumerable<System.Type> TablePerClassHierarchyEntities { get; }
-		IEnumerable<System.Type> TablePerClassHierarchyJoinEntities { get; }
 		IEnumerable<System.Type> TablePerConcreteClassEntities { get; }
 
 		IEnumerable<MemberInfo> OneToOneRelations { get; }
@@ -34,7 +33,6 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsComponent(System.Type type);
 		void AddAsTablePerClassEntity(System.Type type);
 		void AddAsTablePerClassHierarchyEntity(System.Type type);
-		void AddAsTablePerClassHierarchyJoinEntity(System.Type type);
 		void AddAsTablePerConcreteClassEntity(System.Type type);
 
 		void AddAsOneToOneRelation(MemberInfo member);

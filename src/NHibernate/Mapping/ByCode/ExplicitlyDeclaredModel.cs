@@ -26,7 +26,6 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> sets = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> tablePerClassEntities = new HashSet<System.Type>();
 		private readonly HashSet<System.Type> tablePerClassHierarchyEntities = new HashSet<System.Type>();
-		private readonly HashSet<System.Type> tablePerClassHierarchyJoinEntities = new HashSet<System.Type>();
 		private readonly HashSet<System.Type> tablePerConcreteClassEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> versionProperties = new HashSet<MemberInfo>();
 		private readonly Dictionary<System.Type, Action<System.Type>> delayedEntityRegistrations = new Dictionary<System.Type, Action<System.Type>>();
@@ -51,11 +50,6 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<System.Type> TablePerClassHierarchyEntities
 		{
 			get { return tablePerClassHierarchyEntities; }
-		}
-
-		public IEnumerable<System.Type> TablePerClassHierarchyJoinEntities
-		{
-			get { return tablePerClassHierarchyJoinEntities; }
 		}
 
 		public IEnumerable<System.Type> TablePerConcreteClassEntities
@@ -209,7 +203,7 @@ namespace NHibernate.Mapping.ByCode
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
-				if (IsMappedFor(tablePerClassEntities, type) || tablePerClassHierarchyJoinEntities.Contains(type) || IsMappedFor(tablePerConcreteClassEntities, type))
+				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
 					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
@@ -222,41 +216,6 @@ namespace NHibernate.Mapping.ByCode
 					throw new MappingException(string.Format("The root entity for {0} was never registered", type.FullName));
 				}
 				EnlistTypeRegistration(type, t => AddAsTablePerClassHierarchyEntity(t, true));
-			}
-		}
-
-		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type)
-		{
-			AddAsTablePerClassHierarchyJoinEntity(type, false);
-		}
-
-		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type, bool rootEntityMustExists)
-		{
-			if (IsComponent(type))
-			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
-			}
-			var rootEntity = GetRootEntityOrNull(type);
-			if (rootEntity != null)
-			{
-				if (rootEntity.Equals(type))
-				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
-				}
-				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
-				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
-				}
-				tablePerClassHierarchyEntities.Add(rootEntity);
-				tablePerClassHierarchyJoinEntities.Add(type);
-			}
-			else
-			{
-				if (rootEntityMustExists)
-				{
-					throw new MappingException(string.Format("The root entity for {0} was never registered", type.FullName));
-				}
-				EnlistTypeRegistration(type, t => AddAsTablePerClassHierarchyJoinEntity(t, true));
 			}
 		}
 
@@ -413,12 +372,6 @@ namespace NHibernate.Mapping.ByCode
 		{
 			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerClassHierarchyEntities, type);
-		}
-
-		public bool IsTablePerClassHierarchyJoin(System.Type type)
-		{
-			ExecuteDelayedTypeRegistration(type);
-			return tablePerClassHierarchyJoinEntities.Contains(type);
 		}
 
 		public bool IsTablePerConcreteClass(System.Type type)
