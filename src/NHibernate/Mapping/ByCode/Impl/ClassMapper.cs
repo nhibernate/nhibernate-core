@@ -11,6 +11,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	{
 		private readonly HbmClass classMapping;
 		private readonly IIdMapper idMapper;
+		private Dictionary<string, IJoinMapper> joinMappers;
 		private ICacheMapper cacheMapper;
 		private IDiscriminatorMapper discriminatorMapper;
 		private INaturalIdMapper naturalIdMapper;
@@ -48,6 +49,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
+
+		private Dictionary<string, IJoinMapper> JoinMappers
+		{
+			get { return joinMappers ?? (joinMappers = new Dictionary<string, IJoinMapper>()); }
+		}
 
 		#region Implementation of IClassMapper
 
@@ -168,9 +174,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.schemaaction = action.ToSchemaActionString();
 		}
 
-		public void Join(Action<IJoinMapper> splittedMapping)
+		public void Join(string tableName, Action<IJoinMapper> splittedMapping)
 		{
-			throw new NotImplementedException();
+			IJoinMapper splitGroup;
+			if(!JoinMappers.TryGetValue(tableName, out splitGroup))
+			{
+				var hbmJoin = new HbmJoin();
+				splitGroup = new JoinMapper(Container, tableName, hbmJoin, MapDoc);
+				var toAdd = new[] { hbmJoin };
+				JoinMappers.Add(tableName, splitGroup);
+				classMapping.Items1 = classMapping.Items1 == null ? toAdd : classMapping.Items1.Concat(toAdd).ToArray();
+			}
+
+			splittedMapping(splitGroup);
 		}
 
 		#endregion

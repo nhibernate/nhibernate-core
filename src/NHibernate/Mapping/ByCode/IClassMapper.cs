@@ -24,7 +24,7 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
 	{
-		void Join(Action<IJoinMapper> splittedMapping);
+		void Join(string tableName, Action<IJoinMapper> splittedMapping);
 	}
 
 	public interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
