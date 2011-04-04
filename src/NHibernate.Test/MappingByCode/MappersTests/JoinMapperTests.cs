@@ -176,5 +176,43 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Fetch(FetchKind.Select);
 			hbmJoin.fetch.Should().Be(HbmJoinFetch.Select);
 		}
+
+		[Test]
+		public void CallKeyMapper()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			var keyMapperCalled = false;
+
+			mapper.Key(km => keyMapperCalled = true);
+
+			keyMapperCalled.Should().Be.True();
+		}
+
+		[Test]
+		public void WhenCallKeyMapperThenKeyMapperIsNotNull()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+
+			mapper.Key(km => km.Should().Not.Be.Null());
+		}
+
+		[Test]
+		public void WhenCallKeyMapperMoreThanOnceThenKeyMapperIsTheSame()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			IKeyMapper firstCallInstance = null;
+			IKeyMapper secondCallInstance= null;
+
+			mapper.Key(km => firstCallInstance = km);
+			mapper.Key(km => secondCallInstance = km);
+
+			firstCallInstance.Should().Be.SameInstanceAs(secondCallInstance);
+		}
 	}
 }

@@ -18,6 +18,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	public class JoinMapper: AbstractPropertyContainerMapper,IJoinMapper
 	{
 		private readonly HbmJoin hbmJoin;
+		private readonly KeyMapper keyMapper;
 
 		public JoinMapper(System.Type container, string splitGroupId, HbmJoin hbmJoin, HbmMapping mapDoc) : base(container, mapDoc)
 		{
@@ -35,6 +36,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentOutOfRangeException("splitGroupId", "The table-name cant be empty.");
 			}
+			if (hbmJoin.key == null)
+			{
+				hbmJoin.key = new HbmKey { column1 = container.Name.ToLowerInvariant() + "_key" };
+			}
+			keyMapper = new KeyMapper(container, hbmJoin.key);
 		}
 
 		public event TableNameChangedHandler TableNameChanged;
@@ -125,6 +131,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Key(Action<IKeyMapper> keyMapping)
 		{
+			keyMapping(keyMapper);
 		}
 
 		public void Inverse(bool value)
