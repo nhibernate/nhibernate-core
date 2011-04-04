@@ -515,5 +515,10 @@ namespace NHibernate.Mapping.ByCode
 		{
 			return delayedEntityRegistrations.ContainsKey(type);
 		}
+
+		public IEnumerable<string> GetPropertiesSplits(System.Type type)
+		{
+			return null;
+		}
 	}
 }

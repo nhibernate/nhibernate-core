@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
@@ -32,5 +33,6 @@ namespace NHibernate.Mapping.ByCode
 		bool IsArray(MemberInfo role);
 		bool IsDictionary(MemberInfo role);
 		bool IsProperty(MemberInfo member);
+		IEnumerable<string> GetPropertiesSplits(System.Type type);
 	}
 }

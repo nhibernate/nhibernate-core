@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -17,6 +18,31 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 
 		[Test, Ignore("Not implemented yet")]
+		public void WhenSplittedPropertiesThenRegisterSplitGroupIds()
+		{
+			var inspector = new ExplicitlyDeclaredModel();
+			var mapper = new ModelMapper(inspector);
+			mapper.Class<MyClass>(map =>
+			{
+				map.Id(x => x.Id, idmap => { });
+				map.Join("MyClassSplit1", mj =>
+				{
+					mj.Property(x => x.SomethingA1);
+					mj.Property(x => x.SomethingA2);
+				});
+				map.Join("MyClassSplit2", mj =>
+				{
+					mj.Property(x => x.SomethingB1);
+					mj.Property(x => x.SomethingB2);
+				});
+				map.Property(x => x.Something0);
+			});
+
+			IEnumerable<string> tablePerClassSplits = inspector.GetPropertiesSplits(typeof(MyClass));
+			tablePerClassSplits.Should().Have.SameValuesAs("MyClassSplit1", "MyClassSplit2");
+		}
+
+		[Test, Ignore("Not implemented yet")]
 		public void WhenSplittedPropertiesThenRegister()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
@@ -24,15 +50,13 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			mapper.Class<MyClass>(map =>
 														{
 															map.Id(x => x.Id, idmap => { });
-															map.Join(mj=>
+															map.Join("MyClassSplit1", mj=>
 															{
-																mj.Table("MyClassSplit1");
 																mj.Property(x => x.SomethingA1);
 																mj.Property(x => x.SomethingA2);
 															});
-															map.Join(mj =>
+															map.Join("MyClassSplit2", mj =>
 															{
-																mj.Table("MyClassSplit2");
 																mj.Property(x => x.SomethingB1);
 																mj.Property(x => x.SomethingB2);
 															});

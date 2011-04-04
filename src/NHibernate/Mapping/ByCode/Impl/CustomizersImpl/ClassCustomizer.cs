@@ -109,7 +109,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SchemaAction(action));
 		}
 
-		public void Join(Action<IJoinMapper<TEntity>> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping)
 		{
 			throw new NotImplementedException();
 		}
