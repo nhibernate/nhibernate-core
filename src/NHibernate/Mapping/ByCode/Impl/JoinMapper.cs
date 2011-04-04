@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public event TableNameChangedHandler TableNameChanged;
 
-		public void InvokeTableNameChanged(TableNameChangedEventArgs e)
+		private void InvokeTableNameChanged(TableNameChangedEventArgs e)
 		{
 			TableNameChangedHandler handler = TableNameChanged;
 			if (handler != null)
@@ -59,18 +59,38 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void SqlInsert(string sql)
 		{
+			if (hbmJoin.SqlInsert == null)
+			{
+				hbmJoin.sqlinsert = new HbmCustomSQL();
+			}
+			hbmJoin.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql)
 		{
+			if (hbmJoin.SqlUpdate == null)
+			{
+				hbmJoin.sqlupdate = new HbmCustomSQL();
+			}
+			hbmJoin.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql)
 		{
+			if (hbmJoin.SqlDelete == null)
+			{
+				hbmJoin.sqldelete = new HbmCustomSQL();
+			}
+			hbmJoin.sqldelete.Text = new[] { sql };
 		}
 
 		public void Subselect(string sql)
 		{
+			if (hbmJoin.Subselect == null)
+			{
+				hbmJoin.subselect = new HbmSubselect();
+			}
+			hbmJoin.subselect.Text = new[] { sql };
 		}
 
 		public void Table(string tableName)
@@ -95,10 +115,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Catalog(string catalogName)
 		{
+			hbmJoin.catalog = catalogName;
 		}
 
 		public void Schema(string schemaName)
 		{
+			hbmJoin.schema = schemaName;
 		}
 
 		public void Key(Action<IKeyMapper> keyMapping)
@@ -107,14 +129,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Inverse(bool value)
 		{
+			hbmJoin.inverse = value;
 		}
 
 		public void Optional(bool isOptional)
 		{
+			hbmJoin.optional = isOptional;
 		}
 
 		public void Fetch(FetchMode fetchMode)
 		{
+			hbmJoin.fetch = fetchMode.ToHbmJoinFetch();
 		}
 	}
 }

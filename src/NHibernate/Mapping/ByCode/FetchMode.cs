@@ -8,6 +8,7 @@ namespace NHibernate.Mapping.ByCode
 		public static FetchMode Join = new JoinFetchMode();
 
 		public abstract HbmFetchMode ToHbm();
+		public abstract HbmJoinFetch ToHbmJoinFetch();
 
 		#region Nested type: JoinFetchMode
 
@@ -16,6 +17,11 @@ namespace NHibernate.Mapping.ByCode
 			public override HbmFetchMode ToHbm()
 			{
 				return HbmFetchMode.Join;
+			}
+
+			public override HbmJoinFetch ToHbmJoinFetch()
+			{
+				return HbmJoinFetch.Join;
 			}
 		}
 
@@ -28,6 +34,11 @@ namespace NHibernate.Mapping.ByCode
 			public override HbmFetchMode ToHbm()
 			{
 				return HbmFetchMode.Select;
+			}
+
+			public override HbmJoinFetch ToHbmJoinFetch()
+			{
+				return HbmJoinFetch.Select;
 			}
 		}
 

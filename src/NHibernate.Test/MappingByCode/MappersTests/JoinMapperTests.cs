@@ -77,5 +77,103 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Table("   Pizza   ");
 			eventCalled.Should().Be.True();
 		}
+
+		[Test]
+		public void CanSetCatalog()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Catalog("pizza");
+			hbmJoin.catalog.Should().Be("pizza");
+		}
+
+		[Test]
+		public void CanSetSchema()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Schema("pizza");
+			hbmJoin.schema.Should().Be("pizza");
+		}
+
+		[Test]
+		public void CanSetSqlInsert()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlInsert("blah");
+
+			hbmJoin.SqlInsert.Should().Not.Be.Null();
+			hbmJoin.SqlInsert.Text[0].Should().Be("blah");
+		}
+
+		[Test]
+		public void SetSqlUpdate()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlUpdate("blah");
+
+			hbmJoin.SqlUpdate.Should().Not.Be.Null();
+			hbmJoin.SqlUpdate.Text[0].Should().Be("blah");
+		}
+
+		[Test]
+		public void SetSqlDelete()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlDelete("blah");
+
+			hbmJoin.SqlDelete.Should().Not.Be.Null();
+			hbmJoin.SqlDelete.Text[0].Should().Be("blah");
+		}
+
+		[Test]
+		public void CanSetSqlSubselect()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Subselect("blah");
+
+			hbmJoin.Subselect.Should().Not.Be.Null();
+			hbmJoin.subselect.Text[0].Should().Be("blah");
+		}
+
+		[Test]
+		public void CanSetInverse()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Inverse(true);
+			hbmJoin.inverse.Should().Be.True();
+		}
+
+		[Test]
+		public void CanSetOptional()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Optional(true);
+			hbmJoin.optional.Should().Be.True();
+		}
+
+		[Test]
+		public void CanSetFetch()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.Fetch(Mapping.ByCode.FetchMode.Select);
+			hbmJoin.fetch.Should().Be(HbmJoinFetch.Select);
+		}
 	}
 }
