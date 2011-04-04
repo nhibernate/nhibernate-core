@@ -522,6 +522,7 @@
     <Compile Include="MappingByCode\ExpliticMappingTests\RootClassPropertiesSplitsTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
+    <Compile Include="MappingByCode\MappersTests\JoinMapperTests.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Address.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Animal.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Classification.cs" />

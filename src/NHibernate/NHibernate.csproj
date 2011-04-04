@@ -370,6 +370,7 @@
     <Compile Include="Mapping\ByCode\Impl\ICustomizersHolder.cs" />
     <Compile Include="Mapping\ByCode\Impl\IdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\JoinedSubclassMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\JoinMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\KeyManyToOneMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\KeyMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\KeyPropertyMapper.cs" />

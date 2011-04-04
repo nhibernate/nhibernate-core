@@ -168,6 +168,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.schemaaction = action.ToSchemaActionString();
 		}
 
+		public void Join(Action<IJoinMapper> splittedMapping)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 
 		#region Implementation of IEntityAttributesMapper
