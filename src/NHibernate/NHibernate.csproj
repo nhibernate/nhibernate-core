@@ -282,7 +282,7 @@
     <Compile Include="Mapping\ByCode\CollectionLazy.cs" />
     <Compile Include="Mapping\ByCode\ExplicitlyDeclaredModel.cs" />
     <Compile Include="Mapping\ByCode\FakeModelExplicitDeclarationsHolder.cs" />
-    <Compile Include="Mapping\ByCode\FetchMode.cs" />
+    <Compile Include="Mapping\ByCode\FetchKind.cs" />
     <Compile Include="Mapping\ByCode\ForClass.cs" />
     <Compile Include="Mapping\ByCode\IAccessorPropertyMapper.cs" />
     <Compile Include="Mapping\ByCode\IAnyMapper.cs" />

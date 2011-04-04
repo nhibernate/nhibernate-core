@@ -70,7 +70,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			Column(x => x.Index(indexName));
 		}
 
-		public void Fetch(FetchMode fetchMode)
+		public void Fetch(FetchKind fetchMode)
 		{
 			manyToOne.fetch = fetchMode.ToHbm();
 			manyToOne.fetchSpecified = manyToOne.fetch == HbmFetchMode.Join;

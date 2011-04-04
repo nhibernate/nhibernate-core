@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -172,7 +173,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapdoc = new HbmMapping();
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
-			mapper.Fetch(Mapping.ByCode.FetchMode.Select);
+			mapper.Fetch(FetchKind.Select);
 			hbmJoin.fetch.Should().Be(HbmJoinFetch.Select);
 		}
 	}

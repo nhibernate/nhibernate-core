@@ -137,7 +137,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmJoin.optional = isOptional;
 		}
 
-		public void Fetch(FetchMode fetchMode)
+		public void Fetch(FetchKind fetchMode)
 		{
 			hbmJoin.fetch = fetchMode.ToHbmJoinFetch();
 		}

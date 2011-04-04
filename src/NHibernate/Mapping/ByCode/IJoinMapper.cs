@@ -10,7 +10,7 @@ namespace NHibernate.Mapping.ByCode
 		void Key(Action<IKeyMapper> keyMapping);
 		void Inverse(bool value);
 		void Optional(bool isOptional);
-		void Fetch(FetchMode fetchMode);
+		void Fetch(FetchKind fetchMode);
 	}
 
 	public interface IJoinMapper : IJoinAttributesMapper, ICollectionPropertiesContainerMapper, IBasePlainPropertyContainerMapper { }

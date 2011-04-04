@@ -16,7 +16,7 @@ namespace NHibernate.Mapping.ByCode
 		void Unique(bool unique);
 		void UniqueKey(string uniquekeyName);
 		void Index(string indexName);
-		void Fetch(FetchMode fetchMode);
+		void Fetch(FetchKind fetchMode);
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
 		void Update(bool consideredInUpdateQuery);

@@ -2,17 +2,17 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract class FetchMode
+	public abstract class FetchKind
 	{
-		public static FetchMode Select = new SelectFetchMode();
-		public static FetchMode Join = new JoinFetchMode();
+		public static FetchKind Select = new SelectFetchMode();
+		public static FetchKind Join = new JoinFetchMode();
 
 		public abstract HbmFetchMode ToHbm();
 		public abstract HbmJoinFetch ToHbmJoinFetch();
 
 		#region Nested type: JoinFetchMode
 
-		private class JoinFetchMode : FetchMode
+		private class JoinFetchMode : FetchKind
 		{
 			public override HbmFetchMode ToHbm()
 			{
@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 
 		#region Nested type: SelectFetchMode
 
-		private class SelectFetchMode : FetchMode
+		private class SelectFetchMode : FetchKind
 		{
 			public override HbmFetchMode ToHbm()
 			{
