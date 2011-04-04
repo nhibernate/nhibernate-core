@@ -24,7 +24,12 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
 	{
-		void Join(string tableName, Action<IJoinMapper> splittedMapping);
+		/// <summary>
+		/// Using the Join, it is possible to split properties of one class to several tables, when there's a 1-to-1 relationship between the table
+		/// </summary>
+		/// <param name="splitGroupId">The split-group identifier. By default it is assigned to the join-table-name</param>
+		/// <param name="splittedMapping">The lambda to map the join.</param>
+		void Join(string splitGroupId, Action<IJoinMapper> splittedMapping);
 	}
 
 	public interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class

@@ -174,15 +174,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.schemaaction = action.ToSchemaActionString();
 		}
 
-		public void Join(string tableName, Action<IJoinMapper> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper> splittedMapping)
 		{
 			IJoinMapper splitGroup;
-			if(!JoinMappers.TryGetValue(tableName, out splitGroup))
+			if(!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
 			{
 				var hbmJoin = new HbmJoin();
-				splitGroup = new JoinMapper(Container, tableName, hbmJoin, MapDoc);
+				splitGroup = new JoinMapper(Container, splitGroupId, hbmJoin, MapDoc);
 				var toAdd = new[] { hbmJoin };
-				JoinMappers.Add(tableName, splitGroup);
+				JoinMappers.Add(splitGroupId, splitGroup);
 				classMapping.Items1 = classMapping.Items1 == null ? toAdd : classMapping.Items1.Concat(toAdd).ToArray();
 			}
 
