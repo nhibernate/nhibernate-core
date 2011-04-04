@@ -44,5 +44,8 @@ namespace NHibernate.Mapping.ByCode
 		void SchemaAction(SchemaAction action);
 	}
 
-	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
+	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
+	{
+		void Join(Action<IJoinMapper<TEntity>> splittedMapping);
+	}
 }

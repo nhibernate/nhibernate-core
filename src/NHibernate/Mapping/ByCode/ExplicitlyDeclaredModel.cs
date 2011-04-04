@@ -368,6 +368,11 @@ namespace NHibernate.Mapping.ByCode
 			return IsMappedFor(tablePerClassEntities, type);
 		}
 
+		public bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member)
+		{
+			return false;
+		}
+
 		public bool IsTablePerClassHierarchy(System.Type type)
 		{
 			ExecuteDelayedTypeRegistration(type);

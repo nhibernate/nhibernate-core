@@ -109,6 +109,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SchemaAction(action));
 		}
 
+		public void Join(Action<IJoinMapper<TEntity>> splittedMapping)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void EntityName(string value)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.EntityName(value));

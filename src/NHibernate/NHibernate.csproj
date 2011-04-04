@@ -309,6 +309,7 @@
     <Compile Include="Mapping\ByCode\IGeneratorMapper.cs" />
     <Compile Include="Mapping\ByCode\IIdMapper.cs" />
     <Compile Include="Mapping\ByCode\IJoinedSubclassMapper.cs" />
+    <Compile Include="Mapping\ByCode\IJoinMapper.cs" />
     <Compile Include="Mapping\ByCode\IKeyMapper.cs" />
     <Compile Include="Mapping\ByCode\IListIndexMapper.cs" />
     <Compile Include="Mapping\ByCode\IListPropertiesMapper.cs" />
