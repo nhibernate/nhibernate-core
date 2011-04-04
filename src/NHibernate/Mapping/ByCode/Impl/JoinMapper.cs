@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
@@ -56,6 +57,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		protected override void AddProperty(object property)
 		{
+			if (property == null)
+			{
+				throw new ArgumentNullException("property");
+			}
+			var toAdd = new[] { property };
+			hbmJoin.Items = hbmJoin.Items == null ? toAdd : hbmJoin.Items.Concat(toAdd).ToArray();
 		}
 
 		public void Loader(string namedQueryReference)

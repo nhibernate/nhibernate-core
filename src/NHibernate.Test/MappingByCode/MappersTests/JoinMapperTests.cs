@@ -214,5 +214,17 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			firstCallInstance.Should().Be.SameInstanceAs(secondCallInstance);
 		}
+
+		[Test]
+		public void WhenAddPropertyThenAddItem()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+
+			mapper.Property(For<MyClass>.Property(mc => mc.Something), x => { });
+
+			hbmJoin.Properties.Should().Have.Count.EqualTo(1);
+		}
 	}
 }
