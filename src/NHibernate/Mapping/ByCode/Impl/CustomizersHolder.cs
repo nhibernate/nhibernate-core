@@ -59,8 +59,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<PropertyPath, List<Action<ISetPropertiesMapper>>> setCustomizers =
 			new Dictionary<PropertyPath, List<Action<ISetPropertiesMapper>>>();
 
-		private readonly Dictionary<System.Type, List<Action<ISubclassAttributesMapper>>> subclassCustomizers =
-			new Dictionary<System.Type, List<Action<ISubclassAttributesMapper>>>();
+		private readonly Dictionary<System.Type, List<Action<ISubclassMapper>>> subclassCustomizers =
+			new Dictionary<System.Type, List<Action<ISubclassMapper>>>();
 
 		private readonly Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>> unionClassCustomizers =
 			new Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>>();
@@ -75,7 +75,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddCustomizer(rootClassCustomizers, type, classCustomizer);
 		}
 
-		public void AddCustomizer(System.Type type, Action<ISubclassAttributesMapper> classCustomizer)
+		public void AddCustomizer(System.Type type, Action<ISubclassMapper> classCustomizer)
 		{
 			AddCustomizer(subclassCustomizers, type, classCustomizer);
 		}
@@ -180,7 +180,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			InvokeCustomizers(rootClassCustomizers, type, mapper);
 		}
 
-		public void InvokeCustomizers(System.Type type, ISubclassAttributesMapper mapper)
+		public void InvokeCustomizers(System.Type type, ISubclassMapper mapper)
 		{
 			InvokeCustomizers(subclassCustomizers, type, mapper);
 		}
