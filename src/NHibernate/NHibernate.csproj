@@ -290,6 +290,7 @@
     <Compile Include="Mapping\ByCode\ICacheMapper.cs" />
     <Compile Include="Mapping\ByCode\IClassMapper.cs" />
     <Compile Include="Mapping\ByCode\ICollectionElementRelation.cs" />
+    <Compile Include="Mapping\ByCode\ICollectionIdMapper.cs" />
     <Compile Include="Mapping\ByCode\ICollectionPropertiesMapper.cs" />
     <Compile Include="Mapping\ByCode\ICollectionSqlsMapper.cs" />
     <Compile Include="Mapping\ByCode\IColumnMapper.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Mapping\ByCode\IGenerator.cs" />
     <Compile Include="Mapping\ByCode\IGeneratorDef.cs" />
     <Compile Include="Mapping\ByCode\IGeneratorMapper.cs" />
+    <Compile Include="Mapping\ByCode\IIdBagPropertiesMapper.cs" />
     <Compile Include="Mapping\ByCode\IIdMapper.cs" />
     <Compile Include="Mapping\ByCode\IJoinedSubclassMapper.cs" />
     <Compile Include="Mapping\ByCode\IJoinMapper.cs" />
@@ -370,6 +372,7 @@
     <Compile Include="Mapping\ByCode\Generators.cs" />
     <Compile Include="Mapping\ByCode\Impl\ICandidatePersistentMembersProvider.cs" />
     <Compile Include="Mapping\ByCode\Impl\ICustomizersHolder.cs" />
+    <Compile Include="Mapping\ByCode\Impl\IdBagMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\IdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\JoinedSubclassMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\JoinMapper.cs" />
