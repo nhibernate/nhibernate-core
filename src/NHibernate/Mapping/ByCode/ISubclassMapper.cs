@@ -1,3 +1,5 @@
+using System;
+
 namespace NHibernate.Mapping.ByCode
 {
 	public interface ISubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
@@ -6,12 +8,17 @@ namespace NHibernate.Mapping.ByCode
 		void Extends(System.Type baseType);
 	}
 
-	public interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper {}
+	public interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper
+	{
+		void Join(string splitGroupId, Action<IJoinMapper> splittedMapping);
+	}
 
 	public interface ISubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void DiscriminatorValue(object value);
 	}
 
-	public interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
+	public interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
+	{
+	}
 }

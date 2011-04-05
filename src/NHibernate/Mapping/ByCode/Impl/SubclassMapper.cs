@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
@@ -8,6 +9,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	public class SubclassMapper : AbstractPropertyContainerMapper, ISubclassMapper
 	{
 		private readonly HbmSubclass classMapping = new HbmSubclass();
+		private Dictionary<string, IJoinMapper> joinMappers;
 
 		public SubclassMapper(System.Type subClass, HbmMapping mapDoc) : base(subClass, mapDoc)
 		{
@@ -31,6 +33,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		#endregion
 
+		private Dictionary<string, IJoinMapper> JoinMappers
+		{
+			get { return joinMappers ?? (joinMappers = new Dictionary<string, IJoinMapper>()); }
+		}
+
 		#region ISubclassMapper Members
 
 		public void DiscriminatorValue(object value)
@@ -50,6 +57,21 @@ namespace NHibernate.Mapping.ByCode.Impl
 				                                      string.Format("{0} is a valid super-class of {1}", baseType, Container));
 			}
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
+		}
+
+		public void Join(string splitGroupId, Action<IJoinMapper> splittedMapping)
+		{
+			IJoinMapper splitGroup;
+			if (!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
+			{
+				var hbmJoin = new HbmJoin();
+				splitGroup = new JoinMapper(Container, splitGroupId, hbmJoin, MapDoc);
+				var toAdd = new[] { hbmJoin };
+				JoinMappers.Add(splitGroupId, splitGroup);
+				classMapping.join = classMapping.join == null ? toAdd : classMapping.join.Concat(toAdd).ToArray();
+			}
+
+			splittedMapping(splitGroup);
 		}
 
 		#endregion
