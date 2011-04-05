@@ -222,6 +222,8 @@
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
     <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
+    <Compile Include="DynamicProxyTests\ProxiedMembers\ClassWithVarietyOfMembers.cs" />
+    <Compile Include="DynamicProxyTests\ProxiedMembers\Fixture.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />
     <Compile Include="EngineTest\NativeSQLQueryNonScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
@@ -2535,6 +2537,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DynamicProxyTests\ProxiedMembers\Mapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\SqlConverterAndMultiQuery\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2489\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2603\Mappings.hbm.xml" />
