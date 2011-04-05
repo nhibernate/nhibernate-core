@@ -640,7 +640,7 @@ namespace NHibernate.Mapping.ByCode
 				IJoinMapper joinMapper;
 				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
 				{
-					MapProperties(type, propertiesOfTheGroup, joinMapper);
+					MapSplittedProperties(type, propertiesOfTheGroup, joinMapper);
 					propertiesInSplits.UnionWith(propertiesOfTheGroup);
 				}
 			}
@@ -725,7 +725,7 @@ namespace NHibernate.Mapping.ByCode
 				IJoinMapper joinMapper;
 				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
 				{
-					MapProperties(type, propertiesOfTheGroup, joinMapper);
+					MapSplittedProperties(type, propertiesOfTheGroup, joinMapper);
 					propertiesInSplits.UnionWith(propertiesOfTheGroup);
 				}
 			}
@@ -734,7 +734,7 @@ namespace NHibernate.Mapping.ByCode
 			InvokeAfterMapClass(type, classMapper);
 		}
 
-		private void MapProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap, IJoinMapper propertiesContainer)
+		private void MapSplittedProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap, IJoinMapper propertiesContainer)
 		{
 			foreach (var property in propertiesToMap)
 			{
