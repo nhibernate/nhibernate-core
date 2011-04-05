@@ -622,14 +622,32 @@ namespace NHibernate.Mapping.ByCode
 				}
 			}
 			candidateProperties = candidateProperties ?? membersProvider.GetSubEntityMembers(type, type.BaseType);
-			IEnumerable<MemberInfo> propertiesToMap =
-				candidateProperties.Where(p => modelInspector.IsPersistentProperty(p) && !modelInspector.IsPersistentId(p));
 
 			InvokeBeforeMapSubclass(type, classMapper);
 			customizerHolder.InvokeCustomizers(type, classMapper);
-			InvokeAfterMapSubclass(type, classMapper);
+			foreach (var joinMapper in classMapper.JoinMappers.Values)
+			{
+				customizerHolder.InvokeCustomizers(type, joinMapper);
+			}
 
-			MapProperties(type, propertiesToMap, classMapper);
+			var splitGroups = modelInspector.GetPropertiesSplits(type);
+			var propertiesToMap = candidateProperties.Where(p => modelInspector.IsPersistentProperty(p) && !modelInspector.IsPersistentId(p));
+			var propertiesInSplits = new HashSet<MemberInfo>();
+			foreach (var splitGroup in splitGroups)
+			{
+				var groupId = splitGroup;
+				var propertiesOfTheGroup = propertiesToMap.Where(p => modelInspector.IsTablePerClassSplit(type, groupId, p)).ToList();
+				IJoinMapper joinMapper;
+				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
+				{
+					MapProperties(type, propertiesOfTheGroup, joinMapper);
+					propertiesInSplits.UnionWith(propertiesOfTheGroup);
+				}
+			}
+
+			MapProperties(type, propertiesToMap.Except(propertiesInSplits), classMapper);
+
+			InvokeAfterMapSubclass(type, classMapper);
 		}
 
 		private void MapJoinedSubclass(System.Type type, HbmMapping mapping)

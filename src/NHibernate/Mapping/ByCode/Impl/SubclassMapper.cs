@@ -33,7 +33,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		#endregion
 
-		private Dictionary<string, IJoinMapper> JoinMappers
+		public Dictionary<string, IJoinMapper> JoinMappers
 		{
 			get { return joinMappers ?? (joinMappers = new Dictionary<string, IJoinMapper>()); }
 		}
