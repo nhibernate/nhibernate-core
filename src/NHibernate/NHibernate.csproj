@@ -332,6 +332,7 @@
     <Compile Include="Mapping\ByCode\Impl\CascadeConverter.cs" />
     <Compile Include="Mapping\ByCode\Impl\ClassMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\CollectionElementRelation.cs" />
+    <Compile Include="Mapping\ByCode\Impl\CollectionIdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ColumnMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComponentElementMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComponentMapKeyMapper.cs" />

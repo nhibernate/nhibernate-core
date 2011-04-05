@@ -13,8 +13,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly KeyMapper keyMapper;
 		private readonly HbmIdbag mapping;
 		private ICacheMapper cacheMapper;
+		private readonly CollectionIdMapper idMapper;
 
-		public IdBagMapper(System.Type ownerType, System.Type elementType, System.Type idType, HbmIdbag mapping)
+		public IdBagMapper(System.Type ownerType, System.Type elementType, HbmIdbag mapping)
 		{
 			if (ownerType == null)
 			{
@@ -36,6 +37,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.key = new HbmKey();
 			}
 			keyMapper = new KeyMapper(ownerType, mapping.Key);
+			if (mapping.collectionid == null)
+			{
+				mapping.collectionid = new HbmCollectionId();
+			}
+			idMapper = new CollectionIdMapper(mapping.collectionid);
 			entityPropertyMapper = new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x);
 		}
 
@@ -185,9 +191,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.fetchSpecified = mapping.fetch != HbmCollectionFetchMode.Select;
 		}
 
-		public void Id(Action<ICollectionIdMapper> idMapper)
+		public void Id(Action<ICollectionIdMapper> idMapping)
 		{
-			throw new NotImplementedException();
+			idMapping(idMapper);
 		}
 
 		#endregion

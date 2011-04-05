@@ -50,6 +50,16 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return null; }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 
@@ -78,6 +88,16 @@ namespace NHibernate.Mapping.ByCode
 			get { return param; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return null; }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 
@@ -93,6 +113,16 @@ namespace NHibernate.Mapping.ByCode
 		public object Params
 		{
 			get { return null; }
+		}
+
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
 		}
 
 		#endregion
@@ -112,6 +142,15 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 
@@ -129,6 +168,15 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(Guid); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 
@@ -146,6 +194,15 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(Guid); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 
@@ -163,6 +220,15 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 
@@ -180,6 +246,15 @@ namespace NHibernate.Mapping.ByCode
 			get { return null; }
 		}
 
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
 		#endregion
 	}
 }

@@ -4,5 +4,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		string Class { get; }
 		object Params { get; }
+		System.Type DefaultReturnType { get; }
+		bool SupportedAsCollectionElementId { get; }
 	}
 }
