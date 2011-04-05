@@ -22,6 +22,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 	public delegate void BagMappingHandler(IModelInspector modelInspector, PropertyPath member, IBagPropertiesMapper propertyCustomizer);
 
+	public delegate void IdBagMappingHandler(IModelInspector modelInspector, PropertyPath member, IIdBagPropertiesMapper propertyCustomizer);
+
 	public delegate void ListMappingHandler(IModelInspector modelInspector, PropertyPath member, IListPropertiesMapper propertyCustomizer);
 
 	public delegate void MapMappingHandler(IModelInspector modelInspector, PropertyPath member, IMapPropertiesMapper propertyCustomizer);

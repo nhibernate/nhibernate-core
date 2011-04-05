@@ -11,6 +11,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<PropertyPath, List<Action<IBagPropertiesMapper>>> bagCustomizers =
 			new Dictionary<PropertyPath, List<Action<IBagPropertiesMapper>>>();
 
+		private readonly Dictionary<PropertyPath, List<Action<IIdBagPropertiesMapper>>> idBagCustomizers =
+			new Dictionary<PropertyPath, List<Action<IIdBagPropertiesMapper>>>();
+
 		private readonly Dictionary<PropertyPath, List<Action<ICollectionPropertiesMapper>>> collectionCustomizers =
 			new Dictionary<PropertyPath, List<Action<ICollectionPropertiesMapper>>>();
 
@@ -140,6 +143,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddCustomizer(mapCustomizers, member, propertyCustomizer);
 		}
 
+		public void AddCustomizer(PropertyPath member, Action<IIdBagPropertiesMapper> propertyCustomizer)
+		{
+			AddCustomizer(idBagCustomizers, member, propertyCustomizer);
+		}
+
 		public void AddCustomizer(PropertyPath member, Action<ICollectionPropertiesMapper> propertyCustomizer)
 		{
 			AddCustomizer(collectionCustomizers, member, propertyCustomizer);
@@ -247,6 +255,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			InvokeCustomizers(collectionCustomizers, member, mapper);
 			InvokeCustomizers(mapCustomizers, member, mapper);
+		}
+
+		public void InvokeCustomizers(PropertyPath member, IIdBagPropertiesMapper mapper)
+		{
+			InvokeCustomizers(collectionCustomizers, member, mapper);
+			InvokeCustomizers(idBagCustomizers, member, mapper);
 		}
 
 		public void InvokeCustomizers(PropertyPath member, IComponentAttributesMapper mapper)

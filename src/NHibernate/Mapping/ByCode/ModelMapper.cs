@@ -82,6 +82,8 @@ namespace NHibernate.Mapping.ByCode
 
 		public event BagMappingHandler BeforeMapBag;
 
+		public event IdBagMappingHandler BeforeMapIdBag;
+
 		public event ListMappingHandler BeforeMapList;
 
 		public event MapMappingHandler BeforeMapMap;
@@ -128,6 +130,8 @@ namespace NHibernate.Mapping.ByCode
 		public event SetMappingHandler AfterMapSet;
 
 		public event BagMappingHandler AfterMapBag;
+
+		public event IdBagMappingHandler AfterMapIdBag;
 
 		public event ListMappingHandler AfterMapList;
 
@@ -236,6 +240,15 @@ namespace NHibernate.Mapping.ByCode
 		private void InvokeBeforeMapBag(PropertyPath member, IBagPropertiesMapper propertycustomizer)
 		{
 			BagMappingHandler handler = BeforeMapBag;
+			if (handler != null)
+			{
+				handler(ModelInspector, member, propertycustomizer);
+			}
+		}
+
+		private void InvokeBeforeMapIdBag(PropertyPath member, IIdBagPropertiesMapper propertycustomizer)
+		{
+			IdBagMappingHandler handler = BeforeMapIdBag;
 			if (handler != null)
 			{
 				handler(ModelInspector, member, propertycustomizer);
@@ -398,6 +411,15 @@ namespace NHibernate.Mapping.ByCode
 		private void InvokeAfterMapBag(PropertyPath member, IBagPropertiesMapper propertycustomizer)
 		{
 			BagMappingHandler handler = AfterMapBag;
+			if (handler != null)
+			{
+				handler(ModelInspector, member, propertycustomizer);
+			}
+		}
+
+		private void InvokeAfterMapIdBag(PropertyPath member, IIdBagPropertiesMapper propertycustomizer)
+		{
+			IdBagMappingHandler handler = AfterMapIdBag;
 			if (handler != null)
 			{
 				handler(ModelInspector, member, propertycustomizer);
@@ -769,6 +791,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					MapList(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
 				}
+				else if (modelInspector.IsIdBag(property))
+				{
+					MapIdBag(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
+				}
 				else if (modelInspector.IsBag(property))
 				{
 					MapBag(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
@@ -887,6 +913,10 @@ namespace NHibernate.Mapping.ByCode
 				else if (modelInspector.IsList(property))
 				{
 					MapList(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
+				}
+				else if (modelInspector.IsIdBag(property))
+				{
+					MapIdBag(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
 				}
 				else if (modelInspector.IsBag(property))
 				{
@@ -1073,6 +1103,24 @@ namespace NHibernate.Mapping.ByCode
 			                                	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 			                                	InvokeAfterMapSet(propertyPath, collectionPropertiesMapper);
 			                                }, cert.Map);
+		}
+
+		private void MapIdBag(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
+												System.Type propertiesContainerType)
+		{
+			System.Type collectionElementType = GetCollectionElementTypeOrThrow(propertiesContainerType, member, propertyType);
+			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
+			if(cert is OneToManyRelationMapper)
+			{
+				throw new NotSupportedException("id-bag does not suppot one-to-many relation");
+			}
+			propertiesContainer.IdBag(member, collectionPropertiesMapper =>
+			{
+				InvokeBeforeMapIdBag(propertyPath, collectionPropertiesMapper);
+				cert.MapCollectionProperties(collectionPropertiesMapper);
+				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+				InvokeAfterMapIdBag(propertyPath, collectionPropertiesMapper);
+			}, cert.Map);
 		}
 
 		private void MapOneToOne(MemberInfo member, PropertyPath propertyPath, IPlainPropertyContainerMapper propertiesContainer)

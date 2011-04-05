@@ -19,6 +19,9 @@ namespace NHibernate.Mapping.ByCode
 		void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping,
 		         Action<IMapKeyRelation> keyMapping,
 		         Action<ICollectionElementRelation> mapping);
+
+		void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping,
+						 Action<ICollectionElementRelation> mapping);
 	}
 
 	public interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper {}
@@ -45,6 +48,10 @@ namespace NHibernate.Mapping.ByCode
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 		                         Action<ICollectionElementRelation<TElement>> mapping);
+
+		void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+											 Action<ICollectionElementRelation<TElement>> mapping);
 	}
 
 	public interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity> where TEntity : class {}

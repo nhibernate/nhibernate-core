@@ -164,5 +164,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			ExplicitDeclarationsHolder.AddAsPropertySplit(typeof (TEntity), splitGroupId, member);
 			base.Any(property, idTypeOfMetaType, mapping);
 		}
+
+		public override void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
+		{
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			ExplicitDeclarationsHolder.AddAsPropertySplit(typeof(TEntity), splitGroupId, member);
+			base.IdBag(property, collectionMapping, mapping);
+		}
 	}
 }

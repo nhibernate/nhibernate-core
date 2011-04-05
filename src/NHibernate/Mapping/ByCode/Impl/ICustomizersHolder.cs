@@ -20,6 +20,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void AddCustomizer(PropertyPath member, Action<IBagPropertiesMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IListPropertiesMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IMapPropertiesMapper> propertyCustomizer);
+		void AddCustomizer(PropertyPath member, Action<IIdBagPropertiesMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<ICollectionPropertiesMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IComponentAttributesMapper> propertyCustomizer);
 
@@ -39,6 +40,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void InvokeCustomizers(PropertyPath member, IBagPropertiesMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IListPropertiesMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IMapPropertiesMapper mapper);
+		void InvokeCustomizers(PropertyPath member, IIdBagPropertiesMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IComponentAttributesMapper mapper);
 
 		#region Collection Element relations invokers

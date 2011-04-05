@@ -61,6 +61,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		{
+			var hbm = new HbmIdbag { name = property.Name };
+			System.Type propertyType = property.GetPropertyOrFieldType();
+			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			collectionMapping(new IdBagMapper(container, collectionElementType, hbm));
+			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
+			AddProperty(hbm);
+		}
+
 		#endregion
 	}
 }

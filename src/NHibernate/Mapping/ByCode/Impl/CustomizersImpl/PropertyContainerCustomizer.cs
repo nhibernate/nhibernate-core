@@ -160,5 +160,18 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			Map(property, collectionMapping, keyMapping => { }, mapping);
 		}
+
+		public virtual void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+													Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+													Action<ICollectionElementRelation<TElement>> mapping)
+		{
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			collectionMapping(new IdBagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, member), CustomizersHolder));
+			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
+
+			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
+			collectionMapping(new IdBagPropertiesCustomizer<TEntity, TElement>(explicitDeclarationsHolder, new PropertyPath(null, memberOf), CustomizersHolder));
+			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, memberOf), CustomizersHolder));
+		}
 	}
 }
