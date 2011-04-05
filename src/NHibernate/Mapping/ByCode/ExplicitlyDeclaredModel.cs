@@ -29,6 +29,8 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<System.Type> tablePerConcreteClassEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> versionProperties = new HashSet<MemberInfo>();
 		private readonly Dictionary<System.Type, Action<System.Type>> delayedEntityRegistrations = new Dictionary<System.Type, Action<System.Type>>();
+		private readonly Dictionary<System.Type, HashSet<string>> typeSplitGroups = new Dictionary<System.Type, HashSet<string>>();
+		private readonly Dictionary<MemberInfo, string> memberSplitGroup = new Dictionary<MemberInfo, string>();
 
 		#region IModelExplicitDeclarationsHolder Members
 
@@ -130,6 +132,27 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<string> GetSplitGroupsFor(System.Type type)
+		{
+			HashSet<string> splitsGroupsIds;
+			if (typeSplitGroups.TryGetValue(type, out splitsGroupsIds))
+			{
+				return splitsGroupsIds;
+			}
+			return Enumerable.Empty<string>();
+		}
+
+		public string GetSplitGroupFor(MemberInfo member)
+		{
+			var memberKey = member.GetMemberFromDeclaringType();
+			string splitGroup;
+			if (memberSplitGroup.TryGetValue(memberKey, out splitGroup))
+			{
+				return splitGroup;
+			}
+			return null;
 		}
 
 		public void AddAsRootEntity(System.Type type)
@@ -343,6 +366,32 @@ namespace NHibernate.Mapping.ByCode
 			properties.Add(member);
 		}
 
+		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member)
+		{
+			/* Note: if the user "jump/exclude" a class and then map the property in two subclasses the usage of GetMemberFromDeclaringType() may cause a problem
+			   for a legal usage... we will see when the case happen */
+
+			var memberKey = member.GetMemberFromDeclaringType();
+			string splitGroup;
+			if (!memberSplitGroup.TryGetValue(memberKey, out splitGroup))
+			{
+				AddTypeSplits(propertyContainer, splitGroupId);
+				memberSplitGroup[memberKey] = splitGroupId;
+			}
+		}
+
+		private void AddTypeSplits(System.Type propertyContainer, string splitGroupId)
+		{
+			HashSet<string> splitsGroupsIds;
+			typeSplitGroups.TryGetValue(propertyContainer, out splitsGroupsIds);
+			if(splitsGroupsIds == null)
+			{
+				splitsGroupsIds = new HashSet<string>();
+				typeSplitGroups[propertyContainer] = splitsGroupsIds;
+			}
+			splitsGroupsIds.Add(splitGroupId);
+		}
+
 		#endregion
 
 		#region Implementation of IModelInspector
@@ -370,7 +419,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member)
 		{
-			return false;
+			return Equals(splitGroupId, GetSplitGroupFor(member));
 		}
 
 		public bool IsTablePerClassHierarchy(System.Type type)
@@ -518,7 +567,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public IEnumerable<string> GetPropertiesSplits(System.Type type)
 		{
-			return null;
+			return GetSplitGroupsFor(type);
 		}
 	}
 }

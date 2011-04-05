@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -135,6 +136,16 @@ namespace NHibernate.Mapping.ByCode
 			get { return properties; }
 		}
 
+		public IEnumerable<string> GetSplitGroupsFor(System.Type type)
+		{
+			return Enumerable.Empty<string>();
+		}
+
+		public string GetSplitGroupFor(MemberInfo member)
+		{
+			return null;
+		}
+
 		public void AddAsRootEntity(System.Type type) {}
 
 		public void AddAsComponent(System.Type type) {}
@@ -176,6 +187,7 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsMap(MemberInfo member) {}
 
 		public void AddAsProperty(MemberInfo member) {}
+		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member) {}
 
 		#endregion
 	}

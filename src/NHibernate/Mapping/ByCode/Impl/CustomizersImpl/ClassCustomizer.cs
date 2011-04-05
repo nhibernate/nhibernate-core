@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Persister.Entity;
@@ -7,6 +8,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
 	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity> where TEntity : class
 	{
+		private Dictionary<string, IJoinMapper<TEntity>> joinCustomizers;
+
 		public ClassCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null)
 		{
@@ -15,6 +18,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
 			explicitDeclarationsHolder.AddAsRootEntity(typeof (TEntity));
+		}
+
+		private Dictionary<string, IJoinMapper<TEntity>> JoinCustomizers
+		{
+			get { return joinCustomizers ?? (joinCustomizers = new Dictionary<string, IJoinMapper<TEntity>>()); }
 		}
 
 		#region Implementation of IClassAttributesMapper<TEntity>
@@ -39,27 +47,27 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Discriminator(discriminatorMapping));
+			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassMapper m) => m.Discriminator(discriminatorMapping));
 		}
 
 		public void DiscriminatorValue(object value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.DiscriminatorValue(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.DiscriminatorValue(value));
 		}
 
 		public void Table(string tableName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Table(tableName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Table(tableName));
 		}
 
 		public void Catalog(string catalogName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Catalog(catalogName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Catalog(catalogName));
 		}
 
 		public void Schema(string schemaName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Schema(schemaName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Schema(schemaName));
 		}
 
 		#endregion
@@ -68,20 +76,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Mutable(bool isMutable)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Mutable(isMutable));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Mutable(isMutable));
 		}
 
 		public void Version<TProperty>(Expression<Func<TEntity, TProperty>> versionProperty, Action<IVersionMapper> versionMapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(versionProperty);
 			ExplicitDeclarationsHolder.AddAsVersionProperty(member);
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Version(member, versionMapping));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Version(member, versionMapping));
 		}
 
 		public void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping, Action<INaturalIdAttributesMapper> naturalIdMapping)
 		{
 			naturalIdPropertiesMapping(new NaturalIdCustomizer<TEntity>(ExplicitDeclarationsHolder, CustomizersHolder));
-			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassAttributesMapper m) => m.NaturalId(nidm => naturalIdMapping(nidm)));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.NaturalId(nidm => naturalIdMapping(nidm)));
 		}
 
 		public void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping)
@@ -91,67 +99,76 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Cache(Action<ICacheMapper> cacheMapping)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Cache(cacheMapping));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Cache(cacheMapping));
 		}
 
 		public void Filter(string filterName, Action<IFilterMapper> filterMapping)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Filter(filterName, filterMapping));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Filter(filterName, filterMapping));
 		}
 
 		public void Where(string whereClause)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Where(whereClause));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Where(whereClause));
 		}
 
 		public void SchemaAction(SchemaAction action)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SchemaAction(action));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SchemaAction(action));
 		}
 
 		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping)
 		{
-			throw new NotImplementedException();
+			// add the customizer only to create the JoinMapper instance
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Join(splitGroupId, j => { }));
+
+			IJoinMapper<TEntity> joinCustomizer;
+			if (!JoinCustomizers.TryGetValue(splitGroupId, out joinCustomizer))
+			{
+				joinCustomizer = new JoinCustomizer<TEntity>(splitGroupId, ExplicitDeclarationsHolder, CustomizersHolder);
+				JoinCustomizers.Add(splitGroupId, joinCustomizer);
+			}
+			splittedMapping(joinCustomizer);
 		}
 
 		public void EntityName(string value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.EntityName(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.EntityName(value));
 		}
 
 		public void Proxy(System.Type proxy)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Proxy(proxy));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Proxy(proxy));
 		}
 
 		public void Lazy(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Lazy(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Lazy(value));
 		}
 
 		public void DynamicUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.DynamicUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.DynamicUpdate(value));
 		}
 
 		public void DynamicInsert(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.DynamicInsert(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.DynamicInsert(value));
 		}
 
 		public void BatchSize(int value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.BatchSize(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.BatchSize(value));
 		}
 
 		public void SelectBeforeUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SelectBeforeUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SelectBeforeUpdate(value));
 		}
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Persister<T>());
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Persister<T>());
 		}
 
 		#endregion
@@ -160,27 +177,27 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Loader(string namedQueryReference)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Loader(namedQueryReference));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Loader(namedQueryReference));
 		}
 
 		public void SqlInsert(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SqlInsert(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlInsert(sql));
 		}
 
 		public void SqlUpdate(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SqlUpdate(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlUpdate(sql));
 		}
 
 		public void SqlDelete(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.SqlDelete(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlDelete(sql));
 		}
 
 		public void Subselect(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassAttributesMapper m) => m.Subselect(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Subselect(sql));
 		}
 
 		#endregion

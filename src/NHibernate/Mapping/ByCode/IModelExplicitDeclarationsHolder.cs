@@ -28,6 +28,8 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<MemberInfo> Arrays { get; }
 		IEnumerable<MemberInfo> Dictionaries { get; }
 		IEnumerable<MemberInfo> Properties { get; }
+		IEnumerable<string> GetSplitGroupsFor(System.Type type);
+		string GetSplitGroupFor(MemberInfo member);
 
 		void AddAsRootEntity(System.Type type);
 		void AddAsComponent(System.Type type);
@@ -52,5 +54,6 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsArray(MemberInfo member);
 		void AddAsMap(MemberInfo member);
 		void AddAsProperty(MemberInfo member);
+		void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member);
 	}
 }

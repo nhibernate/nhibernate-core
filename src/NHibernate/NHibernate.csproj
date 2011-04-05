@@ -345,8 +345,10 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\CollectionPropertiesCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ComponentCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ComponentElementCustomizer.cs" />
+    <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\JoinCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\JoinedSubclassCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\JoinedSubclassKeyCustomizer.cs" />
+    <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\JoinKeyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ListPropertiesCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ManyToManyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\MapKeyComponentCustomizer.cs" />

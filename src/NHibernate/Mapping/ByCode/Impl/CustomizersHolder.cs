@@ -53,8 +53,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<PropertyPath, List<Action<IPropertyMapper>>> propertyCustomizers =
 			new Dictionary<PropertyPath, List<Action<IPropertyMapper>>>();
 
-		private readonly Dictionary<System.Type, List<Action<IClassAttributesMapper>>> rootClassCustomizers =
-			new Dictionary<System.Type, List<Action<IClassAttributesMapper>>>();
+		private readonly Dictionary<System.Type, List<Action<IClassMapper>>> rootClassCustomizers =
+			new Dictionary<System.Type, List<Action<IClassMapper>>>();
 
 		private readonly Dictionary<PropertyPath, List<Action<ISetPropertiesMapper>>> setCustomizers =
 			new Dictionary<PropertyPath, List<Action<ISetPropertiesMapper>>>();
@@ -65,9 +65,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>> unionClassCustomizers =
 			new Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>>();
 
+		private readonly Dictionary<System.Type, List<Action<IJoinAttributesMapper>>> joinCustomizers = 
+			new Dictionary<System.Type, List<Action<IJoinAttributesMapper>>>();
+
 		#region ICustomizersHolder Members
 
-		public void AddCustomizer(System.Type type, Action<IClassAttributesMapper> classCustomizer)
+		public void AddCustomizer(System.Type type, Action<IClassMapper> classCustomizer)
 		{
 			AddCustomizer(rootClassCustomizers, type, classCustomizer);
 		}
@@ -90,6 +93,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddCustomizer(System.Type type, Action<IComponentAttributesMapper> classCustomizer)
 		{
 			AddCustomizer(componentClassCustomizers, type, classCustomizer);
+		}
+
+		public void AddCustomizer(System.Type type, Action<IJoinAttributesMapper> joinCustomizer)
+		{
+			AddCustomizer(joinCustomizers, type, joinCustomizer);
 		}
 
 		public void AddCustomizer(PropertyPath member, Action<IPropertyMapper> propertyCustomizer)
@@ -167,7 +175,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddCustomizer(mapKeyElementCustomizers, member, mapKeyElementCustomizer);
 		}
 
-		public void InvokeCustomizers(System.Type type, IClassAttributesMapper mapper)
+		public void InvokeCustomizers(System.Type type, IClassMapper mapper)
 		{
 			InvokeCustomizers(rootClassCustomizers, type, mapper);
 		}
@@ -190,6 +198,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void InvokeCustomizers(System.Type type, IComponentAttributesMapper mapper)
 		{
 			InvokeCustomizers(componentClassCustomizers, type, mapper);
+		}
+
+		public void InvokeCustomizers(System.Type type, IJoinAttributesMapper mapper)
+		{
+			InvokeCustomizers(joinCustomizers, type, mapper);
 		}
 
 		public void InvokeCustomizers(PropertyPath member, IPropertyMapper mapper)

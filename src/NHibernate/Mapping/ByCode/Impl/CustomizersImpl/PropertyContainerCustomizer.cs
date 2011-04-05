@@ -27,7 +27,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			get { return explicitDeclarationsHolder; }
 		}
 
-		public void Property<TProperty>(Expression<Func<TEntity, TProperty>> property)
+		public virtual void Property<TProperty>(Expression<Func<TEntity, TProperty>> property)
 		{
 			Property(property, x => { });
 		}
@@ -97,7 +97,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsAny(memberOf);
 		}
 
-		public void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+		public virtual void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                          Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
 		                          Action<ICollectionElementRelation<TElement>> mapping)
 		{
@@ -110,7 +110,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
 		}
 
-		public void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+		public virtual void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                          Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
 		                          Action<ICollectionElementRelation<TElement>> mapping)
 		{
@@ -123,7 +123,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, memberOf), CustomizersHolder));
 		}
 
-		public void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+		public virtual void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                           Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
 		                           Action<ICollectionElementRelation<TElement>> mapping)
 		{
@@ -136,7 +136,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, new PropertyPath(PropertyPath, member), CustomizersHolder));
 		}
 
-		public void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+		public virtual void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 		                                Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 		                                Action<IMapKeyRelation<TKey>> keyMapping,
 		                                Action<ICollectionElementRelation<TElement>> mapping)
@@ -154,7 +154,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new CollectionElementRelationCustomizer<TElement>(explicitDeclarationsHolder, memberOfPath, CustomizersHolder));
 		}
 
-		public void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+		public virtual void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 																		Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 																		Action<ICollectionElementRelation<TElement>> mapping)
 		{

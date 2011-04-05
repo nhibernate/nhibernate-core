@@ -15,6 +15,17 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IJoinMapper : IJoinAttributesMapper, ICollectionPropertiesContainerMapper, IBasePlainPropertyContainerMapper { }
 
-	public interface IJoinMapper<TEntity> : IJoinAttributesMapper, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity> 
+	public interface IJoinAttributesMapper<TEntity> : IEntitySqlsMapper where TEntity : class
+	{
+		void Table(string tableName);
+		void Catalog(string catalogName);
+		void Schema(string schemaName);
+		void Inverse(bool value);
+		void Optional(bool isOptional);
+		void Fetch(FetchKind fetchMode);
+		void Key(Action<IKeyMapper<TEntity>> keyMapping);
+	}
+
+	public interface IJoinMapper<TEntity> : IJoinAttributesMapper<TEntity>, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity> 
 		where TEntity : class {}
 }

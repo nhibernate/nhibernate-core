@@ -4,11 +4,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public interface ICustomizersHolder
 	{
-		void AddCustomizer(System.Type type, Action<IClassAttributesMapper> classCustomizer);
+		void AddCustomizer(System.Type type, Action<IClassMapper> classCustomizer);
 		void AddCustomizer(System.Type type, Action<ISubclassAttributesMapper> classCustomizer);
 		void AddCustomizer(System.Type type, Action<IJoinedSubclassAttributesMapper> classCustomizer);
 		void AddCustomizer(System.Type type, Action<IUnionSubclassAttributesMapper> classCustomizer);
 		void AddCustomizer(System.Type type, Action<IComponentAttributesMapper> classCustomizer);
+		void AddCustomizer(System.Type type, Action<IJoinAttributesMapper> classCustomizer);
 
 		void AddCustomizer(PropertyPath member, Action<IPropertyMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IManyToOneMapper> propertyCustomizer);
@@ -22,11 +23,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void AddCustomizer(PropertyPath member, Action<ICollectionPropertiesMapper> propertyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IComponentAttributesMapper> propertyCustomizer);
 
-		void InvokeCustomizers(System.Type type, IClassAttributesMapper mapper);
+		void InvokeCustomizers(System.Type type, IClassMapper mapper);
 		void InvokeCustomizers(System.Type type, ISubclassAttributesMapper mapper);
 		void InvokeCustomizers(System.Type type, IJoinedSubclassAttributesMapper mapper);
 		void InvokeCustomizers(System.Type type, IUnionSubclassAttributesMapper mapper);
 		void InvokeCustomizers(System.Type type, IComponentAttributesMapper mapper);
+		void InvokeCustomizers(System.Type type, IJoinAttributesMapper mapper);
 
 		void InvokeCustomizers(PropertyPath member, IPropertyMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IManyToOneMapper mapper);
