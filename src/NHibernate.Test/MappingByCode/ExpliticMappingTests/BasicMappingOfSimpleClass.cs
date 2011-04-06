@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				});
 				ca.Property(x => x.Something, map => map.Length(150));
 			});
-			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			var hbmMapping = mapper.CompileMappingForAllExplicitAddedEntities();
 			ModelIsWellFormed(hbmMapping);
 		}
 

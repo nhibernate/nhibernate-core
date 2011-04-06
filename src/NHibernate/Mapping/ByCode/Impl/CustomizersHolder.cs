@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -181,6 +182,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddCustomizer(PropertyPath member, Action<IMapKeyMapper> mapKeyElementCustomizer)
 		{
 			AddCustomizer(mapKeyElementCustomizers, member, mapKeyElementCustomizer);
+		}
+
+		public IEnumerable<System.Type> GetAllCustomizedEntities()
+		{
+			return rootClassCustomizers.Keys.Concat(subclassCustomizers.Keys).Concat(joinedClassCustomizers.Keys).Concat(unionClassCustomizers.Keys);
 		}
 
 		public void InvokeCustomizers(System.Type type, IClassMapper mapper)

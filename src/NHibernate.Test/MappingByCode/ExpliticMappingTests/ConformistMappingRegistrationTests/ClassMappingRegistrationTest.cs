@@ -58,6 +58,16 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			ModelIsWellFormed(hbmMapping);
 		}
 
+		[Test]
+		public void WhenRegisterClassMappingThroughTypeThenGetMapping()
+		{
+			var mapper = new ModelMapper();
+			mapper.AddMapping(typeof(MyClassMap));
+			var hbmMapping = mapper.CompileMappingForAllExplicitAddedEntities();
+
+			ModelIsWellFormed(hbmMapping);
+		}
+
 		private void ModelIsWellFormed(HbmMapping hbmMapping)
 		{
 			var hbmClass = hbmMapping.RootClasses[0];

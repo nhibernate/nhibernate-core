@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -72,5 +73,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void AddCustomizer(PropertyPath member, Action<IMapKeyMapper> mapKeyElementCustomizer);
 
 		#endregion
+
+		IEnumerable<System.Type> GetAllCustomizedEntities();
 	}
 }

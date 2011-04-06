@@ -1650,5 +1650,15 @@ namespace NHibernate.Mapping.ByCode
 				AddMapping(type);
 			}
 		}
+
+		public HbmMapping CompileMappingForAllExplicitAddedEntities()
+		{
+			return CompileMappingFor(customizerHolder.GetAllCustomizedEntities());
+		}
+
+		public IEnumerable<HbmMapping> CompileMappingForEachExplicitAddedEntity()
+		{
+			return CompileMappingForEach(customizerHolder.GetAllCustomizedEntities());
+		}
 	}
 }
