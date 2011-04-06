@@ -31,6 +31,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly Dictionary<System.Type, Action<System.Type>> delayedEntityRegistrations = new Dictionary<System.Type, Action<System.Type>>();
 		private readonly Dictionary<System.Type, HashSet<string>> typeSplitGroups = new Dictionary<System.Type, HashSet<string>>();
 		private readonly Dictionary<MemberInfo, string> memberSplitGroup = new Dictionary<MemberInfo, string>();
+		private readonly HashSet<SplitDefinition> splitDefinitions = new HashSet<SplitDefinition>();
 
 		#region IModelExplicitDeclarationsHolder Members
 
@@ -132,6 +133,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<SplitDefinition> SplitDefinitions
+		{
+			get { return splitDefinitions; }
 		}
 
 		public IEnumerable<string> GetSplitGroupsFor(System.Type type)
@@ -378,6 +384,8 @@ namespace NHibernate.Mapping.ByCode
 				AddTypeSplits(propertyContainer, splitGroupId);
 				memberSplitGroup[memberKey] = splitGroupId;
 			}
+
+			splitDefinitions.Add(new SplitDefinition(propertyContainer, splitGroup, member));
 		}
 
 		private void AddTypeSplits(System.Type propertyContainer, string splitGroupId)

@@ -28,6 +28,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly IEnumerable<System.Type> tablePerClassHierarchyJoinEntities = Enumerable.Empty<System.Type>();
 		private readonly IEnumerable<System.Type> tablePerConcreteClassEntities = Enumerable.Empty<System.Type>();
 		private readonly IEnumerable<MemberInfo> versionProperties = Enumerable.Empty<MemberInfo>();
+		private readonly IEnumerable<SplitDefinition> splitDefinitions = Enumerable.Empty<SplitDefinition>();
 
 		#region IModelExplicitDeclarationsHolder Members
 
@@ -134,6 +135,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<SplitDefinition> SplitDefinitions
+		{
+			get { return splitDefinitions; }
 		}
 
 		public IEnumerable<string> GetSplitGroupsFor(System.Type type)

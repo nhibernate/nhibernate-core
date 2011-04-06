@@ -413,6 +413,7 @@
     <Compile Include="Mapping\ByCode\IUnionSubclassMapper.cs" />
     <Compile Include="Mapping\ByCode\IVersionMapper.cs" />
     <Compile Include="Mapping\ByCode\Lazy.cs" />
+    <Compile Include="Mapping\ByCode\ModelExplicitDeclarationsHolderExtensions.cs" />
     <Compile Include="Mapping\ByCode\ModelMapper.cs" />
     <Compile Include="Mapping\ByCode\MappingsExtensions.cs" />
     <Compile Include="Mapping\ByCode\NotFoundMode.cs" />

@@ -3,6 +3,20 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
+	public class SplitDefinition
+	{
+		public SplitDefinition(System.Type @on, string groupId, MemberInfo member)
+		{
+			On = on;
+			GroupId = groupId;
+			Member = member;
+		}
+
+		public System.Type On { get; private set; }
+		public string GroupId { get; private set; }
+		public MemberInfo Member { get; private set; }
+	}
+
 	public interface IModelExplicitDeclarationsHolder
 	{
 		IEnumerable<System.Type> RootEntities { get; }
@@ -28,6 +42,8 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<MemberInfo> Arrays { get; }
 		IEnumerable<MemberInfo> Dictionaries { get; }
 		IEnumerable<MemberInfo> Properties { get; }
+		IEnumerable<SplitDefinition> SplitDefinitions { get; }
+
 		IEnumerable<string> GetSplitGroupsFor(System.Type type);
 		string GetSplitGroupFor(MemberInfo member);
 

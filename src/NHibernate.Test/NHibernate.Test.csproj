@@ -535,6 +535,7 @@
     <Compile Include="MappingByCode\MappersTests\IdBagMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\JoinMapperTests.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperWithJoinPropertiesTest.cs" />
+    <Compile Include="MappingByCode\ModelExplicitDeclarationsHolderMergeTest.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Address.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Animal.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Classification.cs" />
