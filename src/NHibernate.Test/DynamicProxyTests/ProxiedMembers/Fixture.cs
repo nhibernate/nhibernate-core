@@ -1,50 +1,38 @@
-using System;
-using System.Collections;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {
-	[TestFixture]
-	public class Fixture : TestCase
+	public class ClassWithVarietyOfMembers
 	{
-		protected override IList Mappings
+		public virtual void Method1(out int x)
 		{
-			get { return new[] { "DynamicProxyTests.ProxiedMembers.Mapping.hbm.xml" }; }
+			x = 3;
 		}
 
-		protected override string MappingsAssembly
+		public virtual void Method2(ref int x)
 		{
-			get { return "NHibernate.Test"; }
+			x++;
 		}
+	}
 
+	public class Fixture
+	{
 		[Test]
-        [Ignore]
+		[Ignore]
 		public void Proxy()
 		{
-			ISession s = OpenSession();
-			ClassWithVarietyOfMembers c = new ClassWithVarietyOfMembers {Id = 1, Data = "some data"};
-			s.Save(c);
-			s.Flush();
-			s.Close();
+			var factory = new ProxyFactory();
+			var c = (ClassWithVarietyOfMembers)factory.CreateProxy(typeof(ClassWithVarietyOfMembers), new PassThroughInterceptor(new ClassWithVarietyOfMembers()), null);
 
-			s = OpenSession();
-            c = (ClassWithVarietyOfMembers)s.Load(typeof(ClassWithVarietyOfMembers), c.Id);
-			Assert.IsFalse(NHibernateUtil.IsInitialized(c));
+			int x;
+			c.Method1(out x);
+			x.Should().Be(3);
 
-		    int x;
-		    c.Method1(out x);
-		    Assert.AreEqual(3, x);
-
-            x = 4;
-            c.Method2(ref x);
-            Assert.AreEqual(5, x);
-
-			s.Delete(c);
-			s.Flush();
-			s.Close();
+			x = 4;
+			c.Method2(ref x);
+			x.Should().Be(5);
 		}
 	}
 }
