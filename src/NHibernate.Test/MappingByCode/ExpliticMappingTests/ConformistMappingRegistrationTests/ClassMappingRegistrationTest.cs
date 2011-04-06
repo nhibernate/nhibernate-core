@@ -35,19 +35,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			mapper.AddMapping<MyClassMap>();
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
-			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
-			var hbmId = hbmClass.Id;
-			hbmId.Should().Not.Be.Null();
-			hbmId.name.Should().Be("Id");
-			var hbmGenerator = hbmId.generator;
-			hbmGenerator.Should().Not.Be.Null();
-			hbmGenerator.@class.Should().Be("hilo");
-			hbmGenerator.param[0].name.Should().Be("max_low");
-			hbmGenerator.param[0].GetText().Should().Be("100");
-			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.name.Should().Be("Something");
-			hbmProperty.length.Should().Be("150");
+			ModelIsWellFormed(hbmMapping);
 		}
 
 		[Test]
@@ -57,6 +45,21 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			mapper.AddMapping(typeof(MyClassMap));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
+			ModelIsWellFormed(hbmMapping);
+		}
+
+		[Test]
+		public void WhenRegisterClassMappingThroughCollectionOfTypeThenMapTheClass()
+		{
+			var mapper = new ModelMapper();
+			mapper.AddMappings(new []{typeof(MyClassMap)});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+
+			ModelIsWellFormed(hbmMapping);
+		}
+
+		private void ModelIsWellFormed(HbmMapping hbmMapping)
+		{
 			var hbmClass = hbmMapping.RootClasses[0];
 			hbmClass.Should().Not.Be.Null();
 			var hbmId = hbmClass.Id;

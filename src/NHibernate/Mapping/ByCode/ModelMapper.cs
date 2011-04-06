@@ -1638,5 +1638,17 @@ namespace NHibernate.Mapping.ByCode
 			thisCustomizerHolder.Merge(otherCustomizerHolder);
 			explicitDeclarationsHolder.Merge(mapping.ExplicitDeclarationsHolder);
 		}
+
+		public void AddMappings(IEnumerable<System.Type> types)
+		{
+			if (types == null)
+			{
+				throw new ArgumentNullException("types");
+			}
+			foreach (var type in types)
+			{
+				AddMapping(type);
+			}
+		}
 	}
 }
