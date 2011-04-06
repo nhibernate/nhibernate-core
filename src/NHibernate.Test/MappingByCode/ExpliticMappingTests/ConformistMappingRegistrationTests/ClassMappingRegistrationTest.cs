@@ -49,5 +49,27 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			hbmProperty.name.Should().Be("Something");
 			hbmProperty.length.Should().Be("150");
 		}
+
+		[Test]
+		public void WhenRegisterClassMappingThroughTypeThenMapTheClass()
+		{
+			var mapper = new ModelMapper();
+			mapper.AddMapping(typeof(MyClassMap));
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+
+			var hbmClass = hbmMapping.RootClasses[0];
+			hbmClass.Should().Not.Be.Null();
+			var hbmId = hbmClass.Id;
+			hbmId.Should().Not.Be.Null();
+			hbmId.name.Should().Be("Id");
+			var hbmGenerator = hbmId.generator;
+			hbmGenerator.Should().Not.Be.Null();
+			hbmGenerator.@class.Should().Be("hilo");
+			hbmGenerator.param[0].name.Should().Be("max_low");
+			hbmGenerator.param[0].GetText().Should().Be("100");
+			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
+			hbmProperty.name.Should().Be("Something");
+			hbmProperty.length.Should().Be("150");
+		}
 	}
 }

@@ -1607,5 +1607,36 @@ namespace NHibernate.Mapping.ByCode
 			thisCustomizerHolder.Merge(otherCustomizerHolder);
 			explicitDeclarationsHolder.Merge(mapping.ExplicitDeclarationsHolder);
 		}
+
+		public void AddMapping(System.Type type)
+		{
+			object mappingInstance;
+			try
+			{
+				mappingInstance = Activator.CreateInstance(type);
+			}
+			catch (Exception e)
+			{
+				throw new MappingException("Unable to instantiate mapping class (see InnerException): " + type, e);
+			}
+
+			var mapping = mappingInstance as IConformistHoldersProvider;
+			if(mapping == null)
+			{
+				throw new ArgumentOutOfRangeException("type", "The mapping class must be an implementation of IConformistHoldersProvider.");
+			}
+			var thisCustomizerHolder = customizerHolder as CustomizersHolder;
+			if (thisCustomizerHolder == null)
+			{
+				throw new NotSupportedException("To merge 'conformist' mappings, the instance of ICustomizersHolder, provided in the ModelMapper constructor, have to be a CustomizersHolder instance.");
+			}
+			var otherCustomizerHolder = mapping.CustomizersHolder as CustomizersHolder;
+			if (otherCustomizerHolder == null)
+			{
+				throw new NotSupportedException("The mapping class have to provide a CustomizersHolder instance.");
+			}
+			thisCustomizerHolder.Merge(otherCustomizerHolder);
+			explicitDeclarationsHolder.Merge(mapping.ExplicitDeclarationsHolder);
+		}
 	}
 }
