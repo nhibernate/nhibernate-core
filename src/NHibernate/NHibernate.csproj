@@ -280,6 +280,11 @@
     <Compile Include="Mapping\ByCode\CascadeExtensions.cs" />
     <Compile Include="Mapping\ByCode\CollectionFetchMode.cs" />
     <Compile Include="Mapping\ByCode\CollectionLazy.cs" />
+    <Compile Include="Mapping\ByCode\Conformist\ClassMapping.cs" />
+    <Compile Include="Mapping\ByCode\Conformist\ComponentMapping.cs" />
+    <Compile Include="Mapping\ByCode\Conformist\JoinedSubclassMapping.cs" />
+    <Compile Include="Mapping\ByCode\Conformist\SubclassMapping.cs" />
+    <Compile Include="Mapping\ByCode\Conformist\UnionSubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\ExplicitlyDeclaredModel.cs" />
     <Compile Include="Mapping\ByCode\FakeModelExplicitDeclarationsHolder.cs" />
     <Compile Include="Mapping\ByCode\FetchKind.cs" />
@@ -299,6 +304,7 @@
     <Compile Include="Mapping\ByCode\IComponentMapKeyMapper.cs" />
     <Compile Include="Mapping\ByCode\IComponentMapper.cs" />
     <Compile Include="Mapping\ByCode\IComponentParentMapper.cs" />
+    <Compile Include="Mapping\ByCode\IConformistHoldersProvider.cs" />
     <Compile Include="Mapping\ByCode\IDiscriminatorMapper.cs" />
     <Compile Include="Mapping\ByCode\IElementMapper.cs" />
     <Compile Include="Mapping\ByCode\IEntityAttributesMapper.cs" />
@@ -369,6 +375,7 @@
     <Compile Include="Mapping\ByCode\Impl\DefaultCandidatePersistentMembersProvider.cs" />
     <Compile Include="Mapping\ByCode\Impl\DiscriminatorMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ElementMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\ExplicitDeclarationsHolder.cs" />
     <Compile Include="Mapping\ByCode\Impl\FilterMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\GeneratorMapper.cs" />
     <Compile Include="Mapping\ByCode\Generators.cs" />

@@ -20,9 +20,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			PropertyPath = propertyPath;
 		}
 
-		protected ICustomizersHolder CustomizersHolder { get; private set; }
-		protected PropertyPath PropertyPath { get; private set; }
-		protected IModelExplicitDeclarationsHolder ExplicitDeclarationsHolder
+		protected internal ICustomizersHolder CustomizersHolder { get; private set; }
+		protected internal PropertyPath PropertyPath { get; private set; }
+
+		protected internal IModelExplicitDeclarationsHolder ExplicitDeclarationsHolder
 		{
 			get { return explicitDeclarationsHolder; }
 		}

@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity> where TEntity : class
+	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
 	{
 		private Dictionary<string, IJoinMapper<TEntity>> joinCustomizers;
 
@@ -201,5 +201,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#endregion
+
+		ICustomizersHolder IConformistHoldersProvider.CustomizersHolder
+		{
+			get { return CustomizersHolder; }
+		}
+
+		IModelExplicitDeclarationsHolder IConformistHoldersProvider.ExplicitDeclarationsHolder
+		{
+			get { return ExplicitDeclarationsHolder; }
+		}
 	}
 }
