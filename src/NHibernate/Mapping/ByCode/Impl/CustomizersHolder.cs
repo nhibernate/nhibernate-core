@@ -293,7 +293,47 @@ namespace NHibernate.Mapping.ByCode.Impl
 			InvokeCustomizers(mapKeyElementCustomizers, member, mapper);
 		}
 
+		public void Merge(CustomizersHolder source)
+		{
+			MergeDictionary(rootClassCustomizers, source.rootClassCustomizers);
+			MergeDictionary(subclassCustomizers, source.subclassCustomizers);
+			MergeDictionary(joinedClassCustomizers, source.joinedClassCustomizers);
+			MergeDictionary(unionClassCustomizers, source.unionClassCustomizers);
+			MergeDictionary(componentClassCustomizers, source.componentClassCustomizers);
+			MergeDictionary(joinCustomizers, source.joinCustomizers);
+			MergeDictionary(propertyCustomizers, source.propertyCustomizers);
+			MergeDictionary(manyToOneCustomizers, source.manyToOneCustomizers);
+			MergeDictionary(oneToOneCustomizers, source.oneToOneCustomizers);
+			MergeDictionary(anyCustomizers, source.anyCustomizers);
+			MergeDictionary(setCustomizers, source.setCustomizers);
+			MergeDictionary(bagCustomizers, source.bagCustomizers);
+			MergeDictionary(listCustomizers, source.listCustomizers);
+			MergeDictionary(mapCustomizers, source.mapCustomizers);
+			MergeDictionary(idBagCustomizers, source.idBagCustomizers);
+			MergeDictionary(collectionCustomizers, source.collectionCustomizers);
+			MergeDictionary(componentPropertyCustomizers, source.componentPropertyCustomizers);
+			MergeDictionary(collectionRelationManyToManyCustomizers, source.collectionRelationManyToManyCustomizers);
+			MergeDictionary(collectionRelationElementCustomizers, source.collectionRelationElementCustomizers);
+			MergeDictionary(collectionRelationOneToManyCustomizers, source.collectionRelationOneToManyCustomizers);
+			MergeDictionary(mapKeyManyToManyCustomizers, source.mapKeyManyToManyCustomizers);
+			MergeDictionary(mapKeyElementCustomizers, source.mapKeyElementCustomizers);
+		}
+
 		#endregion
+
+		private void MergeDictionary<TSubject, TCustomizable>(Dictionary<TSubject, List<Action<TCustomizable>>> destination,Dictionary<TSubject, List<Action<TCustomizable>>> source)
+		{
+			foreach (var element in source)
+			{
+				List<Action<TCustomizable>> actions;
+				if (!destination.TryGetValue(element.Key, out actions))
+				{
+					actions = new List<Action<TCustomizable>>();
+					destination[element.Key] = actions;
+				}
+				actions.AddRange(element.Value);
+			}
+		}
 
 		private void AddCustomizer<TSubject, TCustomizable>(IDictionary<TSubject, List<Action<TCustomizable>>> customizers,
 		                                                    TSubject member, Action<TCustomizable> customizer)
