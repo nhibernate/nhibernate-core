@@ -1590,5 +1590,22 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		#endregion
+
+		public void AddMapping<T>() where T: IConformistHoldersProvider, new()
+		{
+			var mapping = new T();
+			var thisCustomizerHolder = customizerHolder as CustomizersHolder;
+			if (thisCustomizerHolder == null)
+			{
+				throw new NotSupportedException("To merge 'conformist' mappings, the instance of ICustomizersHolder, provided in the ModelMapper constructor, have to be a CustomizersHolder instance.");
+			}
+			var otherCustomizerHolder = mapping.CustomizersHolder as CustomizersHolder;
+			if(otherCustomizerHolder == null)
+			{
+				throw new NotSupportedException("The mapping class have to provide a CustomizersHolder instance.");
+			}
+			thisCustomizerHolder.Merge(otherCustomizerHolder);
+			explicitDeclarationsHolder.Merge(mapping.ExplicitDeclarationsHolder);
+		}
 	}
 }
