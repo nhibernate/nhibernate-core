@@ -15,6 +15,13 @@ namespace NHibernate.Test.MappingByCode
 		private PropertyPath propertyPath = new PropertyPath(null, typeof(MyClass).GetProperty("Bar"));
 
 		[Test]
+		public void WhenMergeWithNullThenNotThrow()
+		{
+			var emptyHolder = new CustomizersHolder();
+			emptyHolder.Executing(x=> x.Merge(null)).NotThrows();
+		}
+
+		[Test]
 		public void MergeShouldMergeAnyMapper()
 		{
 			var emptyHolder = new CustomizersHolder();

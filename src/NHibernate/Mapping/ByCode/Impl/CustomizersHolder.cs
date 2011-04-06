@@ -295,6 +295,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Merge(CustomizersHolder source)
 		{
+			if (source == null)
+			{
+				return;
+			}
 			MergeDictionary(rootClassCustomizers, source.rootClassCustomizers);
 			MergeDictionary(subclassCustomizers, source.subclassCustomizers);
 			MergeDictionary(joinedClassCustomizers, source.joinedClassCustomizers);
