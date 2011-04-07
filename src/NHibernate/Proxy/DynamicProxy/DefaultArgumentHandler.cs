@@ -6,7 +6,6 @@
 
 #endregion
 
-using System;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -37,7 +36,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			int argumentPosition = 1;
 			foreach (ParameterInfo param in parameters)
 			{
-				System.Type parameterType = param.ParameterType;
+				System.Type parameterType = param.ParameterType.IsByRef ? param.ParameterType.GetElementType() : param.ParameterType;
 				// args[N] = argumentN (pseudocode)
 				IL.Emit(OpCodes.Ldloc_S, 0);
 				IL.Emit(OpCodes.Ldc_I4, index);
@@ -54,9 +53,17 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				IL.Emit(OpCodes.Ldarg, argumentPosition);
 
-				bool isGeneric = parameterType.IsGenericParameter;
+				if (param.ParameterType.IsByRef)
+				{
+					OpCode ldindInstruction;
+					if(!OpCodesMap.TryGetLdindOpCode(param.ParameterType.GetElementType(), out ldindInstruction))
+					{
+						ldindInstruction = OpCodes.Ldind_Ref;
+					}
+					IL.Emit(ldindInstruction);
+				}
 
-				if (parameterType.IsValueType || isGeneric)
+				if (parameterType.IsValueType || param.ParameterType.IsByRef || parameterType.IsGenericParameter)
 				{
 					IL.Emit(OpCodes.Box, parameterType);
 				}

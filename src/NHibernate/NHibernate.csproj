@@ -499,6 +499,7 @@
     <Compile Include="Proxy\DynamicProxy\IProxy.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyCache.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyMethodBuilder.cs" />
+    <Compile Include="Proxy\DynamicProxy\OpCodesMap.cs" />
     <Compile Include="Proxy\DynamicProxy\ProxyCache.cs" />
     <Compile Include="Proxy\DynamicProxy\ProxyCacheEntry.cs" />
     <Compile Include="Proxy\DynamicProxy\ProxyDummy.cs" />

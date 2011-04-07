@@ -30,7 +30,6 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static readonly ConstructorInfo notImplementedConstructor = typeof(NotImplementedException).GetConstructor(new System.Type[0]);
 
-		private static readonly Dictionary<string, OpCode> stindMap = new Dictionary<string, OpCode>();
 		private readonly IArgumentHandler _argumentHandler;
 
 		static DefaultMethodEmitter()
@@ -43,23 +42,6 @@ namespace NHibernate.Proxy.DynamicProxy
 			                       };
 
 			infoConstructor = typeof (InvocationInfo).GetConstructor(constructorTypes);
-
-
-			stindMap["Bool&"] = OpCodes.Stind_I1;
-			stindMap["Int8&"] = OpCodes.Stind_I1;
-			stindMap["Uint8&"] = OpCodes.Stind_I1;
-
-			stindMap["Int16&"] = OpCodes.Stind_I2;
-			stindMap["Uint16&"] = OpCodes.Stind_I2;
-
-			stindMap["Uint32&"] = OpCodes.Stind_I4;
-			stindMap["Int32&"] = OpCodes.Stind_I4;
-
-			stindMap["IntPtr"] = OpCodes.Stind_I4;
-			stindMap["Uint64&"] = OpCodes.Stind_I8;
-			stindMap["Int64&"] = OpCodes.Stind_I8;
-			stindMap["Float32&"] = OpCodes.Stind_R4;
-			stindMap["Float64&"] = OpCodes.Stind_R8;
 		}
 
 		public DefaultMethodEmitter() : this(new DefaultArgumentHandler()) {}
@@ -124,8 +106,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ldloc_1);
 			IL.Emit(OpCodes.Callvirt, handlerMethod);
 
-			SaveRefArguments(IL, parameters);
 			PackageReturnType(method, IL);
+			SaveRefArguments(IL, parameters);
 
 			IL.Emit(OpCodes.Ret);
 		}
@@ -158,8 +140,7 @@ namespace NHibernate.Proxy.DynamicProxy
 				IL.Emit(OpCodes.Ldc_I4, param.Position);
 				IL.Emit(OpCodes.Ldelem_Ref);
 
-				typeName = typeName.Replace("&", "");
-				System.Type unboxedType = System.Type.GetType(typeName);
+				System.Type unboxedType = param.ParameterType.GetElementType();
 
 				IL.Emit(OpCodes.Unbox_Any, unboxedType);
 
@@ -170,23 +151,16 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static OpCode GetStindInstruction(System.Type parameterType)
 		{
-			if (parameterType.IsClass && !parameterType.Name.EndsWith("&"))
+			if (parameterType.IsByRef)
 			{
-				return OpCodes.Stind_Ref;
+				OpCode stindOpCode;
+				if(OpCodesMap.TryGetStindOpCode(parameterType.GetElementType(), out stindOpCode))
+				{
+					return stindOpCode;
+				}
 			}
 
-
-			string typeName = parameterType.Name;
-
-			if (!stindMap.ContainsKey(typeName) && parameterType.IsByRef)
-			{
-				return OpCodes.Stind_Ref;
-			}
-
-			Debug.Assert(stindMap.ContainsKey(typeName));
-			OpCode result = stindMap[typeName];
-
-			return result;
+			return OpCodes.Stind_Ref;
 		}
 
 		private void PushStackTrace(ILGenerator IL)

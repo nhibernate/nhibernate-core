@@ -20,7 +20,6 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 	public class Fixture
 	{
 		[Test]
-		[Ignore]
 		public void Proxy()
 		{
 			var factory = new ProxyFactory();
@@ -28,11 +27,11 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 
 			int x;
 			c.Method1(out x);
-			x.Should().Be(3);
+			Assert.AreEqual(3, x);
 
 			x = 4;
 			c.Method2(ref x);
-			x.Should().Be(5);
+			Assert.AreEqual(5, x);
 		}
 	}
 }
