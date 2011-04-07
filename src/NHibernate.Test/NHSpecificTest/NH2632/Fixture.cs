@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 			}
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void GettingCustomerDoesNotThrow()
 		{
 			using (var scenario = new Scenario(Sfi))
@@ -95,7 +95,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 				{
 					Customer customer = null;
 					Executing.This(()=> customer = session.Get<Customer>(scenario.CustomerId)).Should().NotThrow();
-					NHibernateUtil.IsInitialized(customer.Address).Should().Be.False();
+					// An entity defined with lazy=false can't have lazy properties (as reported by the WARNING; see EntityMetamodel class)
+					NHibernateUtil.IsInitialized(customer.Address).Should().Be.True();
+					customer.Address.Should().Be("Bah?!??");
 				}
 			}
 		}

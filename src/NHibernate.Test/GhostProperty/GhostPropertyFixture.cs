@@ -69,7 +69,7 @@ namespace NHibernate.Test.GhostProperty
 		[Test]
 		public void ShouldGenerateErrorForNonAutoPropGhostProp()
 		{
-			Assert.IsTrue(log.Contains("Lazy or ghost property NHibernate.Test.GhostProperty.Order.Payment is not an auto property, which may result in uninitialized property access"));
+			Assert.IsTrue(log.Contains("NHibernate.Test.GhostProperty.Order.Payment is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]

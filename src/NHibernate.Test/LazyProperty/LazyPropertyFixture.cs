@@ -76,7 +76,7 @@ namespace NHibernate.Test.LazyProperty
 		[Test]
 		public void ShouldGenerateErrorForNonAutoPropLazyProp()
 		{
-			Assert.IsTrue(log.Contains("Lazy or ghost property NHibernate.Test.LazyProperty.Book.ALotOfText is not an auto property, which may result in uninitialized property access"));
+			Assert.IsTrue(log.Contains("NHibernate.Test.LazyProperty.Book.ALotOfText is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]

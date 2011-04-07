@@ -332,7 +332,8 @@ namespace NHibernate.Persister.Entity
 
 			#region PROPERTIES
 
-			bool lazyAvailable = IsInstrumented(EntityMode.Poco);
+			// NH: see consistence with the implementation on EntityMetamodel where we are disabling lazy-properties for no lazy entities
+			bool lazyAvailable = IsInstrumented(EntityMode.Poco) && entityMetamodel.IsLazy;
 
 			int hydrateSpan = entityMetamodel.PropertySpan;
 			propertyColumnSpans = new int[hydrateSpan];

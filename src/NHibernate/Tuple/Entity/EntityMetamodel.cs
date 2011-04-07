@@ -8,6 +8,7 @@ using NHibernate.Intercept;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -126,19 +127,47 @@ namespace NHibernate.Tuple.Entity
 			bool foundUpdateGeneratedValue = false;
 			bool foundNonIdentifierPropertyNamedId = false;
 			HasPocoRepresentation = persistentClass.HasPocoRepresentation;
+			
+			// NH: WARNING if we have to disable lazy/unproxy properties we have to do it in the whole process.
+			lazy = persistentClass.IsLazy && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
+			lazyAvailable &= lazy; // <== Disable lazy properties if the class is marked with lazy=false
+
+			bool hadLazyProperties = false;
+			bool hadNoProxyRelations = false;
 			foreach (Mapping.Property prop in persistentClass.PropertyClosureIterator)
 			{
-				// NH: A lazy property is a simple property marked with lazy=true or a relation (in this case many-to-one or one-to-one marked as "no-proxy")
-				bool lazyProperty = prop.IsLazy && lazyAvailable && (!prop.IsEntityRelation || prop.UnwrapProxy);
+				if (prop.IsLazy)
+				{
+					hadLazyProperties = true;
+				}
+				if(prop.UnwrapProxy)
+				{
+					hadNoProxyRelations = true;
+				}
+
+				// NH: A lazy property is a simple property marked with lazy=true
+				bool islazyProperty = prop.IsLazy && lazyAvailable && (!prop.IsEntityRelation || prop.UnwrapProxy);
+				// NH: A Relation (in this case many-to-one or one-to-one) marked as "no-proxy"
+				var isUnwrapProxy = prop.UnwrapProxy && lazyAvailable;
+
+				if (islazyProperty || isUnwrapProxy)
+				{
+					// NH: verify property proxiability
+					var getter = prop.GetGetter(persistentClass.MappedClass);
+					if (getter.Method == null || getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
+					{
+						log.ErrorFormat("Lazy or no-proxy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);
+					}
+				}
 
 				if (prop == persistentClass.Version)
 				{
 					tempVersionProperty = i;
-					properties[i] = PropertyFactory.BuildVersionProperty(prop, lazyProperty);
+					properties[i] = PropertyFactory.BuildVersionProperty(prop, islazyProperty);
 				}
 				else
 				{
-					properties[i] = PropertyFactory.BuildStandardProperty(prop, lazyProperty);
+					properties[i] = PropertyFactory.BuildStandardProperty(prop, islazyProperty);
 				}
 
 				if (prop.IsNaturalIdentifier)
@@ -151,16 +180,16 @@ namespace NHibernate.Tuple.Entity
 					foundNonIdentifierPropertyNamedId = true;
 				}
 
-				if (lazyProperty)
+				if (islazyProperty)
 				{
 					hasLazy = true;
 				}
-				if (prop.UnwrapProxy)
+				if (isUnwrapProxy)
 				{
 					hasUnwrapProxyForProperties = true;
 				}
 
-				propertyLaziness[i] = lazyProperty;
+				propertyLaziness[i] = islazyProperty;
 
 				propertyNames[i] = properties[i].Name;
 				propertyTypes[i] = properties[i].Type;
@@ -170,7 +199,7 @@ namespace NHibernate.Tuple.Entity
 				insertInclusions[i] = DetermineInsertValueGenerationType(prop, properties[i]);
 				updateInclusions[i] = DetermineUpdateValueGenerationType(prop, properties[i]);
 				propertyVersionability[i] = properties[i].IsVersionable;
-				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !lazyProperty;
+				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !islazyProperty;
 				propertyCheckability[i] = propertyUpdateability[i]
 				                          ||
 				                          (propertyTypes[i].IsAssociationType
@@ -224,35 +253,23 @@ namespace NHibernate.Tuple.Entity
 
 			versionPropertyIndex = tempVersionProperty;
 			hasLazyProperties = hasLazy;
-			lazy = persistentClass.IsLazy
-			       && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
 
+			if(hadLazyProperties && !hasLazy)
+			{
+				log.WarnFormat("Disabled lazy properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+			}
 			if (hasLazy)
 			{
-				if (lazy == false)
-				{
-					log.WarnFormat("Disabled lazy properies fetching for {0} beacuse it does not support lazy at the entity level", name);
-					hasLazyProperties = false;
-				}
-				else
-				{
-					log.Info("lazy property fetching available for: " + name);
-					VerifyCanInterceptPropertiesForLazyOrGhostProperties(persistentClass);
-				}
+				log.Info("lazy property fetching available for: " + name);
 			}
-			if(hasUnwrapProxyForProperties)
+
+			if(hadNoProxyRelations && !hasUnwrapProxyForProperties)
 			{
-				if (lazy == false)
-				{
-					log.WarnFormat("Disabled ghost properies fetching for {0} beacuse it does not support lazy at the entity level", name);
-					hasUnwrapProxyForProperties = false;
-				}
-				else
-				{
-					log.Info("Ghost property fetching available for: " + name);
-					if (hasLazy == false) // avoid double checking
-						VerifyCanInterceptPropertiesForLazyOrGhostProperties(persistentClass);
-				}
+				log.WarnFormat("Disabled ghost properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+			}
+			if (hasUnwrapProxyForProperties)
+			{
+				log.Info("no-proxy property fetching available for: " + name);
 			}
 
 			mutable = persistentClass.IsMutable;
@@ -302,23 +319,6 @@ namespace NHibernate.Tuple.Entity
 		}
 
 		public bool HasPocoRepresentation { get; private set; }
-
-		private static void VerifyCanInterceptPropertiesForLazyOrGhostProperties(PersistentClass persistentClass)
-		{
-			foreach (var prop in persistentClass.PropertyClosureIterator)
-			{
-				if (prop.IsLazy == false &&
-					prop.UnwrapProxy == false)
-					continue;
-
-				var getter = prop.GetGetter(persistentClass.MappedClass);
-				if(getter.Method == null || 
-					getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
-				{
-					log.ErrorFormat("Lazy or ghost property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);	
-				}
-			}
-		}
 
 		private ValueInclusion DetermineInsertValueGenerationType(Mapping.Property mappingProperty, StandardProperty runtimeProperty)
 		{
