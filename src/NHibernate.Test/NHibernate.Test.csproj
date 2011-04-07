@@ -749,6 +749,7 @@
     <Compile Include="ReadOnly\VersionedNode.cs" />
     <Compile Include="Subselect\ClassSubselectFixture.cs" />
     <Compile Include="Subselect\Domain.cs" />
+    <Compile Include="TestCaseMappingByCode.cs" />
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />

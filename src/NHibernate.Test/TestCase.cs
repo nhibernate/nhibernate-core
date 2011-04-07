@@ -222,16 +222,21 @@ namespace NHibernate.Test
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-
-			foreach (string file in Mappings)
-			{
-				cfg.AddResource(MappingsAssembly + "." + file, assembly);
-			}
+			AddMappings(cfg);
 
 			Configure(cfg);
 
 			ApplyCacheSettings(cfg);
+		}
+
+		protected virtual void AddMappings(Configuration configuration)
+		{
+			Assembly assembly = Assembly.Load(MappingsAssembly);
+
+			foreach (string file in Mappings)
+			{
+				configuration.AddResource(MappingsAssembly + "." + file, assembly);
+			}
 		}
 
 		protected virtual void CreateSchema()
