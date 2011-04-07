@@ -719,6 +719,8 @@
     <Compile Include="NHSpecificTest\NH2580\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2603\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2603\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2632\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2632\Fixture.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
