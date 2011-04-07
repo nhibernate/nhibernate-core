@@ -109,23 +109,24 @@ namespace NHibernate.AdoNet.Util
 
 	    }
 
-	    public string GetParameterLogableValue(IDataParameter parameter)
-		{
-			if (parameter.Value == null || DBNull.Value.Equals(parameter.Value))
+			public string GetParameterLogableValue(IDataParameter parameter)
 			{
-				return "NULL";
+				const int maxLogableStringLength = 1000;
+				if (parameter.Value == null || DBNull.Value.Equals(parameter.Value))
+				{
+					return "NULL";
+				}
+				if (IsStringType(parameter.DbType))
+				{
+					return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLogableStringLength), "'");
+				}
+				var buffer = parameter.Value as byte[];
+				if (buffer != null)
+				{
+					return GetBufferAsHexString(buffer);
+				}
+				return parameter.Value.ToString();
 			}
-			if (IsStringType(parameter.DbType))
-			{
-				return string.Concat("'", parameter.Value.ToString(), "'");
-			}
-			var buffer = parameter.Value as byte[];
-			if (buffer != null)
-			{
-				return GetBufferAsHexString(buffer);
-			}
-			return parameter.Value.ToString();
-		}
 
 		private static string GetBufferAsHexString(byte[] buffer)
 		{
@@ -163,6 +164,16 @@ namespace NHibernate.AdoNet.Util
 			{
 				Console.Out.WriteLine("NHibernate: " + batchCommand);
 			}
+		}
+
+		private string TruncateWithEllipsis(string source, int length)
+		{
+			const string ellipsis = "...";
+			if (source.Length > length)
+			{
+				return source.Substring(0, length) + ellipsis;
+			}
+			return source;
 		}
 	}
 }
