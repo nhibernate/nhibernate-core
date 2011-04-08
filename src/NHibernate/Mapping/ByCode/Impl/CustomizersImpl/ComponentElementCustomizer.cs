@@ -19,20 +19,25 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			this.explicitDeclarationsHolder = explicitDeclarationsHolder;
 			this.propertyPath = propertyPath;
 			this.customizersHolder = customizersHolder;
+			explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
+			if (propertyPath != null)
+			{
+				explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
+			}
 		}
 
 		#region IComponentElementMapper<TComponent> Members
 
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent) where TProperty : class
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(parent);
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Parent(member));
+			Parent(parent, x => { });
 		}
 
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent, Action<IComponentParentMapper> parentMapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(parent);
 			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
+			explicitDeclarationsHolder.AddAsPersistentMember(member);
 		}
 
 		public void Update(bool consideredInUpdateQuery)
@@ -61,6 +66,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
+			explicitDeclarationsHolder.AddAsProperty(member);
+			explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
 
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property)
@@ -83,6 +90,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
+			explicitDeclarationsHolder.AddAsManyToOneRelation(member);
+			explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property) where TProperty : class

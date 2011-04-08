@@ -509,6 +509,7 @@
     <Compile Include="Linq\ByMethod\SumTests.cs" />
     <Compile Include="Logging\Log4NetLoggerTest.cs" />
     <Compile Include="Logging\LoggerProviderTest.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithComponentsTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ClassMappingRegistrationTest.cs" />
     <Compile Include="MappingByCode\CustomizerHolderMergeTest.cs" />
