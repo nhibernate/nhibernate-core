@@ -11,16 +11,16 @@ namespace NHibernate.Linq
 {
 	public class DefaultQueryProvider : IQueryProvider
 	{
-		private readonly ISessionImplementor _session;
-
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
-			_session = session;
+			Session = session;
 		}
+
+		protected virtual ISessionImplementor Session { get; private set; }
 
 		#region IQueryProvider Members
 
-		public object Execute(Expression expression)
+		public virtual object Execute(Expression expression)
 		{
 			IQuery query;
 			NhLinqExpression nhQuery;
@@ -48,7 +48,7 @@ namespace NHibernate.Linq
 
 		#endregion
 
-		public object ExecuteFuture(Expression expression)
+		public virtual object ExecuteFuture(Expression expression)
 		{
 			IQuery query;
 			NhLinqExpression nhQuery;
@@ -56,11 +56,11 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
-		private NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+		protected NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression);
 
-			query = _session.CreateQuery(nhLinqExpression);
+			query = Session.CreateQuery(nhLinqExpression);
 
 			nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
 
@@ -69,7 +69,7 @@ namespace NHibernate.Linq
 			return nhLinqExpression;
 		}
 
-		private object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+		protected virtual object ExecuteFutureQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			MethodInfo method;
 			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
@@ -92,7 +92,7 @@ namespace NHibernate.Linq
 			return result;
 		}
 
-		private object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
 		{
 			IList results = query.List();
 
