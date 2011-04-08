@@ -59,6 +59,16 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		}
 
 		[Test]
+		public void WhenRegisterClassMappingThroughCollectionOfTypeThenFilterValidMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Executing(x=> x.AddMappings(new[] { typeof(object), typeof(MyClassMap), typeof(MyClass) })).NotThrows();
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+
+			ModelIsWellFormed(hbmMapping);
+		}
+
+		[Test]
 		public void WhenRegisterClassMappingThroughTypeThenGetMapping()
 		{
 			var mapper = new ModelMapper();
