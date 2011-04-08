@@ -398,6 +398,7 @@
     <Compile Include="GenericTest\SetGeneric\SetGenericFixture.cs" />
     <Compile Include="GhostProperty\Order.cs" />
     <Compile Include="GhostProperty\GhostPropertyFixture.cs" />
+    <Compile Include="HbmMappingExtensions.cs" />
     <Compile Include="HQL\Animal.cs" />
     <Compile Include="HQL\Ast\Address.cs" />
     <Compile Include="HQL\Ast\Animal.cs" />
