@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq;

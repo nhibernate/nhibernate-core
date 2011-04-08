@@ -1,10 +1,11 @@
 using System;
+using NHibernate.Cfg.Loquacious;
 using NHibernate.Context;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
 
-namespace NHibernate.Cfg.Loquacious
+namespace NHibernate.Cfg
 {
 	public static class ConfigurationExtensions
 	{

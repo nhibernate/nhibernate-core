@@ -1,4 +1,5 @@
 ﻿using NHibernate.AdoNet;
+using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NUnit.Framework;
 

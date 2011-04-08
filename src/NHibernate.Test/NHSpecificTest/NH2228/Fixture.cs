@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
 using SharpTestsEx;

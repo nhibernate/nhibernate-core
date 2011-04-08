@@ -676,7 +676,7 @@
     <Compile Include="Cfg\FilterSecondPassArgs.cs" />
     <Compile Include="Cfg\Hbm2ddlKeyWords.cs" />
     <Compile Include="Cfg\Loquacious\CacheConfiguration.cs" />
-    <Compile Include="Cfg\Loquacious\ConfigurationExtensions.cs" />
+    <Compile Include="Cfg\ConfigurationExtensions.cs" />
     <Compile Include="Cfg\Loquacious\DbIntegrationConfiguration.cs" />
     <Compile Include="Cfg\Loquacious\EntityCacheConfigurationProperties.cs" />
     <Compile Include="Cfg\Loquacious\FluentSessionFactoryConfiguration.cs" />
