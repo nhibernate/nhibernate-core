@@ -933,7 +933,7 @@
     <Compile Include="Linq\Visitors\ExpressionParameterVisitor.cs" />
     <Compile Include="Linq\NhLinqExpression.cs" />
     <Compile Include="Linq\NhLinqExpressionReturnType.cs" />
-    <Compile Include="Linq\NhQueryProvider.cs" />
+    <Compile Include="Linq\DefaultQueryProvider.cs" />
     <Compile Include="Linq\Visitors\ExpressionKeyVisitor.cs" />
     <Compile Include="Linq\GroupBy\GroupByAggregateDetectionVisitor.cs" />
     <Compile Include="Linq\GroupBy\AggregatingGroupByRewriter.cs" />

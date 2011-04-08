@@ -53,7 +53,7 @@ namespace NHibernate.Linq
                 throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
 
 
-            var future = ((NhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+            var future = ((DefaultQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
             return (IEnumerable<T>)future;
         }
 
@@ -63,7 +63,7 @@ namespace NHibernate.Linq
             if (nhQueryable == null)
                 throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
 
-            var future = ((NhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+            var future = ((DefaultQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
             if(future is DelayedEnumerator<T>)
             {
                 return new FutureValue<T>(() => ((IEnumerable<T>) future));

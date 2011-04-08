@@ -12,7 +12,7 @@ namespace NHibernate.Linq
     {
         // This constructor is called by our users, create a new IQueryExecutor.
         public NhQueryable(ISessionImplementor session)
-            : base(new NhQueryProvider(session))
+            : base(new DefaultQueryProvider(session))
         {
         }
 

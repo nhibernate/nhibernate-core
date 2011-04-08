@@ -10,11 +10,11 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class NhQueryProvider : IQueryProvider
+	public class DefaultQueryProvider : IQueryProvider
 	{
 		private readonly ISessionImplementor _session;
 
-		public NhQueryProvider(ISessionImplementor session)
+		public DefaultQueryProvider(ISessionImplementor session)
 		{
 			_session = session;
 		}
@@ -105,7 +105,7 @@ namespace NHibernate.Linq
 
 		public IQueryable CreateQuery(Expression expression)
 		{
-		    var m = ReflectionHelper.GetMethodDefinition((NhQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+		    var m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
 		    return (IQueryable) m.Invoke(this, new[] {expression});
 		}
