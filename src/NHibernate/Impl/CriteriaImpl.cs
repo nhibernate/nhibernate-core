@@ -588,7 +588,7 @@ namespace NHibernate.Impl
 						"Could not find parent for subcriteria in the previous subcriteria. If you see this error, it is a bug");
 				}
 				Subcriteria clonedSubCriteria =
-					new Subcriteria(clone, currentParent, subcriteria.Path, subcriteria.Alias, subcriteria.JoinType);
+					new Subcriteria(clone, currentParent, subcriteria.Path, subcriteria.Alias, subcriteria.JoinType, subcriteria.WithClause);
 				clonedSubCriteria.SetLockMode(subcriteria.LockMode);
 				newParents[subcriteria] = clonedSubCriteria;
 			}

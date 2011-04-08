@@ -2890,6 +2890,31 @@ namespace NHibernate.Test.Criteria
 						Assert.IsNull(result[1]);
 						Assert.IsNull(result[2]);
 					}
+
+					// test != on one existing value (using clone)
+					var criteria = session.CreateCriteria<Student>()
+						.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin,
+						             Restrictions.Not(Restrictions.Eq("pc.CourseCode", "HIB-A")))
+						.SetProjection(Property.ForName("pc.CourseCode"))
+						.AddOrder(Order.Asc("pc.CourseCode"));
+					var clonedCriteria = CriteriaTransformer.Clone(criteria);
+					result = clonedCriteria.List<string>();
+
+					Assert.AreEqual(3, result.Count);
+
+					// can't be sure of NULL comparison ordering aside from they should
+					// either come first or last
+					if (result[0] == null)
+					{
+						Assert.IsNull(result[1]);
+						Assert.AreEqual("HIB-B", result[2]);
+					}
+					else
+					{
+						Assert.AreEqual("HIB-B", result[0]);
+						Assert.IsNull(result[1]);
+						Assert.IsNull(result[2]);
+					}
 					
 					session.Delete(gavin);
 					session.Delete(leonardo);
