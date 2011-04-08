@@ -414,127 +414,132 @@ namespace NHibernate.Mapping.ByCode
 
 		#region Implementation of IModelInspector
 
-		public bool IsRootEntity(System.Type type)
+		public virtual bool IsRootEntity(System.Type type)
 		{
 			return rootEntities.Contains(type);
 		}
 
-		public bool IsComponent(System.Type type)
+		public virtual bool IsComponent(System.Type type)
 		{
 			return components.Contains(type);
 		}
 
-		public bool IsEntity(System.Type type)
+		public virtual bool IsEntity(System.Type type)
 		{
 			return rootEntities.Contains(type) || type.GetBaseTypes().Any(t => rootEntities.Contains(t)) || HasDelayedEntityRegistration(type);
 		}
 
-		public bool IsTablePerClass(System.Type type)
+		public virtual bool IsTablePerClass(System.Type type)
 		{
 			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerClassEntities, type);
 		}
 
-		public bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member)
+		public virtual bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member)
 		{
 			return Equals(splitGroupId, GetSplitGroupFor(member));
 		}
 
-		public bool IsTablePerClassHierarchy(System.Type type)
+		public virtual bool IsTablePerClassHierarchy(System.Type type)
 		{
 			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerClassHierarchyEntities, type);
 		}
 
-		public bool IsTablePerConcreteClass(System.Type type)
+		public virtual bool IsTablePerConcreteClass(System.Type type)
 		{
 			ExecuteDelayedTypeRegistration(type);
 			return IsMappedFor(tablePerConcreteClassEntities, type);
 		}
 
-		public bool IsOneToOne(MemberInfo member)
+		public virtual bool IsOneToOne(MemberInfo member)
 		{
 			return oneToOneRelations.Contains(member);
 		}
 
-		public bool IsManyToOne(MemberInfo member)
+		public virtual bool IsManyToOne(MemberInfo member)
 		{
 			return manyToOneRelations.Contains(member);
 		}
 
-		public bool IsManyToMany(MemberInfo member)
+		public virtual bool IsManyToMany(MemberInfo member)
 		{
 			return manyToManyRelations.Contains(member);
 		}
 
-		public bool IsOneToMany(MemberInfo member)
+		public virtual bool IsOneToMany(MemberInfo member)
 		{
 			return oneToManyRelations.Contains(member);
 		}
 
-		public bool IsAny(MemberInfo member)
+		public virtual bool IsAny(MemberInfo member)
 		{
 			return any.Contains(member);
 		}
 
-		public bool IsPersistentId(MemberInfo member)
+		public virtual bool IsPersistentId(MemberInfo member)
 		{
 			return poids.Contains(member);
 		}
 
-		public bool IsVersion(MemberInfo member)
+		public virtual bool IsVersion(MemberInfo member)
 		{
 			return versionProperties.Contains(member);
 		}
 
-		public bool IsMemberOfNaturalId(MemberInfo member)
+		public virtual bool IsMemberOfNaturalId(MemberInfo member)
 		{
 			return naturalIds.Contains(member);
 		}
 
-		public bool IsPersistentProperty(MemberInfo member)
+		public virtual bool IsPersistentProperty(MemberInfo member)
 		{
 			return persistentMembers.Contains(member);
 		}
 
-		public bool IsSet(MemberInfo role)
+		public virtual bool IsSet(MemberInfo role)
 		{
 			return sets.Contains(role);
 		}
 
-		public bool IsBag(MemberInfo role)
+		public virtual bool IsBag(MemberInfo role)
 		{
 			return bags.Contains(role);
 		}
 
-		public bool IsIdBag(MemberInfo role)
+		public virtual bool IsIdBag(MemberInfo role)
 		{
 			return idBags.Contains(role);
 		}
 
-		public bool IsList(MemberInfo role)
+		public virtual bool IsList(MemberInfo role)
 		{
 			return lists.Contains(role);
 		}
 
-		public bool IsArray(MemberInfo role)
+		public virtual bool IsArray(MemberInfo role)
 		{
 			return arrays.Contains(role);
 		}
 
-		public bool IsDictionary(MemberInfo role)
+		public virtual bool IsDictionary(MemberInfo role)
 		{
 			return dictionaries.Contains(role);
 		}
 
-		public bool IsProperty(MemberInfo member)
+		public virtual bool IsProperty(MemberInfo member)
 		{
 			return properties.Contains(member);
 		}
 
+		public IEnumerable<string> GetPropertiesSplits(System.Type type)
+		{
+			return GetSplitGroupsFor(type);
+		}
+
 		#endregion
 
-		private System.Type GetRootEntityOrNull(System.Type entityType)
+		protected System.Type GetRootEntityOrNull(System.Type entityType)
 		{
 			if (entityType == null)
 			{
@@ -563,12 +568,12 @@ namespace NHibernate.Mapping.ByCode
 			return isExplicitMapped || isDerived;
 		}
 
-		private void EnlistTypeRegistration(System.Type type, Action<System.Type> registration)
+		protected void EnlistTypeRegistration(System.Type type, Action<System.Type> registration)
 		{
 			delayedEntityRegistrations.Add(type, registration);
 		}
 
-		private void ExecuteDelayedTypeRegistration(System.Type type)
+		protected void ExecuteDelayedTypeRegistration(System.Type type)
 		{
 			Action<System.Type> registration;
 			if(delayedEntityRegistrations.TryGetValue(type, out registration))
@@ -578,14 +583,9 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		private bool HasDelayedEntityRegistration(System.Type type)
+		protected bool HasDelayedEntityRegistration(System.Type type)
 		{
 			return delayedEntityRegistrations.ContainsKey(type);
-		}
-
-		public IEnumerable<string> GetPropertiesSplits(System.Type type)
-		{
-			return GetSplitGroupsFor(type);
 		}
 	}
 }
