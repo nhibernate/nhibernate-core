@@ -9,7 +9,13 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class DefaultQueryProvider : IQueryProvider
+	public interface INhQueryProvider : IQueryProvider
+	{
+		object ExecuteFuture(Expression expression);
+		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
+	}
+
+	public class DefaultQueryProvider : INhQueryProvider
 	{
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
@@ -34,14 +40,14 @@ namespace NHibernate.Linq
 			return (TResult) Execute(expression);
 		}
 
-		public IQueryable CreateQuery(Expression expression)
+		public virtual IQueryable CreateQuery(Expression expression)
 		{
 			MethodInfo m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
 			return (IQueryable) m.Invoke(this, new[] {expression});
 		}
 
-		public IQueryable<T> CreateQuery<T>(Expression expression)
+		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
 		{
 			return new NhQueryable<T>(this, expression);
 		}
