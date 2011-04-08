@@ -75,6 +75,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private void ApplyGenerator(IGeneratorDef generator)
 		{
 			var hbmGenerator = new HbmGenerator {@class = generator.Class};
+			if(hbmId.name == null)
+			{
+				// no member for the id
+				hbmId.type1 = generator.DefaultReturnType.GetNhTypeName();
+			}
 			object generatorParameters = generator.Params;
 			if (generatorParameters != null)
 			{

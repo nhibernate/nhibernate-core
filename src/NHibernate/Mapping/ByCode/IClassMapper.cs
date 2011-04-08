@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
-		void Id(Action<IIdMapper> idMapper);
+		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty);
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
 		void Id(FieldInfo idProperty, Action<IIdMapper> idMapper);
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);

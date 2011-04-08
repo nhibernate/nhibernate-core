@@ -27,21 +27,28 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		#region Implementation of IClassAttributesMapper<TEntity>
 
-		public void Id(Action<IIdMapper> idMapper)
+		public void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), m => m.Id(idMapper));
+			Id(idProperty, x => { });
 		}
 
 		public void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
-			ExplicitDeclarationsHolder.AddAsPoid(member);
+			MemberInfo member = null;
+			if (idProperty != null)
+			{
+				member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
+				ExplicitDeclarationsHolder.AddAsPoid(member);
+			}
 			CustomizersHolder.AddCustomizer(typeof (TEntity), m => m.Id(member, idMapper));
 		}
 
 		public void Id(FieldInfo idProperty, Action<IIdMapper> idMapper)
 		{
-			ExplicitDeclarationsHolder.AddAsPoid(idProperty);
+			if (idProperty != null)
+			{
+				ExplicitDeclarationsHolder.AddAsPoid(idProperty);
+			}
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(idProperty, idMapper));
 		}
 

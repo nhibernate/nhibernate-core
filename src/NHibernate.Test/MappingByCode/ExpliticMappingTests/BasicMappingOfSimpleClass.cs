@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -29,6 +30,24 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			});
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			ModelIsWellFormed(hbmMapping);
+		}
+
+		[Test]
+		public void WhenMapClassWithoutIdThenApplyTypeOfGeneratorDef()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(ca => ca.Id(null, map =>
+			                                        {
+			                                        	map.Column("MyClassId");
+			                                        	map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
+			                                        }));
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			hbmClass.Should().Not.Be.Null();
+			var hbmId = hbmClass.Id;
+			hbmId.Should().Not.Be.Null();
+			hbmId.column1.Should().Be("MyClassId");
+			hbmId.type1.Should().Be(NHibernateUtil.Int32.Name);
 		}
 
 		[Test]
