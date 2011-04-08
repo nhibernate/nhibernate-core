@@ -21,6 +21,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly IEnumerable<MemberInfo> oneToOneRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> poids = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> properties = Enumerable.Empty<MemberInfo>();
+		private readonly IEnumerable<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
 		private readonly IEnumerable<System.Type> rootEntities = Enumerable.Empty<System.Type>();
 		private readonly IEnumerable<MemberInfo> sets = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<System.Type> tablePerClassEntities = Enumerable.Empty<System.Type>();
@@ -137,6 +138,11 @@ namespace NHibernate.Mapping.ByCode
 			get { return properties; }
 		}
 
+		public IEnumerable<MemberInfo> PersistentMembers
+		{
+			get { return persistentMembers; }
+		}
+
 		public IEnumerable<SplitDefinition> SplitDefinitions
 		{
 			get { return splitDefinitions; }
@@ -193,6 +199,8 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsMap(MemberInfo member) {}
 
 		public void AddAsProperty(MemberInfo member) {}
+		public void AddAsPersistentMember(MemberInfo member){}
+
 		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member) {}
 
 		#endregion

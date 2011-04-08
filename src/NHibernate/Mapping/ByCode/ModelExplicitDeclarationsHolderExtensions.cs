@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -37,6 +34,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Array.ForEach(source.Arrays.ToArray(), destination.AddAsArray);
 			System.Array.ForEach(source.Dictionaries.ToArray(), destination.AddAsMap);
 			System.Array.ForEach(source.Properties.ToArray(), destination.AddAsProperty);
+			System.Array.ForEach(source.PersistentMembers.ToArray(), destination.AddAsPersistentMember);
 			System.Array.ForEach(source.SplitDefinitions.ToArray(), x => destination.AddAsPropertySplit(x.On, x.GroupId, x.Member));
 		}
 	}

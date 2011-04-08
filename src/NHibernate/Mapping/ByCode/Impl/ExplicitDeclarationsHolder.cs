@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> properties = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> rootEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> sets = new HashSet<MemberInfo>();
 		private readonly HashSet<SplitDefinition> splitDefinitions = new HashSet<SplitDefinition>();
@@ -128,6 +130,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<MemberInfo> PersistentMembers
+		{
+			get { return persistentMembers; }
 		}
 
 		public IEnumerable<SplitDefinition> SplitDefinitions
@@ -243,6 +250,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddAsProperty(MemberInfo member)
 		{
 			properties.Add(member);
+		}
+
+		public void AddAsPersistentMember(MemberInfo member)
+		{
+			persistentMembers.Add(member);
 		}
 
 		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member)

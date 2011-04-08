@@ -19,9 +19,9 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
-		private readonly HashSet<MemberInfo> persistentProperties = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> properties = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> rootEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> sets = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> tablePerClassEntities = new HashSet<System.Type>();
@@ -133,6 +133,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<MemberInfo> PersistentMembers
+		{
+			get { return persistentMembers; }
 		}
 
 		public IEnumerable<SplitDefinition> SplitDefinitions
@@ -284,92 +289,97 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsOneToOneRelation(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			oneToOneRelations.Add(member);
 		}
 
 		public void AddAsManyToOneRelation(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			manyToOneRelations.Add(member);
 		}
 
 		public void AddAsManyToManyRelation(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			manyToManyRelations.Add(member);
 		}
 
 		public void AddAsOneToManyRelation(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			oneToManyRelations.Add(member);
 		}
 
 		public void AddAsAny(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			any.Add(member);
 		}
 
 		public void AddAsPoid(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			poids.Add(member);
 		}
 
 		public void AddAsVersionProperty(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			versionProperties.Add(member);
 		}
 
 		public void AddAsNaturalId(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			naturalIds.Add(member);
 		}
 
 		public void AddAsSet(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			sets.Add(member);
 		}
 
 		public void AddAsBag(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			bags.Add(member);
 		}
 
 		public void AddAsIdBag(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			idBags.Add(member);
 		}
 
 		public void AddAsList(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			lists.Add(member);
 		}
 
 		public void AddAsArray(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			arrays.Add(member);
 		}
 
 		public void AddAsMap(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			dictionaries.Add(member);
 		}
 
 		public void AddAsProperty(MemberInfo member)
 		{
-			persistentProperties.Add(member);
+			persistentMembers.Add(member);
 			properties.Add(member);
+		}
+
+		public void AddAsPersistentMember(MemberInfo member)
+		{
+			persistentMembers.Add(member);
 		}
 
 		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member)
@@ -484,7 +494,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public bool IsPersistentProperty(MemberInfo member)
 		{
-			return persistentProperties.Contains(member);
+			return persistentMembers.Contains(member);
 		}
 
 		public bool IsSet(MemberInfo role)

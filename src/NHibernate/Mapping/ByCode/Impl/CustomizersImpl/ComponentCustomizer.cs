@@ -25,6 +25,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
 			explicitDeclarationsHolder.AddAsComponent(typeof (TComponent));
+			if(propertyPath != null)
+			{
+				explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
+			}
 		}
 
 		#region Implementation of IComponentMapper<TComponent>

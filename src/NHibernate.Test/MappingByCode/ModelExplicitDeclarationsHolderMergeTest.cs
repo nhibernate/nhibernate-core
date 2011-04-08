@@ -29,6 +29,17 @@ namespace NHibernate.Test.MappingByCode
 		}
 
 		[Test]
+		public void MergePersistentMembers()
+		{
+			var destination = new ExplicitDeclarationsHolder();
+			var source = new ExplicitDeclarationsHolder();
+			source.AddAsPersistentMember(property);
+
+			destination.Merge(source);
+			destination.PersistentMembers.Should().Have.Count.EqualTo(1);
+		}
+
+		[Test]
 		public void MergeProperties()
 		{
 			var destination = new ExplicitDeclarationsHolder();
