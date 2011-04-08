@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
-using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {

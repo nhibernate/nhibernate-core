@@ -1,7 +1,6 @@
 using System;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
-using Remotion.Data.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {

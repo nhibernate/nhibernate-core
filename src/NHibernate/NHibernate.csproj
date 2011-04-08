@@ -266,6 +266,7 @@
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
+    <Compile Include="Linq\Visitors\ExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
