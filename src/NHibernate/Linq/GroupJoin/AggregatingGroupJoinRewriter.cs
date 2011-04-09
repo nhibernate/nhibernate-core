@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Remotion.Data.Linq;
-using Remotion.Data.Linq.Clauses;
+using Remotion.Linq;
+using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.GroupJoin
 {

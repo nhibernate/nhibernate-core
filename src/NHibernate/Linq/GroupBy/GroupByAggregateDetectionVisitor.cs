@@ -2,7 +2,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.GroupBy
 {

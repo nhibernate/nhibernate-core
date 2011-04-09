@@ -1,5 +1,5 @@
 using System.Linq;
-using Remotion.Data.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {

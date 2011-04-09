@@ -1,4 +1,4 @@
-﻿using Remotion.Data.Linq.EagerFetching;
+﻿using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {

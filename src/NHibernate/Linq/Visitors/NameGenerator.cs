@@ -1,4 +1,4 @@
-﻿using Remotion.Data.Linq;
+﻿using Remotion.Linq;
 
 namespace NHibernate.Linq.Visitors
 {

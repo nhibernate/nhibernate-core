@@ -78,9 +78,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Data.Linq, Version=1.13.41.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
+    <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Remotion.Data.Linq.dll</HintPath>
+      <HintPath>..\..\lib\net\3.5\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq">

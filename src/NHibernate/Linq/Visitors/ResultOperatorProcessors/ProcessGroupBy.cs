@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
-using Remotion.Data.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.ResultOperators;
 using System.Linq;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors

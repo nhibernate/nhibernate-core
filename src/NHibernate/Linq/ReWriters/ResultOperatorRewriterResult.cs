@@ -2,8 +2,8 @@ namespace NHibernate.Linq.ReWriters
 {
     using System.Collections.Generic;
 
-    using Remotion.Data.Linq.Clauses;
-    using Remotion.Data.Linq.Clauses.StreamedData;
+    using Remotion.Linq.Clauses;
+    using Remotion.Linq.Clauses.StreamedData;
 
     /// <summary>
     /// Result of <see cref="ResultOperatorRewriter.Rewrite" />.

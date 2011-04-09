@@ -24,7 +24,7 @@
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="Antlr3.Runtime.dll" />
-			<include name="Remotion.Data.Linq.dll" />
+			<include name="Remotion.Linq.dll" />
 		</assemblyfileset>
 
 		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">
@@ -62,14 +62,14 @@
 				<arg value="/out:${bin.dir}/merged/NHibernate.dll" />
 				<arg value="${bin.dir}/NHibernate.dll" />
 				<arg value="${bin.dir}/Antlr3.Runtime.dll" />
-				<arg value="${bin.dir}/Remotion.Data.Linq.dll" />
+				<arg value="${bin.dir}/Remotion.Linq.dll" />
 			</exec>
 			
 			<move file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<move file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 			<delete dir="${bin.dir}/merged" />
 			<delete file="${bin.dir}/Antlr3.Runtime.dll" />
-			<delete file="${bin.dir}/Remotion.Data.Linq.dll" />
+			<delete file="${bin.dir}/Remotion.Linq.dll" />
 		</if>
 	</target>
 	

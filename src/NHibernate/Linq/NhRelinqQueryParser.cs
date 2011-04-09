@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Remotion.Data.Linq;
-using Remotion.Data.Linq.Clauses;
-using Remotion.Data.Linq.Clauses.StreamedData;
-using Remotion.Data.Linq.EagerFetching.Parsing;
-using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors.Transformation;
-using Remotion.Data.Linq.Parsing.Structure;
-using Remotion.Data.Linq.Parsing.Structure.IntermediateModel;
-using Remotion.Data.Linq.Parsing.Structure.NodeTypeProviders;
+using Remotion.Linq;
+using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.StreamedData;
+using Remotion.Linq.EagerFetching.Parsing;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
+using Remotion.Linq.Parsing.Structure;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
+using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 
 namespace NHibernate.Linq
 {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {

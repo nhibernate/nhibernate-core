@@ -6,7 +6,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
 using NHibernate.Type;
-using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq
 {

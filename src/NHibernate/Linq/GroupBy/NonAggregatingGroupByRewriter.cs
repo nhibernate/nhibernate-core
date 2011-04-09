@@ -3,10 +3,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
-using Remotion.Data.Linq;
-using Remotion.Data.Linq.Clauses;
-using Remotion.Data.Linq.Clauses.Expressions;
-using Remotion.Data.Linq.Clauses.ResultOperators;
+using Remotion.Linq;
+using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
 {

@@ -4,7 +4,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {

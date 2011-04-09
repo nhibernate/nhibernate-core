@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Clauses.ResultOperators;
-using Remotion.Data.Linq.Clauses.StreamedData;
-using Remotion.Data.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.StreamedData;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {

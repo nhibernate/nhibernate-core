@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Remotion.Data.Linq.Clauses;
+using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {

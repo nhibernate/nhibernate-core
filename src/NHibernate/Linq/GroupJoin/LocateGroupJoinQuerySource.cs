@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using NHibernate.Linq.Visitors;
-using Remotion.Data.Linq.Clauses;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.GroupJoin
 {

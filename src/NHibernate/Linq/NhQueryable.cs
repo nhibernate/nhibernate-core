@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
-using Remotion.Data.Linq;
+using Remotion.Linq;
 
 namespace NHibernate.Linq
 {

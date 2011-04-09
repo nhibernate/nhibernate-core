@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Linq.Visitors
     /// This class is used to expose the members from the base class that get internalized when the other class is ilmerged.
     /// We do this instead of exposing the base class directly by name, since we don't want it to be part of our public API.
     /// </summary>
-    public class ExpressionTreeVisitor : Remotion.Data.Linq.Parsing.ExpressionTreeVisitor
+    public class ExpressionTreeVisitor : Remotion.Linq.Parsing.ExpressionTreeVisitor
     {
         public override ReadOnlyCollection<T> VisitAndConvert<T>(ReadOnlyCollection<T> expressions, string callerName)
         {
@@ -126,12 +126,12 @@ namespace NHibernate.Linq.Visitors
             return base.VisitParameterExpression(expression);
         }
 
-        protected override Expression VisitQuerySourceReferenceExpression(Remotion.Data.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
+        protected override Expression VisitQuerySourceReferenceExpression(Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
         {
             return base.VisitQuerySourceReferenceExpression(expression);
         }
 
-        protected override Expression VisitSubQueryExpression(Remotion.Data.Linq.Clauses.Expressions.SubQueryExpression expression)
+        protected override Expression VisitSubQueryExpression(Remotion.Linq.Clauses.Expressions.SubQueryExpression expression)
         {
             return base.VisitSubQueryExpression(expression);
         }

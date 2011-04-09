@@ -6,12 +6,12 @@ namespace NHibernate.Linq.ReWriters
 
     using NHibernate.Linq.Visitors;
 
-    using Remotion.Data.Linq;
-    using Remotion.Data.Linq.Clauses;
-    using Remotion.Data.Linq.Clauses.Expressions;
-    using Remotion.Data.Linq.Clauses.ResultOperators;
-    using Remotion.Data.Linq.Clauses.StreamedData;
-    using Remotion.Data.Linq.EagerFetching;
+    using Remotion.Linq;
+    using Remotion.Linq.Clauses;
+    using Remotion.Linq.Clauses.Expressions;
+    using Remotion.Linq.Clauses.ResultOperators;
+    using Remotion.Linq.Clauses.StreamedData;
+    using Remotion.Linq.EagerFetching;
 
     /// <summary>
     /// Removes various result operators from a query so that they can be processed at the same

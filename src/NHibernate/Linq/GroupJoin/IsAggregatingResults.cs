@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Clauses;
+using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.GroupJoin
 {
