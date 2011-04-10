@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private Func<System.Type, bool, bool> isEntity = (t, declared) => declared;
 		private Func<System.Type, bool, bool> isRootEntity = (t, declared) => declared;
-		private Func<System.Type, bool, bool> isTablePerClass = (t, declared) => declared;
+		private Func<System.Type, bool, bool> isTablePerClass;
 		private Func<SplitDefinition, bool, bool> isTablePerClassSplit = (sd, declared) => declared;
 		private Func<System.Type, bool, bool> isTablePerClassHierarchy = (t, declared) => declared;
 		private Func<System.Type, bool, bool> isTablePerConcreteClass = (t, declared) => declared;
@@ -44,6 +44,7 @@ namespace NHibernate.Mapping.ByCode
 		public SimpleModelInspector()
 		{
 			isEntity = (t, declared) => declared || MatchEntity(t);
+			isTablePerClass = (t, declared) => declared || MatchTablePerClass(t);
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
 			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
@@ -53,6 +54,11 @@ namespace NHibernate.Mapping.ByCode
 			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
 			isManyToOne = (m, declared) => declared || MatchManyToOne(m);
 			isOneToMany = (m, declared) => declared || MatchOneToMany(m);
+		}
+
+		private bool MatchTablePerClass(System.Type type)
+		{
+			return !declaredModel.IsTablePerClassHierarchy(type) && !declaredModel.IsTablePerConcreteClass(type);
 		}
 
 		private bool MatchOneToMany(MemberInfo memberInfo)
