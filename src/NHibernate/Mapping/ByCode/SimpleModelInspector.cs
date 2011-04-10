@@ -48,12 +48,18 @@ namespace NHibernate.Mapping.ByCode
 			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
 			isSet = (m, declared) => declared || MatchCollection(m, MatchSetMember);
 			isArray = (m, declared) => declared;
-			isBag = (m, declared) => declared;
+			isBag = (m, declared) => declared || MatchCollection(m, MatchBagMember);
 			isDictionary = (m, declared) => declared;
 			isList = (m, declared) => declared;
 		}
 
-		public bool MatchCollection(MemberInfo subject, Predicate<MemberInfo> specificCollectionPredicate)
+		protected bool MatchBagMember(MemberInfo subject)
+		{
+			System.Type memberType = subject.GetPropertyOrFieldType();
+			return typeof(System.Collections.IEnumerable).IsAssignableFrom(memberType) && !(memberType == typeof(string) || memberType == typeof(byte[]));
+		}
+
+		protected bool MatchCollection(MemberInfo subject, Predicate<MemberInfo> specificCollectionPredicate)
 		{
 			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
