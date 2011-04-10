@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Iesi.Collections;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -33,18 +34,58 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isOneToMany = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isOneToOne = (m, declared) => declared;
 
-		private Func<MemberInfo, bool, bool> isSet = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isArray = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isBag = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isDictionary = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isSet;
+		private Func<MemberInfo, bool, bool> isArray;
+		private Func<MemberInfo, bool, bool> isBag;
+		private Func<MemberInfo, bool, bool> isDictionary;
 		private Func<MemberInfo, bool, bool> isIdBag = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isList = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isList;
 
 		public SimpleModelInspector()
 		{
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
 			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
+			isSet = (m, declared) => declared || MatchCollection(m, MatchSetMember);
+			isArray = (m, declared) => declared;
+			isBag = (m, declared) => declared;
+			isDictionary = (m, declared) => declared;
+			isList = (m, declared) => declared;
+		}
+
+		public bool MatchCollection(MemberInfo subject, Predicate<MemberInfo> specificCollectionPredicate)
+		{
+			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+			if (specificCollectionPredicate(subject)) return true;
+			var pi = subject as PropertyInfo;
+			if (pi != null)
+			{
+				var fieldInfo = (from ps in PropertyToField.DefaultStrategies.Values
+												 let fi = subject.DeclaringType.GetField(ps.GetFieldName(pi.Name), defaultBinding)
+												 where fi != null
+												 select fi).FirstOrDefault();
+
+				if (fieldInfo != null)
+				{
+					return specificCollectionPredicate(fieldInfo);
+				}
+			}
+			return false;
+		}
+
+		protected bool MatchSetMember(MemberInfo subject)
+		{
+			var memberType = subject.GetPropertyOrFieldType();
+			if (typeof(ISet).IsAssignableFrom(memberType))
+			{
+				return true;
+			}
+			if (memberType.IsGenericType)
+			{
+				return memberType.GetGenericIntercafesTypeDefinitions().Contains(typeof(Iesi.Collections.Generic.ISet<>));
+			}
+			return false;
 		}
 
 		protected bool MatchNoReadOnlyPropertyPattern(MemberInfo subject)

@@ -544,6 +544,7 @@
     <Compile Include="MappingByCode\MixAutomapping\ComponentsTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PoidTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PropertiesExclusionTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\SetCollectionTests.cs" />
     <Compile Include="MappingByCode\ModelExplicitDeclarationsHolderMergeTest.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Address.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Animal.cs" />
