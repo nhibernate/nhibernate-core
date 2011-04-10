@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isProperty = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isAny = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isManyToMany = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isManyToOne = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isManyToOne;
 		private Func<MemberInfo, bool, bool> isMemberOfNaturalId = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isOneToMany = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isOneToOne = (m, declared) => declared;
@@ -50,6 +50,18 @@ namespace NHibernate.Mapping.ByCode
 			isArray = (m, declared) => declared || MatchCollection(m, MatchArrayMember);
 			isBag = (m, declared) => declared || MatchCollection(m, MatchBagMember);
 			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
+			isManyToOne = (m, declared) => declared || MatchManyToOne(m);
+		}
+
+		private bool MatchManyToOne(MemberInfo memberInfo)
+		{
+			var modelInspector = (IModelInspector)this;
+			System.Type from = memberInfo.ReflectedType;
+			System.Type to = memberInfo.GetPropertyOrFieldType();
+
+			bool areEntities = modelInspector.IsEntity(from) && modelInspector.IsEntity(to);
+			bool isFromComponentToEntity = modelInspector.IsComponent(from) && modelInspector.IsEntity(to);
+			return isFromComponentToEntity || (areEntities && !modelInspector.IsOneToOne(memberInfo));
 		}
 
 		protected bool MatchArrayMember(MemberInfo subject)
