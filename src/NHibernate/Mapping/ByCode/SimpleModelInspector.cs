@@ -49,8 +49,22 @@ namespace NHibernate.Mapping.ByCode
 			isSet = (m, declared) => declared || MatchCollection(m, MatchSetMember);
 			isArray = (m, declared) => declared;
 			isBag = (m, declared) => declared || MatchCollection(m, MatchBagMember);
-			isDictionary = (m, declared) => declared;
+			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
 			isList = (m, declared) => declared;
+		}
+
+		protected bool MatchDictionaryMember(MemberInfo subject)
+		{
+			System.Type memberType = subject.GetPropertyOrFieldType();
+			if (typeof(System.Collections.IDictionary).IsAssignableFrom(memberType))
+			{
+				return true;
+			}
+			if (memberType.IsGenericType)
+			{
+				return memberType.GetGenericIntercafesTypeDefinitions().Contains(typeof(IDictionary<,>));
+			}
+			return false;
 		}
 
 		protected bool MatchBagMember(MemberInfo subject)

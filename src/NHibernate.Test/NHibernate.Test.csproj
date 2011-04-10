@@ -543,6 +543,7 @@
     <Compile Include="MappingByCode\MappersTests\SubclassMapperWithJoinPropertiesTest.cs" />
     <Compile Include="MappingByCode\MixAutomapping\BagCollectionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ComponentsTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\DictionaryCollectionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PoidTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PropertiesExclusionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\SetCollectionTests.cs" />
