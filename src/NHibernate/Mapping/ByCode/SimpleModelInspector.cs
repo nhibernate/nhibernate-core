@@ -20,7 +20,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<System.Type, IEnumerable<string>, IEnumerable<string>> splitsForType = (t, declared) => declared;
 		private Func<System.Type, bool, bool> isComponent = (t, declared) => declared;
 
-		private Func<MemberInfo, bool, bool> isPersistentId = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isPersistentId;
 		private Func<MemberInfo, bool, bool> isPersistentProperty = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isVersion = (m, declared) => declared;
 
@@ -38,6 +38,20 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isDictionary = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isIdBag = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isList = (m, declared) => declared;
+
+		public SimpleModelInspector()
+		{
+			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
+		}
+
+		protected bool MatchPoIdPattern(MemberInfo subject)
+		{
+			var name = subject.Name;
+			return name.Equals("id", StringComparison.InvariantCultureIgnoreCase)
+						 || name.Equals("poid", StringComparison.InvariantCultureIgnoreCase)
+						 || name.Equals("oid", StringComparison.InvariantCultureIgnoreCase)
+						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.InvariantCultureIgnoreCase));
+		}
 
 		#region IModelExplicitDeclarationsHolder Members
 
