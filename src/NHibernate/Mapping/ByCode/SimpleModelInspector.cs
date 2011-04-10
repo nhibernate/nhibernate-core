@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isBag;
 		private Func<MemberInfo, bool, bool> isDictionary;
 		private Func<MemberInfo, bool, bool> isIdBag = (m, declared) => declared;
-		private Func<MemberInfo, bool, bool> isList;
+		private Func<MemberInfo, bool, bool> isList = (m, declared) => declared;
 
 		public SimpleModelInspector()
 		{
@@ -47,10 +47,15 @@ namespace NHibernate.Mapping.ByCode
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
 			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
 			isSet = (m, declared) => declared || MatchCollection(m, MatchSetMember);
-			isArray = (m, declared) => declared;
+			isArray = (m, declared) => declared || MatchCollection(m, MatchArrayMember);
 			isBag = (m, declared) => declared || MatchCollection(m, MatchBagMember);
 			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
-			isList = (m, declared) => declared;
+		}
+
+		protected bool MatchArrayMember(MemberInfo subject)
+		{
+			System.Type memberType = subject.GetPropertyOrFieldType();
+			return memberType.IsArray && memberType.GetElementType() != typeof(byte);
 		}
 
 		protected bool MatchDictionaryMember(MemberInfo subject)
