@@ -22,7 +22,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<System.Type, bool, bool> isComponent;
 
 		private Func<MemberInfo, bool, bool> isPersistentId;
-		private Func<MemberInfo, bool, bool> isPersistentProperty = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isPersistentProperty;
 		private Func<MemberInfo, bool, bool> isVersion = (m, declared) => declared;
 
 		private Func<MemberInfo, bool, bool> isProperty = (m, declared) => declared;
@@ -44,6 +44,51 @@ namespace NHibernate.Mapping.ByCode
 		{
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
+			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
+		}
+
+		protected bool MatchNoReadOnlyPropertyPattern(MemberInfo subject)
+		{
+			var isReadOnlyProperty = IsReadOnlyProperty(subject);
+			return !isReadOnlyProperty;
+		}
+
+		protected bool IsReadOnlyProperty(MemberInfo subject)
+		{
+			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+			var property = subject as PropertyInfo;
+			if (property == null)
+			{
+				return false;
+			}
+			if (CanReadCantWriteInsideType(property) || CanReadCantWriteInBaseType(property))
+			{
+				return !PropertyToField.DefaultStrategies.Values.Any(s => subject.DeclaringType.GetField(s.GetFieldName(property.Name), defaultBinding) != null) || IsAutoproperty(property);
+			}
+			return false;
+		}
+
+		protected bool IsAutoproperty(PropertyInfo property)
+		{
+			return property.ReflectedType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+																					 | BindingFlags.DeclaredOnly).Any(pi => pi.Name == string.Concat("<", property.Name, ">k__BackingField"));
+		}
+
+		protected bool CanReadCantWriteInsideType(PropertyInfo property)
+		{
+			return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
+		}
+
+		protected bool CanReadCantWriteInBaseType(PropertyInfo property)
+		{
+			if (property.DeclaringType == property.ReflectedType)
+			{
+				return false;
+			}
+			var rfprop = property.DeclaringType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+																					 | BindingFlags.DeclaredOnly).SingleOrDefault(pi => pi.Name == property.Name);
+			return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
 		}
 
 		protected bool MatchPoIdPattern(MemberInfo subject)

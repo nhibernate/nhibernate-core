@@ -15,16 +15,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private readonly System.Type declaringType;
 
-		private readonly Dictionary<string, IFieldNamingStrategy> fieldNamningStrategies =
-			new Dictionary<string, IFieldNamingStrategy>
-			{
-				{"camelcase", new CamelCaseStrategy()},
-				{"camelcase-underscore", new CamelCaseUnderscoreStrategy()},
-				{"lowercase", new LowerCaseStrategy()},
-				{"lowercase-underscore", new LowerCaseUnderscoreStrategy()},
-				{"pascalcase-underscore", new PascalCaseUnderscoreStrategy()},
-				{"pascalcase-m-underscore", new PascalCaseMUnderscoreStrategy()},
-			};
+		private readonly IDictionary<string, IFieldNamingStrategy> fieldNamningStrategies = PropertyToField.DefaultStrategies;
 
 		private readonly string propertyName;
 		private readonly Action<string> setAccessor;
