@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
@@ -18,7 +19,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<System.Type, bool, bool> isTablePerClassHierarchy = (t, declared) => declared;
 		private Func<System.Type, bool, bool> isTablePerConcreteClass = (t, declared) => declared;
 		private Func<System.Type, IEnumerable<string>, IEnumerable<string>> splitsForType = (t, declared) => declared;
-		private Func<System.Type, bool, bool> isComponent = (t, declared) => declared;
+		private Func<System.Type, bool, bool> isComponent;
 
 		private Func<MemberInfo, bool, bool> isPersistentId;
 		private Func<MemberInfo, bool, bool> isPersistentProperty = (m, declared) => declared;
@@ -42,6 +43,7 @@ namespace NHibernate.Mapping.ByCode
 		public SimpleModelInspector()
 		{
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
+			isComponent = (t, declared) => declared || MatchComponentPattern(t);
 		}
 
 		protected bool MatchPoIdPattern(MemberInfo subject)
@@ -51,6 +53,18 @@ namespace NHibernate.Mapping.ByCode
 						 || name.Equals("poid", StringComparison.InvariantCultureIgnoreCase)
 						 || name.Equals("oid", StringComparison.InvariantCultureIgnoreCase)
 						 || (name.StartsWith(subject.DeclaringType.Name) && name.Equals(subject.DeclaringType.Name + "id", StringComparison.InvariantCultureIgnoreCase));
+		}
+
+		protected bool MatchComponentPattern(System.Type subject)
+		{
+			const BindingFlags flattenHierarchyMembers =
+				BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+			var modelInspector = (IModelInspector) this;
+			return !subject.IsEnum && !subject.Namespace.StartsWith("System") /* hack */&& !modelInspector.IsEntity(subject)
+			       &&
+			       !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
+			       	subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
 		}
 
 		#region IModelExplicitDeclarationsHolder Members
