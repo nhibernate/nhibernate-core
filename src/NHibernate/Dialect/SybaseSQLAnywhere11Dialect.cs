@@ -22,23 +22,22 @@ namespace NHibernate.Dialect
 	/// You should have received a copy of the GNU Lesser General Public
 	/// License along with this library; if not, write to the Free Software
 	/// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-	///
 	/// </summary>
 	/// <remarks>
 	/// The dialect defaults the following configuration properties:
 	/// <list type="table">
-	///		<listheader>
-	///			<term>Property</term>
-	///			<description>Default Value</description>
-	///		</listheader>
-	///		<item>
-	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.ASA10ClientDriver" /></description>
-	///		</item>
-	///		<item>
-	///			<term>prepare_sql</term>
-	///			<description><see langword="false" /></description>
-	///		</item>
+	///	<listheader>
+	///		<term>Property</term>
+	///		<description>Default Value</description>
+	///	</listheader>
+	///	<item>
+	///		<term>connection.driver_class</term>
+	///		<description><see cref="NHibernate.Driver.SybaseSQLAnywhereDriver" /></description>
+	///	</item>
+	///	<item>
+	///		<term>prepare_sql</term>
+	///		<description><see langword="false" /></description>
+	///	</item>
 	/// </list>
 	/// </remarks>
 	public class SybaseSQLAnywhere11Dialect : SybaseSQLAnywhere10Dialect

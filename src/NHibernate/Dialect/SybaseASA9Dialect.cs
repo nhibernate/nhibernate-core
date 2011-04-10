@@ -24,7 +24,7 @@ namespace NHibernate.Dialect
 	///	</listheader>
 	///	<item>
 	///		<term>connection.driver_class</term>
-	///		<description><see cref="NHibernate.Driver.ASAClientDriver" /></description>
+	///		<description><see cref="NHibernate.Driver.SybaseAsaClientDriver" /></description>
 	///	</item>
 	///	<item>
 	///		<term>prepare_sql</term>
@@ -36,7 +36,7 @@ namespace NHibernate.Dialect
 	{
 		public SybaseASA9Dialect()
 		{
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.ASAClientDriver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseAsaClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 			
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
@@ -77,7 +77,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
-
 			RegisterFunction("now", new StandardSQLFunction("now"));
 			
 			RegisterKeyword("top");
@@ -96,7 +95,7 @@ namespace NHibernate.Dialect
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
 		{
 			int intSelectInsertPoint = GetAfterSelectInsertPoint(querySqlString);
-			string strLimit = string.Format(" TOP {0} START AT {1}", limit, offset + 1);
+			string strLimit = string.Format(" top {0} start at {1}", limit, offset + 1);
 			return querySqlString.Insert(intSelectInsertPoint, strLimit);
 		}
 
@@ -135,16 +134,14 @@ namespace NHibernate.Dialect
 			get { return "select @@identity"; }
 		}
 
-		/// <summary></summary>
 		public override string IdentityColumnString
 		{
-			get { return "IDENTITY NOT NULL"; }
+			get { return "identity not null"; }
 		}
 
-		/// <summary></summary>
 		public override string NoColumnsInsertString
 		{
-			get { return "DEFAULT VALUES"; }
+			get { return "default values"; }
 		}
 
 		/// <summary>

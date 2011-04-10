@@ -38,30 +38,29 @@ namespace NHibernate.Dialect
 	/// You should have received a copy of the GNU Lesser General Public
 	/// License along with this library; if not, write to the Free Software
 	/// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-	///
 	/// </summary>
 	/// <remarks>
 	/// The dialect defaults the following configuration properties:
 	/// <list type="table">
-	///		<listheader>
-	///			<term>Property</term>
-	///			<description>Default Value</description>
-	///		</listheader>
-	///		<item>
-	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.ASA10ClientDriver" /></description>
-	///		</item>
-	///		<item>
-	///			<term>prepare_sql</term>
-	///			<description><see langword="false" /></description>
-	///		</item>
+	///	<listheader>
+	///		<term>Property</term>
+	///		<description>Default Value</description>
+	///	</listheader>
+	///	<item>
+	///		<term>connection.driver_class</term>
+	///		<description><see cref="NHibernate.Driver.SybaseSQLAnywhereDriver" /></description>
+	///	</item>
+	///	<item>
+	///		<term>prepare_sql</term>
+	///		<description><see langword="false" /></description>
+	///	</item>
 	/// </list>
 	/// </remarks>
 	public class SybaseSQLAnywhere10Dialect : Dialect
 	{
 		public SybaseSQLAnywhere10Dialect()
 		{
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.ASA10ClientDriver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseSQLAnywhereDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 
 			RegisterCharacterTypeMappings();
@@ -72,298 +71,298 @@ namespace NHibernate.Dialect
 			RegisterKeywords();
 		}
 
-		protected void RegisterCharacterTypeMappings()
+		protected virtual void RegisterCharacterTypeMappings()
 		{
-			RegisterColumnType( DbType.AnsiStringFixedLength, "CHAR(1)" );
-			RegisterColumnType( DbType.AnsiStringFixedLength, 32767, "CHAR($l)" );
-			RegisterColumnType( DbType.AnsiString, "VARCHAR(1)" );
-			RegisterColumnType( DbType.AnsiString, 32767, "VARCHAR($l)" );
-			RegisterColumnType( DbType.AnsiString, 2147483647, "LONG VARCHAR" );
-			RegisterColumnType( DbType.StringFixedLength, "NCHAR(1)" );
-			RegisterColumnType( DbType.StringFixedLength, 32767, "NCHAR($l)" );
-			RegisterColumnType( DbType.String, "NVARCHAR(1)" );
-			RegisterColumnType( DbType.String, 32767, "NVARCHAR($l)" );
-			RegisterColumnType( DbType.String, 2147483647, "LONG NVARCHAR" );
-			RegisterColumnType( DbType.Binary, "BINARY(1)" );
-			RegisterColumnType( DbType.Binary, 32767, "VARBINARY($l)" );
-			RegisterColumnType( DbType.Binary, 2147483647, "LONG VARBINARY" );
-			RegisterColumnType( DbType.Guid, "UNIQUEIDENTIFIER");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(1)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 32767, "CHAR($l)");
+			RegisterColumnType(DbType.AnsiString, "VARCHAR(1)");
+			RegisterColumnType(DbType.AnsiString, 32767, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, 2147483647, "LONG VARCHAR");
+			RegisterColumnType(DbType.StringFixedLength, "NCHAR(1)");
+			RegisterColumnType(DbType.StringFixedLength, 32767, "NCHAR($l)");
+			RegisterColumnType(DbType.String, "NVARCHAR(1)");
+			RegisterColumnType(DbType.String, 32767, "NVARCHAR($l)");
+			RegisterColumnType(DbType.String, 2147483647, "LONG NVARCHAR");
+			RegisterColumnType(DbType.Binary, "BINARY(1)");
+			RegisterColumnType(DbType.Binary, 32767, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, 2147483647, "LONG VARBINARY");
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 		}
 
-		protected void RegisterNumericTypeMappings()
+		protected virtual void RegisterNumericTypeMappings()
 		{
-			RegisterColumnType( DbType.Boolean, "BIT" ); // BIT type is NOT NULL by default
-			RegisterColumnType( DbType.Int64, "BIGINT" );
-			RegisterColumnType( DbType.UInt64, "UNSIGNED BIGINT");
-			RegisterColumnType( DbType.Int16, "SMALLINT" );
-			RegisterColumnType( DbType.UInt16,"UNSIGNED SMALLINT");
-			RegisterColumnType( DbType.Int32, "INTEGER" );
-			RegisterColumnType( DbType.UInt32, "UNSIGNED INTEGER");
-			RegisterColumnType( DbType.Single, "REAL" );
-			RegisterColumnType( DbType.Double, "DOUBLE" );
-			RegisterColumnType( DbType.Decimal, "NUMERIC(19,$l)" ); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Boolean, "BIT"); // BIT type is NOT NULL by default
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.UInt64, "UNSIGNED BIGINT");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.UInt16,"UNSIGNED SMALLINT");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.UInt32, "UNSIGNED INTEGER");
+			RegisterColumnType(DbType.Single, "REAL");
+			RegisterColumnType(DbType.Double, "DOUBLE");
+			RegisterColumnType(DbType.Decimal, "NUMERIC(19,$l)"); // Precision ranges from 0-127
 		}
 
-		protected void RegisterDateTimeTypeMappings()
+		protected virtual void RegisterDateTimeTypeMappings()
 		{
-			RegisterColumnType( DbType.Date, "DATE" );
-			RegisterColumnType( DbType.Time, "TIME" );
-			RegisterColumnType( DbType.DateTime, "TIMESTAMP" );
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.Time, "TIME");
+			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 		}
 	
-		protected void RegisterReverseNHibernateTypeMappings() {}
+		protected virtual void RegisterReverseNHibernateTypeMappings() {}
 	
-		protected void RegisterFunctions()
+		protected virtual void RegisterFunctions()
 		{
 			RegisterMathFunctions();
-			RegisterXMLFunctions();
+			RegisterXmlFunctions();
 			RegisterAggregationFunctions();
 			RegisterBitFunctions();
 			RegisterDateFunctions();
 			RegisterStringFunctions();
-			RegisterSOAPFunctions();
+			RegisterSoapFunctions();
 			RegisterMiscellaneousFunctions();
 		}
 
-		protected void RegisterMathFunctions()
+		protected virtual void RegisterMathFunctions()
 		{
 			// mathematical functions
-			RegisterFunction( "abs", new StandardSQLFunction("abs") );
-			RegisterFunction( "acos", new StandardSQLFunction("acos", NHibernateUtil.Double) );
-			RegisterFunction( "asin", new StandardSQLFunction("asin", NHibernateUtil.Double) );
-			RegisterFunction( "atan", new StandardSQLFunction("atan", NHibernateUtil.Double) );
-			RegisterFunction( "atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double) );
-			RegisterFunction( "ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double) );
-			RegisterFunction( "cos", new StandardSQLFunction("cos", NHibernateUtil.Double) );
-			RegisterFunction( "cot", new StandardSQLFunction("cot", NHibernateUtil.Double) );
-			RegisterFunction( "degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double) );
-			RegisterFunction( "exp", new StandardSQLFunction("exp", NHibernateUtil.Double) );
-			RegisterFunction( "floor", new StandardSQLFunction("floor", NHibernateUtil.Double) );
-			RegisterFunction( "log", new StandardSQLFunction("log", NHibernateUtil.Double) );
-			RegisterFunction( "log10", new StandardSQLFunction("log10", NHibernateUtil.Double) );
-			RegisterFunction( "mod", new StandardSQLFunction("mod") );
-			RegisterFunction( "pi", new NoArgSQLFunction("pi", NHibernateUtil.Double, true ) );
-			RegisterFunction( "power", new StandardSQLFunction("power", NHibernateUtil.Double) );
-			RegisterFunction( "radians", new StandardSQLFunction("radians", NHibernateUtil.Double) );
-			RegisterFunction( "rand", new StandardSQLFunction("rand", NHibernateUtil.Double) );
-			RegisterFunction( "remainder", new StandardSQLFunction("remainder") );
-			RegisterFunction( "round", new StandardSQLFunction("round") );
-			RegisterFunction( "sign", new StandardSQLFunction("sign", NHibernateUtil.Int32) );
-			RegisterFunction( "sin", new StandardSQLFunction("sin", NHibernateUtil.Double) );
-			RegisterFunction( "sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double) );
-			RegisterFunction( "tan", new StandardSQLFunction("tan", NHibernateUtil.Double) );
-			RegisterFunction( "truncate", new StandardSQLFunction("truncate") );
+			RegisterFunction("abs", new StandardSQLFunction("abs"));
+			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
+			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
+			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
+			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
+			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
+			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
+			RegisterFunction("floor", new StandardSQLFunction("floor", NHibernateUtil.Double));
+			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
+			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
+			RegisterFunction("mod", new StandardSQLFunction("mod"));
+			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double, true ));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
+			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
+			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
+			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
+			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
 		}
 
-		protected void RegisterXMLFunctions()
+		protected virtual void RegisterXmlFunctions()
 		{
 			// XML scalar functions only
-			RegisterFunction( "xmlconcat", new VarArgsSQLFunction( NHibernateUtil.String, "xmlconcat(", ",", ")" ) );
-			RegisterFunction( "xmlelement", new VarArgsSQLFunction( NHibernateUtil.String, "xmlelement(", ",", ")" ) );
-			RegisterFunction( "xmlgen", new VarArgsSQLFunction( NHibernateUtil.String, "xmlgen(", ",", ")" ) );
+			RegisterFunction("xmlconcat", new VarArgsSQLFunction( NHibernateUtil.String, "xmlconcat(", ",", ")"));
+			RegisterFunction("xmlelement", new VarArgsSQLFunction( NHibernateUtil.String, "xmlelement(", ",", ")"));
+			RegisterFunction("xmlgen", new VarArgsSQLFunction( NHibernateUtil.String, "xmlgen(", ",", ")"));
 			// missing: XMLForest().
 		}
 	
-		protected void RegisterAggregationFunctions()
+		protected virtual void RegisterAggregationFunctions()
 		{
 			// basic aggregate, linear regression OLAP, and window functions
-			RegisterFunction( "bit_or", new StandardSQLFunction("bit_or") );
-			RegisterFunction( "bit_and", new StandardSQLFunction("bit_and") );
-			RegisterFunction( "bit_xor", new StandardSQLFunction("bit_xor") );
-			RegisterFunction( "covar_pop", new StandardSQLFunction("covar_pop", NHibernateUtil.Double) );
-			RegisterFunction( "covar_samp", new StandardSQLFunction("covar_samp", NHibernateUtil.Double) );
-			RegisterFunction( "corr", new StandardSQLFunction("corr", NHibernateUtil.Double) );
-			RegisterFunction( "first_value", new VarArgsSQLFunction(NHibernateUtil.Double, "first_value(", ",", ")" ));
-			RegisterFunction( "grouping", new StandardSQLFunction("grouping", NHibernateUtil.Int32) );
-			RegisterFunction( "last_value", new VarArgsSQLFunction(NHibernateUtil.Double, "last_value(", ",", ")" ));
-			RegisterFunction( "list", new VarArgsSQLFunction("list(", ",", ")" ));
-			RegisterFunction( "regr_avgx", new StandardSQLFunction("regr_avgx", NHibernateUtil.Double) );
-			RegisterFunction( "regr_avgy", new StandardSQLFunction("regr_avgy", NHibernateUtil.Double) );
-			RegisterFunction( "regr_count", new StandardSQLFunction("regr_count", NHibernateUtil.Double) );
-			RegisterFunction( "regr_intercept", new StandardSQLFunction("regr_intercept", NHibernateUtil.Double) );
-			RegisterFunction( "regr_r2", new StandardSQLFunction("regr_r2", NHibernateUtil.Double) );
-			RegisterFunction( "regr_slope", new StandardSQLFunction("regr_slope", NHibernateUtil.Double) );
-			RegisterFunction( "regr_sxx", new StandardSQLFunction("regr_sxx", NHibernateUtil.Double) );
-			RegisterFunction( "regr_sxy", new StandardSQLFunction("regr_sxy", NHibernateUtil.Double) );
-			RegisterFunction( "regr_syy", new StandardSQLFunction("regr_syy", NHibernateUtil.Double) );
-			RegisterFunction( "set_bits", new StandardSQLFunction("set_bits") );
-			RegisterFunction( "stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double) );
-			RegisterFunction( "stddev_pop", new StandardSQLFunction("stddev_pop", NHibernateUtil.Double) );
-			RegisterFunction( "stddev_samp", new StandardSQLFunction("stddev_samp", NHibernateUtil.Double) );
-			RegisterFunction( "variance", new StandardSQLFunction("variance", NHibernateUtil.Double) );
-			RegisterFunction( "var_pop", new StandardSQLFunction("var_pop", NHibernateUtil.Double) );
-			RegisterFunction( "var_samp", new StandardSQLFunction("var_samp", NHibernateUtil.Double) );
-			RegisterFunction( "xmlagg", new StandardSQLFunction("xmlagg") );
+			RegisterFunction("bit_or", new StandardSQLFunction("bit_or"));
+			RegisterFunction("bit_and", new StandardSQLFunction("bit_and"));
+			RegisterFunction("bit_xor", new StandardSQLFunction("bit_xor"));
+			RegisterFunction("covar_pop", new StandardSQLFunction("covar_pop", NHibernateUtil.Double));
+			RegisterFunction("covar_samp", new StandardSQLFunction("covar_samp", NHibernateUtil.Double));
+			RegisterFunction("corr", new StandardSQLFunction("corr", NHibernateUtil.Double));
+			RegisterFunction("first_value", new VarArgsSQLFunction(NHibernateUtil.Double, "first_value(", ",", ")"));
+			RegisterFunction("grouping", new StandardSQLFunction("grouping", NHibernateUtil.Int32));
+			RegisterFunction("last_value", new VarArgsSQLFunction(NHibernateUtil.Double, "last_value(", ",", ")"));
+			RegisterFunction("list", new VarArgsSQLFunction("list(", ",", ")"));
+			RegisterFunction("regr_avgx", new StandardSQLFunction("regr_avgx", NHibernateUtil.Double));
+			RegisterFunction("regr_avgy", new StandardSQLFunction("regr_avgy", NHibernateUtil.Double));
+			RegisterFunction("regr_count", new StandardSQLFunction("regr_count", NHibernateUtil.Double));
+			RegisterFunction("regr_intercept", new StandardSQLFunction("regr_intercept", NHibernateUtil.Double));
+			RegisterFunction("regr_r2", new StandardSQLFunction("regr_r2", NHibernateUtil.Double));
+			RegisterFunction("regr_slope", new StandardSQLFunction("regr_slope", NHibernateUtil.Double));
+			RegisterFunction("regr_sxx", new StandardSQLFunction("regr_sxx", NHibernateUtil.Double));
+			RegisterFunction("regr_sxy", new StandardSQLFunction("regr_sxy", NHibernateUtil.Double));
+			RegisterFunction("regr_syy", new StandardSQLFunction("regr_syy", NHibernateUtil.Double));
+			RegisterFunction("set_bits", new StandardSQLFunction("set_bits"));
+			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
+			RegisterFunction("stddev_pop", new StandardSQLFunction("stddev_pop", NHibernateUtil.Double));
+			RegisterFunction("stddev_samp", new StandardSQLFunction("stddev_samp", NHibernateUtil.Double));
+			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
+			RegisterFunction("var_pop", new StandardSQLFunction("var_pop", NHibernateUtil.Double));
+			RegisterFunction("var_samp", new StandardSQLFunction("var_samp", NHibernateUtil.Double));
+			RegisterFunction("xmlagg", new StandardSQLFunction("xmlagg"));
 		}
 	
-		protected void RegisterBitFunctions()
+		protected virtual void RegisterBitFunctions()
 		{
-			RegisterFunction( "bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32) );
-			RegisterFunction( "bit_substr", new StandardSQLFunction("bit_substr") );
-			RegisterFunction( "get_bit", new StandardSQLFunction("get_bit", NHibernateUtil.Boolean) );
-			RegisterFunction( "set_bit", new VarArgsSQLFunction("set_bit(", ",", ")" ));
+			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
+			RegisterFunction("bit_substr", new StandardSQLFunction("bit_substr"));
+			RegisterFunction("get_bit", new StandardSQLFunction("get_bit", NHibernateUtil.Boolean));
+			RegisterFunction("set_bit", new VarArgsSQLFunction("set_bit(", ",", ")"));
 		}
 
-		protected void RegisterDateFunctions()
+		protected virtual void RegisterDateFunctions()
 		{
-			RegisterFunction( "date", new StandardSQLFunction("date", NHibernateUtil.Date) );
-			RegisterFunction( "dateadd", new StandardSQLFunction("dateadd", NHibernateUtil.Timestamp) );
-			RegisterFunction( "datediff", new StandardSQLFunction("datediff", NHibernateUtil.Int32) );
-			RegisterFunction( "dateformat", new StandardSQLFunction("dateformat", NHibernateUtil.String) );
-			RegisterFunction( "datename", new StandardSQLFunction("datename", NHibernateUtil.String) );
-			RegisterFunction( "datepart", new StandardSQLFunction("datepart", NHibernateUtil.Int32) );
-			RegisterFunction( "datetime", new StandardSQLFunction("datetime", NHibernateUtil.Timestamp) );
-			RegisterFunction( "day", new StandardSQLFunction("day", NHibernateUtil.Int32) );
-			RegisterFunction( "dayname", new StandardSQLFunction("dayname", NHibernateUtil.String) );
-			RegisterFunction( "days", new StandardSQLFunction("days") );
-			RegisterFunction( "dow", new StandardSQLFunction("dow", NHibernateUtil.Int32) );
-			RegisterFunction( "getdate", new StandardSQLFunction("getdate", NHibernateUtil.Timestamp) );
-			RegisterFunction( "hour", new StandardSQLFunction("hour", NHibernateUtil.Int32) );
-			RegisterFunction( "hours", new StandardSQLFunction("hours") );
-			RegisterFunction( "minute", new StandardSQLFunction("minute", NHibernateUtil.Int32) );
-			RegisterFunction( "minutes", new StandardSQLFunction("minutes") );
-			RegisterFunction( "month", new StandardSQLFunction("month", NHibernateUtil.Int32) );
-			RegisterFunction( "monthname", new StandardSQLFunction("monthname", NHibernateUtil.String) );
-			RegisterFunction( "months", new StandardSQLFunction("months") );
-			RegisterFunction( "now", new NoArgSQLFunction("now", NHibernateUtil.Timestamp) );
-			RegisterFunction( "quarter", new StandardSQLFunction("quarter", NHibernateUtil.Int32) );
-			RegisterFunction( "second", new StandardSQLFunction("second", NHibernateUtil.Int32) );
-			RegisterFunction( "seconds", new StandardSQLFunction("seconds") );
-			RegisterFunction( "today", new NoArgSQLFunction("now", NHibernateUtil.Date) );
-			RegisterFunction( "weeks", new StandardSQLFunction("weeks") );
-			RegisterFunction( "year", new StandardSQLFunction("year", NHibernateUtil.Int32) );
-			RegisterFunction( "years", new StandardSQLFunction("years") );
-			RegisterFunction( "ymd", new StandardSQLFunction("ymd", NHibernateUtil.Date) );
+			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.Date));
+			RegisterFunction("dateadd", new StandardSQLFunction("dateadd", NHibernateUtil.Timestamp));
+			RegisterFunction("datediff", new StandardSQLFunction("datediff", NHibernateUtil.Int32));
+			RegisterFunction("dateformat", new StandardSQLFunction("dateformat", NHibernateUtil.String));
+			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
+			RegisterFunction("datepart", new StandardSQLFunction("datepart", NHibernateUtil.Int32));
+			RegisterFunction("datetime", new StandardSQLFunction("datetime", NHibernateUtil.Timestamp));
+			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
+			RegisterFunction("dayname", new StandardSQLFunction("dayname", NHibernateUtil.String));
+			RegisterFunction("days", new StandardSQLFunction("days"));
+			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.Int32));
+			RegisterFunction("getdate", new StandardSQLFunction("getdate", NHibernateUtil.Timestamp));
+			RegisterFunction("hour", new StandardSQLFunction("hour", NHibernateUtil.Int32));
+			RegisterFunction("hours", new StandardSQLFunction("hours"));
+			RegisterFunction("minute", new StandardSQLFunction("minute", NHibernateUtil.Int32));
+			RegisterFunction("minutes", new StandardSQLFunction("minutes"));
+			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
+			RegisterFunction("monthname", new StandardSQLFunction("monthname", NHibernateUtil.String));
+			RegisterFunction("months", new StandardSQLFunction("months"));
+			RegisterFunction("now", new NoArgSQLFunction("now", NHibernateUtil.Timestamp));
+			RegisterFunction("quarter", new StandardSQLFunction("quarter", NHibernateUtil.Int32));
+			RegisterFunction("second", new StandardSQLFunction("second", NHibernateUtil.Int32));
+			RegisterFunction("seconds", new StandardSQLFunction("seconds"));
+			RegisterFunction("today", new NoArgSQLFunction("now", NHibernateUtil.Date));
+			RegisterFunction("weeks", new StandardSQLFunction("weeks"));
+			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
+			RegisterFunction("years", new StandardSQLFunction("years"));
+			RegisterFunction("ymd", new StandardSQLFunction("ymd", NHibernateUtil.Date));
 	
 			// compatibility functions
-			RegisterFunction( "current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.Timestamp, true ) );
-			RegisterFunction( "current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true ) );
-			RegisterFunction( "current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true ) );
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.Timestamp, true ));
+			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true ));
+			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true ));
 		}
 	
-		protected void RegisterStringFunctions()
+		protected virtual void RegisterStringFunctions()
 		{
-			RegisterFunction( "ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32) );
-			RegisterFunction( "byte64_decode", new StandardSQLFunction("byte64_decode", NHibernateUtil.StringClob ) );
-			RegisterFunction( "byte64_encode", new StandardSQLFunction("byte64_encode", NHibernateUtil.StringClob ) );
-			RegisterFunction( "byte_length", new StandardSQLFunction("byte_length", NHibernateUtil.Int32) );
-			RegisterFunction( "byte_substr", new VarArgsSQLFunction( NHibernateUtil.String, "byte_substr(",",",")" ) );
-			RegisterFunction( "char", new StandardSQLFunction("char", NHibernateUtil.String ) );
-			RegisterFunction( "charindex", new StandardSQLFunction("charindex", NHibernateUtil.Int32) );
-			RegisterFunction( "char_length", new StandardSQLFunction("char_length", NHibernateUtil.Int32) );
-			RegisterFunction( "compare", new VarArgsSQLFunction( NHibernateUtil.Int32, "compare(",",",")" ) );
-			RegisterFunction( "compress", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "compress(",",",")" ) );
-			RegisterFunction( "concat", new VarArgsSQLFunction( NHibernateUtil.String, "(","+",")" ) );
-			RegisterFunction( "csconvert", new VarArgsSQLFunction( NHibernateUtil.StringClob, "csconvert(",",",")" ) );
-			RegisterFunction( "decompress", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "decompress(",",",")" ) );
-			RegisterFunction( "decrypt", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "decrypt(",",",")" ) );
-			RegisterFunction( "difference", new StandardSQLFunction("difference", NHibernateUtil.Int32) );
-			RegisterFunction( "encrypt", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "encrypt(",",",")" ) );
-			RegisterFunction( "hash", new VarArgsSQLFunction( NHibernateUtil.String, "hash(",",",")" ) );
-			RegisterFunction( "insertstr", new StandardSQLFunction("insertstr", NHibernateUtil.String) );
-			RegisterFunction( "lcase", new StandardSQLFunction("lcase", NHibernateUtil.String) );
-			RegisterFunction( "left", new StandardSQLFunction("left", NHibernateUtil.String) );
-			RegisterFunction( "length", new StandardSQLFunction("length", NHibernateUtil.Int32) );
-			RegisterFunction( "locate", new VarArgsSQLFunction( NHibernateUtil.Int32, "locate(",",",")" ) );
-			RegisterFunction( "lower", new StandardSQLFunction("lower", NHibernateUtil.String) );
-			RegisterFunction( "ltrim", new StandardSQLFunction("ltrim", NHibernateUtil.String) );
-			RegisterFunction( "patindex", new StandardSQLFunction("patindex", NHibernateUtil.Int32) );
-			RegisterFunction( "repeat", new StandardSQLFunction("repeat", NHibernateUtil.String) );
-			RegisterFunction( "replace", new StandardSQLFunction("replace", NHibernateUtil.String) );
-			RegisterFunction( "replicate", new StandardSQLFunction("replicate", NHibernateUtil.String) );
-			RegisterFunction( "reverse", new StandardSQLFunction("reverse", NHibernateUtil.String) );
-			RegisterFunction( "right", new StandardSQLFunction("right", NHibernateUtil.String) );
-			RegisterFunction( "rtrim", new StandardSQLFunction("rtrim", NHibernateUtil.String) );
-			RegisterFunction( "similar", new StandardSQLFunction("rtrim", NHibernateUtil.Int32) );
-			RegisterFunction( "sortkey", new VarArgsSQLFunction( NHibernateUtil.Binary, "sortkey(",",",")" ) );
-			RegisterFunction( "soundex", new StandardSQLFunction("soundex", NHibernateUtil.Int32) );
-			RegisterFunction( "space", new StandardSQLFunction("space", NHibernateUtil.String) );
-			RegisterFunction( "str", new VarArgsSQLFunction( NHibernateUtil.String, "str(",",",")" ) );
-			RegisterFunction( "string", new VarArgsSQLFunction( NHibernateUtil.String, "string(",",",")" ) );
-			RegisterFunction( "strtouuid", new StandardSQLFunction("strtouuid") );
-			RegisterFunction( "stuff", new StandardSQLFunction("stuff", NHibernateUtil.String) );
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
+			RegisterFunction("byte64_decode", new StandardSQLFunction("byte64_decode", NHibernateUtil.StringClob ));
+			RegisterFunction("byte64_encode", new StandardSQLFunction("byte64_encode", NHibernateUtil.StringClob ));
+			RegisterFunction("byte_length", new StandardSQLFunction("byte_length", NHibernateUtil.Int32));
+			RegisterFunction("byte_substr", new VarArgsSQLFunction( NHibernateUtil.String, "byte_substr(",",",")"));
+			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.String ));
+			RegisterFunction("charindex", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
+			RegisterFunction("char_length", new StandardSQLFunction("char_length", NHibernateUtil.Int32));
+			RegisterFunction("compare", new VarArgsSQLFunction( NHibernateUtil.Int32, "compare(",",",")"));
+			RegisterFunction("compress", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "compress(",",",")"));
+			RegisterFunction("concat", new VarArgsSQLFunction( NHibernateUtil.String, "(","+",")"));
+			RegisterFunction("csconvert", new VarArgsSQLFunction( NHibernateUtil.StringClob, "csconvert(",",",")"));
+			RegisterFunction("decompress", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "decompress(",",",")"));
+			RegisterFunction("decrypt", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "decrypt(",",",")"));
+			RegisterFunction("difference", new StandardSQLFunction("difference", NHibernateUtil.Int32));
+			RegisterFunction("encrypt", new VarArgsSQLFunction( NHibernateUtil.BinaryBlob, "encrypt(",",",")"));
+			RegisterFunction("hash", new VarArgsSQLFunction( NHibernateUtil.String, "hash(",",",")"));
+			RegisterFunction("insertstr", new StandardSQLFunction("insertstr", NHibernateUtil.String));
+			RegisterFunction("lcase", new StandardSQLFunction("lcase", NHibernateUtil.String));
+			RegisterFunction("left", new StandardSQLFunction("left", NHibernateUtil.String));
+			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
+			RegisterFunction("locate", new VarArgsSQLFunction( NHibernateUtil.Int32, "locate(",",",")"));
+			RegisterFunction("lower", new StandardSQLFunction("lower", NHibernateUtil.String));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim", NHibernateUtil.String));
+			RegisterFunction("patindex", new StandardSQLFunction("patindex", NHibernateUtil.Int32));
+			RegisterFunction("repeat", new StandardSQLFunction("repeat", NHibernateUtil.String));
+			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
+			RegisterFunction("replicate", new StandardSQLFunction("replicate", NHibernateUtil.String));
+			RegisterFunction("reverse", new StandardSQLFunction("reverse", NHibernateUtil.String));
+			RegisterFunction("right", new StandardSQLFunction("right", NHibernateUtil.String));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim", NHibernateUtil.String));
+			RegisterFunction("similar", new StandardSQLFunction("rtrim", NHibernateUtil.Int32));
+			RegisterFunction("sortkey", new VarArgsSQLFunction( NHibernateUtil.Binary, "sortkey(",",",")"));
+			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.Int32));
+			RegisterFunction("space", new StandardSQLFunction("space", NHibernateUtil.String));
+			RegisterFunction("str", new VarArgsSQLFunction( NHibernateUtil.String, "str(",",",")"));
+			RegisterFunction("string", new VarArgsSQLFunction( NHibernateUtil.String, "string(",",",")"));
+			RegisterFunction("strtouuid", new StandardSQLFunction("strtouuid"));
+			RegisterFunction("stuff", new StandardSQLFunction("stuff", NHibernateUtil.String));
 	
 			// In SQL Anywhere 10, substr() semantics depends on the ANSI_substring option
 	
-			RegisterFunction( "substr", new VarArgsSQLFunction( NHibernateUtil.String, "substr(",",",")" ) );
-			RegisterFunction( "substring", new VarArgsSQLFunction( NHibernateUtil.String, "substr(",",",")" ) );
-			RegisterFunction( "to_char", new VarArgsSQLFunction( NHibernateUtil.String, "to_char(",",",")" ) );
-			RegisterFunction( "to_nchar", new VarArgsSQLFunction( NHibernateUtil.String, "to_nchar(",",",")" ) );
+			RegisterFunction("substr", new VarArgsSQLFunction( NHibernateUtil.String, "substr(",",",")"));
+			RegisterFunction("substring", new VarArgsSQLFunction( NHibernateUtil.String, "substr(",",",")"));
+			RegisterFunction("to_char", new VarArgsSQLFunction( NHibernateUtil.String, "to_char(",",",")"));
+			RegisterFunction("to_nchar", new VarArgsSQLFunction( NHibernateUtil.String, "to_nchar(",",",")"));
 	
-			RegisterFunction( "trim", new StandardSQLFunction( "trim", NHibernateUtil.String) );
-			RegisterFunction( "ucase", new StandardSQLFunction("ucase", NHibernateUtil.String) );
-			RegisterFunction( "unicode", new StandardSQLFunction("unicode", NHibernateUtil.Int32) );
-			RegisterFunction( "unistr", new StandardSQLFunction("unistr", NHibernateUtil.String) );
-			RegisterFunction( "upper", new StandardSQLFunction("upper", NHibernateUtil.String) );
-			RegisterFunction( "uuidtostr", new StandardSQLFunction("uuidtostr", NHibernateUtil.String) );
+			RegisterFunction("trim", new StandardSQLFunction("trim", NHibernateUtil.String));
+			RegisterFunction("ucase", new StandardSQLFunction("ucase", NHibernateUtil.String));
+			RegisterFunction("unicode", new StandardSQLFunction("unicode", NHibernateUtil.Int32));
+			RegisterFunction("unistr", new StandardSQLFunction("unistr", NHibernateUtil.String));
+			RegisterFunction("upper", new StandardSQLFunction("upper", NHibernateUtil.String));
+			RegisterFunction("uuidtostr", new StandardSQLFunction("uuidtostr", NHibernateUtil.String));
 		}
 	
-		protected void RegisterSOAPFunctions()
+		protected virtual void RegisterSoapFunctions()
 		{
-			RegisterFunction( "html_decode", new StandardSQLFunction("html_decode", NHibernateUtil.String) );
-			RegisterFunction( "html_encode", new StandardSQLFunction("html_encode", NHibernateUtil.String) );
-			RegisterFunction( "http_decode", new StandardSQLFunction("http_decode", NHibernateUtil.String) );
-			RegisterFunction( "http_encode", new StandardSQLFunction("http_encode", NHibernateUtil.String) );
-			RegisterFunction( "http_header", new StandardSQLFunction("http_header", NHibernateUtil.String) );
-			RegisterFunction( "http_variable", new VarArgsSQLFunction( "http_variable(",",",")" ) );
-			RegisterFunction( "next_http_header", new StandardSQLFunction("next_http_header", NHibernateUtil.String) );
-			RegisterFunction( "next_http_variable", new StandardSQLFunction("next_http_variable", NHibernateUtil.String) );
-			RegisterFunction( "next_soap_header", new VarArgsSQLFunction( "next_soap_header(",",",")" ) );
+			RegisterFunction("html_decode", new StandardSQLFunction("html_decode", NHibernateUtil.String));
+			RegisterFunction("html_encode", new StandardSQLFunction("html_encode", NHibernateUtil.String));
+			RegisterFunction("http_decode", new StandardSQLFunction("http_decode", NHibernateUtil.String));
+			RegisterFunction("http_encode", new StandardSQLFunction("http_encode", NHibernateUtil.String));
+			RegisterFunction("http_header", new StandardSQLFunction("http_header", NHibernateUtil.String));
+			RegisterFunction("http_variable", new VarArgsSQLFunction("http_variable(",",",")"));
+			RegisterFunction("next_http_header", new StandardSQLFunction("next_http_header", NHibernateUtil.String));
+			RegisterFunction("next_http_variable", new StandardSQLFunction("next_http_variable", NHibernateUtil.String));
+			RegisterFunction("next_soap_header", new VarArgsSQLFunction("next_soap_header(",",",")"));
 		}
 	
-		protected void RegisterMiscellaneousFunctions()
+		protected virtual void RegisterMiscellaneousFunctions()
 		{
-			RegisterFunction( "argn", new VarArgsSQLFunction( "argn(",",",")" ) );
-			RegisterFunction( "coalesce", new VarArgsSQLFunction( "coalesce(",",",")" ) );
-			RegisterFunction( "conflict", new StandardSQLFunction("conflict", NHibernateUtil.Boolean) );
-			RegisterFunction( "connection_property", new VarArgsSQLFunction( "connection_property(",",",")" ) );
-			RegisterFunction( "connection_extended_property", new VarArgsSQLFunction( "connection_extended_property(",",",")" ) );
-			RegisterFunction( "db_extended_property", new VarArgsSQLFunction( "db_extended_property(",",",")" ) );
-			RegisterFunction( "db_property", new VarArgsSQLFunction( "db_property(",",",")" ) );
-			RegisterFunction( "errormsg", new NoArgSQLFunction("errormsg", NHibernateUtil.String, true ) );
-			RegisterFunction( "estimate", new VarArgsSQLFunction( "estimate(",",",")" ) );
-			RegisterFunction( "estimate_source", new VarArgsSQLFunction( NHibernateUtil.String, "estimate_source(",",",")" ) );
-			RegisterFunction( "experience_estimate", new VarArgsSQLFunction( "experience_estimate(",",",")" ) );
-			RegisterFunction( "explanation", new VarArgsSQLFunction( NHibernateUtil.String, "explanation(",",",")" ) );
-			RegisterFunction( "exprtype", new StandardSQLFunction("exprtype", NHibernateUtil.String) );
-			RegisterFunction( "get_identity", new VarArgsSQLFunction( "get_identity(",",",")" ) );
-			RegisterFunction( "graphical_plan", new VarArgsSQLFunction( NHibernateUtil.String, "graphical_plan(",",",")" ) );
-			RegisterFunction( "greater", new StandardSQLFunction("greater") );
-			RegisterFunction( "identity", new StandardSQLFunction("identity") );
-			RegisterFunction( "ifnull", new VarArgsSQLFunction( "ifnull(",",",")" ) );
-			RegisterFunction( "index_estimate", new VarArgsSQLFunction( "index_estimate(",",",")" ) );
-			RegisterFunction( "isnull", new VarArgsSQLFunction( "isnull(",",",")" ) );
-			RegisterFunction( "lesser", new StandardSQLFunction("lesser") );
-			RegisterFunction( "newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true ) );
-			RegisterFunction( "nullif", new StandardSQLFunction("nullif") );
-			RegisterFunction( "number", new NoArgSQLFunction("number", NHibernateUtil.Int32) );
-			RegisterFunction( "plan", new VarArgsSQLFunction( NHibernateUtil.String, "plan(",",",")" ) );
-			RegisterFunction( "property", new StandardSQLFunction( "property", NHibernateUtil.String ) );
-			RegisterFunction( "property_description", new StandardSQLFunction( "property_description", NHibernateUtil.String ) );
-			RegisterFunction( "property_name", new StandardSQLFunction( "property_name", NHibernateUtil.String ) );
-			RegisterFunction( "property_number", new StandardSQLFunction( "property_number", NHibernateUtil.Int32 ) );
-			RegisterFunction( "rewrite", new VarArgsSQLFunction( NHibernateUtil.String, "rewrite(",",",")" ) );
-			RegisterFunction( "row_number", new NoArgSQLFunction("row_number", NHibernateUtil.Int32, true ) );
-			RegisterFunction( "sqldialect", new StandardSQLFunction("sqldialect", NHibernateUtil.String) );
-			RegisterFunction( "sqlflagger", new StandardSQLFunction("sqlflagger", NHibernateUtil.String) );
-			RegisterFunction( "traceback", new NoArgSQLFunction("traceback", NHibernateUtil.String) );
-			RegisterFunction( "transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String) );
-			RegisterFunction( "varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32) );
-			RegisterFunction( "watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String) );
+			RegisterFunction("argn", new VarArgsSQLFunction("argn(",",",")"));
+			RegisterFunction("coalesce", new VarArgsSQLFunction("coalesce(",",",")"));
+			RegisterFunction("conflict", new StandardSQLFunction("conflict", NHibernateUtil.Boolean));
+			RegisterFunction("connection_property", new VarArgsSQLFunction("connection_property(",",",")"));
+			RegisterFunction("connection_extended_property", new VarArgsSQLFunction("connection_extended_property(",",",")"));
+			RegisterFunction("db_extended_property", new VarArgsSQLFunction("db_extended_property(",",",")"));
+			RegisterFunction("db_property", new VarArgsSQLFunction("db_property(",",",")"));
+			RegisterFunction("errormsg", new NoArgSQLFunction("errormsg", NHibernateUtil.String, true ));
+			RegisterFunction("estimate", new VarArgsSQLFunction("estimate(",",",")"));
+			RegisterFunction("estimate_source", new VarArgsSQLFunction( NHibernateUtil.String, "estimate_source(",",",")"));
+			RegisterFunction("experience_estimate", new VarArgsSQLFunction("experience_estimate(",",",")"));
+			RegisterFunction("explanation", new VarArgsSQLFunction( NHibernateUtil.String, "explanation(",",",")"));
+			RegisterFunction("exprtype", new StandardSQLFunction("exprtype", NHibernateUtil.String));
+			RegisterFunction("get_identity", new VarArgsSQLFunction("get_identity(",",",")"));
+			RegisterFunction("graphical_plan", new VarArgsSQLFunction( NHibernateUtil.String, "graphical_plan(",",",")"));
+			RegisterFunction("greater", new StandardSQLFunction("greater"));
+			RegisterFunction("identity", new StandardSQLFunction("identity"));
+			RegisterFunction("ifnull", new VarArgsSQLFunction("ifnull(",",",")"));
+			RegisterFunction("index_estimate", new VarArgsSQLFunction("index_estimate(",",",")"));
+			RegisterFunction("isnull", new VarArgsSQLFunction("isnull(",",",")"));
+			RegisterFunction("lesser", new StandardSQLFunction("lesser"));
+			RegisterFunction("newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true ));
+			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
+			RegisterFunction("number", new NoArgSQLFunction("number", NHibernateUtil.Int32));
+			RegisterFunction("plan", new VarArgsSQLFunction( NHibernateUtil.String, "plan(",",",")"));
+			RegisterFunction("property", new StandardSQLFunction("property", NHibernateUtil.String ));
+			RegisterFunction("property_description", new StandardSQLFunction("property_description", NHibernateUtil.String ));
+			RegisterFunction("property_name", new StandardSQLFunction("property_name", NHibernateUtil.String ));
+			RegisterFunction("property_number", new StandardSQLFunction("property_number", NHibernateUtil.Int32 ));
+			RegisterFunction("rewrite", new VarArgsSQLFunction( NHibernateUtil.String, "rewrite(",",",")"));
+			RegisterFunction("row_number", new NoArgSQLFunction("row_number", NHibernateUtil.Int32, true ));
+			RegisterFunction("sqldialect", new StandardSQLFunction("sqldialect", NHibernateUtil.String));
+			RegisterFunction("sqlflagger", new StandardSQLFunction("sqlflagger", NHibernateUtil.String));
+			RegisterFunction("traceback", new NoArgSQLFunction("traceback", NHibernateUtil.String));
+			RegisterFunction("transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String));
+			RegisterFunction("varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32));
+			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
 		}
 
-		protected void RegisterKeywords()
+		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword( "TOP" );
-			RegisterKeyword( "FIRST" );
-			RegisterKeyword( "FETCH" );
-			RegisterKeyword( "START" );
-			RegisterKeyword( "AT" );
-			RegisterKeyword( "WITH" );
-			RegisterKeyword( "CONTAINS" );
-			RegisterKeyword( "REGEXP" );
-			RegisterKeyword( "SIMILAR" );
-			RegisterKeyword( "SEQUENCE" );
+			RegisterKeyword("TOP");
+			RegisterKeyword("FIRST");
+			RegisterKeyword("FETCH");
+			RegisterKeyword("START");
+			RegisterKeyword("AT");
+			RegisterKeyword("WITH");
+			RegisterKeyword("CONTAINS");
+			RegisterKeyword("REGEXP");
+			RegisterKeyword("SIMILAR");
+			RegisterKeyword("SEQUENCE");
 		}
 
 		#region IDENTITY or AUTOINCREMENT support
@@ -375,7 +374,7 @@ namespace NHibernate.Dialect
 
 		public override string IdentitySelectString
 		{
-			get { return "SELECT @@IDENTITY"; }
+			get { return "select @@identity"; }
 		}
 
 		/// <summary>
@@ -384,12 +383,12 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override string IdentityColumnString
 		{
-			get { return "NOT NULL DEFAULT AUTOINCREMENT"; }
+			get { return "not null default autoincrement"; }
 		}
 		
-		public override SqlString AppendIdentitySelectToInsert( SqlString insertSql )
+		public override SqlString AppendIdentitySelectToInsert(SqlString insertSql)
 		{
-			return insertSql.Append( "; " + IdentitySelectString );
+			return insertSql.Append("; " + IdentitySelectString);
 		}
 
 		public override bool SupportsInsertSelectIdentity
@@ -401,29 +400,16 @@ namespace NHibernate.Dialect
 		
 		#region LIMIT/OFFSET support
 
-		/// <summary>
-		/// SQL Anywhere supports a query statement that provides <c>LIMIT</c>
-		/// functionality.
-		/// </summary>
-		/// <value><c>true</c></value>
 		public override bool SupportsLimit
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// SQL Anywhere supports a query statement that provides <c>LIMIT</c>
-		/// functionality with an offset.
-		/// </summary>
-		/// <value><c>true</c></value>
 		public override bool SupportsLimitOffset
 		{
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Can parameters be used for a statement containing a LIMIT?
-		/// </summary>
 		public override bool SupportsVariableLimit
 		{
 			get { return true; }
@@ -446,14 +432,14 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		private static int GetAfterSelectInsertPoint( SqlString sql )
+		private static int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			// Assume no common table expressions with the statement.
-			if ( sql.StartsWithCaseInsensitive( "SELECT DISTINCT" ) )
+			if (sql.StartsWithCaseInsensitive("select distinct"))
 			{
 				return 15;
 			}
-			else if ( sql.StartsWithCaseInsensitive( "SELECT" ) )
+			else if (sql.StartsWithCaseInsensitive("select"))
 			{
 				return 6;
 			}
@@ -467,27 +453,27 @@ namespace NHibernate.Dialect
 		/// Produce a parametertized SQL query using positional parameters for
 		/// TOP and START AT (if specified).
 		/// </summary>
-		public override SqlString GetLimitString( SqlString sql, bool hasOffset )
+		public override SqlString GetLimitString(SqlString sql, bool hasOffset)
 		{
-			int InsertionPoint = GetAfterSelectInsertPoint( sql );
+			int insertionPoint = GetAfterSelectInsertPoint(sql);
 			
-			if ( InsertionPoint > 0 )
+			if (insertionPoint > 0)
 			{
-				SqlStringBuilder LimitBuilder = new SqlStringBuilder();
-				LimitBuilder.Add( "SELECT" );
-				if ( InsertionPoint > 6 ) 
+				SqlStringBuilder limitBuilder = new SqlStringBuilder();
+				limitBuilder.Add("select");
+				if (insertionPoint > 6)
 				{
-					LimitBuilder.Add( " DISTINCT " );
+					limitBuilder.Add(" distinct ");
 				}
-				LimitBuilder.Add( " TOP ");
-				LimitBuilder.Add( Parameter.Placeholder );
-				if ( hasOffset )
+				limitBuilder.Add(" top ");
+				limitBuilder.Add(Parameter.Placeholder);
+				if (hasOffset)
 				{
-					LimitBuilder.Add( " START AT ");
-					LimitBuilder.Add( Parameter.Placeholder );
+					limitBuilder.Add(" start at ");
+					limitBuilder.Add(Parameter.Placeholder);
 				}
-				LimitBuilder.Add( sql.Substring( InsertionPoint ) );
-				return LimitBuilder.ToSqlString();
+				limitBuilder.Add(sql.Substring(insertionPoint));
+				return limitBuilder.ToSqlString();
 			}
 			else
 			{
@@ -502,17 +488,17 @@ namespace NHibernate.Dialect
 		/// Generate SELECT TOP n START AT m syntax using bound parameters
 		/// SQL Anywhere constraints: n > 0, m >= 0
 		/// </summary>
-		public override SqlString GetLimitString( SqlString sql, int offset, int limit)
+		public override SqlString GetLimitString(SqlString sql, int offset, int limit)
 		{
-			if ( offset < 0 )
+			if (offset < 0)
 			{
 				throw new NotSupportedException("SQL Anywhere does not support negative offsets");
 			}
-			if ( limit <= 0 )
+			if (limit <= 0)
 			{
-				throw new NotSupportedException( "negative or zero TOP n (SQL limit) is not supported" );
+				throw new NotSupportedException("negative or zero TOP n (SQL limit) is not supported");
 			}
-			return GetLimitString( sql, offset > 0 );
+			return GetLimitString(sql, offset > 0);
 		}
 		
 		#endregion
@@ -544,27 +530,27 @@ namespace NHibernate.Dialect
 		/// option <tt>BLOCKING</tt> to "OFF", or setting an appropriate timeout
 		/// period through the connection option <tt>BLOCKING_TIMEOUT</tt>.
 		/// </summary>
-		public override string GetForUpdateString( LockMode lockMode )
+		public override string GetForUpdateString(LockMode lockMode)
 		{
-			if( lockMode == LockMode.Read )
+			if (lockMode == LockMode.Read)
 			{
 				return ForReadOnlyString;
 			}
-			else if( lockMode == LockMode.Upgrade )
+			else if (lockMode == LockMode.Upgrade)
 			{
 				return ForUpdateByLockString;
 			}
-			else if( lockMode == LockMode.UpgradeNoWait )
+			else if (lockMode == LockMode.UpgradeNoWait)
 			{
 				return ForUpdateNowaitString;
 			}
-			else if( lockMode == LockMode.Force )
+			else if (lockMode == LockMode.Force)
 			{
 				return ForUpdateNowaitString;
 			}
 			else
 			{
-				return string.Empty;
+				return String.Empty;
 			}
 		}
 
@@ -608,7 +594,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public string ForReadOnlyString
 		{
-			get { return " FOR READ ONLY"; }
+			get { return " for read only"; }
 		}
 	
 		/// <summary>
@@ -616,7 +602,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public string ForUpdateByLockString
 		{
-			get { return " FOR UPDATE BY LOCK"; }
+			get { return " for update by lock"; }
 		}
 	
 		/// <summary>
@@ -657,7 +643,7 @@ namespace NHibernate.Dialect
 		
 		public override string CurrentTimestampSQLFunctionName
 		{
-			get { return "GETDATE"; }
+			get { return "getdate"; }
 		}
 		
 		public override bool IsCurrentTimestampSelectStringCallable
@@ -667,7 +653,7 @@ namespace NHibernate.Dialect
 		
 		public override string CurrentTimestampSelectString
 		{
-			get { return "SELECT GETDATE()"; }
+			get { return "select getdate()"; }
 		}
 		
 		/// <summary>
@@ -695,9 +681,6 @@ namespace NHibernate.Dialect
 		
 		#region Informational metadata
 
-		/// <summary>
-		/// SQL Anywhere Does not support empty IN lists.
-		/// </summary>
 		public override bool SupportsEmptyInList
 		{
 			get { return false; }
@@ -716,10 +699,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary>
-		/// SQL Anywhere does not support an EXISTS clause within a
-		/// SELECT list.
-		/// </summary>
 		public override bool SupportsExistsInSelect
 		{
 			get { return false; }
@@ -763,17 +742,14 @@ namespace NHibernate.Dialect
 
 		public override string AddColumnString
 		{
-			get { return "ADD "; }
+			get { return "add "; }
 		}
 
 		public override string NullColumnString
 		{
-			get { return " NULL"; }
+			get { return " null"; }
 		}
 
-		/// <summary>
-		/// SQL Anywhere does not require qualification of index names.
-		/// </summary>
 		public override bool QualifyIndexName
 		{
 			get { return false; }
@@ -787,7 +763,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override string NoColumnsInsertString
 		{
-			get { return " VALUES (DEFAULT) "; }
+			get { return " values (default) "; }
 		}
 
 		/// <summary>
@@ -801,9 +777,8 @@ namespace NHibernate.Dialect
 		}
 	
 		public override string DropForeignKeyString
-		// ALTER TABLE DROP FOREIGN KEY <foo>
 		{
-			get { return " DROP FOREIGN KEY "; }
+			get { return " drop foreign key "; }
 		}
 
 		#endregion
@@ -816,16 +791,13 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// In SQL Anywhere, the syntax
-		///
-		/// DECLARE LOCAL TEMPORARY TABLE ...
-		///
+		/// In SQL Anywhere, the syntax, DECLARE LOCAL TEMPORARY TABLE ...,
 		/// can also be used, which creates a temporary table with procedure scope,
 		/// which may be important for stored procedures.
 		/// </summary>
 		public override string CreateTemporaryTableString
 		{
-			get { return "CREATE LOCAL TEMPORARY TABLE "; }
+			get { return "create local temporary table "; }
 		}
 
 		/// <summary>
@@ -833,7 +805,7 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override string CreateTemporaryTablePostfix
 		{
-			get { return " ON COMMIT PRESERVE ROWS "; }
+			get { return " on commit preserve rows "; }
 		}
 
 		/// <summary>
@@ -854,12 +826,12 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// SQL Anywhere does support OUT parameters with callable stored procedures.
 		///  </summary>
-		public override int RegisterResultSetOutParameter( DbCommand statement, int position )
+		public override int RegisterResultSetOutParameter(DbCommand statement, int position)
 		{
-		   return position;
+			return position;
 		}
 
-		public override DbDataReader GetResultSet( DbCommand statement )
+		public override DbDataReader GetResultSet(DbCommand statement)
 		{
 			DbDataReader rdr = statement.ExecuteReader();
 			return rdr;
@@ -870,11 +842,8 @@ namespace NHibernate.Dialect
 		public override string SelectGUIDString
 		{
 			get { return "select newid()"; }
-		}		
+		}
 		
-		/// <summary>
-		/// SQL Anywhere does support query expressions containing UNION ALL.
-		/// </summary>
 		public override bool SupportsUnionAll
 		{
 			get { return true; }
@@ -883,6 +852,6 @@ namespace NHibernate.Dialect
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
-		}		
+		}
 	}
 }

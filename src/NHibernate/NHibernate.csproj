@@ -160,7 +160,9 @@
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />
+    <Compile Include="Driver\SybaseAsaClientDriver.cs" />
     <Compile Include="Driver\SybaseAseClientDriver.cs" />
+    <Compile Include="Driver\SybaseSQLAnywhereDriver.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
     <Compile Include="Engine\IMapping.cs" />
