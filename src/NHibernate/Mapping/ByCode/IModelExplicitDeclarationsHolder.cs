@@ -72,6 +72,6 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsMap(MemberInfo member);
 		void AddAsProperty(MemberInfo member);
 		void AddAsPersistentMember(MemberInfo member);
-		void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member);
+		void AddAsPropertySplit(SplitDefinition definition);
 	}
 }

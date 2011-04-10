@@ -20,8 +20,8 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisterPropertySplitsThenTypeHasSplitGroups()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsPropertySplit(typeof(MyClass), "group", For<MyClass>.Property(x => x.Something));
-			inspector.AddAsPropertySplit(typeof(Inherited), "group1", For<Inherited>.Property(x => x.SomethingElse));
+			inspector.AddAsPropertySplit(new SplitDefinition(typeof(MyClass), "group", For<MyClass>.Property(x => x.Something)));
+			inspector.AddAsPropertySplit(new SplitDefinition(typeof(Inherited), "group1", For<Inherited>.Property(x => x.SomethingElse)));
 
 			inspector.GetSplitGroupsFor(typeof(MyClass)).Should().Have.SameValuesAs("group");
 			inspector.GetSplitGroupsFor(typeof(Inherited)).Should().Have.SameValuesAs("group1");
@@ -34,8 +34,8 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var memberFromDeclaringType = For<MyClass>.Property(x=> x.Something);
 			var memberFromReferencedType = typeof(Inherited).GetProperty("Something");
 
-			inspector.AddAsPropertySplit(typeof(MyClass), "group", memberFromDeclaringType);
-			inspector.AddAsPropertySplit(typeof(Inherited), "group1", memberFromReferencedType);
+			inspector.AddAsPropertySplit(new SplitDefinition(typeof(MyClass), "group", memberFromDeclaringType));
+			inspector.AddAsPropertySplit(new SplitDefinition(typeof(Inherited), "group1", memberFromReferencedType));
 
 			inspector.GetSplitGroupsFor(typeof(MyClass)).Should().Have.SameValuesAs("group");
 			inspector.GetSplitGroupsFor(typeof(Inherited)).Should().Be.Empty();

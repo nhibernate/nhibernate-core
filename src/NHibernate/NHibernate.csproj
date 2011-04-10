@@ -290,6 +290,7 @@
     <Compile Include="Mapping\ByCode\Conformist\JoinedSubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\Conformist\SubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\Conformist\UnionSubclassMapping.cs" />
+    <Compile Include="Mapping\ByCode\SimpleModelInspector.cs" />
     <Compile Include="Mapping\ByCode\ExplicitlyDeclaredModel.cs" />
     <Compile Include="Mapping\ByCode\FakeModelExplicitDeclarationsHolder.cs" />
     <Compile Include="Mapping\ByCode\FetchKind.cs" />

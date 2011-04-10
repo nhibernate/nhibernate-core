@@ -200,8 +200,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsProperty(MemberInfo member) {}
 		public void AddAsPersistentMember(MemberInfo member){}
-
-		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member) {}
+		public void AddAsPropertySplit(SplitDefinition definition) {}
 
 		#endregion
 	}

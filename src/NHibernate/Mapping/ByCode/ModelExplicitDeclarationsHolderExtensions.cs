@@ -35,7 +35,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Array.ForEach(source.Dictionaries.ToArray(), destination.AddAsMap);
 			System.Array.ForEach(source.Properties.ToArray(), destination.AddAsProperty);
 			System.Array.ForEach(source.PersistentMembers.ToArray(), destination.AddAsPersistentMember);
-			System.Array.ForEach(source.SplitDefinitions.ToArray(), x => destination.AddAsPropertySplit(x.On, x.GroupId, x.Member));
+			System.Array.ForEach(source.SplitDefinitions.ToArray(), destination.AddAsPropertySplit);
 		}
 	}
 }

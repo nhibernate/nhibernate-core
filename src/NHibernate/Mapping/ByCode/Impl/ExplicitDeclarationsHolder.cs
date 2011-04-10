@@ -257,9 +257,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			persistentMembers.Add(member);
 		}
 
-		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member)
+		public void AddAsPropertySplit(SplitDefinition definition)
 		{
-			splitDefinitions.Add(new SplitDefinition(propertyContainer, splitGroupId, member));
+			splitDefinitions.Add(definition);
 		}
 
 		#endregion

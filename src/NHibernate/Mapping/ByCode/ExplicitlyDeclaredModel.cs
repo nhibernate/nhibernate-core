@@ -382,11 +382,17 @@ namespace NHibernate.Mapping.ByCode
 			persistentMembers.Add(member);
 		}
 
-		public void AddAsPropertySplit(System.Type propertyContainer, string splitGroupId, MemberInfo member)
+		public void AddAsPropertySplit(SplitDefinition definition)
 		{
+			if (definition == null)
+			{
+				return;
+			}
 			/* Note: if the user "jump/exclude" a class and then map the property in two subclasses the usage of GetMemberFromDeclaringType() may cause a problem
 			   for a legal usage... we will see when the case happen */
-
+			System.Type propertyContainer = definition.On;
+			string splitGroupId = definition.GroupId;
+			MemberInfo member = definition.Member;
 			var memberKey = member.GetMemberFromDeclaringType();
 			string splitGroup;
 			if (!memberSplitGroup.TryGetValue(memberKey, out splitGroup))
@@ -395,7 +401,7 @@ namespace NHibernate.Mapping.ByCode
 				memberSplitGroup[memberKey] = splitGroupId;
 			}
 
-			splitDefinitions.Add(new SplitDefinition(propertyContainer, splitGroup, member));
+			splitDefinitions.Add(definition);
 		}
 
 		private void AddTypeSplits(System.Type propertyContainer, string splitGroupId)

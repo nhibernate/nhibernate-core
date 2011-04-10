@@ -22,7 +22,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsPropertySplit(typeof (MyClass), "foo", property);
+			source.AddAsPropertySplit(new SplitDefinition(typeof (MyClass), "foo", property));
 
 			destination.Merge(source);
 			destination.SplitDefinitions.Should().Have.Count.EqualTo(1);
