@@ -140,6 +140,7 @@
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
+    <Compile Include="Dialect\SybaseASE15Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />
+    <Compile Include="Driver\SybaseAseClientDriver.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
     <Compile Include="Engine\IMapping.cs" />
