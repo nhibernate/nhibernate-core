@@ -545,6 +545,7 @@
     <Compile Include="MappingByCode\MixAutomapping\BagCollectionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ComponentsTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\DictionaryCollectionTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\EntityTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ManyToOneTest.cs" />
     <Compile Include="MappingByCode\MixAutomapping\OneToManyTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PoidTests.cs" />

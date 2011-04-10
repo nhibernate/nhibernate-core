@@ -43,6 +43,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public SimpleModelInspector()
 		{
+			isEntity = (t, declared) => declared || MatchEntity(t);
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
 			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
@@ -204,6 +205,16 @@ namespace NHibernate.Mapping.ByCode
 			       &&
 			       !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
 			       	subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
+		}
+
+		protected bool MatchEntity(System.Type subject)
+		{
+			const BindingFlags flattenHierarchyMembers =
+				BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+			var modelInspector = (IModelInspector) this;
+			return subject.IsClass &&
+			       subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
 		}
 
 		#region IModelExplicitDeclarationsHolder Members
