@@ -2,7 +2,7 @@ using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQL
+namespace NHibernate.Test.Hql
 {
 	[TestFixture]
 	public class SqlCommentsFixture : TestCase
@@ -14,7 +14,7 @@ namespace NHibernate.Test.HQL
 
 		protected override IList Mappings
 		{
-			get { return new[] { "HQL.Animal.hbm.xml" }; }
+			get { return new[] { "Hql.Animal.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)

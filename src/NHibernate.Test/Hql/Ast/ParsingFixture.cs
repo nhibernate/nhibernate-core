@@ -7,7 +7,7 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	// This test need the new NUnit
 	//[TestFixture]

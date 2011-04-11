@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
 	public class SqlTranslationFixture : BaseFixture

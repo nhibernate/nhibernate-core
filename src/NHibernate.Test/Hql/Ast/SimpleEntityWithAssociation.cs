@@ -1,7 +1,7 @@
 using System;
 using Iesi.Collections;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	public class SimpleEntityWithAssociation
 	{

@@ -6,7 +6,7 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 using NUnit.Framework;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
 	public class HqlFixture : BaseFixture

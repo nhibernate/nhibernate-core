@@ -4,7 +4,7 @@ using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
 using SharpTestsEx;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	public class QuerySubstitutionTest: BaseFixture
 	{

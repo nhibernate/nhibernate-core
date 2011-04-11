@@ -1,10 +1,10 @@
 using System.Collections;
-using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
-using NHibernate.Util;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Classic;
+using NHibernate.Util;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	public class BaseFixture: TestCase
 	{

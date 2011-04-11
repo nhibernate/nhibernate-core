@@ -8,7 +8,7 @@ using NHibernate.Persister.Entity;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace NHibernate.Test.HQL.Ast
+namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
 	public class BulkManipulation : BaseFixture

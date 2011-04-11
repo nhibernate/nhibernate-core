@@ -49,7 +49,7 @@ namespace NHibernate.Test.Hql
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "HQL.Animal.hbm.xml", "HQL.MaterialResource.hbm.xml" }; }
+			get { return new string[] { "Hql.Animal.hbm.xml", "Hql.MaterialResource.hbm.xml" }; }
 		}
 
 		protected override void OnTearDown()
