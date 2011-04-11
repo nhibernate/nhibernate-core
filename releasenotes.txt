@@ -8,6 +8,70 @@
 		* - ICollectionPersister added property to fix [NH-2489]
 		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
 
+Build 3.2.0.Aplha1 (rev5664)
+=============================
+** Bug
+    * [NH-1925] - Wrong SQL aliases generated for HQL subselect
+    * [NH-2480] - AssertByIds test function with unordered Ids
+    * [NH-2488] - Subclass join does not exclude lazy properties
+    * [NH-2489] - AbstractPersistentCollection.ReadElementByIndex gives wrong result for missing element with lazy="extra"
+    * [NH-2490] - Mapping.Join.IsLazy always returns true
+    * [NH-2491] - ObjectNotFoundException in HQL query when referencing joined subclass
+    * [NH-2498] - Lazy="no-proxy" does eager load
+    * [NH-2554] - NHibernate Formula doesnt recognize varbinary as a keyword on Sql Server 2008 or 2008 R2
+    * [NH-2565] - session.Persist does not work with entities with lazy properties (no-proxy)
+    * [NH-2584] - An entity with a lazy property cannot be saved in new session
+    * [NH-2603] - lazy="extra" return different count than initialized collection.
+    * [NH-2604] - Problem with MSTest and Relinq (possibly due to ILMerge)
+    * [NH-2607] - Proxifier should not try to proxy sealed and non public methods
+    * [NH-2610] - ISQLExceptionConverter doesn't work with MultiCriteria and MultiQuery
+    * [NH-2622] - Proxying fails for methods with out and ref arguments
+    * [NH-2626] - LinqExtensionMethods.Query<T> implements wrong NhQueryable<T>
+    * [NH-2627] - Cloning subcriteria loses WithClause
+    * [NH-2628] - Fails to create proxy for class with method that has argument "ref of Dictionary<string, string>"
+    * [NH-2632] - Lazy Properties Causing An Exception If Containing Class Is Set To Not Lazy
+    * [NH-2633] - MapperByCode don't Register Component
+
+** Improvement
+    * [NH-1513] - MultiCriteria, MultiQuery improvements
+    * [NH-2382] - HQL, Criteria, QueryOver need Set methods for all NHibernate types
+    * [NH-2418] - Dialect.IsQuoted fails on empty name
+    * [NH-2495] - Support ISqlQuery in MultiQuery
+    * [NH-2518] - disable/truncate SQL parameter logging of BLOBs
+    * [NH-2526] - Sybase ASE 15 support
+    * [NH-2530] - Include WHERE clause in error message if we aren't able to locate a 'High' value
+    * [NH-2531] - NHibernate.Impl.CriteriaImpl.cs: Fix for possible ArgumentNullException in sub-criteria alias handling
+    * [NH-2550] - Allow public access to FieldInterceptor Session
+    * [NH-2563] - Support calls to ToString() in Linq queries
+    * [NH-2570] - Full SQLite Support
+    * [NH-2573] - Ability to retrieve longest registered type for a specified DbType
+    * [NH-2580] - "Unable to locate persister" exception message should be more helpful
+    * [NH-2586] - Default ProxyFactory
+    * [NH-2592] - Add ICriteria functionality missing in QueryOver
+    * [NH-2593] - Default common values per dialect
+    * [NH-2601] - Remove Dialect.HasAlterTable
+    * [NH-2605] - Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive
+    * [NH-2612] - Move the lambda con to the same namespace than Configuration
+    * [NH-2630] - Truncate SQL parameter logging of very long strings
+
+** New Feature
+    * [NH-2015] - Implement Hibernate's Order.IgnoreCase() 
+    * [NH-2426] - postgresql schema metadata
+    * [NH-2591] - Insert ordering
+    * [NH-2602] - Mapping <subselct> node in collection, subclass, join and so on
+    * [NH-2635] - Mapping by code
+
+** Patch
+    * [NH-2548] - HQL Select Clause Parameters
+    * [NH-2590] - Missed registration of Concat function for SQLCE4
+    * [NH-2600] - Increase visibility of components in AbstractPersistentCollection
+
+** Task
+    * [NH-2561] - Consider current_timestamp semantics
+    * [NH-2575] - Update documentation for immutable classes
+    * [NH-2608] - Integrate Remotion 1.13.100 to fix duplicate mscorlib problem
+    * [NH-2636] - Expose ExpressionTreeVisitor Members
+
 Build 3.1.0.GA (rev5425)
 =============================
 
