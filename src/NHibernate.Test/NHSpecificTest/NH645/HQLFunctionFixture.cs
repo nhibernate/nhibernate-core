@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 
 		protected override IList Mappings
 		{
-			get { return new[] { "HQL.Animal.hbm.xml", "HQL.MaterialResource.hbm.xml" }; }
+			get { return new[] { "Hql.Animal.hbm.xml", "Hql.MaterialResource.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
