@@ -53,8 +53,10 @@ tokens
 	RIGHT='right';
 	SELECT='select';
 	SET='set';
+	SKIP='skip';
 	SOME='some';
 	SUM='sum';
+	TAKE='take';
 	TRUE='true';
 	UNION='union';
 	UPDATE='update';
@@ -125,7 +127,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
 statement
-	: ( updateStatement | deleteStatement | selectStatement | insertStatement )
+	: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF!
 	;
 
 updateStatement
@@ -194,13 +196,16 @@ insertablePropertySpec
 	;
 
 //## query:
-//##     [selectClause] fromClause [whereClause] [groupByClause] [havingClause] [orderByClause];
+//##     [selectClause] fromClause [whereClause] [groupByClause] [havingClause] [orderByClause] [skipClause] [takeClause];
 
 queryRule
 	: selectFrom
 		(whereClause)?
 		(groupByClause)?
+		(havingClause)?
 		(orderByClause)?
+		(skipClause)?
+		(takeClause)?
 		;
 
 selectFrom
@@ -291,11 +296,18 @@ propertyFetch
 groupByClause
 	: GROUP^ 
 		'by'! expression ( COMMA! expression )*
-		(havingClause)?
 	;
 
 orderByClause
 	: ORDER^ 'by'! orderElement ( COMMA! orderElement )*
+	;
+
+skipClause
+	: SKIP^ NUM_INT
+	;
+
+takeClause
+	: TAKE^ NUM_INT
 	;
 
 orderElement

@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-01-13 10:47:55
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-04-11 10:19:40
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -17,136 +17,138 @@ using Hashtable 	= System.Collections.Hashtable;
 namespace  NHibernate.Hql.Ast.ANTLR 
 {
 public partial class HqlLexer : Lexer {
-    public const int LT = 105;
-    public const int EXPONENT = 128;
-    public const int STAR = 116;
-    public const int FLOAT_SUFFIX = 129;
-    public const int LITERAL_by = 54;
-    public const int CASE = 55;
+    public const int LT = 107;
+    public const int EXPONENT = 130;
+    public const int STAR = 118;
+    public const int FLOAT_SUFFIX = 131;
+    public const int LITERAL_by = 56;
+    public const int CASE = 57;
     public const int NEW = 37;
-    public const int FILTER_ENTITY = 74;
-    public const int PARAM = 121;
+    public const int FILTER_ENTITY = 76;
+    public const int PARAM = 123;
     public const int COUNT = 12;
     public const int NOT = 38;
     public const int EOF = -1;
-    public const int UNARY_PLUS = 89;
-    public const int QUOTED_String = 122;
-    public const int ESCqs = 126;
-    public const int WEIRD_IDENT = 91;
-    public const int OPEN_BRACKET = 118;
+    public const int UNARY_PLUS = 91;
+    public const int QUOTED_String = 124;
+    public const int ESCqs = 128;
+    public const int WEIRD_IDENT = 93;
+    public const int OPEN_BRACKET = 120;
     public const int FULL = 23;
-    public const int ORDER_ELEMENT = 83;
-    public const int IS_NULL = 78;
+    public const int ORDER_ELEMENT = 85;
+    public const int IS_NULL = 80;
     public const int ESCAPE = 18;
     public const int INSERT = 29;
-    public const int BOTH = 62;
-    public const int NUM_DECIMAL = 95;
-    public const int VERSIONED = 52;
-    public const int EQ = 100;
+    public const int BOTH = 64;
+    public const int NUM_DECIMAL = 97;
+    public const int VERSIONED = 54;
+    public const int EQ = 102;
     public const int SELECT = 45;
     public const int INTO = 30;
-    public const int NE = 103;
-    public const int GE = 108;
-    public const int CONCAT = 109;
-    public const int ID_LETTER = 125;
+    public const int NE = 105;
+    public const int GE = 110;
+    public const int TAKE = 50;
+    public const int CONCAT = 111;
+    public const int ID_LETTER = 127;
     public const int NULL = 39;
-    public const int ELSE = 57;
-    public const int SELECT_FROM = 87;
-    public const int TRAILING = 68;
-    public const int ON = 60;
-    public const int NUM_LONG = 97;
-    public const int NUM_DOUBLE = 94;
-    public const int UNARY_MINUS = 88;
+    public const int ELSE = 59;
+    public const int SELECT_FROM = 89;
+    public const int TRAILING = 70;
+    public const int ON = 62;
+    public const int NUM_LONG = 99;
+    public const int NUM_DOUBLE = 96;
+    public const int UNARY_MINUS = 90;
     public const int DELETE = 13;
     public const int INDICES = 27;
-    public const int OF = 67;
-    public const int METHOD_CALL = 79;
-    public const int LEADING = 64;
-    public const int EMPTY = 63;
+    public const int OF = 69;
+    public const int METHOD_CALL = 81;
+    public const int LEADING = 66;
+    public const int SKIP = 47;
+    public const int EMPTY = 65;
     public const int GROUP = 24;
-    public const int WS = 127;
+    public const int WS = 129;
     public const int FETCH = 21;
-    public const int VECTOR_EXPR = 90;
-    public const int NOT_IN = 81;
-    public const int NUM_INT = 93;
+    public const int VECTOR_EXPR = 92;
+    public const int NOT_IN = 83;
+    public const int NUM_INT = 95;
     public const int OR = 40;
-    public const int ALIAS = 70;
-    public const int JAVA_CONSTANT = 98;
-    public const int CONSTANT = 92;
-    public const int GT = 106;
-    public const int QUERY = 84;
-    public const int BNOT = 110;
-    public const int INDEX_OP = 76;
-    public const int NUM_FLOAT = 96;
+    public const int ALIAS = 72;
+    public const int JAVA_CONSTANT = 100;
+    public const int CONSTANT = 94;
+    public const int GT = 108;
+    public const int QUERY = 86;
+    public const int BNOT = 112;
+    public const int INDEX_OP = 78;
+    public const int NUM_FLOAT = 98;
     public const int FROM = 22;
-    public const int END = 56;
+    public const int END = 58;
     public const int FALSE = 20;
     public const int DISTINCT = 16;
-    public const int T__131 = 131;
-    public const int CONSTRUCTOR = 71;
-    public const int T__132 = 132;
-    public const int CLOSE_BRACKET = 119;
-    public const int WHERE = 53;
+    public const int CONSTRUCTOR = 73;
+    public const int T__133 = 133;
+    public const int T__134 = 134;
+    public const int CLOSE_BRACKET = 121;
+    public const int WHERE = 55;
     public const int CLASS = 11;
-    public const int MEMBER = 65;
+    public const int MEMBER = 67;
     public const int INNER = 28;
     public const int PROPERTIES = 43;
     public const int ORDER = 41;
     public const int MAX = 35;
-    public const int UPDATE = 51;
-    public const int SQL_NE = 104;
+    public const int UPDATE = 53;
+    public const int SQL_NE = 106;
     public const int AND = 6;
-    public const int SUM = 48;
+    public const int SUM = 49;
     public const int ASCENDING = 8;
-    public const int EXPR_LIST = 73;
+    public const int EXPR_LIST = 75;
     public const int AS = 7;
     public const int IN = 26;
-    public const int THEN = 58;
-    public const int OBJECT = 66;
-    public const int COMMA = 99;
+    public const int THEN = 60;
+    public const int OBJECT = 68;
+    public const int COMMA = 101;
     public const int IS = 31;
     public const int AVG = 9;
     public const int LEFT = 33;
-    public const int SOME = 47;
+    public const int SOME = 48;
     public const int ALL = 4;
-    public const int BOR = 111;
-    public const int IDENT = 123;
-    public const int CASE2 = 72;
-    public const int BXOR = 112;
-    public const int PLUS = 114;
+    public const int BOR = 113;
+    public const int IDENT = 125;
+    public const int CASE2 = 74;
+    public const int BXOR = 114;
+    public const int PLUS = 116;
     public const int EXISTS = 19;
     public const int DOT = 15;
-    public const int WITH = 61;
+    public const int WITH = 63;
     public const int LIKE = 34;
     public const int OUTER = 42;
-    public const int ID_START_LETTER = 124;
-    public const int ROW_STAR = 86;
-    public const int NOT_LIKE = 82;
-    public const int RANGE = 85;
-    public const int NOT_BETWEEN = 80;
-    public const int HEX_DIGIT = 130;
+    public const int ID_START_LETTER = 126;
+    public const int ROW_STAR = 88;
+    public const int NOT_LIKE = 84;
+    public const int RANGE = 87;
+    public const int NOT_BETWEEN = 82;
+    public const int HEX_DIGIT = 132;
     public const int SET = 46;
     public const int RIGHT = 44;
     public const int HAVING = 25;
     public const int MIN = 36;
-    public const int IS_NOT_NULL = 77;
-    public const int MINUS = 115;
+    public const int IS_NOT_NULL = 79;
+    public const int MINUS = 117;
     public const int ELEMENTS = 17;
-    public const int BAND = 113;
-    public const int TRUE = 49;
+    public const int BAND = 115;
+    public const int TRUE = 51;
     public const int JOIN = 32;
-    public const int IN_LIST = 75;
-    public const int UNION = 50;
-    public const int OPEN = 101;
-    public const int COLON = 120;
+    public const int IN_LIST = 77;
+    public const int UNION = 52;
+    public const int OPEN = 103;
+    public const int COLON = 122;
     public const int ANY = 5;
-    public const int CLOSE = 102;
-    public const int WHEN = 59;
-    public const int DIV = 117;
+    public const int CLOSE = 104;
+    public const int WHEN = 61;
+    public const int DIV = 119;
     public const int DESCENDING = 14;
-    public const int AGGREGATE = 69;
+    public const int AGGREGATE = 71;
     public const int BETWEEN = 10;
-    public const int LE = 107;
+    public const int LE = 109;
 
     // delegates
     // delegators
@@ -1177,6 +1179,30 @@ public partial class HqlLexer : Lexer {
     }
     // $ANTLR end "SET"
 
+    // $ANTLR start "SKIP"
+    public void mSKIP() // throws RecognitionException [2]
+    {
+    		try
+    		{
+            int _type = SKIP;
+    	int _channel = DEFAULT_TOKEN_CHANNEL;
+            // Hql.g:51:6: ( 'skip' )
+            // Hql.g:51:8: 'skip'
+            {
+            	Match("skip"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally 
+    	{
+        }
+    }
+    // $ANTLR end "SKIP"
+
     // $ANTLR start "SOME"
     public void mSOME() // throws RecognitionException [2]
     {
@@ -1184,8 +1210,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SOME;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:51:6: ( 'some' )
-            // Hql.g:51:8: 'some'
+            // Hql.g:52:6: ( 'some' )
+            // Hql.g:52:8: 'some'
             {
             	Match("some"); if (state.failed) return ;
 
@@ -1208,8 +1234,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SUM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:52:5: ( 'sum' )
-            // Hql.g:52:7: 'sum'
+            // Hql.g:53:5: ( 'sum' )
+            // Hql.g:53:7: 'sum'
             {
             	Match("sum"); if (state.failed) return ;
 
@@ -1225,6 +1251,30 @@ public partial class HqlLexer : Lexer {
     }
     // $ANTLR end "SUM"
 
+    // $ANTLR start "TAKE"
+    public void mTAKE() // throws RecognitionException [2]
+    {
+    		try
+    		{
+            int _type = TAKE;
+    	int _channel = DEFAULT_TOKEN_CHANNEL;
+            // Hql.g:54:6: ( 'take' )
+            // Hql.g:54:8: 'take'
+            {
+            	Match("take"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally 
+    	{
+        }
+    }
+    // $ANTLR end "TAKE"
+
     // $ANTLR start "TRUE"
     public void mTRUE() // throws RecognitionException [2]
     {
@@ -1232,8 +1282,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = TRUE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:53:6: ( 'true' )
-            // Hql.g:53:8: 'true'
+            // Hql.g:55:6: ( 'true' )
+            // Hql.g:55:8: 'true'
             {
             	Match("true"); if (state.failed) return ;
 
@@ -1256,8 +1306,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = UNION;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:54:7: ( 'union' )
-            // Hql.g:54:9: 'union'
+            // Hql.g:56:7: ( 'union' )
+            // Hql.g:56:9: 'union'
             {
             	Match("union"); if (state.failed) return ;
 
@@ -1280,8 +1330,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = UPDATE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:55:8: ( 'update' )
-            // Hql.g:55:10: 'update'
+            // Hql.g:57:8: ( 'update' )
+            // Hql.g:57:10: 'update'
             {
             	Match("update"); if (state.failed) return ;
 
@@ -1304,8 +1354,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = VERSIONED;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:56:11: ( 'versioned' )
-            // Hql.g:56:13: 'versioned'
+            // Hql.g:58:11: ( 'versioned' )
+            // Hql.g:58:13: 'versioned'
             {
             	Match("versioned"); if (state.failed) return ;
 
@@ -1328,8 +1378,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WHERE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:57:7: ( 'where' )
-            // Hql.g:57:9: 'where'
+            // Hql.g:59:7: ( 'where' )
+            // Hql.g:59:9: 'where'
             {
             	Match("where"); if (state.failed) return ;
 
@@ -1352,8 +1402,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LITERAL_by;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:58:12: ( 'by' )
-            // Hql.g:58:14: 'by'
+            // Hql.g:60:12: ( 'by' )
+            // Hql.g:60:14: 'by'
             {
             	Match("by"); if (state.failed) return ;
 
@@ -1376,8 +1426,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CASE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:59:6: ( 'case' )
-            // Hql.g:59:8: 'case'
+            // Hql.g:61:6: ( 'case' )
+            // Hql.g:61:8: 'case'
             {
             	Match("case"); if (state.failed) return ;
 
@@ -1400,8 +1450,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = END;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:60:5: ( 'end' )
-            // Hql.g:60:7: 'end'
+            // Hql.g:62:5: ( 'end' )
+            // Hql.g:62:7: 'end'
             {
             	Match("end"); if (state.failed) return ;
 
@@ -1424,8 +1474,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ELSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:61:6: ( 'else' )
-            // Hql.g:61:8: 'else'
+            // Hql.g:63:6: ( 'else' )
+            // Hql.g:63:8: 'else'
             {
             	Match("else"); if (state.failed) return ;
 
@@ -1448,8 +1498,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = THEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:62:6: ( 'then' )
-            // Hql.g:62:8: 'then'
+            // Hql.g:64:6: ( 'then' )
+            // Hql.g:64:8: 'then'
             {
             	Match("then"); if (state.failed) return ;
 
@@ -1472,8 +1522,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WHEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:63:6: ( 'when' )
-            // Hql.g:63:8: 'when'
+            // Hql.g:65:6: ( 'when' )
+            // Hql.g:65:8: 'when'
             {
             	Match("when"); if (state.failed) return ;
 
@@ -1496,8 +1546,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = ON;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:64:4: ( 'on' )
-            // Hql.g:64:6: 'on'
+            // Hql.g:66:4: ( 'on' )
+            // Hql.g:66:6: 'on'
             {
             	Match("on"); if (state.failed) return ;
 
@@ -1520,8 +1570,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WITH;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:65:6: ( 'with' )
-            // Hql.g:65:8: 'with'
+            // Hql.g:67:6: ( 'with' )
+            // Hql.g:67:8: 'with'
             {
             	Match("with"); if (state.failed) return ;
 
@@ -1544,8 +1594,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BOTH;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:66:6: ( 'both' )
-            // Hql.g:66:8: 'both'
+            // Hql.g:68:6: ( 'both' )
+            // Hql.g:68:8: 'both'
             {
             	Match("both"); if (state.failed) return ;
 
@@ -1568,8 +1618,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EMPTY;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:67:7: ( 'empty' )
-            // Hql.g:67:9: 'empty'
+            // Hql.g:69:7: ( 'empty' )
+            // Hql.g:69:9: 'empty'
             {
             	Match("empty"); if (state.failed) return ;
 
@@ -1592,8 +1642,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LEADING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:68:9: ( 'leading' )
-            // Hql.g:68:11: 'leading'
+            // Hql.g:70:9: ( 'leading' )
+            // Hql.g:70:11: 'leading'
             {
             	Match("leading"); if (state.failed) return ;
 
@@ -1616,8 +1666,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MEMBER;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:69:8: ( 'member' )
-            // Hql.g:69:10: 'member'
+            // Hql.g:71:8: ( 'member' )
+            // Hql.g:71:10: 'member'
             {
             	Match("member"); if (state.failed) return ;
 
@@ -1640,8 +1690,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OBJECT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:70:8: ( 'object' )
-            // Hql.g:70:10: 'object'
+            // Hql.g:72:8: ( 'object' )
+            // Hql.g:72:10: 'object'
             {
             	Match("object"); if (state.failed) return ;
 
@@ -1664,8 +1714,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OF;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:71:4: ( 'of' )
-            // Hql.g:71:6: 'of'
+            // Hql.g:73:4: ( 'of' )
+            // Hql.g:73:6: 'of'
             {
             	Match("of"); if (state.failed) return ;
 
@@ -1688,8 +1738,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = TRAILING;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:72:10: ( 'trailing' )
-            // Hql.g:72:12: 'trailing'
+            // Hql.g:74:10: ( 'trailing' )
+            // Hql.g:74:12: 'trailing'
             {
             	Match("trailing"); if (state.failed) return ;
 
@@ -1705,15 +1755,15 @@ public partial class HqlLexer : Lexer {
     }
     // $ANTLR end "TRAILING"
 
-    // $ANTLR start "T__131"
-    public void mT__131() // throws RecognitionException [2]
+    // $ANTLR start "T__133"
+    public void mT__133() // throws RecognitionException [2]
     {
     		try
     		{
-            int _type = T__131;
+            int _type = T__133;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:73:8: ( 'ascending' )
-            // Hql.g:73:10: 'ascending'
+            // Hql.g:75:8: ( 'ascending' )
+            // Hql.g:75:10: 'ascending'
             {
             	Match("ascending"); if (state.failed) return ;
 
@@ -1727,17 +1777,17 @@ public partial class HqlLexer : Lexer {
     	{
         }
     }
-    // $ANTLR end "T__131"
+    // $ANTLR end "T__133"
 
-    // $ANTLR start "T__132"
-    public void mT__132() // throws RecognitionException [2]
+    // $ANTLR start "T__134"
+    public void mT__134() // throws RecognitionException [2]
     {
     		try
     		{
-            int _type = T__132;
+            int _type = T__134;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:74:8: ( 'descending' )
-            // Hql.g:74:10: 'descending'
+            // Hql.g:76:8: ( 'descending' )
+            // Hql.g:76:10: 'descending'
             {
             	Match("descending"); if (state.failed) return ;
 
@@ -1751,7 +1801,7 @@ public partial class HqlLexer : Lexer {
     	{
         }
     }
-    // $ANTLR end "T__132"
+    // $ANTLR end "T__134"
 
     // $ANTLR start "EQ"
     public void mEQ() // throws RecognitionException [2]
@@ -1760,8 +1810,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EQ;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:672:3: ( '=' )
-            // Hql.g:672:5: '='
+            // Hql.g:684:3: ( '=' )
+            // Hql.g:684:5: '='
             {
             	Match('='); if (state.failed) return ;
 
@@ -1783,8 +1833,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:673:3: ( '<' )
-            // Hql.g:673:5: '<'
+            // Hql.g:685:3: ( '<' )
+            // Hql.g:685:5: '<'
             {
             	Match('<'); if (state.failed) return ;
 
@@ -1806,8 +1856,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:674:3: ( '>' )
-            // Hql.g:674:5: '>'
+            // Hql.g:686:3: ( '>' )
+            // Hql.g:686:5: '>'
             {
             	Match('>'); if (state.failed) return ;
 
@@ -1829,8 +1879,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SQL_NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:675:7: ( '<>' )
-            // Hql.g:675:9: '<>'
+            // Hql.g:687:7: ( '<>' )
+            // Hql.g:687:9: '<>'
             {
             	Match("<>"); if (state.failed) return ;
 
@@ -1853,7 +1903,7 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:676:3: ( '!=' | '^=' )
+            // Hql.g:688:3: ( '!=' | '^=' )
             int alt1 = 2;
             int LA1_0 = input.LA(1);
 
@@ -1876,7 +1926,7 @@ public partial class HqlLexer : Lexer {
             switch (alt1) 
             {
                 case 1 :
-                    // Hql.g:676:5: '!='
+                    // Hql.g:688:5: '!='
                     {
                     	Match("!="); if (state.failed) return ;
 
@@ -1884,7 +1934,7 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // Hql.g:676:12: '^='
+                    // Hql.g:688:12: '^='
                     {
                     	Match("^="); if (state.failed) return ;
 
@@ -1909,8 +1959,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:677:3: ( '<=' )
-            // Hql.g:677:5: '<='
+            // Hql.g:689:3: ( '<=' )
+            // Hql.g:689:5: '<='
             {
             	Match("<="); if (state.failed) return ;
 
@@ -1933,8 +1983,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:678:3: ( '>=' )
-            // Hql.g:678:5: '>='
+            // Hql.g:690:3: ( '>=' )
+            // Hql.g:690:5: '>='
             {
             	Match(">="); if (state.failed) return ;
 
@@ -1957,8 +2007,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:680:5: ( '|' )
-            // Hql.g:680:8: '|'
+            // Hql.g:692:5: ( '|' )
+            // Hql.g:692:8: '|'
             {
             	Match('|'); if (state.failed) return ;
 
@@ -1980,8 +2030,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BXOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:681:6: ( '^' )
-            // Hql.g:681:8: '^'
+            // Hql.g:693:6: ( '^' )
+            // Hql.g:693:8: '^'
             {
             	Match('^'); if (state.failed) return ;
 
@@ -2003,8 +2053,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BAND;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:682:6: ( '&' )
-            // Hql.g:682:8: '&'
+            // Hql.g:694:6: ( '&' )
+            // Hql.g:694:8: '&'
             {
             	Match('&'); if (state.failed) return ;
 
@@ -2026,8 +2076,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BNOT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:683:6: ( '!' )
-            // Hql.g:683:8: '!'
+            // Hql.g:695:6: ( '!' )
+            // Hql.g:695:8: '!'
             {
             	Match('!'); if (state.failed) return ;
 
@@ -2049,8 +2099,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COMMA;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:685:6: ( ',' )
-            // Hql.g:685:8: ','
+            // Hql.g:697:6: ( ',' )
+            // Hql.g:697:8: ','
             {
             	Match(','); if (state.failed) return ;
 
@@ -2072,8 +2122,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:687:5: ( '(' )
-            // Hql.g:687:7: '('
+            // Hql.g:699:5: ( '(' )
+            // Hql.g:699:7: '('
             {
             	Match('('); if (state.failed) return ;
 
@@ -2095,8 +2145,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:688:6: ( ')' )
-            // Hql.g:688:8: ')'
+            // Hql.g:700:6: ( ')' )
+            // Hql.g:700:8: ')'
             {
             	Match(')'); if (state.failed) return ;
 
@@ -2118,8 +2168,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:689:13: ( '[' )
-            // Hql.g:689:15: '['
+            // Hql.g:701:13: ( '[' )
+            // Hql.g:701:15: '['
             {
             	Match('['); if (state.failed) return ;
 
@@ -2141,8 +2191,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:690:14: ( ']' )
-            // Hql.g:690:16: ']'
+            // Hql.g:702:14: ( ']' )
+            // Hql.g:702:16: ']'
             {
             	Match(']'); if (state.failed) return ;
 
@@ -2164,8 +2214,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CONCAT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:692:7: ( '||' )
-            // Hql.g:692:9: '||'
+            // Hql.g:704:7: ( '||' )
+            // Hql.g:704:9: '||'
             {
             	Match("||"); if (state.failed) return ;
 
@@ -2188,8 +2238,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PLUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:693:5: ( '+' )
-            // Hql.g:693:7: '+'
+            // Hql.g:705:5: ( '+' )
+            // Hql.g:705:7: '+'
             {
             	Match('+'); if (state.failed) return ;
 
@@ -2211,8 +2261,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MINUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:694:6: ( '-' )
-            // Hql.g:694:8: '-'
+            // Hql.g:706:6: ( '-' )
+            // Hql.g:706:8: '-'
             {
             	Match('-'); if (state.failed) return ;
 
@@ -2234,8 +2284,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = STAR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:695:5: ( '*' )
-            // Hql.g:695:7: '*'
+            // Hql.g:707:5: ( '*' )
+            // Hql.g:707:7: '*'
             {
             	Match('*'); if (state.failed) return ;
 
@@ -2257,8 +2307,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DIV;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:696:4: ( '/' )
-            // Hql.g:696:6: '/'
+            // Hql.g:708:4: ( '/' )
+            // Hql.g:708:6: '/'
             {
             	Match('/'); if (state.failed) return ;
 
@@ -2280,8 +2330,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COLON;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:697:6: ( ':' )
-            // Hql.g:697:8: ':'
+            // Hql.g:709:6: ( ':' )
+            // Hql.g:709:8: ':'
             {
             	Match(':'); if (state.failed) return ;
 
@@ -2303,8 +2353,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PARAM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:698:6: ( '?' )
-            // Hql.g:698:8: '?'
+            // Hql.g:710:6: ( '?' )
+            // Hql.g:710:8: '?'
             {
             	Match('?'); if (state.failed) return ;
 
@@ -2326,11 +2376,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = IDENT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:701:2: ( ID_START_LETTER ( ID_LETTER )* )
-            // Hql.g:701:4: ID_START_LETTER ( ID_LETTER )*
+            // Hql.g:713:2: ( ID_START_LETTER ( ID_LETTER )* )
+            // Hql.g:713:4: ID_START_LETTER ( ID_LETTER )*
             {
             	mID_START_LETTER(); if (state.failed) return ;
-            	// Hql.g:701:20: ( ID_LETTER )*
+            	// Hql.g:713:20: ( ID_LETTER )*
             	do 
             	{
             	    int alt2 = 2;
@@ -2345,7 +2395,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt2) 
             		{
             			case 1 :
-            			    // Hql.g:701:22: ID_LETTER
+            			    // Hql.g:713:22: ID_LETTER
             			    {
             			    	mID_LETTER(); if (state.failed) return ;
 
@@ -2377,7 +2427,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:706:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
+            // Hql.g:718:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
             // Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
@@ -2407,7 +2457,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:715:5: ( ID_START_LETTER | '0' .. '9' )
+            // Hql.g:727:5: ( ID_START_LETTER | '0' .. '9' )
             // Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
@@ -2439,11 +2489,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = QUOTED_String;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:720:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
-            // Hql.g:720:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
+            // Hql.g:732:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
+            // Hql.g:732:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
             {
             	Match('\''); if (state.failed) return ;
-            	// Hql.g:720:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
+            	// Hql.g:732:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
             	do 
             	{
             	    int alt3 = 3;
@@ -2469,14 +2519,14 @@ public partial class HqlLexer : Lexer {
             	    switch (alt3) 
             		{
             			case 1 :
-            			    // Hql.g:720:13: ( ESCqs )=> ESCqs
+            			    // Hql.g:732:13: ( ESCqs )=> ESCqs
             			    {
             			    	mESCqs(); if (state.failed) return ;
 
             			    }
             			    break;
             			case 2 :
-            			    // Hql.g:720:31: ~ '\\''
+            			    // Hql.g:732:31: ~ '\\''
             			    {
             			    	if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&') || (input.LA(1) >= '(' && input.LA(1) <= '\uFFFF') ) 
             			    	{
@@ -2520,8 +2570,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:725:2: ( '\\'' '\\'' )
-            // Hql.g:726:3: '\\'' '\\''
+            // Hql.g:737:2: ( '\\'' '\\'' )
+            // Hql.g:738:3: '\\'' '\\''
             {
             	Match('\''); if (state.failed) return ;
             	Match('\''); if (state.failed) return ;
@@ -2542,10 +2592,10 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:729:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
-            // Hql.g:729:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            // Hql.g:741:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+            // Hql.g:741:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             {
-            	// Hql.g:729:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            	// Hql.g:741:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             	int alt4 = 5;
             	switch ( input.LA(1) ) 
             	{
@@ -2588,21 +2638,21 @@ public partial class HqlLexer : Lexer {
             	switch (alt4) 
             	{
             	    case 1 :
-            	        // Hql.g:729:13: ' '
+            	        // Hql.g:741:13: ' '
             	        {
             	        	Match(' '); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:730:7: '\\t'
+            	        // Hql.g:742:7: '\\t'
             	        {
             	        	Match('\t'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:731:7: '\\r' '\\n'
+            	        // Hql.g:743:7: '\\r' '\\n'
             	        {
             	        	Match('\r'); if (state.failed) return ;
             	        	Match('\n'); if (state.failed) return ;
@@ -2610,14 +2660,14 @@ public partial class HqlLexer : Lexer {
             	        }
             	        break;
             	    case 4 :
-            	        // Hql.g:732:7: '\\n'
+            	        // Hql.g:744:7: '\\n'
             	        {
             	        	Match('\n'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 5 :
-            	        // Hql.g:733:7: '\\r'
+            	        // Hql.g:745:7: '\\r'
             	        {
             	        	Match('\r'); if (state.failed) return ;
 
@@ -2655,7 +2705,7 @@ public partial class HqlLexer : Lexer {
             IToken f4 = null;
 
             bool isDecimal=false; IToken t=null;
-            // Hql.g:742:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
+            // Hql.g:754:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
             int alt20 = 2;
             int LA20_0 = input.LA(1);
 
@@ -2678,14 +2728,14 @@ public partial class HqlLexer : Lexer {
             switch (alt20) 
             {
                 case 1 :
-                    // Hql.g:742:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    // Hql.g:754:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     {
                     	Match('.'); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	  _type = DOT;
                     	}
-                    	// Hql.g:743:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    	// Hql.g:755:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     	int alt8 = 2;
                     	int LA8_0 = input.LA(1);
 
@@ -2696,9 +2746,9 @@ public partial class HqlLexer : Lexer {
                     	switch (alt8) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:743:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+                    	        // Hql.g:755:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
                     	        {
-                    	        	// Hql.g:743:6: ( '0' .. '9' )+
+                    	        	// Hql.g:755:6: ( '0' .. '9' )+
                     	        	int cnt5 = 0;
                     	        	do 
                     	        	{
@@ -2714,7 +2764,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt5) 
                     	        		{
                     	        			case 1 :
-                    	        			    // Hql.g:743:7: '0' .. '9'
+                    	        			    // Hql.g:755:7: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -2734,7 +2784,7 @@ public partial class HqlLexer : Lexer {
                     	        	loop5:
                     	        		;	// Stops C# compiler whining that label 'loop5' has no statements
 
-                    	        	// Hql.g:743:18: ( EXPONENT )?
+                    	        	// Hql.g:755:18: ( EXPONENT )?
                     	        	int alt6 = 2;
                     	        	int LA6_0 = input.LA(1);
 
@@ -2745,7 +2795,7 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt6) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:743:19: EXPONENT
+                    	        	        // Hql.g:755:19: EXPONENT
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -2754,7 +2804,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	}
 
-                    	        	// Hql.g:743:30: (f1= FLOAT_SUFFIX )?
+                    	        	// Hql.g:755:30: (f1= FLOAT_SUFFIX )?
                     	        	int alt7 = 2;
                     	        	int LA7_0 = input.LA(1);
 
@@ -2765,11 +2815,11 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt7) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:743:31: f1= FLOAT_SUFFIX
+                    	        	        // Hql.g:755:31: f1= FLOAT_SUFFIX
                     	        	        {
-                    	        	        	int f1Start1018 = CharIndex;
+                    	        	        	int f1Start1034 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start1018, CharIndex-1);
+                    	        	        	f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start1034, CharIndex-1);
                     	        	        	if ( (state.backtracking==0) )
                     	        	        	{
                     	        	        	  t=f1;
@@ -2807,9 +2857,9 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // Hql.g:759:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    // Hql.g:771:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     {
-                    	// Hql.g:759:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+                    	// Hql.g:771:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
                     	int alt13 = 2;
                     	int LA13_0 = input.LA(1);
 
@@ -2832,14 +2882,14 @@ public partial class HqlLexer : Lexer {
                     	switch (alt13) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:759:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        // Hql.g:771:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        {
                     	        	Match('0'); if (state.failed) return ;
                     	        	if ( (state.backtracking==0) )
                     	        	{
                     	        	  isDecimal = true;
                     	        	}
-                    	        	// Hql.g:760:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        	// Hql.g:772:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        	int alt11 = 3;
                     	        	int LA11_0 = input.LA(1);
 
@@ -2854,16 +2904,16 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt11) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:760:6: ( 'x' ) ( HEX_DIGIT )+
+                    	        	        // Hql.g:772:6: ( 'x' ) ( HEX_DIGIT )+
                     	        	        {
-                    	        	        	// Hql.g:760:6: ( 'x' )
-                    	        	        	// Hql.g:760:7: 'x'
+                    	        	        	// Hql.g:772:6: ( 'x' )
+                    	        	        	// Hql.g:772:7: 'x'
                     	        	        	{
                     	        	        		Match('x'); if (state.failed) return ;
 
                     	        	        	}
 
-                    	        	        	// Hql.g:761:5: ( HEX_DIGIT )+
+                    	        	        	// Hql.g:773:5: ( HEX_DIGIT )+
                     	        	        	int cnt9 = 0;
                     	        	        	do 
                     	        	        	{
@@ -2929,7 +2979,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt9) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:768:7: HEX_DIGIT
+                    	        	        			    // Hql.g:780:7: HEX_DIGIT
                     	        	        			    {
                     	        	        			    	mHEX_DIGIT(); if (state.failed) return ;
 
@@ -2953,9 +3003,9 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // Hql.g:770:6: ( '0' .. '7' )+
+                    	        	        // Hql.g:782:6: ( '0' .. '7' )+
                     	        	        {
-                    	        	        	// Hql.g:770:6: ( '0' .. '7' )+
+                    	        	        	// Hql.g:782:6: ( '0' .. '7' )+
                     	        	        	int cnt10 = 0;
                     	        	        	do 
                     	        	        	{
@@ -2971,7 +3021,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt10) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:770:7: '0' .. '7'
+                    	        	        			    // Hql.g:782:7: '0' .. '7'
                     	        	        			    {
                     	        	        			    	MatchRange('0','7'); if (state.failed) return ;
 
@@ -3001,16 +3051,16 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:772:5: ( '1' .. '9' ) ( '0' .. '9' )*
+                    	        // Hql.g:784:5: ( '1' .. '9' ) ( '0' .. '9' )*
                     	        {
-                    	        	// Hql.g:772:5: ( '1' .. '9' )
-                    	        	// Hql.g:772:6: '1' .. '9'
+                    	        	// Hql.g:784:5: ( '1' .. '9' )
+                    	        	// Hql.g:784:6: '1' .. '9'
                     	        	{
                     	        		MatchRange('1','9'); if (state.failed) return ;
 
                     	        	}
 
-                    	        	// Hql.g:772:16: ( '0' .. '9' )*
+                    	        	// Hql.g:784:16: ( '0' .. '9' )*
                     	        	do 
                     	        	{
                     	        	    int alt12 = 2;
@@ -3025,7 +3075,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt12) 
                     	        		{
                     	        			case 1 :
-                    	        			    // Hql.g:772:17: '0' .. '9'
+                    	        			    // Hql.g:784:17: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3050,7 +3100,7 @@ public partial class HqlLexer : Lexer {
 
                     	}
 
-                    	// Hql.g:774:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    	// Hql.g:786:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     	int alt19 = 3;
                     	int LA19_0 = input.LA(1);
 
@@ -3065,10 +3115,10 @@ public partial class HqlLexer : Lexer {
                     	switch (alt19) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:774:5: ( 'l' )
+                    	        // Hql.g:786:5: ( 'l' )
                     	        {
-                    	        	// Hql.g:774:5: ( 'l' )
-                    	        	// Hql.g:774:6: 'l'
+                    	        	// Hql.g:786:5: ( 'l' )
+                    	        	// Hql.g:786:6: 'l'
                     	        	{
                     	        		Match('l'); if (state.failed) return ;
 
@@ -3082,14 +3132,14 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:777:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        // Hql.g:789:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        {
                     	        	if ( !((isDecimal)) ) 
                     	        	{
                     	        	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
                     	        	    throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
                     	        	}
-                    	        	// Hql.g:778:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        	// Hql.g:790:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        	int alt18 = 3;
                     	        	switch ( input.LA(1) ) 
                     	        	{
@@ -3121,10 +3171,10 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt18) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:778:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+                    	        	        // Hql.g:790:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	Match('.'); if (state.failed) return ;
-                    	        	        	// Hql.g:778:12: ( '0' .. '9' )*
+                    	        	        	// Hql.g:790:12: ( '0' .. '9' )*
                     	        	        	do 
                     	        	        	{
                     	        	        	    int alt14 = 2;
@@ -3139,7 +3189,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt14) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:778:13: '0' .. '9'
+                    	        	        			    // Hql.g:790:13: '0' .. '9'
                     	        	        			    {
                     	        	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3154,7 +3204,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	loop14:
                     	        	        		;	// Stops C# compiler whining that label 'loop14' has no statements
 
-                    	        	        	// Hql.g:778:24: ( EXPONENT )?
+                    	        	        	// Hql.g:790:24: ( EXPONENT )?
                     	        	        	int alt15 = 2;
                     	        	        	int LA15_0 = input.LA(1);
 
@@ -3165,7 +3215,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt15) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:778:25: EXPONENT
+                    	        	        	        // Hql.g:790:25: EXPONENT
                     	        	        	        {
                     	        	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -3174,7 +3224,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	        	}
 
-                    	        	        	// Hql.g:778:36: (f2= FLOAT_SUFFIX )?
+                    	        	        	// Hql.g:790:36: (f2= FLOAT_SUFFIX )?
                     	        	        	int alt16 = 2;
                     	        	        	int LA16_0 = input.LA(1);
 
@@ -3185,11 +3235,11 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt16) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:778:37: f2= FLOAT_SUFFIX
+                    	        	        	        // Hql.g:790:37: f2= FLOAT_SUFFIX
                     	        	        	        {
-                    	        	        	        	int f2Start1220 = CharIndex;
+                    	        	        	        	int f2Start1236 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	        	f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start1220, CharIndex-1);
+                    	        	        	        	f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start1236, CharIndex-1);
                     	        	        	        	if ( (state.backtracking==0) )
                     	        	        	        	{
                     	        	        	        	  t=f2;
@@ -3204,10 +3254,10 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // Hql.g:779:8: EXPONENT (f3= FLOAT_SUFFIX )?
+                    	        	        // Hql.g:791:8: EXPONENT (f3= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
-                    	        	        	// Hql.g:779:17: (f3= FLOAT_SUFFIX )?
+                    	        	        	// Hql.g:791:17: (f3= FLOAT_SUFFIX )?
                     	        	        	int alt17 = 2;
                     	        	        	int LA17_0 = input.LA(1);
 
@@ -3218,11 +3268,11 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt17) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:779:18: f3= FLOAT_SUFFIX
+                    	        	        	        // Hql.g:791:18: f3= FLOAT_SUFFIX
                     	        	        	        {
-                    	        	        	        	int f3Start1238 = CharIndex;
+                    	        	        	        	int f3Start1254 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	        	f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start1238, CharIndex-1);
+                    	        	        	        	f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start1254, CharIndex-1);
                     	        	        	        	if ( (state.backtracking==0) )
                     	        	        	        	{
                     	        	        	        	  t=f3;
@@ -3237,11 +3287,11 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 3 :
-                    	        	        // Hql.g:780:8: f4= FLOAT_SUFFIX
+                    	        	        // Hql.g:792:8: f4= FLOAT_SUFFIX
                     	        	        {
-                    	        	        	int f4Start1253 = CharIndex;
+                    	        	        	int f4Start1269 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
-                    	        	        	f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start1253, CharIndex-1);
+                    	        	        	f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start1269, CharIndex-1);
                     	        	        	if ( (state.backtracking==0) )
                     	        	        	{
                     	        	        	  t=f4;
@@ -3294,8 +3344,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:802:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
-            // Hql.g:802:4: ( '0' .. '9' | 'a' .. 'f' )
+            // Hql.g:814:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
+            // Hql.g:814:4: ( '0' .. '9' | 'a' .. 'f' )
             {
             	if ( (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'a' && input.LA(1) <= 'f') ) 
             	{
@@ -3324,17 +3374,17 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:808:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // Hql.g:808:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // Hql.g:820:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // Hql.g:820:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
-            	// Hql.g:808:4: ( 'e' )
-            	// Hql.g:808:5: 'e'
+            	// Hql.g:820:4: ( 'e' )
+            	// Hql.g:820:5: 'e'
             	{
             		Match('e'); if (state.failed) return ;
 
             	}
 
-            	// Hql.g:808:10: ( '+' | '-' )?
+            	// Hql.g:820:10: ( '+' | '-' )?
             	int alt21 = 2;
             	int LA21_0 = input.LA(1);
 
@@ -3365,7 +3415,7 @@ public partial class HqlLexer : Lexer {
 
             	}
 
-            	// Hql.g:808:21: ( '0' .. '9' )+
+            	// Hql.g:820:21: ( '0' .. '9' )+
             	int cnt22 = 0;
             	do 
             	{
@@ -3381,7 +3431,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt22) 
             		{
             			case 1 :
-            			    // Hql.g:808:22: '0' .. '9'
+            			    // Hql.g:820:22: '0' .. '9'
             			    {
             			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3416,7 +3466,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:813:2: ( 'f' | 'd' | 'm' )
+            // Hql.g:825:2: ( 'f' | 'd' | 'm' )
             // Hql.g:
             {
             	if ( input.LA(1) == 'd' || input.LA(1) == 'f' || input.LA(1) == 'm' ) 
@@ -3443,8 +3493,8 @@ public partial class HqlLexer : Lexer {
 
     override public void mTokens() // throws RecognitionException 
     {
-        // Hql.g:1:8: ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SOME | SUM | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__131 | T__132 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
-        int alt23 = 93;
+        // Hql.g:1:8: ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SKIP | SOME | SUM | TAKE | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__133 | T__134 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
+        int alt23 = 95;
         alt23 = dfa23.Predict(input);
         switch (alt23) 
         {
@@ -3743,357 +3793,371 @@ public partial class HqlLexer : Lexer {
                 }
                 break;
             case 43 :
-                // Hql.g:1:255: SOME
+                // Hql.g:1:255: SKIP
+                {
+                	mSKIP(); if (state.failed) return ;
+
+                }
+                break;
+            case 44 :
+                // Hql.g:1:260: SOME
                 {
                 	mSOME(); if (state.failed) return ;
 
                 }
                 break;
-            case 44 :
-                // Hql.g:1:260: SUM
+            case 45 :
+                // Hql.g:1:265: SUM
                 {
                 	mSUM(); if (state.failed) return ;
 
                 }
                 break;
-            case 45 :
-                // Hql.g:1:264: TRUE
+            case 46 :
+                // Hql.g:1:269: TAKE
+                {
+                	mTAKE(); if (state.failed) return ;
+
+                }
+                break;
+            case 47 :
+                // Hql.g:1:274: TRUE
                 {
                 	mTRUE(); if (state.failed) return ;
 
                 }
                 break;
-            case 46 :
-                // Hql.g:1:269: UNION
+            case 48 :
+                // Hql.g:1:279: UNION
                 {
                 	mUNION(); if (state.failed) return ;
 
                 }
                 break;
-            case 47 :
-                // Hql.g:1:275: UPDATE
+            case 49 :
+                // Hql.g:1:285: UPDATE
                 {
                 	mUPDATE(); if (state.failed) return ;
 
                 }
                 break;
-            case 48 :
-                // Hql.g:1:282: VERSIONED
+            case 50 :
+                // Hql.g:1:292: VERSIONED
                 {
                 	mVERSIONED(); if (state.failed) return ;
 
                 }
                 break;
-            case 49 :
-                // Hql.g:1:292: WHERE
+            case 51 :
+                // Hql.g:1:302: WHERE
                 {
                 	mWHERE(); if (state.failed) return ;
 
                 }
                 break;
-            case 50 :
-                // Hql.g:1:298: LITERAL_by
+            case 52 :
+                // Hql.g:1:308: LITERAL_by
                 {
                 	mLITERAL_by(); if (state.failed) return ;
 
                 }
                 break;
-            case 51 :
-                // Hql.g:1:309: CASE
+            case 53 :
+                // Hql.g:1:319: CASE
                 {
                 	mCASE(); if (state.failed) return ;
 
                 }
                 break;
-            case 52 :
-                // Hql.g:1:314: END
+            case 54 :
+                // Hql.g:1:324: END
                 {
                 	mEND(); if (state.failed) return ;
 
                 }
                 break;
-            case 53 :
-                // Hql.g:1:318: ELSE
+            case 55 :
+                // Hql.g:1:328: ELSE
                 {
                 	mELSE(); if (state.failed) return ;
 
                 }
                 break;
-            case 54 :
-                // Hql.g:1:323: THEN
+            case 56 :
+                // Hql.g:1:333: THEN
                 {
                 	mTHEN(); if (state.failed) return ;
 
                 }
                 break;
-            case 55 :
-                // Hql.g:1:328: WHEN
+            case 57 :
+                // Hql.g:1:338: WHEN
                 {
                 	mWHEN(); if (state.failed) return ;
 
                 }
                 break;
-            case 56 :
-                // Hql.g:1:333: ON
+            case 58 :
+                // Hql.g:1:343: ON
                 {
                 	mON(); if (state.failed) return ;
 
                 }
                 break;
-            case 57 :
-                // Hql.g:1:336: WITH
+            case 59 :
+                // Hql.g:1:346: WITH
                 {
                 	mWITH(); if (state.failed) return ;
 
                 }
                 break;
-            case 58 :
-                // Hql.g:1:341: BOTH
+            case 60 :
+                // Hql.g:1:351: BOTH
                 {
                 	mBOTH(); if (state.failed) return ;
 
                 }
                 break;
-            case 59 :
-                // Hql.g:1:346: EMPTY
+            case 61 :
+                // Hql.g:1:356: EMPTY
                 {
                 	mEMPTY(); if (state.failed) return ;
 
                 }
                 break;
-            case 60 :
-                // Hql.g:1:352: LEADING
+            case 62 :
+                // Hql.g:1:362: LEADING
                 {
                 	mLEADING(); if (state.failed) return ;
 
                 }
                 break;
-            case 61 :
-                // Hql.g:1:360: MEMBER
+            case 63 :
+                // Hql.g:1:370: MEMBER
                 {
                 	mMEMBER(); if (state.failed) return ;
 
                 }
                 break;
-            case 62 :
-                // Hql.g:1:367: OBJECT
+            case 64 :
+                // Hql.g:1:377: OBJECT
                 {
                 	mOBJECT(); if (state.failed) return ;
 
                 }
                 break;
-            case 63 :
-                // Hql.g:1:374: OF
+            case 65 :
+                // Hql.g:1:384: OF
                 {
                 	mOF(); if (state.failed) return ;
 
                 }
                 break;
-            case 64 :
-                // Hql.g:1:377: TRAILING
+            case 66 :
+                // Hql.g:1:387: TRAILING
                 {
                 	mTRAILING(); if (state.failed) return ;
 
                 }
                 break;
-            case 65 :
-                // Hql.g:1:386: T__131
-                {
-                	mT__131(); if (state.failed) return ;
-
-                }
-                break;
-            case 66 :
-                // Hql.g:1:393: T__132
-                {
-                	mT__132(); if (state.failed) return ;
-
-                }
-                break;
             case 67 :
-                // Hql.g:1:400: EQ
+                // Hql.g:1:396: T__133
+                {
+                	mT__133(); if (state.failed) return ;
+
+                }
+                break;
+            case 68 :
+                // Hql.g:1:403: T__134
+                {
+                	mT__134(); if (state.failed) return ;
+
+                }
+                break;
+            case 69 :
+                // Hql.g:1:410: EQ
                 {
                 	mEQ(); if (state.failed) return ;
 
                 }
                 break;
-            case 68 :
-                // Hql.g:1:403: LT
+            case 70 :
+                // Hql.g:1:413: LT
                 {
                 	mLT(); if (state.failed) return ;
 
                 }
                 break;
-            case 69 :
-                // Hql.g:1:406: GT
+            case 71 :
+                // Hql.g:1:416: GT
                 {
                 	mGT(); if (state.failed) return ;
 
                 }
                 break;
-            case 70 :
-                // Hql.g:1:409: SQL_NE
+            case 72 :
+                // Hql.g:1:419: SQL_NE
                 {
                 	mSQL_NE(); if (state.failed) return ;
 
                 }
                 break;
-            case 71 :
-                // Hql.g:1:416: NE
+            case 73 :
+                // Hql.g:1:426: NE
                 {
                 	mNE(); if (state.failed) return ;
 
                 }
                 break;
-            case 72 :
-                // Hql.g:1:419: LE
+            case 74 :
+                // Hql.g:1:429: LE
                 {
                 	mLE(); if (state.failed) return ;
 
                 }
                 break;
-            case 73 :
-                // Hql.g:1:422: GE
+            case 75 :
+                // Hql.g:1:432: GE
                 {
                 	mGE(); if (state.failed) return ;
 
                 }
                 break;
-            case 74 :
-                // Hql.g:1:425: BOR
+            case 76 :
+                // Hql.g:1:435: BOR
                 {
                 	mBOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 75 :
-                // Hql.g:1:429: BXOR
+            case 77 :
+                // Hql.g:1:439: BXOR
                 {
                 	mBXOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 76 :
-                // Hql.g:1:434: BAND
+            case 78 :
+                // Hql.g:1:444: BAND
                 {
                 	mBAND(); if (state.failed) return ;
 
                 }
                 break;
-            case 77 :
-                // Hql.g:1:439: BNOT
+            case 79 :
+                // Hql.g:1:449: BNOT
                 {
                 	mBNOT(); if (state.failed) return ;
 
                 }
                 break;
-            case 78 :
-                // Hql.g:1:444: COMMA
+            case 80 :
+                // Hql.g:1:454: COMMA
                 {
                 	mCOMMA(); if (state.failed) return ;
 
                 }
                 break;
-            case 79 :
-                // Hql.g:1:450: OPEN
+            case 81 :
+                // Hql.g:1:460: OPEN
                 {
                 	mOPEN(); if (state.failed) return ;
 
                 }
                 break;
-            case 80 :
-                // Hql.g:1:455: CLOSE
+            case 82 :
+                // Hql.g:1:465: CLOSE
                 {
                 	mCLOSE(); if (state.failed) return ;
 
                 }
                 break;
-            case 81 :
-                // Hql.g:1:461: OPEN_BRACKET
+            case 83 :
+                // Hql.g:1:471: OPEN_BRACKET
                 {
                 	mOPEN_BRACKET(); if (state.failed) return ;
 
                 }
                 break;
-            case 82 :
-                // Hql.g:1:474: CLOSE_BRACKET
+            case 84 :
+                // Hql.g:1:484: CLOSE_BRACKET
                 {
                 	mCLOSE_BRACKET(); if (state.failed) return ;
 
                 }
                 break;
-            case 83 :
-                // Hql.g:1:488: CONCAT
+            case 85 :
+                // Hql.g:1:498: CONCAT
                 {
                 	mCONCAT(); if (state.failed) return ;
 
                 }
                 break;
-            case 84 :
-                // Hql.g:1:495: PLUS
+            case 86 :
+                // Hql.g:1:505: PLUS
                 {
                 	mPLUS(); if (state.failed) return ;
 
                 }
                 break;
-            case 85 :
-                // Hql.g:1:500: MINUS
+            case 87 :
+                // Hql.g:1:510: MINUS
                 {
                 	mMINUS(); if (state.failed) return ;
 
                 }
                 break;
-            case 86 :
-                // Hql.g:1:506: STAR
+            case 88 :
+                // Hql.g:1:516: STAR
                 {
                 	mSTAR(); if (state.failed) return ;
 
                 }
                 break;
-            case 87 :
-                // Hql.g:1:511: DIV
+            case 89 :
+                // Hql.g:1:521: DIV
                 {
                 	mDIV(); if (state.failed) return ;
 
                 }
                 break;
-            case 88 :
-                // Hql.g:1:515: COLON
+            case 90 :
+                // Hql.g:1:525: COLON
                 {
                 	mCOLON(); if (state.failed) return ;
 
                 }
                 break;
-            case 89 :
-                // Hql.g:1:521: PARAM
+            case 91 :
+                // Hql.g:1:531: PARAM
                 {
                 	mPARAM(); if (state.failed) return ;
 
                 }
                 break;
-            case 90 :
-                // Hql.g:1:527: IDENT
+            case 92 :
+                // Hql.g:1:537: IDENT
                 {
                 	mIDENT(); if (state.failed) return ;
 
                 }
                 break;
-            case 91 :
-                // Hql.g:1:533: QUOTED_String
+            case 93 :
+                // Hql.g:1:543: QUOTED_String
                 {
                 	mQUOTED_String(); if (state.failed) return ;
 
                 }
                 break;
-            case 92 :
-                // Hql.g:1:547: WS
+            case 94 :
+                // Hql.g:1:557: WS
                 {
                 	mWS(); if (state.failed) return ;
 
                 }
                 break;
-            case 93 :
-                // Hql.g:1:550: NUM_INT
+            case 95 :
+                // Hql.g:1:560: NUM_INT
                 {
                 	mNUM_INT(); if (state.failed) return ;
 
@@ -4106,8 +4170,8 @@ public partial class HqlLexer : Lexer {
 
     // $ANTLR start "synpred1_Hql"
     public void synpred1_Hql_fragment() {
-        // Hql.g:720:13: ( ESCqs )
-        // Hql.g:720:14: ESCqs
+        // Hql.g:732:13: ( ESCqs )
+        // Hql.g:732:14: ESCqs
         {
         	mESCqs(); if (state.failed) return ;
 
@@ -4142,70 +4206,71 @@ public partial class HqlLexer : Lexer {
 	}
 
     const string DFA23_eotS =
-        "\x01\uffff\x15\x28\x01\uffff\x01\x61\x01\x63\x01\x65\x01\x66\x01"+
-        "\x68\x10\uffff\x02\x28\x01\x6d\x02\x28\x01\x70\x11\x28\x01\u0088"+
-        "\x01\u0089\x09\x28\x01\u0095\x01\x28\x01\u0097\x01\x28\x01\u0099"+
-        "\x0c\x28\x0a\uffff\x01\u00a8\x01\u00a9\x01\u00aa\x01\u00ac\x01\uffff"+
-        "\x01\u00ad\x01\x28\x01\uffff\x0b\x28\x01\u00ba\x0b\x28\x02\uffff"+
-        "\x04\x28\x01\u00ca\x01\u00cb\x01\x28\x01\u00cd\x01\u00ce\x02\x28"+
-        "\x01\uffff\x01\x28\x01\uffff\x01\x28\x01\uffff\x03\x28\x01\u00d6"+
-        "\x01\x28\x01\u00d8\x08\x28\x03\uffff\x01\x28\x02\uffff\x01\x28\x01"+
-        "\u00e4\x02\x28\x01\u00e7\x01\x28\x01\u00ea\x02\x28\x01\u00ed\x02"+
-        "\x28\x01\uffff\x03\x28\x01\u00f3\x01\u00f4\x05\x28\x01\u00fa\x01"+
-        "\u00fb\x01\u00fc\x01\x28\x01\u00fe\x02\uffff\x01\x28\x02\uffff\x01"+
-        "\u0100\x06\x28\x01\uffff\x01\u0107\x01\uffff\x01\u0108\x01\x28\x01"+
-        "\u010a\x04\x28\x01\u010f\x01\u0110\x02\x28\x01\uffff\x01\u0113\x01"+
-        "\u0114\x01\uffff\x02\x28\x01\uffff\x02\x28\x01\uffff\x02\x28\x01"+
-        "\u011b\x01\u011c\x01\u011d\x02\uffff\x01\u011e\x02\x28\x01\u0121"+
-        "\x01\x28\x03\uffff\x01\x28\x01\uffff\x01\x28\x01\uffff\x01\u0125"+
-        "\x01\u0126\x02\x28\x01\u0129\x01\x28\x02\uffff\x01\x28\x01\uffff"+
-        "\x01\u012c\x02\x28\x01\u012f\x02\uffff\x02\x28\x02\uffff\x01\u0132"+
-        "\x03\x28\x01\u0136\x01\u0137\x04\uffff\x01\u0138\x01\x28\x01\uffff"+
-        "\x01\u013a\x01\x28\x01\u013c\x02\uffff\x01\u013d\x01\x28\x01\uffff"+
-        "\x01\u013f\x01\x28\x01\uffff\x01\u0141\x01\x28\x01\uffff\x01\x28"+
-        "\x01\u0144\x01\uffff\x03\x28\x03\uffff\x01\u0148\x01\uffff\x01\u0149"+
-        "\x02\uffff\x01\x28\x01\uffff\x01\x28\x01\uffff\x02\x28\x01\uffff"+
-        "\x01\x28\x01\u014f\x01\u0150\x02\uffff\x01\x28\x01\u0152\x01\x28"+
-        "\x01\u0154\x01\x28\x02\uffff\x01\x28\x01\uffff\x01\u0157\x01\uffff"+
-        "\x01\u0158\x01\u0159\x03\uffff";
+        "\x01\uffff\x15\x28\x01\uffff\x01\x63\x01\x65\x01\x67\x01\x68\x01"+
+        "\x6a\x10\uffff\x02\x28\x01\x6f\x02\x28\x01\x72\x11\x28\x01\u008a"+
+        "\x01\u008b\x09\x28\x01\u0097\x01\x28\x01\u0099\x01\x28\x01\u009b"+
+        "\x0e\x28\x0a\uffff\x01\u00ac\x01\u00ad\x01\u00ae\x01\u00b0\x01\uffff"+
+        "\x01\u00b1\x01\x28\x01\uffff\x0b\x28\x01\u00be\x0b\x28\x02\uffff"+
+        "\x04\x28\x01\u00ce\x01\u00cf\x01\x28\x01\u00d1\x01\u00d2\x02\x28"+
+        "\x01\uffff\x01\x28\x01\uffff\x01\x28\x01\uffff\x03\x28\x01\u00da"+
+        "\x02\x28\x01\u00dd\x09\x28\x03\uffff\x01\x28\x02\uffff\x01\x28\x01"+
+        "\u00ea\x02\x28\x01\u00ed\x01\x28\x01\u00f0\x02\x28\x01\u00f3\x02"+
+        "\x28\x01\uffff\x03\x28\x01\u00f9\x01\u00fa\x05\x28\x01\u0100\x01"+
+        "\u0101\x01\u0102\x01\x28\x01\u0104\x02\uffff\x01\x28\x02\uffff\x01"+
+        "\u0106\x06\x28\x01\uffff\x01\u010d\x01\u010e\x01\uffff\x01\u010f"+
+        "\x01\u0110\x01\x28\x01\u0112\x04\x28\x01\u0117\x01\u0118\x02\x28"+
+        "\x01\uffff\x01\u011b\x01\u011c\x01\uffff\x02\x28\x01\uffff\x02\x28"+
+        "\x01\uffff\x02\x28\x01\u0123\x01\u0124\x01\u0125\x02\uffff\x01\u0126"+
+        "\x02\x28\x01\u0129\x01\x28\x03\uffff\x01\x28\x01\uffff\x01\x28\x01"+
+        "\uffff\x01\u012d\x01\u012e\x02\x28\x01\u0131\x01\x28\x04\uffff\x01"+
+        "\x28\x01\uffff\x01\u0134\x02\x28\x01\u0137\x02\uffff\x02\x28\x02"+
+        "\uffff\x01\u013a\x03\x28\x01\u013e\x01\u013f\x04\uffff\x01\u0140"+
+        "\x01\x28\x01\uffff\x01\u0142\x01\x28\x01\u0144\x02\uffff\x01\u0145"+
+        "\x01\x28\x01\uffff\x01\u0147\x01\x28\x01\uffff\x01\u0149\x01\x28"+
+        "\x01\uffff\x01\x28\x01\u014c\x01\uffff\x03\x28\x03\uffff\x01\u0150"+
+        "\x01\uffff\x01\u0151\x02\uffff\x01\x28\x01\uffff\x01\x28\x01\uffff"+
+        "\x02\x28\x01\uffff\x01\x28\x01\u0157\x01\u0158\x02\uffff\x01\x28"+
+        "\x01\u015a\x01\x28\x01\u015c\x01\x28\x02\uffff\x01\x28\x01\uffff"+
+        "\x01\u015f\x01\uffff\x01\u0160\x01\u0161\x03\uffff";
     const string DFA23_eofS =
-        "\u015a\uffff";
+        "\u0162\uffff";
     const string DFA23_minS =
         "\x01\x09\x01\x6c\x01\x65\x01\x61\x01\x65\x01\x6c\x01\x61\x01\x72"+
         "\x01\x61\x01\x6e\x01\x6f\x01\x65\x01\x61\x01\x65\x01\x62\x01\x72"+
-        "\x01\x69\x01\x65\x01\x68\x01\x6e\x01\x65\x01\x68\x01\uffff\x04\x3d"+
+        "\x01\x69\x01\x65\x01\x61\x01\x6e\x01\x65\x01\x68\x01\uffff\x04\x3d"+
         "\x01\x7c\x10\uffff\x01\x6c\x01\x64\x01\x24\x01\x67\x01\x74\x01\x24"+
         "\x01\x74\x01\x61\x01\x75\x01\x73\x01\x6c\x01\x73\x01\x65\x01\x63"+
         "\x01\x69\x01\x64\x01\x70\x01\x6c\x01\x74\x01\x6f\x01\x6c\x01\x6f"+
         "\x01\x76\x02\x24\x01\x69\x01\x61\x01\x6b\x01\x78\x01\x6e\x01\x6d"+
         "\x01\x77\x01\x74\x01\x6c\x01\x24\x01\x74\x01\x24\x01\x6a\x01\x24"+
-        "\x01\x6f\x01\x67\x01\x6c\x02\x6d\x01\x61\x01\x65\x01\x69\x01\x64"+
-        "\x01\x72\x01\x65\x01\x74\x0a\uffff\x04\x24\x01\uffff\x01\x24\x01"+
-        "\x77\x01\uffff\x01\x68\x01\x73\x01\x6e\x02\x65\x01\x63\x01\x74\x01"+
-        "\x6d\x01\x65\x01\x61\x01\x73\x01\x24\x01\x74\x01\x73\x01\x63\x01"+
-        "\x6d\x01\x6c\x01\x75\x02\x69\x02\x65\x01\x6f\x02\uffff\x01\x6e\x01"+
-        "\x74\x01\x64\x01\x65\x02\x24\x01\x62\x02\x24\x01\x6c\x01\x65\x01"+
-        "\uffff\x01\x65\x01\uffff\x01\x65\x01\uffff\x01\x70\x01\x68\x01\x65"+
-        "\x01\x24\x01\x65\x01\x24\x01\x65\x01\x69\x01\x6e\x01\x6f\x01\x61"+
-        "\x01\x73\x01\x6e\x01\x68\x03\uffff\x01\x6e\x02\uffff\x01\x65\x01"+
-        "\x24\x01\x73\x01\x74\x01\x24\x01\x74\x01\x24\x01\x69\x01\x65\x01"+
-        "\x24\x01\x70\x01\x74\x01\uffff\x01\x79\x01\x65\x01\x68\x02\x24\x01"+
-        "\x70\x01\x6e\x01\x63\x02\x72\x03\x24\x01\x69\x01\x24\x02\uffff\x01"+
-        "\x65\x02\uffff\x01\x24\x02\x72\x01\x63\x01\x65\x01\x74\x01\x63\x01"+
-        "\uffff\x01\x24\x01\uffff\x01\x24\x01\x6c\x01\x24\x01\x6e\x01\x74"+
-        "\x01\x69\x01\x65\x02\x24\x01\x64\x01\x65\x01\uffff\x02\x24\x01\uffff"+
-        "\x01\x65\x01\x6e\x01\uffff\x02\x6e\x01\uffff\x01\x65\x01\x73\x03"+
-        "\x24\x02\uffff\x01\x24\x01\x67\x01\x65\x01\x24\x01\x74\x03\uffff"+
-        "\x01\x6e\x01\uffff\x01\x72\x01\uffff\x02\x24\x01\x74\x01\x72\x01"+
-        "\x24\x01\x74\x02\uffff\x01\x69\x01\uffff\x01\x24\x01\x65\x01\x6f"+
-        "\x01\x24\x02\uffff\x01\x69\x01\x6e\x02\uffff\x01\x24\x01\x64\x01"+
-        "\x63\x01\x74\x02\x24\x04\uffff\x01\x24\x01\x73\x01\uffff\x01\x24"+
-        "\x01\x67\x01\x24\x02\uffff\x01\x24\x01\x74\x01\uffff\x01\x24\x01"+
-        "\x6e\x01\uffff\x01\x24\x01\x6e\x01\uffff\x01\x6e\x01\x24\x01\uffff"+
-        "\x01\x69\x01\x74\x01\x73\x03\uffff\x01\x24\x01\uffff\x01\x24\x02"+
-        "\uffff\x01\x69\x01\uffff\x01\x67\x01\uffff\x01\x65\x01\x67\x01\uffff"+
-        "\x01\x6e\x02\x24\x02\uffff\x01\x65\x01\x24\x01\x64\x01\x24\x01\x67"+
-        "\x02\uffff\x01\x73\x01\uffff\x01\x24\x01\uffff\x02\x24\x03\uffff";
+        "\x01\x6f\x01\x67\x01\x6c\x01\x69\x02\x6d\x01\x6b\x01\x61\x01\x65"+
+        "\x01\x69\x01\x64\x01\x72\x01\x65\x01\x74\x0a\uffff\x04\x24\x01\uffff"+
+        "\x01\x24\x01\x77\x01\uffff\x01\x68\x01\x73\x01\x6e\x02\x65\x01\x63"+
+        "\x01\x74\x01\x6d\x01\x65\x01\x61\x01\x73\x01\x24\x01\x74\x01\x73"+
+        "\x01\x63\x01\x6d\x01\x6c\x01\x75\x02\x69\x02\x65\x01\x6f\x02\uffff"+
+        "\x01\x6e\x01\x74\x01\x64\x01\x65\x02\x24\x01\x62\x02\x24\x01\x6c"+
+        "\x01\x65\x01\uffff\x01\x65\x01\uffff\x01\x65\x01\uffff\x01\x70\x01"+
+        "\x68\x01\x65\x01\x24\x01\x70\x01\x65\x01\x24\x02\x65\x01\x69\x01"+
+        "\x6e\x01\x6f\x01\x61\x01\x73\x01\x6e\x01\x68\x03\uffff\x01\x6e\x02"+
+        "\uffff\x01\x65\x01\x24\x01\x73\x01\x74\x01\x24\x01\x74\x01\x24\x01"+
+        "\x69\x01\x65\x01\x24\x01\x70\x01\x74\x01\uffff\x01\x79\x01\x65\x01"+
+        "\x68\x02\x24\x01\x70\x01\x6e\x01\x63\x02\x72\x03\x24\x01\x69\x01"+
+        "\x24\x02\uffff\x01\x65\x02\uffff\x01\x24\x02\x72\x01\x63\x01\x65"+
+        "\x01\x74\x01\x63\x01\uffff\x02\x24\x01\uffff\x02\x24\x01\x6c\x01"+
+        "\x24\x01\x6e\x01\x74\x01\x69\x01\x65\x02\x24\x01\x64\x01\x65\x01"+
+        "\uffff\x02\x24\x01\uffff\x01\x65\x01\x6e\x01\uffff\x02\x6e\x01\uffff"+
+        "\x01\x65\x01\x73\x03\x24\x02\uffff\x01\x24\x01\x67\x01\x65\x01\x24"+
+        "\x01\x74\x03\uffff\x01\x6e\x01\uffff\x01\x72\x01\uffff\x02\x24\x01"+
+        "\x74\x01\x72\x01\x24\x01\x74\x04\uffff\x01\x69\x01\uffff\x01\x24"+
+        "\x01\x65\x01\x6f\x01\x24\x02\uffff\x01\x69\x01\x6e\x02\uffff\x01"+
+        "\x24\x01\x64\x01\x63\x01\x74\x02\x24\x04\uffff\x01\x24\x01\x73\x01"+
+        "\uffff\x01\x24\x01\x67\x01\x24\x02\uffff\x01\x24\x01\x74\x01\uffff"+
+        "\x01\x24\x01\x6e\x01\uffff\x01\x24\x01\x6e\x01\uffff\x01\x6e\x01"+
+        "\x24\x01\uffff\x01\x69\x01\x74\x01\x73\x03\uffff\x01\x24\x01\uffff"+
+        "\x01\x24\x02\uffff\x01\x69\x01\uffff\x01\x67\x01\uffff\x01\x65\x01"+
+        "\x67\x01\uffff\x01\x6e\x02\x24\x02\uffff\x01\x65\x01\x24\x01\x64"+
+        "\x01\x24\x01\x67\x02\uffff\x01\x73\x01\uffff\x01\x24\x01\uffff\x02"+
+        "\x24\x03\uffff";
     const string DFA23_maxS =
         "\x01\ufffe\x01\x76\x01\x79\x01\x6f\x01\x69\x01\x78\x01\x75\x01"+
         "\x72\x01\x61\x01\x73\x01\x6f\x02\x69\x02\x75\x01\x72\x01\x69\x01"+
@@ -4215,56 +4280,57 @@ public partial class HqlLexer : Lexer {
         "\x01\x6c\x01\x74\x01\x6f\x01\x6c\x01\x6f\x01\x76\x02\ufffe\x01\x69"+
         "\x01\x66\x01\x6b\x01\x78\x01\x6e\x01\x6d\x01\x77\x01\x74\x01\x6c"+
         "\x01\ufffe\x01\x74\x01\ufffe\x01\x6a\x01\ufffe\x01\x6f\x01\x67\x01"+
-        "\x74\x02\x6d\x01\x75\x01\x65\x01\x69\x01\x64\x01\x72\x01\x65\x01"+
-        "\x74\x0a\uffff\x04\ufffe\x01\uffff\x01\ufffe\x01\x77\x01\uffff\x01"+
-        "\x68\x01\x73\x01\x6e\x02\x65\x01\x63\x01\x74\x01\x6d\x01\x65\x01"+
-        "\x61\x01\x73\x01\ufffe\x01\x74\x01\x73\x01\x63\x01\x6d\x01\x6c\x01"+
-        "\x75\x02\x69\x02\x65\x01\x6f\x02\uffff\x01\x6e\x01\x74\x01\x64\x01"+
-        "\x65\x02\ufffe\x01\x62\x02\ufffe\x01\x6c\x01\x65\x01\uffff\x01\x65"+
-        "\x01\uffff\x01\x65\x01\uffff\x01\x70\x01\x68\x01\x65\x01\ufffe\x01"+
-        "\x65\x01\ufffe\x01\x65\x01\x69\x01\x6e\x01\x6f\x01\x61\x01\x73\x01"+
-        "\x72\x01\x68\x03\uffff\x01\x6e\x02\uffff\x01\x65\x01\ufffe\x01\x73"+
-        "\x01\x74\x01\ufffe\x01\x74\x01\ufffe\x01\x69\x01\x65\x01\ufffe\x01"+
-        "\x70\x01\x74\x01\uffff\x01\x79\x01\x65\x01\x68\x02\ufffe\x01\x70"+
-        "\x01\x6e\x01\x63\x02\x72\x03\ufffe\x01\x69\x01\ufffe\x02\uffff\x01"+
-        "\x65\x02\uffff\x01\ufffe\x02\x72\x01\x63\x01\x65\x01\x74\x01\x63"+
-        "\x01\uffff\x01\ufffe\x01\uffff\x01\ufffe\x01\x6c\x01\ufffe\x01\x6e"+
-        "\x01\x74\x01\x69\x01\x65\x02\ufffe\x01\x64\x01\x65\x01\uffff\x02"+
-        "\ufffe\x01\uffff\x01\x65\x01\x6e\x01\uffff\x02\x6e\x01\uffff\x01"+
-        "\x65\x01\x73\x03\ufffe\x02\uffff\x01\ufffe\x01\x67\x01\x65\x01\ufffe"+
-        "\x01\x74\x03\uffff\x01\x6e\x01\uffff\x01\x72\x01\uffff\x02\ufffe"+
-        "\x01\x74\x01\x72\x01\ufffe\x01\x74\x02\uffff\x01\x69\x01\uffff\x01"+
-        "\ufffe\x01\x65\x01\x6f\x01\ufffe\x02\uffff\x01\x69\x01\x6e\x02\uffff"+
-        "\x01\ufffe\x01\x64\x01\x63\x01\x74\x02\ufffe\x04\uffff\x01\ufffe"+
-        "\x01\x73\x01\uffff\x01\ufffe\x01\x67\x01\ufffe\x02\uffff\x01\ufffe"+
-        "\x01\x74\x01\uffff\x01\ufffe\x01\x6e\x01\uffff\x01\ufffe\x01\x6e"+
-        "\x01\uffff\x01\x6e\x01\ufffe\x01\uffff\x01\x69\x01\x74\x01\x73\x03"+
-        "\uffff\x01\ufffe\x01\uffff\x01\ufffe\x02\uffff\x01\x69\x01\uffff"+
-        "\x01\x67\x01\uffff\x01\x65\x01\x67\x01\uffff\x01\x6e\x02\ufffe\x02"+
-        "\uffff\x01\x65\x01\ufffe\x01\x64\x01\ufffe\x01\x67\x02\uffff\x01"+
-        "\x73\x01\uffff\x01\ufffe\x01\uffff\x02\ufffe\x03\uffff";
+        "\x74\x01\x69\x02\x6d\x01\x6b\x01\x75\x01\x65\x01\x69\x01\x64\x01"+
+        "\x72\x01\x65\x01\x74\x0a\uffff\x04\ufffe\x01\uffff\x01\ufffe\x01"+
+        "\x77\x01\uffff\x01\x68\x01\x73\x01\x6e\x02\x65\x01\x63\x01\x74\x01"+
+        "\x6d\x01\x65\x01\x61\x01\x73\x01\ufffe\x01\x74\x01\x73\x01\x63\x01"+
+        "\x6d\x01\x6c\x01\x75\x02\x69\x02\x65\x01\x6f\x02\uffff\x01\x6e\x01"+
+        "\x74\x01\x64\x01\x65\x02\ufffe\x01\x62\x02\ufffe\x01\x6c\x01\x65"+
+        "\x01\uffff\x01\x65\x01\uffff\x01\x65\x01\uffff\x01\x70\x01\x68\x01"+
+        "\x65\x01\ufffe\x01\x70\x01\x65\x01\ufffe\x02\x65\x01\x69\x01\x6e"+
+        "\x01\x6f\x01\x61\x01\x73\x01\x72\x01\x68\x03\uffff\x01\x6e\x02\uffff"+
+        "\x01\x65\x01\ufffe\x01\x73\x01\x74\x01\ufffe\x01\x74\x01\ufffe\x01"+
+        "\x69\x01\x65\x01\ufffe\x01\x70\x01\x74\x01\uffff\x01\x79\x01\x65"+
+        "\x01\x68\x02\ufffe\x01\x70\x01\x6e\x01\x63\x02\x72\x03\ufffe\x01"+
+        "\x69\x01\ufffe\x02\uffff\x01\x65\x02\uffff\x01\ufffe\x02\x72\x01"+
+        "\x63\x01\x65\x01\x74\x01\x63\x01\uffff\x02\ufffe\x01\uffff\x02\ufffe"+
+        "\x01\x6c\x01\ufffe\x01\x6e\x01\x74\x01\x69\x01\x65\x02\ufffe\x01"+
+        "\x64\x01\x65\x01\uffff\x02\ufffe\x01\uffff\x01\x65\x01\x6e\x01\uffff"+
+        "\x02\x6e\x01\uffff\x01\x65\x01\x73\x03\ufffe\x02\uffff\x01\ufffe"+
+        "\x01\x67\x01\x65\x01\ufffe\x01\x74\x03\uffff\x01\x6e\x01\uffff\x01"+
+        "\x72\x01\uffff\x02\ufffe\x01\x74\x01\x72\x01\ufffe\x01\x74\x04\uffff"+
+        "\x01\x69\x01\uffff\x01\ufffe\x01\x65\x01\x6f\x01\ufffe\x02\uffff"+
+        "\x01\x69\x01\x6e\x02\uffff\x01\ufffe\x01\x64\x01\x63\x01\x74\x02"+
+        "\ufffe\x04\uffff\x01\ufffe\x01\x73\x01\uffff\x01\ufffe\x01\x67\x01"+
+        "\ufffe\x02\uffff\x01\ufffe\x01\x74\x01\uffff\x01\ufffe\x01\x6e\x01"+
+        "\uffff\x01\ufffe\x01\x6e\x01\uffff\x01\x6e\x01\ufffe\x01\uffff\x01"+
+        "\x69\x01\x74\x01\x73\x03\uffff\x01\ufffe\x01\uffff\x01\ufffe\x02"+
+        "\uffff\x01\x69\x01\uffff\x01\x67\x01\uffff\x01\x65\x01\x67\x01\uffff"+
+        "\x01\x6e\x02\ufffe\x02\uffff\x01\x65\x01\ufffe\x01\x64\x01\ufffe"+
+        "\x01\x67\x02\uffff\x01\x73\x01\uffff\x01\ufffe\x01\uffff\x02\ufffe"+
+        "\x03\uffff";
     const string DFA23_acceptS =
-        "\x16\uffff\x01\x43\x05\uffff\x01\x4c\x01\x4e\x01\x4f\x01\x50\x01"+
-        "\x51\x01\x52\x01\x54\x01\x55\x01\x56\x01\x57\x01\x58\x01\x59\x01"+
-        "\x5a\x01\x5b\x01\x5c\x01\x5d\x33\uffff\x01\x46\x01\x48\x01\x44\x01"+
-        "\x49\x01\x45\x01\x47\x01\x4d\x01\x4b\x01\x53\x01\x4a\x04\uffff\x01"+
-        "\x04\x02\uffff\x01\x32\x17\uffff\x01\x16\x01\x1b\x0b\uffff\x01\x24"+
-        "\x01\uffff\x01\x38\x01\uffff\x01\x3f\x0e\uffff\x01\x01\x01\x02\x01"+
-        "\x03\x01\uffff\x01\x05\x01\x06\x0c\uffff\x01\x34\x0f\uffff\x01\x1f"+
-        "\x01\x20\x01\uffff\x01\x21\x01\x22\x07\uffff\x01\x2a\x01\uffff\x01"+
-        "\x2c\x0b\uffff\x01\x3a\x02\uffff\x01\x33\x02\uffff\x01\x0b\x02\uffff"+
-        "\x01\x35\x05\uffff\x01\x12\x01\x13\x05\uffff\x01\x1a\x01\x1c\x01"+
-        "\x1d\x01\uffff\x01\x1e\x01\uffff\x01\x23\x06\uffff\x01\x2b\x01\x2d"+
-        "\x01\uffff\x01\x36\x04\uffff\x01\x37\x01\x39\x02\uffff\x01\x08\x01"+
-        "\x09\x06\uffff\x01\x3b\x01\x10\x01\x11\x01\x14\x02\uffff\x01\x18"+
-        "\x03\uffff\x01\x25\x01\x26\x02\uffff\x01\x28\x02\uffff\x01\x2e\x02"+
-        "\uffff\x01\x31\x02\uffff\x01\x0a\x03\uffff\x01\x0e\x01\x0f\x01\x15"+
-        "\x01\uffff\x01\x19\x01\uffff\x01\x3d\x01\x3e\x01\uffff\x01\x29\x01"+
-        "\uffff\x01\x2f\x02\uffff\x01\x07\x03\uffff\x01\x17\x01\x3c\x05\uffff"+
-        "\x01\x0c\x01\x0d\x01\uffff\x01\x40\x01\uffff\x01\x41\x02\uffff\x01"+
-        "\x30\x01\x42\x01\x27";
+        "\x16\uffff\x01\x45\x05\uffff\x01\x4e\x01\x50\x01\x51\x01\x52\x01"+
+        "\x53\x01\x54\x01\x56\x01\x57\x01\x58\x01\x59\x01\x5a\x01\x5b\x01"+
+        "\x5c\x01\x5d\x01\x5e\x01\x5f\x35\uffff\x01\x48\x01\x4a\x01\x46\x01"+
+        "\x4b\x01\x47\x01\x49\x01\x4f\x01\x4d\x01\x55\x01\x4c\x04\uffff\x01"+
+        "\x04\x02\uffff\x01\x34\x17\uffff\x01\x16\x01\x1b\x0b\uffff\x01\x24"+
+        "\x01\uffff\x01\x3a\x01\uffff\x01\x41\x10\uffff\x01\x01\x01\x02\x01"+
+        "\x03\x01\uffff\x01\x05\x01\x06\x0c\uffff\x01\x36\x0f\uffff\x01\x1f"+
+        "\x01\x20\x01\uffff\x01\x21\x01\x22\x07\uffff\x01\x2a\x02\uffff\x01"+
+        "\x2d\x0c\uffff\x01\x3c\x02\uffff\x01\x35\x02\uffff\x01\x0b\x02\uffff"+
+        "\x01\x37\x05\uffff\x01\x12\x01\x13\x05\uffff\x01\x1a\x01\x1c\x01"+
+        "\x1d\x01\uffff\x01\x1e\x01\uffff\x01\x23\x06\uffff\x01\x2b\x01\x2c"+
+        "\x01\x2e\x01\x2f\x01\uffff\x01\x38\x04\uffff\x01\x39\x01\x3b\x02"+
+        "\uffff\x01\x08\x01\x09\x06\uffff\x01\x3d\x01\x10\x01\x11\x01\x14"+
+        "\x02\uffff\x01\x18\x03\uffff\x01\x25\x01\x26\x02\uffff\x01\x28\x02"+
+        "\uffff\x01\x30\x02\uffff\x01\x33\x02\uffff\x01\x0a\x03\uffff\x01"+
+        "\x0e\x01\x0f\x01\x15\x01\uffff\x01\x19\x01\uffff\x01\x3f\x01\x40"+
+        "\x01\uffff\x01\x29\x01\uffff\x01\x31\x02\uffff\x01\x07\x03\uffff"+
+        "\x01\x17\x01\x3e\x05\uffff\x01\x0c\x01\x0d\x01\uffff\x01\x42\x01"+
+        "\uffff\x01\x43\x02\uffff\x01\x32\x01\x44\x01\x27";
     const string DFA23_specialS =
-        "\u015a\uffff}>";
+        "\u0162\uffff}>";
     static readonly string[] DFA23_transitionS = {
             "\x02\x2a\x02\uffff\x01\x2a\x12\uffff\x01\x2a\x01\x19\x02\uffff"+
             "\x01\x28\x01\uffff\x01\x1c\x01\x29\x01\x1e\x01\x1f\x01\x24\x01"+
@@ -4294,50 +4360,49 @@ public partial class HqlLexer : Lexer {
             "\x4e\x02\uffff\x01\x4f",
             "\x01\x53",
             "\x01\x54",
-            "\x01\x55\x09\uffff\x01\x56\x05\uffff\x01\x57",
-            "\x01\x59\x09\uffff\x01\x58",
-            "\x01\x5a\x01\uffff\x01\x5b",
-            "\x01\x5c",
-            "\x01\x5d\x01\x5e",
+            "\x01\x55\x05\uffff\x01\x56\x03\uffff\x01\x57\x05\uffff\x01"+
+            "\x58",
+            "\x01\x59\x06\uffff\x01\x5b\x09\uffff\x01\x5a",
+            "\x01\x5c\x01\uffff\x01\x5d",
+            "\x01\x5e",
+            "\x01\x5f\x01\x60",
             "",
-            "\x01\x60\x01\x5f",
-            "\x01\x62",
+            "\x01\x62\x01\x61",
             "\x01\x64",
-            "\x01\x64",
-            "\x01\x67",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\x01\x66",
+            "\x01\x66",
             "\x01\x69",
-            "\x01\x6b\x14\uffff\x01\x6a",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\x01\x6b",
+            "\x01\x6d\x14\uffff\x01\x6c",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x02\x28\x01\x6c\x17\x28\x05\uffff\uff7f\x28",
-            "\x01\x6e",
-            "\x01\x6f",
+            "\x28\x01\uffff\x02\x28\x01\x6e\x17\x28\x05\uffff\uff7f\x28",
+            "\x01\x70",
+            "\x01\x71",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x71",
-            "\x01\x72",
             "\x01\x73",
             "\x01\x74",
-            "\x01\x75\x06\uffff\x01\x76",
-            "\x01\x77",
-            "\x01\x78\x0d\uffff\x01\x79",
-            "\x01\x7a",
-            "\x01\x7b",
+            "\x01\x75",
+            "\x01\x76",
+            "\x01\x77\x06\uffff\x01\x78",
+            "\x01\x79",
+            "\x01\x7a\x0d\uffff\x01\x7b",
             "\x01\x7c",
             "\x01\x7d",
             "\x01\x7e",
@@ -4346,40 +4411,44 @@ public partial class HqlLexer : Lexer {
             "\x01\u0081",
             "\x01\u0082",
             "\x01\u0083",
+            "\x01\u0084",
+            "\x01\u0085",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x03\x28\x01\u0084\x09\x28\x01\u0085\x04\x28\x01"+
-            "\u0086\x01\u0087\x06\x28\x05\uffff\uff7f\x28",
+            "\x28\x01\uffff\x03\x28\x01\u0086\x09\x28\x01\u0087\x04\x28\x01"+
+            "\u0088\x01\u0089\x06\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u008a",
-            "\x01\u008c\x04\uffff\x01\u008b",
-            "\x01\u008d",
-            "\x01\u008e",
+            "\x01\u008c",
+            "\x01\u008e\x04\uffff\x01\u008d",
             "\x01\u008f",
             "\x01\u0090",
             "\x01\u0091",
             "\x01\u0092",
             "\x01\u0093",
+            "\x01\u0094",
+            "\x01\u0095",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x03\x28\x01\u0094\x16\x28\x05\uffff\uff7f\x28",
-            "\x01\u0096",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x28\x01\uffff\x03\x28\x01\u0096\x16\x28\x05\uffff\uff7f\x28",
             "\x01\u0098",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u009a",
-            "\x01\u009b",
-            "\x01\u009c\x07\uffff\x01\u009d",
-            "\x01\u009e",
-            "\x01\u009f",
-            "\x01\u00a1\x13\uffff\x01\u00a0",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u009c",
+            "\x01\u009d",
+            "\x01\u009e\x07\uffff\x01\u009f",
+            "\x01\u00a0",
+            "\x01\u00a1",
             "\x01\u00a2",
             "\x01\u00a3",
-            "\x01\u00a4",
-            "\x01\u00a5",
+            "\x01\u00a5\x13\uffff\x01\u00a4",
             "\x01\u00a6",
             "\x01\u00a7",
+            "\x01\u00a8",
+            "\x01\u00a9",
+            "\x01\u00aa",
+            "\x01\u00ab",
             "",
             "",
             "",
@@ -4397,16 +4466,12 @@ public partial class HqlLexer : Lexer {
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x04\x28\x01\u00ab\x15\x28\x05\uffff\uff7f\x28",
+            "\x28\x01\uffff\x04\x28\x01\u00af\x15\x28\x05\uffff\uff7f\x28",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u00ae",
-            "",
-            "\x01\u00af",
-            "\x01\u00b0",
-            "\x01\u00b1",
             "\x01\u00b2",
+            "",
             "\x01\u00b3",
             "\x01\u00b4",
             "\x01\u00b5",
@@ -4414,12 +4479,12 @@ public partial class HqlLexer : Lexer {
             "\x01\u00b7",
             "\x01\u00b8",
             "\x01\u00b9",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u00ba",
             "\x01\u00bb",
             "\x01\u00bc",
             "\x01\u00bd",
-            "\x01\u00be",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u00bf",
             "\x01\u00c0",
             "\x01\u00c1",
@@ -4427,158 +4492,152 @@ public partial class HqlLexer : Lexer {
             "\x01\u00c3",
             "\x01\u00c4",
             "\x01\u00c5",
-            "",
-            "",
             "\x01\u00c6",
             "\x01\u00c7",
             "\x01\u00c8",
             "\x01\u00c9",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "",
+            "\x01\u00ca",
+            "\x01\u00cb",
             "\x01\u00cc",
+            "\x01\u00cd",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u00cf",
             "\x01\u00d0",
-            "",
-            "\x01\u00d1",
-            "",
-            "\x01\u00d2",
-            "",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u00d3",
             "\x01\u00d4",
+            "",
             "\x01\u00d5",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "\x01\u00d6",
+            "",
             "\x01\u00d7",
+            "\x01\u00d8",
+            "\x01\u00d9",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u00d9",
-            "\x01\u00da",
             "\x01\u00db",
             "\x01\u00dc",
-            "\x01\u00dd",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u00de",
-            "\x01\u00e0\x03\uffff\x01\u00df",
+            "\x01\u00df",
+            "\x01\u00e0",
             "\x01\u00e1",
-            "",
-            "",
-            "",
             "\x01\u00e2",
-            "",
-            "",
             "\x01\u00e3",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u00e5",
-            "\x01\u00e6",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u00e4",
+            "\x01\u00e6\x03\uffff\x01\u00e5",
+            "\x01\u00e7",
+            "",
+            "",
+            "",
             "\x01\u00e8",
+            "",
+            "",
+            "\x01\u00e9",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x04\x28\x01\u00e9\x15\x28\x05\uffff\uff7f\x28",
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u00eb",
             "\x01\u00ec",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u00ee",
-            "\x01\u00ef",
-            "",
-            "\x01\u00f0",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x04\x28\x01\u00ef\x15\x28\x05\uffff\uff7f\x28",
             "\x01\u00f1",
             "\x01\u00f2",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u00f4",
             "\x01\u00f5",
+            "",
             "\x01\u00f6",
             "\x01\u00f7",
             "\x01\u00f8",
-            "\x01\u00f9",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u00fb",
+            "\x01\u00fc",
             "\x01\u00fd",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "",
-            "",
+            "\x01\u00fe",
             "\x01\u00ff",
-            "",
-            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u0101",
-            "\x01\u0102",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0103",
-            "\x01\u0104",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "",
             "\x01\u0105",
-            "\x01\u0106",
+            "",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u0107",
+            "\x01\u0108",
             "\x01\u0109",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u010a",
             "\x01\u010b",
             "\x01\u010c",
-            "\x01\u010d",
-            "\x01\u010e",
+            "",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0111",
-            "\x01\u0112",
-            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "",
+            "\x01\u0113",
+            "\x01\u0114",
             "\x01\u0115",
             "\x01\u0116",
-            "",
-            "\x01\u0117",
-            "\x01\u0118",
-            "",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0119",
             "\x01\u011a",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
+            "\x01\u011d",
+            "\x01\u011e",
             "",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u011f",
             "\x01\u0120",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "\x01\u0121",
             "\x01\u0122",
-            "",
-            "",
-            "",
-            "\x01\u0123",
-            "",
-            "\x01\u0124",
-            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0127",
@@ -4588,97 +4647,115 @@ public partial class HqlLexer : Lexer {
             "\x01\u012a",
             "",
             "",
+            "",
             "\x01\u012b",
             "",
+            "\x01\u012c",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u012d",
-            "\x01\u012e",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "",
-            "",
+            "\x01\u012f",
             "\x01\u0130",
-            "\x01\u0131",
-            "",
-            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u0132",
+            "",
+            "",
+            "",
+            "",
             "\x01\u0133",
-            "\x01\u0134",
+            "",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0135",
+            "\x01\u0136",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
             "",
-            "",
-            "",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u0138",
             "\x01\u0139",
+            "",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u013b",
+            "\x01\u013c",
+            "\x01\u013d",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
             "",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u013e",
+            "",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u0140",
+            "\x01\u0141",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "\x01\u0142",
-            "",
             "\x01\u0143",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
-            "\x01\u0145",
+            "",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "\x01\u0146",
-            "\x01\u0147",
-            "",
-            "",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u0148",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
-            "",
-            "",
             "\x01\u014a",
             "",
             "\x01\u014b",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
-            "\x01\u014c",
             "\x01\u014d",
-            "",
             "\x01\u014e",
+            "\x01\u014f",
+            "",
+            "",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
             "",
             "",
-            "\x01\u0151",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u0152",
+            "",
             "\x01\u0153",
-            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
-            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "\x01\u0154",
             "\x01\u0155",
             "",
-            "",
             "\x01\u0156",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "",
+            "",
+            "\x01\u0159",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u015b",
+            "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
+            "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
+            "\x01\u015d",
+            "",
+            "",
+            "\x01\u015e",
             "",
             "\x01\x28\x0b\uffff\x0a\x28\x07\uffff\x1a\x28\x04\uffff\x01"+
             "\x28\x01\uffff\x1a\x28\x05\uffff\uff7f\x28",
@@ -4718,7 +4795,7 @@ public partial class HqlLexer : Lexer {
 
         override public string Description
         {
-            get { return "1:1: Tokens : ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SOME | SUM | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__131 | T__132 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT );"; }
+            get { return "1:1: Tokens : ( ALL | ANY | AND | AS | ASCENDING | AVG | BETWEEN | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEFT | LIKE | MAX | MIN | NEW | NOT | NULL | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SKIP | SOME | SUM | TAKE | TRUE | UNION | UPDATE | VERSIONED | WHERE | LITERAL_by | CASE | END | ELSE | THEN | WHEN | ON | WITH | BOTH | EMPTY | LEADING | MEMBER | OBJECT | OF | TRAILING | T__133 | T__134 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT );"; }
         }
 
     }

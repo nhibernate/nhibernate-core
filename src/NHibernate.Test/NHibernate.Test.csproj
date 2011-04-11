@@ -414,6 +414,7 @@
     <Compile Include="Hql\Ast\Joiner.cs" />
     <Compile Include="Hql\Ast\KeyManyToOneEntity.cs" />
     <Compile Include="Hql\Ast\KeyManyToOneKeyEntity.cs" />
+    <Compile Include="Hql\Ast\LimitClauseFixture.cs" />
     <Compile Include="Hql\Ast\Mammal.cs" />
     <Compile Include="Hql\Ast\Name.cs" />
     <Compile Include="Hql\Ast\ParsingFixture.cs" />

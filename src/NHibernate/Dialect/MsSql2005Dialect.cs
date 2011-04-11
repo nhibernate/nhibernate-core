@@ -29,6 +29,13 @@ namespace NHibernate.Dialect
 			RegisterKeyword("xml");
 		}
 
+        public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+        {
+            return GetLimitString(querySqlString,
+                offset == 0 ? null : new SqlString(offset.ToString()),
+                limit == int.MaxValue ? null : new SqlString(limit.ToString()));
+        }
+
 		/// <summary>
 		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
 		/// </summary>
@@ -43,17 +50,29 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
+            object limitObject = limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value);
+		    object offsetObject = null;
+		    if (offset != 0)
+                offsetObject = offsetParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(offsetParameterIndex.Value);
+		    return GetLimitString(querySqlString, offsetObject, limitObject);
+		}
+
+        private SqlString GetLimitString(SqlString querySqlString, object offset, object limit)
+		{
+            if (offset == null && limit == null)
+                return querySqlString;
+
 			SqlStringBuilder result = new SqlStringBuilder();
 						
-			if (offset == 0)
+			if (offset == null)
 			{
 				int insertPoint = this.GetAfterSelectInsertPoint(querySqlString);
 				
 				return result
 					.Add(querySqlString.Substring(0, insertPoint))
 					.Add(" TOP (")
-					.Add(limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value))
-					.Add(")")
+					.AddObject(limit)
+                    .Add(") ")
 					.Add(querySqlString.Substring(insertPoint))
 					.ToSqlString();
 			}
@@ -84,10 +103,12 @@ namespace NHibernate.Dialect
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
 			}
 				
-			result
-				.Add("SELECT TOP (")
-				.Add(limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value))
-				.Add(") ")
+			result.Add("SELECT ");
+
+            if (limit != null)
+                result.Add("TOP (").AddObject(limit).Add(") ");
+
+            result
 				.Add(StringHelper.Join(", ", columnsOrAliases))
 				.Add(" FROM (")
 				.Add(select)
@@ -99,7 +120,7 @@ namespace NHibernate.Dialect
 				.Add(") as __hibernate_sort_row ")
 				.Add(fromAndWhere)
 				.Add(") as query WHERE query.__hibernate_sort_row > ")
-				.Add(offsetParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(offsetParameterIndex.Value))
+				.AddObject(offset)
 				.Add(" ORDER BY query.__hibernate_sort_row");
 			
 			return result.ToSqlString();

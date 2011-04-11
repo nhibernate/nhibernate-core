@@ -111,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 
 					var hql = new StringBuilder();
 					hql.AppendLine("from NewsFeed");
-					hql.AppendLine("where (Url = ? or Url = ?) and Title in (:TitleList)) ");
+					hql.AppendLine("where (Url = ? or Url = ?) and Title in (:TitleList) ");
 
 					IQuery query = s.CreateQuery(hql.ToString());
 					query.SetString(0, "Feed4Uri");

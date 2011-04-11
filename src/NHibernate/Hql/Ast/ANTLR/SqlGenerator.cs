@@ -310,6 +310,33 @@ namespace NHibernate.Hql.Ast.ANTLR
 			writer.CommaBetweenParameters(comma);
 		}
 
+	    private void StartQuery()
+	    {
+	        outputStack.Insert(0, writer);
+	        writer = new QueryWriter();
+	    }
+
+        private void EndQuery()
+        {
+            QueryWriter queryWriter = ((QueryWriter) writer);
+            SqlString sqlString = queryWriter.ToSqlString();
+
+            sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
+
+            writer = outputStack[0];
+            outputStack.RemoveAt(0);
+            Out(sqlString);
+        }
+
+        private void Skip(IASTNode node)
+        {
+            ((QueryWriter) writer).Skip = Convert.ToInt32(node.Text);
+        }
+
+        private void Take(IASTNode node)
+        {
+            ((QueryWriter)writer).Take = Convert.ToInt32(node.Text);
+        }
 
 		#region Nested type: DefaultWriter
 
@@ -352,7 +379,51 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		#endregion
 
-		#region Nested type: FunctionArguments
+        #region Nested type: QueryWriter
+
+        /// <summary>
+        /// The default SQL writer.
+        /// </summary>
+        private class QueryWriter : ISqlWriter
+        {
+            private readonly SqlStringBuilder builder = new SqlStringBuilder();
+
+            #region ISqlWriter Members
+
+            public void Clause(String clause)
+            {
+                builder.Add(clause);
+            }
+
+            public void Clause(SqlString clause)
+            {
+                builder.Add(clause);
+            }
+
+            public void Parameter()
+            {
+                builder.AddParameter();
+            }
+
+            public void CommaBetweenParameters(String comma)
+            {
+                builder.Add(comma);
+            }
+
+            public SqlString ToSqlString()
+            {
+                return builder.ToSqlString();
+            }
+
+            public int? Skip { get; set; }
+            public int? Take { get; set; }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested type: FunctionArguments
 
 		private class FunctionArguments : ISqlWriter
 		{

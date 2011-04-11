@@ -32,12 +32,16 @@ statement
 	;
 
 selectStatement
-	: ^(SELECT { Out("select "); }
+	: ^(SELECT { StartQuery(); Out("select "); }
 		selectClause
 		from
 		( ^(WHERE { Out(" where "); } whereExpr ) )?
-		( ^(GROUP { Out(" group by "); } groupExprs ( ^(HAVING { Out(" having "); } booleanExpr[false]) )? ) )?
+		( ^(GROUP { Out(" group by "); } groupExprs ) )?
+		( ^(HAVING { Out(" having "); } booleanExpr[false]) )?
 		( ^(ORDER { Out(" order by "); } orderExprs ) )?
+		( ^(SKIP si=NUM_INT) { Skip($si); })?
+		( ^(TAKE ti=NUM_INT) { Take($ti); })?
+		{ EndQuery(); }
 	)
 	;
 

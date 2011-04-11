@@ -87,7 +87,7 @@ namespace NHibernate.Test.DialectTest
 
 			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), 0, 10);
 			System.Console.WriteLine(str);
-			Assert.That(str.ToString(), Is.EqualTo("select distinct top 10 c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
+			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10)  c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
 		}
 
 		[Test]

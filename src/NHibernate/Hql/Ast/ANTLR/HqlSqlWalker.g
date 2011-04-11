@@ -131,9 +131,12 @@ unionedQuery!
 			)
 			(w=whereClause)?
 			(g=groupClause)?
+			(h=havingClause)?
 			(o=orderClause)?
+			(sk=skipClause)?
+			(tk=takeClause)?
 		) 
-	-> ^(SELECT $s? $f $w? $g? $o?)
+	-> ^(SELECT $s? $f $w? $g? $h? $o? $sk? $tk?)
 	;
 
 orderClause
@@ -144,8 +147,20 @@ orderExprs
 	: expr ( ASCENDING | DESCENDING )? (orderExprs)?
 	;
 
+skipClause
+	: ^(SKIP NUM_INT)
+	;
+
+takeClause
+	: ^(TAKE NUM_INT)
+	;
+
 groupClause
-	: ^(GROUP { HandleClauseStart( GROUP ); } (expr)+ ( ^(HAVING logicalExpr) )? )
+	: ^(GROUP { HandleClauseStart( GROUP ); } (expr)+ )
+	;
+
+havingClause
+	: ^(HAVING logicalExpr)
 	;
 
 selectClause!

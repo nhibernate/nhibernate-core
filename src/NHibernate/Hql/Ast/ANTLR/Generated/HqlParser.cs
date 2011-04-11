@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-01-13 11:20:20
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-04-11 10:19:39
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -72,8 +72,10 @@ public partial class HqlParser : Parser
 		"RIGHT", 
 		"SELECT", 
 		"SET", 
+		"SKIP", 
 		"SOME", 
 		"SUM", 
+		"TAKE", 
 		"TRUE", 
 		"UNION", 
 		"UPDATE", 
@@ -160,136 +162,138 @@ public partial class HqlParser : Parser
 		"'descending'"
     };
 
-    public const int EXPONENT = 128;
-    public const int LT = 105;
-    public const int FLOAT_SUFFIX = 129;
-    public const int STAR = 116;
-    public const int LITERAL_by = 54;
-    public const int CASE = 55;
+    public const int EXPONENT = 130;
+    public const int LT = 107;
+    public const int FLOAT_SUFFIX = 131;
+    public const int STAR = 118;
+    public const int LITERAL_by = 56;
+    public const int CASE = 57;
     public const int NEW = 37;
-    public const int FILTER_ENTITY = 74;
-    public const int PARAM = 121;
+    public const int FILTER_ENTITY = 76;
+    public const int PARAM = 123;
     public const int COUNT = 12;
     public const int NOT = 38;
     public const int EOF = -1;
-    public const int UNARY_PLUS = 89;
-    public const int QUOTED_String = 122;
-    public const int ESCqs = 126;
-    public const int WEIRD_IDENT = 91;
-    public const int OPEN_BRACKET = 118;
+    public const int UNARY_PLUS = 91;
+    public const int QUOTED_String = 124;
+    public const int ESCqs = 128;
+    public const int WEIRD_IDENT = 93;
+    public const int OPEN_BRACKET = 120;
     public const int FULL = 23;
-    public const int ORDER_ELEMENT = 83;
+    public const int ORDER_ELEMENT = 85;
     public const int INSERT = 29;
     public const int ESCAPE = 18;
-    public const int IS_NULL = 78;
-    public const int BOTH = 62;
-    public const int NUM_DECIMAL = 95;
-    public const int EQ = 100;
-    public const int VERSIONED = 52;
+    public const int IS_NULL = 80;
+    public const int BOTH = 64;
+    public const int NUM_DECIMAL = 97;
+    public const int EQ = 102;
+    public const int VERSIONED = 54;
     public const int SELECT = 45;
     public const int INTO = 30;
-    public const int NE = 103;
-    public const int GE = 108;
-    public const int ID_LETTER = 125;
-    public const int CONCAT = 109;
+    public const int NE = 105;
+    public const int GE = 110;
+    public const int TAKE = 50;
+    public const int ID_LETTER = 127;
+    public const int CONCAT = 111;
     public const int NULL = 39;
-    public const int ELSE = 57;
-    public const int SELECT_FROM = 87;
-    public const int NUM_LONG = 97;
-    public const int ON = 60;
-    public const int TRAILING = 68;
-    public const int NUM_DOUBLE = 94;
-    public const int UNARY_MINUS = 88;
+    public const int ELSE = 59;
+    public const int SELECT_FROM = 89;
+    public const int NUM_LONG = 99;
+    public const int ON = 62;
+    public const int TRAILING = 70;
+    public const int NUM_DOUBLE = 96;
+    public const int UNARY_MINUS = 90;
     public const int DELETE = 13;
     public const int INDICES = 27;
-    public const int OF = 67;
-    public const int METHOD_CALL = 79;
-    public const int LEADING = 64;
-    public const int EMPTY = 63;
+    public const int OF = 69;
+    public const int METHOD_CALL = 81;
+    public const int LEADING = 66;
+    public const int SKIP = 47;
+    public const int EMPTY = 65;
     public const int GROUP = 24;
-    public const int WS = 127;
+    public const int WS = 129;
     public const int FETCH = 21;
-    public const int VECTOR_EXPR = 90;
-    public const int NOT_IN = 81;
-    public const int NUM_INT = 93;
+    public const int VECTOR_EXPR = 92;
+    public const int NOT_IN = 83;
+    public const int NUM_INT = 95;
     public const int OR = 40;
-    public const int ALIAS = 70;
-    public const int JAVA_CONSTANT = 98;
-    public const int CONSTANT = 92;
-    public const int GT = 106;
-    public const int QUERY = 84;
-    public const int BNOT = 110;
-    public const int INDEX_OP = 76;
-    public const int NUM_FLOAT = 96;
+    public const int ALIAS = 72;
+    public const int JAVA_CONSTANT = 100;
+    public const int CONSTANT = 94;
+    public const int GT = 108;
+    public const int QUERY = 86;
+    public const int BNOT = 112;
+    public const int INDEX_OP = 78;
+    public const int NUM_FLOAT = 98;
     public const int FROM = 22;
-    public const int END = 56;
+    public const int END = 58;
     public const int FALSE = 20;
     public const int DISTINCT = 16;
-    public const int T__131 = 131;
-    public const int CONSTRUCTOR = 71;
-    public const int T__132 = 132;
-    public const int CLOSE_BRACKET = 119;
-    public const int WHERE = 53;
+    public const int CONSTRUCTOR = 73;
+    public const int T__133 = 133;
+    public const int T__134 = 134;
+    public const int CLOSE_BRACKET = 121;
+    public const int WHERE = 55;
     public const int CLASS = 11;
-    public const int MEMBER = 65;
+    public const int MEMBER = 67;
     public const int INNER = 28;
     public const int PROPERTIES = 43;
     public const int ORDER = 41;
     public const int MAX = 35;
-    public const int UPDATE = 51;
-    public const int SQL_NE = 104;
+    public const int UPDATE = 53;
+    public const int SQL_NE = 106;
     public const int AND = 6;
-    public const int SUM = 48;
+    public const int SUM = 49;
     public const int ASCENDING = 8;
-    public const int EXPR_LIST = 73;
+    public const int EXPR_LIST = 75;
     public const int AS = 7;
     public const int IN = 26;
-    public const int THEN = 58;
-    public const int OBJECT = 66;
-    public const int COMMA = 99;
+    public const int THEN = 60;
+    public const int OBJECT = 68;
+    public const int COMMA = 101;
     public const int IS = 31;
     public const int LEFT = 33;
     public const int AVG = 9;
-    public const int SOME = 47;
-    public const int BOR = 111;
+    public const int SOME = 48;
+    public const int BOR = 113;
     public const int ALL = 4;
-    public const int IDENT = 123;
-    public const int PLUS = 114;
-    public const int BXOR = 112;
-    public const int CASE2 = 72;
+    public const int IDENT = 125;
+    public const int PLUS = 116;
+    public const int BXOR = 114;
+    public const int CASE2 = 74;
     public const int EXISTS = 19;
     public const int DOT = 15;
     public const int LIKE = 34;
-    public const int WITH = 61;
+    public const int WITH = 63;
     public const int OUTER = 42;
-    public const int ID_START_LETTER = 124;
-    public const int ROW_STAR = 86;
-    public const int NOT_LIKE = 82;
-    public const int HEX_DIGIT = 130;
-    public const int NOT_BETWEEN = 80;
-    public const int RANGE = 85;
+    public const int ID_START_LETTER = 126;
+    public const int ROW_STAR = 88;
+    public const int NOT_LIKE = 84;
+    public const int HEX_DIGIT = 132;
+    public const int NOT_BETWEEN = 82;
+    public const int RANGE = 87;
     public const int RIGHT = 44;
     public const int SET = 46;
     public const int HAVING = 25;
     public const int MIN = 36;
-    public const int MINUS = 115;
-    public const int IS_NOT_NULL = 77;
-    public const int BAND = 113;
+    public const int MINUS = 117;
+    public const int IS_NOT_NULL = 79;
+    public const int BAND = 115;
     public const int ELEMENTS = 17;
-    public const int TRUE = 49;
+    public const int TRUE = 51;
     public const int JOIN = 32;
-    public const int UNION = 50;
-    public const int IN_LIST = 75;
-    public const int COLON = 120;
-    public const int OPEN = 101;
+    public const int UNION = 52;
+    public const int IN_LIST = 77;
+    public const int COLON = 122;
+    public const int OPEN = 103;
     public const int ANY = 5;
-    public const int CLOSE = 102;
-    public const int WHEN = 59;
-    public const int DIV = 117;
+    public const int CLOSE = 104;
+    public const int WHEN = 61;
+    public const int DIV = 119;
     public const int DESCENDING = 14;
     public const int BETWEEN = 10;
-    public const int AGGREGATE = 69;
-    public const int LE = 107;
+    public const int AGGREGATE = 71;
+    public const int LE = 109;
 
     // delegates
     // delegators
@@ -337,7 +341,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "statement"
-    // Hql.g:127:1: statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) ;
+    // Hql.g:129:1: statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF ;
     public HqlParser.statement_return statement() // throws RecognitionException [1]
     {   
         HqlParser.statement_return retval = new HqlParser.statement_return();
@@ -345,6 +349,7 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
+        IToken EOF5 = null;
         HqlParser.updateStatement_return updateStatement1 = default(HqlParser.updateStatement_return);
 
         HqlParser.deleteStatement_return deleteStatement2 = default(HqlParser.deleteStatement_return);
@@ -354,15 +359,16 @@ public partial class HqlParser : Parser
         HqlParser.insertStatement_return insertStatement4 = default(HqlParser.insertStatement_return);
 
 
+        IASTNode EOF5_tree=null;
 
         try 
     	{
-            // Hql.g:128:2: ( ( updateStatement | deleteStatement | selectStatement | insertStatement ) )
-            // Hql.g:128:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
+            // Hql.g:130:2: ( ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF )
+            // Hql.g:130:4: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:128:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
+            	// Hql.g:130:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
             	int alt1 = 4;
             	switch ( input.LA(1) ) 
             	{
@@ -379,8 +385,11 @@ public partial class HqlParser : Parser
             	case EOF:
             	case FROM:
             	case GROUP:
+            	case HAVING:
             	case ORDER:
             	case SELECT:
+            	case SKIP:
+            	case TAKE:
             	case UNION:
             	case WHERE:
             	case CLOSE:
@@ -403,9 +412,9 @@ public partial class HqlParser : Parser
             	switch (alt1) 
             	{
             	    case 1 :
-            	        // Hql.g:128:6: updateStatement
+            	        // Hql.g:130:6: updateStatement
             	        {
-            	        	PushFollow(FOLLOW_updateStatement_in_statement599);
+            	        	PushFollow(FOLLOW_updateStatement_in_statement611);
             	        	updateStatement1 = updateStatement();
             	        	state.followingStackPointer--;
 
@@ -414,9 +423,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:128:24: deleteStatement
+            	        // Hql.g:130:24: deleteStatement
             	        {
-            	        	PushFollow(FOLLOW_deleteStatement_in_statement603);
+            	        	PushFollow(FOLLOW_deleteStatement_in_statement615);
             	        	deleteStatement2 = deleteStatement();
             	        	state.followingStackPointer--;
 
@@ -425,9 +434,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:128:42: selectStatement
+            	        // Hql.g:130:42: selectStatement
             	        {
-            	        	PushFollow(FOLLOW_selectStatement_in_statement607);
+            	        	PushFollow(FOLLOW_selectStatement_in_statement619);
             	        	selectStatement3 = selectStatement();
             	        	state.followingStackPointer--;
 
@@ -436,9 +445,9 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 4 :
-            	        // Hql.g:128:60: insertStatement
+            	        // Hql.g:130:60: insertStatement
             	        {
-            	        	PushFollow(FOLLOW_insertStatement_in_statement611);
+            	        	PushFollow(FOLLOW_insertStatement_in_statement623);
             	        	insertStatement4 = insertStatement();
             	        	state.followingStackPointer--;
 
@@ -449,6 +458,7 @@ public partial class HqlParser : Parser
 
             	}
 
+            	EOF5=(IToken)Match(input,EOF,FOLLOW_EOF_in_statement627); 
 
             }
 
@@ -483,7 +493,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "updateStatement"
-    // Hql.g:131:1: updateStatement : UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
+    // Hql.g:133:1: updateStatement : UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
     public HqlParser.updateStatement_return updateStatement() // throws RecognitionException [1]
     {   
         HqlParser.updateStatement_return retval = new HqlParser.updateStatement_return();
@@ -491,30 +501,30 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken UPDATE5 = null;
-        IToken VERSIONED6 = null;
-        HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause7 = default(HqlParser.optionalFromTokenFromClause_return);
+        IToken UPDATE6 = null;
+        IToken VERSIONED7 = null;
+        HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause8 = default(HqlParser.optionalFromTokenFromClause_return);
 
-        HqlParser.setClause_return setClause8 = default(HqlParser.setClause_return);
+        HqlParser.setClause_return setClause9 = default(HqlParser.setClause_return);
 
-        HqlParser.whereClause_return whereClause9 = default(HqlParser.whereClause_return);
+        HqlParser.whereClause_return whereClause10 = default(HqlParser.whereClause_return);
 
 
-        IASTNode UPDATE5_tree=null;
-        IASTNode VERSIONED6_tree=null;
+        IASTNode UPDATE6_tree=null;
+        IASTNode VERSIONED7_tree=null;
 
         try 
     	{
-            // Hql.g:132:2: ( UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
-            // Hql.g:132:4: UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
+            // Hql.g:134:2: ( UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
+            // Hql.g:134:4: UPDATE ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	UPDATE5=(IToken)Match(input,UPDATE,FOLLOW_UPDATE_in_updateStatement624); 
-            		UPDATE5_tree = (IASTNode)adaptor.Create(UPDATE5);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(UPDATE5_tree, root_0);
+            	UPDATE6=(IToken)Match(input,UPDATE,FOLLOW_UPDATE_in_updateStatement639); 
+            		UPDATE6_tree = (IASTNode)adaptor.Create(UPDATE6);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(UPDATE6_tree, root_0);
 
-            	// Hql.g:132:12: ( VERSIONED )?
+            	// Hql.g:134:12: ( VERSIONED )?
             	int alt2 = 2;
             	int LA2_0 = input.LA(1);
 
@@ -525,11 +535,11 @@ public partial class HqlParser : Parser
             	switch (alt2) 
             	{
             	    case 1 :
-            	        // Hql.g:132:13: VERSIONED
+            	        // Hql.g:134:13: VERSIONED
             	        {
-            	        	VERSIONED6=(IToken)Match(input,VERSIONED,FOLLOW_VERSIONED_in_updateStatement628); 
-            	        		VERSIONED6_tree = (IASTNode)adaptor.Create(VERSIONED6);
-            	        		adaptor.AddChild(root_0, VERSIONED6_tree);
+            	        	VERSIONED7=(IToken)Match(input,VERSIONED,FOLLOW_VERSIONED_in_updateStatement643); 
+            	        		VERSIONED7_tree = (IASTNode)adaptor.Create(VERSIONED7);
+            	        		adaptor.AddChild(root_0, VERSIONED7_tree);
 
 
             	        }
@@ -537,17 +547,17 @@ public partial class HqlParser : Parser
 
             	}
 
-            	PushFollow(FOLLOW_optionalFromTokenFromClause_in_updateStatement634);
-            	optionalFromTokenFromClause7 = optionalFromTokenFromClause();
+            	PushFollow(FOLLOW_optionalFromTokenFromClause_in_updateStatement649);
+            	optionalFromTokenFromClause8 = optionalFromTokenFromClause();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, optionalFromTokenFromClause7.Tree);
-            	PushFollow(FOLLOW_setClause_in_updateStatement638);
-            	setClause8 = setClause();
+            	adaptor.AddChild(root_0, optionalFromTokenFromClause8.Tree);
+            	PushFollow(FOLLOW_setClause_in_updateStatement653);
+            	setClause9 = setClause();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, setClause8.Tree);
-            	// Hql.g:135:3: ( whereClause )?
+            	adaptor.AddChild(root_0, setClause9.Tree);
+            	// Hql.g:137:3: ( whereClause )?
             	int alt3 = 2;
             	int LA3_0 = input.LA(1);
 
@@ -558,13 +568,13 @@ public partial class HqlParser : Parser
             	switch (alt3) 
             	{
             	    case 1 :
-            	        // Hql.g:135:4: whereClause
+            	        // Hql.g:137:4: whereClause
             	        {
-            	        	PushFollow(FOLLOW_whereClause_in_updateStatement643);
-            	        	whereClause9 = whereClause();
+            	        	PushFollow(FOLLOW_whereClause_in_updateStatement658);
+            	        	whereClause10 = whereClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, whereClause9.Tree);
+            	        	adaptor.AddChild(root_0, whereClause10.Tree);
 
             	        }
             	        break;
@@ -605,7 +615,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "setClause"
-    // Hql.g:138:1: setClause : ( SET assignment ( COMMA assignment )* ) ;
+    // Hql.g:140:1: setClause : ( SET assignment ( COMMA assignment )* ) ;
     public HqlParser.setClause_return setClause() // throws RecognitionException [1]
     {   
         HqlParser.setClause_return retval = new HqlParser.setClause_return();
@@ -613,36 +623,36 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken SET10 = null;
-        IToken COMMA12 = null;
-        HqlParser.assignment_return assignment11 = default(HqlParser.assignment_return);
+        IToken SET11 = null;
+        IToken COMMA13 = null;
+        HqlParser.assignment_return assignment12 = default(HqlParser.assignment_return);
 
-        HqlParser.assignment_return assignment13 = default(HqlParser.assignment_return);
+        HqlParser.assignment_return assignment14 = default(HqlParser.assignment_return);
 
 
-        IASTNode SET10_tree=null;
-        IASTNode COMMA12_tree=null;
+        IASTNode SET11_tree=null;
+        IASTNode COMMA13_tree=null;
 
         try 
     	{
-            // Hql.g:139:2: ( ( SET assignment ( COMMA assignment )* ) )
-            // Hql.g:139:4: ( SET assignment ( COMMA assignment )* )
+            // Hql.g:141:2: ( ( SET assignment ( COMMA assignment )* ) )
+            // Hql.g:141:4: ( SET assignment ( COMMA assignment )* )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:139:4: ( SET assignment ( COMMA assignment )* )
-            	// Hql.g:139:5: SET assignment ( COMMA assignment )*
+            	// Hql.g:141:4: ( SET assignment ( COMMA assignment )* )
+            	// Hql.g:141:5: SET assignment ( COMMA assignment )*
             	{
-            		SET10=(IToken)Match(input,SET,FOLLOW_SET_in_setClause657); 
-            			SET10_tree = (IASTNode)adaptor.Create(SET10);
-            			root_0 = (IASTNode)adaptor.BecomeRoot(SET10_tree, root_0);
+            		SET11=(IToken)Match(input,SET,FOLLOW_SET_in_setClause672); 
+            			SET11_tree = (IASTNode)adaptor.Create(SET11);
+            			root_0 = (IASTNode)adaptor.BecomeRoot(SET11_tree, root_0);
 
-            		PushFollow(FOLLOW_assignment_in_setClause660);
-            		assignment11 = assignment();
+            		PushFollow(FOLLOW_assignment_in_setClause675);
+            		assignment12 = assignment();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, assignment11.Tree);
-            		// Hql.g:139:21: ( COMMA assignment )*
+            		adaptor.AddChild(root_0, assignment12.Tree);
+            		// Hql.g:141:21: ( COMMA assignment )*
             		do 
             		{
             		    int alt4 = 2;
@@ -657,14 +667,14 @@ public partial class HqlParser : Parser
             		    switch (alt4) 
             			{
             				case 1 :
-            				    // Hql.g:139:22: COMMA assignment
+            				    // Hql.g:141:22: COMMA assignment
             				    {
-            				    	COMMA12=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_setClause663); 
-            				    	PushFollow(FOLLOW_assignment_in_setClause666);
-            				    	assignment13 = assignment();
+            				    	COMMA13=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_setClause678); 
+            				    	PushFollow(FOLLOW_assignment_in_setClause681);
+            				    	assignment14 = assignment();
             				    	state.followingStackPointer--;
 
-            				    	adaptor.AddChild(root_0, assignment13.Tree);
+            				    	adaptor.AddChild(root_0, assignment14.Tree);
 
             				    }
             				    break;
@@ -714,7 +724,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "assignment"
-    // Hql.g:142:1: assignment : stateField EQ newValue ;
+    // Hql.g:144:1: assignment : stateField EQ newValue ;
     public HqlParser.assignment_return assignment() // throws RecognitionException [1]
     {   
         HqlParser.assignment_return retval = new HqlParser.assignment_return();
@@ -722,35 +732,35 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken EQ15 = null;
-        HqlParser.stateField_return stateField14 = default(HqlParser.stateField_return);
+        IToken EQ16 = null;
+        HqlParser.stateField_return stateField15 = default(HqlParser.stateField_return);
 
-        HqlParser.newValue_return newValue16 = default(HqlParser.newValue_return);
+        HqlParser.newValue_return newValue17 = default(HqlParser.newValue_return);
 
 
-        IASTNode EQ15_tree=null;
+        IASTNode EQ16_tree=null;
 
         try 
     	{
-            // Hql.g:143:2: ( stateField EQ newValue )
-            // Hql.g:143:4: stateField EQ newValue
+            // Hql.g:145:2: ( stateField EQ newValue )
+            // Hql.g:145:4: stateField EQ newValue
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_stateField_in_assignment680);
-            	stateField14 = stateField();
+            	PushFollow(FOLLOW_stateField_in_assignment695);
+            	stateField15 = stateField();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, stateField14.Tree);
-            	EQ15=(IToken)Match(input,EQ,FOLLOW_EQ_in_assignment682); 
-            		EQ15_tree = (IASTNode)adaptor.Create(EQ15);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(EQ15_tree, root_0);
+            	adaptor.AddChild(root_0, stateField15.Tree);
+            	EQ16=(IToken)Match(input,EQ,FOLLOW_EQ_in_assignment697); 
+            		EQ16_tree = (IASTNode)adaptor.Create(EQ16);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(EQ16_tree, root_0);
 
-            	PushFollow(FOLLOW_newValue_in_assignment685);
-            	newValue16 = newValue();
+            	PushFollow(FOLLOW_newValue_in_assignment700);
+            	newValue17 = newValue();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, newValue16.Tree);
+            	adaptor.AddChild(root_0, newValue17.Tree);
 
             }
 
@@ -785,7 +795,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "stateField"
-    // Hql.g:148:1: stateField : path ;
+    // Hql.g:150:1: stateField : path ;
     public HqlParser.stateField_return stateField() // throws RecognitionException [1]
     {   
         HqlParser.stateField_return retval = new HqlParser.stateField_return();
@@ -793,22 +803,22 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.path_return path17 = default(HqlParser.path_return);
+        HqlParser.path_return path18 = default(HqlParser.path_return);
 
 
 
         try 
     	{
-            // Hql.g:149:2: ( path )
-            // Hql.g:149:4: path
+            // Hql.g:151:2: ( path )
+            // Hql.g:151:4: path
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_path_in_stateField698);
-            	path17 = path();
+            	PushFollow(FOLLOW_path_in_stateField713);
+            	path18 = path();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, path17.Tree);
+            	adaptor.AddChild(root_0, path18.Tree);
 
             }
 
@@ -843,7 +853,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "newValue"
-    // Hql.g:154:1: newValue : concatenation ;
+    // Hql.g:156:1: newValue : concatenation ;
     public HqlParser.newValue_return newValue() // throws RecognitionException [1]
     {   
         HqlParser.newValue_return retval = new HqlParser.newValue_return();
@@ -851,22 +861,22 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.concatenation_return concatenation18 = default(HqlParser.concatenation_return);
+        HqlParser.concatenation_return concatenation19 = default(HqlParser.concatenation_return);
 
 
 
         try 
     	{
-            // Hql.g:155:2: ( concatenation )
-            // Hql.g:155:4: concatenation
+            // Hql.g:157:2: ( concatenation )
+            // Hql.g:157:4: concatenation
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_concatenation_in_newValue711);
-            	concatenation18 = concatenation();
+            	PushFollow(FOLLOW_concatenation_in_newValue726);
+            	concatenation19 = concatenation();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, concatenation18.Tree);
+            	adaptor.AddChild(root_0, concatenation19.Tree);
 
             }
 
@@ -901,7 +911,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "deleteStatement"
-    // Hql.g:158:1: deleteStatement : DELETE ( optionalFromTokenFromClause ) ( whereClause )? ;
+    // Hql.g:160:1: deleteStatement : DELETE ( optionalFromTokenFromClause ) ( whereClause )? ;
     public HqlParser.deleteStatement_return deleteStatement() // throws RecognitionException [1]
     {   
         HqlParser.deleteStatement_return retval = new HqlParser.deleteStatement_return();
@@ -909,37 +919,37 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken DELETE19 = null;
-        HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause20 = default(HqlParser.optionalFromTokenFromClause_return);
+        IToken DELETE20 = null;
+        HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause21 = default(HqlParser.optionalFromTokenFromClause_return);
 
-        HqlParser.whereClause_return whereClause21 = default(HqlParser.whereClause_return);
+        HqlParser.whereClause_return whereClause22 = default(HqlParser.whereClause_return);
 
 
-        IASTNode DELETE19_tree=null;
+        IASTNode DELETE20_tree=null;
 
         try 
     	{
-            // Hql.g:159:2: ( DELETE ( optionalFromTokenFromClause ) ( whereClause )? )
-            // Hql.g:159:4: DELETE ( optionalFromTokenFromClause ) ( whereClause )?
+            // Hql.g:161:2: ( DELETE ( optionalFromTokenFromClause ) ( whereClause )? )
+            // Hql.g:161:4: DELETE ( optionalFromTokenFromClause ) ( whereClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	DELETE19=(IToken)Match(input,DELETE,FOLLOW_DELETE_in_deleteStatement722); 
-            		DELETE19_tree = (IASTNode)adaptor.Create(DELETE19);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(DELETE19_tree, root_0);
+            	DELETE20=(IToken)Match(input,DELETE,FOLLOW_DELETE_in_deleteStatement737); 
+            		DELETE20_tree = (IASTNode)adaptor.Create(DELETE20);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(DELETE20_tree, root_0);
 
-            	// Hql.g:160:3: ( optionalFromTokenFromClause )
-            	// Hql.g:160:4: optionalFromTokenFromClause
+            	// Hql.g:162:3: ( optionalFromTokenFromClause )
+            	// Hql.g:162:4: optionalFromTokenFromClause
             	{
-            		PushFollow(FOLLOW_optionalFromTokenFromClause_in_deleteStatement728);
-            		optionalFromTokenFromClause20 = optionalFromTokenFromClause();
+            		PushFollow(FOLLOW_optionalFromTokenFromClause_in_deleteStatement743);
+            		optionalFromTokenFromClause21 = optionalFromTokenFromClause();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, optionalFromTokenFromClause20.Tree);
+            		adaptor.AddChild(root_0, optionalFromTokenFromClause21.Tree);
 
             	}
 
-            	// Hql.g:161:3: ( whereClause )?
+            	// Hql.g:163:3: ( whereClause )?
             	int alt5 = 2;
             	int LA5_0 = input.LA(1);
 
@@ -950,13 +960,13 @@ public partial class HqlParser : Parser
             	switch (alt5) 
             	{
             	    case 1 :
-            	        // Hql.g:161:4: whereClause
+            	        // Hql.g:163:4: whereClause
             	        {
-            	        	PushFollow(FOLLOW_whereClause_in_deleteStatement734);
-            	        	whereClause21 = whereClause();
+            	        	PushFollow(FOLLOW_whereClause_in_deleteStatement749);
+            	        	whereClause22 = whereClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, whereClause21.Tree);
+            	        	adaptor.AddChild(root_0, whereClause22.Tree);
 
             	        }
             	        break;
@@ -997,7 +1007,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "optionalFromTokenFromClause"
-    // Hql.g:166:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
+    // Hql.g:168:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
     public HqlParser.optionalFromTokenFromClause_return optionalFromTokenFromClause() // throws RecognitionException [1]
     {   
         HqlParser.optionalFromTokenFromClause_return retval = new HqlParser.optionalFromTokenFromClause_return();
@@ -1005,11 +1015,11 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.optionalFromTokenFromClause2_return optionalFromTokenFromClause222 = default(HqlParser.optionalFromTokenFromClause2_return);
+        HqlParser.optionalFromTokenFromClause2_return optionalFromTokenFromClause223 = default(HqlParser.optionalFromTokenFromClause2_return);
 
-        HqlParser.path_return path23 = default(HqlParser.path_return);
+        HqlParser.path_return path24 = default(HqlParser.path_return);
 
-        HqlParser.asAlias_return asAlias24 = default(HqlParser.asAlias_return);
+        HqlParser.asAlias_return asAlias25 = default(HqlParser.asAlias_return);
 
 
         RewriteRuleSubtreeStream stream_optionalFromTokenFromClause2 = new RewriteRuleSubtreeStream(adaptor,"rule optionalFromTokenFromClause2");
@@ -1017,20 +1027,20 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_asAlias = new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
         try 
     	{
-            // Hql.g:167:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
-            // Hql.g:167:4: optionalFromTokenFromClause2 path ( asAlias )?
+            // Hql.g:169:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
+            // Hql.g:169:4: optionalFromTokenFromClause2 path ( asAlias )?
             {
-            	PushFollow(FOLLOW_optionalFromTokenFromClause2_in_optionalFromTokenFromClause749);
-            	optionalFromTokenFromClause222 = optionalFromTokenFromClause2();
+            	PushFollow(FOLLOW_optionalFromTokenFromClause2_in_optionalFromTokenFromClause764);
+            	optionalFromTokenFromClause223 = optionalFromTokenFromClause2();
             	state.followingStackPointer--;
 
-            	stream_optionalFromTokenFromClause2.Add(optionalFromTokenFromClause222.Tree);
-            	PushFollow(FOLLOW_path_in_optionalFromTokenFromClause751);
-            	path23 = path();
+            	stream_optionalFromTokenFromClause2.Add(optionalFromTokenFromClause223.Tree);
+            	PushFollow(FOLLOW_path_in_optionalFromTokenFromClause766);
+            	path24 = path();
             	state.followingStackPointer--;
 
-            	stream_path.Add(path23.Tree);
-            	// Hql.g:167:38: ( asAlias )?
+            	stream_path.Add(path24.Tree);
+            	// Hql.g:169:38: ( asAlias )?
             	int alt6 = 2;
             	int LA6_0 = input.LA(1);
 
@@ -1041,13 +1051,13 @@ public partial class HqlParser : Parser
             	switch (alt6) 
             	{
             	    case 1 :
-            	        // Hql.g:167:39: asAlias
+            	        // Hql.g:169:39: asAlias
             	        {
-            	        	PushFollow(FOLLOW_asAlias_in_optionalFromTokenFromClause754);
-            	        	asAlias24 = asAlias();
+            	        	PushFollow(FOLLOW_asAlias_in_optionalFromTokenFromClause769);
+            	        	asAlias25 = asAlias();
             	        	state.followingStackPointer--;
 
-            	        	stream_asAlias.Add(asAlias24.Tree);
+            	        	stream_asAlias.Add(asAlias25.Tree);
 
             	        }
             	        break;
@@ -1057,7 +1067,7 @@ public partial class HqlParser : Parser
 
 
             	// AST REWRITE
-            	// elements:          asAlias, path
+            	// elements:          path, asAlias
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -1067,20 +1077,20 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 168:3: -> ^( FROM ^( RANGE path ( asAlias )? ) )
+            	// 170:3: -> ^( FROM ^( RANGE path ( asAlias )? ) )
             	{
-            	    // Hql.g:168:6: ^( FROM ^( RANGE path ( asAlias )? ) )
+            	    // Hql.g:170:6: ^( FROM ^( RANGE path ( asAlias )? ) )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(FROM, "FROM"), root_1);
 
-            	    // Hql.g:168:13: ^( RANGE path ( asAlias )? )
+            	    // Hql.g:170:13: ^( RANGE path ( asAlias )? )
             	    {
             	    IASTNode root_2 = (IASTNode)adaptor.GetNilNode();
             	    root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_2);
 
             	    adaptor.AddChild(root_2, stream_path.NextTree());
-            	    // Hql.g:168:26: ( asAlias )?
+            	    // Hql.g:170:26: ( asAlias )?
             	    if ( stream_asAlias.HasNext() )
             	    {
             	        adaptor.AddChild(root_2, stream_asAlias.NextTree());
@@ -1130,7 +1140,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "optionalFromTokenFromClause2"
-    // Hql.g:171:1: optionalFromTokenFromClause2 : ( FROM )? ;
+    // Hql.g:173:1: optionalFromTokenFromClause2 : ( FROM )? ;
     public HqlParser.optionalFromTokenFromClause2_return optionalFromTokenFromClause2() // throws RecognitionException [1]
     {   
         HqlParser.optionalFromTokenFromClause2_return retval = new HqlParser.optionalFromTokenFromClause2_return();
@@ -1138,18 +1148,18 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken FROM25 = null;
+        IToken FROM26 = null;
 
-        IASTNode FROM25_tree=null;
+        IASTNode FROM26_tree=null;
 
         try 
     	{
-            // Hql.g:172:2: ( ( FROM )? )
-            // Hql.g:172:4: ( FROM )?
+            // Hql.g:174:2: ( ( FROM )? )
+            // Hql.g:174:4: ( FROM )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:172:4: ( FROM )?
+            	// Hql.g:174:4: ( FROM )?
             	int alt7 = 2;
             	int LA7_0 = input.LA(1);
 
@@ -1160,11 +1170,11 @@ public partial class HqlParser : Parser
             	switch (alt7) 
             	{
             	    case 1 :
-            	        // Hql.g:172:4: FROM
+            	        // Hql.g:174:4: FROM
             	        {
-            	        	FROM25=(IToken)Match(input,FROM,FOLLOW_FROM_in_optionalFromTokenFromClause2785); 
-            	        		FROM25_tree = (IASTNode)adaptor.Create(FROM25);
-            	        		adaptor.AddChild(root_0, FROM25_tree);
+            	        	FROM26=(IToken)Match(input,FROM,FOLLOW_FROM_in_optionalFromTokenFromClause2800); 
+            	        		FROM26_tree = (IASTNode)adaptor.Create(FROM26);
+            	        		adaptor.AddChild(root_0, FROM26_tree);
 
 
             	        }
@@ -1206,7 +1216,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectStatement"
-    // Hql.g:175:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
+    // Hql.g:177:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
     public HqlParser.selectStatement_return selectStatement() // throws RecognitionException [1]
     {   
         HqlParser.selectStatement_return retval = new HqlParser.selectStatement_return();
@@ -1220,10 +1230,10 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_queryRule = new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
         try 
     	{
-            // Hql.g:176:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
-            // Hql.g:176:4: q= queryRule
+            // Hql.g:178:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
+            // Hql.g:178:4: q= queryRule
             {
-            	PushFollow(FOLLOW_queryRule_in_selectStatement799);
+            	PushFollow(FOLLOW_queryRule_in_selectStatement814);
             	q = queryRule();
             	state.followingStackPointer--;
 
@@ -1242,9 +1252,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_q = new RewriteRuleSubtreeStream(adaptor, "rule q", q!=null ? q.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 177:2: -> ^( QUERY[\"query\"] $q)
+            	// 179:2: -> ^( QUERY[\"query\"] $q)
             	{
-            	    // Hql.g:177:5: ^( QUERY[\"query\"] $q)
+            	    // Hql.g:179:5: ^( QUERY[\"query\"] $q)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
@@ -1290,7 +1300,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "insertStatement"
-    // Hql.g:180:1: insertStatement : INSERT intoClause selectStatement ;
+    // Hql.g:182:1: insertStatement : INSERT intoClause selectStatement ;
     public HqlParser.insertStatement_return insertStatement() // throws RecognitionException [1]
     {   
         HqlParser.insertStatement_return retval = new HqlParser.insertStatement_return();
@@ -1298,35 +1308,35 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken INSERT26 = null;
-        HqlParser.intoClause_return intoClause27 = default(HqlParser.intoClause_return);
+        IToken INSERT27 = null;
+        HqlParser.intoClause_return intoClause28 = default(HqlParser.intoClause_return);
 
-        HqlParser.selectStatement_return selectStatement28 = default(HqlParser.selectStatement_return);
+        HqlParser.selectStatement_return selectStatement29 = default(HqlParser.selectStatement_return);
 
 
-        IASTNode INSERT26_tree=null;
+        IASTNode INSERT27_tree=null;
 
         try 
     	{
-            // Hql.g:184:2: ( INSERT intoClause selectStatement )
-            // Hql.g:184:4: INSERT intoClause selectStatement
+            // Hql.g:186:2: ( INSERT intoClause selectStatement )
+            // Hql.g:186:4: INSERT intoClause selectStatement
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	INSERT26=(IToken)Match(input,INSERT,FOLLOW_INSERT_in_insertStatement828); 
-            		INSERT26_tree = (IASTNode)adaptor.Create(INSERT26);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(INSERT26_tree, root_0);
+            	INSERT27=(IToken)Match(input,INSERT,FOLLOW_INSERT_in_insertStatement843); 
+            		INSERT27_tree = (IASTNode)adaptor.Create(INSERT27);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(INSERT27_tree, root_0);
 
-            	PushFollow(FOLLOW_intoClause_in_insertStatement831);
-            	intoClause27 = intoClause();
+            	PushFollow(FOLLOW_intoClause_in_insertStatement846);
+            	intoClause28 = intoClause();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, intoClause27.Tree);
-            	PushFollow(FOLLOW_selectStatement_in_insertStatement833);
-            	selectStatement28 = selectStatement();
+            	adaptor.AddChild(root_0, intoClause28.Tree);
+            	PushFollow(FOLLOW_selectStatement_in_insertStatement848);
+            	selectStatement29 = selectStatement();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, selectStatement28.Tree);
+            	adaptor.AddChild(root_0, selectStatement29.Tree);
 
             }
 
@@ -1361,7 +1371,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "intoClause"
-    // Hql.g:187:1: intoClause : INTO path insertablePropertySpec ;
+    // Hql.g:189:1: intoClause : INTO path insertablePropertySpec ;
     public HqlParser.intoClause_return intoClause() // throws RecognitionException [1]
     {   
         HqlParser.intoClause_return retval = new HqlParser.intoClause_return();
@@ -1369,36 +1379,36 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken INTO29 = null;
-        HqlParser.path_return path30 = default(HqlParser.path_return);
+        IToken INTO30 = null;
+        HqlParser.path_return path31 = default(HqlParser.path_return);
 
-        HqlParser.insertablePropertySpec_return insertablePropertySpec31 = default(HqlParser.insertablePropertySpec_return);
+        HqlParser.insertablePropertySpec_return insertablePropertySpec32 = default(HqlParser.insertablePropertySpec_return);
 
 
-        IASTNode INTO29_tree=null;
+        IASTNode INTO30_tree=null;
 
         try 
     	{
-            // Hql.g:188:2: ( INTO path insertablePropertySpec )
-            // Hql.g:188:4: INTO path insertablePropertySpec
+            // Hql.g:190:2: ( INTO path insertablePropertySpec )
+            // Hql.g:190:4: INTO path insertablePropertySpec
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	INTO29=(IToken)Match(input,INTO,FOLLOW_INTO_in_intoClause844); 
-            		INTO29_tree = (IASTNode)adaptor.Create(INTO29);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(INTO29_tree, root_0);
+            	INTO30=(IToken)Match(input,INTO,FOLLOW_INTO_in_intoClause859); 
+            		INTO30_tree = (IASTNode)adaptor.Create(INTO30);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(INTO30_tree, root_0);
 
-            	PushFollow(FOLLOW_path_in_intoClause847);
-            	path30 = path();
+            	PushFollow(FOLLOW_path_in_intoClause862);
+            	path31 = path();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, path30.Tree);
+            	adaptor.AddChild(root_0, path31.Tree);
             	 WeakKeywords(); 
-            	PushFollow(FOLLOW_insertablePropertySpec_in_intoClause851);
-            	insertablePropertySpec31 = insertablePropertySpec();
+            	PushFollow(FOLLOW_insertablePropertySpec_in_intoClause866);
+            	insertablePropertySpec32 = insertablePropertySpec();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, insertablePropertySpec31.Tree);
+            	adaptor.AddChild(root_0, insertablePropertySpec32.Tree);
 
             }
 
@@ -1433,7 +1443,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "insertablePropertySpec"
-    // Hql.g:191:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
+    // Hql.g:193:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
     public HqlParser.insertablePropertySpec_return insertablePropertySpec() // throws RecognitionException [1]
     {   
         HqlParser.insertablePropertySpec_return retval = new HqlParser.insertablePropertySpec_return();
@@ -1441,35 +1451,35 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken OPEN32 = null;
-        IToken COMMA34 = null;
-        IToken CLOSE36 = null;
-        HqlParser.primaryExpression_return primaryExpression33 = default(HqlParser.primaryExpression_return);
+        IToken OPEN33 = null;
+        IToken COMMA35 = null;
+        IToken CLOSE37 = null;
+        HqlParser.primaryExpression_return primaryExpression34 = default(HqlParser.primaryExpression_return);
 
-        HqlParser.primaryExpression_return primaryExpression35 = default(HqlParser.primaryExpression_return);
+        HqlParser.primaryExpression_return primaryExpression36 = default(HqlParser.primaryExpression_return);
 
 
-        IASTNode OPEN32_tree=null;
-        IASTNode COMMA34_tree=null;
-        IASTNode CLOSE36_tree=null;
+        IASTNode OPEN33_tree=null;
+        IASTNode COMMA35_tree=null;
+        IASTNode CLOSE37_tree=null;
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
         RewriteRuleTokenStream stream_COMMA = new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleSubtreeStream stream_primaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
         try 
     	{
-            // Hql.g:192:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
-            // Hql.g:192:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
+            // Hql.g:194:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
+            // Hql.g:194:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
             {
-            	OPEN32=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_insertablePropertySpec862);  
-            	stream_OPEN.Add(OPEN32);
+            	OPEN33=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_insertablePropertySpec877);  
+            	stream_OPEN.Add(OPEN33);
 
-            	PushFollow(FOLLOW_primaryExpression_in_insertablePropertySpec864);
-            	primaryExpression33 = primaryExpression();
+            	PushFollow(FOLLOW_primaryExpression_in_insertablePropertySpec879);
+            	primaryExpression34 = primaryExpression();
             	state.followingStackPointer--;
 
-            	stream_primaryExpression.Add(primaryExpression33.Tree);
-            	// Hql.g:192:27: ( COMMA primaryExpression )*
+            	stream_primaryExpression.Add(primaryExpression34.Tree);
+            	// Hql.g:194:27: ( COMMA primaryExpression )*
             	do 
             	{
             	    int alt8 = 2;
@@ -1484,16 +1494,16 @@ public partial class HqlParser : Parser
             	    switch (alt8) 
             		{
             			case 1 :
-            			    // Hql.g:192:29: COMMA primaryExpression
+            			    // Hql.g:194:29: COMMA primaryExpression
             			    {
-            			    	COMMA34=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_insertablePropertySpec868);  
-            			    	stream_COMMA.Add(COMMA34);
+            			    	COMMA35=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_insertablePropertySpec883);  
+            			    	stream_COMMA.Add(COMMA35);
 
-            			    	PushFollow(FOLLOW_primaryExpression_in_insertablePropertySpec870);
-            			    	primaryExpression35 = primaryExpression();
+            			    	PushFollow(FOLLOW_primaryExpression_in_insertablePropertySpec885);
+            			    	primaryExpression36 = primaryExpression();
             			    	state.followingStackPointer--;
 
-            			    	stream_primaryExpression.Add(primaryExpression35.Tree);
+            			    	stream_primaryExpression.Add(primaryExpression36.Tree);
 
             			    }
             			    break;
@@ -1506,8 +1516,8 @@ public partial class HqlParser : Parser
             	loop8:
             		;	// Stops C# compiler whining that label 'loop8' has no statements
 
-            	CLOSE36=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_insertablePropertySpec875);  
-            	stream_CLOSE.Add(CLOSE36);
+            	CLOSE37=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_insertablePropertySpec890);  
+            	stream_CLOSE.Add(CLOSE37);
 
 
 
@@ -1522,14 +1532,14 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 193:3: -> ^( RANGE[\"column-spec\"] ( primaryExpression )* )
+            	// 195:3: -> ^( RANGE[\"column-spec\"] ( primaryExpression )* )
             	{
-            	    // Hql.g:193:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
+            	    // Hql.g:195:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "column-spec"), root_1);
 
-            	    // Hql.g:193:29: ( primaryExpression )*
+            	    // Hql.g:195:29: ( primaryExpression )*
             	    while ( stream_primaryExpression.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_primaryExpression.NextTree());
@@ -1576,7 +1586,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "queryRule"
-    // Hql.g:199:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? ;
+    // Hql.g:201:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? ;
     public HqlParser.queryRule_return queryRule() // throws RecognitionException [1]
     {   
         HqlParser.queryRule_return retval = new HqlParser.queryRule_return();
@@ -1584,29 +1594,35 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.selectFrom_return selectFrom37 = default(HqlParser.selectFrom_return);
+        HqlParser.selectFrom_return selectFrom38 = default(HqlParser.selectFrom_return);
 
-        HqlParser.whereClause_return whereClause38 = default(HqlParser.whereClause_return);
+        HqlParser.whereClause_return whereClause39 = default(HqlParser.whereClause_return);
 
-        HqlParser.groupByClause_return groupByClause39 = default(HqlParser.groupByClause_return);
+        HqlParser.groupByClause_return groupByClause40 = default(HqlParser.groupByClause_return);
 
-        HqlParser.orderByClause_return orderByClause40 = default(HqlParser.orderByClause_return);
+        HqlParser.havingClause_return havingClause41 = default(HqlParser.havingClause_return);
+
+        HqlParser.orderByClause_return orderByClause42 = default(HqlParser.orderByClause_return);
+
+        HqlParser.skipClause_return skipClause43 = default(HqlParser.skipClause_return);
+
+        HqlParser.takeClause_return takeClause44 = default(HqlParser.takeClause_return);
 
 
 
         try 
     	{
-            // Hql.g:200:2: ( selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )? )
-            // Hql.g:200:4: selectFrom ( whereClause )? ( groupByClause )? ( orderByClause )?
+            // Hql.g:202:2: ( selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? )
+            // Hql.g:202:4: selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_selectFrom_in_queryRule901);
-            	selectFrom37 = selectFrom();
+            	PushFollow(FOLLOW_selectFrom_in_queryRule916);
+            	selectFrom38 = selectFrom();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, selectFrom37.Tree);
-            	// Hql.g:201:3: ( whereClause )?
+            	adaptor.AddChild(root_0, selectFrom38.Tree);
+            	// Hql.g:203:3: ( whereClause )?
             	int alt9 = 2;
             	int LA9_0 = input.LA(1);
 
@@ -1617,20 +1633,20 @@ public partial class HqlParser : Parser
             	switch (alt9) 
             	{
             	    case 1 :
-            	        // Hql.g:201:4: whereClause
+            	        // Hql.g:203:4: whereClause
             	        {
-            	        	PushFollow(FOLLOW_whereClause_in_queryRule906);
-            	        	whereClause38 = whereClause();
+            	        	PushFollow(FOLLOW_whereClause_in_queryRule921);
+            	        	whereClause39 = whereClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, whereClause38.Tree);
+            	        	adaptor.AddChild(root_0, whereClause39.Tree);
 
             	        }
             	        break;
 
             	}
 
-            	// Hql.g:202:3: ( groupByClause )?
+            	// Hql.g:204:3: ( groupByClause )?
             	int alt10 = 2;
             	int LA10_0 = input.LA(1);
 
@@ -1641,37 +1657,109 @@ public partial class HqlParser : Parser
             	switch (alt10) 
             	{
             	    case 1 :
-            	        // Hql.g:202:4: groupByClause
+            	        // Hql.g:204:4: groupByClause
             	        {
-            	        	PushFollow(FOLLOW_groupByClause_in_queryRule913);
-            	        	groupByClause39 = groupByClause();
+            	        	PushFollow(FOLLOW_groupByClause_in_queryRule928);
+            	        	groupByClause40 = groupByClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, groupByClause39.Tree);
+            	        	adaptor.AddChild(root_0, groupByClause40.Tree);
 
             	        }
             	        break;
 
             	}
 
-            	// Hql.g:203:3: ( orderByClause )?
+            	// Hql.g:205:3: ( havingClause )?
             	int alt11 = 2;
             	int LA11_0 = input.LA(1);
 
-            	if ( (LA11_0 == ORDER) )
+            	if ( (LA11_0 == HAVING) )
             	{
             	    alt11 = 1;
             	}
             	switch (alt11) 
             	{
             	    case 1 :
-            	        // Hql.g:203:4: orderByClause
+            	        // Hql.g:205:4: havingClause
             	        {
-            	        	PushFollow(FOLLOW_orderByClause_in_queryRule920);
-            	        	orderByClause40 = orderByClause();
+            	        	PushFollow(FOLLOW_havingClause_in_queryRule935);
+            	        	havingClause41 = havingClause();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, orderByClause40.Tree);
+            	        	adaptor.AddChild(root_0, havingClause41.Tree);
+
+            	        }
+            	        break;
+
+            	}
+
+            	// Hql.g:206:3: ( orderByClause )?
+            	int alt12 = 2;
+            	int LA12_0 = input.LA(1);
+
+            	if ( (LA12_0 == ORDER) )
+            	{
+            	    alt12 = 1;
+            	}
+            	switch (alt12) 
+            	{
+            	    case 1 :
+            	        // Hql.g:206:4: orderByClause
+            	        {
+            	        	PushFollow(FOLLOW_orderByClause_in_queryRule942);
+            	        	orderByClause42 = orderByClause();
+            	        	state.followingStackPointer--;
+
+            	        	adaptor.AddChild(root_0, orderByClause42.Tree);
+
+            	        }
+            	        break;
+
+            	}
+
+            	// Hql.g:207:3: ( skipClause )?
+            	int alt13 = 2;
+            	int LA13_0 = input.LA(1);
+
+            	if ( (LA13_0 == SKIP) )
+            	{
+            	    alt13 = 1;
+            	}
+            	switch (alt13) 
+            	{
+            	    case 1 :
+            	        // Hql.g:207:4: skipClause
+            	        {
+            	        	PushFollow(FOLLOW_skipClause_in_queryRule949);
+            	        	skipClause43 = skipClause();
+            	        	state.followingStackPointer--;
+
+            	        	adaptor.AddChild(root_0, skipClause43.Tree);
+
+            	        }
+            	        break;
+
+            	}
+
+            	// Hql.g:208:3: ( takeClause )?
+            	int alt14 = 2;
+            	int LA14_0 = input.LA(1);
+
+            	if ( (LA14_0 == TAKE) )
+            	{
+            	    alt14 = 1;
+            	}
+            	switch (alt14) 
+            	{
+            	    case 1 :
+            	        // Hql.g:208:4: takeClause
+            	        {
+            	        	PushFollow(FOLLOW_takeClause_in_queryRule956);
+            	        	takeClause44 = takeClause();
+            	        	state.followingStackPointer--;
+
+            	        	adaptor.AddChild(root_0, takeClause44.Tree);
 
             	        }
             	        break;
@@ -1712,7 +1800,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectFrom"
-    // Hql.g:206:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
+    // Hql.g:211:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
     public HqlParser.selectFrom_return selectFrom() // throws RecognitionException [1]
     {   
         HqlParser.selectFrom_return retval = new HqlParser.selectFrom_return();
@@ -1729,23 +1817,23 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_fromClause = new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
         try 
     	{
-            // Hql.g:207:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
-            // Hql.g:207:5: (s= selectClause )? (f= fromClause )?
+            // Hql.g:212:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
+            // Hql.g:212:5: (s= selectClause )? (f= fromClause )?
             {
-            	// Hql.g:207:5: (s= selectClause )?
-            	int alt12 = 2;
-            	int LA12_0 = input.LA(1);
+            	// Hql.g:212:5: (s= selectClause )?
+            	int alt15 = 2;
+            	int LA15_0 = input.LA(1);
 
-            	if ( (LA12_0 == SELECT) )
+            	if ( (LA15_0 == SELECT) )
             	{
-            	    alt12 = 1;
+            	    alt15 = 1;
             	}
-            	switch (alt12) 
+            	switch (alt15) 
             	{
             	    case 1 :
-            	        // Hql.g:207:6: s= selectClause
+            	        // Hql.g:212:6: s= selectClause
             	        {
-            	        	PushFollow(FOLLOW_selectClause_in_selectFrom938);
+            	        	PushFollow(FOLLOW_selectClause_in_selectFrom974);
             	        	s = selectClause();
             	        	state.followingStackPointer--;
 
@@ -1756,20 +1844,20 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// Hql.g:207:23: (f= fromClause )?
-            	int alt13 = 2;
-            	int LA13_0 = input.LA(1);
+            	// Hql.g:212:23: (f= fromClause )?
+            	int alt16 = 2;
+            	int LA16_0 = input.LA(1);
 
-            	if ( (LA13_0 == FROM) )
+            	if ( (LA16_0 == FROM) )
             	{
-            	    alt13 = 1;
+            	    alt16 = 1;
             	}
-            	switch (alt13) 
+            	switch (alt16) 
             	{
             	    case 1 :
-            	        // Hql.g:207:24: f= fromClause
+            	        // Hql.g:212:24: f= fromClause
             	        {
-            	        	PushFollow(FOLLOW_fromClause_in_selectFrom945);
+            	        	PushFollow(FOLLOW_fromClause_in_selectFrom981);
             	        	f = fromClause();
             	        	state.followingStackPointer--;
 
@@ -1787,7 +1875,7 @@ public partial class HqlParser : Parser
 
 
             	// AST REWRITE
-            	// elements:          selectClause, fromClause, selectClause
+            	// elements:          fromClause, selectClause, selectClause
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -1797,16 +1885,16 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 212:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+            	// 217:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
             	if (((f != null) ? ((IASTNode)f.Tree) : null) == null && filter)
             	{
-            	    // Hql.g:212:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+            	    // Hql.g:217:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
             	    adaptor.AddChild(root_1, (IASTNode)adaptor.Create(FROM, "{filter-implied FROM}"));
-            	    // Hql.g:212:79: ( selectClause )?
+            	    // Hql.g:217:79: ( selectClause )?
             	    if ( stream_selectClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_selectClause.NextTree());
@@ -1818,21 +1906,21 @@ public partial class HqlParser : Parser
             	    }
 
             	}
-            	else // 213:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+            	else // 218:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
             	{
-            	    // Hql.g:213:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+            	    // Hql.g:218:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
-            	    // Hql.g:213:20: ( fromClause )?
+            	    // Hql.g:218:20: ( fromClause )?
             	    if ( stream_fromClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_fromClause.NextTree());
 
             	    }
             	    stream_fromClause.Reset();
-            	    // Hql.g:213:32: ( selectClause )?
+            	    // Hql.g:218:32: ( selectClause )?
             	    if ( stream_selectClause.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_selectClause.NextTree());
@@ -1879,7 +1967,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectClause"
-    // Hql.g:217:1: selectClause : SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
+    // Hql.g:222:1: selectClause : SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
     public HqlParser.selectClause_return selectClause() // throws RecognitionException [1]
     {   
         HqlParser.selectClause_return retval = new HqlParser.selectClause_return();
@@ -1887,46 +1975,46 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken SELECT41 = null;
-        IToken DISTINCT42 = null;
-        HqlParser.selectedPropertiesList_return selectedPropertiesList43 = default(HqlParser.selectedPropertiesList_return);
+        IToken SELECT45 = null;
+        IToken DISTINCT46 = null;
+        HqlParser.selectedPropertiesList_return selectedPropertiesList47 = default(HqlParser.selectedPropertiesList_return);
 
-        HqlParser.newExpression_return newExpression44 = default(HqlParser.newExpression_return);
+        HqlParser.newExpression_return newExpression48 = default(HqlParser.newExpression_return);
 
-        HqlParser.selectObject_return selectObject45 = default(HqlParser.selectObject_return);
+        HqlParser.selectObject_return selectObject49 = default(HqlParser.selectObject_return);
 
 
-        IASTNode SELECT41_tree=null;
-        IASTNode DISTINCT42_tree=null;
+        IASTNode SELECT45_tree=null;
+        IASTNode DISTINCT46_tree=null;
 
         try 
     	{
-            // Hql.g:218:2: ( SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
-            // Hql.g:218:4: SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
+            // Hql.g:223:2: ( SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
+            // Hql.g:223:4: SELECT ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	SELECT41=(IToken)Match(input,SELECT,FOLLOW_SELECT_in_selectClause994); 
-            		SELECT41_tree = (IASTNode)adaptor.Create(SELECT41);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(SELECT41_tree, root_0);
+            	SELECT45=(IToken)Match(input,SELECT,FOLLOW_SELECT_in_selectClause1030); 
+            		SELECT45_tree = (IASTNode)adaptor.Create(SELECT45);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(SELECT45_tree, root_0);
 
             	 WeakKeywords(); 
-            	// Hql.g:220:3: ( DISTINCT )?
-            	int alt14 = 2;
-            	int LA14_0 = input.LA(1);
+            	// Hql.g:225:3: ( DISTINCT )?
+            	int alt17 = 2;
+            	int LA17_0 = input.LA(1);
 
-            	if ( (LA14_0 == DISTINCT) )
+            	if ( (LA17_0 == DISTINCT) )
             	{
-            	    alt14 = 1;
+            	    alt17 = 1;
             	}
-            	switch (alt14) 
+            	switch (alt17) 
             	{
             	    case 1 :
-            	        // Hql.g:220:4: DISTINCT
+            	        // Hql.g:225:4: DISTINCT
             	        {
-            	        	DISTINCT42=(IToken)Match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1006); 
-            	        		DISTINCT42_tree = (IASTNode)adaptor.Create(DISTINCT42);
-            	        		adaptor.AddChild(root_0, DISTINCT42_tree);
+            	        	DISTINCT46=(IToken)Match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1042); 
+            	        		DISTINCT46_tree = (IASTNode)adaptor.Create(DISTINCT46);
+            	        		adaptor.AddChild(root_0, DISTINCT46_tree);
 
 
             	        }
@@ -1934,8 +2022,8 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// Hql.g:220:15: ( selectedPropertiesList | newExpression | selectObject )
-            	int alt15 = 3;
+            	// Hql.g:225:15: ( selectedPropertiesList | newExpression | selectObject )
+            	int alt18 = 3;
             	switch ( input.LA(1) ) 
             	{
             	case ALL:
@@ -1969,58 +2057,58 @@ public partial class HqlParser : Parser
             	case QUOTED_String:
             	case IDENT:
             		{
-            	    alt15 = 1;
+            	    alt18 = 1;
             	    }
             	    break;
             	case NEW:
             		{
-            	    alt15 = 2;
+            	    alt18 = 2;
             	    }
             	    break;
             	case OBJECT:
             		{
-            	    alt15 = 3;
+            	    alt18 = 3;
             	    }
             	    break;
             		default:
-            		    NoViableAltException nvae_d15s0 =
-            		        new NoViableAltException("", 15, 0, input);
+            		    NoViableAltException nvae_d18s0 =
+            		        new NoViableAltException("", 18, 0, input);
 
-            		    throw nvae_d15s0;
+            		    throw nvae_d18s0;
             	}
 
-            	switch (alt15) 
+            	switch (alt18) 
             	{
             	    case 1 :
-            	        // Hql.g:220:17: selectedPropertiesList
+            	        // Hql.g:225:17: selectedPropertiesList
             	        {
-            	        	PushFollow(FOLLOW_selectedPropertiesList_in_selectClause1012);
-            	        	selectedPropertiesList43 = selectedPropertiesList();
+            	        	PushFollow(FOLLOW_selectedPropertiesList_in_selectClause1048);
+            	        	selectedPropertiesList47 = selectedPropertiesList();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, selectedPropertiesList43.Tree);
+            	        	adaptor.AddChild(root_0, selectedPropertiesList47.Tree);
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:220:42: newExpression
+            	        // Hql.g:225:42: newExpression
             	        {
-            	        	PushFollow(FOLLOW_newExpression_in_selectClause1016);
-            	        	newExpression44 = newExpression();
+            	        	PushFollow(FOLLOW_newExpression_in_selectClause1052);
+            	        	newExpression48 = newExpression();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, newExpression44.Tree);
+            	        	adaptor.AddChild(root_0, newExpression48.Tree);
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:220:58: selectObject
+            	        // Hql.g:225:58: selectObject
             	        {
-            	        	PushFollow(FOLLOW_selectObject_in_selectClause1020);
-            	        	selectObject45 = selectObject();
+            	        	PushFollow(FOLLOW_selectObject_in_selectClause1056);
+            	        	selectObject49 = selectObject();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, selectObject45.Tree);
+            	        	adaptor.AddChild(root_0, selectObject49.Tree);
 
             	        }
             	        break;
@@ -2061,7 +2149,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "newExpression"
-    // Hql.g:223:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
+    // Hql.g:228:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
     public HqlParser.newExpression_return newExpression() // throws RecognitionException [1]
     {   
         HqlParser.newExpression_return retval = new HqlParser.newExpression_return();
@@ -2070,16 +2158,16 @@ public partial class HqlParser : Parser
         IASTNode root_0 = null;
 
         IToken op = null;
-        IToken NEW46 = null;
-        IToken CLOSE49 = null;
-        HqlParser.path_return path47 = default(HqlParser.path_return);
+        IToken NEW50 = null;
+        IToken CLOSE53 = null;
+        HqlParser.path_return path51 = default(HqlParser.path_return);
 
-        HqlParser.selectedPropertiesList_return selectedPropertiesList48 = default(HqlParser.selectedPropertiesList_return);
+        HqlParser.selectedPropertiesList_return selectedPropertiesList52 = default(HqlParser.selectedPropertiesList_return);
 
 
         IASTNode op_tree=null;
-        IASTNode NEW46_tree=null;
-        IASTNode CLOSE49_tree=null;
+        IASTNode NEW50_tree=null;
+        IASTNode CLOSE53_tree=null;
         RewriteRuleTokenStream stream_NEW = new RewriteRuleTokenStream(adaptor,"token NEW");
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
@@ -2087,33 +2175,33 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_selectedPropertiesList = new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
         try 
     	{
-            // Hql.g:224:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
-            // Hql.g:224:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
+            // Hql.g:229:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
+            // Hql.g:229:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
             {
-            	// Hql.g:224:4: ( NEW path )
-            	// Hql.g:224:5: NEW path
+            	// Hql.g:229:4: ( NEW path )
+            	// Hql.g:229:5: NEW path
             	{
-            		NEW46=(IToken)Match(input,NEW,FOLLOW_NEW_in_newExpression1034);  
-            		stream_NEW.Add(NEW46);
+            		NEW50=(IToken)Match(input,NEW,FOLLOW_NEW_in_newExpression1070);  
+            		stream_NEW.Add(NEW50);
 
-            		PushFollow(FOLLOW_path_in_newExpression1036);
-            		path47 = path();
+            		PushFollow(FOLLOW_path_in_newExpression1072);
+            		path51 = path();
             		state.followingStackPointer--;
 
-            		stream_path.Add(path47.Tree);
+            		stream_path.Add(path51.Tree);
 
             	}
 
-            	op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_newExpression1041);  
+            	op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_newExpression1077);  
             	stream_OPEN.Add(op);
 
-            	PushFollow(FOLLOW_selectedPropertiesList_in_newExpression1043);
-            	selectedPropertiesList48 = selectedPropertiesList();
+            	PushFollow(FOLLOW_selectedPropertiesList_in_newExpression1079);
+            	selectedPropertiesList52 = selectedPropertiesList();
             	state.followingStackPointer--;
 
-            	stream_selectedPropertiesList.Add(selectedPropertiesList48.Tree);
-            	CLOSE49=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_newExpression1045);  
-            	stream_CLOSE.Add(CLOSE49);
+            	stream_selectedPropertiesList.Add(selectedPropertiesList52.Tree);
+            	CLOSE53=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_newExpression1081);  
+            	stream_CLOSE.Add(CLOSE53);
 
 
 
@@ -2128,9 +2216,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 225:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+            	// 230:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
             	{
-            	    // Hql.g:225:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+            	    // Hql.g:230:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CONSTRUCTOR, op), root_1);
@@ -2177,7 +2265,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectObject"
-    // Hql.g:228:1: selectObject : OBJECT OPEN identifier CLOSE ;
+    // Hql.g:233:1: selectObject : OBJECT OPEN identifier CLOSE ;
     public HqlParser.selectObject_return selectObject() // throws RecognitionException [1]
     {   
         HqlParser.selectObject_return retval = new HqlParser.selectObject_return();
@@ -2185,34 +2273,34 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken OBJECT50 = null;
-        IToken OPEN51 = null;
-        IToken CLOSE53 = null;
-        HqlParser.identifier_return identifier52 = default(HqlParser.identifier_return);
+        IToken OBJECT54 = null;
+        IToken OPEN55 = null;
+        IToken CLOSE57 = null;
+        HqlParser.identifier_return identifier56 = default(HqlParser.identifier_return);
 
 
-        IASTNode OBJECT50_tree=null;
-        IASTNode OPEN51_tree=null;
-        IASTNode CLOSE53_tree=null;
+        IASTNode OBJECT54_tree=null;
+        IASTNode OPEN55_tree=null;
+        IASTNode CLOSE57_tree=null;
 
         try 
     	{
-            // Hql.g:229:4: ( OBJECT OPEN identifier CLOSE )
-            // Hql.g:229:6: OBJECT OPEN identifier CLOSE
+            // Hql.g:234:4: ( OBJECT OPEN identifier CLOSE )
+            // Hql.g:234:6: OBJECT OPEN identifier CLOSE
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	OBJECT50=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_selectObject1071); 
-            		OBJECT50_tree = (IASTNode)adaptor.Create(OBJECT50);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(OBJECT50_tree, root_0);
+            	OBJECT54=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_selectObject1107); 
+            		OBJECT54_tree = (IASTNode)adaptor.Create(OBJECT54);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(OBJECT54_tree, root_0);
 
-            	OPEN51=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_selectObject1074); 
-            	PushFollow(FOLLOW_identifier_in_selectObject1077);
-            	identifier52 = identifier();
+            	OPEN55=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_selectObject1110); 
+            	PushFollow(FOLLOW_identifier_in_selectObject1113);
+            	identifier56 = identifier();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, identifier52.Tree);
-            	CLOSE53=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_selectObject1079); 
+            	adaptor.AddChild(root_0, identifier56.Tree);
+            	CLOSE57=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_selectObject1115); 
 
             }
 
@@ -2247,7 +2335,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromClause"
-    // Hql.g:236:1: fromClause : FROM fromRange ( fromJoin | COMMA fromRange )* ;
+    // Hql.g:241:1: fromClause : FROM fromRange ( fromJoin | COMMA fromRange )* ;
     public HqlParser.fromClause_return fromClause() // throws RecognitionException [1]
     {   
         HqlParser.fromClause_return retval = new HqlParser.fromClause_return();
@@ -2255,85 +2343,85 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken FROM54 = null;
-        IToken COMMA57 = null;
-        HqlParser.fromRange_return fromRange55 = default(HqlParser.fromRange_return);
+        IToken FROM58 = null;
+        IToken COMMA61 = null;
+        HqlParser.fromRange_return fromRange59 = default(HqlParser.fromRange_return);
 
-        HqlParser.fromJoin_return fromJoin56 = default(HqlParser.fromJoin_return);
+        HqlParser.fromJoin_return fromJoin60 = default(HqlParser.fromJoin_return);
 
-        HqlParser.fromRange_return fromRange58 = default(HqlParser.fromRange_return);
+        HqlParser.fromRange_return fromRange62 = default(HqlParser.fromRange_return);
 
 
-        IASTNode FROM54_tree=null;
-        IASTNode COMMA57_tree=null;
+        IASTNode FROM58_tree=null;
+        IASTNode COMMA61_tree=null;
 
         try 
     	{
-            // Hql.g:237:2: ( FROM fromRange ( fromJoin | COMMA fromRange )* )
-            // Hql.g:237:4: FROM fromRange ( fromJoin | COMMA fromRange )*
+            // Hql.g:242:2: ( FROM fromRange ( fromJoin | COMMA fromRange )* )
+            // Hql.g:242:4: FROM fromRange ( fromJoin | COMMA fromRange )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	FROM54=(IToken)Match(input,FROM,FOLLOW_FROM_in_fromClause1097); 
-            		FROM54_tree = (IASTNode)adaptor.Create(FROM54);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(FROM54_tree, root_0);
+            	FROM58=(IToken)Match(input,FROM,FOLLOW_FROM_in_fromClause1133); 
+            		FROM58_tree = (IASTNode)adaptor.Create(FROM58);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(FROM58_tree, root_0);
 
             	 WeakKeywords(); 
-            	PushFollow(FOLLOW_fromRange_in_fromClause1102);
-            	fromRange55 = fromRange();
+            	PushFollow(FOLLOW_fromRange_in_fromClause1138);
+            	fromRange59 = fromRange();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, fromRange55.Tree);
-            	// Hql.g:237:40: ( fromJoin | COMMA fromRange )*
+            	adaptor.AddChild(root_0, fromRange59.Tree);
+            	// Hql.g:242:40: ( fromJoin | COMMA fromRange )*
             	do 
             	{
-            	    int alt16 = 3;
-            	    int LA16_0 = input.LA(1);
+            	    int alt19 = 3;
+            	    int LA19_0 = input.LA(1);
 
-            	    if ( (LA16_0 == FULL || LA16_0 == INNER || (LA16_0 >= JOIN && LA16_0 <= LEFT) || LA16_0 == RIGHT) )
+            	    if ( (LA19_0 == FULL || LA19_0 == INNER || (LA19_0 >= JOIN && LA19_0 <= LEFT) || LA19_0 == RIGHT) )
             	    {
-            	        alt16 = 1;
+            	        alt19 = 1;
             	    }
-            	    else if ( (LA16_0 == COMMA) )
+            	    else if ( (LA19_0 == COMMA) )
             	    {
-            	        alt16 = 2;
+            	        alt19 = 2;
             	    }
 
 
-            	    switch (alt16) 
+            	    switch (alt19) 
             		{
             			case 1 :
-            			    // Hql.g:237:42: fromJoin
+            			    // Hql.g:242:42: fromJoin
             			    {
-            			    	PushFollow(FOLLOW_fromJoin_in_fromClause1106);
-            			    	fromJoin56 = fromJoin();
+            			    	PushFollow(FOLLOW_fromJoin_in_fromClause1142);
+            			    	fromJoin60 = fromJoin();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, fromJoin56.Tree);
+            			    	adaptor.AddChild(root_0, fromJoin60.Tree);
 
             			    }
             			    break;
             			case 2 :
-            			    // Hql.g:237:53: COMMA fromRange
+            			    // Hql.g:242:53: COMMA fromRange
             			    {
-            			    	COMMA57=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_fromClause1110); 
+            			    	COMMA61=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_fromClause1146); 
             			    	 WeakKeywords(); 
-            			    	PushFollow(FOLLOW_fromRange_in_fromClause1115);
-            			    	fromRange58 = fromRange();
+            			    	PushFollow(FOLLOW_fromRange_in_fromClause1151);
+            			    	fromRange62 = fromRange();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, fromRange58.Tree);
+            			    	adaptor.AddChild(root_0, fromRange62.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop16;
+            			    goto loop19;
             	    }
             	} while (true);
 
-            	loop16:
-            		;	// Stops C# compiler whining that label 'loop16' has no statements
+            	loop19:
+            		;	// Stops C# compiler whining that label 'loop19' has no statements
 
 
             }
@@ -2369,7 +2457,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromJoin"
-    // Hql.g:240:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? );
+    // Hql.g:245:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? );
     public HqlParser.fromJoin_return fromJoin() // throws RecognitionException [1]
     {   
         HqlParser.fromJoin_return retval = new HqlParser.fromJoin_return();
@@ -2377,281 +2465,281 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken set59 = null;
-        IToken OUTER60 = null;
-        IToken FULL61 = null;
-        IToken INNER62 = null;
-        IToken JOIN63 = null;
-        IToken FETCH64 = null;
-        IToken set69 = null;
-        IToken OUTER70 = null;
-        IToken FULL71 = null;
-        IToken INNER72 = null;
-        IToken JOIN73 = null;
-        IToken FETCH74 = null;
-        IToken ELEMENTS75 = null;
-        IToken OPEN76 = null;
-        IToken CLOSE78 = null;
-        HqlParser.path_return path65 = default(HqlParser.path_return);
+        IToken set63 = null;
+        IToken OUTER64 = null;
+        IToken FULL65 = null;
+        IToken INNER66 = null;
+        IToken JOIN67 = null;
+        IToken FETCH68 = null;
+        IToken set73 = null;
+        IToken OUTER74 = null;
+        IToken FULL75 = null;
+        IToken INNER76 = null;
+        IToken JOIN77 = null;
+        IToken FETCH78 = null;
+        IToken ELEMENTS79 = null;
+        IToken OPEN80 = null;
+        IToken CLOSE82 = null;
+        HqlParser.path_return path69 = default(HqlParser.path_return);
 
-        HqlParser.asAlias_return asAlias66 = default(HqlParser.asAlias_return);
+        HqlParser.asAlias_return asAlias70 = default(HqlParser.asAlias_return);
 
-        HqlParser.propertyFetch_return propertyFetch67 = default(HqlParser.propertyFetch_return);
+        HqlParser.propertyFetch_return propertyFetch71 = default(HqlParser.propertyFetch_return);
 
-        HqlParser.withClause_return withClause68 = default(HqlParser.withClause_return);
+        HqlParser.withClause_return withClause72 = default(HqlParser.withClause_return);
 
-        HqlParser.path_return path77 = default(HqlParser.path_return);
+        HqlParser.path_return path81 = default(HqlParser.path_return);
 
-        HqlParser.asAlias_return asAlias79 = default(HqlParser.asAlias_return);
+        HqlParser.asAlias_return asAlias83 = default(HqlParser.asAlias_return);
 
-        HqlParser.propertyFetch_return propertyFetch80 = default(HqlParser.propertyFetch_return);
+        HqlParser.propertyFetch_return propertyFetch84 = default(HqlParser.propertyFetch_return);
 
-        HqlParser.withClause_return withClause81 = default(HqlParser.withClause_return);
+        HqlParser.withClause_return withClause85 = default(HqlParser.withClause_return);
 
 
-        IASTNode set59_tree=null;
-        IASTNode OUTER60_tree=null;
-        IASTNode FULL61_tree=null;
-        IASTNode INNER62_tree=null;
-        IASTNode JOIN63_tree=null;
-        IASTNode FETCH64_tree=null;
-        IASTNode set69_tree=null;
-        IASTNode OUTER70_tree=null;
-        IASTNode FULL71_tree=null;
-        IASTNode INNER72_tree=null;
-        IASTNode JOIN73_tree=null;
-        IASTNode FETCH74_tree=null;
-        IASTNode ELEMENTS75_tree=null;
-        IASTNode OPEN76_tree=null;
-        IASTNode CLOSE78_tree=null;
+        IASTNode set63_tree=null;
+        IASTNode OUTER64_tree=null;
+        IASTNode FULL65_tree=null;
+        IASTNode INNER66_tree=null;
+        IASTNode JOIN67_tree=null;
+        IASTNode FETCH68_tree=null;
+        IASTNode set73_tree=null;
+        IASTNode OUTER74_tree=null;
+        IASTNode FULL75_tree=null;
+        IASTNode INNER76_tree=null;
+        IASTNode JOIN77_tree=null;
+        IASTNode FETCH78_tree=null;
+        IASTNode ELEMENTS79_tree=null;
+        IASTNode OPEN80_tree=null;
+        IASTNode CLOSE82_tree=null;
 
         try 
     	{
-            // Hql.g:241:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? )
-            int alt29 = 2;
+            // Hql.g:246:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )? )
+            int alt32 = 2;
             switch ( input.LA(1) ) 
             {
             case LEFT:
             case RIGHT:
             	{
-                int LA29_1 = input.LA(2);
+                int LA32_1 = input.LA(2);
 
-                if ( (LA29_1 == OUTER) )
+                if ( (LA32_1 == OUTER) )
                 {
-                    int LA29_5 = input.LA(3);
+                    int LA32_5 = input.LA(3);
 
-                    if ( (LA29_5 == JOIN) )
+                    if ( (LA32_5 == JOIN) )
                     {
                         switch ( input.LA(4) ) 
                         {
                         case FETCH:
                         	{
-                            int LA29_6 = input.LA(5);
+                            int LA32_6 = input.LA(5);
 
-                            if ( (LA29_6 == IDENT) )
+                            if ( (LA32_6 == ELEMENTS) )
                             {
-                                alt29 = 1;
+                                alt32 = 2;
                             }
-                            else if ( (LA29_6 == ELEMENTS) )
+                            else if ( (LA32_6 == IDENT) )
                             {
-                                alt29 = 2;
+                                alt32 = 1;
                             }
                             else 
                             {
-                                NoViableAltException nvae_d29s6 =
-                                    new NoViableAltException("", 29, 6, input);
+                                NoViableAltException nvae_d32s6 =
+                                    new NoViableAltException("", 32, 6, input);
 
-                                throw nvae_d29s6;
+                                throw nvae_d32s6;
                             }
-                            }
-                            break;
-                        case IDENT:
-                        	{
-                            alt29 = 1;
                             }
                             break;
                         case ELEMENTS:
                         	{
-                            alt29 = 2;
+                            alt32 = 2;
+                            }
+                            break;
+                        case IDENT:
+                        	{
+                            alt32 = 1;
                             }
                             break;
                         	default:
-                        	    NoViableAltException nvae_d29s4 =
-                        	        new NoViableAltException("", 29, 4, input);
+                        	    NoViableAltException nvae_d32s4 =
+                        	        new NoViableAltException("", 32, 4, input);
 
-                        	    throw nvae_d29s4;
+                        	    throw nvae_d32s4;
                         }
 
                     }
                     else 
                     {
-                        NoViableAltException nvae_d29s5 =
-                            new NoViableAltException("", 29, 5, input);
+                        NoViableAltException nvae_d32s5 =
+                            new NoViableAltException("", 32, 5, input);
 
-                        throw nvae_d29s5;
+                        throw nvae_d32s5;
                     }
                 }
-                else if ( (LA29_1 == JOIN) )
+                else if ( (LA32_1 == JOIN) )
                 {
                     switch ( input.LA(3) ) 
                     {
                     case FETCH:
                     	{
-                        int LA29_6 = input.LA(4);
+                        int LA32_6 = input.LA(4);
 
-                        if ( (LA29_6 == IDENT) )
+                        if ( (LA32_6 == ELEMENTS) )
                         {
-                            alt29 = 1;
+                            alt32 = 2;
                         }
-                        else if ( (LA29_6 == ELEMENTS) )
+                        else if ( (LA32_6 == IDENT) )
                         {
-                            alt29 = 2;
+                            alt32 = 1;
                         }
                         else 
                         {
-                            NoViableAltException nvae_d29s6 =
-                                new NoViableAltException("", 29, 6, input);
+                            NoViableAltException nvae_d32s6 =
+                                new NoViableAltException("", 32, 6, input);
 
-                            throw nvae_d29s6;
+                            throw nvae_d32s6;
                         }
-                        }
-                        break;
-                    case IDENT:
-                    	{
-                        alt29 = 1;
                         }
                         break;
                     case ELEMENTS:
                     	{
-                        alt29 = 2;
+                        alt32 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt32 = 1;
                         }
                         break;
                     	default:
-                    	    NoViableAltException nvae_d29s4 =
-                    	        new NoViableAltException("", 29, 4, input);
+                    	    NoViableAltException nvae_d32s4 =
+                    	        new NoViableAltException("", 32, 4, input);
 
-                    	    throw nvae_d29s4;
+                    	    throw nvae_d32s4;
                     }
 
                 }
                 else 
                 {
-                    NoViableAltException nvae_d29s1 =
-                        new NoViableAltException("", 29, 1, input);
+                    NoViableAltException nvae_d32s1 =
+                        new NoViableAltException("", 32, 1, input);
 
-                    throw nvae_d29s1;
+                    throw nvae_d32s1;
                 }
                 }
                 break;
             case FULL:
             	{
-                int LA29_2 = input.LA(2);
+                int LA32_2 = input.LA(2);
 
-                if ( (LA29_2 == JOIN) )
+                if ( (LA32_2 == JOIN) )
                 {
                     switch ( input.LA(3) ) 
                     {
                     case FETCH:
                     	{
-                        int LA29_6 = input.LA(4);
+                        int LA32_6 = input.LA(4);
 
-                        if ( (LA29_6 == IDENT) )
+                        if ( (LA32_6 == ELEMENTS) )
                         {
-                            alt29 = 1;
+                            alt32 = 2;
                         }
-                        else if ( (LA29_6 == ELEMENTS) )
+                        else if ( (LA32_6 == IDENT) )
                         {
-                            alt29 = 2;
+                            alt32 = 1;
                         }
                         else 
                         {
-                            NoViableAltException nvae_d29s6 =
-                                new NoViableAltException("", 29, 6, input);
+                            NoViableAltException nvae_d32s6 =
+                                new NoViableAltException("", 32, 6, input);
 
-                            throw nvae_d29s6;
+                            throw nvae_d32s6;
                         }
-                        }
-                        break;
-                    case IDENT:
-                    	{
-                        alt29 = 1;
                         }
                         break;
                     case ELEMENTS:
                     	{
-                        alt29 = 2;
+                        alt32 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt32 = 1;
                         }
                         break;
                     	default:
-                    	    NoViableAltException nvae_d29s4 =
-                    	        new NoViableAltException("", 29, 4, input);
+                    	    NoViableAltException nvae_d32s4 =
+                    	        new NoViableAltException("", 32, 4, input);
 
-                    	    throw nvae_d29s4;
+                    	    throw nvae_d32s4;
                     }
 
                 }
                 else 
                 {
-                    NoViableAltException nvae_d29s2 =
-                        new NoViableAltException("", 29, 2, input);
+                    NoViableAltException nvae_d32s2 =
+                        new NoViableAltException("", 32, 2, input);
 
-                    throw nvae_d29s2;
+                    throw nvae_d32s2;
                 }
                 }
                 break;
             case INNER:
             	{
-                int LA29_3 = input.LA(2);
+                int LA32_3 = input.LA(2);
 
-                if ( (LA29_3 == JOIN) )
+                if ( (LA32_3 == JOIN) )
                 {
                     switch ( input.LA(3) ) 
                     {
                     case FETCH:
                     	{
-                        int LA29_6 = input.LA(4);
+                        int LA32_6 = input.LA(4);
 
-                        if ( (LA29_6 == IDENT) )
+                        if ( (LA32_6 == ELEMENTS) )
                         {
-                            alt29 = 1;
+                            alt32 = 2;
                         }
-                        else if ( (LA29_6 == ELEMENTS) )
+                        else if ( (LA32_6 == IDENT) )
                         {
-                            alt29 = 2;
+                            alt32 = 1;
                         }
                         else 
                         {
-                            NoViableAltException nvae_d29s6 =
-                                new NoViableAltException("", 29, 6, input);
+                            NoViableAltException nvae_d32s6 =
+                                new NoViableAltException("", 32, 6, input);
 
-                            throw nvae_d29s6;
+                            throw nvae_d32s6;
                         }
-                        }
-                        break;
-                    case IDENT:
-                    	{
-                        alt29 = 1;
                         }
                         break;
                     case ELEMENTS:
                     	{
-                        alt29 = 2;
+                        alt32 = 2;
+                        }
+                        break;
+                    case IDENT:
+                    	{
+                        alt32 = 1;
                         }
                         break;
                     	default:
-                    	    NoViableAltException nvae_d29s4 =
-                    	        new NoViableAltException("", 29, 4, input);
+                    	    NoViableAltException nvae_d32s4 =
+                    	        new NoViableAltException("", 32, 4, input);
 
-                    	    throw nvae_d29s4;
+                    	    throw nvae_d32s4;
                     }
 
                 }
                 else 
                 {
-                    NoViableAltException nvae_d29s3 =
-                        new NoViableAltException("", 29, 3, input);
+                    NoViableAltException nvae_d32s3 =
+                        new NoViableAltException("", 32, 3, input);
 
-                    throw nvae_d29s3;
+                    throw nvae_d32s3;
                 }
                 }
                 break;
@@ -2661,93 +2749,93 @@ public partial class HqlParser : Parser
                 {
                 case FETCH:
                 	{
-                    int LA29_6 = input.LA(3);
+                    int LA32_6 = input.LA(3);
 
-                    if ( (LA29_6 == IDENT) )
+                    if ( (LA32_6 == ELEMENTS) )
                     {
-                        alt29 = 1;
+                        alt32 = 2;
                     }
-                    else if ( (LA29_6 == ELEMENTS) )
+                    else if ( (LA32_6 == IDENT) )
                     {
-                        alt29 = 2;
+                        alt32 = 1;
                     }
                     else 
                     {
-                        NoViableAltException nvae_d29s6 =
-                            new NoViableAltException("", 29, 6, input);
+                        NoViableAltException nvae_d32s6 =
+                            new NoViableAltException("", 32, 6, input);
 
-                        throw nvae_d29s6;
+                        throw nvae_d32s6;
                     }
-                    }
-                    break;
-                case IDENT:
-                	{
-                    alt29 = 1;
                     }
                     break;
                 case ELEMENTS:
                 	{
-                    alt29 = 2;
+                    alt32 = 2;
+                    }
+                    break;
+                case IDENT:
+                	{
+                    alt32 = 1;
                     }
                     break;
                 	default:
-                	    NoViableAltException nvae_d29s4 =
-                	        new NoViableAltException("", 29, 4, input);
+                	    NoViableAltException nvae_d32s4 =
+                	        new NoViableAltException("", 32, 4, input);
 
-                	    throw nvae_d29s4;
+                	    throw nvae_d32s4;
                 }
 
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d29s0 =
-            	        new NoViableAltException("", 29, 0, input);
+            	    NoViableAltException nvae_d32s0 =
+            	        new NoViableAltException("", 32, 0, input);
 
-            	    throw nvae_d29s0;
+            	    throw nvae_d32s0;
             }
 
-            switch (alt29) 
+            switch (alt32) 
             {
                 case 1 :
-                    // Hql.g:241:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
+                    // Hql.g:246:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// Hql.g:241:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
-                    	int alt18 = 4;
+                    	// Hql.g:246:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+                    	int alt21 = 4;
                     	switch ( input.LA(1) ) 
                     	{
                     	    case LEFT:
                     	    case RIGHT:
                     	    	{
-                    	        alt18 = 1;
+                    	        alt21 = 1;
                     	        }
                     	        break;
                     	    case FULL:
                     	    	{
-                    	        alt18 = 2;
+                    	        alt21 = 2;
                     	        }
                     	        break;
                     	    case INNER:
                     	    	{
-                    	        alt18 = 3;
+                    	        alt21 = 3;
                     	        }
                     	        break;
                     	}
 
-                    	switch (alt18) 
+                    	switch (alt21) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:241:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        // Hql.g:246:6: ( ( LEFT | RIGHT ) ( OUTER )? )
                     	        {
-                    	        	// Hql.g:241:6: ( ( LEFT | RIGHT ) ( OUTER )? )
-                    	        	// Hql.g:241:8: ( LEFT | RIGHT ) ( OUTER )?
+                    	        	// Hql.g:246:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        	// Hql.g:246:8: ( LEFT | RIGHT ) ( OUTER )?
                     	        	{
-                    	        		set59 = (IToken)input.LT(1);
+                    	        		set63 = (IToken)input.LT(1);
                     	        		if ( input.LA(1) == LEFT || input.LA(1) == RIGHT ) 
                     	        		{
                     	        		    input.Consume();
-                    	        		    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set59));
+                    	        		    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set63));
                     	        		    state.errorRecovery = false;
                     	        		}
                     	        		else 
@@ -2756,22 +2844,22 @@ public partial class HqlParser : Parser
                     	        		    throw mse;
                     	        		}
 
-                    	        		// Hql.g:241:25: ( OUTER )?
-                    	        		int alt17 = 2;
-                    	        		int LA17_0 = input.LA(1);
+                    	        		// Hql.g:246:25: ( OUTER )?
+                    	        		int alt20 = 2;
+                    	        		int LA20_0 = input.LA(1);
 
-                    	        		if ( (LA17_0 == OUTER) )
+                    	        		if ( (LA20_0 == OUTER) )
                     	        		{
-                    	        		    alt17 = 1;
+                    	        		    alt20 = 1;
                     	        		}
-                    	        		switch (alt17) 
+                    	        		switch (alt20) 
                     	        		{
                     	        		    case 1 :
-                    	        		        // Hql.g:241:26: OUTER
+                    	        		        // Hql.g:246:26: OUTER
                     	        		        {
-                    	        		        	OUTER60=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1144); 
-                    	        		        		OUTER60_tree = (IASTNode)adaptor.Create(OUTER60);
-                    	        		        		adaptor.AddChild(root_0, OUTER60_tree);
+                    	        		        	OUTER64=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1180); 
+                    	        		        		OUTER64_tree = (IASTNode)adaptor.Create(OUTER64);
+                    	        		        		adaptor.AddChild(root_0, OUTER64_tree);
 
 
                     	        		        }
@@ -2786,21 +2874,21 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:241:38: FULL
+                    	        // Hql.g:246:38: FULL
                     	        {
-                    	        	FULL61=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1152); 
-                    	        		FULL61_tree = (IASTNode)adaptor.Create(FULL61);
-                    	        		adaptor.AddChild(root_0, FULL61_tree);
+                    	        	FULL65=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1188); 
+                    	        		FULL65_tree = (IASTNode)adaptor.Create(FULL65);
+                    	        		adaptor.AddChild(root_0, FULL65_tree);
 
 
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // Hql.g:241:45: INNER
+                    	        // Hql.g:246:45: INNER
                     	        {
-                    	        	INNER62=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1156); 
-                    	        		INNER62_tree = (IASTNode)adaptor.Create(INNER62);
-                    	        		adaptor.AddChild(root_0, INNER62_tree);
+                    	        	INNER66=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1192); 
+                    	        		INNER66_tree = (IASTNode)adaptor.Create(INNER66);
+                    	        		adaptor.AddChild(root_0, INNER66_tree);
 
 
                     	        }
@@ -2808,104 +2896,104 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	JOIN63=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1161); 
-                    		JOIN63_tree = (IASTNode)adaptor.Create(JOIN63);
-                    		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN63_tree, root_0);
+                    	JOIN67=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1197); 
+                    		JOIN67_tree = (IASTNode)adaptor.Create(JOIN67);
+                    		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN67_tree, root_0);
 
-                    	// Hql.g:241:60: ( FETCH )?
-                    	int alt19 = 2;
-                    	int LA19_0 = input.LA(1);
-
-                    	if ( (LA19_0 == FETCH) )
-                    	{
-                    	    alt19 = 1;
-                    	}
-                    	switch (alt19) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:241:61: FETCH
-                    	        {
-                    	        	FETCH64=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1165); 
-                    	        		FETCH64_tree = (IASTNode)adaptor.Create(FETCH64);
-                    	        		adaptor.AddChild(root_0, FETCH64_tree);
-
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	PushFollow(FOLLOW_path_in_fromJoin1169);
-                    	path65 = path();
-                    	state.followingStackPointer--;
-
-                    	adaptor.AddChild(root_0, path65.Tree);
-                    	// Hql.g:241:74: ( asAlias )?
-                    	int alt20 = 2;
-                    	int LA20_0 = input.LA(1);
-
-                    	if ( (LA20_0 == AS || LA20_0 == IDENT) )
-                    	{
-                    	    alt20 = 1;
-                    	}
-                    	switch (alt20) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:241:75: asAlias
-                    	        {
-                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1172);
-                    	        	asAlias66 = asAlias();
-                    	        	state.followingStackPointer--;
-
-                    	        	adaptor.AddChild(root_0, asAlias66.Tree);
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	// Hql.g:241:85: ( propertyFetch )?
-                    	int alt21 = 2;
-                    	int LA21_0 = input.LA(1);
-
-                    	if ( (LA21_0 == FETCH) )
-                    	{
-                    	    alt21 = 1;
-                    	}
-                    	switch (alt21) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:241:86: propertyFetch
-                    	        {
-                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1177);
-                    	        	propertyFetch67 = propertyFetch();
-                    	        	state.followingStackPointer--;
-
-                    	        	adaptor.AddChild(root_0, propertyFetch67.Tree);
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	// Hql.g:241:102: ( withClause )?
+                    	// Hql.g:246:60: ( FETCH )?
                     	int alt22 = 2;
                     	int LA22_0 = input.LA(1);
 
-                    	if ( (LA22_0 == WITH) )
+                    	if ( (LA22_0 == FETCH) )
                     	{
                     	    alt22 = 1;
                     	}
                     	switch (alt22) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:241:103: withClause
+                    	        // Hql.g:246:61: FETCH
                     	        {
-                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1182);
-                    	        	withClause68 = withClause();
+                    	        	FETCH68=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1201); 
+                    	        		FETCH68_tree = (IASTNode)adaptor.Create(FETCH68);
+                    	        		adaptor.AddChild(root_0, FETCH68_tree);
+
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	PushFollow(FOLLOW_path_in_fromJoin1205);
+                    	path69 = path();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_0, path69.Tree);
+                    	// Hql.g:246:74: ( asAlias )?
+                    	int alt23 = 2;
+                    	int LA23_0 = input.LA(1);
+
+                    	if ( (LA23_0 == AS || LA23_0 == IDENT) )
+                    	{
+                    	    alt23 = 1;
+                    	}
+                    	switch (alt23) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:246:75: asAlias
+                    	        {
+                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1208);
+                    	        	asAlias70 = asAlias();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_0, withClause68.Tree);
+                    	        	adaptor.AddChild(root_0, asAlias70.Tree);
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	// Hql.g:246:85: ( propertyFetch )?
+                    	int alt24 = 2;
+                    	int LA24_0 = input.LA(1);
+
+                    	if ( (LA24_0 == FETCH) )
+                    	{
+                    	    alt24 = 1;
+                    	}
+                    	switch (alt24) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:246:86: propertyFetch
+                    	        {
+                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1213);
+                    	        	propertyFetch71 = propertyFetch();
+                    	        	state.followingStackPointer--;
+
+                    	        	adaptor.AddChild(root_0, propertyFetch71.Tree);
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	// Hql.g:246:102: ( withClause )?
+                    	int alt25 = 2;
+                    	int LA25_0 = input.LA(1);
+
+                    	if ( (LA25_0 == WITH) )
+                    	{
+                    	    alt25 = 1;
+                    	}
+                    	switch (alt25) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:246:103: withClause
+                    	        {
+                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1218);
+                    	        	withClause72 = withClause();
+                    	        	state.followingStackPointer--;
+
+                    	        	adaptor.AddChild(root_0, withClause72.Tree);
 
                     	        }
                     	        break;
@@ -2916,45 +3004,45 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:242:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )?
+                    // Hql.g:247:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ( FETCH )? ELEMENTS OPEN path CLOSE ( asAlias )? ( propertyFetch )? ( withClause )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// Hql.g:242:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
-                    	int alt24 = 4;
+                    	// Hql.g:247:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+                    	int alt27 = 4;
                     	switch ( input.LA(1) ) 
                     	{
                     	    case LEFT:
                     	    case RIGHT:
                     	    	{
-                    	        alt24 = 1;
+                    	        alt27 = 1;
                     	        }
                     	        break;
                     	    case FULL:
                     	    	{
-                    	        alt24 = 2;
+                    	        alt27 = 2;
                     	        }
                     	        break;
                     	    case INNER:
                     	    	{
-                    	        alt24 = 3;
+                    	        alt27 = 3;
                     	        }
                     	        break;
                     	}
 
-                    	switch (alt24) 
+                    	switch (alt27) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:242:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        // Hql.g:247:6: ( ( LEFT | RIGHT ) ( OUTER )? )
                     	        {
-                    	        	// Hql.g:242:6: ( ( LEFT | RIGHT ) ( OUTER )? )
-                    	        	// Hql.g:242:8: ( LEFT | RIGHT ) ( OUTER )?
+                    	        	// Hql.g:247:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+                    	        	// Hql.g:247:8: ( LEFT | RIGHT ) ( OUTER )?
                     	        	{
-                    	        		set69 = (IToken)input.LT(1);
+                    	        		set73 = (IToken)input.LT(1);
                     	        		if ( input.LA(1) == LEFT || input.LA(1) == RIGHT ) 
                     	        		{
                     	        		    input.Consume();
-                    	        		    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set69));
+                    	        		    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set73));
                     	        		    state.errorRecovery = false;
                     	        		}
                     	        		else 
@@ -2963,22 +3051,22 @@ public partial class HqlParser : Parser
                     	        		    throw mse;
                     	        		}
 
-                    	        		// Hql.g:242:25: ( OUTER )?
-                    	        		int alt23 = 2;
-                    	        		int LA23_0 = input.LA(1);
+                    	        		// Hql.g:247:25: ( OUTER )?
+                    	        		int alt26 = 2;
+                    	        		int LA26_0 = input.LA(1);
 
-                    	        		if ( (LA23_0 == OUTER) )
+                    	        		if ( (LA26_0 == OUTER) )
                     	        		{
-                    	        		    alt23 = 1;
+                    	        		    alt26 = 1;
                     	        		}
-                    	        		switch (alt23) 
+                    	        		switch (alt26) 
                     	        		{
                     	        		    case 1 :
-                    	        		        // Hql.g:242:26: OUTER
+                    	        		        // Hql.g:247:26: OUTER
                     	        		        {
-                    	        		        	OUTER70=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1204); 
-                    	        		        		OUTER70_tree = (IASTNode)adaptor.Create(OUTER70);
-                    	        		        		adaptor.AddChild(root_0, OUTER70_tree);
+                    	        		        	OUTER74=(IToken)Match(input,OUTER,FOLLOW_OUTER_in_fromJoin1240); 
+                    	        		        		OUTER74_tree = (IASTNode)adaptor.Create(OUTER74);
+                    	        		        		adaptor.AddChild(root_0, OUTER74_tree);
 
 
                     	        		        }
@@ -2993,21 +3081,21 @@ public partial class HqlParser : Parser
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:242:38: FULL
+                    	        // Hql.g:247:38: FULL
                     	        {
-                    	        	FULL71=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1212); 
-                    	        		FULL71_tree = (IASTNode)adaptor.Create(FULL71);
-                    	        		adaptor.AddChild(root_0, FULL71_tree);
+                    	        	FULL75=(IToken)Match(input,FULL,FOLLOW_FULL_in_fromJoin1248); 
+                    	        		FULL75_tree = (IASTNode)adaptor.Create(FULL75);
+                    	        		adaptor.AddChild(root_0, FULL75_tree);
 
 
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // Hql.g:242:45: INNER
+                    	        // Hql.g:247:45: INNER
                     	        {
-                    	        	INNER72=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1216); 
-                    	        		INNER72_tree = (IASTNode)adaptor.Create(INNER72);
-                    	        		adaptor.AddChild(root_0, INNER72_tree);
+                    	        	INNER76=(IToken)Match(input,INNER,FOLLOW_INNER_in_fromJoin1252); 
+                    	        		INNER76_tree = (IASTNode)adaptor.Create(INNER76);
+                    	        		adaptor.AddChild(root_0, INNER76_tree);
 
 
                     	        }
@@ -3015,107 +3103,107 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	JOIN73=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1221); 
-                    		JOIN73_tree = (IASTNode)adaptor.Create(JOIN73);
-                    		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN73_tree, root_0);
+                    	JOIN77=(IToken)Match(input,JOIN,FOLLOW_JOIN_in_fromJoin1257); 
+                    		JOIN77_tree = (IASTNode)adaptor.Create(JOIN77);
+                    		root_0 = (IASTNode)adaptor.BecomeRoot(JOIN77_tree, root_0);
 
-                    	// Hql.g:242:60: ( FETCH )?
-                    	int alt25 = 2;
-                    	int LA25_0 = input.LA(1);
-
-                    	if ( (LA25_0 == FETCH) )
-                    	{
-                    	    alt25 = 1;
-                    	}
-                    	switch (alt25) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:242:61: FETCH
-                    	        {
-                    	        	FETCH74=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1225); 
-                    	        		FETCH74_tree = (IASTNode)adaptor.Create(FETCH74);
-                    	        		adaptor.AddChild(root_0, FETCH74_tree);
-
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	ELEMENTS75=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_fromJoin1229); 
-                    	OPEN76=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_fromJoin1232); 
-                    	PushFollow(FOLLOW_path_in_fromJoin1235);
-                    	path77 = path();
-                    	state.followingStackPointer--;
-
-                    	adaptor.AddChild(root_0, path77.Tree);
-                    	CLOSE78=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_fromJoin1237); 
-                    	// Hql.g:242:97: ( asAlias )?
-                    	int alt26 = 2;
-                    	int LA26_0 = input.LA(1);
-
-                    	if ( (LA26_0 == AS || LA26_0 == IDENT) )
-                    	{
-                    	    alt26 = 1;
-                    	}
-                    	switch (alt26) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:242:98: asAlias
-                    	        {
-                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1241);
-                    	        	asAlias79 = asAlias();
-                    	        	state.followingStackPointer--;
-
-                    	        	adaptor.AddChild(root_0, asAlias79.Tree);
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	// Hql.g:242:108: ( propertyFetch )?
-                    	int alt27 = 2;
-                    	int LA27_0 = input.LA(1);
-
-                    	if ( (LA27_0 == FETCH) )
-                    	{
-                    	    alt27 = 1;
-                    	}
-                    	switch (alt27) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:242:109: propertyFetch
-                    	        {
-                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1246);
-                    	        	propertyFetch80 = propertyFetch();
-                    	        	state.followingStackPointer--;
-
-                    	        	adaptor.AddChild(root_0, propertyFetch80.Tree);
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	// Hql.g:242:125: ( withClause )?
+                    	// Hql.g:247:60: ( FETCH )?
                     	int alt28 = 2;
                     	int LA28_0 = input.LA(1);
 
-                    	if ( (LA28_0 == WITH) )
+                    	if ( (LA28_0 == FETCH) )
                     	{
                     	    alt28 = 1;
                     	}
                     	switch (alt28) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:242:126: withClause
+                    	        // Hql.g:247:61: FETCH
                     	        {
-                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1251);
-                    	        	withClause81 = withClause();
+                    	        	FETCH78=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_fromJoin1261); 
+                    	        		FETCH78_tree = (IASTNode)adaptor.Create(FETCH78);
+                    	        		adaptor.AddChild(root_0, FETCH78_tree);
+
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	ELEMENTS79=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_fromJoin1265); 
+                    	OPEN80=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_fromJoin1268); 
+                    	PushFollow(FOLLOW_path_in_fromJoin1271);
+                    	path81 = path();
+                    	state.followingStackPointer--;
+
+                    	adaptor.AddChild(root_0, path81.Tree);
+                    	CLOSE82=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_fromJoin1273); 
+                    	// Hql.g:247:97: ( asAlias )?
+                    	int alt29 = 2;
+                    	int LA29_0 = input.LA(1);
+
+                    	if ( (LA29_0 == AS || LA29_0 == IDENT) )
+                    	{
+                    	    alt29 = 1;
+                    	}
+                    	switch (alt29) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:247:98: asAlias
+                    	        {
+                    	        	PushFollow(FOLLOW_asAlias_in_fromJoin1277);
+                    	        	asAlias83 = asAlias();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_0, withClause81.Tree);
+                    	        	adaptor.AddChild(root_0, asAlias83.Tree);
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	// Hql.g:247:108: ( propertyFetch )?
+                    	int alt30 = 2;
+                    	int LA30_0 = input.LA(1);
+
+                    	if ( (LA30_0 == FETCH) )
+                    	{
+                    	    alt30 = 1;
+                    	}
+                    	switch (alt30) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:247:109: propertyFetch
+                    	        {
+                    	        	PushFollow(FOLLOW_propertyFetch_in_fromJoin1282);
+                    	        	propertyFetch84 = propertyFetch();
+                    	        	state.followingStackPointer--;
+
+                    	        	adaptor.AddChild(root_0, propertyFetch84.Tree);
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	// Hql.g:247:125: ( withClause )?
+                    	int alt31 = 2;
+                    	int LA31_0 = input.LA(1);
+
+                    	if ( (LA31_0 == WITH) )
+                    	{
+                    	    alt31 = 1;
+                    	}
+                    	switch (alt31) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:247:126: withClause
+                    	        {
+                    	        	PushFollow(FOLLOW_withClause_in_fromJoin1287);
+                    	        	withClause85 = withClause();
+                    	        	state.followingStackPointer--;
+
+                    	        	adaptor.AddChild(root_0, withClause85.Tree);
 
                     	        }
                     	        break;
@@ -3158,7 +3246,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "withClause"
-    // Hql.g:245:1: withClause : WITH logicalExpression ;
+    // Hql.g:250:1: withClause : WITH logicalExpression ;
     public HqlParser.withClause_return withClause() // throws RecognitionException [1]
     {   
         HqlParser.withClause_return retval = new HqlParser.withClause_return();
@@ -3166,28 +3254,28 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken WITH82 = null;
-        HqlParser.logicalExpression_return logicalExpression83 = default(HqlParser.logicalExpression_return);
+        IToken WITH86 = null;
+        HqlParser.logicalExpression_return logicalExpression87 = default(HqlParser.logicalExpression_return);
 
 
-        IASTNode WITH82_tree=null;
+        IASTNode WITH86_tree=null;
 
         try 
     	{
-            // Hql.g:246:2: ( WITH logicalExpression )
-            // Hql.g:246:4: WITH logicalExpression
+            // Hql.g:251:2: ( WITH logicalExpression )
+            // Hql.g:251:4: WITH logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	WITH82=(IToken)Match(input,WITH,FOLLOW_WITH_in_withClause1264); 
-            		WITH82_tree = (IASTNode)adaptor.Create(WITH82);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(WITH82_tree, root_0);
+            	WITH86=(IToken)Match(input,WITH,FOLLOW_WITH_in_withClause1300); 
+            		WITH86_tree = (IASTNode)adaptor.Create(WITH86);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(WITH86_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_withClause1267);
-            	logicalExpression83 = logicalExpression();
+            	PushFollow(FOLLOW_logicalExpression_in_withClause1303);
+            	logicalExpression87 = logicalExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, logicalExpression83.Tree);
+            	adaptor.AddChild(root_0, logicalExpression87.Tree);
 
             }
 
@@ -3222,7 +3310,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromRange"
-    // Hql.g:249:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
+    // Hql.g:254:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
     public HqlParser.fromRange_return fromRange() // throws RecognitionException [1]
     {   
         HqlParser.fromRange_return retval = new HqlParser.fromRange_return();
@@ -3230,127 +3318,127 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.fromClassOrOuterQueryPath_return fromClassOrOuterQueryPath84 = default(HqlParser.fromClassOrOuterQueryPath_return);
+        HqlParser.fromClassOrOuterQueryPath_return fromClassOrOuterQueryPath88 = default(HqlParser.fromClassOrOuterQueryPath_return);
 
-        HqlParser.inClassDeclaration_return inClassDeclaration85 = default(HqlParser.inClassDeclaration_return);
+        HqlParser.inClassDeclaration_return inClassDeclaration89 = default(HqlParser.inClassDeclaration_return);
 
-        HqlParser.inCollectionDeclaration_return inCollectionDeclaration86 = default(HqlParser.inCollectionDeclaration_return);
+        HqlParser.inCollectionDeclaration_return inCollectionDeclaration90 = default(HqlParser.inCollectionDeclaration_return);
 
-        HqlParser.inCollectionElementsDeclaration_return inCollectionElementsDeclaration87 = default(HqlParser.inCollectionElementsDeclaration_return);
+        HqlParser.inCollectionElementsDeclaration_return inCollectionElementsDeclaration91 = default(HqlParser.inCollectionElementsDeclaration_return);
 
 
 
         try 
     	{
-            // Hql.g:250:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
-            int alt30 = 4;
+            // Hql.g:255:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
+            int alt33 = 4;
             switch ( input.LA(1) ) 
             {
             case IDENT:
             	{
-                int LA30_1 = input.LA(2);
+                int LA33_1 = input.LA(2);
 
-                if ( (LA30_1 == IN) )
+                if ( (LA33_1 == EOF || LA33_1 == AS || LA33_1 == DOT || LA33_1 == FETCH || (LA33_1 >= FULL && LA33_1 <= HAVING) || LA33_1 == INNER || (LA33_1 >= JOIN && LA33_1 <= LEFT) || LA33_1 == ORDER || LA33_1 == RIGHT || LA33_1 == SKIP || LA33_1 == TAKE || LA33_1 == UNION || LA33_1 == WHERE || LA33_1 == COMMA || LA33_1 == CLOSE || LA33_1 == IDENT) )
                 {
-                    int LA30_4 = input.LA(3);
+                    alt33 = 1;
+                }
+                else if ( (LA33_1 == IN) )
+                {
+                    int LA33_5 = input.LA(3);
 
-                    if ( (LA30_4 == ELEMENTS) )
+                    if ( (LA33_5 == ELEMENTS) )
                     {
-                        alt30 = 4;
+                        alt33 = 4;
                     }
-                    else if ( (LA30_4 == CLASS || LA30_4 == IDENT) )
+                    else if ( (LA33_5 == CLASS || LA33_5 == IDENT) )
                     {
-                        alt30 = 2;
+                        alt33 = 2;
                     }
                     else 
                     {
-                        NoViableAltException nvae_d30s4 =
-                            new NoViableAltException("", 30, 4, input);
+                        NoViableAltException nvae_d33s5 =
+                            new NoViableAltException("", 33, 5, input);
 
-                        throw nvae_d30s4;
+                        throw nvae_d33s5;
                     }
-                }
-                else if ( (LA30_1 == EOF || LA30_1 == AS || LA30_1 == DOT || LA30_1 == FETCH || (LA30_1 >= FULL && LA30_1 <= GROUP) || LA30_1 == INNER || (LA30_1 >= JOIN && LA30_1 <= LEFT) || LA30_1 == ORDER || LA30_1 == RIGHT || LA30_1 == UNION || LA30_1 == WHERE || LA30_1 == COMMA || LA30_1 == CLOSE || LA30_1 == IDENT) )
-                {
-                    alt30 = 1;
                 }
                 else 
                 {
-                    NoViableAltException nvae_d30s1 =
-                        new NoViableAltException("", 30, 1, input);
+                    NoViableAltException nvae_d33s1 =
+                        new NoViableAltException("", 33, 1, input);
 
-                    throw nvae_d30s1;
+                    throw nvae_d33s1;
                 }
                 }
                 break;
             case IN:
             	{
-                alt30 = 3;
+                alt33 = 3;
                 }
                 break;
             case ELEMENTS:
             	{
-                alt30 = 4;
+                alt33 = 4;
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d30s0 =
-            	        new NoViableAltException("", 30, 0, input);
+            	    NoViableAltException nvae_d33s0 =
+            	        new NoViableAltException("", 33, 0, input);
 
-            	    throw nvae_d30s0;
+            	    throw nvae_d33s0;
             }
 
-            switch (alt30) 
+            switch (alt33) 
             {
                 case 1 :
-                    // Hql.g:250:4: fromClassOrOuterQueryPath
+                    // Hql.g:255:4: fromClassOrOuterQueryPath
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_fromClassOrOuterQueryPath_in_fromRange1278);
-                    	fromClassOrOuterQueryPath84 = fromClassOrOuterQueryPath();
+                    	PushFollow(FOLLOW_fromClassOrOuterQueryPath_in_fromRange1314);
+                    	fromClassOrOuterQueryPath88 = fromClassOrOuterQueryPath();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, fromClassOrOuterQueryPath84.Tree);
+                    	adaptor.AddChild(root_0, fromClassOrOuterQueryPath88.Tree);
 
                     }
                     break;
                 case 2 :
-                    // Hql.g:251:4: inClassDeclaration
+                    // Hql.g:256:4: inClassDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inClassDeclaration_in_fromRange1283);
-                    	inClassDeclaration85 = inClassDeclaration();
+                    	PushFollow(FOLLOW_inClassDeclaration_in_fromRange1319);
+                    	inClassDeclaration89 = inClassDeclaration();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, inClassDeclaration85.Tree);
+                    	adaptor.AddChild(root_0, inClassDeclaration89.Tree);
 
                     }
                     break;
                 case 3 :
-                    // Hql.g:252:4: inCollectionDeclaration
+                    // Hql.g:257:4: inCollectionDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inCollectionDeclaration_in_fromRange1288);
-                    	inCollectionDeclaration86 = inCollectionDeclaration();
+                    	PushFollow(FOLLOW_inCollectionDeclaration_in_fromRange1324);
+                    	inCollectionDeclaration90 = inCollectionDeclaration();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, inCollectionDeclaration86.Tree);
+                    	adaptor.AddChild(root_0, inCollectionDeclaration90.Tree);
 
                     }
                     break;
                 case 4 :
-                    // Hql.g:253:4: inCollectionElementsDeclaration
+                    // Hql.g:258:4: inCollectionElementsDeclaration
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_inCollectionElementsDeclaration_in_fromRange1293);
-                    	inCollectionElementsDeclaration87 = inCollectionElementsDeclaration();
+                    	PushFollow(FOLLOW_inCollectionElementsDeclaration_in_fromRange1329);
+                    	inCollectionElementsDeclaration91 = inCollectionElementsDeclaration();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, inCollectionElementsDeclaration87.Tree);
+                    	adaptor.AddChild(root_0, inCollectionElementsDeclaration91.Tree);
 
                     }
                     break;
@@ -3387,7 +3475,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "fromClassOrOuterQueryPath"
-    // Hql.g:256:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
+    // Hql.g:261:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
     public HqlParser.fromClassOrOuterQueryPath_return fromClassOrOuterQueryPath() // throws RecognitionException [1]
     {   
         HqlParser.fromClassOrOuterQueryPath_return retval = new HqlParser.fromClassOrOuterQueryPath_return();
@@ -3395,11 +3483,11 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.path_return path88 = default(HqlParser.path_return);
+        HqlParser.path_return path92 = default(HqlParser.path_return);
 
-        HqlParser.asAlias_return asAlias89 = default(HqlParser.asAlias_return);
+        HqlParser.asAlias_return asAlias93 = default(HqlParser.asAlias_return);
 
-        HqlParser.propertyFetch_return propertyFetch90 = default(HqlParser.propertyFetch_return);
+        HqlParser.propertyFetch_return propertyFetch94 = default(HqlParser.propertyFetch_return);
 
 
         RewriteRuleSubtreeStream stream_propertyFetch = new RewriteRuleSubtreeStream(adaptor,"rule propertyFetch");
@@ -3407,57 +3495,57 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_asAlias = new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
         try 
     	{
-            // Hql.g:257:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
-            // Hql.g:257:4: path ( asAlias )? ( propertyFetch )?
+            // Hql.g:262:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
+            // Hql.g:262:4: path ( asAlias )? ( propertyFetch )?
             {
-            	PushFollow(FOLLOW_path_in_fromClassOrOuterQueryPath1305);
-            	path88 = path();
+            	PushFollow(FOLLOW_path_in_fromClassOrOuterQueryPath1341);
+            	path92 = path();
             	state.followingStackPointer--;
 
-            	stream_path.Add(path88.Tree);
+            	stream_path.Add(path92.Tree);
             	 WeakKeywords(); 
-            	// Hql.g:257:29: ( asAlias )?
-            	int alt31 = 2;
-            	int LA31_0 = input.LA(1);
+            	// Hql.g:262:29: ( asAlias )?
+            	int alt34 = 2;
+            	int LA34_0 = input.LA(1);
 
-            	if ( (LA31_0 == AS || LA31_0 == IDENT) )
+            	if ( (LA34_0 == AS || LA34_0 == IDENT) )
             	{
-            	    alt31 = 1;
+            	    alt34 = 1;
             	}
-            	switch (alt31) 
+            	switch (alt34) 
             	{
             	    case 1 :
-            	        // Hql.g:257:30: asAlias
+            	        // Hql.g:262:30: asAlias
             	        {
-            	        	PushFollow(FOLLOW_asAlias_in_fromClassOrOuterQueryPath1310);
-            	        	asAlias89 = asAlias();
+            	        	PushFollow(FOLLOW_asAlias_in_fromClassOrOuterQueryPath1346);
+            	        	asAlias93 = asAlias();
             	        	state.followingStackPointer--;
 
-            	        	stream_asAlias.Add(asAlias89.Tree);
+            	        	stream_asAlias.Add(asAlias93.Tree);
 
             	        }
             	        break;
 
             	}
 
-            	// Hql.g:257:40: ( propertyFetch )?
-            	int alt32 = 2;
-            	int LA32_0 = input.LA(1);
+            	// Hql.g:262:40: ( propertyFetch )?
+            	int alt35 = 2;
+            	int LA35_0 = input.LA(1);
 
-            	if ( (LA32_0 == FETCH) )
+            	if ( (LA35_0 == FETCH) )
             	{
-            	    alt32 = 1;
+            	    alt35 = 1;
             	}
-            	switch (alt32) 
+            	switch (alt35) 
             	{
             	    case 1 :
-            	        // Hql.g:257:41: propertyFetch
+            	        // Hql.g:262:41: propertyFetch
             	        {
-            	        	PushFollow(FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1315);
-            	        	propertyFetch90 = propertyFetch();
+            	        	PushFollow(FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1351);
+            	        	propertyFetch94 = propertyFetch();
             	        	state.followingStackPointer--;
 
-            	        	stream_propertyFetch.Add(propertyFetch90.Tree);
+            	        	stream_propertyFetch.Add(propertyFetch94.Tree);
 
             	        }
             	        break;
@@ -3467,7 +3555,7 @@ public partial class HqlParser : Parser
 
 
             	// AST REWRITE
-            	// elements:          path, asAlias, propertyFetch
+            	// elements:          propertyFetch, path, asAlias
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -3477,22 +3565,22 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 258:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
+            	// 263:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
             	{
-            	    // Hql.g:258:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
+            	    // Hql.g:263:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
 
             	    adaptor.AddChild(root_1, stream_path.NextTree());
-            	    // Hql.g:258:19: ( asAlias )?
+            	    // Hql.g:263:19: ( asAlias )?
             	    if ( stream_asAlias.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_asAlias.NextTree());
 
             	    }
             	    stream_asAlias.Reset();
-            	    // Hql.g:258:28: ( propertyFetch )?
+            	    // Hql.g:263:28: ( propertyFetch )?
             	    if ( stream_propertyFetch.HasNext() )
             	    {
             	        adaptor.AddChild(root_1, stream_propertyFetch.NextTree());
@@ -3539,7 +3627,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inClassDeclaration"
-    // Hql.g:261:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
+    // Hql.g:266:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
     public HqlParser.inClassDeclaration_return inClassDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inClassDeclaration_return retval = new HqlParser.inClassDeclaration_return();
@@ -3547,47 +3635,47 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken IN92 = null;
-        IToken CLASS93 = null;
-        HqlParser.alias_return alias91 = default(HqlParser.alias_return);
+        IToken IN96 = null;
+        IToken CLASS97 = null;
+        HqlParser.alias_return alias95 = default(HqlParser.alias_return);
 
-        HqlParser.path_return path94 = default(HqlParser.path_return);
+        HqlParser.path_return path98 = default(HqlParser.path_return);
 
 
-        IASTNode IN92_tree=null;
-        IASTNode CLASS93_tree=null;
+        IASTNode IN96_tree=null;
+        IASTNode CLASS97_tree=null;
         RewriteRuleTokenStream stream_CLASS = new RewriteRuleTokenStream(adaptor,"token CLASS");
         RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
         RewriteRuleSubtreeStream stream_alias = new RewriteRuleSubtreeStream(adaptor,"rule alias");
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // Hql.g:262:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
-            // Hql.g:262:4: alias IN ( CLASS )? path
+            // Hql.g:267:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
+            // Hql.g:267:4: alias IN ( CLASS )? path
             {
-            	PushFollow(FOLLOW_alias_in_inClassDeclaration1345);
-            	alias91 = alias();
+            	PushFollow(FOLLOW_alias_in_inClassDeclaration1381);
+            	alias95 = alias();
             	state.followingStackPointer--;
 
-            	stream_alias.Add(alias91.Tree);
-            	IN92=(IToken)Match(input,IN,FOLLOW_IN_in_inClassDeclaration1347);  
-            	stream_IN.Add(IN92);
+            	stream_alias.Add(alias95.Tree);
+            	IN96=(IToken)Match(input,IN,FOLLOW_IN_in_inClassDeclaration1383);  
+            	stream_IN.Add(IN96);
 
-            	// Hql.g:262:13: ( CLASS )?
-            	int alt33 = 2;
-            	int LA33_0 = input.LA(1);
+            	// Hql.g:267:13: ( CLASS )?
+            	int alt36 = 2;
+            	int LA36_0 = input.LA(1);
 
-            	if ( (LA33_0 == CLASS) )
+            	if ( (LA36_0 == CLASS) )
             	{
-            	    alt33 = 1;
+            	    alt36 = 1;
             	}
-            	switch (alt33) 
+            	switch (alt36) 
             	{
             	    case 1 :
-            	        // Hql.g:262:13: CLASS
+            	        // Hql.g:267:13: CLASS
             	        {
-            	        	CLASS93=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_inClassDeclaration1349);  
-            	        	stream_CLASS.Add(CLASS93);
+            	        	CLASS97=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_inClassDeclaration1385);  
+            	        	stream_CLASS.Add(CLASS97);
 
 
             	        }
@@ -3595,11 +3683,11 @@ public partial class HqlParser : Parser
 
             	}
 
-            	PushFollow(FOLLOW_path_in_inClassDeclaration1352);
-            	path94 = path();
+            	PushFollow(FOLLOW_path_in_inClassDeclaration1388);
+            	path98 = path();
             	state.followingStackPointer--;
 
-            	stream_path.Add(path94.Tree);
+            	stream_path.Add(path98.Tree);
 
 
             	// AST REWRITE
@@ -3613,9 +3701,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 263:3: -> ^( RANGE path alias )
+            	// 268:3: -> ^( RANGE path alias )
             	{
-            	    // Hql.g:263:6: ^( RANGE path alias )
+            	    // Hql.g:268:6: ^( RANGE path alias )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
@@ -3662,7 +3750,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inCollectionDeclaration"
-    // Hql.g:266:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
+    // Hql.g:271:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
     public HqlParser.inCollectionDeclaration_return inCollectionDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inCollectionDeclaration_return retval = new HqlParser.inCollectionDeclaration_return();
@@ -3670,17 +3758,17 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken IN95 = null;
-        IToken OPEN96 = null;
-        IToken CLOSE98 = null;
-        HqlParser.path_return path97 = default(HqlParser.path_return);
+        IToken IN99 = null;
+        IToken OPEN100 = null;
+        IToken CLOSE102 = null;
+        HqlParser.path_return path101 = default(HqlParser.path_return);
 
-        HqlParser.alias_return alias99 = default(HqlParser.alias_return);
+        HqlParser.alias_return alias103 = default(HqlParser.alias_return);
 
 
-        IASTNode IN95_tree=null;
-        IASTNode OPEN96_tree=null;
-        IASTNode CLOSE98_tree=null;
+        IASTNode IN99_tree=null;
+        IASTNode OPEN100_tree=null;
+        IASTNode CLOSE102_tree=null;
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
         RewriteRuleTokenStream stream_CLOSE = new RewriteRuleTokenStream(adaptor,"token CLOSE");
@@ -3688,32 +3776,32 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // Hql.g:267:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
-            // Hql.g:267:7: IN OPEN path CLOSE alias
+            // Hql.g:272:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+            // Hql.g:272:7: IN OPEN path CLOSE alias
             {
-            	IN95=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionDeclaration1380);  
-            	stream_IN.Add(IN95);
+            	IN99=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionDeclaration1416);  
+            	stream_IN.Add(IN99);
 
-            	OPEN96=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionDeclaration1382);  
-            	stream_OPEN.Add(OPEN96);
+            	OPEN100=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionDeclaration1418);  
+            	stream_OPEN.Add(OPEN100);
 
-            	PushFollow(FOLLOW_path_in_inCollectionDeclaration1384);
-            	path97 = path();
+            	PushFollow(FOLLOW_path_in_inCollectionDeclaration1420);
+            	path101 = path();
             	state.followingStackPointer--;
 
-            	stream_path.Add(path97.Tree);
-            	CLOSE98=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionDeclaration1386);  
-            	stream_CLOSE.Add(CLOSE98);
+            	stream_path.Add(path101.Tree);
+            	CLOSE102=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionDeclaration1422);  
+            	stream_CLOSE.Add(CLOSE102);
 
-            	PushFollow(FOLLOW_alias_in_inCollectionDeclaration1388);
-            	alias99 = alias();
+            	PushFollow(FOLLOW_alias_in_inCollectionDeclaration1424);
+            	alias103 = alias();
             	state.followingStackPointer--;
 
-            	stream_alias.Add(alias99.Tree);
+            	stream_alias.Add(alias103.Tree);
 
 
             	// AST REWRITE
-            	// elements:          path, alias
+            	// elements:          alias, path
             	// token labels:      
             	// rule labels:       retval
             	// token list labels: 
@@ -3723,9 +3811,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 268:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+            	// 273:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
             	{
-            	    // Hql.g:268:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+            	    // Hql.g:273:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -3773,7 +3861,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inCollectionElementsDeclaration"
-    // Hql.g:271:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
+    // Hql.g:276:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
     public HqlParser.inCollectionElementsDeclaration_return inCollectionElementsDeclaration() // throws RecognitionException [1]
     {   
         HqlParser.inCollectionElementsDeclaration_return retval = new HqlParser.inCollectionElementsDeclaration_return();
@@ -3781,31 +3869,31 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken IN101 = null;
-        IToken ELEMENTS102 = null;
-        IToken OPEN103 = null;
-        IToken CLOSE105 = null;
+        IToken IN105 = null;
         IToken ELEMENTS106 = null;
         IToken OPEN107 = null;
         IToken CLOSE109 = null;
-        IToken AS110 = null;
-        HqlParser.alias_return alias100 = default(HqlParser.alias_return);
-
-        HqlParser.path_return path104 = default(HqlParser.path_return);
+        IToken ELEMENTS110 = null;
+        IToken OPEN111 = null;
+        IToken CLOSE113 = null;
+        IToken AS114 = null;
+        HqlParser.alias_return alias104 = default(HqlParser.alias_return);
 
         HqlParser.path_return path108 = default(HqlParser.path_return);
 
-        HqlParser.alias_return alias111 = default(HqlParser.alias_return);
+        HqlParser.path_return path112 = default(HqlParser.path_return);
+
+        HqlParser.alias_return alias115 = default(HqlParser.alias_return);
 
 
-        IASTNode IN101_tree=null;
-        IASTNode ELEMENTS102_tree=null;
-        IASTNode OPEN103_tree=null;
-        IASTNode CLOSE105_tree=null;
+        IASTNode IN105_tree=null;
         IASTNode ELEMENTS106_tree=null;
         IASTNode OPEN107_tree=null;
         IASTNode CLOSE109_tree=null;
-        IASTNode AS110_tree=null;
+        IASTNode ELEMENTS110_tree=null;
+        IASTNode OPEN111_tree=null;
+        IASTNode CLOSE113_tree=null;
+        IASTNode AS114_tree=null;
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_AS = new RewriteRuleTokenStream(adaptor,"token AS");
         RewriteRuleTokenStream stream_IN = new RewriteRuleTokenStream(adaptor,"token IN");
@@ -3815,56 +3903,56 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_path = new RewriteRuleSubtreeStream(adaptor,"rule path");
         try 
     	{
-            // Hql.g:272:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
-            int alt34 = 2;
-            int LA34_0 = input.LA(1);
+            // Hql.g:277:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+            int alt37 = 2;
+            int LA37_0 = input.LA(1);
 
-            if ( (LA34_0 == IDENT) )
+            if ( (LA37_0 == IDENT) )
             {
-                alt34 = 1;
+                alt37 = 1;
             }
-            else if ( (LA34_0 == ELEMENTS) )
+            else if ( (LA37_0 == ELEMENTS) )
             {
-                alt34 = 2;
+                alt37 = 2;
             }
             else 
             {
-                NoViableAltException nvae_d34s0 =
-                    new NoViableAltException("", 34, 0, input);
+                NoViableAltException nvae_d37s0 =
+                    new NoViableAltException("", 37, 0, input);
 
-                throw nvae_d34s0;
+                throw nvae_d37s0;
             }
-            switch (alt34) 
+            switch (alt37) 
             {
                 case 1 :
-                    // Hql.g:272:4: alias IN ELEMENTS OPEN path CLOSE
+                    // Hql.g:277:4: alias IN ELEMENTS OPEN path CLOSE
                     {
-                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1422);
-                    	alias100 = alias();
+                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1458);
+                    	alias104 = alias();
                     	state.followingStackPointer--;
 
-                    	stream_alias.Add(alias100.Tree);
-                    	IN101=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionElementsDeclaration1424);  
-                    	stream_IN.Add(IN101);
+                    	stream_alias.Add(alias104.Tree);
+                    	IN105=(IToken)Match(input,IN,FOLLOW_IN_in_inCollectionElementsDeclaration1460);  
+                    	stream_IN.Add(IN105);
 
-                    	ELEMENTS102=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1426);  
-                    	stream_ELEMENTS.Add(ELEMENTS102);
+                    	ELEMENTS106=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1462);  
+                    	stream_ELEMENTS.Add(ELEMENTS106);
 
-                    	OPEN103=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1428);  
-                    	stream_OPEN.Add(OPEN103);
+                    	OPEN107=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1464);  
+                    	stream_OPEN.Add(OPEN107);
 
-                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1430);
-                    	path104 = path();
+                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1466);
+                    	path108 = path();
                     	state.followingStackPointer--;
 
-                    	stream_path.Add(path104.Tree);
-                    	CLOSE105=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1432);  
-                    	stream_CLOSE.Add(CLOSE105);
+                    	stream_path.Add(path108.Tree);
+                    	CLOSE109=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1468);  
+                    	stream_CLOSE.Add(CLOSE109);
 
 
 
                     	// AST REWRITE
-                    	// elements:          alias, path
+                    	// elements:          path, alias
                     	// token labels:      
                     	// rule labels:       retval
                     	// token list labels: 
@@ -3874,9 +3962,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 273:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	// 278:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	{
-                    	    // Hql.g:273:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	    // Hql.g:278:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -3894,34 +3982,34 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:274:4: ELEMENTS OPEN path CLOSE AS alias
+                    // Hql.g:279:4: ELEMENTS OPEN path CLOSE AS alias
                     {
-                    	ELEMENTS106=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1454);  
-                    	stream_ELEMENTS.Add(ELEMENTS106);
+                    	ELEMENTS110=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1490);  
+                    	stream_ELEMENTS.Add(ELEMENTS110);
 
-                    	OPEN107=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1456);  
-                    	stream_OPEN.Add(OPEN107);
+                    	OPEN111=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_inCollectionElementsDeclaration1492);  
+                    	stream_OPEN.Add(OPEN111);
 
-                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1458);
-                    	path108 = path();
+                    	PushFollow(FOLLOW_path_in_inCollectionElementsDeclaration1494);
+                    	path112 = path();
                     	state.followingStackPointer--;
 
-                    	stream_path.Add(path108.Tree);
-                    	CLOSE109=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1460);  
-                    	stream_CLOSE.Add(CLOSE109);
+                    	stream_path.Add(path112.Tree);
+                    	CLOSE113=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_inCollectionElementsDeclaration1496);  
+                    	stream_CLOSE.Add(CLOSE113);
 
-                    	AS110=(IToken)Match(input,AS,FOLLOW_AS_in_inCollectionElementsDeclaration1462);  
-                    	stream_AS.Add(AS110);
+                    	AS114=(IToken)Match(input,AS,FOLLOW_AS_in_inCollectionElementsDeclaration1498);  
+                    	stream_AS.Add(AS114);
 
-                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1464);
-                    	alias111 = alias();
+                    	PushFollow(FOLLOW_alias_in_inCollectionElementsDeclaration1500);
+                    	alias115 = alias();
                     	state.followingStackPointer--;
 
-                    	stream_alias.Add(alias111.Tree);
+                    	stream_alias.Add(alias115.Tree);
 
 
                     	// AST REWRITE
-                    	// elements:          alias, path
+                    	// elements:          path, alias
                     	// token labels:      
                     	// rule labels:       retval
                     	// token list labels: 
@@ -3931,9 +4019,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 275:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	// 280:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	{
-                    	    // Hql.g:275:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+                    	    // Hql.g:280:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
@@ -3983,7 +4071,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "asAlias"
-    // Hql.g:279:1: asAlias : ( AS )? alias ;
+    // Hql.g:284:1: asAlias : ( AS )? alias ;
     public HqlParser.asAlias_return asAlias() // throws RecognitionException [1]
     {   
         HqlParser.asAlias_return retval = new HqlParser.asAlias_return();
@@ -3991,44 +4079,44 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken AS112 = null;
-        HqlParser.alias_return alias113 = default(HqlParser.alias_return);
+        IToken AS116 = null;
+        HqlParser.alias_return alias117 = default(HqlParser.alias_return);
 
 
-        IASTNode AS112_tree=null;
+        IASTNode AS116_tree=null;
 
         try 
     	{
-            // Hql.g:280:2: ( ( AS )? alias )
-            // Hql.g:280:4: ( AS )? alias
+            // Hql.g:285:2: ( ( AS )? alias )
+            // Hql.g:285:4: ( AS )? alias
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:280:4: ( AS )?
-            	int alt35 = 2;
-            	int LA35_0 = input.LA(1);
+            	// Hql.g:285:4: ( AS )?
+            	int alt38 = 2;
+            	int LA38_0 = input.LA(1);
 
-            	if ( (LA35_0 == AS) )
+            	if ( (LA38_0 == AS) )
             	{
-            	    alt35 = 1;
+            	    alt38 = 1;
             	}
-            	switch (alt35) 
+            	switch (alt38) 
             	{
             	    case 1 :
-            	        // Hql.g:280:5: AS
+            	        // Hql.g:285:5: AS
             	        {
-            	        	AS112=(IToken)Match(input,AS,FOLLOW_AS_in_asAlias1496); 
+            	        	AS116=(IToken)Match(input,AS,FOLLOW_AS_in_asAlias1532); 
 
             	        }
             	        break;
 
             	}
 
-            	PushFollow(FOLLOW_alias_in_asAlias1501);
-            	alias113 = alias();
+            	PushFollow(FOLLOW_alias_in_asAlias1537);
+            	alias117 = alias();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, alias113.Tree);
+            	adaptor.AddChild(root_0, alias117.Tree);
 
             }
 
@@ -4063,7 +4151,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "alias"
-    // Hql.g:282:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
+    // Hql.g:287:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
     public HqlParser.alias_return alias() // throws RecognitionException [1]
     {   
         HqlParser.alias_return retval = new HqlParser.alias_return();
@@ -4077,10 +4165,10 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_identifier = new RewriteRuleSubtreeStream(adaptor,"rule identifier");
         try 
     	{
-            // Hql.g:283:2: (i= identifier -> ^( ALIAS[$i.start] ) )
-            // Hql.g:283:4: i= identifier
+            // Hql.g:288:2: (i= identifier -> ^( ALIAS[$i.start] ) )
+            // Hql.g:288:4: i= identifier
             {
-            	PushFollow(FOLLOW_identifier_in_alias1513);
+            	PushFollow(FOLLOW_identifier_in_alias1549);
             	i = identifier();
             	state.followingStackPointer--;
 
@@ -4098,9 +4186,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 284:2: -> ^( ALIAS[$i.start] )
+            	// 289:2: -> ^( ALIAS[$i.start] )
             	{
-            	    // Hql.g:284:5: ^( ALIAS[$i.start] )
+            	    // Hql.g:289:5: ^( ALIAS[$i.start] )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ALIAS, ((i != null) ? ((IToken)i.Start) : null)), root_1);
@@ -4144,7 +4232,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "propertyFetch"
-    // Hql.g:287:1: propertyFetch : FETCH ALL PROPERTIES ;
+    // Hql.g:292:1: propertyFetch : FETCH ALL PROPERTIES ;
     public HqlParser.propertyFetch_return propertyFetch() // throws RecognitionException [1]
     {   
         HqlParser.propertyFetch_return retval = new HqlParser.propertyFetch_return();
@@ -4152,27 +4240,27 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken FETCH114 = null;
-        IToken ALL115 = null;
-        IToken PROPERTIES116 = null;
+        IToken FETCH118 = null;
+        IToken ALL119 = null;
+        IToken PROPERTIES120 = null;
 
-        IASTNode FETCH114_tree=null;
-        IASTNode ALL115_tree=null;
-        IASTNode PROPERTIES116_tree=null;
+        IASTNode FETCH118_tree=null;
+        IASTNode ALL119_tree=null;
+        IASTNode PROPERTIES120_tree=null;
 
         try 
     	{
-            // Hql.g:288:2: ( FETCH ALL PROPERTIES )
-            // Hql.g:288:4: FETCH ALL PROPERTIES
+            // Hql.g:293:2: ( FETCH ALL PROPERTIES )
+            // Hql.g:293:4: FETCH ALL PROPERTIES
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	FETCH114=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_propertyFetch1532); 
-            		FETCH114_tree = (IASTNode)adaptor.Create(FETCH114);
-            		adaptor.AddChild(root_0, FETCH114_tree);
+            	FETCH118=(IToken)Match(input,FETCH,FOLLOW_FETCH_in_propertyFetch1568); 
+            		FETCH118_tree = (IASTNode)adaptor.Create(FETCH118);
+            		adaptor.AddChild(root_0, FETCH118_tree);
 
-            	ALL115=(IToken)Match(input,ALL,FOLLOW_ALL_in_propertyFetch1534); 
-            	PROPERTIES116=(IToken)Match(input,PROPERTIES,FOLLOW_PROPERTIES_in_propertyFetch1537); 
+            	ALL119=(IToken)Match(input,ALL,FOLLOW_ALL_in_propertyFetch1570); 
+            	PROPERTIES120=(IToken)Match(input,PROPERTIES,FOLLOW_PROPERTIES_in_propertyFetch1573); 
 
             }
 
@@ -4207,7 +4295,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "groupByClause"
-    // Hql.g:291:1: groupByClause : GROUP 'by' expression ( COMMA expression )* ( havingClause )? ;
+    // Hql.g:296:1: groupByClause : GROUP 'by' expression ( COMMA expression )* ;
     public HqlParser.groupByClause_return groupByClause() // throws RecognitionException [1]
     {   
         HqlParser.groupByClause_return retval = new HqlParser.groupByClause_return();
@@ -4215,95 +4303,69 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken GROUP117 = null;
-        IToken string_literal118 = null;
-        IToken COMMA120 = null;
-        HqlParser.expression_return expression119 = default(HqlParser.expression_return);
+        IToken GROUP121 = null;
+        IToken string_literal122 = null;
+        IToken COMMA124 = null;
+        HqlParser.expression_return expression123 = default(HqlParser.expression_return);
 
-        HqlParser.expression_return expression121 = default(HqlParser.expression_return);
-
-        HqlParser.havingClause_return havingClause122 = default(HqlParser.havingClause_return);
+        HqlParser.expression_return expression125 = default(HqlParser.expression_return);
 
 
-        IASTNode GROUP117_tree=null;
-        IASTNode string_literal118_tree=null;
-        IASTNode COMMA120_tree=null;
+        IASTNode GROUP121_tree=null;
+        IASTNode string_literal122_tree=null;
+        IASTNode COMMA124_tree=null;
 
         try 
     	{
-            // Hql.g:292:2: ( GROUP 'by' expression ( COMMA expression )* ( havingClause )? )
-            // Hql.g:292:4: GROUP 'by' expression ( COMMA expression )* ( havingClause )?
+            // Hql.g:297:2: ( GROUP 'by' expression ( COMMA expression )* )
+            // Hql.g:297:4: GROUP 'by' expression ( COMMA expression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	GROUP117=(IToken)Match(input,GROUP,FOLLOW_GROUP_in_groupByClause1549); 
-            		GROUP117_tree = (IASTNode)adaptor.Create(GROUP117);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(GROUP117_tree, root_0);
+            	GROUP121=(IToken)Match(input,GROUP,FOLLOW_GROUP_in_groupByClause1585); 
+            		GROUP121_tree = (IASTNode)adaptor.Create(GROUP121);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(GROUP121_tree, root_0);
 
-            	string_literal118=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_groupByClause1555); 
-            	PushFollow(FOLLOW_expression_in_groupByClause1558);
-            	expression119 = expression();
+            	string_literal122=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_groupByClause1591); 
+            	PushFollow(FOLLOW_expression_in_groupByClause1594);
+            	expression123 = expression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, expression119.Tree);
-            	// Hql.g:293:20: ( COMMA expression )*
+            	adaptor.AddChild(root_0, expression123.Tree);
+            	// Hql.g:298:20: ( COMMA expression )*
             	do 
             	{
-            	    int alt36 = 2;
-            	    int LA36_0 = input.LA(1);
+            	    int alt39 = 2;
+            	    int LA39_0 = input.LA(1);
 
-            	    if ( (LA36_0 == COMMA) )
+            	    if ( (LA39_0 == COMMA) )
             	    {
-            	        alt36 = 1;
+            	        alt39 = 1;
             	    }
 
 
-            	    switch (alt36) 
+            	    switch (alt39) 
             		{
             			case 1 :
-            			    // Hql.g:293:22: COMMA expression
+            			    // Hql.g:298:22: COMMA expression
             			    {
-            			    	COMMA120=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_groupByClause1562); 
-            			    	PushFollow(FOLLOW_expression_in_groupByClause1565);
-            			    	expression121 = expression();
+            			    	COMMA124=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_groupByClause1598); 
+            			    	PushFollow(FOLLOW_expression_in_groupByClause1601);
+            			    	expression125 = expression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, expression121.Tree);
+            			    	adaptor.AddChild(root_0, expression125.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop36;
+            			    goto loop39;
             	    }
             	} while (true);
 
-            	loop36:
-            		;	// Stops C# compiler whining that label 'loop36' has no statements
-
-            	// Hql.g:294:3: ( havingClause )?
-            	int alt37 = 2;
-            	int LA37_0 = input.LA(1);
-
-            	if ( (LA37_0 == HAVING) )
-            	{
-            	    alt37 = 1;
-            	}
-            	switch (alt37) 
-            	{
-            	    case 1 :
-            	        // Hql.g:294:4: havingClause
-            	        {
-            	        	PushFollow(FOLLOW_havingClause_in_groupByClause1573);
-            	        	havingClause122 = havingClause();
-            	        	state.followingStackPointer--;
-
-            	        	adaptor.AddChild(root_0, havingClause122.Tree);
-
-            	        }
-            	        break;
-
-            	}
+            	loop39:
+            		;	// Stops C# compiler whining that label 'loop39' has no statements
 
 
             }
@@ -4339,7 +4401,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "orderByClause"
-    // Hql.g:297:1: orderByClause : ORDER 'by' orderElement ( COMMA orderElement )* ;
+    // Hql.g:301:1: orderByClause : ORDER 'by' orderElement ( COMMA orderElement )* ;
     public HqlParser.orderByClause_return orderByClause() // throws RecognitionException [1]
     {   
         HqlParser.orderByClause_return retval = new HqlParser.orderByClause_return();
@@ -4347,69 +4409,69 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken ORDER123 = null;
-        IToken string_literal124 = null;
-        IToken COMMA126 = null;
-        HqlParser.orderElement_return orderElement125 = default(HqlParser.orderElement_return);
+        IToken ORDER126 = null;
+        IToken string_literal127 = null;
+        IToken COMMA129 = null;
+        HqlParser.orderElement_return orderElement128 = default(HqlParser.orderElement_return);
 
-        HqlParser.orderElement_return orderElement127 = default(HqlParser.orderElement_return);
+        HqlParser.orderElement_return orderElement130 = default(HqlParser.orderElement_return);
 
 
-        IASTNode ORDER123_tree=null;
-        IASTNode string_literal124_tree=null;
-        IASTNode COMMA126_tree=null;
+        IASTNode ORDER126_tree=null;
+        IASTNode string_literal127_tree=null;
+        IASTNode COMMA129_tree=null;
 
         try 
     	{
-            // Hql.g:298:2: ( ORDER 'by' orderElement ( COMMA orderElement )* )
-            // Hql.g:298:4: ORDER 'by' orderElement ( COMMA orderElement )*
+            // Hql.g:302:2: ( ORDER 'by' orderElement ( COMMA orderElement )* )
+            // Hql.g:302:4: ORDER 'by' orderElement ( COMMA orderElement )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	ORDER123=(IToken)Match(input,ORDER,FOLLOW_ORDER_in_orderByClause1586); 
-            		ORDER123_tree = (IASTNode)adaptor.Create(ORDER123);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(ORDER123_tree, root_0);
+            	ORDER126=(IToken)Match(input,ORDER,FOLLOW_ORDER_in_orderByClause1615); 
+            		ORDER126_tree = (IASTNode)adaptor.Create(ORDER126);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(ORDER126_tree, root_0);
 
-            	string_literal124=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_orderByClause1589); 
-            	PushFollow(FOLLOW_orderElement_in_orderByClause1592);
-            	orderElement125 = orderElement();
+            	string_literal127=(IToken)Match(input,LITERAL_by,FOLLOW_LITERAL_by_in_orderByClause1618); 
+            	PushFollow(FOLLOW_orderElement_in_orderByClause1621);
+            	orderElement128 = orderElement();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, orderElement125.Tree);
-            	// Hql.g:298:30: ( COMMA orderElement )*
+            	adaptor.AddChild(root_0, orderElement128.Tree);
+            	// Hql.g:302:30: ( COMMA orderElement )*
             	do 
             	{
-            	    int alt38 = 2;
-            	    int LA38_0 = input.LA(1);
+            	    int alt40 = 2;
+            	    int LA40_0 = input.LA(1);
 
-            	    if ( (LA38_0 == COMMA) )
+            	    if ( (LA40_0 == COMMA) )
             	    {
-            	        alt38 = 1;
+            	        alt40 = 1;
             	    }
 
 
-            	    switch (alt38) 
+            	    switch (alt40) 
             		{
             			case 1 :
-            			    // Hql.g:298:32: COMMA orderElement
+            			    // Hql.g:302:32: COMMA orderElement
             			    {
-            			    	COMMA126=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_orderByClause1596); 
-            			    	PushFollow(FOLLOW_orderElement_in_orderByClause1599);
-            			    	orderElement127 = orderElement();
+            			    	COMMA129=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_orderByClause1625); 
+            			    	PushFollow(FOLLOW_orderElement_in_orderByClause1628);
+            			    	orderElement130 = orderElement();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, orderElement127.Tree);
+            			    	adaptor.AddChild(root_0, orderElement130.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop38;
+            			    goto loop40;
             	    }
             	} while (true);
 
-            	loop38:
-            		;	// Stops C# compiler whining that label 'loop38' has no statements
+            	loop40:
+            		;	// Stops C# compiler whining that label 'loop40' has no statements
 
 
             }
@@ -4434,6 +4496,132 @@ public partial class HqlParser : Parser
     }
     // $ANTLR end "orderByClause"
 
+    public class skipClause_return : ParserRuleReturnScope
+    {
+        private IASTNode tree;
+        override public object Tree
+        {
+        	get { return tree; }
+        	set { tree = (IASTNode) value; }
+        }
+    };
+
+    // $ANTLR start "skipClause"
+    // Hql.g:305:1: skipClause : SKIP NUM_INT ;
+    public HqlParser.skipClause_return skipClause() // throws RecognitionException [1]
+    {   
+        HqlParser.skipClause_return retval = new HqlParser.skipClause_return();
+        retval.Start = input.LT(1);
+
+        IASTNode root_0 = null;
+
+        IToken SKIP131 = null;
+        IToken NUM_INT132 = null;
+
+        IASTNode SKIP131_tree=null;
+        IASTNode NUM_INT132_tree=null;
+
+        try 
+    	{
+            // Hql.g:306:2: ( SKIP NUM_INT )
+            // Hql.g:306:4: SKIP NUM_INT
+            {
+            	root_0 = (IASTNode)adaptor.GetNilNode();
+
+            	SKIP131=(IToken)Match(input,SKIP,FOLLOW_SKIP_in_skipClause1642); 
+            		SKIP131_tree = (IASTNode)adaptor.Create(SKIP131);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(SKIP131_tree, root_0);
+
+            	NUM_INT132=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_skipClause1645); 
+            		NUM_INT132_tree = (IASTNode)adaptor.Create(NUM_INT132);
+            		adaptor.AddChild(root_0, NUM_INT132_tree);
+
+
+            }
+
+            retval.Stop = input.LT(-1);
+
+            	retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+            	adaptor.SetTokenBoundaries(retval.Tree, (IToken) retval.Start, (IToken) retval.Stop);
+        }
+        catch (RecognitionException re) 
+    	{
+            ReportError(re);
+            Recover(input,re);
+    	// Conversion of the second argument necessary, but harmless
+    	retval.Tree = (IASTNode)adaptor.ErrorNode(input, (IToken) retval.Start, input.LT(-1), re);
+
+        }
+        finally 
+    	{
+        }
+        return retval;
+    }
+    // $ANTLR end "skipClause"
+
+    public class takeClause_return : ParserRuleReturnScope
+    {
+        private IASTNode tree;
+        override public object Tree
+        {
+        	get { return tree; }
+        	set { tree = (IASTNode) value; }
+        }
+    };
+
+    // $ANTLR start "takeClause"
+    // Hql.g:309:1: takeClause : TAKE NUM_INT ;
+    public HqlParser.takeClause_return takeClause() // throws RecognitionException [1]
+    {   
+        HqlParser.takeClause_return retval = new HqlParser.takeClause_return();
+        retval.Start = input.LT(1);
+
+        IASTNode root_0 = null;
+
+        IToken TAKE133 = null;
+        IToken NUM_INT134 = null;
+
+        IASTNode TAKE133_tree=null;
+        IASTNode NUM_INT134_tree=null;
+
+        try 
+    	{
+            // Hql.g:310:2: ( TAKE NUM_INT )
+            // Hql.g:310:4: TAKE NUM_INT
+            {
+            	root_0 = (IASTNode)adaptor.GetNilNode();
+
+            	TAKE133=(IToken)Match(input,TAKE,FOLLOW_TAKE_in_takeClause1656); 
+            		TAKE133_tree = (IASTNode)adaptor.Create(TAKE133);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(TAKE133_tree, root_0);
+
+            	NUM_INT134=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_takeClause1659); 
+            		NUM_INT134_tree = (IASTNode)adaptor.Create(NUM_INT134);
+            		adaptor.AddChild(root_0, NUM_INT134_tree);
+
+
+            }
+
+            retval.Stop = input.LT(-1);
+
+            	retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+            	adaptor.SetTokenBoundaries(retval.Tree, (IToken) retval.Start, (IToken) retval.Stop);
+        }
+        catch (RecognitionException re) 
+    	{
+            ReportError(re);
+            Recover(input,re);
+    	// Conversion of the second argument necessary, but harmless
+    	retval.Tree = (IASTNode)adaptor.ErrorNode(input, (IToken) retval.Start, input.LT(-1), re);
+
+        }
+        finally 
+    	{
+        }
+        return retval;
+    }
+    // $ANTLR end "takeClause"
+
     public class orderElement_return : ParserRuleReturnScope
     {
         private IASTNode tree;
@@ -4445,7 +4633,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "orderElement"
-    // Hql.g:301:1: orderElement : expression ( ascendingOrDescending )? ;
+    // Hql.g:313:1: orderElement : expression ( ascendingOrDescending )? ;
     public HqlParser.orderElement_return orderElement() // throws RecognitionException [1]
     {   
         HqlParser.orderElement_return retval = new HqlParser.orderElement_return();
@@ -4453,42 +4641,42 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.expression_return expression128 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression135 = default(HqlParser.expression_return);
 
-        HqlParser.ascendingOrDescending_return ascendingOrDescending129 = default(HqlParser.ascendingOrDescending_return);
+        HqlParser.ascendingOrDescending_return ascendingOrDescending136 = default(HqlParser.ascendingOrDescending_return);
 
 
 
         try 
     	{
-            // Hql.g:302:2: ( expression ( ascendingOrDescending )? )
-            // Hql.g:302:4: expression ( ascendingOrDescending )?
+            // Hql.g:314:2: ( expression ( ascendingOrDescending )? )
+            // Hql.g:314:4: expression ( ascendingOrDescending )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_orderElement1613);
-            	expression128 = expression();
+            	PushFollow(FOLLOW_expression_in_orderElement1670);
+            	expression135 = expression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, expression128.Tree);
-            	// Hql.g:302:15: ( ascendingOrDescending )?
-            	int alt39 = 2;
-            	int LA39_0 = input.LA(1);
+            	adaptor.AddChild(root_0, expression135.Tree);
+            	// Hql.g:314:15: ( ascendingOrDescending )?
+            	int alt41 = 2;
+            	int LA41_0 = input.LA(1);
 
-            	if ( (LA39_0 == ASCENDING || LA39_0 == DESCENDING || (LA39_0 >= 131 && LA39_0 <= 132)) )
+            	if ( (LA41_0 == ASCENDING || LA41_0 == DESCENDING || (LA41_0 >= 133 && LA41_0 <= 134)) )
             	{
-            	    alt39 = 1;
+            	    alt41 = 1;
             	}
-            	switch (alt39) 
+            	switch (alt41) 
             	{
             	    case 1 :
-            	        // Hql.g:302:17: ascendingOrDescending
+            	        // Hql.g:314:17: ascendingOrDescending
             	        {
-            	        	PushFollow(FOLLOW_ascendingOrDescending_in_orderElement1617);
-            	        	ascendingOrDescending129 = ascendingOrDescending();
+            	        	PushFollow(FOLLOW_ascendingOrDescending_in_orderElement1674);
+            	        	ascendingOrDescending136 = ascendingOrDescending();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, ascendingOrDescending129.Tree);
+            	        	adaptor.AddChild(root_0, ascendingOrDescending136.Tree);
 
             	        }
             	        break;
@@ -4529,7 +4717,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "ascendingOrDescending"
-    // Hql.g:305:1: ascendingOrDescending : ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
+    // Hql.g:317:1: ascendingOrDescending : ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
     public HqlParser.ascendingOrDescending_return ascendingOrDescending() // throws RecognitionException [1]
     {   
         HqlParser.ascendingOrDescending_return retval = new HqlParser.ascendingOrDescending_return();
@@ -4542,72 +4730,72 @@ public partial class HqlParser : Parser
 
         IASTNode a_tree=null;
         IASTNode d_tree=null;
-        RewriteRuleTokenStream stream_132 = new RewriteRuleTokenStream(adaptor,"token 132");
+        RewriteRuleTokenStream stream_134 = new RewriteRuleTokenStream(adaptor,"token 134");
+        RewriteRuleTokenStream stream_133 = new RewriteRuleTokenStream(adaptor,"token 133");
         RewriteRuleTokenStream stream_DESCENDING = new RewriteRuleTokenStream(adaptor,"token DESCENDING");
         RewriteRuleTokenStream stream_ASCENDING = new RewriteRuleTokenStream(adaptor,"token ASCENDING");
-        RewriteRuleTokenStream stream_131 = new RewriteRuleTokenStream(adaptor,"token 131");
 
         try 
     	{
-            // Hql.g:306:2: ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
-            int alt42 = 2;
-            int LA42_0 = input.LA(1);
+            // Hql.g:318:2: ( (a= 'asc' | a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' | d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
+            int alt44 = 2;
+            int LA44_0 = input.LA(1);
 
-            if ( (LA42_0 == ASCENDING || LA42_0 == 131) )
+            if ( (LA44_0 == ASCENDING || LA44_0 == 133) )
             {
-                alt42 = 1;
+                alt44 = 1;
             }
-            else if ( (LA42_0 == DESCENDING || LA42_0 == 132) )
+            else if ( (LA44_0 == DESCENDING || LA44_0 == 134) )
             {
-                alt42 = 2;
+                alt44 = 2;
             }
             else 
             {
-                NoViableAltException nvae_d42s0 =
-                    new NoViableAltException("", 42, 0, input);
+                NoViableAltException nvae_d44s0 =
+                    new NoViableAltException("", 44, 0, input);
 
-                throw nvae_d42s0;
+                throw nvae_d44s0;
             }
-            switch (alt42) 
+            switch (alt44) 
             {
                 case 1 :
-                    // Hql.g:306:4: (a= 'asc' | a= 'ascending' )
+                    // Hql.g:318:4: (a= 'asc' | a= 'ascending' )
                     {
-                    	// Hql.g:306:4: (a= 'asc' | a= 'ascending' )
-                    	int alt40 = 2;
-                    	int LA40_0 = input.LA(1);
+                    	// Hql.g:318:4: (a= 'asc' | a= 'ascending' )
+                    	int alt42 = 2;
+                    	int LA42_0 = input.LA(1);
 
-                    	if ( (LA40_0 == ASCENDING) )
+                    	if ( (LA42_0 == ASCENDING) )
                     	{
-                    	    alt40 = 1;
+                    	    alt42 = 1;
                     	}
-                    	else if ( (LA40_0 == 131) )
+                    	else if ( (LA42_0 == 133) )
                     	{
-                    	    alt40 = 2;
+                    	    alt42 = 2;
                     	}
                     	else 
                     	{
-                    	    NoViableAltException nvae_d40s0 =
-                    	        new NoViableAltException("", 40, 0, input);
+                    	    NoViableAltException nvae_d42s0 =
+                    	        new NoViableAltException("", 42, 0, input);
 
-                    	    throw nvae_d40s0;
+                    	    throw nvae_d42s0;
                     	}
-                    	switch (alt40) 
+                    	switch (alt42) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:306:6: a= 'asc'
+                    	        // Hql.g:318:6: a= 'asc'
                     	        {
-                    	        	a=(IToken)Match(input,ASCENDING,FOLLOW_ASCENDING_in_ascendingOrDescending1635);  
+                    	        	a=(IToken)Match(input,ASCENDING,FOLLOW_ASCENDING_in_ascendingOrDescending1692);  
                     	        	stream_ASCENDING.Add(a);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:306:16: a= 'ascending'
+                    	        // Hql.g:318:16: a= 'ascending'
                     	        {
-                    	        	a=(IToken)Match(input,131,FOLLOW_131_in_ascendingOrDescending1641);  
-                    	        	stream_131.Add(a);
+                    	        	a=(IToken)Match(input,133,FOLLOW_133_in_ascendingOrDescending1698);  
+                    	        	stream_133.Add(a);
 
 
                     	        }
@@ -4628,9 +4816,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 307:3: -> ^( ASCENDING[$a.Text] )
+                    	// 319:3: -> ^( ASCENDING[$a.Text] )
                     	{
-                    	    // Hql.g:307:6: ^( ASCENDING[$a.Text] )
+                    	    // Hql.g:319:6: ^( ASCENDING[$a.Text] )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ASCENDING, a.Text), root_1);
@@ -4644,43 +4832,43 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:308:4: (d= 'desc' | d= 'descending' )
+                    // Hql.g:320:4: (d= 'desc' | d= 'descending' )
                     {
-                    	// Hql.g:308:4: (d= 'desc' | d= 'descending' )
-                    	int alt41 = 2;
-                    	int LA41_0 = input.LA(1);
+                    	// Hql.g:320:4: (d= 'desc' | d= 'descending' )
+                    	int alt43 = 2;
+                    	int LA43_0 = input.LA(1);
 
-                    	if ( (LA41_0 == DESCENDING) )
+                    	if ( (LA43_0 == DESCENDING) )
                     	{
-                    	    alt41 = 1;
+                    	    alt43 = 1;
                     	}
-                    	else if ( (LA41_0 == 132) )
+                    	else if ( (LA43_0 == 134) )
                     	{
-                    	    alt41 = 2;
+                    	    alt43 = 2;
                     	}
                     	else 
                     	{
-                    	    NoViableAltException nvae_d41s0 =
-                    	        new NoViableAltException("", 41, 0, input);
+                    	    NoViableAltException nvae_d43s0 =
+                    	        new NoViableAltException("", 43, 0, input);
 
-                    	    throw nvae_d41s0;
+                    	    throw nvae_d43s0;
                     	}
-                    	switch (alt41) 
+                    	switch (alt43) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:308:6: d= 'desc'
+                    	        // Hql.g:320:6: d= 'desc'
                     	        {
-                    	        	d=(IToken)Match(input,DESCENDING,FOLLOW_DESCENDING_in_ascendingOrDescending1661);  
+                    	        	d=(IToken)Match(input,DESCENDING,FOLLOW_DESCENDING_in_ascendingOrDescending1718);  
                     	        	stream_DESCENDING.Add(d);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:308:17: d= 'descending'
+                    	        // Hql.g:320:17: d= 'descending'
                     	        {
-                    	        	d=(IToken)Match(input,132,FOLLOW_132_in_ascendingOrDescending1667);  
-                    	        	stream_132.Add(d);
+                    	        	d=(IToken)Match(input,134,FOLLOW_134_in_ascendingOrDescending1724);  
+                    	        	stream_134.Add(d);
 
 
                     	        }
@@ -4701,9 +4889,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 309:3: -> ^( DESCENDING[$d.Text] )
+                    	// 321:3: -> ^( DESCENDING[$d.Text] )
                     	{
-                    	    // Hql.g:309:6: ^( DESCENDING[$d.Text] )
+                    	    // Hql.g:321:6: ^( DESCENDING[$d.Text] )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(DESCENDING, d.Text), root_1);
@@ -4749,7 +4937,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "havingClause"
-    // Hql.g:312:1: havingClause : HAVING logicalExpression ;
+    // Hql.g:324:1: havingClause : HAVING logicalExpression ;
     public HqlParser.havingClause_return havingClause() // throws RecognitionException [1]
     {   
         HqlParser.havingClause_return retval = new HqlParser.havingClause_return();
@@ -4757,28 +4945,28 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken HAVING130 = null;
-        HqlParser.logicalExpression_return logicalExpression131 = default(HqlParser.logicalExpression_return);
+        IToken HAVING137 = null;
+        HqlParser.logicalExpression_return logicalExpression138 = default(HqlParser.logicalExpression_return);
 
 
-        IASTNode HAVING130_tree=null;
+        IASTNode HAVING137_tree=null;
 
         try 
     	{
-            // Hql.g:313:2: ( HAVING logicalExpression )
-            // Hql.g:313:4: HAVING logicalExpression
+            // Hql.g:325:2: ( HAVING logicalExpression )
+            // Hql.g:325:4: HAVING logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	HAVING130=(IToken)Match(input,HAVING,FOLLOW_HAVING_in_havingClause1688); 
-            		HAVING130_tree = (IASTNode)adaptor.Create(HAVING130);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(HAVING130_tree, root_0);
+            	HAVING137=(IToken)Match(input,HAVING,FOLLOW_HAVING_in_havingClause1745); 
+            		HAVING137_tree = (IASTNode)adaptor.Create(HAVING137);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(HAVING137_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_havingClause1691);
-            	logicalExpression131 = logicalExpression();
+            	PushFollow(FOLLOW_logicalExpression_in_havingClause1748);
+            	logicalExpression138 = logicalExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, logicalExpression131.Tree);
+            	adaptor.AddChild(root_0, logicalExpression138.Tree);
 
             }
 
@@ -4813,7 +5001,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "whereClause"
-    // Hql.g:316:1: whereClause : WHERE logicalExpression ;
+    // Hql.g:328:1: whereClause : WHERE logicalExpression ;
     public HqlParser.whereClause_return whereClause() // throws RecognitionException [1]
     {   
         HqlParser.whereClause_return retval = new HqlParser.whereClause_return();
@@ -4821,28 +5009,28 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken WHERE132 = null;
-        HqlParser.logicalExpression_return logicalExpression133 = default(HqlParser.logicalExpression_return);
+        IToken WHERE139 = null;
+        HqlParser.logicalExpression_return logicalExpression140 = default(HqlParser.logicalExpression_return);
 
 
-        IASTNode WHERE132_tree=null;
+        IASTNode WHERE139_tree=null;
 
         try 
     	{
-            // Hql.g:317:2: ( WHERE logicalExpression )
-            // Hql.g:317:4: WHERE logicalExpression
+            // Hql.g:329:2: ( WHERE logicalExpression )
+            // Hql.g:329:4: WHERE logicalExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	WHERE132=(IToken)Match(input,WHERE,FOLLOW_WHERE_in_whereClause1702); 
-            		WHERE132_tree = (IASTNode)adaptor.Create(WHERE132);
-            		root_0 = (IASTNode)adaptor.BecomeRoot(WHERE132_tree, root_0);
+            	WHERE139=(IToken)Match(input,WHERE,FOLLOW_WHERE_in_whereClause1759); 
+            		WHERE139_tree = (IASTNode)adaptor.Create(WHERE139);
+            		root_0 = (IASTNode)adaptor.BecomeRoot(WHERE139_tree, root_0);
 
-            	PushFollow(FOLLOW_logicalExpression_in_whereClause1705);
-            	logicalExpression133 = logicalExpression();
+            	PushFollow(FOLLOW_logicalExpression_in_whereClause1762);
+            	logicalExpression140 = logicalExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, logicalExpression133.Tree);
+            	adaptor.AddChild(root_0, logicalExpression140.Tree);
 
             }
 
@@ -4877,7 +5065,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "selectedPropertiesList"
-    // Hql.g:320:1: selectedPropertiesList : aliasedExpression ( COMMA aliasedExpression )* ;
+    // Hql.g:332:1: selectedPropertiesList : aliasedExpression ( COMMA aliasedExpression )* ;
     public HqlParser.selectedPropertiesList_return selectedPropertiesList() // throws RecognitionException [1]
     {   
         HqlParser.selectedPropertiesList_return retval = new HqlParser.selectedPropertiesList_return();
@@ -4885,60 +5073,60 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken COMMA135 = null;
-        HqlParser.aliasedExpression_return aliasedExpression134 = default(HqlParser.aliasedExpression_return);
+        IToken COMMA142 = null;
+        HqlParser.aliasedExpression_return aliasedExpression141 = default(HqlParser.aliasedExpression_return);
 
-        HqlParser.aliasedExpression_return aliasedExpression136 = default(HqlParser.aliasedExpression_return);
+        HqlParser.aliasedExpression_return aliasedExpression143 = default(HqlParser.aliasedExpression_return);
 
 
-        IASTNode COMMA135_tree=null;
+        IASTNode COMMA142_tree=null;
 
         try 
     	{
-            // Hql.g:321:2: ( aliasedExpression ( COMMA aliasedExpression )* )
-            // Hql.g:321:4: aliasedExpression ( COMMA aliasedExpression )*
+            // Hql.g:333:2: ( aliasedExpression ( COMMA aliasedExpression )* )
+            // Hql.g:333:4: aliasedExpression ( COMMA aliasedExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1716);
-            	aliasedExpression134 = aliasedExpression();
+            	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1773);
+            	aliasedExpression141 = aliasedExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, aliasedExpression134.Tree);
-            	// Hql.g:321:22: ( COMMA aliasedExpression )*
+            	adaptor.AddChild(root_0, aliasedExpression141.Tree);
+            	// Hql.g:333:22: ( COMMA aliasedExpression )*
             	do 
             	{
-            	    int alt43 = 2;
-            	    int LA43_0 = input.LA(1);
+            	    int alt45 = 2;
+            	    int LA45_0 = input.LA(1);
 
-            	    if ( (LA43_0 == COMMA) )
+            	    if ( (LA45_0 == COMMA) )
             	    {
-            	        alt43 = 1;
+            	        alt45 = 1;
             	    }
 
 
-            	    switch (alt43) 
+            	    switch (alt45) 
             		{
             			case 1 :
-            			    // Hql.g:321:24: COMMA aliasedExpression
+            			    // Hql.g:333:24: COMMA aliasedExpression
             			    {
-            			    	COMMA135=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_selectedPropertiesList1720); 
-            			    	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1723);
-            			    	aliasedExpression136 = aliasedExpression();
+            			    	COMMA142=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_selectedPropertiesList1777); 
+            			    	PushFollow(FOLLOW_aliasedExpression_in_selectedPropertiesList1780);
+            			    	aliasedExpression143 = aliasedExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, aliasedExpression136.Tree);
+            			    	adaptor.AddChild(root_0, aliasedExpression143.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop43;
+            			    goto loop45;
             	    }
             	} while (true);
 
-            	loop43:
-            		;	// Stops C# compiler whining that label 'loop43' has no statements
+            	loop45:
+            		;	// Stops C# compiler whining that label 'loop45' has no statements
 
 
             }
@@ -4974,7 +5162,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aliasedExpression"
-    // Hql.g:324:1: aliasedExpression : expression ( AS identifier )? ;
+    // Hql.g:336:1: aliasedExpression : expression ( AS identifier )? ;
     public HqlParser.aliasedExpression_return aliasedExpression() // throws RecognitionException [1]
     {   
         HqlParser.aliasedExpression_return retval = new HqlParser.aliasedExpression_return();
@@ -4982,48 +5170,48 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken AS138 = null;
-        HqlParser.expression_return expression137 = default(HqlParser.expression_return);
+        IToken AS145 = null;
+        HqlParser.expression_return expression144 = default(HqlParser.expression_return);
 
-        HqlParser.identifier_return identifier139 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier146 = default(HqlParser.identifier_return);
 
 
-        IASTNode AS138_tree=null;
+        IASTNode AS145_tree=null;
 
         try 
     	{
-            // Hql.g:325:2: ( expression ( AS identifier )? )
-            // Hql.g:325:4: expression ( AS identifier )?
+            // Hql.g:337:2: ( expression ( AS identifier )? )
+            // Hql.g:337:4: expression ( AS identifier )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_aliasedExpression1738);
-            	expression137 = expression();
+            	PushFollow(FOLLOW_expression_in_aliasedExpression1795);
+            	expression144 = expression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, expression137.Tree);
-            	// Hql.g:325:15: ( AS identifier )?
-            	int alt44 = 2;
-            	int LA44_0 = input.LA(1);
+            	adaptor.AddChild(root_0, expression144.Tree);
+            	// Hql.g:337:15: ( AS identifier )?
+            	int alt46 = 2;
+            	int LA46_0 = input.LA(1);
 
-            	if ( (LA44_0 == AS) )
+            	if ( (LA46_0 == AS) )
             	{
-            	    alt44 = 1;
+            	    alt46 = 1;
             	}
-            	switch (alt44) 
+            	switch (alt46) 
             	{
             	    case 1 :
-            	        // Hql.g:325:17: AS identifier
+            	        // Hql.g:337:17: AS identifier
             	        {
-            	        	AS138=(IToken)Match(input,AS,FOLLOW_AS_in_aliasedExpression1742); 
-            	        		AS138_tree = (IASTNode)adaptor.Create(AS138);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(AS138_tree, root_0);
+            	        	AS145=(IToken)Match(input,AS,FOLLOW_AS_in_aliasedExpression1799); 
+            	        		AS145_tree = (IASTNode)adaptor.Create(AS145);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(AS145_tree, root_0);
 
-            	        	PushFollow(FOLLOW_identifier_in_aliasedExpression1745);
-            	        	identifier139 = identifier();
+            	        	PushFollow(FOLLOW_identifier_in_aliasedExpression1802);
+            	        	identifier146 = identifier();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, identifier139.Tree);
+            	        	adaptor.AddChild(root_0, identifier146.Tree);
 
             	        }
             	        break;
@@ -5064,7 +5252,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalExpression"
-    // Hql.g:353:1: logicalExpression : expression ;
+    // Hql.g:365:1: logicalExpression : expression ;
     public HqlParser.logicalExpression_return logicalExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalExpression_return retval = new HqlParser.logicalExpression_return();
@@ -5072,22 +5260,22 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.expression_return expression140 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression147 = default(HqlParser.expression_return);
 
 
 
         try 
     	{
-            // Hql.g:354:2: ( expression )
-            // Hql.g:354:4: expression
+            // Hql.g:366:2: ( expression )
+            // Hql.g:366:4: expression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_expression_in_logicalExpression1784);
-            	expression140 = expression();
+            	PushFollow(FOLLOW_expression_in_logicalExpression1841);
+            	expression147 = expression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, expression140.Tree);
+            	adaptor.AddChild(root_0, expression147.Tree);
 
             }
 
@@ -5122,7 +5310,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "expression"
-    // Hql.g:358:1: expression : logicalOrExpression ;
+    // Hql.g:370:1: expression : logicalOrExpression ;
     public HqlParser.expression_return expression() // throws RecognitionException [1]
     {   
         HqlParser.expression_return retval = new HqlParser.expression_return();
@@ -5130,22 +5318,22 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.logicalOrExpression_return logicalOrExpression141 = default(HqlParser.logicalOrExpression_return);
+        HqlParser.logicalOrExpression_return logicalOrExpression148 = default(HqlParser.logicalOrExpression_return);
 
 
 
         try 
     	{
-            // Hql.g:359:2: ( logicalOrExpression )
-            // Hql.g:359:4: logicalOrExpression
+            // Hql.g:371:2: ( logicalOrExpression )
+            // Hql.g:371:4: logicalOrExpression
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_logicalOrExpression_in_expression1796);
-            	logicalOrExpression141 = logicalOrExpression();
+            	PushFollow(FOLLOW_logicalOrExpression_in_expression1853);
+            	logicalOrExpression148 = logicalOrExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, logicalOrExpression141.Tree);
+            	adaptor.AddChild(root_0, logicalOrExpression148.Tree);
 
             }
 
@@ -5180,7 +5368,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalOrExpression"
-    // Hql.g:363:1: logicalOrExpression : logicalAndExpression ( OR logicalAndExpression )* ;
+    // Hql.g:375:1: logicalOrExpression : logicalAndExpression ( OR logicalAndExpression )* ;
     public HqlParser.logicalOrExpression_return logicalOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalOrExpression_return retval = new HqlParser.logicalOrExpression_return();
@@ -5188,63 +5376,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken OR143 = null;
-        HqlParser.logicalAndExpression_return logicalAndExpression142 = default(HqlParser.logicalAndExpression_return);
+        IToken OR150 = null;
+        HqlParser.logicalAndExpression_return logicalAndExpression149 = default(HqlParser.logicalAndExpression_return);
 
-        HqlParser.logicalAndExpression_return logicalAndExpression144 = default(HqlParser.logicalAndExpression_return);
+        HqlParser.logicalAndExpression_return logicalAndExpression151 = default(HqlParser.logicalAndExpression_return);
 
 
-        IASTNode OR143_tree=null;
+        IASTNode OR150_tree=null;
 
         try 
     	{
-            // Hql.g:364:2: ( logicalAndExpression ( OR logicalAndExpression )* )
-            // Hql.g:364:4: logicalAndExpression ( OR logicalAndExpression )*
+            // Hql.g:376:2: ( logicalAndExpression ( OR logicalAndExpression )* )
+            // Hql.g:376:4: logicalAndExpression ( OR logicalAndExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1808);
-            	logicalAndExpression142 = logicalAndExpression();
+            	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1865);
+            	logicalAndExpression149 = logicalAndExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, logicalAndExpression142.Tree);
-            	// Hql.g:364:25: ( OR logicalAndExpression )*
+            	adaptor.AddChild(root_0, logicalAndExpression149.Tree);
+            	// Hql.g:376:25: ( OR logicalAndExpression )*
             	do 
             	{
-            	    int alt45 = 2;
-            	    int LA45_0 = input.LA(1);
+            	    int alt47 = 2;
+            	    int LA47_0 = input.LA(1);
 
-            	    if ( (LA45_0 == OR) )
+            	    if ( (LA47_0 == OR) )
             	    {
-            	        alt45 = 1;
+            	        alt47 = 1;
             	    }
 
 
-            	    switch (alt45) 
+            	    switch (alt47) 
             		{
             			case 1 :
-            			    // Hql.g:364:27: OR logicalAndExpression
+            			    // Hql.g:376:27: OR logicalAndExpression
             			    {
-            			    	OR143=(IToken)Match(input,OR,FOLLOW_OR_in_logicalOrExpression1812); 
-            			    		OR143_tree = (IASTNode)adaptor.Create(OR143);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(OR143_tree, root_0);
+            			    	OR150=(IToken)Match(input,OR,FOLLOW_OR_in_logicalOrExpression1869); 
+            			    		OR150_tree = (IASTNode)adaptor.Create(OR150);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(OR150_tree, root_0);
 
-            			    	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1815);
-            			    	logicalAndExpression144 = logicalAndExpression();
+            			    	PushFollow(FOLLOW_logicalAndExpression_in_logicalOrExpression1872);
+            			    	logicalAndExpression151 = logicalAndExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, logicalAndExpression144.Tree);
+            			    	adaptor.AddChild(root_0, logicalAndExpression151.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop45;
+            			    goto loop47;
             	    }
             	} while (true);
 
-            	loop45:
-            		;	// Stops C# compiler whining that label 'loop45' has no statements
+            	loop47:
+            		;	// Stops C# compiler whining that label 'loop47' has no statements
 
 
             }
@@ -5280,7 +5468,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "logicalAndExpression"
-    // Hql.g:368:1: logicalAndExpression : negatedExpression ( AND negatedExpression )* ;
+    // Hql.g:380:1: logicalAndExpression : negatedExpression ( AND negatedExpression )* ;
     public HqlParser.logicalAndExpression_return logicalAndExpression() // throws RecognitionException [1]
     {   
         HqlParser.logicalAndExpression_return retval = new HqlParser.logicalAndExpression_return();
@@ -5288,63 +5476,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken AND146 = null;
-        HqlParser.negatedExpression_return negatedExpression145 = default(HqlParser.negatedExpression_return);
+        IToken AND153 = null;
+        HqlParser.negatedExpression_return negatedExpression152 = default(HqlParser.negatedExpression_return);
 
-        HqlParser.negatedExpression_return negatedExpression147 = default(HqlParser.negatedExpression_return);
+        HqlParser.negatedExpression_return negatedExpression154 = default(HqlParser.negatedExpression_return);
 
 
-        IASTNode AND146_tree=null;
+        IASTNode AND153_tree=null;
 
         try 
     	{
-            // Hql.g:369:2: ( negatedExpression ( AND negatedExpression )* )
-            // Hql.g:369:4: negatedExpression ( AND negatedExpression )*
+            // Hql.g:381:2: ( negatedExpression ( AND negatedExpression )* )
+            // Hql.g:381:4: negatedExpression ( AND negatedExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1830);
-            	negatedExpression145 = negatedExpression();
+            	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1887);
+            	negatedExpression152 = negatedExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, negatedExpression145.Tree);
-            	// Hql.g:369:22: ( AND negatedExpression )*
+            	adaptor.AddChild(root_0, negatedExpression152.Tree);
+            	// Hql.g:381:22: ( AND negatedExpression )*
             	do 
             	{
-            	    int alt46 = 2;
-            	    int LA46_0 = input.LA(1);
+            	    int alt48 = 2;
+            	    int LA48_0 = input.LA(1);
 
-            	    if ( (LA46_0 == AND) )
+            	    if ( (LA48_0 == AND) )
             	    {
-            	        alt46 = 1;
+            	        alt48 = 1;
             	    }
 
 
-            	    switch (alt46) 
+            	    switch (alt48) 
             		{
             			case 1 :
-            			    // Hql.g:369:24: AND negatedExpression
+            			    // Hql.g:381:24: AND negatedExpression
             			    {
-            			    	AND146=(IToken)Match(input,AND,FOLLOW_AND_in_logicalAndExpression1834); 
-            			    		AND146_tree = (IASTNode)adaptor.Create(AND146);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(AND146_tree, root_0);
+            			    	AND153=(IToken)Match(input,AND,FOLLOW_AND_in_logicalAndExpression1891); 
+            			    		AND153_tree = (IASTNode)adaptor.Create(AND153);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(AND153_tree, root_0);
 
-            			    	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1837);
-            			    	negatedExpression147 = negatedExpression();
+            			    	PushFollow(FOLLOW_negatedExpression_in_logicalAndExpression1894);
+            			    	negatedExpression154 = negatedExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, negatedExpression147.Tree);
+            			    	adaptor.AddChild(root_0, negatedExpression154.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop46;
+            			    goto loop48;
             	    }
             	} while (true);
 
-            	loop46:
-            		;	// Stops C# compiler whining that label 'loop46' has no statements
+            	loop48:
+            		;	// Stops C# compiler whining that label 'loop48' has no statements
 
 
             }
@@ -5380,7 +5568,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "negatedExpression"
-    // Hql.g:374:1: negatedExpression : ( NOT x= negatedExpression -> ^() | equalityExpression -> ^( equalityExpression ) );
+    // Hql.g:386:1: negatedExpression : ( NOT x= negatedExpression -> ^() | equalityExpression -> ^( equalityExpression ) );
     public HqlParser.negatedExpression_return negatedExpression() // throws RecognitionException [1]
     {   
         HqlParser.negatedExpression_return retval = new HqlParser.negatedExpression_return();
@@ -5388,47 +5576,47 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken NOT148 = null;
+        IToken NOT155 = null;
         HqlParser.negatedExpression_return x = default(HqlParser.negatedExpression_return);
 
-        HqlParser.equalityExpression_return equalityExpression149 = default(HqlParser.equalityExpression_return);
+        HqlParser.equalityExpression_return equalityExpression156 = default(HqlParser.equalityExpression_return);
 
 
-        IASTNode NOT148_tree=null;
+        IASTNode NOT155_tree=null;
         RewriteRuleTokenStream stream_NOT = new RewriteRuleTokenStream(adaptor,"token NOT");
         RewriteRuleSubtreeStream stream_equalityExpression = new RewriteRuleSubtreeStream(adaptor,"rule equalityExpression");
         RewriteRuleSubtreeStream stream_negatedExpression = new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
          WeakKeywords(); 
         try 
     	{
-            // Hql.g:376:2: ( NOT x= negatedExpression -> ^() | equalityExpression -> ^( equalityExpression ) )
-            int alt47 = 2;
-            int LA47_0 = input.LA(1);
+            // Hql.g:388:2: ( NOT x= negatedExpression -> ^() | equalityExpression -> ^( equalityExpression ) )
+            int alt49 = 2;
+            int LA49_0 = input.LA(1);
 
-            if ( (LA47_0 == NOT) )
+            if ( (LA49_0 == NOT) )
             {
-                alt47 = 1;
+                alt49 = 1;
             }
-            else if ( ((LA47_0 >= ALL && LA47_0 <= ANY) || LA47_0 == AVG || LA47_0 == COUNT || LA47_0 == ELEMENTS || (LA47_0 >= EXISTS && LA47_0 <= FALSE) || LA47_0 == INDICES || (LA47_0 >= MAX && LA47_0 <= MIN) || LA47_0 == NULL || (LA47_0 >= SOME && LA47_0 <= TRUE) || LA47_0 == CASE || LA47_0 == EMPTY || (LA47_0 >= NUM_INT && LA47_0 <= NUM_LONG) || LA47_0 == OPEN || LA47_0 == BNOT || (LA47_0 >= PLUS && LA47_0 <= MINUS) || (LA47_0 >= COLON && LA47_0 <= IDENT)) )
+            else if ( ((LA49_0 >= ALL && LA49_0 <= ANY) || LA49_0 == AVG || LA49_0 == COUNT || LA49_0 == ELEMENTS || (LA49_0 >= EXISTS && LA49_0 <= FALSE) || LA49_0 == INDICES || (LA49_0 >= MAX && LA49_0 <= MIN) || LA49_0 == NULL || (LA49_0 >= SOME && LA49_0 <= SUM) || LA49_0 == TRUE || LA49_0 == CASE || LA49_0 == EMPTY || (LA49_0 >= NUM_INT && LA49_0 <= NUM_LONG) || LA49_0 == OPEN || LA49_0 == BNOT || (LA49_0 >= PLUS && LA49_0 <= MINUS) || (LA49_0 >= COLON && LA49_0 <= IDENT)) )
             {
-                alt47 = 2;
+                alt49 = 2;
             }
             else 
             {
-                NoViableAltException nvae_d47s0 =
-                    new NoViableAltException("", 47, 0, input);
+                NoViableAltException nvae_d49s0 =
+                    new NoViableAltException("", 49, 0, input);
 
-                throw nvae_d47s0;
+                throw nvae_d49s0;
             }
-            switch (alt47) 
+            switch (alt49) 
             {
                 case 1 :
-                    // Hql.g:376:4: NOT x= negatedExpression
+                    // Hql.g:388:4: NOT x= negatedExpression
                     {
-                    	NOT148=(IToken)Match(input,NOT,FOLLOW_NOT_in_negatedExpression1858);  
-                    	stream_NOT.Add(NOT148);
+                    	NOT155=(IToken)Match(input,NOT,FOLLOW_NOT_in_negatedExpression1915);  
+                    	stream_NOT.Add(NOT155);
 
-                    	PushFollow(FOLLOW_negatedExpression_in_negatedExpression1862);
+                    	PushFollow(FOLLOW_negatedExpression_in_negatedExpression1919);
                     	x = negatedExpression();
                     	state.followingStackPointer--;
 
@@ -5446,9 +5634,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 377:3: -> ^()
+                    	// 389:3: -> ^()
                     	{
-                    	    // Hql.g:377:6: ^()
+                    	    // Hql.g:389:6: ^()
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(NegateNode(((x != null) ? ((IASTNode)x.Tree) : null)), root_1);
@@ -5462,13 +5650,13 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:378:4: equalityExpression
+                    // Hql.g:390:4: equalityExpression
                     {
-                    	PushFollow(FOLLOW_equalityExpression_in_negatedExpression1875);
-                    	equalityExpression149 = equalityExpression();
+                    	PushFollow(FOLLOW_equalityExpression_in_negatedExpression1932);
+                    	equalityExpression156 = equalityExpression();
                     	state.followingStackPointer--;
 
-                    	stream_equalityExpression.Add(equalityExpression149.Tree);
+                    	stream_equalityExpression.Add(equalityExpression156.Tree);
 
 
                     	// AST REWRITE
@@ -5482,9 +5670,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 379:3: -> ^( equalityExpression )
+                    	// 391:3: -> ^( equalityExpression )
                     	{
-                    	    // Hql.g:379:6: ^( equalityExpression )
+                    	    // Hql.g:391:6: ^( equalityExpression )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_equalityExpression.NextNode(), root_1);
@@ -5530,7 +5718,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "equalityExpression"
-    // Hql.g:385:1: equalityExpression : x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* ;
+    // Hql.g:397:1: equalityExpression : x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* ;
     public HqlParser.equalityExpression_return equalityExpression() // throws RecognitionException [1]
     {   
         HqlParser.equalityExpression_return retval = new HqlParser.equalityExpression_return();
@@ -5540,9 +5728,9 @@ public partial class HqlParser : Parser
 
         IToken isx = null;
         IToken ne = null;
-        IToken EQ150 = null;
-        IToken NOT151 = null;
-        IToken NE152 = null;
+        IToken EQ157 = null;
+        IToken NOT158 = null;
+        IToken NE159 = null;
         HqlParser.relationalExpression_return x = default(HqlParser.relationalExpression_return);
 
         HqlParser.relationalExpression_return y = default(HqlParser.relationalExpression_return);
@@ -5550,104 +5738,104 @@ public partial class HqlParser : Parser
 
         IASTNode isx_tree=null;
         IASTNode ne_tree=null;
-        IASTNode EQ150_tree=null;
-        IASTNode NOT151_tree=null;
-        IASTNode NE152_tree=null;
+        IASTNode EQ157_tree=null;
+        IASTNode NOT158_tree=null;
+        IASTNode NE159_tree=null;
 
         try 
     	{
-            // Hql.g:390:2: (x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* )
-            // Hql.g:390:4: x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
+            // Hql.g:402:2: (x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )* )
+            // Hql.g:402:4: x= relationalExpression ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_relationalExpression_in_equalityExpression1905);
+            	PushFollow(FOLLOW_relationalExpression_in_equalityExpression1962);
             	x = relationalExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, x.Tree);
-            	// Hql.g:390:27: ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
+            	// Hql.g:402:27: ( ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression )*
             	do 
             	{
-            	    int alt50 = 2;
-            	    int LA50_0 = input.LA(1);
+            	    int alt52 = 2;
+            	    int LA52_0 = input.LA(1);
 
-            	    if ( (LA50_0 == IS || LA50_0 == EQ || (LA50_0 >= NE && LA50_0 <= SQL_NE)) )
+            	    if ( (LA52_0 == IS || LA52_0 == EQ || (LA52_0 >= NE && LA52_0 <= SQL_NE)) )
             	    {
-            	        alt50 = 1;
+            	        alt52 = 1;
             	    }
 
 
-            	    switch (alt50) 
+            	    switch (alt52) 
             		{
             			case 1 :
-            			    // Hql.g:391:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression
+            			    // Hql.g:403:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE ) y= relationalExpression
             			    {
-            			    	// Hql.g:391:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE )
-            			    	int alt49 = 4;
+            			    	// Hql.g:403:3: ( EQ | isx= IS ( NOT )? | NE | ne= SQL_NE )
+            			    	int alt51 = 4;
             			    	switch ( input.LA(1) ) 
             			    	{
             			    	case EQ:
             			    		{
-            			    	    alt49 = 1;
+            			    	    alt51 = 1;
             			    	    }
             			    	    break;
             			    	case IS:
             			    		{
-            			    	    alt49 = 2;
+            			    	    alt51 = 2;
             			    	    }
             			    	    break;
             			    	case NE:
             			    		{
-            			    	    alt49 = 3;
+            			    	    alt51 = 3;
             			    	    }
             			    	    break;
             			    	case SQL_NE:
             			    		{
-            			    	    alt49 = 4;
+            			    	    alt51 = 4;
             			    	    }
             			    	    break;
             			    		default:
-            			    		    NoViableAltException nvae_d49s0 =
-            			    		        new NoViableAltException("", 49, 0, input);
+            			    		    NoViableAltException nvae_d51s0 =
+            			    		        new NoViableAltException("", 51, 0, input);
 
-            			    		    throw nvae_d49s0;
+            			    		    throw nvae_d51s0;
             			    	}
 
-            			    	switch (alt49) 
+            			    	switch (alt51) 
             			    	{
             			    	    case 1 :
-            			    	        // Hql.g:391:5: EQ
+            			    	        // Hql.g:403:5: EQ
             			    	        {
-            			    	        	EQ150=(IToken)Match(input,EQ,FOLLOW_EQ_in_equalityExpression1913); 
-            			    	        		EQ150_tree = (IASTNode)adaptor.Create(EQ150);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(EQ150_tree, root_0);
+            			    	        	EQ157=(IToken)Match(input,EQ,FOLLOW_EQ_in_equalityExpression1970); 
+            			    	        		EQ157_tree = (IASTNode)adaptor.Create(EQ157);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(EQ157_tree, root_0);
 
 
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // Hql.g:392:5: isx= IS ( NOT )?
+            			    	        // Hql.g:404:5: isx= IS ( NOT )?
             			    	        {
-            			    	        	isx=(IToken)Match(input,IS,FOLLOW_IS_in_equalityExpression1922); 
+            			    	        	isx=(IToken)Match(input,IS,FOLLOW_IS_in_equalityExpression1979); 
             			    	        		isx_tree = (IASTNode)adaptor.Create(isx);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(isx_tree, root_0);
 
             			    	        	 isx.Type = EQ; 
-            			    	        	// Hql.g:392:33: ( NOT )?
-            			    	        	int alt48 = 2;
-            			    	        	int LA48_0 = input.LA(1);
+            			    	        	// Hql.g:404:33: ( NOT )?
+            			    	        	int alt50 = 2;
+            			    	        	int LA50_0 = input.LA(1);
 
-            			    	        	if ( (LA48_0 == NOT) )
+            			    	        	if ( (LA50_0 == NOT) )
             			    	        	{
-            			    	        	    alt48 = 1;
+            			    	        	    alt50 = 1;
             			    	        	}
-            			    	        	switch (alt48) 
+            			    	        	switch (alt50) 
             			    	        	{
             			    	        	    case 1 :
-            			    	        	        // Hql.g:392:34: NOT
+            			    	        	        // Hql.g:404:34: NOT
             			    	        	        {
-            			    	        	        	NOT151=(IToken)Match(input,NOT,FOLLOW_NOT_in_equalityExpression1928); 
+            			    	        	        	NOT158=(IToken)Match(input,NOT,FOLLOW_NOT_in_equalityExpression1985); 
             			    	        	        	 isx.Type =NE; 
 
             			    	        	        }
@@ -5659,19 +5847,19 @@ public partial class HqlParser : Parser
             			    	        }
             			    	        break;
             			    	    case 3 :
-            			    	        // Hql.g:393:5: NE
+            			    	        // Hql.g:405:5: NE
             			    	        {
-            			    	        	NE152=(IToken)Match(input,NE,FOLLOW_NE_in_equalityExpression1940); 
-            			    	        		NE152_tree = (IASTNode)adaptor.Create(NE152);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(NE152_tree, root_0);
+            			    	        	NE159=(IToken)Match(input,NE,FOLLOW_NE_in_equalityExpression1997); 
+            			    	        		NE159_tree = (IASTNode)adaptor.Create(NE159);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(NE159_tree, root_0);
 
 
             			    	        }
             			    	        break;
             			    	    case 4 :
-            			    	        // Hql.g:394:5: ne= SQL_NE
+            			    	        // Hql.g:406:5: ne= SQL_NE
             			    	        {
-            			    	        	ne=(IToken)Match(input,SQL_NE,FOLLOW_SQL_NE_in_equalityExpression1949); 
+            			    	        	ne=(IToken)Match(input,SQL_NE,FOLLOW_SQL_NE_in_equalityExpression2006); 
             			    	        		ne_tree = (IASTNode)adaptor.Create(ne);
             			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(ne_tree, root_0);
 
@@ -5682,7 +5870,7 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_relationalExpression_in_equalityExpression1960);
+            			    	PushFollow(FOLLOW_relationalExpression_in_equalityExpression2017);
             			    	y = relationalExpression();
             			    	state.followingStackPointer--;
 
@@ -5692,12 +5880,12 @@ public partial class HqlParser : Parser
             			    break;
 
             			default:
-            			    goto loop50;
+            			    goto loop52;
             	    }
             	} while (true);
 
-            	loop50:
-            		;	// Stops C# compiler whining that label 'loop50' has no statements
+            	loop52:
+            		;	// Stops C# compiler whining that label 'loop52' has no statements
 
 
             }
@@ -5737,7 +5925,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "relationalExpression"
-    // Hql.g:402:1: relationalExpression : concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) ;
+    // Hql.g:414:1: relationalExpression : concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) ;
     public HqlParser.relationalExpression_return relationalExpression() // throws RecognitionException [1]
     {   
         HqlParser.relationalExpression_return retval = new HqlParser.relationalExpression_return();
@@ -5749,163 +5937,163 @@ public partial class HqlParser : Parser
         IToken i = null;
         IToken b = null;
         IToken l = null;
-        IToken LT154 = null;
-        IToken GT155 = null;
-        IToken LE156 = null;
-        IToken GE157 = null;
-        IToken MEMBER163 = null;
-        IToken OF164 = null;
+        IToken LT161 = null;
+        IToken GT162 = null;
+        IToken LE163 = null;
+        IToken GE164 = null;
+        IToken MEMBER170 = null;
+        IToken OF171 = null;
         HqlParser.path_return p = default(HqlParser.path_return);
 
-        HqlParser.concatenation_return concatenation153 = default(HqlParser.concatenation_return);
+        HqlParser.concatenation_return concatenation160 = default(HqlParser.concatenation_return);
 
-        HqlParser.bitwiseNotExpression_return bitwiseNotExpression158 = default(HqlParser.bitwiseNotExpression_return);
+        HqlParser.bitwiseNotExpression_return bitwiseNotExpression165 = default(HqlParser.bitwiseNotExpression_return);
 
-        HqlParser.inList_return inList159 = default(HqlParser.inList_return);
+        HqlParser.inList_return inList166 = default(HqlParser.inList_return);
 
-        HqlParser.betweenList_return betweenList160 = default(HqlParser.betweenList_return);
+        HqlParser.betweenList_return betweenList167 = default(HqlParser.betweenList_return);
 
-        HqlParser.concatenation_return concatenation161 = default(HqlParser.concatenation_return);
+        HqlParser.concatenation_return concatenation168 = default(HqlParser.concatenation_return);
 
-        HqlParser.likeEscape_return likeEscape162 = default(HqlParser.likeEscape_return);
+        HqlParser.likeEscape_return likeEscape169 = default(HqlParser.likeEscape_return);
 
 
         IASTNode n_tree=null;
         IASTNode i_tree=null;
         IASTNode b_tree=null;
         IASTNode l_tree=null;
-        IASTNode LT154_tree=null;
-        IASTNode GT155_tree=null;
-        IASTNode LE156_tree=null;
-        IASTNode GE157_tree=null;
-        IASTNode MEMBER163_tree=null;
-        IASTNode OF164_tree=null;
+        IASTNode LT161_tree=null;
+        IASTNode GT162_tree=null;
+        IASTNode LE163_tree=null;
+        IASTNode GE164_tree=null;
+        IASTNode MEMBER170_tree=null;
+        IASTNode OF171_tree=null;
 
         try 
     	{
-            // Hql.g:403:2: ( concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) )
-            // Hql.g:403:4: concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
+            // Hql.g:415:2: ( concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) ) )
+            // Hql.g:415:4: concatenation ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_concatenation_in_relationalExpression1977);
-            	concatenation153 = concatenation();
+            	PushFollow(FOLLOW_concatenation_in_relationalExpression2034);
+            	concatenation160 = concatenation();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, concatenation153.Tree);
-            	// Hql.g:403:18: ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
-            	int alt56 = 2;
-            	int LA56_0 = input.LA(1);
+            	adaptor.AddChild(root_0, concatenation160.Tree);
+            	// Hql.g:415:18: ( ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* ) | (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) ) )
+            	int alt58 = 2;
+            	int LA58_0 = input.LA(1);
 
-            	if ( (LA56_0 == EOF || (LA56_0 >= AND && LA56_0 <= ASCENDING) || LA56_0 == DESCENDING || (LA56_0 >= FROM && LA56_0 <= HAVING) || LA56_0 == INNER || (LA56_0 >= IS && LA56_0 <= LEFT) || (LA56_0 >= OR && LA56_0 <= ORDER) || LA56_0 == RIGHT || LA56_0 == UNION || LA56_0 == WHERE || (LA56_0 >= END && LA56_0 <= WHEN) || (LA56_0 >= COMMA && LA56_0 <= EQ) || (LA56_0 >= CLOSE && LA56_0 <= GE) || LA56_0 == CLOSE_BRACKET || (LA56_0 >= 131 && LA56_0 <= 132)) )
+            	if ( (LA58_0 == EOF || (LA58_0 >= AND && LA58_0 <= ASCENDING) || LA58_0 == DESCENDING || (LA58_0 >= FROM && LA58_0 <= HAVING) || LA58_0 == INNER || (LA58_0 >= IS && LA58_0 <= LEFT) || (LA58_0 >= OR && LA58_0 <= ORDER) || LA58_0 == RIGHT || LA58_0 == SKIP || LA58_0 == TAKE || LA58_0 == UNION || LA58_0 == WHERE || (LA58_0 >= END && LA58_0 <= WHEN) || (LA58_0 >= COMMA && LA58_0 <= EQ) || (LA58_0 >= CLOSE && LA58_0 <= GE) || LA58_0 == CLOSE_BRACKET || (LA58_0 >= 133 && LA58_0 <= 134)) )
             	{
-            	    alt56 = 1;
+            	    alt58 = 1;
             	}
-            	else if ( (LA56_0 == BETWEEN || LA56_0 == IN || LA56_0 == LIKE || LA56_0 == NOT || LA56_0 == MEMBER) )
+            	else if ( (LA58_0 == BETWEEN || LA58_0 == IN || LA58_0 == LIKE || LA58_0 == NOT || LA58_0 == MEMBER) )
             	{
-            	    alt56 = 2;
+            	    alt58 = 2;
             	}
             	else 
             	{
-            	    NoViableAltException nvae_d56s0 =
-            	        new NoViableAltException("", 56, 0, input);
+            	    NoViableAltException nvae_d58s0 =
+            	        new NoViableAltException("", 58, 0, input);
 
-            	    throw nvae_d56s0;
+            	    throw nvae_d58s0;
             	}
-            	switch (alt56) 
+            	switch (alt58) 
             	{
             	    case 1 :
-            	        // Hql.g:404:3: ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* )
+            	        // Hql.g:416:3: ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* )
             	        {
-            	        	// Hql.g:404:3: ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* )
-            	        	// Hql.g:404:5: ( ( LT | GT | LE | GE ) bitwiseNotExpression )*
+            	        	// Hql.g:416:3: ( ( ( LT | GT | LE | GE ) bitwiseNotExpression )* )
+            	        	// Hql.g:416:5: ( ( LT | GT | LE | GE ) bitwiseNotExpression )*
             	        	{
-            	        		// Hql.g:404:5: ( ( LT | GT | LE | GE ) bitwiseNotExpression )*
+            	        		// Hql.g:416:5: ( ( LT | GT | LE | GE ) bitwiseNotExpression )*
             	        		do 
             	        		{
-            	        		    int alt52 = 2;
-            	        		    int LA52_0 = input.LA(1);
+            	        		    int alt54 = 2;
+            	        		    int LA54_0 = input.LA(1);
 
-            	        		    if ( ((LA52_0 >= LT && LA52_0 <= GE)) )
+            	        		    if ( ((LA54_0 >= LT && LA54_0 <= GE)) )
             	        		    {
-            	        		        alt52 = 1;
+            	        		        alt54 = 1;
             	        		    }
 
 
-            	        		    switch (alt52) 
+            	        		    switch (alt54) 
             	        			{
             	        				case 1 :
-            	        				    // Hql.g:404:7: ( LT | GT | LE | GE ) bitwiseNotExpression
+            	        				    // Hql.g:416:7: ( LT | GT | LE | GE ) bitwiseNotExpression
             	        				    {
-            	        				    	// Hql.g:404:7: ( LT | GT | LE | GE )
-            	        				    	int alt51 = 4;
+            	        				    	// Hql.g:416:7: ( LT | GT | LE | GE )
+            	        				    	int alt53 = 4;
             	        				    	switch ( input.LA(1) ) 
             	        				    	{
             	        				    	case LT:
             	        				    		{
-            	        				    	    alt51 = 1;
+            	        				    	    alt53 = 1;
             	        				    	    }
             	        				    	    break;
             	        				    	case GT:
             	        				    		{
-            	        				    	    alt51 = 2;
+            	        				    	    alt53 = 2;
             	        				    	    }
             	        				    	    break;
             	        				    	case LE:
             	        				    		{
-            	        				    	    alt51 = 3;
+            	        				    	    alt53 = 3;
             	        				    	    }
             	        				    	    break;
             	        				    	case GE:
             	        				    		{
-            	        				    	    alt51 = 4;
+            	        				    	    alt53 = 4;
             	        				    	    }
             	        				    	    break;
             	        				    		default:
-            	        				    		    NoViableAltException nvae_d51s0 =
-            	        				    		        new NoViableAltException("", 51, 0, input);
+            	        				    		    NoViableAltException nvae_d53s0 =
+            	        				    		        new NoViableAltException("", 53, 0, input);
 
-            	        				    		    throw nvae_d51s0;
+            	        				    		    throw nvae_d53s0;
             	        				    	}
 
-            	        				    	switch (alt51) 
+            	        				    	switch (alt53) 
             	        				    	{
             	        				    	    case 1 :
-            	        				    	        // Hql.g:404:9: LT
+            	        				    	        // Hql.g:416:9: LT
             	        				    	        {
-            	        				    	        	LT154=(IToken)Match(input,LT,FOLLOW_LT_in_relationalExpression1989); 
-            	        				    	        		LT154_tree = (IASTNode)adaptor.Create(LT154);
-            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LT154_tree, root_0);
+            	        				    	        	LT161=(IToken)Match(input,LT,FOLLOW_LT_in_relationalExpression2046); 
+            	        				    	        		LT161_tree = (IASTNode)adaptor.Create(LT161);
+            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LT161_tree, root_0);
 
 
             	        				    	        }
             	        				    	        break;
             	        				    	    case 2 :
-            	        				    	        // Hql.g:404:15: GT
+            	        				    	        // Hql.g:416:15: GT
             	        				    	        {
-            	        				    	        	GT155=(IToken)Match(input,GT,FOLLOW_GT_in_relationalExpression1994); 
-            	        				    	        		GT155_tree = (IASTNode)adaptor.Create(GT155);
-            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GT155_tree, root_0);
+            	        				    	        	GT162=(IToken)Match(input,GT,FOLLOW_GT_in_relationalExpression2051); 
+            	        				    	        		GT162_tree = (IASTNode)adaptor.Create(GT162);
+            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GT162_tree, root_0);
 
 
             	        				    	        }
             	        				    	        break;
             	        				    	    case 3 :
-            	        				    	        // Hql.g:404:21: LE
+            	        				    	        // Hql.g:416:21: LE
             	        				    	        {
-            	        				    	        	LE156=(IToken)Match(input,LE,FOLLOW_LE_in_relationalExpression1999); 
-            	        				    	        		LE156_tree = (IASTNode)adaptor.Create(LE156);
-            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LE156_tree, root_0);
+            	        				    	        	LE163=(IToken)Match(input,LE,FOLLOW_LE_in_relationalExpression2056); 
+            	        				    	        		LE163_tree = (IASTNode)adaptor.Create(LE163);
+            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(LE163_tree, root_0);
 
 
             	        				    	        }
             	        				    	        break;
             	        				    	    case 4 :
-            	        				    	        // Hql.g:404:27: GE
+            	        				    	        // Hql.g:416:27: GE
             	        				    	        {
-            	        				    	        	GE157=(IToken)Match(input,GE,FOLLOW_GE_in_relationalExpression2004); 
-            	        				    	        		GE157_tree = (IASTNode)adaptor.Create(GE157);
-            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GE157_tree, root_0);
+            	        				    	        	GE164=(IToken)Match(input,GE,FOLLOW_GE_in_relationalExpression2061); 
+            	        				    	        		GE164_tree = (IASTNode)adaptor.Create(GE164);
+            	        				    	        		root_0 = (IASTNode)adaptor.BecomeRoot(GE164_tree, root_0);
 
 
             	        				    	        }
@@ -5913,22 +6101,22 @@ public partial class HqlParser : Parser
 
             	        				    	}
 
-            	        				    	PushFollow(FOLLOW_bitwiseNotExpression_in_relationalExpression2009);
-            	        				    	bitwiseNotExpression158 = bitwiseNotExpression();
+            	        				    	PushFollow(FOLLOW_bitwiseNotExpression_in_relationalExpression2066);
+            	        				    	bitwiseNotExpression165 = bitwiseNotExpression();
             	        				    	state.followingStackPointer--;
 
-            	        				    	adaptor.AddChild(root_0, bitwiseNotExpression158.Tree);
+            	        				    	adaptor.AddChild(root_0, bitwiseNotExpression165.Tree);
 
             	        				    }
             	        				    break;
 
             	        				default:
-            	        				    goto loop52;
+            	        				    goto loop54;
             	        		    }
             	        		} while (true);
 
-            	        		loop52:
-            	        			;	// Stops C# compiler whining that label 'loop52' has no statements
+            	        		loop54:
+            	        			;	// Stops C# compiler whining that label 'loop54' has no statements
 
 
             	        	}
@@ -5937,68 +6125,68 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:406:5: (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
+            	        // Hql.g:418:5: (n= NOT )? ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
             	        {
-            	        	// Hql.g:406:5: (n= NOT )?
-            	        	int alt53 = 2;
-            	        	int LA53_0 = input.LA(1);
+            	        	// Hql.g:418:5: (n= NOT )?
+            	        	int alt55 = 2;
+            	        	int LA55_0 = input.LA(1);
 
-            	        	if ( (LA53_0 == NOT) )
+            	        	if ( (LA55_0 == NOT) )
             	        	{
-            	        	    alt53 = 1;
+            	        	    alt55 = 1;
             	        	}
-            	        	switch (alt53) 
+            	        	switch (alt55) 
             	        	{
             	        	    case 1 :
-            	        	        // Hql.g:406:6: n= NOT
+            	        	        // Hql.g:418:6: n= NOT
             	        	        {
-            	        	        	n=(IToken)Match(input,NOT,FOLLOW_NOT_in_relationalExpression2026); 
+            	        	        	n=(IToken)Match(input,NOT,FOLLOW_NOT_in_relationalExpression2083); 
 
             	        	        }
             	        	        break;
 
             	        	}
 
-            	        	// Hql.g:406:15: ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
-            	        	int alt55 = 4;
+            	        	// Hql.g:418:15: ( (i= IN inList ) | (b= BETWEEN betweenList ) | (l= LIKE concatenation likeEscape ) | ( MEMBER ( OF )? p= path ) )
+            	        	int alt57 = 4;
             	        	switch ( input.LA(1) ) 
             	        	{
             	        	case IN:
             	        		{
-            	        	    alt55 = 1;
+            	        	    alt57 = 1;
             	        	    }
             	        	    break;
             	        	case BETWEEN:
             	        		{
-            	        	    alt55 = 2;
+            	        	    alt57 = 2;
             	        	    }
             	        	    break;
             	        	case LIKE:
             	        		{
-            	        	    alt55 = 3;
+            	        	    alt57 = 3;
             	        	    }
             	        	    break;
             	        	case MEMBER:
             	        		{
-            	        	    alt55 = 4;
+            	        	    alt57 = 4;
             	        	    }
             	        	    break;
             	        		default:
-            	        		    NoViableAltException nvae_d55s0 =
-            	        		        new NoViableAltException("", 55, 0, input);
+            	        		    NoViableAltException nvae_d57s0 =
+            	        		        new NoViableAltException("", 57, 0, input);
 
-            	        		    throw nvae_d55s0;
+            	        		    throw nvae_d57s0;
             	        	}
 
-            	        	switch (alt55) 
+            	        	switch (alt57) 
             	        	{
             	        	    case 1 :
-            	        	        // Hql.g:409:4: (i= IN inList )
+            	        	        // Hql.g:421:4: (i= IN inList )
             	        	        {
-            	        	        	// Hql.g:409:4: (i= IN inList )
-            	        	        	// Hql.g:409:5: i= IN inList
+            	        	        	// Hql.g:421:4: (i= IN inList )
+            	        	        	// Hql.g:421:5: i= IN inList
             	        	        	{
-            	        	        		i=(IToken)Match(input,IN,FOLLOW_IN_in_relationalExpression2047); 
+            	        	        		i=(IToken)Match(input,IN,FOLLOW_IN_in_relationalExpression2104); 
             	        	        			i_tree = (IASTNode)adaptor.Create(i);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(i_tree, root_0);
 
@@ -6006,11 +6194,11 @@ public partial class HqlParser : Parser
             	        	        							i.Type = (n == null) ? IN : NOT_IN;
             	        	        							i.Text = (n == null) ? "in" : "not in";
             	        	        						
-            	        	        		PushFollow(FOLLOW_inList_in_relationalExpression2056);
-            	        	        		inList159 = inList();
+            	        	        		PushFollow(FOLLOW_inList_in_relationalExpression2113);
+            	        	        		inList166 = inList();
             	        	        		state.followingStackPointer--;
 
-            	        	        		adaptor.AddChild(root_0, inList159.Tree);
+            	        	        		adaptor.AddChild(root_0, inList166.Tree);
 
             	        	        	}
 
@@ -6018,12 +6206,12 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 2 :
-            	        	        // Hql.g:414:6: (b= BETWEEN betweenList )
+            	        	        // Hql.g:426:6: (b= BETWEEN betweenList )
             	        	        {
-            	        	        	// Hql.g:414:6: (b= BETWEEN betweenList )
-            	        	        	// Hql.g:414:7: b= BETWEEN betweenList
+            	        	        	// Hql.g:426:6: (b= BETWEEN betweenList )
+            	        	        	// Hql.g:426:7: b= BETWEEN betweenList
             	        	        	{
-            	        	        		b=(IToken)Match(input,BETWEEN,FOLLOW_BETWEEN_in_relationalExpression2067); 
+            	        	        		b=(IToken)Match(input,BETWEEN,FOLLOW_BETWEEN_in_relationalExpression2124); 
             	        	        			b_tree = (IASTNode)adaptor.Create(b);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(b_tree, root_0);
 
@@ -6031,11 +6219,11 @@ public partial class HqlParser : Parser
             	        	        							b.Type = (n == null) ? BETWEEN : NOT_BETWEEN;
             	        	        							b.Text = (n == null) ? "between" : "not between";
             	        	        						
-            	        	        		PushFollow(FOLLOW_betweenList_in_relationalExpression2076);
-            	        	        		betweenList160 = betweenList();
+            	        	        		PushFollow(FOLLOW_betweenList_in_relationalExpression2133);
+            	        	        		betweenList167 = betweenList();
             	        	        		state.followingStackPointer--;
 
-            	        	        		adaptor.AddChild(root_0, betweenList160.Tree);
+            	        	        		adaptor.AddChild(root_0, betweenList167.Tree);
 
             	        	        	}
 
@@ -6043,12 +6231,12 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 3 :
-            	        	        // Hql.g:419:6: (l= LIKE concatenation likeEscape )
+            	        	        // Hql.g:431:6: (l= LIKE concatenation likeEscape )
             	        	        {
-            	        	        	// Hql.g:419:6: (l= LIKE concatenation likeEscape )
-            	        	        	// Hql.g:419:7: l= LIKE concatenation likeEscape
+            	        	        	// Hql.g:431:6: (l= LIKE concatenation likeEscape )
+            	        	        	// Hql.g:431:7: l= LIKE concatenation likeEscape
             	        	        	{
-            	        	        		l=(IToken)Match(input,LIKE,FOLLOW_LIKE_in_relationalExpression2088); 
+            	        	        		l=(IToken)Match(input,LIKE,FOLLOW_LIKE_in_relationalExpression2145); 
             	        	        			l_tree = (IASTNode)adaptor.Create(l);
             	        	        			root_0 = (IASTNode)adaptor.BecomeRoot(l_tree, root_0);
 
@@ -6056,16 +6244,16 @@ public partial class HqlParser : Parser
             	        	        							l.Type = (n == null) ? LIKE : NOT_LIKE;
             	        	        							l.Text = (n == null) ? "like" : "not like";
             	        	        						
-            	        	        		PushFollow(FOLLOW_concatenation_in_relationalExpression2097);
-            	        	        		concatenation161 = concatenation();
+            	        	        		PushFollow(FOLLOW_concatenation_in_relationalExpression2154);
+            	        	        		concatenation168 = concatenation();
             	        	        		state.followingStackPointer--;
 
-            	        	        		adaptor.AddChild(root_0, concatenation161.Tree);
-            	        	        		PushFollow(FOLLOW_likeEscape_in_relationalExpression2099);
-            	        	        		likeEscape162 = likeEscape();
+            	        	        		adaptor.AddChild(root_0, concatenation168.Tree);
+            	        	        		PushFollow(FOLLOW_likeEscape_in_relationalExpression2156);
+            	        	        		likeEscape169 = likeEscape();
             	        	        		state.followingStackPointer--;
 
-            	        	        		adaptor.AddChild(root_0, likeEscape162.Tree);
+            	        	        		adaptor.AddChild(root_0, likeEscape169.Tree);
 
             	        	        	}
 
@@ -6073,33 +6261,33 @@ public partial class HqlParser : Parser
             	        	        }
             	        	        break;
             	        	    case 4 :
-            	        	        // Hql.g:424:6: ( MEMBER ( OF )? p= path )
+            	        	        // Hql.g:436:6: ( MEMBER ( OF )? p= path )
             	        	        {
-            	        	        	// Hql.g:424:6: ( MEMBER ( OF )? p= path )
-            	        	        	// Hql.g:424:7: MEMBER ( OF )? p= path
+            	        	        	// Hql.g:436:6: ( MEMBER ( OF )? p= path )
+            	        	        	// Hql.g:436:7: MEMBER ( OF )? p= path
             	        	        	{
-            	        	        		MEMBER163=(IToken)Match(input,MEMBER,FOLLOW_MEMBER_in_relationalExpression2108); 
-            	        	        		// Hql.g:424:15: ( OF )?
-            	        	        		int alt54 = 2;
-            	        	        		int LA54_0 = input.LA(1);
+            	        	        		MEMBER170=(IToken)Match(input,MEMBER,FOLLOW_MEMBER_in_relationalExpression2165); 
+            	        	        		// Hql.g:436:15: ( OF )?
+            	        	        		int alt56 = 2;
+            	        	        		int LA56_0 = input.LA(1);
 
-            	        	        		if ( (LA54_0 == OF) )
+            	        	        		if ( (LA56_0 == OF) )
             	        	        		{
-            	        	        		    alt54 = 1;
+            	        	        		    alt56 = 1;
             	        	        		}
-            	        	        		switch (alt54) 
+            	        	        		switch (alt56) 
             	        	        		{
             	        	        		    case 1 :
-            	        	        		        // Hql.g:424:16: OF
+            	        	        		        // Hql.g:436:16: OF
             	        	        		        {
-            	        	        		        	OF164=(IToken)Match(input,OF,FOLLOW_OF_in_relationalExpression2112); 
+            	        	        		        	OF171=(IToken)Match(input,OF,FOLLOW_OF_in_relationalExpression2169); 
 
             	        	        		        }
             	        	        		        break;
 
             	        	        		}
 
-            	        	        		PushFollow(FOLLOW_path_in_relationalExpression2119);
+            	        	        		PushFollow(FOLLOW_path_in_relationalExpression2176);
             	        	        		p = path();
             	        	        		state.followingStackPointer--;
 
@@ -6155,7 +6343,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "likeEscape"
-    // Hql.g:431:1: likeEscape : ( ESCAPE concatenation )? ;
+    // Hql.g:443:1: likeEscape : ( ESCAPE concatenation )? ;
     public HqlParser.likeEscape_return likeEscape() // throws RecognitionException [1]
     {   
         HqlParser.likeEscape_return retval = new HqlParser.likeEscape_return();
@@ -6163,41 +6351,41 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken ESCAPE165 = null;
-        HqlParser.concatenation_return concatenation166 = default(HqlParser.concatenation_return);
+        IToken ESCAPE172 = null;
+        HqlParser.concatenation_return concatenation173 = default(HqlParser.concatenation_return);
 
 
-        IASTNode ESCAPE165_tree=null;
+        IASTNode ESCAPE172_tree=null;
 
         try 
     	{
-            // Hql.g:432:2: ( ( ESCAPE concatenation )? )
-            // Hql.g:432:4: ( ESCAPE concatenation )?
+            // Hql.g:444:2: ( ( ESCAPE concatenation )? )
+            // Hql.g:444:4: ( ESCAPE concatenation )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:432:4: ( ESCAPE concatenation )?
-            	int alt57 = 2;
-            	int LA57_0 = input.LA(1);
+            	// Hql.g:444:4: ( ESCAPE concatenation )?
+            	int alt59 = 2;
+            	int LA59_0 = input.LA(1);
 
-            	if ( (LA57_0 == ESCAPE) )
+            	if ( (LA59_0 == ESCAPE) )
             	{
-            	    alt57 = 1;
+            	    alt59 = 1;
             	}
-            	switch (alt57) 
+            	switch (alt59) 
             	{
             	    case 1 :
-            	        // Hql.g:432:5: ESCAPE concatenation
+            	        // Hql.g:444:5: ESCAPE concatenation
             	        {
-            	        	ESCAPE165=(IToken)Match(input,ESCAPE,FOLLOW_ESCAPE_in_likeEscape2146); 
-            	        		ESCAPE165_tree = (IASTNode)adaptor.Create(ESCAPE165);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE165_tree, root_0);
+            	        	ESCAPE172=(IToken)Match(input,ESCAPE,FOLLOW_ESCAPE_in_likeEscape2203); 
+            	        		ESCAPE172_tree = (IASTNode)adaptor.Create(ESCAPE172);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE172_tree, root_0);
 
-            	        	PushFollow(FOLLOW_concatenation_in_likeEscape2149);
-            	        	concatenation166 = concatenation();
+            	        	PushFollow(FOLLOW_concatenation_in_likeEscape2206);
+            	        	concatenation173 = concatenation();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, concatenation166.Tree);
+            	        	adaptor.AddChild(root_0, concatenation173.Tree);
 
             	        }
             	        break;
@@ -6238,7 +6426,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "inList"
-    // Hql.g:435:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
+    // Hql.g:447:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
     public HqlParser.inList_return inList() // throws RecognitionException [1]
     {   
         HqlParser.inList_return retval = new HqlParser.inList_return();
@@ -6246,20 +6434,20 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.compoundExpr_return compoundExpr167 = default(HqlParser.compoundExpr_return);
+        HqlParser.compoundExpr_return compoundExpr174 = default(HqlParser.compoundExpr_return);
 
 
         RewriteRuleSubtreeStream stream_compoundExpr = new RewriteRuleSubtreeStream(adaptor,"rule compoundExpr");
         try 
     	{
-            // Hql.g:436:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
-            // Hql.g:436:4: compoundExpr
+            // Hql.g:448:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
+            // Hql.g:448:4: compoundExpr
             {
-            	PushFollow(FOLLOW_compoundExpr_in_inList2162);
-            	compoundExpr167 = compoundExpr();
+            	PushFollow(FOLLOW_compoundExpr_in_inList2219);
+            	compoundExpr174 = compoundExpr();
             	state.followingStackPointer--;
 
-            	stream_compoundExpr.Add(compoundExpr167.Tree);
+            	stream_compoundExpr.Add(compoundExpr174.Tree);
 
 
             	// AST REWRITE
@@ -6273,9 +6461,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 437:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
+            	// 449:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
             	{
-            	    // Hql.g:437:5: ^( IN_LIST[\"inList\"] compoundExpr )
+            	    // Hql.g:449:5: ^( IN_LIST[\"inList\"] compoundExpr )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IN_LIST, "inList"), root_1);
@@ -6321,7 +6509,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "betweenList"
-    // Hql.g:440:1: betweenList : concatenation AND concatenation ;
+    // Hql.g:452:1: betweenList : concatenation AND concatenation ;
     public HqlParser.betweenList_return betweenList() // throws RecognitionException [1]
     {   
         HqlParser.betweenList_return retval = new HqlParser.betweenList_return();
@@ -6329,32 +6517,32 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken AND169 = null;
-        HqlParser.concatenation_return concatenation168 = default(HqlParser.concatenation_return);
+        IToken AND176 = null;
+        HqlParser.concatenation_return concatenation175 = default(HqlParser.concatenation_return);
 
-        HqlParser.concatenation_return concatenation170 = default(HqlParser.concatenation_return);
+        HqlParser.concatenation_return concatenation177 = default(HqlParser.concatenation_return);
 
 
-        IASTNode AND169_tree=null;
+        IASTNode AND176_tree=null;
 
         try 
     	{
-            // Hql.g:441:2: ( concatenation AND concatenation )
-            // Hql.g:441:4: concatenation AND concatenation
+            // Hql.g:453:2: ( concatenation AND concatenation )
+            // Hql.g:453:4: concatenation AND concatenation
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_concatenation_in_betweenList2183);
-            	concatenation168 = concatenation();
+            	PushFollow(FOLLOW_concatenation_in_betweenList2240);
+            	concatenation175 = concatenation();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, concatenation168.Tree);
-            	AND169=(IToken)Match(input,AND,FOLLOW_AND_in_betweenList2185); 
-            	PushFollow(FOLLOW_concatenation_in_betweenList2188);
-            	concatenation170 = concatenation();
+            	adaptor.AddChild(root_0, concatenation175.Tree);
+            	AND176=(IToken)Match(input,AND,FOLLOW_AND_in_betweenList2242); 
+            	PushFollow(FOLLOW_concatenation_in_betweenList2245);
+            	concatenation177 = concatenation();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, concatenation170.Tree);
+            	adaptor.AddChild(root_0, concatenation177.Tree);
 
             }
 
@@ -6389,7 +6577,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "concatenation"
-    // Hql.g:445:1: concatenation : a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )? ;
+    // Hql.g:457:1: concatenation : a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )? ;
     public HqlParser.concatenation_return concatenation() // throws RecognitionException [1]
     {   
         HqlParser.concatenation_return retval = new HqlParser.concatenation_return();
@@ -6398,86 +6586,86 @@ public partial class HqlParser : Parser
         IASTNode root_0 = null;
 
         IToken c = null;
-        IToken CONCAT172 = null;
+        IToken CONCAT179 = null;
         HqlParser.bitwiseNotExpression_return a = default(HqlParser.bitwiseNotExpression_return);
 
-        HqlParser.bitwiseNotExpression_return bitwiseNotExpression171 = default(HqlParser.bitwiseNotExpression_return);
+        HqlParser.bitwiseNotExpression_return bitwiseNotExpression178 = default(HqlParser.bitwiseNotExpression_return);
 
-        HqlParser.bitwiseNotExpression_return bitwiseNotExpression173 = default(HqlParser.bitwiseNotExpression_return);
+        HqlParser.bitwiseNotExpression_return bitwiseNotExpression180 = default(HqlParser.bitwiseNotExpression_return);
 
 
         IASTNode c_tree=null;
-        IASTNode CONCAT172_tree=null;
+        IASTNode CONCAT179_tree=null;
 
         try 
     	{
-            // Hql.g:456:2: (a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )? )
-            // Hql.g:456:4: a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )?
+            // Hql.g:468:2: (a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )? )
+            // Hql.g:468:4: a= bitwiseNotExpression (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2207);
+            	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2264);
             	a = bitwiseNotExpression();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, a.Tree);
-            	// Hql.g:457:2: (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )?
-            	int alt59 = 2;
-            	int LA59_0 = input.LA(1);
+            	// Hql.g:469:2: (c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )* )?
+            	int alt61 = 2;
+            	int LA61_0 = input.LA(1);
 
-            	if ( (LA59_0 == CONCAT) )
+            	if ( (LA61_0 == CONCAT) )
             	{
-            	    alt59 = 1;
+            	    alt61 = 1;
             	}
-            	switch (alt59) 
+            	switch (alt61) 
             	{
             	    case 1 :
-            	        // Hql.g:457:4: c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )*
+            	        // Hql.g:469:4: c= CONCAT bitwiseNotExpression ( CONCAT bitwiseNotExpression )*
             	        {
-            	        	c=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2215); 
+            	        	c=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2272); 
             	        		c_tree = (IASTNode)adaptor.Create(c);
             	        		root_0 = (IASTNode)adaptor.BecomeRoot(c_tree, root_0);
 
             	        	 c.Type = EXPR_LIST; c.Text = "concatList"; 
-            	        	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2224);
-            	        	bitwiseNotExpression171 = bitwiseNotExpression();
+            	        	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2281);
+            	        	bitwiseNotExpression178 = bitwiseNotExpression();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, bitwiseNotExpression171.Tree);
-            	        	// Hql.g:459:4: ( CONCAT bitwiseNotExpression )*
+            	        	adaptor.AddChild(root_0, bitwiseNotExpression178.Tree);
+            	        	// Hql.g:471:4: ( CONCAT bitwiseNotExpression )*
             	        	do 
             	        	{
-            	        	    int alt58 = 2;
-            	        	    int LA58_0 = input.LA(1);
+            	        	    int alt60 = 2;
+            	        	    int LA60_0 = input.LA(1);
 
-            	        	    if ( (LA58_0 == CONCAT) )
+            	        	    if ( (LA60_0 == CONCAT) )
             	        	    {
-            	        	        alt58 = 1;
+            	        	        alt60 = 1;
             	        	    }
 
 
-            	        	    switch (alt58) 
+            	        	    switch (alt60) 
             	        		{
             	        			case 1 :
-            	        			    // Hql.g:459:6: CONCAT bitwiseNotExpression
+            	        			    // Hql.g:471:6: CONCAT bitwiseNotExpression
             	        			    {
-            	        			    	CONCAT172=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2231); 
-            	        			    	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2234);
-            	        			    	bitwiseNotExpression173 = bitwiseNotExpression();
+            	        			    	CONCAT179=(IToken)Match(input,CONCAT,FOLLOW_CONCAT_in_concatenation2288); 
+            	        			    	PushFollow(FOLLOW_bitwiseNotExpression_in_concatenation2291);
+            	        			    	bitwiseNotExpression180 = bitwiseNotExpression();
             	        			    	state.followingStackPointer--;
 
-            	        			    	adaptor.AddChild(root_0, bitwiseNotExpression173.Tree);
+            	        			    	adaptor.AddChild(root_0, bitwiseNotExpression180.Tree);
 
             	        			    }
             	        			    break;
 
             	        			default:
-            	        			    goto loop58;
+            	        			    goto loop60;
             	        	    }
             	        	} while (true);
 
-            	        	loop58:
-            	        		;	// Stops C# compiler whining that label 'loop58' has no statements
+            	        	loop60:
+            	        		;	// Stops C# compiler whining that label 'loop60' has no statements
 
 
             	        }
@@ -6529,7 +6717,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseNotExpression"
-    // Hql.g:464:1: bitwiseNotExpression : ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression );
+    // Hql.g:476:1: bitwiseNotExpression : ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression );
     public HqlParser.bitwiseNotExpression_return bitwiseNotExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseNotExpression_return retval = new HqlParser.bitwiseNotExpression_return();
@@ -6537,54 +6725,54 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken BNOT174 = null;
-        HqlParser.bitwiseOrExpression_return bitwiseOrExpression175 = default(HqlParser.bitwiseOrExpression_return);
+        IToken BNOT181 = null;
+        HqlParser.bitwiseOrExpression_return bitwiseOrExpression182 = default(HqlParser.bitwiseOrExpression_return);
 
-        HqlParser.bitwiseOrExpression_return bitwiseOrExpression176 = default(HqlParser.bitwiseOrExpression_return);
+        HqlParser.bitwiseOrExpression_return bitwiseOrExpression183 = default(HqlParser.bitwiseOrExpression_return);
 
 
-        IASTNode BNOT174_tree=null;
+        IASTNode BNOT181_tree=null;
 
         try 
     	{
-            // Hql.g:465:2: ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression )
-            int alt60 = 2;
-            int LA60_0 = input.LA(1);
+            // Hql.g:477:2: ( ( BNOT bitwiseOrExpression ) | bitwiseOrExpression )
+            int alt62 = 2;
+            int LA62_0 = input.LA(1);
 
-            if ( (LA60_0 == BNOT) )
+            if ( (LA62_0 == BNOT) )
             {
-                alt60 = 1;
+                alt62 = 1;
             }
-            else if ( ((LA60_0 >= ALL && LA60_0 <= ANY) || LA60_0 == AVG || LA60_0 == COUNT || LA60_0 == ELEMENTS || (LA60_0 >= EXISTS && LA60_0 <= FALSE) || LA60_0 == INDICES || (LA60_0 >= MAX && LA60_0 <= MIN) || LA60_0 == NULL || (LA60_0 >= SOME && LA60_0 <= TRUE) || LA60_0 == CASE || LA60_0 == EMPTY || (LA60_0 >= NUM_INT && LA60_0 <= NUM_LONG) || LA60_0 == OPEN || (LA60_0 >= PLUS && LA60_0 <= MINUS) || (LA60_0 >= COLON && LA60_0 <= IDENT)) )
+            else if ( ((LA62_0 >= ALL && LA62_0 <= ANY) || LA62_0 == AVG || LA62_0 == COUNT || LA62_0 == ELEMENTS || (LA62_0 >= EXISTS && LA62_0 <= FALSE) || LA62_0 == INDICES || (LA62_0 >= MAX && LA62_0 <= MIN) || LA62_0 == NULL || (LA62_0 >= SOME && LA62_0 <= SUM) || LA62_0 == TRUE || LA62_0 == CASE || LA62_0 == EMPTY || (LA62_0 >= NUM_INT && LA62_0 <= NUM_LONG) || LA62_0 == OPEN || (LA62_0 >= PLUS && LA62_0 <= MINUS) || (LA62_0 >= COLON && LA62_0 <= IDENT)) )
             {
-                alt60 = 2;
+                alt62 = 2;
             }
             else 
             {
-                NoViableAltException nvae_d60s0 =
-                    new NoViableAltException("", 60, 0, input);
+                NoViableAltException nvae_d62s0 =
+                    new NoViableAltException("", 62, 0, input);
 
-                throw nvae_d60s0;
+                throw nvae_d62s0;
             }
-            switch (alt60) 
+            switch (alt62) 
             {
                 case 1 :
-                    // Hql.g:465:4: ( BNOT bitwiseOrExpression )
+                    // Hql.g:477:4: ( BNOT bitwiseOrExpression )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// Hql.g:465:4: ( BNOT bitwiseOrExpression )
-                    	// Hql.g:465:5: BNOT bitwiseOrExpression
+                    	// Hql.g:477:4: ( BNOT bitwiseOrExpression )
+                    	// Hql.g:477:5: BNOT bitwiseOrExpression
                     	{
-                    		BNOT174=(IToken)Match(input,BNOT,FOLLOW_BNOT_in_bitwiseNotExpression2258); 
-                    			BNOT174_tree = (IASTNode)adaptor.Create(BNOT174);
-                    			root_0 = (IASTNode)adaptor.BecomeRoot(BNOT174_tree, root_0);
+                    		BNOT181=(IToken)Match(input,BNOT,FOLLOW_BNOT_in_bitwiseNotExpression2315); 
+                    			BNOT181_tree = (IASTNode)adaptor.Create(BNOT181);
+                    			root_0 = (IASTNode)adaptor.BecomeRoot(BNOT181_tree, root_0);
 
-                    		PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2261);
-                    		bitwiseOrExpression175 = bitwiseOrExpression();
+                    		PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2318);
+                    		bitwiseOrExpression182 = bitwiseOrExpression();
                     		state.followingStackPointer--;
 
-                    		adaptor.AddChild(root_0, bitwiseOrExpression175.Tree);
+                    		adaptor.AddChild(root_0, bitwiseOrExpression182.Tree);
 
                     	}
 
@@ -6592,15 +6780,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:466:4: bitwiseOrExpression
+                    // Hql.g:478:4: bitwiseOrExpression
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2267);
-                    	bitwiseOrExpression176 = bitwiseOrExpression();
+                    	PushFollow(FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2324);
+                    	bitwiseOrExpression183 = bitwiseOrExpression();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, bitwiseOrExpression176.Tree);
+                    	adaptor.AddChild(root_0, bitwiseOrExpression183.Tree);
 
                     }
                     break;
@@ -6637,7 +6825,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseOrExpression"
-    // Hql.g:469:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR bitwiseXOrExpression )* ;
+    // Hql.g:481:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR bitwiseXOrExpression )* ;
     public HqlParser.bitwiseOrExpression_return bitwiseOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseOrExpression_return retval = new HqlParser.bitwiseOrExpression_return();
@@ -6645,63 +6833,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken BOR178 = null;
-        HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression177 = default(HqlParser.bitwiseXOrExpression_return);
+        IToken BOR185 = null;
+        HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression184 = default(HqlParser.bitwiseXOrExpression_return);
 
-        HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression179 = default(HqlParser.bitwiseXOrExpression_return);
+        HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression186 = default(HqlParser.bitwiseXOrExpression_return);
 
 
-        IASTNode BOR178_tree=null;
+        IASTNode BOR185_tree=null;
 
         try 
     	{
-            // Hql.g:470:2: ( bitwiseXOrExpression ( BOR bitwiseXOrExpression )* )
-            // Hql.g:470:4: bitwiseXOrExpression ( BOR bitwiseXOrExpression )*
+            // Hql.g:482:2: ( bitwiseXOrExpression ( BOR bitwiseXOrExpression )* )
+            // Hql.g:482:4: bitwiseXOrExpression ( BOR bitwiseXOrExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2279);
-            	bitwiseXOrExpression177 = bitwiseXOrExpression();
+            	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2336);
+            	bitwiseXOrExpression184 = bitwiseXOrExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, bitwiseXOrExpression177.Tree);
-            	// Hql.g:470:25: ( BOR bitwiseXOrExpression )*
+            	adaptor.AddChild(root_0, bitwiseXOrExpression184.Tree);
+            	// Hql.g:482:25: ( BOR bitwiseXOrExpression )*
             	do 
             	{
-            	    int alt61 = 2;
-            	    int LA61_0 = input.LA(1);
+            	    int alt63 = 2;
+            	    int LA63_0 = input.LA(1);
 
-            	    if ( (LA61_0 == BOR) )
+            	    if ( (LA63_0 == BOR) )
             	    {
-            	        alt61 = 1;
+            	        alt63 = 1;
             	    }
 
 
-            	    switch (alt61) 
+            	    switch (alt63) 
             		{
             			case 1 :
-            			    // Hql.g:470:26: BOR bitwiseXOrExpression
+            			    // Hql.g:482:26: BOR bitwiseXOrExpression
             			    {
-            			    	BOR178=(IToken)Match(input,BOR,FOLLOW_BOR_in_bitwiseOrExpression2282); 
-            			    		BOR178_tree = (IASTNode)adaptor.Create(BOR178);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BOR178_tree, root_0);
+            			    	BOR185=(IToken)Match(input,BOR,FOLLOW_BOR_in_bitwiseOrExpression2339); 
+            			    		BOR185_tree = (IASTNode)adaptor.Create(BOR185);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BOR185_tree, root_0);
 
-            			    	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2285);
-            			    	bitwiseXOrExpression179 = bitwiseXOrExpression();
+            			    	PushFollow(FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2342);
+            			    	bitwiseXOrExpression186 = bitwiseXOrExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, bitwiseXOrExpression179.Tree);
+            			    	adaptor.AddChild(root_0, bitwiseXOrExpression186.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop61;
+            			    goto loop63;
             	    }
             	} while (true);
 
-            	loop61:
-            		;	// Stops C# compiler whining that label 'loop61' has no statements
+            	loop63:
+            		;	// Stops C# compiler whining that label 'loop63' has no statements
 
 
             }
@@ -6737,7 +6925,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseXOrExpression"
-    // Hql.g:473:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR bitwiseAndExpression )* ;
+    // Hql.g:485:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR bitwiseAndExpression )* ;
     public HqlParser.bitwiseXOrExpression_return bitwiseXOrExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseXOrExpression_return retval = new HqlParser.bitwiseXOrExpression_return();
@@ -6745,63 +6933,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken BXOR181 = null;
-        HqlParser.bitwiseAndExpression_return bitwiseAndExpression180 = default(HqlParser.bitwiseAndExpression_return);
+        IToken BXOR188 = null;
+        HqlParser.bitwiseAndExpression_return bitwiseAndExpression187 = default(HqlParser.bitwiseAndExpression_return);
 
-        HqlParser.bitwiseAndExpression_return bitwiseAndExpression182 = default(HqlParser.bitwiseAndExpression_return);
+        HqlParser.bitwiseAndExpression_return bitwiseAndExpression189 = default(HqlParser.bitwiseAndExpression_return);
 
 
-        IASTNode BXOR181_tree=null;
+        IASTNode BXOR188_tree=null;
 
         try 
     	{
-            // Hql.g:474:2: ( bitwiseAndExpression ( BXOR bitwiseAndExpression )* )
-            // Hql.g:474:4: bitwiseAndExpression ( BXOR bitwiseAndExpression )*
+            // Hql.g:486:2: ( bitwiseAndExpression ( BXOR bitwiseAndExpression )* )
+            // Hql.g:486:4: bitwiseAndExpression ( BXOR bitwiseAndExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2299);
-            	bitwiseAndExpression180 = bitwiseAndExpression();
+            	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2356);
+            	bitwiseAndExpression187 = bitwiseAndExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, bitwiseAndExpression180.Tree);
-            	// Hql.g:474:25: ( BXOR bitwiseAndExpression )*
+            	adaptor.AddChild(root_0, bitwiseAndExpression187.Tree);
+            	// Hql.g:486:25: ( BXOR bitwiseAndExpression )*
             	do 
             	{
-            	    int alt62 = 2;
-            	    int LA62_0 = input.LA(1);
+            	    int alt64 = 2;
+            	    int LA64_0 = input.LA(1);
 
-            	    if ( (LA62_0 == BXOR) )
+            	    if ( (LA64_0 == BXOR) )
             	    {
-            	        alt62 = 1;
+            	        alt64 = 1;
             	    }
 
 
-            	    switch (alt62) 
+            	    switch (alt64) 
             		{
             			case 1 :
-            			    // Hql.g:474:26: BXOR bitwiseAndExpression
+            			    // Hql.g:486:26: BXOR bitwiseAndExpression
             			    {
-            			    	BXOR181=(IToken)Match(input,BXOR,FOLLOW_BXOR_in_bitwiseXOrExpression2302); 
-            			    		BXOR181_tree = (IASTNode)adaptor.Create(BXOR181);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BXOR181_tree, root_0);
+            			    	BXOR188=(IToken)Match(input,BXOR,FOLLOW_BXOR_in_bitwiseXOrExpression2359); 
+            			    		BXOR188_tree = (IASTNode)adaptor.Create(BXOR188);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BXOR188_tree, root_0);
 
-            			    	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2305);
-            			    	bitwiseAndExpression182 = bitwiseAndExpression();
+            			    	PushFollow(FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2362);
+            			    	bitwiseAndExpression189 = bitwiseAndExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, bitwiseAndExpression182.Tree);
+            			    	adaptor.AddChild(root_0, bitwiseAndExpression189.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop62;
+            			    goto loop64;
             	    }
             	} while (true);
 
-            	loop62:
-            		;	// Stops C# compiler whining that label 'loop62' has no statements
+            	loop64:
+            		;	// Stops C# compiler whining that label 'loop64' has no statements
 
 
             }
@@ -6837,7 +7025,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "bitwiseAndExpression"
-    // Hql.g:477:1: bitwiseAndExpression : additiveExpression ( BAND additiveExpression )* ;
+    // Hql.g:489:1: bitwiseAndExpression : additiveExpression ( BAND additiveExpression )* ;
     public HqlParser.bitwiseAndExpression_return bitwiseAndExpression() // throws RecognitionException [1]
     {   
         HqlParser.bitwiseAndExpression_return retval = new HqlParser.bitwiseAndExpression_return();
@@ -6845,63 +7033,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken BAND184 = null;
-        HqlParser.additiveExpression_return additiveExpression183 = default(HqlParser.additiveExpression_return);
+        IToken BAND191 = null;
+        HqlParser.additiveExpression_return additiveExpression190 = default(HqlParser.additiveExpression_return);
 
-        HqlParser.additiveExpression_return additiveExpression185 = default(HqlParser.additiveExpression_return);
+        HqlParser.additiveExpression_return additiveExpression192 = default(HqlParser.additiveExpression_return);
 
 
-        IASTNode BAND184_tree=null;
+        IASTNode BAND191_tree=null;
 
         try 
     	{
-            // Hql.g:478:2: ( additiveExpression ( BAND additiveExpression )* )
-            // Hql.g:478:4: additiveExpression ( BAND additiveExpression )*
+            // Hql.g:490:2: ( additiveExpression ( BAND additiveExpression )* )
+            // Hql.g:490:4: additiveExpression ( BAND additiveExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_additiveExpression_in_bitwiseAndExpression2319);
-            	additiveExpression183 = additiveExpression();
+            	PushFollow(FOLLOW_additiveExpression_in_bitwiseAndExpression2376);
+            	additiveExpression190 = additiveExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, additiveExpression183.Tree);
-            	// Hql.g:478:23: ( BAND additiveExpression )*
+            	adaptor.AddChild(root_0, additiveExpression190.Tree);
+            	// Hql.g:490:23: ( BAND additiveExpression )*
             	do 
             	{
-            	    int alt63 = 2;
-            	    int LA63_0 = input.LA(1);
+            	    int alt65 = 2;
+            	    int LA65_0 = input.LA(1);
 
-            	    if ( (LA63_0 == BAND) )
+            	    if ( (LA65_0 == BAND) )
             	    {
-            	        alt63 = 1;
+            	        alt65 = 1;
             	    }
 
 
-            	    switch (alt63) 
+            	    switch (alt65) 
             		{
             			case 1 :
-            			    // Hql.g:478:24: BAND additiveExpression
+            			    // Hql.g:490:24: BAND additiveExpression
             			    {
-            			    	BAND184=(IToken)Match(input,BAND,FOLLOW_BAND_in_bitwiseAndExpression2322); 
-            			    		BAND184_tree = (IASTNode)adaptor.Create(BAND184);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BAND184_tree, root_0);
+            			    	BAND191=(IToken)Match(input,BAND,FOLLOW_BAND_in_bitwiseAndExpression2379); 
+            			    		BAND191_tree = (IASTNode)adaptor.Create(BAND191);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(BAND191_tree, root_0);
 
-            			    	PushFollow(FOLLOW_additiveExpression_in_bitwiseAndExpression2325);
-            			    	additiveExpression185 = additiveExpression();
+            			    	PushFollow(FOLLOW_additiveExpression_in_bitwiseAndExpression2382);
+            			    	additiveExpression192 = additiveExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, additiveExpression185.Tree);
+            			    	adaptor.AddChild(root_0, additiveExpression192.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop63;
+            			    goto loop65;
             	    }
             	} while (true);
 
-            	loop63:
-            		;	// Stops C# compiler whining that label 'loop63' has no statements
+            	loop65:
+            		;	// Stops C# compiler whining that label 'loop65' has no statements
 
 
             }
@@ -6937,7 +7125,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "additiveExpression"
-    // Hql.g:482:1: additiveExpression : multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* ;
+    // Hql.g:494:1: additiveExpression : multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* ;
     public HqlParser.additiveExpression_return additiveExpression() // throws RecognitionException [1]
     {   
         HqlParser.additiveExpression_return retval = new HqlParser.additiveExpression_return();
@@ -6945,82 +7133,82 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken PLUS187 = null;
-        IToken MINUS188 = null;
-        HqlParser.multiplyExpression_return multiplyExpression186 = default(HqlParser.multiplyExpression_return);
+        IToken PLUS194 = null;
+        IToken MINUS195 = null;
+        HqlParser.multiplyExpression_return multiplyExpression193 = default(HqlParser.multiplyExpression_return);
 
-        HqlParser.multiplyExpression_return multiplyExpression189 = default(HqlParser.multiplyExpression_return);
+        HqlParser.multiplyExpression_return multiplyExpression196 = default(HqlParser.multiplyExpression_return);
 
 
-        IASTNode PLUS187_tree=null;
-        IASTNode MINUS188_tree=null;
+        IASTNode PLUS194_tree=null;
+        IASTNode MINUS195_tree=null;
 
         try 
     	{
-            // Hql.g:483:2: ( multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* )
-            // Hql.g:483:4: multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )*
+            // Hql.g:495:2: ( multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )* )
+            // Hql.g:495:4: multiplyExpression ( ( PLUS | MINUS ) multiplyExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2339);
-            	multiplyExpression186 = multiplyExpression();
+            	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2396);
+            	multiplyExpression193 = multiplyExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, multiplyExpression186.Tree);
-            	// Hql.g:483:23: ( ( PLUS | MINUS ) multiplyExpression )*
+            	adaptor.AddChild(root_0, multiplyExpression193.Tree);
+            	// Hql.g:495:23: ( ( PLUS | MINUS ) multiplyExpression )*
             	do 
             	{
-            	    int alt65 = 2;
-            	    int LA65_0 = input.LA(1);
+            	    int alt67 = 2;
+            	    int LA67_0 = input.LA(1);
 
-            	    if ( ((LA65_0 >= PLUS && LA65_0 <= MINUS)) )
+            	    if ( ((LA67_0 >= PLUS && LA67_0 <= MINUS)) )
             	    {
-            	        alt65 = 1;
+            	        alt67 = 1;
             	    }
 
 
-            	    switch (alt65) 
+            	    switch (alt67) 
             		{
             			case 1 :
-            			    // Hql.g:483:25: ( PLUS | MINUS ) multiplyExpression
+            			    // Hql.g:495:25: ( PLUS | MINUS ) multiplyExpression
             			    {
-            			    	// Hql.g:483:25: ( PLUS | MINUS )
-            			    	int alt64 = 2;
-            			    	int LA64_0 = input.LA(1);
+            			    	// Hql.g:495:25: ( PLUS | MINUS )
+            			    	int alt66 = 2;
+            			    	int LA66_0 = input.LA(1);
 
-            			    	if ( (LA64_0 == PLUS) )
+            			    	if ( (LA66_0 == PLUS) )
             			    	{
-            			    	    alt64 = 1;
+            			    	    alt66 = 1;
             			    	}
-            			    	else if ( (LA64_0 == MINUS) )
+            			    	else if ( (LA66_0 == MINUS) )
             			    	{
-            			    	    alt64 = 2;
+            			    	    alt66 = 2;
             			    	}
             			    	else 
             			    	{
-            			    	    NoViableAltException nvae_d64s0 =
-            			    	        new NoViableAltException("", 64, 0, input);
+            			    	    NoViableAltException nvae_d66s0 =
+            			    	        new NoViableAltException("", 66, 0, input);
 
-            			    	    throw nvae_d64s0;
+            			    	    throw nvae_d66s0;
             			    	}
-            			    	switch (alt64) 
+            			    	switch (alt66) 
             			    	{
             			    	    case 1 :
-            			    	        // Hql.g:483:27: PLUS
+            			    	        // Hql.g:495:27: PLUS
             			    	        {
-            			    	        	PLUS187=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_additiveExpression2345); 
-            			    	        		PLUS187_tree = (IASTNode)adaptor.Create(PLUS187);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(PLUS187_tree, root_0);
+            			    	        	PLUS194=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_additiveExpression2402); 
+            			    	        		PLUS194_tree = (IASTNode)adaptor.Create(PLUS194);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(PLUS194_tree, root_0);
 
 
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // Hql.g:483:35: MINUS
+            			    	        // Hql.g:495:35: MINUS
             			    	        {
-            			    	        	MINUS188=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_additiveExpression2350); 
-            			    	        		MINUS188_tree = (IASTNode)adaptor.Create(MINUS188);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(MINUS188_tree, root_0);
+            			    	        	MINUS195=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_additiveExpression2407); 
+            			    	        		MINUS195_tree = (IASTNode)adaptor.Create(MINUS195);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(MINUS195_tree, root_0);
 
 
             			    	        }
@@ -7028,22 +7216,22 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2355);
-            			    	multiplyExpression189 = multiplyExpression();
+            			    	PushFollow(FOLLOW_multiplyExpression_in_additiveExpression2412);
+            			    	multiplyExpression196 = multiplyExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, multiplyExpression189.Tree);
+            			    	adaptor.AddChild(root_0, multiplyExpression196.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop65;
+            			    goto loop67;
             	    }
             	} while (true);
 
-            	loop65:
-            		;	// Stops C# compiler whining that label 'loop65' has no statements
+            	loop67:
+            		;	// Stops C# compiler whining that label 'loop67' has no statements
 
 
             }
@@ -7079,7 +7267,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "multiplyExpression"
-    // Hql.g:487:1: multiplyExpression : unaryExpression ( ( STAR | DIV ) unaryExpression )* ;
+    // Hql.g:499:1: multiplyExpression : unaryExpression ( ( STAR | DIV ) unaryExpression )* ;
     public HqlParser.multiplyExpression_return multiplyExpression() // throws RecognitionException [1]
     {   
         HqlParser.multiplyExpression_return retval = new HqlParser.multiplyExpression_return();
@@ -7087,82 +7275,82 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken STAR191 = null;
-        IToken DIV192 = null;
-        HqlParser.unaryExpression_return unaryExpression190 = default(HqlParser.unaryExpression_return);
+        IToken STAR198 = null;
+        IToken DIV199 = null;
+        HqlParser.unaryExpression_return unaryExpression197 = default(HqlParser.unaryExpression_return);
 
-        HqlParser.unaryExpression_return unaryExpression193 = default(HqlParser.unaryExpression_return);
+        HqlParser.unaryExpression_return unaryExpression200 = default(HqlParser.unaryExpression_return);
 
 
-        IASTNode STAR191_tree=null;
-        IASTNode DIV192_tree=null;
+        IASTNode STAR198_tree=null;
+        IASTNode DIV199_tree=null;
 
         try 
     	{
-            // Hql.g:488:2: ( unaryExpression ( ( STAR | DIV ) unaryExpression )* )
-            // Hql.g:488:4: unaryExpression ( ( STAR | DIV ) unaryExpression )*
+            // Hql.g:500:2: ( unaryExpression ( ( STAR | DIV ) unaryExpression )* )
+            // Hql.g:500:4: unaryExpression ( ( STAR | DIV ) unaryExpression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2370);
-            	unaryExpression190 = unaryExpression();
+            	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2427);
+            	unaryExpression197 = unaryExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, unaryExpression190.Tree);
-            	// Hql.g:488:20: ( ( STAR | DIV ) unaryExpression )*
+            	adaptor.AddChild(root_0, unaryExpression197.Tree);
+            	// Hql.g:500:20: ( ( STAR | DIV ) unaryExpression )*
             	do 
             	{
-            	    int alt67 = 2;
-            	    int LA67_0 = input.LA(1);
+            	    int alt69 = 2;
+            	    int LA69_0 = input.LA(1);
 
-            	    if ( ((LA67_0 >= STAR && LA67_0 <= DIV)) )
+            	    if ( ((LA69_0 >= STAR && LA69_0 <= DIV)) )
             	    {
-            	        alt67 = 1;
+            	        alt69 = 1;
             	    }
 
 
-            	    switch (alt67) 
+            	    switch (alt69) 
             		{
             			case 1 :
-            			    // Hql.g:488:22: ( STAR | DIV ) unaryExpression
+            			    // Hql.g:500:22: ( STAR | DIV ) unaryExpression
             			    {
-            			    	// Hql.g:488:22: ( STAR | DIV )
-            			    	int alt66 = 2;
-            			    	int LA66_0 = input.LA(1);
+            			    	// Hql.g:500:22: ( STAR | DIV )
+            			    	int alt68 = 2;
+            			    	int LA68_0 = input.LA(1);
 
-            			    	if ( (LA66_0 == STAR) )
+            			    	if ( (LA68_0 == STAR) )
             			    	{
-            			    	    alt66 = 1;
+            			    	    alt68 = 1;
             			    	}
-            			    	else if ( (LA66_0 == DIV) )
+            			    	else if ( (LA68_0 == DIV) )
             			    	{
-            			    	    alt66 = 2;
+            			    	    alt68 = 2;
             			    	}
             			    	else 
             			    	{
-            			    	    NoViableAltException nvae_d66s0 =
-            			    	        new NoViableAltException("", 66, 0, input);
+            			    	    NoViableAltException nvae_d68s0 =
+            			    	        new NoViableAltException("", 68, 0, input);
 
-            			    	    throw nvae_d66s0;
+            			    	    throw nvae_d68s0;
             			    	}
-            			    	switch (alt66) 
+            			    	switch (alt68) 
             			    	{
             			    	    case 1 :
-            			    	        // Hql.g:488:24: STAR
+            			    	        // Hql.g:500:24: STAR
             			    	        {
-            			    	        	STAR191=(IToken)Match(input,STAR,FOLLOW_STAR_in_multiplyExpression2376); 
-            			    	        		STAR191_tree = (IASTNode)adaptor.Create(STAR191);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(STAR191_tree, root_0);
+            			    	        	STAR198=(IToken)Match(input,STAR,FOLLOW_STAR_in_multiplyExpression2433); 
+            			    	        		STAR198_tree = (IASTNode)adaptor.Create(STAR198);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(STAR198_tree, root_0);
 
 
             			    	        }
             			    	        break;
             			    	    case 2 :
-            			    	        // Hql.g:488:32: DIV
+            			    	        // Hql.g:500:32: DIV
             			    	        {
-            			    	        	DIV192=(IToken)Match(input,DIV,FOLLOW_DIV_in_multiplyExpression2381); 
-            			    	        		DIV192_tree = (IASTNode)adaptor.Create(DIV192);
-            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(DIV192_tree, root_0);
+            			    	        	DIV199=(IToken)Match(input,DIV,FOLLOW_DIV_in_multiplyExpression2438); 
+            			    	        		DIV199_tree = (IASTNode)adaptor.Create(DIV199);
+            			    	        		root_0 = (IASTNode)adaptor.BecomeRoot(DIV199_tree, root_0);
 
 
             			    	        }
@@ -7170,22 +7358,22 @@ public partial class HqlParser : Parser
 
             			    	}
 
-            			    	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2386);
-            			    	unaryExpression193 = unaryExpression();
+            			    	PushFollow(FOLLOW_unaryExpression_in_multiplyExpression2443);
+            			    	unaryExpression200 = unaryExpression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, unaryExpression193.Tree);
+            			    	adaptor.AddChild(root_0, unaryExpression200.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop67;
+            			    goto loop69;
             	    }
             	} while (true);
 
-            	loop67:
-            		;	// Stops C# compiler whining that label 'loop67' has no statements
+            	loop69:
+            		;	// Stops C# compiler whining that label 'loop69' has no statements
 
 
             }
@@ -7221,7 +7409,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "unaryExpression"
-    // Hql.g:492:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) );
+    // Hql.g:504:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) );
     public HqlParser.unaryExpression_return unaryExpression() // throws RecognitionException [1]
     {   
         HqlParser.unaryExpression_return retval = new HqlParser.unaryExpression_return();
@@ -7252,23 +7440,23 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_unaryExpression = new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
         try 
     	{
-            // Hql.g:493:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) )
-            int alt68 = 5;
+            // Hql.g:505:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) | p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | c= caseExpression -> ^( $c) | q= quantifiedExpression -> ^( $q) | a= atom -> ^( $a) )
+            int alt70 = 5;
             switch ( input.LA(1) ) 
             {
             case MINUS:
             	{
-                alt68 = 1;
+                alt70 = 1;
                 }
                 break;
             case PLUS:
             	{
-                alt68 = 2;
+                alt70 = 2;
                 }
                 break;
             case CASE:
             	{
-                alt68 = 3;
+                alt70 = 3;
                 }
                 break;
             case ALL:
@@ -7276,7 +7464,7 @@ public partial class HqlParser : Parser
             case EXISTS:
             case SOME:
             	{
-                alt68 = 4;
+                alt70 = 4;
                 }
                 break;
             case AVG:
@@ -7301,25 +7489,25 @@ public partial class HqlParser : Parser
             case QUOTED_String:
             case IDENT:
             	{
-                alt68 = 5;
+                alt70 = 5;
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d68s0 =
-            	        new NoViableAltException("", 68, 0, input);
+            	    NoViableAltException nvae_d70s0 =
+            	        new NoViableAltException("", 70, 0, input);
 
-            	    throw nvae_d68s0;
+            	    throw nvae_d70s0;
             }
 
-            switch (alt68) 
+            switch (alt70) 
             {
                 case 1 :
-                    // Hql.g:493:4: m= MINUS mu= unaryExpression
+                    // Hql.g:505:4: m= MINUS mu= unaryExpression
                     {
-                    	m=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_unaryExpression2404);  
+                    	m=(IToken)Match(input,MINUS,FOLLOW_MINUS_in_unaryExpression2461);  
                     	stream_MINUS.Add(m);
 
-                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2408);
+                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2465);
                     	mu = unaryExpression();
                     	state.followingStackPointer--;
 
@@ -7338,9 +7526,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_mu = new RewriteRuleSubtreeStream(adaptor, "rule mu", mu!=null ? mu.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 493:31: -> ^( UNARY_MINUS[$m] $mu)
+                    	// 505:31: -> ^( UNARY_MINUS[$m] $mu)
                     	{
-                    	    // Hql.g:493:34: ^( UNARY_MINUS[$m] $mu)
+                    	    // Hql.g:505:34: ^( UNARY_MINUS[$m] $mu)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_MINUS, m), root_1);
@@ -7356,12 +7544,12 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:494:4: p= PLUS pu= unaryExpression
+                    // Hql.g:506:4: p= PLUS pu= unaryExpression
                     {
-                    	p=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_unaryExpression2425);  
+                    	p=(IToken)Match(input,PLUS,FOLLOW_PLUS_in_unaryExpression2482);  
                     	stream_PLUS.Add(p);
 
-                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2429);
+                    	PushFollow(FOLLOW_unaryExpression_in_unaryExpression2486);
                     	pu = unaryExpression();
                     	state.followingStackPointer--;
 
@@ -7380,9 +7568,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_pu = new RewriteRuleSubtreeStream(adaptor, "rule pu", pu!=null ? pu.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 494:30: -> ^( UNARY_PLUS[$p] $pu)
+                    	// 506:30: -> ^( UNARY_PLUS[$p] $pu)
                     	{
-                    	    // Hql.g:494:33: ^( UNARY_PLUS[$p] $pu)
+                    	    // Hql.g:506:33: ^( UNARY_PLUS[$p] $pu)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_PLUS, p), root_1);
@@ -7398,9 +7586,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // Hql.g:495:4: c= caseExpression
+                    // Hql.g:507:4: c= caseExpression
                     {
-                    	PushFollow(FOLLOW_caseExpression_in_unaryExpression2446);
+                    	PushFollow(FOLLOW_caseExpression_in_unaryExpression2503);
                     	c = caseExpression();
                     	state.followingStackPointer--;
 
@@ -7419,9 +7607,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_c = new RewriteRuleSubtreeStream(adaptor, "rule c", c!=null ? c.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 495:21: -> ^( $c)
+                    	// 507:21: -> ^( $c)
                     	{
-                    	    // Hql.g:495:24: ^( $c)
+                    	    // Hql.g:507:24: ^( $c)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_c.NextNode(), root_1);
@@ -7435,9 +7623,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 4 :
-                    // Hql.g:496:4: q= quantifiedExpression
+                    // Hql.g:508:4: q= quantifiedExpression
                     {
-                    	PushFollow(FOLLOW_quantifiedExpression_in_unaryExpression2460);
+                    	PushFollow(FOLLOW_quantifiedExpression_in_unaryExpression2517);
                     	q = quantifiedExpression();
                     	state.followingStackPointer--;
 
@@ -7456,9 +7644,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_q = new RewriteRuleSubtreeStream(adaptor, "rule q", q!=null ? q.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 496:27: -> ^( $q)
+                    	// 508:27: -> ^( $q)
                     	{
-                    	    // Hql.g:496:30: ^( $q)
+                    	    // Hql.g:508:30: ^( $q)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_q.NextNode(), root_1);
@@ -7472,9 +7660,9 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 5 :
-                    // Hql.g:497:4: a= atom
+                    // Hql.g:509:4: a= atom
                     {
-                    	PushFollow(FOLLOW_atom_in_unaryExpression2475);
+                    	PushFollow(FOLLOW_atom_in_unaryExpression2532);
                     	a = atom();
                     	state.followingStackPointer--;
 
@@ -7493,9 +7681,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_a = new RewriteRuleSubtreeStream(adaptor, "rule a", a!=null ? a.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 497:11: -> ^( $a)
+                    	// 509:11: -> ^( $a)
                     	{
-                    	    // Hql.g:497:14: ^( $a)
+                    	    // Hql.g:509:14: ^( $a)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_a.NextNode(), root_1);
@@ -7541,7 +7729,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "caseExpression"
-    // Hql.g:500:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
+    // Hql.g:512:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
     public HqlParser.caseExpression_return caseExpression() // throws RecognitionException [1]
     {   
         HqlParser.caseExpression_return retval = new HqlParser.caseExpression_return();
@@ -7549,25 +7737,25 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken CASE194 = null;
-        IToken END197 = null;
-        IToken CASE198 = null;
-        IToken END202 = null;
-        HqlParser.whenClause_return whenClause195 = default(HqlParser.whenClause_return);
+        IToken CASE201 = null;
+        IToken END204 = null;
+        IToken CASE205 = null;
+        IToken END209 = null;
+        HqlParser.whenClause_return whenClause202 = default(HqlParser.whenClause_return);
 
-        HqlParser.elseClause_return elseClause196 = default(HqlParser.elseClause_return);
+        HqlParser.elseClause_return elseClause203 = default(HqlParser.elseClause_return);
 
-        HqlParser.unaryExpression_return unaryExpression199 = default(HqlParser.unaryExpression_return);
+        HqlParser.unaryExpression_return unaryExpression206 = default(HqlParser.unaryExpression_return);
 
-        HqlParser.altWhenClause_return altWhenClause200 = default(HqlParser.altWhenClause_return);
+        HqlParser.altWhenClause_return altWhenClause207 = default(HqlParser.altWhenClause_return);
 
-        HqlParser.elseClause_return elseClause201 = default(HqlParser.elseClause_return);
+        HqlParser.elseClause_return elseClause208 = default(HqlParser.elseClause_return);
 
 
-        IASTNode CASE194_tree=null;
-        IASTNode END197_tree=null;
-        IASTNode CASE198_tree=null;
-        IASTNode END202_tree=null;
+        IASTNode CASE201_tree=null;
+        IASTNode END204_tree=null;
+        IASTNode CASE205_tree=null;
+        IASTNode END209_tree=null;
         RewriteRuleTokenStream stream_END = new RewriteRuleTokenStream(adaptor,"token END");
         RewriteRuleTokenStream stream_CASE = new RewriteRuleTokenStream(adaptor,"token CASE");
         RewriteRuleSubtreeStream stream_whenClause = new RewriteRuleSubtreeStream(adaptor,"rule whenClause");
@@ -7576,168 +7764,46 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_elseClause = new RewriteRuleSubtreeStream(adaptor,"rule elseClause");
         try 
     	{
-            // Hql.g:501:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
-            int alt73 = 2;
-            int LA73_0 = input.LA(1);
+            // Hql.g:513:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
+            int alt75 = 2;
+            int LA75_0 = input.LA(1);
 
-            if ( (LA73_0 == CASE) )
+            if ( (LA75_0 == CASE) )
             {
-                int LA73_1 = input.LA(2);
+                int LA75_1 = input.LA(2);
 
-                if ( ((LA73_1 >= ALL && LA73_1 <= ANY) || LA73_1 == AVG || LA73_1 == COUNT || LA73_1 == ELEMENTS || (LA73_1 >= EXISTS && LA73_1 <= FALSE) || LA73_1 == INDICES || (LA73_1 >= MAX && LA73_1 <= MIN) || LA73_1 == NULL || (LA73_1 >= SOME && LA73_1 <= TRUE) || LA73_1 == CASE || LA73_1 == EMPTY || (LA73_1 >= NUM_INT && LA73_1 <= NUM_LONG) || LA73_1 == OPEN || (LA73_1 >= PLUS && LA73_1 <= MINUS) || (LA73_1 >= COLON && LA73_1 <= IDENT)) )
+                if ( ((LA75_1 >= ALL && LA75_1 <= ANY) || LA75_1 == AVG || LA75_1 == COUNT || LA75_1 == ELEMENTS || (LA75_1 >= EXISTS && LA75_1 <= FALSE) || LA75_1 == INDICES || (LA75_1 >= MAX && LA75_1 <= MIN) || LA75_1 == NULL || (LA75_1 >= SOME && LA75_1 <= SUM) || LA75_1 == TRUE || LA75_1 == CASE || LA75_1 == EMPTY || (LA75_1 >= NUM_INT && LA75_1 <= NUM_LONG) || LA75_1 == OPEN || (LA75_1 >= PLUS && LA75_1 <= MINUS) || (LA75_1 >= COLON && LA75_1 <= IDENT)) )
                 {
-                    alt73 = 2;
+                    alt75 = 2;
                 }
-                else if ( (LA73_1 == WHEN) )
+                else if ( (LA75_1 == WHEN) )
                 {
-                    alt73 = 1;
+                    alt75 = 1;
                 }
                 else 
                 {
-                    NoViableAltException nvae_d73s1 =
-                        new NoViableAltException("", 73, 1, input);
+                    NoViableAltException nvae_d75s1 =
+                        new NoViableAltException("", 75, 1, input);
 
-                    throw nvae_d73s1;
+                    throw nvae_d75s1;
                 }
             }
             else 
             {
-                NoViableAltException nvae_d73s0 =
-                    new NoViableAltException("", 73, 0, input);
+                NoViableAltException nvae_d75s0 =
+                    new NoViableAltException("", 75, 0, input);
 
-                throw nvae_d73s0;
+                throw nvae_d75s0;
             }
-            switch (alt73) 
+            switch (alt75) 
             {
                 case 1 :
-                    // Hql.g:501:4: CASE ( whenClause )+ ( elseClause )? END
+                    // Hql.g:513:4: CASE ( whenClause )+ ( elseClause )? END
                     {
-                    	CASE194=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2494);  
-                    	stream_CASE.Add(CASE194);
+                    	CASE201=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2551);  
+                    	stream_CASE.Add(CASE201);
 
-                    	// Hql.g:501:9: ( whenClause )+
-                    	int cnt69 = 0;
-                    	do 
-                    	{
-                    	    int alt69 = 2;
-                    	    int LA69_0 = input.LA(1);
-
-                    	    if ( (LA69_0 == WHEN) )
-                    	    {
-                    	        alt69 = 1;
-                    	    }
-
-
-                    	    switch (alt69) 
-                    		{
-                    			case 1 :
-                    			    // Hql.g:501:10: whenClause
-                    			    {
-                    			    	PushFollow(FOLLOW_whenClause_in_caseExpression2497);
-                    			    	whenClause195 = whenClause();
-                    			    	state.followingStackPointer--;
-
-                    			    	stream_whenClause.Add(whenClause195.Tree);
-
-                    			    }
-                    			    break;
-
-                    			default:
-                    			    if ( cnt69 >= 1 ) goto loop69;
-                    		            EarlyExitException eee69 =
-                    		                new EarlyExitException(69, input);
-                    		            throw eee69;
-                    	    }
-                    	    cnt69++;
-                    	} while (true);
-
-                    	loop69:
-                    		;	// Stops C# compiler whining that label 'loop69' has no statements
-
-                    	// Hql.g:501:23: ( elseClause )?
-                    	int alt70 = 2;
-                    	int LA70_0 = input.LA(1);
-
-                    	if ( (LA70_0 == ELSE) )
-                    	{
-                    	    alt70 = 1;
-                    	}
-                    	switch (alt70) 
-                    	{
-                    	    case 1 :
-                    	        // Hql.g:501:24: elseClause
-                    	        {
-                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2502);
-                    	        	elseClause196 = elseClause();
-                    	        	state.followingStackPointer--;
-
-                    	        	stream_elseClause.Add(elseClause196.Tree);
-
-                    	        }
-                    	        break;
-
-                    	}
-
-                    	END197=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2506);  
-                    	stream_END.Add(END197);
-
-
-
-                    	// AST REWRITE
-                    	// elements:          elseClause, CASE, whenClause
-                    	// token labels:      
-                    	// rule labels:       retval
-                    	// token list labels: 
-                    	// rule list labels:  
-                    	// wildcard labels: 
-                    	retval.Tree = root_0;
-                    	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
-
-                    	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 502:3: -> ^( CASE ( whenClause )+ ( elseClause )? )
-                    	{
-                    	    // Hql.g:502:6: ^( CASE ( whenClause )+ ( elseClause )? )
-                    	    {
-                    	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
-                    	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_CASE.NextNode(), root_1);
-
-                    	    if ( !(stream_whenClause.HasNext()) ) {
-                    	        throw new RewriteEarlyExitException();
-                    	    }
-                    	    while ( stream_whenClause.HasNext() )
-                    	    {
-                    	        adaptor.AddChild(root_1, stream_whenClause.NextTree());
-
-                    	    }
-                    	    stream_whenClause.Reset();
-                    	    // Hql.g:502:25: ( elseClause )?
-                    	    if ( stream_elseClause.HasNext() )
-                    	    {
-                    	        adaptor.AddChild(root_1, stream_elseClause.NextTree());
-
-                    	    }
-                    	    stream_elseClause.Reset();
-
-                    	    adaptor.AddChild(root_0, root_1);
-                    	    }
-
-                    	}
-
-                    	retval.Tree = root_0;retval.Tree = root_0;
-                    }
-                    break;
-                case 2 :
-                    // Hql.g:503:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
-                    {
-                    	CASE198=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2526);  
-                    	stream_CASE.Add(CASE198);
-
-                    	PushFollow(FOLLOW_unaryExpression_in_caseExpression2528);
-                    	unaryExpression199 = unaryExpression();
-                    	state.followingStackPointer--;
-
-                    	stream_unaryExpression.Add(unaryExpression199.Tree);
-                    	// Hql.g:503:25: ( altWhenClause )+
+                    	// Hql.g:513:9: ( whenClause )+
                     	int cnt71 = 0;
                     	do 
                     	{
@@ -7753,13 +7819,13 @@ public partial class HqlParser : Parser
                     	    switch (alt71) 
                     		{
                     			case 1 :
-                    			    // Hql.g:503:26: altWhenClause
+                    			    // Hql.g:513:10: whenClause
                     			    {
-                    			    	PushFollow(FOLLOW_altWhenClause_in_caseExpression2531);
-                    			    	altWhenClause200 = altWhenClause();
+                    			    	PushFollow(FOLLOW_whenClause_in_caseExpression2554);
+                    			    	whenClause202 = whenClause();
                     			    	state.followingStackPointer--;
 
-                    			    	stream_altWhenClause.Add(altWhenClause200.Tree);
+                    			    	stream_whenClause.Add(whenClause202.Tree);
 
                     			    }
                     			    break;
@@ -7776,7 +7842,7 @@ public partial class HqlParser : Parser
                     	loop71:
                     		;	// Stops C# compiler whining that label 'loop71' has no statements
 
-                    	// Hql.g:503:42: ( elseClause )?
+                    	// Hql.g:513:23: ( elseClause )?
                     	int alt72 = 2;
                     	int LA72_0 = input.LA(1);
 
@@ -7787,26 +7853,26 @@ public partial class HqlParser : Parser
                     	switch (alt72) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:503:43: elseClause
+                    	        // Hql.g:513:24: elseClause
                     	        {
-                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2536);
-                    	        	elseClause201 = elseClause();
+                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2559);
+                    	        	elseClause203 = elseClause();
                     	        	state.followingStackPointer--;
 
-                    	        	stream_elseClause.Add(elseClause201.Tree);
+                    	        	stream_elseClause.Add(elseClause203.Tree);
 
                     	        }
                     	        break;
 
                     	}
 
-                    	END202=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2540);  
-                    	stream_END.Add(END202);
+                    	END204=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2563);  
+                    	stream_END.Add(END204);
 
 
 
                     	// AST REWRITE
-                    	// elements:          elseClause, altWhenClause, unaryExpression
+                    	// elements:          whenClause, elseClause, CASE
                     	// token labels:      
                     	// rule labels:       retval
                     	// token list labels: 
@@ -7816,9 +7882,131 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 504:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+                    	// 514:3: -> ^( CASE ( whenClause )+ ( elseClause )? )
                     	{
-                    	    // Hql.g:504:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+                    	    // Hql.g:514:6: ^( CASE ( whenClause )+ ( elseClause )? )
+                    	    {
+                    	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
+                    	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_CASE.NextNode(), root_1);
+
+                    	    if ( !(stream_whenClause.HasNext()) ) {
+                    	        throw new RewriteEarlyExitException();
+                    	    }
+                    	    while ( stream_whenClause.HasNext() )
+                    	    {
+                    	        adaptor.AddChild(root_1, stream_whenClause.NextTree());
+
+                    	    }
+                    	    stream_whenClause.Reset();
+                    	    // Hql.g:514:25: ( elseClause )?
+                    	    if ( stream_elseClause.HasNext() )
+                    	    {
+                    	        adaptor.AddChild(root_1, stream_elseClause.NextTree());
+
+                    	    }
+                    	    stream_elseClause.Reset();
+
+                    	    adaptor.AddChild(root_0, root_1);
+                    	    }
+
+                    	}
+
+                    	retval.Tree = root_0;retval.Tree = root_0;
+                    }
+                    break;
+                case 2 :
+                    // Hql.g:515:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
+                    {
+                    	CASE205=(IToken)Match(input,CASE,FOLLOW_CASE_in_caseExpression2583);  
+                    	stream_CASE.Add(CASE205);
+
+                    	PushFollow(FOLLOW_unaryExpression_in_caseExpression2585);
+                    	unaryExpression206 = unaryExpression();
+                    	state.followingStackPointer--;
+
+                    	stream_unaryExpression.Add(unaryExpression206.Tree);
+                    	// Hql.g:515:25: ( altWhenClause )+
+                    	int cnt73 = 0;
+                    	do 
+                    	{
+                    	    int alt73 = 2;
+                    	    int LA73_0 = input.LA(1);
+
+                    	    if ( (LA73_0 == WHEN) )
+                    	    {
+                    	        alt73 = 1;
+                    	    }
+
+
+                    	    switch (alt73) 
+                    		{
+                    			case 1 :
+                    			    // Hql.g:515:26: altWhenClause
+                    			    {
+                    			    	PushFollow(FOLLOW_altWhenClause_in_caseExpression2588);
+                    			    	altWhenClause207 = altWhenClause();
+                    			    	state.followingStackPointer--;
+
+                    			    	stream_altWhenClause.Add(altWhenClause207.Tree);
+
+                    			    }
+                    			    break;
+
+                    			default:
+                    			    if ( cnt73 >= 1 ) goto loop73;
+                    		            EarlyExitException eee73 =
+                    		                new EarlyExitException(73, input);
+                    		            throw eee73;
+                    	    }
+                    	    cnt73++;
+                    	} while (true);
+
+                    	loop73:
+                    		;	// Stops C# compiler whining that label 'loop73' has no statements
+
+                    	// Hql.g:515:42: ( elseClause )?
+                    	int alt74 = 2;
+                    	int LA74_0 = input.LA(1);
+
+                    	if ( (LA74_0 == ELSE) )
+                    	{
+                    	    alt74 = 1;
+                    	}
+                    	switch (alt74) 
+                    	{
+                    	    case 1 :
+                    	        // Hql.g:515:43: elseClause
+                    	        {
+                    	        	PushFollow(FOLLOW_elseClause_in_caseExpression2593);
+                    	        	elseClause208 = elseClause();
+                    	        	state.followingStackPointer--;
+
+                    	        	stream_elseClause.Add(elseClause208.Tree);
+
+                    	        }
+                    	        break;
+
+                    	}
+
+                    	END209=(IToken)Match(input,END,FOLLOW_END_in_caseExpression2597);  
+                    	stream_END.Add(END209);
+
+
+
+                    	// AST REWRITE
+                    	// elements:          altWhenClause, unaryExpression, elseClause
+                    	// token labels:      
+                    	// rule labels:       retval
+                    	// token list labels: 
+                    	// rule list labels:  
+                    	// wildcard labels: 
+                    	retval.Tree = root_0;
+                    	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
+
+                    	root_0 = (IASTNode)adaptor.GetNilNode();
+                    	// 516:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+                    	{
+                    	    // Hql.g:516:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CASE2, "CASE2"), root_1);
@@ -7833,7 +8021,7 @@ public partial class HqlParser : Parser
 
                     	    }
                     	    stream_altWhenClause.Reset();
-                    	    // Hql.g:504:45: ( elseClause )?
+                    	    // Hql.g:516:45: ( elseClause )?
                     	    if ( stream_elseClause.HasNext() )
                     	    {
                     	        adaptor.AddChild(root_1, stream_elseClause.NextTree());
@@ -7882,7 +8070,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "whenClause"
-    // Hql.g:507:1: whenClause : ( WHEN logicalExpression THEN expression ) ;
+    // Hql.g:519:1: whenClause : ( WHEN logicalExpression THEN expression ) ;
     public HqlParser.whenClause_return whenClause() // throws RecognitionException [1]
     {   
         HqlParser.whenClause_return retval = new HqlParser.whenClause_return();
@@ -7890,41 +8078,41 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken WHEN203 = null;
-        IToken THEN205 = null;
-        HqlParser.logicalExpression_return logicalExpression204 = default(HqlParser.logicalExpression_return);
+        IToken WHEN210 = null;
+        IToken THEN212 = null;
+        HqlParser.logicalExpression_return logicalExpression211 = default(HqlParser.logicalExpression_return);
 
-        HqlParser.expression_return expression206 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression213 = default(HqlParser.expression_return);
 
 
-        IASTNode WHEN203_tree=null;
-        IASTNode THEN205_tree=null;
+        IASTNode WHEN210_tree=null;
+        IASTNode THEN212_tree=null;
 
         try 
     	{
-            // Hql.g:508:2: ( ( WHEN logicalExpression THEN expression ) )
-            // Hql.g:508:4: ( WHEN logicalExpression THEN expression )
+            // Hql.g:520:2: ( ( WHEN logicalExpression THEN expression ) )
+            // Hql.g:520:4: ( WHEN logicalExpression THEN expression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:508:4: ( WHEN logicalExpression THEN expression )
-            	// Hql.g:508:5: WHEN logicalExpression THEN expression
+            	// Hql.g:520:4: ( WHEN logicalExpression THEN expression )
+            	// Hql.g:520:5: WHEN logicalExpression THEN expression
             	{
-            		WHEN203=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_whenClause2569); 
-            			WHEN203_tree = (IASTNode)adaptor.Create(WHEN203);
-            			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN203_tree, root_0);
+            		WHEN210=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_whenClause2626); 
+            			WHEN210_tree = (IASTNode)adaptor.Create(WHEN210);
+            			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN210_tree, root_0);
 
-            		PushFollow(FOLLOW_logicalExpression_in_whenClause2572);
-            		logicalExpression204 = logicalExpression();
+            		PushFollow(FOLLOW_logicalExpression_in_whenClause2629);
+            		logicalExpression211 = logicalExpression();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, logicalExpression204.Tree);
-            		THEN205=(IToken)Match(input,THEN,FOLLOW_THEN_in_whenClause2574); 
-            		PushFollow(FOLLOW_expression_in_whenClause2577);
-            		expression206 = expression();
+            		adaptor.AddChild(root_0, logicalExpression211.Tree);
+            		THEN212=(IToken)Match(input,THEN,FOLLOW_THEN_in_whenClause2631); 
+            		PushFollow(FOLLOW_expression_in_whenClause2634);
+            		expression213 = expression();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, expression206.Tree);
+            		adaptor.AddChild(root_0, expression213.Tree);
 
             	}
 
@@ -7962,7 +8150,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "altWhenClause"
-    // Hql.g:511:1: altWhenClause : ( WHEN unaryExpression THEN expression ) ;
+    // Hql.g:523:1: altWhenClause : ( WHEN unaryExpression THEN expression ) ;
     public HqlParser.altWhenClause_return altWhenClause() // throws RecognitionException [1]
     {   
         HqlParser.altWhenClause_return retval = new HqlParser.altWhenClause_return();
@@ -7970,41 +8158,41 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken WHEN207 = null;
-        IToken THEN209 = null;
-        HqlParser.unaryExpression_return unaryExpression208 = default(HqlParser.unaryExpression_return);
+        IToken WHEN214 = null;
+        IToken THEN216 = null;
+        HqlParser.unaryExpression_return unaryExpression215 = default(HqlParser.unaryExpression_return);
 
-        HqlParser.expression_return expression210 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression217 = default(HqlParser.expression_return);
 
 
-        IASTNode WHEN207_tree=null;
-        IASTNode THEN209_tree=null;
+        IASTNode WHEN214_tree=null;
+        IASTNode THEN216_tree=null;
 
         try 
     	{
-            // Hql.g:512:2: ( ( WHEN unaryExpression THEN expression ) )
-            // Hql.g:512:4: ( WHEN unaryExpression THEN expression )
+            // Hql.g:524:2: ( ( WHEN unaryExpression THEN expression ) )
+            // Hql.g:524:4: ( WHEN unaryExpression THEN expression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:512:4: ( WHEN unaryExpression THEN expression )
-            	// Hql.g:512:5: WHEN unaryExpression THEN expression
+            	// Hql.g:524:4: ( WHEN unaryExpression THEN expression )
+            	// Hql.g:524:5: WHEN unaryExpression THEN expression
             	{
-            		WHEN207=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_altWhenClause2591); 
-            			WHEN207_tree = (IASTNode)adaptor.Create(WHEN207);
-            			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN207_tree, root_0);
+            		WHEN214=(IToken)Match(input,WHEN,FOLLOW_WHEN_in_altWhenClause2648); 
+            			WHEN214_tree = (IASTNode)adaptor.Create(WHEN214);
+            			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN214_tree, root_0);
 
-            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2594);
-            		unaryExpression208 = unaryExpression();
+            		PushFollow(FOLLOW_unaryExpression_in_altWhenClause2651);
+            		unaryExpression215 = unaryExpression();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, unaryExpression208.Tree);
-            		THEN209=(IToken)Match(input,THEN,FOLLOW_THEN_in_altWhenClause2596); 
-            		PushFollow(FOLLOW_expression_in_altWhenClause2599);
-            		expression210 = expression();
+            		adaptor.AddChild(root_0, unaryExpression215.Tree);
+            		THEN216=(IToken)Match(input,THEN,FOLLOW_THEN_in_altWhenClause2653); 
+            		PushFollow(FOLLOW_expression_in_altWhenClause2656);
+            		expression217 = expression();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, expression210.Tree);
+            		adaptor.AddChild(root_0, expression217.Tree);
 
             	}
 
@@ -8042,7 +8230,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "elseClause"
-    // Hql.g:515:1: elseClause : ( ELSE expression ) ;
+    // Hql.g:527:1: elseClause : ( ELSE expression ) ;
     public HqlParser.elseClause_return elseClause() // throws RecognitionException [1]
     {   
         HqlParser.elseClause_return retval = new HqlParser.elseClause_return();
@@ -8050,31 +8238,31 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken ELSE211 = null;
-        HqlParser.expression_return expression212 = default(HqlParser.expression_return);
+        IToken ELSE218 = null;
+        HqlParser.expression_return expression219 = default(HqlParser.expression_return);
 
 
-        IASTNode ELSE211_tree=null;
+        IASTNode ELSE218_tree=null;
 
         try 
     	{
-            // Hql.g:516:2: ( ( ELSE expression ) )
-            // Hql.g:516:4: ( ELSE expression )
+            // Hql.g:528:2: ( ( ELSE expression ) )
+            // Hql.g:528:4: ( ELSE expression )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:516:4: ( ELSE expression )
-            	// Hql.g:516:5: ELSE expression
+            	// Hql.g:528:4: ( ELSE expression )
+            	// Hql.g:528:5: ELSE expression
             	{
-            		ELSE211=(IToken)Match(input,ELSE,FOLLOW_ELSE_in_elseClause2613); 
-            			ELSE211_tree = (IASTNode)adaptor.Create(ELSE211);
-            			root_0 = (IASTNode)adaptor.BecomeRoot(ELSE211_tree, root_0);
+            		ELSE218=(IToken)Match(input,ELSE,FOLLOW_ELSE_in_elseClause2670); 
+            			ELSE218_tree = (IASTNode)adaptor.Create(ELSE218);
+            			root_0 = (IASTNode)adaptor.BecomeRoot(ELSE218_tree, root_0);
 
-            		PushFollow(FOLLOW_expression_in_elseClause2616);
-            		expression212 = expression();
+            		PushFollow(FOLLOW_expression_in_elseClause2673);
+            		expression219 = expression();
             		state.followingStackPointer--;
 
-            		adaptor.AddChild(root_0, expression212.Tree);
+            		adaptor.AddChild(root_0, expression219.Tree);
 
             	}
 
@@ -8112,7 +8300,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "quantifiedExpression"
-    // Hql.g:519:1: quantifiedExpression : ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) ;
+    // Hql.g:531:1: quantifiedExpression : ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) ;
     public HqlParser.quantifiedExpression_return quantifiedExpression() // throws RecognitionException [1]
     {   
         HqlParser.quantifiedExpression_return retval = new HqlParser.quantifiedExpression_return();
@@ -8120,102 +8308,102 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken SOME213 = null;
-        IToken EXISTS214 = null;
-        IToken ALL215 = null;
-        IToken ANY216 = null;
-        IToken OPEN219 = null;
-        IToken CLOSE221 = null;
-        HqlParser.identifier_return identifier217 = default(HqlParser.identifier_return);
+        IToken SOME220 = null;
+        IToken EXISTS221 = null;
+        IToken ALL222 = null;
+        IToken ANY223 = null;
+        IToken OPEN226 = null;
+        IToken CLOSE228 = null;
+        HqlParser.identifier_return identifier224 = default(HqlParser.identifier_return);
 
-        HqlParser.collectionExpr_return collectionExpr218 = default(HqlParser.collectionExpr_return);
+        HqlParser.collectionExpr_return collectionExpr225 = default(HqlParser.collectionExpr_return);
 
-        HqlParser.subQuery_return subQuery220 = default(HqlParser.subQuery_return);
+        HqlParser.subQuery_return subQuery227 = default(HqlParser.subQuery_return);
 
 
-        IASTNode SOME213_tree=null;
-        IASTNode EXISTS214_tree=null;
-        IASTNode ALL215_tree=null;
-        IASTNode ANY216_tree=null;
-        IASTNode OPEN219_tree=null;
-        IASTNode CLOSE221_tree=null;
+        IASTNode SOME220_tree=null;
+        IASTNode EXISTS221_tree=null;
+        IASTNode ALL222_tree=null;
+        IASTNode ANY223_tree=null;
+        IASTNode OPEN226_tree=null;
+        IASTNode CLOSE228_tree=null;
 
         try 
     	{
-            // Hql.g:520:2: ( ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) )
-            // Hql.g:520:4: ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
+            // Hql.g:532:2: ( ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) ) )
+            // Hql.g:532:4: ( SOME | EXISTS | ALL | ANY ) ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:520:4: ( SOME | EXISTS | ALL | ANY )
-            	int alt74 = 4;
+            	// Hql.g:532:4: ( SOME | EXISTS | ALL | ANY )
+            	int alt76 = 4;
             	switch ( input.LA(1) ) 
             	{
             	case SOME:
             		{
-            	    alt74 = 1;
+            	    alt76 = 1;
             	    }
             	    break;
             	case EXISTS:
             		{
-            	    alt74 = 2;
+            	    alt76 = 2;
             	    }
             	    break;
             	case ALL:
             		{
-            	    alt74 = 3;
+            	    alt76 = 3;
             	    }
             	    break;
             	case ANY:
             		{
-            	    alt74 = 4;
+            	    alt76 = 4;
             	    }
             	    break;
             		default:
-            		    NoViableAltException nvae_d74s0 =
-            		        new NoViableAltException("", 74, 0, input);
+            		    NoViableAltException nvae_d76s0 =
+            		        new NoViableAltException("", 76, 0, input);
 
-            		    throw nvae_d74s0;
+            		    throw nvae_d76s0;
             	}
 
-            	switch (alt74) 
+            	switch (alt76) 
             	{
             	    case 1 :
-            	        // Hql.g:520:6: SOME
+            	        // Hql.g:532:6: SOME
             	        {
-            	        	SOME213=(IToken)Match(input,SOME,FOLLOW_SOME_in_quantifiedExpression2631); 
-            	        		SOME213_tree = (IASTNode)adaptor.Create(SOME213);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(SOME213_tree, root_0);
+            	        	SOME220=(IToken)Match(input,SOME,FOLLOW_SOME_in_quantifiedExpression2688); 
+            	        		SOME220_tree = (IASTNode)adaptor.Create(SOME220);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(SOME220_tree, root_0);
 
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:520:14: EXISTS
+            	        // Hql.g:532:14: EXISTS
             	        {
-            	        	EXISTS214=(IToken)Match(input,EXISTS,FOLLOW_EXISTS_in_quantifiedExpression2636); 
-            	        		EXISTS214_tree = (IASTNode)adaptor.Create(EXISTS214);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS214_tree, root_0);
+            	        	EXISTS221=(IToken)Match(input,EXISTS,FOLLOW_EXISTS_in_quantifiedExpression2693); 
+            	        		EXISTS221_tree = (IASTNode)adaptor.Create(EXISTS221);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS221_tree, root_0);
 
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:520:24: ALL
+            	        // Hql.g:532:24: ALL
             	        {
-            	        	ALL215=(IToken)Match(input,ALL,FOLLOW_ALL_in_quantifiedExpression2641); 
-            	        		ALL215_tree = (IASTNode)adaptor.Create(ALL215);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ALL215_tree, root_0);
+            	        	ALL222=(IToken)Match(input,ALL,FOLLOW_ALL_in_quantifiedExpression2698); 
+            	        		ALL222_tree = (IASTNode)adaptor.Create(ALL222);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ALL222_tree, root_0);
 
 
             	        }
             	        break;
             	    case 4 :
-            	        // Hql.g:520:31: ANY
+            	        // Hql.g:532:31: ANY
             	        {
-            	        	ANY216=(IToken)Match(input,ANY,FOLLOW_ANY_in_quantifiedExpression2646); 
-            	        		ANY216_tree = (IASTNode)adaptor.Create(ANY216);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ANY216_tree, root_0);
+            	        	ANY223=(IToken)Match(input,ANY,FOLLOW_ANY_in_quantifiedExpression2703); 
+            	        		ANY223_tree = (IASTNode)adaptor.Create(ANY223);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ANY223_tree, root_0);
 
 
             	        }
@@ -8223,76 +8411,76 @@ public partial class HqlParser : Parser
 
             	}
 
-            	// Hql.g:521:2: ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
-            	int alt75 = 3;
+            	// Hql.g:533:2: ( identifier | collectionExpr | ( OPEN ( subQuery ) CLOSE ) )
+            	int alt77 = 3;
             	switch ( input.LA(1) ) 
             	{
             	case IDENT:
             		{
-            	    alt75 = 1;
+            	    alt77 = 1;
             	    }
             	    break;
             	case ELEMENTS:
             	case INDICES:
             		{
-            	    alt75 = 2;
+            	    alt77 = 2;
             	    }
             	    break;
             	case OPEN:
             		{
-            	    alt75 = 3;
+            	    alt77 = 3;
             	    }
             	    break;
             		default:
-            		    NoViableAltException nvae_d75s0 =
-            		        new NoViableAltException("", 75, 0, input);
+            		    NoViableAltException nvae_d77s0 =
+            		        new NoViableAltException("", 77, 0, input);
 
-            		    throw nvae_d75s0;
+            		    throw nvae_d77s0;
             	}
 
-            	switch (alt75) 
+            	switch (alt77) 
             	{
             	    case 1 :
-            	        // Hql.g:521:4: identifier
+            	        // Hql.g:533:4: identifier
             	        {
-            	        	PushFollow(FOLLOW_identifier_in_quantifiedExpression2655);
-            	        	identifier217 = identifier();
+            	        	PushFollow(FOLLOW_identifier_in_quantifiedExpression2712);
+            	        	identifier224 = identifier();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, identifier217.Tree);
+            	        	adaptor.AddChild(root_0, identifier224.Tree);
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:521:17: collectionExpr
+            	        // Hql.g:533:17: collectionExpr
             	        {
-            	        	PushFollow(FOLLOW_collectionExpr_in_quantifiedExpression2659);
-            	        	collectionExpr218 = collectionExpr();
+            	        	PushFollow(FOLLOW_collectionExpr_in_quantifiedExpression2716);
+            	        	collectionExpr225 = collectionExpr();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, collectionExpr218.Tree);
+            	        	adaptor.AddChild(root_0, collectionExpr225.Tree);
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:521:34: ( OPEN ( subQuery ) CLOSE )
+            	        // Hql.g:533:34: ( OPEN ( subQuery ) CLOSE )
             	        {
-            	        	// Hql.g:521:34: ( OPEN ( subQuery ) CLOSE )
-            	        	// Hql.g:521:35: OPEN ( subQuery ) CLOSE
+            	        	// Hql.g:533:34: ( OPEN ( subQuery ) CLOSE )
+            	        	// Hql.g:533:35: OPEN ( subQuery ) CLOSE
             	        	{
-            	        		OPEN219=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_quantifiedExpression2664); 
-            	        		// Hql.g:521:41: ( subQuery )
-            	        		// Hql.g:521:43: subQuery
+            	        		OPEN226=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_quantifiedExpression2721); 
+            	        		// Hql.g:533:41: ( subQuery )
+            	        		// Hql.g:533:43: subQuery
             	        		{
-            	        			PushFollow(FOLLOW_subQuery_in_quantifiedExpression2669);
-            	        			subQuery220 = subQuery();
+            	        			PushFollow(FOLLOW_subQuery_in_quantifiedExpression2726);
+            	        			subQuery227 = subQuery();
             	        			state.followingStackPointer--;
 
-            	        			adaptor.AddChild(root_0, subQuery220.Tree);
+            	        			adaptor.AddChild(root_0, subQuery227.Tree);
 
             	        		}
 
-            	        		CLOSE221=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_quantifiedExpression2673); 
+            	        		CLOSE228=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_quantifiedExpression2730); 
 
             	        	}
 
@@ -8336,7 +8524,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "atom"
-    // Hql.g:527:1: atom : primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* ;
+    // Hql.g:539:1: atom : primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* ;
     public HqlParser.atom_return atom() // throws RecognitionException [1]
     {   
         HqlParser.atom_return retval = new HqlParser.atom_return();
@@ -8346,93 +8534,93 @@ public partial class HqlParser : Parser
 
         IToken op = null;
         IToken lb = null;
-        IToken DOT223 = null;
-        IToken CLOSE226 = null;
-        IToken CLOSE_BRACKET228 = null;
-        HqlParser.primaryExpression_return primaryExpression222 = default(HqlParser.primaryExpression_return);
+        IToken DOT230 = null;
+        IToken CLOSE233 = null;
+        IToken CLOSE_BRACKET235 = null;
+        HqlParser.primaryExpression_return primaryExpression229 = default(HqlParser.primaryExpression_return);
 
-        HqlParser.identifier_return identifier224 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier231 = default(HqlParser.identifier_return);
 
-        HqlParser.exprList_return exprList225 = default(HqlParser.exprList_return);
+        HqlParser.exprList_return exprList232 = default(HqlParser.exprList_return);
 
-        HqlParser.expression_return expression227 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression234 = default(HqlParser.expression_return);
 
 
         IASTNode op_tree=null;
         IASTNode lb_tree=null;
-        IASTNode DOT223_tree=null;
-        IASTNode CLOSE226_tree=null;
-        IASTNode CLOSE_BRACKET228_tree=null;
+        IASTNode DOT230_tree=null;
+        IASTNode CLOSE233_tree=null;
+        IASTNode CLOSE_BRACKET235_tree=null;
 
         try 
     	{
-            // Hql.g:528:3: ( primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* )
-            // Hql.g:528:5: primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
+            // Hql.g:540:3: ( primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )* )
+            // Hql.g:540:5: primaryExpression ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_primaryExpression_in_atom2692);
-            	primaryExpression222 = primaryExpression();
+            	PushFollow(FOLLOW_primaryExpression_in_atom2749);
+            	primaryExpression229 = primaryExpression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, primaryExpression222.Tree);
-            	// Hql.g:529:3: ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
+            	adaptor.AddChild(root_0, primaryExpression229.Tree);
+            	// Hql.g:541:3: ( DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )? | lb= OPEN_BRACKET expression CLOSE_BRACKET )*
             	do 
             	{
-            	    int alt77 = 3;
-            	    int LA77_0 = input.LA(1);
+            	    int alt79 = 3;
+            	    int LA79_0 = input.LA(1);
 
-            	    if ( (LA77_0 == DOT) )
+            	    if ( (LA79_0 == DOT) )
             	    {
-            	        alt77 = 1;
+            	        alt79 = 1;
             	    }
-            	    else if ( (LA77_0 == OPEN_BRACKET) )
+            	    else if ( (LA79_0 == OPEN_BRACKET) )
             	    {
-            	        alt77 = 2;
+            	        alt79 = 2;
             	    }
 
 
-            	    switch (alt77) 
+            	    switch (alt79) 
             		{
             			case 1 :
-            			    // Hql.g:530:4: DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
+            			    // Hql.g:542:4: DOT identifier ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
             			    {
-            			    	DOT223=(IToken)Match(input,DOT,FOLLOW_DOT_in_atom2701); 
-            			    		DOT223_tree = (IASTNode)adaptor.Create(DOT223);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT223_tree, root_0);
+            			    	DOT230=(IToken)Match(input,DOT,FOLLOW_DOT_in_atom2758); 
+            			    		DOT230_tree = (IASTNode)adaptor.Create(DOT230);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT230_tree, root_0);
 
-            			    	PushFollow(FOLLOW_identifier_in_atom2704);
-            			    	identifier224 = identifier();
+            			    	PushFollow(FOLLOW_identifier_in_atom2761);
+            			    	identifier231 = identifier();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, identifier224.Tree);
-            			    	// Hql.g:531:5: ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
-            			    	int alt76 = 2;
-            			    	int LA76_0 = input.LA(1);
+            			    	adaptor.AddChild(root_0, identifier231.Tree);
+            			    	// Hql.g:543:5: ( options {greedy=true; } : (op= OPEN exprList CLOSE ) )?
+            			    	int alt78 = 2;
+            			    	int LA78_0 = input.LA(1);
 
-            			    	if ( (LA76_0 == OPEN) )
+            			    	if ( (LA78_0 == OPEN) )
             			    	{
-            			    	    alt76 = 1;
+            			    	    alt78 = 1;
             			    	}
-            			    	switch (alt76) 
+            			    	switch (alt78) 
             			    	{
             			    	    case 1 :
-            			    	        // Hql.g:532:6: (op= OPEN exprList CLOSE )
+            			    	        // Hql.g:544:6: (op= OPEN exprList CLOSE )
             			    	        {
-            			    	        	// Hql.g:532:6: (op= OPEN exprList CLOSE )
-            			    	        	// Hql.g:532:8: op= OPEN exprList CLOSE
+            			    	        	// Hql.g:544:6: (op= OPEN exprList CLOSE )
+            			    	        	// Hql.g:544:8: op= OPEN exprList CLOSE
             			    	        	{
-            			    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_atom2732); 
+            			    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_atom2789); 
             			    	        			op_tree = (IASTNode)adaptor.Create(op);
             			    	        			root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
 
             			    	        		op.Type = METHOD_CALL; 
-            			    	        		PushFollow(FOLLOW_exprList_in_atom2737);
-            			    	        		exprList225 = exprList();
+            			    	        		PushFollow(FOLLOW_exprList_in_atom2794);
+            			    	        		exprList232 = exprList();
             			    	        		state.followingStackPointer--;
 
-            			    	        		adaptor.AddChild(root_0, exprList225.Tree);
-            			    	        		CLOSE226=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_atom2739); 
+            			    	        		adaptor.AddChild(root_0, exprList232.Tree);
+            			    	        		CLOSE233=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_atom2796); 
 
             			    	        	}
 
@@ -8446,30 +8634,30 @@ public partial class HqlParser : Parser
             			    }
             			    break;
             			case 2 :
-            			    // Hql.g:533:5: lb= OPEN_BRACKET expression CLOSE_BRACKET
+            			    // Hql.g:545:5: lb= OPEN_BRACKET expression CLOSE_BRACKET
             			    {
-            			    	lb=(IToken)Match(input,OPEN_BRACKET,FOLLOW_OPEN_BRACKET_in_atom2753); 
+            			    	lb=(IToken)Match(input,OPEN_BRACKET,FOLLOW_OPEN_BRACKET_in_atom2810); 
             			    		lb_tree = (IASTNode)adaptor.Create(lb);
             			    		root_0 = (IASTNode)adaptor.BecomeRoot(lb_tree, root_0);
 
             			    	lb.Type = INDEX_OP; 
-            			    	PushFollow(FOLLOW_expression_in_atom2758);
-            			    	expression227 = expression();
+            			    	PushFollow(FOLLOW_expression_in_atom2815);
+            			    	expression234 = expression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, expression227.Tree);
-            			    	CLOSE_BRACKET228=(IToken)Match(input,CLOSE_BRACKET,FOLLOW_CLOSE_BRACKET_in_atom2760); 
+            			    	adaptor.AddChild(root_0, expression234.Tree);
+            			    	CLOSE_BRACKET235=(IToken)Match(input,CLOSE_BRACKET,FOLLOW_CLOSE_BRACKET_in_atom2817); 
 
             			    }
             			    break;
 
             			default:
-            			    goto loop77;
+            			    goto loop79;
             	    }
             	} while (true);
 
-            	loop77:
-            		;	// Stops C# compiler whining that label 'loop77' has no statements
+            	loop79:
+            		;	// Stops C# compiler whining that label 'loop79' has no statements
 
 
             }
@@ -8505,7 +8693,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "primaryExpression"
-    // Hql.g:538:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? );
+    // Hql.g:550:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? );
     public HqlParser.primaryExpression_return primaryExpression() // throws RecognitionException [1]
     {   
         HqlParser.primaryExpression_return retval = new HqlParser.primaryExpression_return();
@@ -8513,36 +8701,36 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken DOT230 = null;
-        IToken string_literal231 = null;
-        IToken COLON233 = null;
-        IToken OPEN235 = null;
-        IToken CLOSE238 = null;
-        IToken PARAM239 = null;
-        IToken NUM_INT240 = null;
-        HqlParser.identPrimary_return identPrimary229 = default(HqlParser.identPrimary_return);
+        IToken DOT237 = null;
+        IToken string_literal238 = null;
+        IToken COLON240 = null;
+        IToken OPEN242 = null;
+        IToken CLOSE245 = null;
+        IToken PARAM246 = null;
+        IToken NUM_INT247 = null;
+        HqlParser.identPrimary_return identPrimary236 = default(HqlParser.identPrimary_return);
 
-        HqlParser.constant_return constant232 = default(HqlParser.constant_return);
+        HqlParser.constant_return constant239 = default(HqlParser.constant_return);
 
-        HqlParser.identifier_return identifier234 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier241 = default(HqlParser.identifier_return);
 
-        HqlParser.expressionOrVector_return expressionOrVector236 = default(HqlParser.expressionOrVector_return);
+        HqlParser.expressionOrVector_return expressionOrVector243 = default(HqlParser.expressionOrVector_return);
 
-        HqlParser.subQuery_return subQuery237 = default(HqlParser.subQuery_return);
+        HqlParser.subQuery_return subQuery244 = default(HqlParser.subQuery_return);
 
 
-        IASTNode DOT230_tree=null;
-        IASTNode string_literal231_tree=null;
-        IASTNode COLON233_tree=null;
-        IASTNode OPEN235_tree=null;
-        IASTNode CLOSE238_tree=null;
-        IASTNode PARAM239_tree=null;
-        IASTNode NUM_INT240_tree=null;
+        IASTNode DOT237_tree=null;
+        IASTNode string_literal238_tree=null;
+        IASTNode COLON240_tree=null;
+        IASTNode OPEN242_tree=null;
+        IASTNode CLOSE245_tree=null;
+        IASTNode PARAM246_tree=null;
+        IASTNode NUM_INT247_tree=null;
 
         try 
     	{
-            // Hql.g:539:2: ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? )
-            int alt81 = 5;
+            // Hql.g:551:2: ( identPrimary ( options {greedy=true; } : DOT 'class' )? | constant | COLON identifier | OPEN ( expressionOrVector | subQuery ) CLOSE | PARAM ( NUM_INT )? )
+            int alt83 = 5;
             switch ( input.LA(1) ) 
             {
             case AVG:
@@ -8554,7 +8742,7 @@ public partial class HqlParser : Parser
             case SUM:
             case IDENT:
             	{
-                alt81 = 1;
+                alt83 = 1;
                 }
                 break;
             case FALSE:
@@ -8568,68 +8756,68 @@ public partial class HqlParser : Parser
             case NUM_LONG:
             case QUOTED_String:
             	{
-                alt81 = 2;
+                alt83 = 2;
                 }
                 break;
             case COLON:
             	{
-                alt81 = 3;
+                alt83 = 3;
                 }
                 break;
             case OPEN:
             	{
-                alt81 = 4;
+                alt83 = 4;
                 }
                 break;
             case PARAM:
             	{
-                alt81 = 5;
+                alt83 = 5;
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d81s0 =
-            	        new NoViableAltException("", 81, 0, input);
+            	    NoViableAltException nvae_d83s0 =
+            	        new NoViableAltException("", 83, 0, input);
 
-            	    throw nvae_d81s0;
+            	    throw nvae_d83s0;
             }
 
-            switch (alt81) 
+            switch (alt83) 
             {
                 case 1 :
-                    // Hql.g:539:6: identPrimary ( options {greedy=true; } : DOT 'class' )?
+                    // Hql.g:551:6: identPrimary ( options {greedy=true; } : DOT 'class' )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_identPrimary_in_primaryExpression2780);
-                    	identPrimary229 = identPrimary();
+                    	PushFollow(FOLLOW_identPrimary_in_primaryExpression2837);
+                    	identPrimary236 = identPrimary();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, identPrimary229.Tree);
-                    	// Hql.g:539:19: ( options {greedy=true; } : DOT 'class' )?
-                    	int alt78 = 2;
-                    	int LA78_0 = input.LA(1);
+                    	adaptor.AddChild(root_0, identPrimary236.Tree);
+                    	// Hql.g:551:19: ( options {greedy=true; } : DOT 'class' )?
+                    	int alt80 = 2;
+                    	int LA80_0 = input.LA(1);
 
-                    	if ( (LA78_0 == DOT) )
+                    	if ( (LA80_0 == DOT) )
                     	{
-                    	    int LA78_1 = input.LA(2);
+                    	    int LA80_1 = input.LA(2);
 
-                    	    if ( (LA78_1 == CLASS) )
+                    	    if ( (LA80_1 == CLASS) )
                     	    {
-                    	        alt78 = 1;
+                    	        alt80 = 1;
                     	    }
                     	}
-                    	switch (alt78) 
+                    	switch (alt80) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:539:46: DOT 'class'
+                    	        // Hql.g:551:46: DOT 'class'
                     	        {
-                    	        	DOT230=(IToken)Match(input,DOT,FOLLOW_DOT_in_primaryExpression2793); 
-                    	        		DOT230_tree = (IASTNode)adaptor.Create(DOT230);
-                    	        		root_0 = (IASTNode)adaptor.BecomeRoot(DOT230_tree, root_0);
+                    	        	DOT237=(IToken)Match(input,DOT,FOLLOW_DOT_in_primaryExpression2850); 
+                    	        		DOT237_tree = (IASTNode)adaptor.Create(DOT237);
+                    	        		root_0 = (IASTNode)adaptor.BecomeRoot(DOT237_tree, root_0);
 
-                    	        	string_literal231=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_primaryExpression2796); 
-                    	        		string_literal231_tree = (IASTNode)adaptor.Create(string_literal231);
-                    	        		adaptor.AddChild(root_0, string_literal231_tree);
+                    	        	string_literal238=(IToken)Match(input,CLASS,FOLLOW_CLASS_in_primaryExpression2853); 
+                    	        		string_literal238_tree = (IASTNode)adaptor.Create(string_literal238);
+                    	        		adaptor.AddChild(root_0, string_literal238_tree);
 
 
                     	        }
@@ -8641,116 +8829,116 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:540:6: constant
+                    // Hql.g:552:6: constant
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_constant_in_primaryExpression2806);
-                    	constant232 = constant();
+                    	PushFollow(FOLLOW_constant_in_primaryExpression2863);
+                    	constant239 = constant();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, constant232.Tree);
+                    	adaptor.AddChild(root_0, constant239.Tree);
 
                     }
                     break;
                 case 3 :
-                    // Hql.g:541:6: COLON identifier
+                    // Hql.g:553:6: COLON identifier
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	COLON233=(IToken)Match(input,COLON,FOLLOW_COLON_in_primaryExpression2813); 
-                    		COLON233_tree = (IASTNode)adaptor.Create(COLON233);
-                    		root_0 = (IASTNode)adaptor.BecomeRoot(COLON233_tree, root_0);
+                    	COLON240=(IToken)Match(input,COLON,FOLLOW_COLON_in_primaryExpression2870); 
+                    		COLON240_tree = (IASTNode)adaptor.Create(COLON240);
+                    		root_0 = (IASTNode)adaptor.BecomeRoot(COLON240_tree, root_0);
 
-                    	PushFollow(FOLLOW_identifier_in_primaryExpression2816);
-                    	identifier234 = identifier();
+                    	PushFollow(FOLLOW_identifier_in_primaryExpression2873);
+                    	identifier241 = identifier();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, identifier234.Tree);
+                    	adaptor.AddChild(root_0, identifier241.Tree);
 
                     }
                     break;
                 case 4 :
-                    // Hql.g:543:6: OPEN ( expressionOrVector | subQuery ) CLOSE
+                    // Hql.g:555:6: OPEN ( expressionOrVector | subQuery ) CLOSE
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	OPEN235=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_primaryExpression2825); 
-                    	// Hql.g:543:12: ( expressionOrVector | subQuery )
-                    	int alt79 = 2;
-                    	int LA79_0 = input.LA(1);
+                    	OPEN242=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_primaryExpression2882); 
+                    	// Hql.g:555:12: ( expressionOrVector | subQuery )
+                    	int alt81 = 2;
+                    	int LA81_0 = input.LA(1);
 
-                    	if ( ((LA79_0 >= ALL && LA79_0 <= ANY) || LA79_0 == AVG || LA79_0 == COUNT || LA79_0 == ELEMENTS || (LA79_0 >= EXISTS && LA79_0 <= FALSE) || LA79_0 == INDICES || (LA79_0 >= MAX && LA79_0 <= MIN) || (LA79_0 >= NOT && LA79_0 <= NULL) || (LA79_0 >= SOME && LA79_0 <= TRUE) || LA79_0 == CASE || LA79_0 == EMPTY || (LA79_0 >= NUM_INT && LA79_0 <= NUM_LONG) || LA79_0 == OPEN || LA79_0 == BNOT || (LA79_0 >= PLUS && LA79_0 <= MINUS) || (LA79_0 >= COLON && LA79_0 <= IDENT)) )
+                    	if ( ((LA81_0 >= ALL && LA81_0 <= ANY) || LA81_0 == AVG || LA81_0 == COUNT || LA81_0 == ELEMENTS || (LA81_0 >= EXISTS && LA81_0 <= FALSE) || LA81_0 == INDICES || (LA81_0 >= MAX && LA81_0 <= MIN) || (LA81_0 >= NOT && LA81_0 <= NULL) || (LA81_0 >= SOME && LA81_0 <= SUM) || LA81_0 == TRUE || LA81_0 == CASE || LA81_0 == EMPTY || (LA81_0 >= NUM_INT && LA81_0 <= NUM_LONG) || LA81_0 == OPEN || LA81_0 == BNOT || (LA81_0 >= PLUS && LA81_0 <= MINUS) || (LA81_0 >= COLON && LA81_0 <= IDENT)) )
                     	{
-                    	    alt79 = 1;
+                    	    alt81 = 1;
                     	}
-                    	else if ( (LA79_0 == EOF || LA79_0 == FROM || LA79_0 == GROUP || LA79_0 == ORDER || LA79_0 == SELECT || LA79_0 == UNION || LA79_0 == WHERE || LA79_0 == CLOSE) )
+                    	else if ( (LA81_0 == EOF || LA81_0 == FROM || (LA81_0 >= GROUP && LA81_0 <= HAVING) || LA81_0 == ORDER || LA81_0 == SELECT || LA81_0 == SKIP || LA81_0 == TAKE || LA81_0 == UNION || LA81_0 == WHERE || LA81_0 == CLOSE) )
                     	{
-                    	    alt79 = 2;
+                    	    alt81 = 2;
                     	}
                     	else 
                     	{
-                    	    NoViableAltException nvae_d79s0 =
-                    	        new NoViableAltException("", 79, 0, input);
+                    	    NoViableAltException nvae_d81s0 =
+                    	        new NoViableAltException("", 81, 0, input);
 
-                    	    throw nvae_d79s0;
+                    	    throw nvae_d81s0;
                     	}
-                    	switch (alt79) 
+                    	switch (alt81) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:543:13: expressionOrVector
+                    	        // Hql.g:555:13: expressionOrVector
                     	        {
-                    	        	PushFollow(FOLLOW_expressionOrVector_in_primaryExpression2829);
-                    	        	expressionOrVector236 = expressionOrVector();
+                    	        	PushFollow(FOLLOW_expressionOrVector_in_primaryExpression2886);
+                    	        	expressionOrVector243 = expressionOrVector();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_0, expressionOrVector236.Tree);
+                    	        	adaptor.AddChild(root_0, expressionOrVector243.Tree);
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:543:34: subQuery
+                    	        // Hql.g:555:34: subQuery
                     	        {
-                    	        	PushFollow(FOLLOW_subQuery_in_primaryExpression2833);
-                    	        	subQuery237 = subQuery();
+                    	        	PushFollow(FOLLOW_subQuery_in_primaryExpression2890);
+                    	        	subQuery244 = subQuery();
                     	        	state.followingStackPointer--;
 
-                    	        	adaptor.AddChild(root_0, subQuery237.Tree);
+                    	        	adaptor.AddChild(root_0, subQuery244.Tree);
 
                     	        }
                     	        break;
 
                     	}
 
-                    	CLOSE238=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_primaryExpression2836); 
+                    	CLOSE245=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_primaryExpression2893); 
 
                     }
                     break;
                 case 5 :
-                    // Hql.g:544:6: PARAM ( NUM_INT )?
+                    // Hql.g:556:6: PARAM ( NUM_INT )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PARAM239=(IToken)Match(input,PARAM,FOLLOW_PARAM_in_primaryExpression2844); 
-                    		PARAM239_tree = (IASTNode)adaptor.Create(PARAM239);
-                    		root_0 = (IASTNode)adaptor.BecomeRoot(PARAM239_tree, root_0);
+                    	PARAM246=(IToken)Match(input,PARAM,FOLLOW_PARAM_in_primaryExpression2901); 
+                    		PARAM246_tree = (IASTNode)adaptor.Create(PARAM246);
+                    		root_0 = (IASTNode)adaptor.BecomeRoot(PARAM246_tree, root_0);
 
-                    	// Hql.g:544:13: ( NUM_INT )?
-                    	int alt80 = 2;
-                    	int LA80_0 = input.LA(1);
+                    	// Hql.g:556:13: ( NUM_INT )?
+                    	int alt82 = 2;
+                    	int LA82_0 = input.LA(1);
 
-                    	if ( (LA80_0 == NUM_INT) )
+                    	if ( (LA82_0 == NUM_INT) )
                     	{
-                    	    alt80 = 1;
+                    	    alt82 = 1;
                     	}
-                    	switch (alt80) 
+                    	switch (alt82) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:544:14: NUM_INT
+                    	        // Hql.g:556:14: NUM_INT
                     	        {
-                    	        	NUM_INT240=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_primaryExpression2848); 
-                    	        		NUM_INT240_tree = (IASTNode)adaptor.Create(NUM_INT240);
-                    	        		adaptor.AddChild(root_0, NUM_INT240_tree);
+                    	        	NUM_INT247=(IToken)Match(input,NUM_INT,FOLLOW_NUM_INT_in_primaryExpression2905); 
+                    	        		NUM_INT247_tree = (IASTNode)adaptor.Create(NUM_INT247);
+                    	        		adaptor.AddChild(root_0, NUM_INT247_tree);
 
 
                     	        }
@@ -8794,7 +8982,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "expressionOrVector"
-    // Hql.g:549:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) ;
+    // Hql.g:561:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) ;
     public HqlParser.expressionOrVector_return expressionOrVector() // throws RecognitionException [1]
     {   
         HqlParser.expressionOrVector_return retval = new HqlParser.expressionOrVector_return();
@@ -8811,28 +8999,28 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_vectorExpr = new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
         try 
     	{
-            // Hql.g:550:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) )
-            // Hql.g:550:4: e= expression (v= vectorExpr )?
+            // Hql.g:562:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) )
+            // Hql.g:562:4: e= expression (v= vectorExpr )?
             {
-            	PushFollow(FOLLOW_expression_in_expressionOrVector2866);
+            	PushFollow(FOLLOW_expression_in_expressionOrVector2923);
             	e = expression();
             	state.followingStackPointer--;
 
             	stream_expression.Add(e.Tree);
-            	// Hql.g:550:17: (v= vectorExpr )?
-            	int alt82 = 2;
-            	int LA82_0 = input.LA(1);
+            	// Hql.g:562:17: (v= vectorExpr )?
+            	int alt84 = 2;
+            	int LA84_0 = input.LA(1);
 
-            	if ( (LA82_0 == COMMA) )
+            	if ( (LA84_0 == COMMA) )
             	{
-            	    alt82 = 1;
+            	    alt84 = 1;
             	}
-            	switch (alt82) 
+            	switch (alt84) 
             	{
             	    case 1 :
-            	        // Hql.g:550:19: v= vectorExpr
+            	        // Hql.g:562:19: v= vectorExpr
             	        {
-            	        	PushFollow(FOLLOW_vectorExpr_in_expressionOrVector2872);
+            	        	PushFollow(FOLLOW_vectorExpr_in_expressionOrVector2929);
             	        	v = vectorExpr();
             	        	state.followingStackPointer--;
 
@@ -8846,7 +9034,7 @@ public partial class HqlParser : Parser
 
 
             	// AST REWRITE
-            	// elements:          e, v, e
+            	// elements:          e, e, v
             	// token labels:      
             	// rule labels:       v, retval, e
             	// token list labels: 
@@ -8858,10 +9046,10 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_e = new RewriteRuleSubtreeStream(adaptor, "rule e", e!=null ? e.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 551:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+            	// 563:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
             	if (v != null)
             	{
-            	    // Hql.g:551:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+            	    // Hql.g:563:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(VECTOR_EXPR, "{vector}"), root_1);
@@ -8873,9 +9061,9 @@ public partial class HqlParser : Parser
             	    }
 
             	}
-            	else // 552:2: -> ^( $e)
+            	else // 564:2: -> ^( $e)
             	{
-            	    // Hql.g:552:5: ^( $e)
+            	    // Hql.g:564:5: ^( $e)
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_e.NextNode(), root_1);
@@ -8919,7 +9107,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "vectorExpr"
-    // Hql.g:555:1: vectorExpr : COMMA expression ( COMMA expression )* ;
+    // Hql.g:567:1: vectorExpr : COMMA expression ( COMMA expression )* ;
     public HqlParser.vectorExpr_return vectorExpr() // throws RecognitionException [1]
     {   
         HqlParser.vectorExpr_return retval = new HqlParser.vectorExpr_return();
@@ -8927,63 +9115,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken COMMA241 = null;
-        IToken COMMA243 = null;
-        HqlParser.expression_return expression242 = default(HqlParser.expression_return);
+        IToken COMMA248 = null;
+        IToken COMMA250 = null;
+        HqlParser.expression_return expression249 = default(HqlParser.expression_return);
 
-        HqlParser.expression_return expression244 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression251 = default(HqlParser.expression_return);
 
 
-        IASTNode COMMA241_tree=null;
-        IASTNode COMMA243_tree=null;
+        IASTNode COMMA248_tree=null;
+        IASTNode COMMA250_tree=null;
 
         try 
     	{
-            // Hql.g:556:2: ( COMMA expression ( COMMA expression )* )
-            // Hql.g:556:4: COMMA expression ( COMMA expression )*
+            // Hql.g:568:2: ( COMMA expression ( COMMA expression )* )
+            // Hql.g:568:4: COMMA expression ( COMMA expression )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	COMMA241=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2911); 
-            	PushFollow(FOLLOW_expression_in_vectorExpr2914);
-            	expression242 = expression();
+            	COMMA248=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2968); 
+            	PushFollow(FOLLOW_expression_in_vectorExpr2971);
+            	expression249 = expression();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, expression242.Tree);
-            	// Hql.g:556:22: ( COMMA expression )*
+            	adaptor.AddChild(root_0, expression249.Tree);
+            	// Hql.g:568:22: ( COMMA expression )*
             	do 
             	{
-            	    int alt83 = 2;
-            	    int LA83_0 = input.LA(1);
+            	    int alt85 = 2;
+            	    int LA85_0 = input.LA(1);
 
-            	    if ( (LA83_0 == COMMA) )
+            	    if ( (LA85_0 == COMMA) )
             	    {
-            	        alt83 = 1;
+            	        alt85 = 1;
             	    }
 
 
-            	    switch (alt83) 
+            	    switch (alt85) 
             		{
             			case 1 :
-            			    // Hql.g:556:23: COMMA expression
+            			    // Hql.g:568:23: COMMA expression
             			    {
-            			    	COMMA243=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2917); 
-            			    	PushFollow(FOLLOW_expression_in_vectorExpr2920);
-            			    	expression244 = expression();
+            			    	COMMA250=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_vectorExpr2974); 
+            			    	PushFollow(FOLLOW_expression_in_vectorExpr2977);
+            			    	expression251 = expression();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, expression244.Tree);
+            			    	adaptor.AddChild(root_0, expression251.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop83;
+            			    goto loop85;
             	    }
             	} while (true);
 
-            	loop83:
-            		;	// Stops C# compiler whining that label 'loop83' has no statements
+            	loop85:
+            		;	// Stops C# compiler whining that label 'loop85' has no statements
 
 
             }
@@ -9019,7 +9207,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "identPrimary"
-    // Hql.g:562:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate );
+    // Hql.g:574:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate );
     public HqlParser.identPrimary_return identPrimary() // throws RecognitionException [1]
     {   
         HqlParser.identPrimary_return retval = new HqlParser.identPrimary_return();
@@ -9029,120 +9217,120 @@ public partial class HqlParser : Parser
 
         IToken o = null;
         IToken op = null;
-        IToken DOT246 = null;
-        IToken CLOSE249 = null;
-        HqlParser.identifier_return identifier245 = default(HqlParser.identifier_return);
+        IToken DOT253 = null;
+        IToken CLOSE256 = null;
+        HqlParser.identifier_return identifier252 = default(HqlParser.identifier_return);
 
-        HqlParser.identifier_return identifier247 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier254 = default(HqlParser.identifier_return);
 
-        HqlParser.exprList_return exprList248 = default(HqlParser.exprList_return);
+        HqlParser.exprList_return exprList255 = default(HqlParser.exprList_return);
 
-        HqlParser.aggregate_return aggregate250 = default(HqlParser.aggregate_return);
+        HqlParser.aggregate_return aggregate257 = default(HqlParser.aggregate_return);
 
 
         IASTNode o_tree=null;
         IASTNode op_tree=null;
-        IASTNode DOT246_tree=null;
-        IASTNode CLOSE249_tree=null;
+        IASTNode DOT253_tree=null;
+        IASTNode CLOSE256_tree=null;
 
         try 
     	{
-            // Hql.g:563:2: ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate )
-            int alt87 = 2;
-            int LA87_0 = input.LA(1);
+            // Hql.g:575:2: ( identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )? | aggregate )
+            int alt89 = 2;
+            int LA89_0 = input.LA(1);
 
-            if ( (LA87_0 == IDENT) )
+            if ( (LA89_0 == IDENT) )
             {
-                alt87 = 1;
+                alt89 = 1;
             }
-            else if ( (LA87_0 == AVG || LA87_0 == COUNT || LA87_0 == ELEMENTS || LA87_0 == INDICES || (LA87_0 >= MAX && LA87_0 <= MIN) || LA87_0 == SUM) )
+            else if ( (LA89_0 == AVG || LA89_0 == COUNT || LA89_0 == ELEMENTS || LA89_0 == INDICES || (LA89_0 >= MAX && LA89_0 <= MIN) || LA89_0 == SUM) )
             {
-                alt87 = 2;
+                alt89 = 2;
             }
             else 
             {
-                NoViableAltException nvae_d87s0 =
-                    new NoViableAltException("", 87, 0, input);
+                NoViableAltException nvae_d89s0 =
+                    new NoViableAltException("", 89, 0, input);
 
-                throw nvae_d87s0;
+                throw nvae_d89s0;
             }
-            switch (alt87) 
+            switch (alt89) 
             {
                 case 1 :
-                    // Hql.g:563:4: identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )?
+                    // Hql.g:575:4: identifier ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )* ( (op= OPEN exprList CLOSE ) )?
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_identifier_in_identPrimary2936);
-                    	identifier245 = identifier();
+                    	PushFollow(FOLLOW_identifier_in_identPrimary2993);
+                    	identifier252 = identifier();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, identifier245.Tree);
+                    	adaptor.AddChild(root_0, identifier252.Tree);
                     	 HandleDotIdent(); 
-                    	// Hql.g:564:4: ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )*
+                    	// Hql.g:576:4: ( options {greedy=true; } : DOT ( identifier | o= OBJECT ) )*
                     	do 
                     	{
-                    	    int alt85 = 2;
-                    	    int LA85_0 = input.LA(1);
+                    	    int alt87 = 2;
+                    	    int LA87_0 = input.LA(1);
 
-                    	    if ( (LA85_0 == DOT) )
+                    	    if ( (LA87_0 == DOT) )
                     	    {
-                    	        int LA85_2 = input.LA(2);
+                    	        int LA87_2 = input.LA(2);
 
-                    	        if ( (LA85_2 == OBJECT || LA85_2 == IDENT) )
+                    	        if ( (LA87_2 == OBJECT || LA87_2 == IDENT) )
                     	        {
-                    	            alt85 = 1;
+                    	            alt87 = 1;
                     	        }
 
 
                     	    }
 
 
-                    	    switch (alt85) 
+                    	    switch (alt87) 
                     		{
                     			case 1 :
-                    			    // Hql.g:564:31: DOT ( identifier | o= OBJECT )
+                    			    // Hql.g:576:31: DOT ( identifier | o= OBJECT )
                     			    {
-                    			    	DOT246=(IToken)Match(input,DOT,FOLLOW_DOT_in_identPrimary2954); 
-                    			    		DOT246_tree = (IASTNode)adaptor.Create(DOT246);
-                    			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT246_tree, root_0);
+                    			    	DOT253=(IToken)Match(input,DOT,FOLLOW_DOT_in_identPrimary3011); 
+                    			    		DOT253_tree = (IASTNode)adaptor.Create(DOT253);
+                    			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT253_tree, root_0);
 
-                    			    	// Hql.g:564:36: ( identifier | o= OBJECT )
-                    			    	int alt84 = 2;
-                    			    	int LA84_0 = input.LA(1);
+                    			    	// Hql.g:576:36: ( identifier | o= OBJECT )
+                    			    	int alt86 = 2;
+                    			    	int LA86_0 = input.LA(1);
 
-                    			    	if ( (LA84_0 == IDENT) )
+                    			    	if ( (LA86_0 == IDENT) )
                     			    	{
-                    			    	    alt84 = 1;
+                    			    	    alt86 = 1;
                     			    	}
-                    			    	else if ( (LA84_0 == OBJECT) )
+                    			    	else if ( (LA86_0 == OBJECT) )
                     			    	{
-                    			    	    alt84 = 2;
+                    			    	    alt86 = 2;
                     			    	}
                     			    	else 
                     			    	{
-                    			    	    NoViableAltException nvae_d84s0 =
-                    			    	        new NoViableAltException("", 84, 0, input);
+                    			    	    NoViableAltException nvae_d86s0 =
+                    			    	        new NoViableAltException("", 86, 0, input);
 
-                    			    	    throw nvae_d84s0;
+                    			    	    throw nvae_d86s0;
                     			    	}
-                    			    	switch (alt84) 
+                    			    	switch (alt86) 
                     			    	{
                     			    	    case 1 :
-                    			    	        // Hql.g:564:38: identifier
+                    			    	        // Hql.g:576:38: identifier
                     			    	        {
-                    			    	        	PushFollow(FOLLOW_identifier_in_identPrimary2959);
-                    			    	        	identifier247 = identifier();
+                    			    	        	PushFollow(FOLLOW_identifier_in_identPrimary3016);
+                    			    	        	identifier254 = identifier();
                     			    	        	state.followingStackPointer--;
 
-                    			    	        	adaptor.AddChild(root_0, identifier247.Tree);
+                    			    	        	adaptor.AddChild(root_0, identifier254.Tree);
 
                     			    	        }
                     			    	        break;
                     			    	    case 2 :
-                    			    	        // Hql.g:564:51: o= OBJECT
+                    			    	        // Hql.g:576:51: o= OBJECT
                     			    	        {
-                    			    	        	o=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_identPrimary2965); 
+                    			    	        	o=(IToken)Match(input,OBJECT,FOLLOW_OBJECT_in_identPrimary3022); 
                     			    	        		o_tree = (IASTNode)adaptor.Create(o);
                     			    	        		adaptor.AddChild(root_0, o_tree);
 
@@ -9158,40 +9346,40 @@ public partial class HqlParser : Parser
                     			    break;
 
                     			default:
-                    			    goto loop85;
+                    			    goto loop87;
                     	    }
                     	} while (true);
 
-                    	loop85:
-                    		;	// Stops C# compiler whining that label 'loop85' has no statements
+                    	loop87:
+                    		;	// Stops C# compiler whining that label 'loop87' has no statements
 
-                    	// Hql.g:565:4: ( (op= OPEN exprList CLOSE ) )?
-                    	int alt86 = 2;
-                    	int LA86_0 = input.LA(1);
+                    	// Hql.g:577:4: ( (op= OPEN exprList CLOSE ) )?
+                    	int alt88 = 2;
+                    	int LA88_0 = input.LA(1);
 
-                    	if ( (LA86_0 == OPEN) )
+                    	if ( (LA88_0 == OPEN) )
                     	{
-                    	    alt86 = 1;
+                    	    alt88 = 1;
                     	}
-                    	switch (alt86) 
+                    	switch (alt88) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:565:6: (op= OPEN exprList CLOSE )
+                    	        // Hql.g:577:6: (op= OPEN exprList CLOSE )
                     	        {
-                    	        	// Hql.g:565:6: (op= OPEN exprList CLOSE )
-                    	        	// Hql.g:565:8: op= OPEN exprList CLOSE
+                    	        	// Hql.g:577:6: (op= OPEN exprList CLOSE )
+                    	        	// Hql.g:577:8: op= OPEN exprList CLOSE
                     	        	{
-                    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_identPrimary2983); 
+                    	        		op=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_identPrimary3040); 
                     	        			op_tree = (IASTNode)adaptor.Create(op);
                     	        			root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
 
                     	        		 op.Type = METHOD_CALL;
-                    	        		PushFollow(FOLLOW_exprList_in_identPrimary2988);
-                    	        		exprList248 = exprList();
+                    	        		PushFollow(FOLLOW_exprList_in_identPrimary3045);
+                    	        		exprList255 = exprList();
                     	        		state.followingStackPointer--;
 
-                    	        		adaptor.AddChild(root_0, exprList248.Tree);
-                    	        		CLOSE249=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_identPrimary2990); 
+                    	        		adaptor.AddChild(root_0, exprList255.Tree);
+                    	        		CLOSE256=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_identPrimary3047); 
 
                     	        	}
 
@@ -9205,15 +9393,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:568:4: aggregate
+                    // Hql.g:580:4: aggregate
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_aggregate_in_identPrimary3006);
-                    	aggregate250 = aggregate();
+                    	PushFollow(FOLLOW_aggregate_in_identPrimary3063);
+                    	aggregate257 = aggregate();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, aggregate250.Tree);
+                    	adaptor.AddChild(root_0, aggregate257.Tree);
 
                     }
                     break;
@@ -9250,7 +9438,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aggregate"
-    // Hql.g:576:1: aggregate : ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
+    // Hql.g:588:1: aggregate : ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
     public HqlParser.aggregate_return aggregate() // throws RecognitionException [1]
     {   
         HqlParser.aggregate_return retval = new HqlParser.aggregate_return();
@@ -9260,25 +9448,25 @@ public partial class HqlParser : Parser
 
         IToken op = null;
         IToken s = null;
-        IToken OPEN251 = null;
-        IToken CLOSE253 = null;
-        IToken COUNT254 = null;
-        IToken OPEN255 = null;
-        IToken CLOSE256 = null;
+        IToken OPEN258 = null;
+        IToken CLOSE260 = null;
+        IToken COUNT261 = null;
+        IToken OPEN262 = null;
+        IToken CLOSE263 = null;
         HqlParser.aggregateDistinctAll_return p = default(HqlParser.aggregateDistinctAll_return);
 
-        HqlParser.additiveExpression_return additiveExpression252 = default(HqlParser.additiveExpression_return);
+        HqlParser.additiveExpression_return additiveExpression259 = default(HqlParser.additiveExpression_return);
 
-        HqlParser.collectionExpr_return collectionExpr257 = default(HqlParser.collectionExpr_return);
+        HqlParser.collectionExpr_return collectionExpr264 = default(HqlParser.collectionExpr_return);
 
 
         IASTNode op_tree=null;
         IASTNode s_tree=null;
-        IASTNode OPEN251_tree=null;
-        IASTNode CLOSE253_tree=null;
-        IASTNode COUNT254_tree=null;
-        IASTNode OPEN255_tree=null;
-        IASTNode CLOSE256_tree=null;
+        IASTNode OPEN258_tree=null;
+        IASTNode CLOSE260_tree=null;
+        IASTNode COUNT261_tree=null;
+        IASTNode OPEN262_tree=null;
+        IASTNode CLOSE263_tree=null;
         RewriteRuleTokenStream stream_OPEN = new RewriteRuleTokenStream(adaptor,"token OPEN");
         RewriteRuleTokenStream stream_MAX = new RewriteRuleTokenStream(adaptor,"token MAX");
         RewriteRuleTokenStream stream_COUNT = new RewriteRuleTokenStream(adaptor,"token COUNT");
@@ -9291,8 +9479,8 @@ public partial class HqlParser : Parser
         RewriteRuleSubtreeStream stream_additiveExpression = new RewriteRuleSubtreeStream(adaptor,"rule additiveExpression");
         try 
     	{
-            // Hql.g:577:2: ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
-            int alt90 = 3;
+            // Hql.g:589:2: ( (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
+            int alt92 = 3;
             switch ( input.LA(1) ) 
             {
             case AVG:
@@ -9300,96 +9488,96 @@ public partial class HqlParser : Parser
             case MIN:
             case SUM:
             	{
-                alt90 = 1;
+                alt92 = 1;
                 }
                 break;
             case COUNT:
             	{
-                alt90 = 2;
+                alt92 = 2;
                 }
                 break;
             case ELEMENTS:
             case INDICES:
             	{
-                alt90 = 3;
+                alt92 = 3;
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d90s0 =
-            	        new NoViableAltException("", 90, 0, input);
+            	    NoViableAltException nvae_d92s0 =
+            	        new NoViableAltException("", 92, 0, input);
 
-            	    throw nvae_d90s0;
+            	    throw nvae_d92s0;
             }
 
-            switch (alt90) 
+            switch (alt92) 
             {
                 case 1 :
-                    // Hql.g:577:4: (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE
+                    // Hql.g:589:4: (op= SUM | op= AVG | op= MAX | op= MIN ) OPEN additiveExpression CLOSE
                     {
-                    	// Hql.g:577:4: (op= SUM | op= AVG | op= MAX | op= MIN )
-                    	int alt88 = 4;
+                    	// Hql.g:589:4: (op= SUM | op= AVG | op= MAX | op= MIN )
+                    	int alt90 = 4;
                     	switch ( input.LA(1) ) 
                     	{
                     	case SUM:
                     		{
-                    	    alt88 = 1;
+                    	    alt90 = 1;
                     	    }
                     	    break;
                     	case AVG:
                     		{
-                    	    alt88 = 2;
+                    	    alt90 = 2;
                     	    }
                     	    break;
                     	case MAX:
                     		{
-                    	    alt88 = 3;
+                    	    alt90 = 3;
                     	    }
                     	    break;
                     	case MIN:
                     		{
-                    	    alt88 = 4;
+                    	    alt90 = 4;
                     	    }
                     	    break;
                     		default:
-                    		    NoViableAltException nvae_d88s0 =
-                    		        new NoViableAltException("", 88, 0, input);
+                    		    NoViableAltException nvae_d90s0 =
+                    		        new NoViableAltException("", 90, 0, input);
 
-                    		    throw nvae_d88s0;
+                    		    throw nvae_d90s0;
                     	}
 
-                    	switch (alt88) 
+                    	switch (alt90) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:577:6: op= SUM
+                    	        // Hql.g:589:6: op= SUM
                     	        {
-                    	        	op=(IToken)Match(input,SUM,FOLLOW_SUM_in_aggregate3027);  
+                    	        	op=(IToken)Match(input,SUM,FOLLOW_SUM_in_aggregate3084);  
                     	        	stream_SUM.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:577:15: op= AVG
+                    	        // Hql.g:589:15: op= AVG
                     	        {
-                    	        	op=(IToken)Match(input,AVG,FOLLOW_AVG_in_aggregate3033);  
+                    	        	op=(IToken)Match(input,AVG,FOLLOW_AVG_in_aggregate3090);  
                     	        	stream_AVG.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 3 :
-                    	        // Hql.g:577:24: op= MAX
+                    	        // Hql.g:589:24: op= MAX
                     	        {
-                    	        	op=(IToken)Match(input,MAX,FOLLOW_MAX_in_aggregate3039);  
+                    	        	op=(IToken)Match(input,MAX,FOLLOW_MAX_in_aggregate3096);  
                     	        	stream_MAX.Add(op);
 
 
                     	        }
                     	        break;
                     	    case 4 :
-                    	        // Hql.g:577:33: op= MIN
+                    	        // Hql.g:589:33: op= MIN
                     	        {
-                    	        	op=(IToken)Match(input,MIN,FOLLOW_MIN_in_aggregate3045);  
+                    	        	op=(IToken)Match(input,MIN,FOLLOW_MIN_in_aggregate3102);  
                     	        	stream_MIN.Add(op);
 
 
@@ -9398,16 +9586,16 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	OPEN251=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3049);  
-                    	stream_OPEN.Add(OPEN251);
+                    	OPEN258=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3106);  
+                    	stream_OPEN.Add(OPEN258);
 
-                    	PushFollow(FOLLOW_additiveExpression_in_aggregate3051);
-                    	additiveExpression252 = additiveExpression();
+                    	PushFollow(FOLLOW_additiveExpression_in_aggregate3108);
+                    	additiveExpression259 = additiveExpression();
                     	state.followingStackPointer--;
 
-                    	stream_additiveExpression.Add(additiveExpression252.Tree);
-                    	CLOSE253=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3053);  
-                    	stream_CLOSE.Add(CLOSE253);
+                    	stream_additiveExpression.Add(additiveExpression259.Tree);
+                    	CLOSE260=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3110);  
+                    	stream_CLOSE.Add(CLOSE260);
 
 
 
@@ -9422,9 +9610,9 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 578:3: -> ^( AGGREGATE[$op] additiveExpression )
+                    	// 590:3: -> ^( AGGREGATE[$op] additiveExpression )
                     	{
-                    	    // Hql.g:578:6: ^( AGGREGATE[$op] additiveExpression )
+                    	    // Hql.g:590:6: ^( AGGREGATE[$op] additiveExpression )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(AGGREGATE, op), root_1);
@@ -9440,48 +9628,48 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 2 :
-                    // Hql.g:580:5: COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE
+                    // Hql.g:592:5: COUNT OPEN (s= STAR | p= aggregateDistinctAll ) CLOSE
                     {
-                    	COUNT254=(IToken)Match(input,COUNT,FOLLOW_COUNT_in_aggregate3072);  
-                    	stream_COUNT.Add(COUNT254);
+                    	COUNT261=(IToken)Match(input,COUNT,FOLLOW_COUNT_in_aggregate3129);  
+                    	stream_COUNT.Add(COUNT261);
 
-                    	OPEN255=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3074);  
-                    	stream_OPEN.Add(OPEN255);
+                    	OPEN262=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_aggregate3131);  
+                    	stream_OPEN.Add(OPEN262);
 
-                    	// Hql.g:580:16: (s= STAR | p= aggregateDistinctAll )
-                    	int alt89 = 2;
-                    	int LA89_0 = input.LA(1);
+                    	// Hql.g:592:16: (s= STAR | p= aggregateDistinctAll )
+                    	int alt91 = 2;
+                    	int LA91_0 = input.LA(1);
 
-                    	if ( (LA89_0 == STAR) )
+                    	if ( (LA91_0 == STAR) )
                     	{
-                    	    alt89 = 1;
+                    	    alt91 = 1;
                     	}
-                    	else if ( (LA89_0 == ALL || (LA89_0 >= DISTINCT && LA89_0 <= ELEMENTS) || LA89_0 == INDICES || LA89_0 == IDENT) )
+                    	else if ( (LA91_0 == ALL || (LA91_0 >= DISTINCT && LA91_0 <= ELEMENTS) || LA91_0 == INDICES || LA91_0 == IDENT) )
                     	{
-                    	    alt89 = 2;
+                    	    alt91 = 2;
                     	}
                     	else 
                     	{
-                    	    NoViableAltException nvae_d89s0 =
-                    	        new NoViableAltException("", 89, 0, input);
+                    	    NoViableAltException nvae_d91s0 =
+                    	        new NoViableAltException("", 91, 0, input);
 
-                    	    throw nvae_d89s0;
+                    	    throw nvae_d91s0;
                     	}
-                    	switch (alt89) 
+                    	switch (alt91) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:580:18: s= STAR
+                    	        // Hql.g:592:18: s= STAR
                     	        {
-                    	        	s=(IToken)Match(input,STAR,FOLLOW_STAR_in_aggregate3080);  
+                    	        	s=(IToken)Match(input,STAR,FOLLOW_STAR_in_aggregate3137);  
                     	        	stream_STAR.Add(s);
 
 
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:580:27: p= aggregateDistinctAll
+                    	        // Hql.g:592:27: p= aggregateDistinctAll
                     	        {
-                    	        	PushFollow(FOLLOW_aggregateDistinctAll_in_aggregate3086);
+                    	        	PushFollow(FOLLOW_aggregateDistinctAll_in_aggregate3143);
                     	        	p = aggregateDistinctAll();
                     	        	state.followingStackPointer--;
 
@@ -9492,13 +9680,13 @@ public partial class HqlParser : Parser
 
                     	}
 
-                    	CLOSE256=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3090);  
-                    	stream_CLOSE.Add(CLOSE256);
+                    	CLOSE263=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_aggregate3147);  
+                    	stream_CLOSE.Add(CLOSE263);
 
 
 
                     	// AST REWRITE
-                    	// elements:          COUNT, COUNT, p
+                    	// elements:          p, COUNT, COUNT
                     	// token labels:      
                     	// rule labels:       retval, p
                     	// token list labels: 
@@ -9509,10 +9697,10 @@ public partial class HqlParser : Parser
                     	RewriteRuleSubtreeStream stream_p = new RewriteRuleSubtreeStream(adaptor, "rule p", p!=null ? p.Tree : null);
 
                     	root_0 = (IASTNode)adaptor.GetNilNode();
-                    	// 581:3: -> {s == null}? ^( COUNT $p)
+                    	// 593:3: -> {s == null}? ^( COUNT $p)
                     	if (s == null)
                     	{
-                    	    // Hql.g:581:19: ^( COUNT $p)
+                    	    // Hql.g:593:19: ^( COUNT $p)
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
@@ -9523,14 +9711,14 @@ public partial class HqlParser : Parser
                     	    }
 
                     	}
-                    	else // 582:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
+                    	else // 594:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
                     	{
-                    	    // Hql.g:582:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
+                    	    // Hql.g:594:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
                     	    {
                     	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
                     	    root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
 
-                    	    // Hql.g:582:14: ^( ROW_STAR[\"*\"] )
+                    	    // Hql.g:594:14: ^( ROW_STAR[\"*\"] )
                     	    {
                     	    IASTNode root_2 = (IASTNode)adaptor.GetNilNode();
                     	    root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ROW_STAR, "*"), root_2);
@@ -9547,15 +9735,15 @@ public partial class HqlParser : Parser
                     }
                     break;
                 case 3 :
-                    // Hql.g:583:5: collectionExpr
+                    // Hql.g:595:5: collectionExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_collectionExpr_in_aggregate3122);
-                    	collectionExpr257 = collectionExpr();
+                    	PushFollow(FOLLOW_collectionExpr_in_aggregate3179);
+                    	collectionExpr264 = collectionExpr();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, collectionExpr257.Tree);
+                    	adaptor.AddChild(root_0, collectionExpr264.Tree);
 
                     }
                     break;
@@ -9592,7 +9780,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "aggregateDistinctAll"
-    // Hql.g:586:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
+    // Hql.g:598:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
     public HqlParser.aggregateDistinctAll_return aggregateDistinctAll() // throws RecognitionException [1]
     {   
         HqlParser.aggregateDistinctAll_return retval = new HqlParser.aggregateDistinctAll_return();
@@ -9600,42 +9788,42 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken set258 = null;
-        HqlParser.path_return path259 = default(HqlParser.path_return);
+        IToken set265 = null;
+        HqlParser.path_return path266 = default(HqlParser.path_return);
 
-        HqlParser.collectionExpr_return collectionExpr260 = default(HqlParser.collectionExpr_return);
+        HqlParser.collectionExpr_return collectionExpr267 = default(HqlParser.collectionExpr_return);
 
 
-        IASTNode set258_tree=null;
+        IASTNode set265_tree=null;
 
         try 
     	{
-            // Hql.g:587:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
-            // Hql.g:587:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+            // Hql.g:599:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
+            // Hql.g:599:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:587:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
-            	// Hql.g:587:6: ( DISTINCT | ALL )? ( path | collectionExpr )
+            	// Hql.g:599:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+            	// Hql.g:599:6: ( DISTINCT | ALL )? ( path | collectionExpr )
             	{
-            		// Hql.g:587:6: ( DISTINCT | ALL )?
-            		int alt91 = 2;
-            		int LA91_0 = input.LA(1);
+            		// Hql.g:599:6: ( DISTINCT | ALL )?
+            		int alt93 = 2;
+            		int LA93_0 = input.LA(1);
 
-            		if ( (LA91_0 == ALL || LA91_0 == DISTINCT) )
+            		if ( (LA93_0 == ALL || LA93_0 == DISTINCT) )
             		{
-            		    alt91 = 1;
+            		    alt93 = 1;
             		}
-            		switch (alt91) 
+            		switch (alt93) 
             		{
             		    case 1 :
             		        // Hql.g:
             		        {
-            		        	set258 = (IToken)input.LT(1);
+            		        	set265 = (IToken)input.LT(1);
             		        	if ( input.LA(1) == ALL || input.LA(1) == DISTINCT ) 
             		        	{
             		        	    input.Consume();
-            		        	    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set258));
+            		        	    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set265));
             		        	    state.errorRecovery = false;
             		        	}
             		        	else 
@@ -9650,46 +9838,46 @@ public partial class HqlParser : Parser
 
             		}
 
-            		// Hql.g:587:26: ( path | collectionExpr )
-            		int alt92 = 2;
-            		int LA92_0 = input.LA(1);
+            		// Hql.g:599:26: ( path | collectionExpr )
+            		int alt94 = 2;
+            		int LA94_0 = input.LA(1);
 
-            		if ( (LA92_0 == IDENT) )
+            		if ( (LA94_0 == IDENT) )
             		{
-            		    alt92 = 1;
+            		    alt94 = 1;
             		}
-            		else if ( (LA92_0 == ELEMENTS || LA92_0 == INDICES) )
+            		else if ( (LA94_0 == ELEMENTS || LA94_0 == INDICES) )
             		{
-            		    alt92 = 2;
+            		    alt94 = 2;
             		}
             		else 
             		{
-            		    NoViableAltException nvae_d92s0 =
-            		        new NoViableAltException("", 92, 0, input);
+            		    NoViableAltException nvae_d94s0 =
+            		        new NoViableAltException("", 94, 0, input);
 
-            		    throw nvae_d92s0;
+            		    throw nvae_d94s0;
             		}
-            		switch (alt92) 
+            		switch (alt94) 
             		{
             		    case 1 :
-            		        // Hql.g:587:28: path
+            		        // Hql.g:599:28: path
             		        {
-            		        	PushFollow(FOLLOW_path_in_aggregateDistinctAll3148);
-            		        	path259 = path();
+            		        	PushFollow(FOLLOW_path_in_aggregateDistinctAll3205);
+            		        	path266 = path();
             		        	state.followingStackPointer--;
 
-            		        	adaptor.AddChild(root_0, path259.Tree);
+            		        	adaptor.AddChild(root_0, path266.Tree);
 
             		        }
             		        break;
             		    case 2 :
-            		        // Hql.g:587:35: collectionExpr
+            		        // Hql.g:599:35: collectionExpr
             		        {
-            		        	PushFollow(FOLLOW_collectionExpr_in_aggregateDistinctAll3152);
-            		        	collectionExpr260 = collectionExpr();
+            		        	PushFollow(FOLLOW_collectionExpr_in_aggregateDistinctAll3209);
+            		        	collectionExpr267 = collectionExpr();
             		        	state.followingStackPointer--;
 
-            		        	adaptor.AddChild(root_0, collectionExpr260.Tree);
+            		        	adaptor.AddChild(root_0, collectionExpr267.Tree);
 
             		        }
             		        break;
@@ -9733,7 +9921,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "collectionExpr"
-    // Hql.g:592:1: collectionExpr : ( ELEMENTS | INDICES ) OPEN path CLOSE ;
+    // Hql.g:604:1: collectionExpr : ( ELEMENTS | INDICES ) OPEN path CLOSE ;
     public HqlParser.collectionExpr_return collectionExpr() // throws RecognitionException [1]
     {   
         HqlParser.collectionExpr_return retval = new HqlParser.collectionExpr_return();
@@ -9741,62 +9929,62 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken ELEMENTS261 = null;
-        IToken INDICES262 = null;
-        IToken OPEN263 = null;
-        IToken CLOSE265 = null;
-        HqlParser.path_return path264 = default(HqlParser.path_return);
+        IToken ELEMENTS268 = null;
+        IToken INDICES269 = null;
+        IToken OPEN270 = null;
+        IToken CLOSE272 = null;
+        HqlParser.path_return path271 = default(HqlParser.path_return);
 
 
-        IASTNode ELEMENTS261_tree=null;
-        IASTNode INDICES262_tree=null;
-        IASTNode OPEN263_tree=null;
-        IASTNode CLOSE265_tree=null;
+        IASTNode ELEMENTS268_tree=null;
+        IASTNode INDICES269_tree=null;
+        IASTNode OPEN270_tree=null;
+        IASTNode CLOSE272_tree=null;
 
         try 
     	{
-            // Hql.g:593:2: ( ( ELEMENTS | INDICES ) OPEN path CLOSE )
-            // Hql.g:593:4: ( ELEMENTS | INDICES ) OPEN path CLOSE
+            // Hql.g:605:2: ( ( ELEMENTS | INDICES ) OPEN path CLOSE )
+            // Hql.g:605:4: ( ELEMENTS | INDICES ) OPEN path CLOSE
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:593:4: ( ELEMENTS | INDICES )
-            	int alt93 = 2;
-            	int LA93_0 = input.LA(1);
+            	// Hql.g:605:4: ( ELEMENTS | INDICES )
+            	int alt95 = 2;
+            	int LA95_0 = input.LA(1);
 
-            	if ( (LA93_0 == ELEMENTS) )
+            	if ( (LA95_0 == ELEMENTS) )
             	{
-            	    alt93 = 1;
+            	    alt95 = 1;
             	}
-            	else if ( (LA93_0 == INDICES) )
+            	else if ( (LA95_0 == INDICES) )
             	{
-            	    alt93 = 2;
+            	    alt95 = 2;
             	}
             	else 
             	{
-            	    NoViableAltException nvae_d93s0 =
-            	        new NoViableAltException("", 93, 0, input);
+            	    NoViableAltException nvae_d95s0 =
+            	        new NoViableAltException("", 95, 0, input);
 
-            	    throw nvae_d93s0;
+            	    throw nvae_d95s0;
             	}
-            	switch (alt93) 
+            	switch (alt95) 
             	{
             	    case 1 :
-            	        // Hql.g:593:5: ELEMENTS
+            	        // Hql.g:605:5: ELEMENTS
             	        {
-            	        	ELEMENTS261=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionExpr3171); 
-            	        		ELEMENTS261_tree = (IASTNode)adaptor.Create(ELEMENTS261);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS261_tree, root_0);
+            	        	ELEMENTS268=(IToken)Match(input,ELEMENTS,FOLLOW_ELEMENTS_in_collectionExpr3228); 
+            	        		ELEMENTS268_tree = (IASTNode)adaptor.Create(ELEMENTS268);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS268_tree, root_0);
 
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:593:17: INDICES
+            	        // Hql.g:605:17: INDICES
             	        {
-            	        	INDICES262=(IToken)Match(input,INDICES,FOLLOW_INDICES_in_collectionExpr3176); 
-            	        		INDICES262_tree = (IASTNode)adaptor.Create(INDICES262);
-            	        		root_0 = (IASTNode)adaptor.BecomeRoot(INDICES262_tree, root_0);
+            	        	INDICES269=(IToken)Match(input,INDICES,FOLLOW_INDICES_in_collectionExpr3233); 
+            	        		INDICES269_tree = (IASTNode)adaptor.Create(INDICES269);
+            	        		root_0 = (IASTNode)adaptor.BecomeRoot(INDICES269_tree, root_0);
 
 
             	        }
@@ -9804,13 +9992,13 @@ public partial class HqlParser : Parser
 
             	}
 
-            	OPEN263=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_collectionExpr3180); 
-            	PushFollow(FOLLOW_path_in_collectionExpr3183);
-            	path264 = path();
+            	OPEN270=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_collectionExpr3237); 
+            	PushFollow(FOLLOW_path_in_collectionExpr3240);
+            	path271 = path();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, path264.Tree);
-            	CLOSE265=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_collectionExpr3185); 
+            	adaptor.AddChild(root_0, path271.Tree);
+            	CLOSE272=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_collectionExpr3242); 
 
             }
 
@@ -9845,7 +10033,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "compoundExpr"
-    // Hql.g:596:1: compoundExpr : ( collectionExpr | path | ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE ) );
+    // Hql.g:608:1: compoundExpr : ( collectionExpr | path | ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE ) );
     public HqlParser.compoundExpr_return compoundExpr() // throws RecognitionException [1]
     {   
         HqlParser.compoundExpr_return retval = new HqlParser.compoundExpr_return();
@@ -9853,167 +10041,167 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken OPEN268 = null;
-        IToken COMMA271 = null;
-        IToken CLOSE273 = null;
-        HqlParser.collectionExpr_return collectionExpr266 = default(HqlParser.collectionExpr_return);
+        IToken OPEN275 = null;
+        IToken COMMA278 = null;
+        IToken CLOSE280 = null;
+        HqlParser.collectionExpr_return collectionExpr273 = default(HqlParser.collectionExpr_return);
 
-        HqlParser.path_return path267 = default(HqlParser.path_return);
+        HqlParser.path_return path274 = default(HqlParser.path_return);
 
-        HqlParser.subQuery_return subQuery269 = default(HqlParser.subQuery_return);
+        HqlParser.subQuery_return subQuery276 = default(HqlParser.subQuery_return);
 
-        HqlParser.expression_return expression270 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression277 = default(HqlParser.expression_return);
 
-        HqlParser.expression_return expression272 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression279 = default(HqlParser.expression_return);
 
 
-        IASTNode OPEN268_tree=null;
-        IASTNode COMMA271_tree=null;
-        IASTNode CLOSE273_tree=null;
+        IASTNode OPEN275_tree=null;
+        IASTNode COMMA278_tree=null;
+        IASTNode CLOSE280_tree=null;
 
         try 
     	{
-            // Hql.g:597:2: ( collectionExpr | path | ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE ) )
-            int alt96 = 3;
+            // Hql.g:609:2: ( collectionExpr | path | ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE ) )
+            int alt98 = 3;
             switch ( input.LA(1) ) 
             {
             case ELEMENTS:
             case INDICES:
             	{
-                alt96 = 1;
+                alt98 = 1;
                 }
                 break;
             case IDENT:
             	{
-                alt96 = 2;
+                alt98 = 2;
                 }
                 break;
             case OPEN:
             	{
-                alt96 = 3;
+                alt98 = 3;
                 }
                 break;
             	default:
-            	    NoViableAltException nvae_d96s0 =
-            	        new NoViableAltException("", 96, 0, input);
+            	    NoViableAltException nvae_d98s0 =
+            	        new NoViableAltException("", 98, 0, input);
 
-            	    throw nvae_d96s0;
+            	    throw nvae_d98s0;
             }
 
-            switch (alt96) 
+            switch (alt98) 
             {
                 case 1 :
-                    // Hql.g:597:4: collectionExpr
+                    // Hql.g:609:4: collectionExpr
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_collectionExpr_in_compoundExpr3240);
-                    	collectionExpr266 = collectionExpr();
+                    	PushFollow(FOLLOW_collectionExpr_in_compoundExpr3297);
+                    	collectionExpr273 = collectionExpr();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, collectionExpr266.Tree);
+                    	adaptor.AddChild(root_0, collectionExpr273.Tree);
 
                     }
                     break;
                 case 2 :
-                    // Hql.g:598:4: path
+                    // Hql.g:610:4: path
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	PushFollow(FOLLOW_path_in_compoundExpr3245);
-                    	path267 = path();
+                    	PushFollow(FOLLOW_path_in_compoundExpr3302);
+                    	path274 = path();
                     	state.followingStackPointer--;
 
-                    	adaptor.AddChild(root_0, path267.Tree);
+                    	adaptor.AddChild(root_0, path274.Tree);
 
                     }
                     break;
                 case 3 :
-                    // Hql.g:599:4: ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE )
+                    // Hql.g:611:4: ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE )
                     {
                     	root_0 = (IASTNode)adaptor.GetNilNode();
 
-                    	// Hql.g:599:4: ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE )
-                    	// Hql.g:599:5: OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE
+                    	// Hql.g:611:4: ( OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE )
+                    	// Hql.g:611:5: OPEN ( subQuery | ( expression ( COMMA expression )* ) ) CLOSE
                     	{
-                    		OPEN268=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_compoundExpr3251); 
-                    		// Hql.g:599:11: ( subQuery | ( expression ( COMMA expression )* ) )
-                    		int alt95 = 2;
-                    		int LA95_0 = input.LA(1);
+                    		OPEN275=(IToken)Match(input,OPEN,FOLLOW_OPEN_in_compoundExpr3308); 
+                    		// Hql.g:611:11: ( subQuery | ( expression ( COMMA expression )* ) )
+                    		int alt97 = 2;
+                    		int LA97_0 = input.LA(1);
 
-                    		if ( (LA95_0 == EOF || LA95_0 == FROM || LA95_0 == GROUP || LA95_0 == ORDER || LA95_0 == SELECT || LA95_0 == UNION || LA95_0 == WHERE || LA95_0 == CLOSE) )
+                    		if ( (LA97_0 == EOF || LA97_0 == FROM || (LA97_0 >= GROUP && LA97_0 <= HAVING) || LA97_0 == ORDER || LA97_0 == SELECT || LA97_0 == SKIP || LA97_0 == TAKE || LA97_0 == UNION || LA97_0 == WHERE || LA97_0 == CLOSE) )
                     		{
-                    		    alt95 = 1;
+                    		    alt97 = 1;
                     		}
-                    		else if ( ((LA95_0 >= ALL && LA95_0 <= ANY) || LA95_0 == AVG || LA95_0 == COUNT || LA95_0 == ELEMENTS || (LA95_0 >= EXISTS && LA95_0 <= FALSE) || LA95_0 == INDICES || (LA95_0 >= MAX && LA95_0 <= MIN) || (LA95_0 >= NOT && LA95_0 <= NULL) || (LA95_0 >= SOME && LA95_0 <= TRUE) || LA95_0 == CASE || LA95_0 == EMPTY || (LA95_0 >= NUM_INT && LA95_0 <= NUM_LONG) || LA95_0 == OPEN || LA95_0 == BNOT || (LA95_0 >= PLUS && LA95_0 <= MINUS) || (LA95_0 >= COLON && LA95_0 <= IDENT)) )
+                    		else if ( ((LA97_0 >= ALL && LA97_0 <= ANY) || LA97_0 == AVG || LA97_0 == COUNT || LA97_0 == ELEMENTS || (LA97_0 >= EXISTS && LA97_0 <= FALSE) || LA97_0 == INDICES || (LA97_0 >= MAX && LA97_0 <= MIN) || (LA97_0 >= NOT && LA97_0 <= NULL) || (LA97_0 >= SOME && LA97_0 <= SUM) || LA97_0 == TRUE || LA97_0 == CASE || LA97_0 == EMPTY || (LA97_0 >= NUM_INT && LA97_0 <= NUM_LONG) || LA97_0 == OPEN || LA97_0 == BNOT || (LA97_0 >= PLUS && LA97_0 <= MINUS) || (LA97_0 >= COLON && LA97_0 <= IDENT)) )
                     		{
-                    		    alt95 = 2;
+                    		    alt97 = 2;
                     		}
                     		else 
                     		{
-                    		    NoViableAltException nvae_d95s0 =
-                    		        new NoViableAltException("", 95, 0, input);
+                    		    NoViableAltException nvae_d97s0 =
+                    		        new NoViableAltException("", 97, 0, input);
 
-                    		    throw nvae_d95s0;
+                    		    throw nvae_d97s0;
                     		}
-                    		switch (alt95) 
+                    		switch (alt97) 
                     		{
                     		    case 1 :
-                    		        // Hql.g:599:13: subQuery
+                    		        // Hql.g:611:13: subQuery
                     		        {
-                    		        	PushFollow(FOLLOW_subQuery_in_compoundExpr3256);
-                    		        	subQuery269 = subQuery();
+                    		        	PushFollow(FOLLOW_subQuery_in_compoundExpr3313);
+                    		        	subQuery276 = subQuery();
                     		        	state.followingStackPointer--;
 
-                    		        	adaptor.AddChild(root_0, subQuery269.Tree);
+                    		        	adaptor.AddChild(root_0, subQuery276.Tree);
 
                     		        }
                     		        break;
                     		    case 2 :
-                    		        // Hql.g:599:24: ( expression ( COMMA expression )* )
+                    		        // Hql.g:611:24: ( expression ( COMMA expression )* )
                     		        {
-                    		        	// Hql.g:599:24: ( expression ( COMMA expression )* )
-                    		        	// Hql.g:599:25: expression ( COMMA expression )*
+                    		        	// Hql.g:611:24: ( expression ( COMMA expression )* )
+                    		        	// Hql.g:611:25: expression ( COMMA expression )*
                     		        	{
-                    		        		PushFollow(FOLLOW_expression_in_compoundExpr3261);
-                    		        		expression270 = expression();
+                    		        		PushFollow(FOLLOW_expression_in_compoundExpr3318);
+                    		        		expression277 = expression();
                     		        		state.followingStackPointer--;
 
-                    		        		adaptor.AddChild(root_0, expression270.Tree);
-                    		        		// Hql.g:599:36: ( COMMA expression )*
+                    		        		adaptor.AddChild(root_0, expression277.Tree);
+                    		        		// Hql.g:611:36: ( COMMA expression )*
                     		        		do 
                     		        		{
-                    		        		    int alt94 = 2;
-                    		        		    int LA94_0 = input.LA(1);
+                    		        		    int alt96 = 2;
+                    		        		    int LA96_0 = input.LA(1);
 
-                    		        		    if ( (LA94_0 == COMMA) )
+                    		        		    if ( (LA96_0 == COMMA) )
                     		        		    {
-                    		        		        alt94 = 1;
+                    		        		        alt96 = 1;
                     		        		    }
 
 
-                    		        		    switch (alt94) 
+                    		        		    switch (alt96) 
                     		        			{
                     		        				case 1 :
-                    		        				    // Hql.g:599:37: COMMA expression
+                    		        				    // Hql.g:611:37: COMMA expression
                     		        				    {
-                    		        				    	COMMA271=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_compoundExpr3264); 
-                    		        				    	PushFollow(FOLLOW_expression_in_compoundExpr3267);
-                    		        				    	expression272 = expression();
+                    		        				    	COMMA278=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_compoundExpr3321); 
+                    		        				    	PushFollow(FOLLOW_expression_in_compoundExpr3324);
+                    		        				    	expression279 = expression();
                     		        				    	state.followingStackPointer--;
 
-                    		        				    	adaptor.AddChild(root_0, expression272.Tree);
+                    		        				    	adaptor.AddChild(root_0, expression279.Tree);
 
                     		        				    }
                     		        				    break;
 
                     		        				default:
-                    		        				    goto loop94;
+                    		        				    goto loop96;
                     		        		    }
                     		        		} while (true);
 
-                    		        		loop94:
-                    		        			;	// Stops C# compiler whining that label 'loop94' has no statements
+                    		        		loop96:
+                    		        			;	// Stops C# compiler whining that label 'loop96' has no statements
 
 
                     		        	}
@@ -10024,7 +10212,7 @@ public partial class HqlParser : Parser
 
                     		}
 
-                    		CLOSE273=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_compoundExpr3274); 
+                    		CLOSE280=(IToken)Match(input,CLOSE,FOLLOW_CLOSE_in_compoundExpr3331); 
 
                     	}
 
@@ -10064,7 +10252,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "exprList"
-    // Hql.g:602:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? ;
+    // Hql.g:614:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? ;
     public HqlParser.exprList_return exprList() // throws RecognitionException [1]
     {   
         HqlParser.exprList_return retval = new HqlParser.exprList_return();
@@ -10074,212 +10262,212 @@ public partial class HqlParser : Parser
 
         IToken f = null;
         IToken f2 = null;
-        IToken TRAILING274 = null;
-        IToken LEADING275 = null;
-        IToken BOTH276 = null;
-        IToken COMMA278 = null;
-        IToken AS281 = null;
-        HqlParser.expression_return expression277 = default(HqlParser.expression_return);
+        IToken TRAILING281 = null;
+        IToken LEADING282 = null;
+        IToken BOTH283 = null;
+        IToken COMMA285 = null;
+        IToken AS288 = null;
+        HqlParser.expression_return expression284 = default(HqlParser.expression_return);
 
-        HqlParser.expression_return expression279 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression286 = default(HqlParser.expression_return);
 
-        HqlParser.expression_return expression280 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression287 = default(HqlParser.expression_return);
 
-        HqlParser.identifier_return identifier282 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier289 = default(HqlParser.identifier_return);
 
-        HqlParser.expression_return expression283 = default(HqlParser.expression_return);
+        HqlParser.expression_return expression290 = default(HqlParser.expression_return);
 
 
         IASTNode f_tree=null;
         IASTNode f2_tree=null;
-        IASTNode TRAILING274_tree=null;
-        IASTNode LEADING275_tree=null;
-        IASTNode BOTH276_tree=null;
-        IASTNode COMMA278_tree=null;
-        IASTNode AS281_tree=null;
+        IASTNode TRAILING281_tree=null;
+        IASTNode LEADING282_tree=null;
+        IASTNode BOTH283_tree=null;
+        IASTNode COMMA285_tree=null;
+        IASTNode AS288_tree=null;
 
         try 
     	{
-            // Hql.g:608:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? )
-            // Hql.g:608:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
+            // Hql.g:620:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )? )
+            // Hql.g:620:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	// Hql.g:608:4: ( TRAILING | LEADING | BOTH )?
-            	int alt97 = 4;
+            	// Hql.g:620:4: ( TRAILING | LEADING | BOTH )?
+            	int alt99 = 4;
             	switch ( input.LA(1) ) 
             	{
             	    case TRAILING:
             	    	{
-            	        alt97 = 1;
+            	        alt99 = 1;
             	        }
             	        break;
             	    case LEADING:
             	    	{
-            	        alt97 = 2;
+            	        alt99 = 2;
             	        }
             	        break;
             	    case BOTH:
             	    	{
-            	        alt97 = 3;
+            	        alt99 = 3;
             	        }
             	        break;
             	}
 
-            	switch (alt97) 
+            	switch (alt99) 
             	{
             	    case 1 :
-            	        // Hql.g:608:5: TRAILING
+            	        // Hql.g:620:5: TRAILING
             	        {
-            	        	TRAILING274=(IToken)Match(input,TRAILING,FOLLOW_TRAILING_in_exprList3293); 
-            	        		TRAILING274_tree = (IASTNode)adaptor.Create(TRAILING274);
-            	        		adaptor.AddChild(root_0, TRAILING274_tree);
+            	        	TRAILING281=(IToken)Match(input,TRAILING,FOLLOW_TRAILING_in_exprList3350); 
+            	        		TRAILING281_tree = (IASTNode)adaptor.Create(TRAILING281);
+            	        		adaptor.AddChild(root_0, TRAILING281_tree);
 
-            	        	TRAILING274.Type = IDENT;
+            	        	TRAILING281.Type = IDENT;
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:609:10: LEADING
+            	        // Hql.g:621:10: LEADING
             	        {
-            	        	LEADING275=(IToken)Match(input,LEADING,FOLLOW_LEADING_in_exprList3306); 
-            	        		LEADING275_tree = (IASTNode)adaptor.Create(LEADING275);
-            	        		adaptor.AddChild(root_0, LEADING275_tree);
+            	        	LEADING282=(IToken)Match(input,LEADING,FOLLOW_LEADING_in_exprList3363); 
+            	        		LEADING282_tree = (IASTNode)adaptor.Create(LEADING282);
+            	        		adaptor.AddChild(root_0, LEADING282_tree);
 
-            	        	LEADING275.Type = IDENT;
+            	        	LEADING282.Type = IDENT;
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:610:10: BOTH
+            	        // Hql.g:622:10: BOTH
             	        {
-            	        	BOTH276=(IToken)Match(input,BOTH,FOLLOW_BOTH_in_exprList3319); 
-            	        		BOTH276_tree = (IASTNode)adaptor.Create(BOTH276);
-            	        		adaptor.AddChild(root_0, BOTH276_tree);
+            	        	BOTH283=(IToken)Match(input,BOTH,FOLLOW_BOTH_in_exprList3376); 
+            	        		BOTH283_tree = (IASTNode)adaptor.Create(BOTH283);
+            	        		adaptor.AddChild(root_0, BOTH283_tree);
 
-            	        	BOTH276.Type = IDENT;
+            	        	BOTH283.Type = IDENT;
 
             	        }
             	        break;
 
             	}
 
-            	// Hql.g:612:4: ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
-            	int alt100 = 3;
-            	int LA100_0 = input.LA(1);
+            	// Hql.g:624:4: ( expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )? | f2= FROM expression )?
+            	int alt102 = 3;
+            	int LA102_0 = input.LA(1);
 
-            	if ( ((LA100_0 >= ALL && LA100_0 <= ANY) || LA100_0 == AVG || LA100_0 == COUNT || LA100_0 == ELEMENTS || (LA100_0 >= EXISTS && LA100_0 <= FALSE) || LA100_0 == INDICES || (LA100_0 >= MAX && LA100_0 <= MIN) || (LA100_0 >= NOT && LA100_0 <= NULL) || (LA100_0 >= SOME && LA100_0 <= TRUE) || LA100_0 == CASE || LA100_0 == EMPTY || (LA100_0 >= NUM_INT && LA100_0 <= NUM_LONG) || LA100_0 == OPEN || LA100_0 == BNOT || (LA100_0 >= PLUS && LA100_0 <= MINUS) || (LA100_0 >= COLON && LA100_0 <= IDENT)) )
+            	if ( ((LA102_0 >= ALL && LA102_0 <= ANY) || LA102_0 == AVG || LA102_0 == COUNT || LA102_0 == ELEMENTS || (LA102_0 >= EXISTS && LA102_0 <= FALSE) || LA102_0 == INDICES || (LA102_0 >= MAX && LA102_0 <= MIN) || (LA102_0 >= NOT && LA102_0 <= NULL) || (LA102_0 >= SOME && LA102_0 <= SUM) || LA102_0 == TRUE || LA102_0 == CASE || LA102_0 == EMPTY || (LA102_0 >= NUM_INT && LA102_0 <= NUM_LONG) || LA102_0 == OPEN || LA102_0 == BNOT || (LA102_0 >= PLUS && LA102_0 <= MINUS) || (LA102_0 >= COLON && LA102_0 <= IDENT)) )
             	{
-            	    alt100 = 1;
+            	    alt102 = 1;
             	}
-            	else if ( (LA100_0 == FROM) )
+            	else if ( (LA102_0 == FROM) )
             	{
-            	    alt100 = 2;
+            	    alt102 = 2;
             	}
-            	switch (alt100) 
+            	switch (alt102) 
             	{
             	    case 1 :
-            	        // Hql.g:613:5: expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
+            	        // Hql.g:625:5: expression ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
             	        {
-            	        	PushFollow(FOLLOW_expression_in_exprList3343);
-            	        	expression277 = expression();
+            	        	PushFollow(FOLLOW_expression_in_exprList3400);
+            	        	expression284 = expression();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, expression277.Tree);
-            	        	// Hql.g:613:16: ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
-            	        	int alt99 = 4;
+            	        	adaptor.AddChild(root_0, expression284.Tree);
+            	        	// Hql.g:625:16: ( ( COMMA expression )+ | f= FROM expression | AS identifier )?
+            	        	int alt101 = 4;
             	        	switch ( input.LA(1) ) 
             	        	{
             	        	    case COMMA:
             	        	    	{
-            	        	        alt99 = 1;
+            	        	        alt101 = 1;
             	        	        }
             	        	        break;
             	        	    case FROM:
             	        	    	{
-            	        	        alt99 = 2;
+            	        	        alt101 = 2;
             	        	        }
             	        	        break;
             	        	    case AS:
             	        	    	{
-            	        	        alt99 = 3;
+            	        	        alt101 = 3;
             	        	        }
             	        	        break;
             	        	}
 
-            	        	switch (alt99) 
+            	        	switch (alt101) 
             	        	{
             	        	    case 1 :
-            	        	        // Hql.g:613:18: ( COMMA expression )+
+            	        	        // Hql.g:625:18: ( COMMA expression )+
             	        	        {
-            	        	        	// Hql.g:613:18: ( COMMA expression )+
-            	        	        	int cnt98 = 0;
+            	        	        	// Hql.g:625:18: ( COMMA expression )+
+            	        	        	int cnt100 = 0;
             	        	        	do 
             	        	        	{
-            	        	        	    int alt98 = 2;
-            	        	        	    int LA98_0 = input.LA(1);
+            	        	        	    int alt100 = 2;
+            	        	        	    int LA100_0 = input.LA(1);
 
-            	        	        	    if ( (LA98_0 == COMMA) )
+            	        	        	    if ( (LA100_0 == COMMA) )
             	        	        	    {
-            	        	        	        alt98 = 1;
+            	        	        	        alt100 = 1;
             	        	        	    }
 
 
-            	        	        	    switch (alt98) 
+            	        	        	    switch (alt100) 
             	        	        		{
             	        	        			case 1 :
-            	        	        			    // Hql.g:613:19: COMMA expression
+            	        	        			    // Hql.g:625:19: COMMA expression
             	        	        			    {
-            	        	        			    	COMMA278=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_exprList3348); 
-            	        	        			    	PushFollow(FOLLOW_expression_in_exprList3351);
-            	        	        			    	expression279 = expression();
+            	        	        			    	COMMA285=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_exprList3405); 
+            	        	        			    	PushFollow(FOLLOW_expression_in_exprList3408);
+            	        	        			    	expression286 = expression();
             	        	        			    	state.followingStackPointer--;
 
-            	        	        			    	adaptor.AddChild(root_0, expression279.Tree);
+            	        	        			    	adaptor.AddChild(root_0, expression286.Tree);
 
             	        	        			    }
             	        	        			    break;
 
             	        	        			default:
-            	        	        			    if ( cnt98 >= 1 ) goto loop98;
-            	        	        		            EarlyExitException eee98 =
-            	        	        		                new EarlyExitException(98, input);
-            	        	        		            throw eee98;
+            	        	        			    if ( cnt100 >= 1 ) goto loop100;
+            	        	        		            EarlyExitException eee100 =
+            	        	        		                new EarlyExitException(100, input);
+            	        	        		            throw eee100;
             	        	        	    }
-            	        	        	    cnt98++;
+            	        	        	    cnt100++;
             	        	        	} while (true);
 
-            	        	        	loop98:
-            	        	        		;	// Stops C# compiler whining that label 'loop98' has no statements
+            	        	        	loop100:
+            	        	        		;	// Stops C# compiler whining that label 'loop100' has no statements
 
 
             	        	        }
             	        	        break;
             	        	    case 2 :
-            	        	        // Hql.g:614:9: f= FROM expression
+            	        	        // Hql.g:626:9: f= FROM expression
             	        	        {
-            	        	        	f=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3366); 
+            	        	        	f=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3423); 
             	        	        		f_tree = (IASTNode)adaptor.Create(f);
             	        	        		adaptor.AddChild(root_0, f_tree);
 
-            	        	        	PushFollow(FOLLOW_expression_in_exprList3368);
-            	        	        	expression280 = expression();
+            	        	        	PushFollow(FOLLOW_expression_in_exprList3425);
+            	        	        	expression287 = expression();
             	        	        	state.followingStackPointer--;
 
-            	        	        	adaptor.AddChild(root_0, expression280.Tree);
+            	        	        	adaptor.AddChild(root_0, expression287.Tree);
             	        	        	f.Type = IDENT;
 
             	        	        }
             	        	        break;
             	        	    case 3 :
-            	        	        // Hql.g:615:9: AS identifier
+            	        	        // Hql.g:627:9: AS identifier
             	        	        {
-            	        	        	AS281=(IToken)Match(input,AS,FOLLOW_AS_in_exprList3380); 
-            	        	        	PushFollow(FOLLOW_identifier_in_exprList3383);
-            	        	        	identifier282 = identifier();
+            	        	        	AS288=(IToken)Match(input,AS,FOLLOW_AS_in_exprList3437); 
+            	        	        	PushFollow(FOLLOW_identifier_in_exprList3440);
+            	        	        	identifier289 = identifier();
             	        	        	state.followingStackPointer--;
 
-            	        	        	adaptor.AddChild(root_0, identifier282.Tree);
+            	        	        	adaptor.AddChild(root_0, identifier289.Tree);
 
             	        	        }
             	        	        break;
@@ -10290,17 +10478,17 @@ public partial class HqlParser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:616:7: f2= FROM expression
+            	        // Hql.g:628:7: f2= FROM expression
             	        {
-            	        	f2=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3397); 
+            	        	f2=(IToken)Match(input,FROM,FOLLOW_FROM_in_exprList3454); 
             	        		f2_tree = (IASTNode)adaptor.Create(f2);
             	        		adaptor.AddChild(root_0, f2_tree);
 
-            	        	PushFollow(FOLLOW_expression_in_exprList3399);
-            	        	expression283 = expression();
+            	        	PushFollow(FOLLOW_expression_in_exprList3456);
+            	        	expression290 = expression();
             	        	state.followingStackPointer--;
 
-            	        	adaptor.AddChild(root_0, expression283.Tree);
+            	        	adaptor.AddChild(root_0, expression290.Tree);
             	        	f2.Type = IDENT;
 
             	        }
@@ -10347,7 +10535,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "subQuery"
-    // Hql.g:620:1: subQuery : innerSubQuery ( UNION innerSubQuery )* ;
+    // Hql.g:632:1: subQuery : innerSubQuery ( UNION innerSubQuery )* ;
     public HqlParser.subQuery_return subQuery() // throws RecognitionException [1]
     {   
         HqlParser.subQuery_return retval = new HqlParser.subQuery_return();
@@ -10355,63 +10543,63 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken UNION285 = null;
-        HqlParser.innerSubQuery_return innerSubQuery284 = default(HqlParser.innerSubQuery_return);
+        IToken UNION292 = null;
+        HqlParser.innerSubQuery_return innerSubQuery291 = default(HqlParser.innerSubQuery_return);
 
-        HqlParser.innerSubQuery_return innerSubQuery286 = default(HqlParser.innerSubQuery_return);
+        HqlParser.innerSubQuery_return innerSubQuery293 = default(HqlParser.innerSubQuery_return);
 
 
-        IASTNode UNION285_tree=null;
+        IASTNode UNION292_tree=null;
 
         try 
     	{
-            // Hql.g:621:2: ( innerSubQuery ( UNION innerSubQuery )* )
-            // Hql.g:621:4: innerSubQuery ( UNION innerSubQuery )*
+            // Hql.g:633:2: ( innerSubQuery ( UNION innerSubQuery )* )
+            // Hql.g:633:4: innerSubQuery ( UNION innerSubQuery )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_innerSubQuery_in_subQuery3419);
-            	innerSubQuery284 = innerSubQuery();
+            	PushFollow(FOLLOW_innerSubQuery_in_subQuery3476);
+            	innerSubQuery291 = innerSubQuery();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, innerSubQuery284.Tree);
-            	// Hql.g:621:18: ( UNION innerSubQuery )*
+            	adaptor.AddChild(root_0, innerSubQuery291.Tree);
+            	// Hql.g:633:18: ( UNION innerSubQuery )*
             	do 
             	{
-            	    int alt101 = 2;
-            	    int LA101_0 = input.LA(1);
+            	    int alt103 = 2;
+            	    int LA103_0 = input.LA(1);
 
-            	    if ( (LA101_0 == UNION) )
+            	    if ( (LA103_0 == UNION) )
             	    {
-            	        alt101 = 1;
+            	        alt103 = 1;
             	    }
 
 
-            	    switch (alt101) 
+            	    switch (alt103) 
             		{
             			case 1 :
-            			    // Hql.g:621:19: UNION innerSubQuery
+            			    // Hql.g:633:19: UNION innerSubQuery
             			    {
-            			    	UNION285=(IToken)Match(input,UNION,FOLLOW_UNION_in_subQuery3422); 
-            			    		UNION285_tree = (IASTNode)adaptor.Create(UNION285);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(UNION285_tree, root_0);
+            			    	UNION292=(IToken)Match(input,UNION,FOLLOW_UNION_in_subQuery3479); 
+            			    		UNION292_tree = (IASTNode)adaptor.Create(UNION292);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(UNION292_tree, root_0);
 
-            			    	PushFollow(FOLLOW_innerSubQuery_in_subQuery3425);
-            			    	innerSubQuery286 = innerSubQuery();
+            			    	PushFollow(FOLLOW_innerSubQuery_in_subQuery3482);
+            			    	innerSubQuery293 = innerSubQuery();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, innerSubQuery286.Tree);
+            			    	adaptor.AddChild(root_0, innerSubQuery293.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop101;
+            			    goto loop103;
             	    }
             	} while (true);
 
-            	loop101:
-            		;	// Stops C# compiler whining that label 'loop101' has no statements
+            	loop103:
+            		;	// Stops C# compiler whining that label 'loop103' has no statements
 
 
             }
@@ -10447,7 +10635,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "innerSubQuery"
-    // Hql.g:624:1: innerSubQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
+    // Hql.g:636:1: innerSubQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
     public HqlParser.innerSubQuery_return innerSubQuery() // throws RecognitionException [1]
     {   
         HqlParser.innerSubQuery_return retval = new HqlParser.innerSubQuery_return();
@@ -10455,20 +10643,20 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        HqlParser.queryRule_return queryRule287 = default(HqlParser.queryRule_return);
+        HqlParser.queryRule_return queryRule294 = default(HqlParser.queryRule_return);
 
 
         RewriteRuleSubtreeStream stream_queryRule = new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
         try 
     	{
-            // Hql.g:625:2: ( queryRule -> ^( QUERY[\"query\"] queryRule ) )
-            // Hql.g:625:4: queryRule
+            // Hql.g:637:2: ( queryRule -> ^( QUERY[\"query\"] queryRule ) )
+            // Hql.g:637:4: queryRule
             {
-            	PushFollow(FOLLOW_queryRule_in_innerSubQuery3439);
-            	queryRule287 = queryRule();
+            	PushFollow(FOLLOW_queryRule_in_innerSubQuery3496);
+            	queryRule294 = queryRule();
             	state.followingStackPointer--;
 
-            	stream_queryRule.Add(queryRule287.Tree);
+            	stream_queryRule.Add(queryRule294.Tree);
 
 
             	// AST REWRITE
@@ -10482,9 +10670,9 @@ public partial class HqlParser : Parser
             	RewriteRuleSubtreeStream stream_retval = new RewriteRuleSubtreeStream(adaptor, "rule retval", retval!=null ? retval.Tree : null);
 
             	root_0 = (IASTNode)adaptor.GetNilNode();
-            	// 626:2: -> ^( QUERY[\"query\"] queryRule )
+            	// 638:2: -> ^( QUERY[\"query\"] queryRule )
             	{
-            	    // Hql.g:626:5: ^( QUERY[\"query\"] queryRule )
+            	    // Hql.g:638:5: ^( QUERY[\"query\"] queryRule )
             	    {
             	    IASTNode root_1 = (IASTNode)adaptor.GetNilNode();
             	    root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
@@ -10530,7 +10718,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "constant"
-    // Hql.g:629:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
+    // Hql.g:641:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
     public HqlParser.constant_return constant() // throws RecognitionException [1]
     {   
         HqlParser.constant_return retval = new HqlParser.constant_return();
@@ -10538,22 +10726,22 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken set288 = null;
+        IToken set295 = null;
 
-        IASTNode set288_tree=null;
+        IASTNode set295_tree=null;
 
         try 
     	{
-            // Hql.g:630:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
+            // Hql.g:642:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
             // Hql.g:
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	set288 = (IToken)input.LT(1);
+            	set295 = (IToken)input.LT(1);
             	if ( input.LA(1) == FALSE || input.LA(1) == NULL || input.LA(1) == TRUE || input.LA(1) == EMPTY || (input.LA(1) >= NUM_INT && input.LA(1) <= NUM_LONG) || input.LA(1) == QUOTED_String ) 
             	{
             	    input.Consume();
-            	    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set288));
+            	    adaptor.AddChild(root_0, (IASTNode)adaptor.Create(set295));
             	    state.errorRecovery = false;
             	}
             	else 
@@ -10596,7 +10784,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "path"
-    // Hql.g:648:1: path : identifier ( DOT identifier )* ;
+    // Hql.g:660:1: path : identifier ( DOT identifier )* ;
     public HqlParser.path_return path() // throws RecognitionException [1]
     {   
         HqlParser.path_return retval = new HqlParser.path_return();
@@ -10604,13 +10792,13 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken DOT290 = null;
-        HqlParser.identifier_return identifier289 = default(HqlParser.identifier_return);
+        IToken DOT297 = null;
+        HqlParser.identifier_return identifier296 = default(HqlParser.identifier_return);
 
-        HqlParser.identifier_return identifier291 = default(HqlParser.identifier_return);
+        HqlParser.identifier_return identifier298 = default(HqlParser.identifier_return);
 
 
-        IASTNode DOT290_tree=null;
+        IASTNode DOT297_tree=null;
 
 
         // TODO - need to clean up DotIdent - suspect that DotIdent2 supersedes the other one, but need to do the analysis
@@ -10618,54 +10806,54 @@ public partial class HqlParser : Parser
 
         try 
     	{
-            // Hql.g:653:2: ( identifier ( DOT identifier )* )
-            // Hql.g:653:4: identifier ( DOT identifier )*
+            // Hql.g:665:2: ( identifier ( DOT identifier )* )
+            // Hql.g:665:4: identifier ( DOT identifier )*
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	PushFollow(FOLLOW_identifier_in_path3527);
-            	identifier289 = identifier();
+            	PushFollow(FOLLOW_identifier_in_path3584);
+            	identifier296 = identifier();
             	state.followingStackPointer--;
 
-            	adaptor.AddChild(root_0, identifier289.Tree);
-            	// Hql.g:653:15: ( DOT identifier )*
+            	adaptor.AddChild(root_0, identifier296.Tree);
+            	// Hql.g:665:15: ( DOT identifier )*
             	do 
             	{
-            	    int alt102 = 2;
-            	    int LA102_0 = input.LA(1);
+            	    int alt104 = 2;
+            	    int LA104_0 = input.LA(1);
 
-            	    if ( (LA102_0 == DOT) )
+            	    if ( (LA104_0 == DOT) )
             	    {
-            	        alt102 = 1;
+            	        alt104 = 1;
             	    }
 
 
-            	    switch (alt102) 
+            	    switch (alt104) 
             		{
             			case 1 :
-            			    // Hql.g:653:17: DOT identifier
+            			    // Hql.g:665:17: DOT identifier
             			    {
-            			    	DOT290=(IToken)Match(input,DOT,FOLLOW_DOT_in_path3531); 
-            			    		DOT290_tree = (IASTNode)adaptor.Create(DOT290);
-            			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT290_tree, root_0);
+            			    	DOT297=(IToken)Match(input,DOT,FOLLOW_DOT_in_path3588); 
+            			    		DOT297_tree = (IASTNode)adaptor.Create(DOT297);
+            			    		root_0 = (IASTNode)adaptor.BecomeRoot(DOT297_tree, root_0);
 
             			    	 WeakKeywords(); 
-            			    	PushFollow(FOLLOW_identifier_in_path3536);
-            			    	identifier291 = identifier();
+            			    	PushFollow(FOLLOW_identifier_in_path3593);
+            			    	identifier298 = identifier();
             			    	state.followingStackPointer--;
 
-            			    	adaptor.AddChild(root_0, identifier291.Tree);
+            			    	adaptor.AddChild(root_0, identifier298.Tree);
 
             			    }
             			    break;
 
             			default:
-            			    goto loop102;
+            			    goto loop104;
             	    }
             	} while (true);
 
-            	loop102:
-            		;	// Stops C# compiler whining that label 'loop102' has no statements
+            	loop104:
+            		;	// Stops C# compiler whining that label 'loop104' has no statements
 
 
             }
@@ -10701,7 +10889,7 @@ public partial class HqlParser : Parser
     };
 
     // $ANTLR start "identifier"
-    // Hql.g:658:1: identifier : IDENT ;
+    // Hql.g:670:1: identifier : IDENT ;
     public HqlParser.identifier_return identifier() // throws RecognitionException [1]
     {   
         HqlParser.identifier_return retval = new HqlParser.identifier_return();
@@ -10709,20 +10897,20 @@ public partial class HqlParser : Parser
 
         IASTNode root_0 = null;
 
-        IToken IDENT292 = null;
+        IToken IDENT299 = null;
 
-        IASTNode IDENT292_tree=null;
+        IASTNode IDENT299_tree=null;
 
         try 
     	{
-            // Hql.g:659:2: ( IDENT )
-            // Hql.g:659:4: IDENT
+            // Hql.g:671:2: ( IDENT )
+            // Hql.g:671:4: IDENT
             {
             	root_0 = (IASTNode)adaptor.GetNilNode();
 
-            	IDENT292=(IToken)Match(input,IDENT,FOLLOW_IDENT_in_identifier3552); 
-            		IDENT292_tree = (IASTNode)adaptor.Create(IDENT292);
-            		adaptor.AddChild(root_0, IDENT292_tree);
+            	IDENT299=(IToken)Match(input,IDENT,FOLLOW_IDENT_in_identifier3609); 
+            		IDENT299_tree = (IASTNode)adaptor.Create(IDENT299);
+            		adaptor.AddChild(root_0, IDENT299_tree);
 
 
             }
@@ -10754,340 +10942,347 @@ public partial class HqlParser : Parser
 
  
 
-    public static readonly BitSet FOLLOW_updateStatement_in_statement599 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_deleteStatement_in_statement603 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectStatement_in_statement607 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_insertStatement_in_statement611 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_UPDATE_in_updateStatement624 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_VERSIONED_in_updateStatement628 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_optionalFromTokenFromClause_in_updateStatement634 = new BitSet(new ulong[]{0x0000400000000000UL});
-    public static readonly BitSet FOLLOW_setClause_in_updateStatement638 = new BitSet(new ulong[]{0x0020000000000002UL});
-    public static readonly BitSet FOLLOW_whereClause_in_updateStatement643 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SET_in_setClause657 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_assignment_in_setClause660 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_setClause663 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_assignment_in_setClause666 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_stateField_in_assignment680 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000001000000000UL});
-    public static readonly BitSet FOLLOW_EQ_in_assignment682 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_newValue_in_assignment685 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_path_in_stateField698 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_concatenation_in_newValue711 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DELETE_in_deleteStatement722 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_optionalFromTokenFromClause_in_deleteStatement728 = new BitSet(new ulong[]{0x0020000000000002UL});
-    public static readonly BitSet FOLLOW_whereClause_in_deleteStatement734 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_optionalFromTokenFromClause2_in_optionalFromTokenFromClause749 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_optionalFromTokenFromClause751 = new BitSet(new ulong[]{0x0010000000400082UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_optionalFromTokenFromClause754 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FROM_in_optionalFromTokenFromClause2785 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_queryRule_in_selectStatement799 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_INSERT_in_insertStatement828 = new BitSet(new ulong[]{0x0000000040000000UL});
-    public static readonly BitSet FOLLOW_intoClause_in_insertStatement831 = new BitSet(new ulong[]{0x0020220001400000UL});
-    public static readonly BitSet FOLLOW_selectStatement_in_insertStatement833 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_INTO_in_intoClause844 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_intoClause847 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_insertablePropertySpec_in_intoClause851 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_insertablePropertySpec862 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_primaryExpression_in_insertablePropertySpec864 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_insertablePropertySpec868 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_primaryExpression_in_insertablePropertySpec870 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004800000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_insertablePropertySpec875 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectFrom_in_queryRule901 = new BitSet(new ulong[]{0x0020020001000002UL});
-    public static readonly BitSet FOLLOW_whereClause_in_queryRule906 = new BitSet(new ulong[]{0x0000020001000002UL});
-    public static readonly BitSet FOLLOW_groupByClause_in_queryRule913 = new BitSet(new ulong[]{0x0000020000000002UL});
-    public static readonly BitSet FOLLOW_orderByClause_in_queryRule920 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectClause_in_selectFrom938 = new BitSet(new ulong[]{0x0000000000400002UL});
-    public static readonly BitSet FOLLOW_fromClause_in_selectFrom945 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SELECT_in_selectClause994 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x0F0C4023E0000004UL});
-    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause1006 = new BitSet(new ulong[]{0x809380F8085B1230UL,0x0F0C4023E0000004UL});
-    public static readonly BitSet FOLLOW_selectedPropertiesList_in_selectClause1012 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_newExpression_in_selectClause1016 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_selectObject_in_selectClause1020 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_NEW_in_newExpression1034 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_newExpression1036 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_newExpression1041 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_selectedPropertiesList_in_newExpression1043 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_newExpression1045 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OBJECT_in_selectObject1071 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_selectObject1074 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_selectObject1077 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_selectObject1079 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FROM_in_fromClause1097 = new BitSet(new ulong[]{0x0010000004420080UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_fromRange_in_fromClause1102 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_fromJoin_in_fromClause1106 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_fromClause1110 = new BitSet(new ulong[]{0x0010000004420080UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_fromRange_in_fromClause1115 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_set_in_fromJoin1133 = new BitSet(new ulong[]{0x0000040100000000UL});
-    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1144 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_FULL_in_fromJoin1152 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_INNER_in_fromJoin1156 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1161 = new BitSet(new ulong[]{0x0010000000600000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1165 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_fromJoin1169 = new BitSet(new ulong[]{0x2010000000600082UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1172 = new BitSet(new ulong[]{0x2000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1177 = new BitSet(new ulong[]{0x2000000000000002UL});
-    public static readonly BitSet FOLLOW_withClause_in_fromJoin1182 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_set_in_fromJoin1193 = new BitSet(new ulong[]{0x0000040100000000UL});
-    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1204 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_FULL_in_fromJoin1212 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_INNER_in_fromJoin1216 = new BitSet(new ulong[]{0x0000000100000000UL});
-    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1221 = new BitSet(new ulong[]{0x0000000000220000UL});
-    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1225 = new BitSet(new ulong[]{0x0000000000020000UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_fromJoin1229 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_fromJoin1232 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_fromJoin1235 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_fromJoin1237 = new BitSet(new ulong[]{0x2010000000600082UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1241 = new BitSet(new ulong[]{0x2000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1246 = new BitSet(new ulong[]{0x2000000000000002UL});
-    public static readonly BitSet FOLLOW_withClause_in_fromJoin1251 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WITH_in_withClause1264 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_withClause1267 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_fromClassOrOuterQueryPath_in_fromRange1278 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inClassDeclaration_in_fromRange1283 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inCollectionDeclaration_in_fromRange1288 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_inCollectionElementsDeclaration_in_fromRange1293 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_path_in_fromClassOrOuterQueryPath1305 = new BitSet(new ulong[]{0x0010000000600082UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_asAlias_in_fromClassOrOuterQueryPath1310 = new BitSet(new ulong[]{0x0000000000200002UL});
-    public static readonly BitSet FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1315 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_alias_in_inClassDeclaration1345 = new BitSet(new ulong[]{0x0000000004000000UL});
-    public static readonly BitSet FOLLOW_IN_in_inClassDeclaration1347 = new BitSet(new ulong[]{0x0010000000400800UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_CLASS_in_inClassDeclaration1349 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inClassDeclaration1352 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_IN_in_inCollectionDeclaration1380 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionDeclaration1382 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionDeclaration1384 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionDeclaration1386 = new BitSet(new ulong[]{0x0010000000400080UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionDeclaration1388 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1422 = new BitSet(new ulong[]{0x0000000004000000UL});
-    public static readonly BitSet FOLLOW_IN_in_inCollectionElementsDeclaration1424 = new BitSet(new ulong[]{0x0000000000020000UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1426 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1428 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1430 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1432 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1454 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1456 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1458 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1460 = new BitSet(new ulong[]{0x0000000000000080UL});
-    public static readonly BitSet FOLLOW_AS_in_inCollectionElementsDeclaration1462 = new BitSet(new ulong[]{0x0010000000400080UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1464 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_AS_in_asAlias1496 = new BitSet(new ulong[]{0x0010000000400080UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_alias_in_asAlias1501 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_alias1513 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FETCH_in_propertyFetch1532 = new BitSet(new ulong[]{0x0000000000000010UL});
-    public static readonly BitSet FOLLOW_ALL_in_propertyFetch1534 = new BitSet(new ulong[]{0x0000080000000000UL});
-    public static readonly BitSet FOLLOW_PROPERTIES_in_propertyFetch1537 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_GROUP_in_groupByClause1549 = new BitSet(new ulong[]{0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_LITERAL_by_in_groupByClause1555 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_groupByClause1558 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_groupByClause1562 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_groupByClause1565 = new BitSet(new ulong[]{0x0000000002000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_havingClause_in_groupByClause1573 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ORDER_in_orderByClause1586 = new BitSet(new ulong[]{0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_LITERAL_by_in_orderByClause1589 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1592 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_orderByClause1596 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1599 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_expression_in_orderElement1613 = new BitSet(new ulong[]{0x0000000000004102UL,0x0000000000000000UL,0x0000000000000018UL});
-    public static readonly BitSet FOLLOW_ascendingOrDescending_in_orderElement1617 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ASCENDING_in_ascendingOrDescending1635 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_131_in_ascendingOrDescending1641 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DESCENDING_in_ascendingOrDescending1661 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_132_in_ascendingOrDescending1667 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_HAVING_in_havingClause1688 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_havingClause1691 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHERE_in_whereClause1702 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_whereClause1705 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1716 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_selectedPropertiesList1720 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1723 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_expression_in_aliasedExpression1738 = new BitSet(new ulong[]{0x0000000000000082UL});
-    public static readonly BitSet FOLLOW_AS_in_aliasedExpression1742 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_aliasedExpression1745 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expression_in_logicalExpression1784 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_logicalOrExpression_in_expression1796 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1808 = new BitSet(new ulong[]{0x0000010000000002UL});
-    public static readonly BitSet FOLLOW_OR_in_logicalOrExpression1812 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1815 = new BitSet(new ulong[]{0x0000010000000002UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1830 = new BitSet(new ulong[]{0x0000000000000042UL});
-    public static readonly BitSet FOLLOW_AND_in_logicalAndExpression1834 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1837 = new BitSet(new ulong[]{0x0000000000000042UL});
-    public static readonly BitSet FOLLOW_NOT_in_negatedExpression1858 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_negatedExpression_in_negatedExpression1862 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_equalityExpression_in_negatedExpression1875 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression1905 = new BitSet(new ulong[]{0x0000000080000002UL,0x0000019000000000UL});
-    public static readonly BitSet FOLLOW_EQ_in_equalityExpression1913 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_IS_in_equalityExpression1922 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_NOT_in_equalityExpression1928 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_NE_in_equalityExpression1940 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_SQL_NE_in_equalityExpression1949 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression1960 = new BitSet(new ulong[]{0x0000000080000002UL,0x0000019000000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression1977 = new BitSet(new ulong[]{0x0000004404000402UL,0x00001E0000000002UL});
-    public static readonly BitSet FOLLOW_LT_in_relationalExpression1989 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_GT_in_relationalExpression1994 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_LE_in_relationalExpression1999 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_GE_in_relationalExpression2004 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_relationalExpression2009 = new BitSet(new ulong[]{0x0000000000000002UL,0x00001E0000000000UL});
-    public static readonly BitSet FOLLOW_NOT_in_relationalExpression2026 = new BitSet(new ulong[]{0x0000000404000400UL,0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_IN_in_relationalExpression2047 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800002000000000UL});
-    public static readonly BitSet FOLLOW_inList_in_relationalExpression2056 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_BETWEEN_in_relationalExpression2067 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_betweenList_in_relationalExpression2076 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_LIKE_in_relationalExpression2088 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2097 = new BitSet(new ulong[]{0x0000000000040000UL});
-    public static readonly BitSet FOLLOW_likeEscape_in_relationalExpression2099 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_MEMBER_in_relationalExpression2108 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000008UL});
-    public static readonly BitSet FOLLOW_OF_in_relationalExpression2112 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_relationalExpression2119 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ESCAPE_in_likeEscape2146 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_likeEscape2149 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_compoundExpr_in_inList2162 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_concatenation_in_betweenList2183 = new BitSet(new ulong[]{0x0000000000000040UL});
-    public static readonly BitSet FOLLOW_AND_in_betweenList2185 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_concatenation_in_betweenList2188 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2207 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000200000000000UL});
-    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2215 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2224 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000200000000000UL});
-    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2231 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2234 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000200000000000UL});
-    public static readonly BitSet FOLLOW_BNOT_in_bitwiseNotExpression2258 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2261 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2267 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2279 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000800000000000UL});
-    public static readonly BitSet FOLLOW_BOR_in_bitwiseOrExpression2282 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2285 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000800000000000UL});
-    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2299 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
-    public static readonly BitSet FOLLOW_BXOR_in_bitwiseXOrExpression2302 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2305 = new BitSet(new ulong[]{0x0000000000000002UL,0x0001000000000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_bitwiseAndExpression2319 = new BitSet(new ulong[]{0x0000000000000002UL,0x0002000000000000UL});
-    public static readonly BitSet FOLLOW_BAND_in_bitwiseAndExpression2322 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_bitwiseAndExpression2325 = new BitSet(new ulong[]{0x0000000000000002UL,0x0002000000000000UL});
-    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2339 = new BitSet(new ulong[]{0x0000000000000002UL,0x000C000000000000UL});
-    public static readonly BitSet FOLLOW_PLUS_in_additiveExpression2345 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_MINUS_in_additiveExpression2350 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2355 = new BitSet(new ulong[]{0x0000000000000002UL,0x000C000000000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2370 = new BitSet(new ulong[]{0x0000000000000002UL,0x0030000000000000UL});
-    public static readonly BitSet FOLLOW_STAR_in_multiplyExpression2376 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_DIV_in_multiplyExpression2381 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2386 = new BitSet(new ulong[]{0x0000000000000002UL,0x0030000000000000UL});
-    public static readonly BitSet FOLLOW_MINUS_in_unaryExpression2404 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2408 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PLUS_in_unaryExpression2425 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2429 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_caseExpression_in_unaryExpression2446 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_quantifiedExpression_in_unaryExpression2460 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_atom_in_unaryExpression2475 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpression2494 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_whenClause_in_caseExpression2497 = new BitSet(new ulong[]{0x0B00000000000000UL});
-    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2502 = new BitSet(new ulong[]{0x0100000000000000UL});
-    public static readonly BitSet FOLLOW_END_in_caseExpression2506 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_CASE_in_caseExpression2526 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_caseExpression2528 = new BitSet(new ulong[]{0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_altWhenClause_in_caseExpression2531 = new BitSet(new ulong[]{0x0B00000000000000UL});
-    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2536 = new BitSet(new ulong[]{0x0100000000000000UL});
-    public static readonly BitSet FOLLOW_END_in_caseExpression2540 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHEN_in_whenClause2569 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_logicalExpression_in_whenClause2572 = new BitSet(new ulong[]{0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_THEN_in_whenClause2574 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_whenClause2577 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_WHEN_in_altWhenClause2591 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2594 = new BitSet(new ulong[]{0x0400000000000000UL});
-    public static readonly BitSet FOLLOW_THEN_in_altWhenClause2596 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_altWhenClause2599 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELSE_in_elseClause2613 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_elseClause2616 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SOME_in_quantifiedExpression2631 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800002000000000UL});
-    public static readonly BitSet FOLLOW_EXISTS_in_quantifiedExpression2636 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800002000000000UL});
-    public static readonly BitSet FOLLOW_ALL_in_quantifiedExpression2641 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800002000000000UL});
-    public static readonly BitSet FOLLOW_ANY_in_quantifiedExpression2646 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800002000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_quantifiedExpression2655 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_quantifiedExpression2659 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_quantifiedExpression2664 = new BitSet(new ulong[]{0x0020220001400000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_quantifiedExpression2669 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_quantifiedExpression2673 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_primaryExpression_in_atom2692 = new BitSet(new ulong[]{0x0000000000008002UL,0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_DOT_in_atom2701 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_atom2704 = new BitSet(new ulong[]{0x0000000000008002UL,0x0040002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_atom2732 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x0F0C4063E0000011UL});
-    public static readonly BitSet FOLLOW_exprList_in_atom2737 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_atom2739 = new BitSet(new ulong[]{0x0000000000008002UL,0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_BRACKET_in_atom2753 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_atom2758 = new BitSet(new ulong[]{0x0000000000000000UL,0x0080000000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_BRACKET_in_atom2760 = new BitSet(new ulong[]{0x0000000000008002UL,0x0040000000000000UL});
-    public static readonly BitSet FOLLOW_identPrimary_in_primaryExpression2780 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_DOT_in_primaryExpression2793 = new BitSet(new ulong[]{0x0000000000000800UL});
-    public static readonly BitSet FOLLOW_CLASS_in_primaryExpression2796 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_constant_in_primaryExpression2806 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COLON_in_primaryExpression2813 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_primaryExpression2816 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_primaryExpression2825 = new BitSet(new ulong[]{0x80B3A2D8095A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expressionOrVector_in_primaryExpression2829 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_primaryExpression2833 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_primaryExpression2836 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_PARAM_in_primaryExpression2844 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000020000000UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_primaryExpression2848 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expression_in_expressionOrVector2866 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_vectorExpr_in_expressionOrVector2872 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2911 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_vectorExpr2914 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2917 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_vectorExpr2920 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_identPrimary2936 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_DOT_in_identPrimary2954 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000004UL});
-    public static readonly BitSet FOLLOW_identifier_in_identPrimary2959 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OBJECT_in_identPrimary2965 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_identPrimary2983 = new BitSet(new ulong[]{0xC09380D8085A1230UL,0x0F0C4063E0000011UL});
-    public static readonly BitSet FOLLOW_exprList_in_identPrimary2988 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_identPrimary2990 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_aggregate_in_identPrimary3006 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_SUM_in_aggregate3027 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_AVG_in_aggregate3033 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_MAX_in_aggregate3039 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_MIN_in_aggregate3045 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_aggregate3049 = new BitSet(new ulong[]{0x80938098085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_additiveExpression_in_aggregate3051 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3053 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_COUNT_in_aggregate3072 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_aggregate3074 = new BitSet(new ulong[]{0x0011001808431210UL,0x0810000000000000UL});
-    public static readonly BitSet FOLLOW_STAR_in_aggregate3080 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_aggregateDistinctAll_in_aggregate3086 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3090 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_aggregate3122 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_set_in_aggregateDistinctAll3135 = new BitSet(new ulong[]{0x0011001808421200UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_aggregateDistinctAll3148 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_aggregateDistinctAll3152 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionExpr3171 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_INDICES_in_collectionExpr3176 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000002000000000UL});
-    public static readonly BitSet FOLLOW_OPEN_in_collectionExpr3180 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_path_in_collectionExpr3183 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_collectionExpr3185 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_collectionExpr_in_compoundExpr3240 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_path_in_compoundExpr3245 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_OPEN_in_compoundExpr3251 = new BitSet(new ulong[]{0x80B3A2D8095A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_subQuery_in_compoundExpr3256 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
-    public static readonly BitSet FOLLOW_expression_in_compoundExpr3261 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_compoundExpr3264 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_compoundExpr3267 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004800000000UL});
-    public static readonly BitSet FOLLOW_CLOSE_in_compoundExpr3274 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_TRAILING_in_exprList3293 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_LEADING_in_exprList3306 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_BOTH_in_exprList3319 = new BitSet(new ulong[]{0x809380D8085A1232UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3343 = new BitSet(new ulong[]{0x0000000000400082UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_COMMA_in_exprList3348 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3351 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000800000000UL});
-    public static readonly BitSet FOLLOW_FROM_in_exprList3366 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3368 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_AS_in_exprList3380 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_exprList3383 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_FROM_in_exprList3397 = new BitSet(new ulong[]{0x809380D8085A1230UL,0x0F0C4023E0000000UL});
-    public static readonly BitSet FOLLOW_expression_in_exprList3399 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_innerSubQuery_in_subQuery3419 = new BitSet(new ulong[]{0x0004000000000002UL});
-    public static readonly BitSet FOLLOW_UNION_in_subQuery3422 = new BitSet(new ulong[]{0x0020220001400000UL});
-    public static readonly BitSet FOLLOW_innerSubQuery_in_subQuery3425 = new BitSet(new ulong[]{0x0004000000000002UL});
-    public static readonly BitSet FOLLOW_queryRule_in_innerSubQuery3439 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_updateStatement_in_statement611 = new BitSet(new ulong[]{0x0000000000000000UL});
+    public static readonly BitSet FOLLOW_deleteStatement_in_statement615 = new BitSet(new ulong[]{0x0000000000000000UL});
+    public static readonly BitSet FOLLOW_selectStatement_in_statement619 = new BitSet(new ulong[]{0x0000000000000000UL});
+    public static readonly BitSet FOLLOW_insertStatement_in_statement623 = new BitSet(new ulong[]{0x0000000000000000UL});
+    public static readonly BitSet FOLLOW_EOF_in_statement627 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_UPDATE_in_updateStatement639 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_VERSIONED_in_updateStatement643 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_optionalFromTokenFromClause_in_updateStatement649 = new BitSet(new ulong[]{0x0000400000000000UL});
+    public static readonly BitSet FOLLOW_setClause_in_updateStatement653 = new BitSet(new ulong[]{0x0080000000000002UL});
+    public static readonly BitSet FOLLOW_whereClause_in_updateStatement658 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SET_in_setClause672 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_assignment_in_setClause675 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_setClause678 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_assignment_in_setClause681 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_stateField_in_assignment695 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000004000000000UL});
+    public static readonly BitSet FOLLOW_EQ_in_assignment697 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_newValue_in_assignment700 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_path_in_stateField713 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_newValue726 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DELETE_in_deleteStatement737 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_optionalFromTokenFromClause_in_deleteStatement743 = new BitSet(new ulong[]{0x0080000000000002UL});
+    public static readonly BitSet FOLLOW_whereClause_in_deleteStatement749 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_optionalFromTokenFromClause2_in_optionalFromTokenFromClause764 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_optionalFromTokenFromClause766 = new BitSet(new ulong[]{0x0040000000400082UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_optionalFromTokenFromClause769 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FROM_in_optionalFromTokenFromClause2800 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_queryRule_in_selectStatement814 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_INSERT_in_insertStatement843 = new BitSet(new ulong[]{0x0000000040000000UL});
+    public static readonly BitSet FOLLOW_intoClause_in_insertStatement846 = new BitSet(new ulong[]{0x0084A20003400000UL});
+    public static readonly BitSet FOLLOW_selectStatement_in_insertStatement848 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_INTO_in_intoClause859 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_intoClause862 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_insertablePropertySpec_in_intoClause866 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_insertablePropertySpec877 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_primaryExpression_in_insertablePropertySpec879 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000012000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_insertablePropertySpec883 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_primaryExpression_in_insertablePropertySpec885 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000012000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_insertablePropertySpec890 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectFrom_in_queryRule916 = new BitSet(new ulong[]{0x0084820003000002UL});
+    public static readonly BitSet FOLLOW_whereClause_in_queryRule921 = new BitSet(new ulong[]{0x0004820003000002UL});
+    public static readonly BitSet FOLLOW_groupByClause_in_queryRule928 = new BitSet(new ulong[]{0x0004820002000002UL});
+    public static readonly BitSet FOLLOW_havingClause_in_queryRule935 = new BitSet(new ulong[]{0x0004820000000002UL});
+    public static readonly BitSet FOLLOW_orderByClause_in_queryRule942 = new BitSet(new ulong[]{0x0004800000000002UL});
+    public static readonly BitSet FOLLOW_skipClause_in_queryRule949 = new BitSet(new ulong[]{0x0004000000000002UL});
+    public static readonly BitSet FOLLOW_takeClause_in_queryRule956 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectClause_in_selectFrom974 = new BitSet(new ulong[]{0x0000000000400002UL});
+    public static readonly BitSet FOLLOW_fromClause_in_selectFrom981 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SELECT_in_selectClause1030 = new BitSet(new ulong[]{0x024B00F8085B1230UL,0x3C31008F80000012UL});
+    public static readonly BitSet FOLLOW_DISTINCT_in_selectClause1042 = new BitSet(new ulong[]{0x024B00F8085B1230UL,0x3C31008F80000012UL});
+    public static readonly BitSet FOLLOW_selectedPropertiesList_in_selectClause1048 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_newExpression_in_selectClause1052 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_selectObject_in_selectClause1056 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_NEW_in_newExpression1070 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_newExpression1072 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_newExpression1077 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_selectedPropertiesList_in_newExpression1079 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_newExpression1081 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OBJECT_in_selectObject1107 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_selectObject1110 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_selectObject1113 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_selectObject1115 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FROM_in_fromClause1133 = new BitSet(new ulong[]{0x0040000004420080UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_fromRange_in_fromClause1138 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_fromJoin_in_fromClause1142 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_fromClause1146 = new BitSet(new ulong[]{0x0040000004420080UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_fromRange_in_fromClause1151 = new BitSet(new ulong[]{0x0000100310800002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_set_in_fromJoin1169 = new BitSet(new ulong[]{0x0000040100000000UL});
+    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1180 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_FULL_in_fromJoin1188 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_INNER_in_fromJoin1192 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1197 = new BitSet(new ulong[]{0x0040000000600000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1201 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_fromJoin1205 = new BitSet(new ulong[]{0x8040000000600082UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1208 = new BitSet(new ulong[]{0x8000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1213 = new BitSet(new ulong[]{0x8000000000000002UL});
+    public static readonly BitSet FOLLOW_withClause_in_fromJoin1218 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_set_in_fromJoin1229 = new BitSet(new ulong[]{0x0000040100000000UL});
+    public static readonly BitSet FOLLOW_OUTER_in_fromJoin1240 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_FULL_in_fromJoin1248 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_INNER_in_fromJoin1252 = new BitSet(new ulong[]{0x0000000100000000UL});
+    public static readonly BitSet FOLLOW_JOIN_in_fromJoin1257 = new BitSet(new ulong[]{0x0000000000220000UL});
+    public static readonly BitSet FOLLOW_FETCH_in_fromJoin1261 = new BitSet(new ulong[]{0x0000000000020000UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_fromJoin1265 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_fromJoin1268 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_fromJoin1271 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_fromJoin1273 = new BitSet(new ulong[]{0x8040000000600082UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromJoin1277 = new BitSet(new ulong[]{0x8000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromJoin1282 = new BitSet(new ulong[]{0x8000000000000002UL});
+    public static readonly BitSet FOLLOW_withClause_in_fromJoin1287 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WITH_in_withClause1300 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_withClause1303 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_fromClassOrOuterQueryPath_in_fromRange1314 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inClassDeclaration_in_fromRange1319 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inCollectionDeclaration_in_fromRange1324 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_inCollectionElementsDeclaration_in_fromRange1329 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_path_in_fromClassOrOuterQueryPath1341 = new BitSet(new ulong[]{0x0040000000600082UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_asAlias_in_fromClassOrOuterQueryPath1346 = new BitSet(new ulong[]{0x0000000000200002UL});
+    public static readonly BitSet FOLLOW_propertyFetch_in_fromClassOrOuterQueryPath1351 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_alias_in_inClassDeclaration1381 = new BitSet(new ulong[]{0x0000000004000000UL});
+    public static readonly BitSet FOLLOW_IN_in_inClassDeclaration1383 = new BitSet(new ulong[]{0x0040000000400800UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_CLASS_in_inClassDeclaration1385 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inClassDeclaration1388 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_IN_in_inCollectionDeclaration1416 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionDeclaration1418 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionDeclaration1420 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionDeclaration1422 = new BitSet(new ulong[]{0x0040000000400080UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionDeclaration1424 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1458 = new BitSet(new ulong[]{0x0000000004000000UL});
+    public static readonly BitSet FOLLOW_IN_in_inCollectionElementsDeclaration1460 = new BitSet(new ulong[]{0x0000000000020000UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1462 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1464 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1466 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1468 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_inCollectionElementsDeclaration1490 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_inCollectionElementsDeclaration1492 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_inCollectionElementsDeclaration1494 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_inCollectionElementsDeclaration1496 = new BitSet(new ulong[]{0x0000000000000080UL});
+    public static readonly BitSet FOLLOW_AS_in_inCollectionElementsDeclaration1498 = new BitSet(new ulong[]{0x0040000000400080UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_inCollectionElementsDeclaration1500 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_AS_in_asAlias1532 = new BitSet(new ulong[]{0x0040000000400080UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_alias_in_asAlias1537 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_alias1549 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FETCH_in_propertyFetch1568 = new BitSet(new ulong[]{0x0000000000000010UL});
+    public static readonly BitSet FOLLOW_ALL_in_propertyFetch1570 = new BitSet(new ulong[]{0x0000080000000000UL});
+    public static readonly BitSet FOLLOW_PROPERTIES_in_propertyFetch1573 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_GROUP_in_groupByClause1585 = new BitSet(new ulong[]{0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_LITERAL_by_in_groupByClause1591 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_groupByClause1594 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_groupByClause1598 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_groupByClause1601 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_ORDER_in_orderByClause1615 = new BitSet(new ulong[]{0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_LITERAL_by_in_orderByClause1618 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1621 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_orderByClause1625 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_orderElement_in_orderByClause1628 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_SKIP_in_skipClause1642 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000080000000UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_skipClause1645 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_TAKE_in_takeClause1656 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000080000000UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_takeClause1659 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expression_in_orderElement1670 = new BitSet(new ulong[]{0x0000000000004102UL,0x0000000000000000UL,0x0000000000000060UL});
+    public static readonly BitSet FOLLOW_ascendingOrDescending_in_orderElement1674 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ASCENDING_in_ascendingOrDescending1692 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_133_in_ascendingOrDescending1698 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DESCENDING_in_ascendingOrDescending1718 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_134_in_ascendingOrDescending1724 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_HAVING_in_havingClause1745 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_havingClause1748 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHERE_in_whereClause1759 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_whereClause1762 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1773 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_selectedPropertiesList1777 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_aliasedExpression_in_selectedPropertiesList1780 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_expression_in_aliasedExpression1795 = new BitSet(new ulong[]{0x0000000000000082UL});
+    public static readonly BitSet FOLLOW_AS_in_aliasedExpression1799 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_aliasedExpression1802 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expression_in_logicalExpression1841 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_logicalOrExpression_in_expression1853 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1865 = new BitSet(new ulong[]{0x0000010000000002UL});
+    public static readonly BitSet FOLLOW_OR_in_logicalOrExpression1869 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_logicalAndExpression_in_logicalOrExpression1872 = new BitSet(new ulong[]{0x0000010000000002UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1887 = new BitSet(new ulong[]{0x0000000000000042UL});
+    public static readonly BitSet FOLLOW_AND_in_logicalAndExpression1891 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_logicalAndExpression1894 = new BitSet(new ulong[]{0x0000000000000042UL});
+    public static readonly BitSet FOLLOW_NOT_in_negatedExpression1915 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_negatedExpression_in_negatedExpression1919 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_equalityExpression_in_negatedExpression1932 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression1962 = new BitSet(new ulong[]{0x0000000080000002UL,0x0000064000000000UL});
+    public static readonly BitSet FOLLOW_EQ_in_equalityExpression1970 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_IS_in_equalityExpression1979 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_NOT_in_equalityExpression1985 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_NE_in_equalityExpression1997 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_SQL_NE_in_equalityExpression2006 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_relationalExpression_in_equalityExpression2017 = new BitSet(new ulong[]{0x0000000080000002UL,0x0000064000000000UL});
+    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2034 = new BitSet(new ulong[]{0x0000004404000402UL,0x0000780000000008UL});
+    public static readonly BitSet FOLLOW_LT_in_relationalExpression2046 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_GT_in_relationalExpression2051 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_LE_in_relationalExpression2056 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_GE_in_relationalExpression2061 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_relationalExpression2066 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000780000000000UL});
+    public static readonly BitSet FOLLOW_NOT_in_relationalExpression2083 = new BitSet(new ulong[]{0x0000000404000400UL,0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_IN_in_relationalExpression2104 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000008000000000UL});
+    public static readonly BitSet FOLLOW_inList_in_relationalExpression2113 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_BETWEEN_in_relationalExpression2124 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_betweenList_in_relationalExpression2133 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_LIKE_in_relationalExpression2145 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_relationalExpression2154 = new BitSet(new ulong[]{0x0000000000040000UL});
+    public static readonly BitSet FOLLOW_likeEscape_in_relationalExpression2156 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_MEMBER_in_relationalExpression2165 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000020UL});
+    public static readonly BitSet FOLLOW_OF_in_relationalExpression2169 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_relationalExpression2176 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ESCAPE_in_likeEscape2203 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_likeEscape2206 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_compoundExpr_in_inList2219 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_betweenList2240 = new BitSet(new ulong[]{0x0000000000000040UL});
+    public static readonly BitSet FOLLOW_AND_in_betweenList2242 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_concatenation_in_betweenList2245 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2264 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000800000000000UL});
+    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2272 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2281 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000800000000000UL});
+    public static readonly BitSet FOLLOW_CONCAT_in_concatenation2288 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseNotExpression_in_concatenation2291 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000800000000000UL});
+    public static readonly BitSet FOLLOW_BNOT_in_bitwiseNotExpression2315 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2318 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseOrExpression_in_bitwiseNotExpression2324 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2336 = new BitSet(new ulong[]{0x0000000000000002UL,0x0002000000000000UL});
+    public static readonly BitSet FOLLOW_BOR_in_bitwiseOrExpression2339 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseXOrExpression_in_bitwiseOrExpression2342 = new BitSet(new ulong[]{0x0000000000000002UL,0x0002000000000000UL});
+    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2356 = new BitSet(new ulong[]{0x0000000000000002UL,0x0004000000000000UL});
+    public static readonly BitSet FOLLOW_BXOR_in_bitwiseXOrExpression2359 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_bitwiseAndExpression_in_bitwiseXOrExpression2362 = new BitSet(new ulong[]{0x0000000000000002UL,0x0004000000000000UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_bitwiseAndExpression2376 = new BitSet(new ulong[]{0x0000000000000002UL,0x0008000000000000UL});
+    public static readonly BitSet FOLLOW_BAND_in_bitwiseAndExpression2379 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_bitwiseAndExpression2382 = new BitSet(new ulong[]{0x0000000000000002UL,0x0008000000000000UL});
+    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2396 = new BitSet(new ulong[]{0x0000000000000002UL,0x0030000000000000UL});
+    public static readonly BitSet FOLLOW_PLUS_in_additiveExpression2402 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_MINUS_in_additiveExpression2407 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_multiplyExpression_in_additiveExpression2412 = new BitSet(new ulong[]{0x0000000000000002UL,0x0030000000000000UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2427 = new BitSet(new ulong[]{0x0000000000000002UL,0x00C0000000000000UL});
+    public static readonly BitSet FOLLOW_STAR_in_multiplyExpression2433 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_DIV_in_multiplyExpression2438 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_multiplyExpression2443 = new BitSet(new ulong[]{0x0000000000000002UL,0x00C0000000000000UL});
+    public static readonly BitSet FOLLOW_MINUS_in_unaryExpression2461 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2465 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PLUS_in_unaryExpression2482 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_unaryExpression2486 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_caseExpression_in_unaryExpression2503 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_quantifiedExpression_in_unaryExpression2517 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_atom_in_unaryExpression2532 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpression2551 = new BitSet(new ulong[]{0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_whenClause_in_caseExpression2554 = new BitSet(new ulong[]{0x2C00000000000000UL});
+    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2559 = new BitSet(new ulong[]{0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_END_in_caseExpression2563 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_CASE_in_caseExpression2583 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_caseExpression2585 = new BitSet(new ulong[]{0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_altWhenClause_in_caseExpression2588 = new BitSet(new ulong[]{0x2C00000000000000UL});
+    public static readonly BitSet FOLLOW_elseClause_in_caseExpression2593 = new BitSet(new ulong[]{0x0400000000000000UL});
+    public static readonly BitSet FOLLOW_END_in_caseExpression2597 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHEN_in_whenClause2626 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_logicalExpression_in_whenClause2629 = new BitSet(new ulong[]{0x1000000000000000UL});
+    public static readonly BitSet FOLLOW_THEN_in_whenClause2631 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_whenClause2634 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_WHEN_in_altWhenClause2648 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_unaryExpression_in_altWhenClause2651 = new BitSet(new ulong[]{0x1000000000000000UL});
+    public static readonly BitSet FOLLOW_THEN_in_altWhenClause2653 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_altWhenClause2656 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELSE_in_elseClause2670 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_elseClause2673 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SOME_in_quantifiedExpression2688 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000008000000000UL});
+    public static readonly BitSet FOLLOW_EXISTS_in_quantifiedExpression2693 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000008000000000UL});
+    public static readonly BitSet FOLLOW_ALL_in_quantifiedExpression2698 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000008000000000UL});
+    public static readonly BitSet FOLLOW_ANY_in_quantifiedExpression2703 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000008000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_quantifiedExpression2712 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_quantifiedExpression2716 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_quantifiedExpression2721 = new BitSet(new ulong[]{0x0084A20003400000UL});
+    public static readonly BitSet FOLLOW_subQuery_in_quantifiedExpression2726 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_quantifiedExpression2730 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_primaryExpression_in_atom2749 = new BitSet(new ulong[]{0x0000000000008002UL,0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_DOT_in_atom2758 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_atom2761 = new BitSet(new ulong[]{0x0000000000008002UL,0x0100008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_atom2789 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31018F80000047UL});
+    public static readonly BitSet FOLLOW_exprList_in_atom2794 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_atom2796 = new BitSet(new ulong[]{0x0000000000008002UL,0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_BRACKET_in_atom2810 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_atom2815 = new BitSet(new ulong[]{0x0000000000000000UL,0x0200000000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_BRACKET_in_atom2817 = new BitSet(new ulong[]{0x0000000000008002UL,0x0100000000000000UL});
+    public static readonly BitSet FOLLOW_identPrimary_in_primaryExpression2837 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_DOT_in_primaryExpression2850 = new BitSet(new ulong[]{0x0000000000000800UL});
+    public static readonly BitSet FOLLOW_CLASS_in_primaryExpression2853 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_constant_in_primaryExpression2863 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COLON_in_primaryExpression2870 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_primaryExpression2873 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_primaryExpression2882 = new BitSet(new ulong[]{0x02CFA2D80B5A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expressionOrVector_in_primaryExpression2886 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_subQuery_in_primaryExpression2890 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_primaryExpression2893 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_PARAM_in_primaryExpression2901 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000080000000UL});
+    public static readonly BitSet FOLLOW_NUM_INT_in_primaryExpression2905 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_expression_in_expressionOrVector2923 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_vectorExpr_in_expressionOrVector2929 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2968 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_vectorExpr2971 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_vectorExpr2974 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_vectorExpr2977 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_identPrimary2993 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_DOT_in_identPrimary3011 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000010UL});
+    public static readonly BitSet FOLLOW_identifier_in_identPrimary3016 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OBJECT_in_identPrimary3022 = new BitSet(new ulong[]{0x0000000000008002UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_identPrimary3040 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31018F80000047UL});
+    public static readonly BitSet FOLLOW_exprList_in_identPrimary3045 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_identPrimary3047 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_aggregate_in_identPrimary3063 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_SUM_in_aggregate3084 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_AVG_in_aggregate3090 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_MAX_in_aggregate3096 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_MIN_in_aggregate3102 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_aggregate3106 = new BitSet(new ulong[]{0x024B0098085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_additiveExpression_in_aggregate3108 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3110 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_COUNT_in_aggregate3129 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_aggregate3131 = new BitSet(new ulong[]{0x0042001808431210UL,0x2040000000000000UL});
+    public static readonly BitSet FOLLOW_STAR_in_aggregate3137 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_aggregateDistinctAll_in_aggregate3143 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_aggregate3147 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_aggregate3179 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_set_in_aggregateDistinctAll3192 = new BitSet(new ulong[]{0x0042001808421200UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_aggregateDistinctAll3205 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_aggregateDistinctAll3209 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_ELEMENTS_in_collectionExpr3228 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_INDICES_in_collectionExpr3233 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000008000000000UL});
+    public static readonly BitSet FOLLOW_OPEN_in_collectionExpr3237 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_path_in_collectionExpr3240 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_collectionExpr3242 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_collectionExpr_in_compoundExpr3297 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_path_in_compoundExpr3302 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_OPEN_in_compoundExpr3308 = new BitSet(new ulong[]{0x02CFA2D80B5A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_subQuery_in_compoundExpr3313 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000010000000000UL});
+    public static readonly BitSet FOLLOW_expression_in_compoundExpr3318 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000012000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_compoundExpr3321 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_compoundExpr3324 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000012000000000UL});
+    public static readonly BitSet FOLLOW_CLOSE_in_compoundExpr3331 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_TRAILING_in_exprList3350 = new BitSet(new ulong[]{0x024B00D8085A1232UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_LEADING_in_exprList3363 = new BitSet(new ulong[]{0x024B00D8085A1232UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_BOTH_in_exprList3376 = new BitSet(new ulong[]{0x024B00D8085A1232UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3400 = new BitSet(new ulong[]{0x0000000000400082UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_COMMA_in_exprList3405 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3408 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000002000000000UL});
+    public static readonly BitSet FOLLOW_FROM_in_exprList3423 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3425 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_AS_in_exprList3437 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_exprList3440 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_FROM_in_exprList3454 = new BitSet(new ulong[]{0x024B00D8085A1230UL,0x3C31008F80000002UL});
+    public static readonly BitSet FOLLOW_expression_in_exprList3456 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_innerSubQuery_in_subQuery3476 = new BitSet(new ulong[]{0x0010000000000002UL});
+    public static readonly BitSet FOLLOW_UNION_in_subQuery3479 = new BitSet(new ulong[]{0x0084A20003400000UL});
+    public static readonly BitSet FOLLOW_innerSubQuery_in_subQuery3482 = new BitSet(new ulong[]{0x0010000000000002UL});
+    public static readonly BitSet FOLLOW_queryRule_in_innerSubQuery3496 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_constant0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_identifier_in_path3527 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_DOT_in_path3531 = new BitSet(new ulong[]{0x0010000000400000UL,0x0800000000000000UL});
-    public static readonly BitSet FOLLOW_identifier_in_path3536 = new BitSet(new ulong[]{0x0000000000008002UL});
-    public static readonly BitSet FOLLOW_IDENT_in_identifier3552 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_identifier_in_path3584 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_DOT_in_path3588 = new BitSet(new ulong[]{0x0040000000400000UL,0x2000000000000000UL});
+    public static readonly BitSet FOLLOW_identifier_in_path3593 = new BitSet(new ulong[]{0x0000000000008002UL});
+    public static readonly BitSet FOLLOW_IDENT_in_identifier3609 = new BitSet(new ulong[]{0x0000000000000002UL});
 
 }
 }
