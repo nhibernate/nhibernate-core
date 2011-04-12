@@ -80,13 +80,25 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		}
 
 		[Test]
-		public void IncludesFields()
+		public void IncludesFieldsWhenExplicitDeclared()
+		{
+			var autoinspector = new SimpleModelInspector();
+			var mapper = new ModelMapper(autoinspector);
+			mapper.Class<MyEntity>(map => map.Property(ForClass<MyEntity>.Field("pizza"), x => { }));
+			var inspector = (IModelInspector)autoinspector;
+
+			var pi = typeof(MyEntity).GetField("pizza", BindingFlags.Instance | BindingFlags.NonPublic);
+			inspector.IsPersistentProperty(pi).Should().Be.True();
+		}
+
+		[Test]
+		public void DoesNotIncludesFieldsByDefault()
 		{
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
 			var pi = typeof(MyEntity).GetField("pizza", BindingFlags.Instance | BindingFlags.NonPublic);
-			inspector.IsPersistentProperty(pi).Should().Be.True();
+			inspector.IsPersistentProperty(pi).Should().Be.False();
 		}
 
 		[Test]
