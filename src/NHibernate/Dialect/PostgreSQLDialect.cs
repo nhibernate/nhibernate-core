@@ -123,6 +123,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+        public override bool SupportsLimitOffset
+        {
+            get { return true; }
+        }
+
 		public override bool BindLimitParametersInReverseOrder
 		{
 			get { return true; }
@@ -139,19 +144,35 @@ namespace NHibernate.Dialect
 		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			pagingBuilder.Add(querySqlString);
-			pagingBuilder.Add(" limit ");
-			pagingBuilder.Add(Parameter.WithIndex(limitParameterIndex.Value));
-
-			if (offset > 0)
-			{
-				pagingBuilder.Add(" offset ");
-				pagingBuilder.Add(Parameter.WithIndex(offsetParameterIndex.Value));
-			}
-
-			return pagingBuilder.ToSqlString();
+		    object limitObject = Parameter.WithIndex(limitParameterIndex.Value);
+		    object offsetObject = offset > 0 ? Parameter.WithIndex(offsetParameterIndex.Value) : null;
+		    return GetLimitString(querySqlString, offsetObject, limitObject);
 		}
+
+        public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+        {
+            return GetLimitString(querySqlString, new SqlString(offset.ToString()), new SqlString(limit.ToString()));
+        }
+
+        private SqlString GetLimitString(SqlString querySqlString, object offset, object limit)
+        {
+            SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+            pagingBuilder.Add(querySqlString);
+
+            if (limit != null)
+            {
+                pagingBuilder.Add(" limit ");
+                pagingBuilder.AddObject(limit);
+            }
+
+            if (offset != null)
+            {
+                pagingBuilder.Add(" offset ");
+                pagingBuilder.AddObject(offset);
+            }
+
+            return pagingBuilder.ToSqlString();
+        }
 
 		public override string GetForUpdateString(string aliases)
 		{

@@ -164,6 +164,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+        public override bool SupportsLimitOffset
+        {
+            get { return true; }
+        }
+
 		public override string IdentityColumnString
 		{
 			get
