@@ -44,6 +44,7 @@ namespace NHibernate.Mapping.ByCode
 		public SimpleModelInspector()
 		{
 			isEntity = (t, declared) => declared || MatchEntity(t);
+			isRootEntity = (t, declared) => declared || MatchRootEntity(t);
 			isTablePerClass = (t, declared) => declared || MatchTablePerClass(t);
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
@@ -54,6 +55,11 @@ namespace NHibernate.Mapping.ByCode
 			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
 			isManyToOne = (m, declared) => declared || MatchManyToOne(m);
 			isOneToMany = (m, declared) => declared || MatchOneToMany(m);
+		}
+
+		private bool MatchRootEntity(System.Type type)
+		{
+			return type.IsClass && typeof(object).Equals(type.BaseType);
 		}
 
 		private bool MatchTablePerClass(System.Type type)
