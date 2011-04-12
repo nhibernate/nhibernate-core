@@ -46,5 +46,10 @@ namespace NHibernate.Test.TestDialects
         {
             get { return true; }
         }
+
+        public override bool SupportsHavingWithoutGroupBy
+        {
+            get { return false; }
+        }
 	}
 }

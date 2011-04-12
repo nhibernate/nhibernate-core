@@ -49,6 +49,8 @@ namespace NHibernate.Test
 
         public virtual bool SupportsSelectForUpdateOnOuterJoin { get { return true; } }
 
+        public virtual bool SupportsHavingWithoutGroupBy { get { return true; } }
+
 	    public bool SupportsSqlType(SqlType sqlType)
 	    {
             try
