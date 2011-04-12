@@ -321,7 +321,8 @@ namespace NHibernate.Hql.Ast.ANTLR
             QueryWriter queryWriter = ((QueryWriter) writer);
             SqlString sqlString = queryWriter.ToSqlString();
 
-            sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
+            if (queryWriter.Take.HasValue || queryWriter.Skip.HasValue)
+                sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
 
             writer = outputStack[0];
             outputStack.RemoveAt(0);
