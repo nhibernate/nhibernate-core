@@ -16,6 +16,22 @@ namespace NHibernate.Mapping.ByCode
 		protected virtual void AppendDefaultEvents()
 		{
 			BeforeMapJoinedSubclass += JoinedSubclassKeyAsRootIdColumn;
+			BeforeMapProperty += PropertyColumnName;
+		}
+
+		protected void PropertyColumnName(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
+		{
+			if (member.PreviousPath == null || member.LocalMember == null)
+			{
+				return;
+			}
+			if (member.PreviousPath.LocalMember.GetPropertyOrFieldType().IsGenericCollection())
+			{
+				return;
+			}
+
+			var pathToMap = member.DepureFirstLevelIfCollection();
+			propertyCustomizer.Column(pathToMap.ToColumnName());
 		}
 
 		protected void JoinedSubclassKeyAsRootIdColumn(IModelInspector modelInspector, System.Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
@@ -42,6 +43,20 @@ namespace NHibernate.Mapping.ByCode
 				yield return progressivePath;
 				analizing = analizing.PreviousPath;
 			} while (analizing != null);
+		}
+
+		public static PropertyPath DepureFirstLevelIfCollection(this PropertyPath source)
+		{
+			// when the component is used as elements of a collection, the name of the property representing
+			// the collection itself may be ignored since each collection will have its own table.
+			// Note: In some cases may be a problem.
+			const int penultimateOffset = 2;
+			if (!source.GetRootMember().GetPropertyOrFieldType().IsGenericCollection())
+			{
+				return source;
+			}
+			var paths = source.InverseProgressivePath().ToArray();
+			return paths[paths.Length - penultimateOffset];
 		}
 	}
 }

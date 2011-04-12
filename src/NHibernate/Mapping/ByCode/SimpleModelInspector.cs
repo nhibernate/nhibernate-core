@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.ByCode
 			isTablePerClass = (t, declared) => declared || MatchTablePerClass(t);
 			isPersistentId = (m, declared) => declared || MatchPoIdPattern(m);
 			isComponent = (t, declared) => declared || MatchComponentPattern(t);
-			isPersistentProperty = (m, declared) => declared || MatchNoReadOnlyPropertyPattern(m);
+			isPersistentProperty = (m, declared) => declared || ((m is PropertyInfo) && MatchNoReadOnlyPropertyPattern(m));
 			isSet = (m, declared) => declared || MatchCollection(m, MatchSetMember);
 			isArray = (m, declared) => declared || MatchCollection(m, MatchArrayMember);
 			isBag = (m, declared) => declared || MatchCollection(m, MatchBagMember);
