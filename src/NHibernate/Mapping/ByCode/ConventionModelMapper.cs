@@ -17,6 +17,28 @@ namespace NHibernate.Mapping.ByCode
 		{
 			BeforeMapJoinedSubclass += JoinedSubclassKeyAsRootIdColumn;
 			BeforeMapProperty += PropertyColumnName;
+			BeforeMapList += ManyToManyInCollectionTable;
+			BeforeMapBag += ManyToManyInCollectionTable;
+			BeforeMapSet += ManyToManyInCollectionTable;
+			BeforeMapMap += ManyToManyInCollectionTable;
+		}
+
+		protected void ManyToManyInCollectionTable(IModelInspector modelInspector, PropertyPath member, ICollectionPropertiesMapper collectionCustomizer)
+		{
+			System.Type propertyType = member.LocalMember.GetPropertyOrFieldType();
+
+			System.Type fromMany = member.GetContainerEntity(modelInspector);
+			System.Type toMany = propertyType.DetermineCollectionElementOrDictionaryValueType();
+			if(!modelInspector.IsEntity(toMany))
+			{
+				// does not apply when the relation is on the key of the dictionary
+				// Note: a dictionary may have relation with 3 entities; in this handler we are covering only relations on values
+				return;
+			}
+			var relation = new[] { fromMany, toMany };
+			var twoEntitiesNames = (from relationOn in relation orderby relationOn.Name select relationOn.Name).ToArray();
+
+			collectionCustomizer.Table(string.Format("{0}To{1}", twoEntitiesNames[0], twoEntitiesNames[1]));
 		}
 
 		protected void PropertyColumnName(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
@@ -36,7 +58,7 @@ namespace NHibernate.Mapping.ByCode
 
 		protected void JoinedSubclassKeyAsRootIdColumn(IModelInspector modelInspector, System.Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
 		{
-			var idMember = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields()).FirstOrDefault(mi => ModelInspector.IsPersistentId(mi.GetMemberFromDeclaringType()));
+			var idMember = type.GetProperties().Cast<MemberInfo>().Concat(type.GetFields()).FirstOrDefault(mi => modelInspector.IsPersistentId(mi.GetMemberFromDeclaringType()));
 			if (idMember != null)
 			{
 				joinedSubclassCustomizer.Key(km => km.Column(idMember.Name));
