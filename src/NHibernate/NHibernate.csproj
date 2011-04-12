@@ -438,6 +438,7 @@
     <Compile Include="Mapping\Column.cs" />
     <Compile Include="Mapping\Component.cs" />
     <Compile Include="Mapping\Constraint.cs" />
+    <Compile Include="Mapping\ByCode\ConventionModelMapper.cs" />
     <Compile Include="Mapping\ForeignKey.cs" />
     <Compile Include="Mapping\Formula.cs" />
     <Compile Include="Mapping\IdentifierBag.cs" />
