@@ -409,18 +409,6 @@ ISession session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
-                            <literal>use_outer_join</literal>
-                        </entry>
-                        <entry>
-                            Enables outer join fetching. Deprecated, use <literal>max_fetch_depth</literal>.
-                            <para>
-                                <emphasis role="strong">eg.</emphasis> 
-                                <literal>true</literal> | <literal>false</literal>
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry>
                             <literal>max_fetch_depth</literal>
                         </entry>
                         <entry>
@@ -942,7 +930,6 @@ ISession session = sessions.OpenSession(conn);
         <property name="connection.connection_string">Server=localhost;initial catalog=nhibernate;User Id=;Password=</property>
         <property name="show_sql">false</property>
         <property name="dialect">NHibernate.Dialect.MsSql2000Dialect</property>
-        <property name="use_outer_join">true</property>
 
         <!-- mapping files -->
         <mapping resource="NHibernate.Auction.Item.hbm.xml" assembly="NHibernate.Auction" />
