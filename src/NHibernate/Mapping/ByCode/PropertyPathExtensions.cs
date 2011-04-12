@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace NHibernate.Mapping.ByCode.Impl
+namespace NHibernate.Mapping.ByCode
 {
 	public static class PropertyPathExtensions
 	{

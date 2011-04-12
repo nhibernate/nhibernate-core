@@ -409,8 +409,8 @@
     <Compile Include="Mapping\ByCode\Impl\OneToManyMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\OneToOneMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\PropertyMapper.cs" />
-    <Compile Include="Mapping\ByCode\Impl\PropertyPath.cs" />
-    <Compile Include="Mapping\ByCode\Impl\PropertyPathExtensions.cs" />
+    <Compile Include="Mapping\ByCode\PropertyPath.cs" />
+    <Compile Include="Mapping\ByCode\PropertyPathExtensions.cs" />
     <Compile Include="Mapping\ByCode\Impl\SetMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\SubclassMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\TypeNameUtil.cs" />

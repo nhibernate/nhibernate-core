@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace NHibernate.Mapping.ByCode.Impl
+namespace NHibernate.Mapping.ByCode
 {
 	public class PropertyPath
 	{
