@@ -14,7 +14,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly ExplicitlyDeclaredModel declaredModel = new ExplicitlyDeclaredModel();
 
 		private Func<System.Type, bool, bool> isEntity = (t, declared) => declared;
-		private Func<System.Type, bool, bool> isRootEntity = (t, declared) => declared;
+		private Func<System.Type, bool, bool> isRootEntity;
 		private Func<System.Type, bool, bool> isTablePerClass;
 		private Func<SplitDefinition, bool, bool> isTablePerClassSplit = (sd, declared) => declared;
 		private Func<System.Type, bool, bool> isTablePerClassHierarchy = (t, declared) => declared;
