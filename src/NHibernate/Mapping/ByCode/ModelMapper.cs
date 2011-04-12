@@ -491,7 +491,7 @@ namespace NHibernate.Mapping.ByCode
 
 		#endregion
 
-		public IModelInspector ModelInspector
+		protected IModelInspector ModelInspector
 		{
 			get { return modelInspector; }
 		}
