@@ -37,15 +37,13 @@ namespace NHibernate.TestDatabaseSetup
         private static void SetupSqlServer(Cfg.Configuration cfg)
         {
             var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
-			
-            using (var conn = new SqlConnection(connStr))
+
+            using (var conn = new SqlConnection(connStr.Replace("initial catalog=nhibernate", "initial catalog=master")))
             {
                 conn.Open();
 
-                using (var cmd = new System.Data.SqlClient.SqlCommand("use master", conn))
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.ExecuteNonQuery();
-
                     cmd.CommandText = "drop database nhibernate";
 
                     try
