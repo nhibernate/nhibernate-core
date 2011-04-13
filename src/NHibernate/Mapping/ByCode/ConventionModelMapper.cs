@@ -17,6 +17,40 @@ namespace NHibernate.Mapping.ByCode
 		{
 			BeforeMapClass += NoPoidGuid;
 			BeforeMapClass += NoSetterPoidToField;
+
+			BeforeMapProperty += MemberToFieldAccessor;
+			BeforeMapBag += MemberToFieldAccessor;
+			BeforeMapSet += MemberToFieldAccessor;
+			BeforeMapMap += MemberToFieldAccessor;
+			BeforeMapList += MemberToFieldAccessor;
+			
+			BeforeMapManyToOne += MemberToFieldAccessor;
+			BeforeMapOneToOne += MemberToFieldAccessor;
+			BeforeMapAny += MemberToFieldAccessor;
+		}
+
+		void MemberToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+		{
+			if (MatchPropertyToField(member.LocalMember))
+			{
+				propertyCustomizer.Access(Accessor.Field);
+			}
+		}
+
+		protected bool MatchPropertyToField(MemberInfo subject)
+		{
+			var property = subject as PropertyInfo;
+			if (property == null)
+			{
+				return false;
+			}
+			var fieldInfo = PropertyToField.GetBackFieldInfo(property);
+			if (fieldInfo != null)
+			{
+				return fieldInfo.FieldType != property.PropertyType;
+			}
+
+			return false;
 		}
 
 		protected virtual void NoSetterPoidToField(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
@@ -28,7 +62,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		public bool MatchNoSetterProperty(MemberInfo subject)
+		protected bool MatchNoSetterProperty(MemberInfo subject)
 		{
 			var property = subject as PropertyInfo;
 			if (property == null || property.CanWrite || !property.CanRead)
