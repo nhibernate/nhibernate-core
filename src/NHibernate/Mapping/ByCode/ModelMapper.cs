@@ -743,7 +743,7 @@ namespace NHibernate.Mapping.ByCode
 				                      });
 			}
 			var splitGroups = modelInspector.GetPropertiesSplits(type);
-			var propertiesToMap = persistentProperties.Where(mi => !modelInspector.IsVersion(mi)).Except(naturalIdPropeties).ToList();
+			var propertiesToMap = persistentProperties.Where(mi => !modelInspector.IsVersion(mi) && !modelInspector.IsVersion(mi.GetMemberFromDeclaringType())).Except(naturalIdPropeties).ToList();
 			var propertiesInSplits = new HashSet<MemberInfo>();
 			foreach (var splitGroup in splitGroups)
 			{
