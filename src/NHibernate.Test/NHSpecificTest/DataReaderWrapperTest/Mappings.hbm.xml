@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest"
+				   assembly="NHibernate.Test">
+
+	<class name="TheEntity">
+		<id name="Id" type="Int32">
+			<generator class="assigned" />
+		</id>
+		<property name="TheValue" type="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.TheUserType, NHibernate.Test" />
+	</class>
+</hibernate-mapping>

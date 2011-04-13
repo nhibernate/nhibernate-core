@@ -149,7 +149,7 @@ namespace NHibernate.Driver
 
 		public object GetValue(int i)
 		{
-			return reader.GetDecimal(i);
+			return reader.GetValue(i);
 		}
 
 		public int GetValues(object[] values)
