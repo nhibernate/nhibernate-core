@@ -35,7 +35,7 @@ namespace NHibernate.Test.Hql.Ast
         {
             ISession session = OpenSession();
             ITransaction txn = session.BeginTransaction();
-            session.CreateQuery("delete Human").ExecuteUpdate();
+			session.Delete("from Animal");
             txn.Commit();
             session.Close();
         }
