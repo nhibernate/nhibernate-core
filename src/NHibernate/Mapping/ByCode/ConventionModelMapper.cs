@@ -19,17 +19,80 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapClass += NoSetterPoidToField;
 
 			BeforeMapProperty += MemberToFieldAccessor;
+			BeforeMapProperty += MemberNoSetterToField;
+			BeforeMapProperty += MemberReadOnlyAccessor;
+
 			BeforeMapBag += MemberToFieldAccessor;
 			BeforeMapSet += MemberToFieldAccessor;
 			BeforeMapMap += MemberToFieldAccessor;
 			BeforeMapList += MemberToFieldAccessor;
+			BeforeMapBag += MemberNoSetterToField;
+			BeforeMapSet += MemberNoSetterToField;
+			BeforeMapMap += MemberNoSetterToField;
+			BeforeMapList += MemberNoSetterToField;
+			BeforeMapBag += MemberReadOnlyAccessor;
+			BeforeMapSet += MemberReadOnlyAccessor;
+			BeforeMapMap += MemberReadOnlyAccessor;
+			BeforeMapList += MemberReadOnlyAccessor;
 			
 			BeforeMapManyToOne += MemberToFieldAccessor;
 			BeforeMapOneToOne += MemberToFieldAccessor;
 			BeforeMapAny += MemberToFieldAccessor;
+			BeforeMapManyToOne += MemberNoSetterToField;
+			BeforeMapOneToOne += MemberNoSetterToField;
+			BeforeMapAny += MemberNoSetterToField;
+			BeforeMapManyToOne += MemberReadOnlyAccessor;
+			BeforeMapOneToOne += MemberReadOnlyAccessor;
+			BeforeMapAny += MemberReadOnlyAccessor;
 		}
 
-		void MemberToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+		protected virtual void MemberReadOnlyAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+		{
+			if (MatchReadOnlyProperty(member.LocalMember))
+			{
+				propertyCustomizer.Access(Accessor.ReadOnly);
+			}
+		}
+
+		protected bool MatchReadOnlyProperty(MemberInfo subject)
+		{
+			var property = subject as PropertyInfo;
+			if (property == null)
+			{
+				return false;
+			}
+			if (CanReadCantWriteInsideType(property) || CanReadCantWriteInBaseType(property))
+			{
+				return PropertyToField.GetBackFieldInfo(property) == null;
+			}
+			return false;
+		}
+
+		private bool CanReadCantWriteInsideType(PropertyInfo property)
+		{
+			return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
+		}
+
+		private bool CanReadCantWriteInBaseType(PropertyInfo property)
+		{
+			if (property.DeclaringType == property.ReflectedType)
+			{
+				return false;
+			}
+			var rfprop = property.DeclaringType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+																					 | BindingFlags.DeclaredOnly).SingleOrDefault(pi => pi.Name == property.Name);
+			return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
+		}
+
+		protected virtual void MemberNoSetterToField(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+		{
+			if (MatchNoSetterProperty(member.LocalMember))
+			{
+				propertyCustomizer.Access(Accessor.NoSetter);
+			}
+		}
+
+		protected virtual void MemberToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
 		{
 			if (MatchPropertyToField(member.LocalMember))
 			{
