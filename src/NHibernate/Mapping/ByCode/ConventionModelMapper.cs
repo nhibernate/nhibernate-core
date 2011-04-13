@@ -19,8 +19,30 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapProperty += PropertyColumnName;
 			BeforeMapList += ManyToManyInCollectionTable;
 			BeforeMapBag += ManyToManyInCollectionTable;
+			BeforeMapIdBag += ManyToManyInCollectionTable;
 			BeforeMapSet += ManyToManyInCollectionTable;
 			BeforeMapMap += ManyToManyInCollectionTable;
+
+			BeforeMapList += ManyToManyKeyIdColumn;
+			BeforeMapBag += ManyToManyKeyIdColumn;
+			BeforeMapIdBag += ManyToManyKeyIdColumn;
+			BeforeMapSet += ManyToManyKeyIdColumn;
+			BeforeMapMap += ManyToManyKeyIdColumn;
+		}
+
+		protected void ManyToManyKeyIdColumn(IModelInspector modelInspector, PropertyPath member, ICollectionPropertiesMapper collectionCustomizer)
+		{
+			System.Type propertyType = member.LocalMember.GetPropertyOrFieldType();
+
+			System.Type fromMany = member.GetContainerEntity(modelInspector);
+			System.Type toMany = propertyType.DetermineCollectionElementOrDictionaryValueType();
+			if (!modelInspector.IsEntity(toMany))
+			{
+				// does not apply when the relation is on the key of the dictionary
+				return;
+			}
+
+			collectionCustomizer.Key(km => km.Column(fromMany.Name + "Id"));
 		}
 
 		protected void ManyToManyInCollectionTable(IModelInspector modelInspector, PropertyPath member, ICollectionPropertiesMapper collectionCustomizer)

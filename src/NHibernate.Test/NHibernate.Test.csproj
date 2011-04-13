@@ -513,6 +513,7 @@
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\JoinedSubclassKeyAsRootIdColumnTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\ManyToManyInCollectionTableTests.cs" />
+    <Compile Include="MappingByCode\ConventionModelMapperTests\ManyToManyKeyIdColumnTests.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\PropertyColumnNameTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithComponentsTest.cs" />
