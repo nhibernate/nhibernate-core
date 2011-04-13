@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode
@@ -27,6 +29,15 @@ namespace NHibernate.Mapping.ByCode
 				// please leave it as no read-only; the user may need to add his strategies or remove existing if he no want his people use it.
 				return FieldNamningStrategies;
 			}
+		}
+
+		public static FieldInfo GetBackFieldInfo(PropertyInfo subject)
+		{
+			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+			return (from s in FieldNamningStrategies.Values
+			        let field = subject.DeclaringType.GetField(s.GetFieldName(subject.Name), defaultBinding)
+			        where field != null
+			        select field).FirstOrDefault();
 		}
 	}
 }

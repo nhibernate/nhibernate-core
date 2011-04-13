@@ -15,6 +15,43 @@ namespace NHibernate.Mapping.ByCode
 
 		protected virtual void AppendDefaultEvents()
 		{
+			BeforeMapClass += NoPoidGuid;
+			BeforeMapClass += NoSetterPoidToField;
+		}
+
+		protected virtual void NoSetterPoidToField(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
+		{
+			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
+			if(MatchNoSetterProperty(poidPropertyOrField))
+			{
+				classCustomizer.Id(idm=> idm.Access(Accessor.NoSetter));
+			}
+		}
+
+		public bool MatchNoSetterProperty(MemberInfo subject)
+		{
+			var property = subject as PropertyInfo;
+			if (property == null || property.CanWrite || !property.CanRead)
+			{
+				return false;
+			}
+			var fieldInfo = PropertyToField.GetBackFieldInfo(property);
+			if (fieldInfo != null)
+			{
+				return fieldInfo.FieldType == property.PropertyType;
+			}
+
+			return false;
+		}
+
+		protected virtual void NoPoidGuid(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
+		{
+			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(mi => modelInspector.IsPersistentId(mi));
+			if (!ReferenceEquals(null, poidPropertyOrField))
+			{
+				return;
+			}
+			classCustomizer.Id(null, idm=> idm.Generator(Generators.Guid));
 		}
 
 		protected SimpleModelInspector SimpleModelInspector

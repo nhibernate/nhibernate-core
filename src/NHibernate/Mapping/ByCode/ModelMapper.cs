@@ -496,6 +496,11 @@ namespace NHibernate.Mapping.ByCode
 			get { return modelInspector; }
 		}
 
+		protected ICandidatePersistentMembersProvider MembersProvider
+		{
+			get { return membersProvider; }
+		}
+
 		public void Class<TRootEntity>(Action<IClassMapper<TRootEntity>> customizeAction) where TRootEntity : class
 		{
 			var customizer = new ClassCustomizer<TRootEntity>(explicitDeclarationsHolder, customizerHolder);
