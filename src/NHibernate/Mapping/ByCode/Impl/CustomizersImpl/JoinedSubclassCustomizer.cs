@@ -25,6 +25,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			keyMapping(keyMapper);
 		}
 
+		public void SchemaAction(SchemaAction action)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.SchemaAction(action));
+		}
+
 		public void EntityName(string value)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.EntityName(value));

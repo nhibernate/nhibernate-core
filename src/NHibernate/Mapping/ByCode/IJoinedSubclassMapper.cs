@@ -9,6 +9,7 @@ namespace NHibernate.Mapping.ByCode
 		void Schema(string schemaName);
 		void Key(Action<IKeyMapper> keyMapping);
 		void Extends(System.Type baseType);
+		void SchemaAction(SchemaAction action);
 	}
 
 	public interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper {}
@@ -19,6 +20,7 @@ namespace NHibernate.Mapping.ByCode
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
 		void Key(Action<IKeyMapper<TEntity>> keyMapping);
+		void SchemaAction(SchemaAction action);
 	}
 
 	public interface IJoinedSubclassMapper<TEntity> : IJoinedSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}

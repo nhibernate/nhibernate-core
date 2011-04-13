@@ -171,6 +171,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
 
+		public void SchemaAction(SchemaAction action)
+		{
+			classMapping.schemaaction = action.ToSchemaActionString();
+		}
+
 		#endregion
 	}
 }

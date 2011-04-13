@@ -38,12 +38,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string schema = joinedSubclassMapping.schema ?? mappings.SchemaName;
 			string catalog = joinedSubclassMapping.catalog ?? mappings.CatalogName;
 
-			// TODO: very strange, the schema does not support it
-			//XmlAttribute actionNode = subnode.Attributes["schema-action"];
-			//string action = actionNode == null ? "all" : actionNode.Value;
-			string action = "all";
-
-			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, action);
+			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, joinedSubclassMapping.schemaaction);
 			((ITableOwner)subclass).Table = mytable;
 
 			log.InfoFormat("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
