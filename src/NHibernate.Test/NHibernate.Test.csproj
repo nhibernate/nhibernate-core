@@ -513,6 +513,7 @@
     <Compile Include="Logging\LoggerProviderTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\PropertyToFieldAccessorTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\SafePoidTests.cs" />
+    <Compile Include="MappingByCode\ConventionModelMapperTests\VersionOnBaseClassIntegrationTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithComponentsTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ClassMappingRegistrationTest.cs" />
@@ -550,6 +551,7 @@
     <Compile Include="MappingByCode\MixAutomapping\DefaultClassHierarchyRepresentationTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\DictionaryCollectionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\EntityTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\InheritedVersionTest.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ManyToOneTest.cs" />
     <Compile Include="MappingByCode\MixAutomapping\OneToManyTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PoidTests.cs" />
