@@ -47,6 +47,8 @@ namespace NHibernate.Test
 
         public virtual bool HasBrokenDecimalType { get { return false; } }
 
+        public virtual bool SupportsNullCharactersInUtfStrings { get { return true; } }
+
         public virtual bool SupportsSelectForUpdateOnOuterJoin { get { return true; } }
 
         public virtual bool SupportsHavingWithoutGroupBy { get { return true; } }

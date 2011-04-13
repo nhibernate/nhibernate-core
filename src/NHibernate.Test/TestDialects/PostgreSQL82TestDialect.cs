@@ -16,5 +16,10 @@ namespace NHibernate.Test.TestDialects
         {
             get { return false; }
         }
+
+        public override bool SupportsNullCharactersInUtfStrings
+        {
+            get { return false; }
+        }
 	}
 }

@@ -33,6 +33,8 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				BasicClass bc = new BasicClass();
+                if (!TestDialect.SupportsNullCharactersInUtfStrings)
+                    bc.CharacterProperty = 'a';
 				bc.Id = 1;
 				bc.ValueOfPrivateField = 5;
 				s.Save(bc);
@@ -56,6 +58,8 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				BasicClass bc = new BasicClass();
+                if (!TestDialect.SupportsNullCharactersInUtfStrings)
+                    bc.CharacterProperty = 'a';
 				bc.Id = 1;
 				s.Save(bc);
 				tx.Commit();
@@ -819,6 +823,8 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			BasicClass bc = new BasicClass();
+            if (!TestDialect.SupportsNullCharactersInUtfStrings)
+                bc.CharacterProperty = 'a';
 
 			int id = 1;
 
