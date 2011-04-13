@@ -1052,9 +1052,9 @@ namespace NHibernate.Mapping.ByCode
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.Bag(member, collectionPropertiesMapper =>
 			                                {
-			                                	InvokeBeforeMapBag(propertyPath, collectionPropertiesMapper);
 			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-			                                	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+																				InvokeBeforeMapBag(propertyPath, collectionPropertiesMapper);
+																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 			                                	InvokeAfterMapBag(propertyPath, collectionPropertiesMapper);
 			                                }, cert.Map);
 		}
@@ -1066,9 +1066,9 @@ namespace NHibernate.Mapping.ByCode
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.List(member, collectionPropertiesMapper =>
 			                                 {
-			                                 	InvokeBeforeMapList(propertyPath, collectionPropertiesMapper);
 			                                 	cert.MapCollectionProperties(collectionPropertiesMapper);
-			                                 	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+																				InvokeBeforeMapList(propertyPath, collectionPropertiesMapper);
+																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 			                                 	InvokeAfterMapList(propertyPath, collectionPropertiesMapper);
 			                                 }, cert.Map);
 		}
@@ -1089,9 +1089,9 @@ namespace NHibernate.Mapping.ByCode
 
 			propertiesContainer.Map(member, collectionPropertiesMapper =>
 			                                {
-			                                	InvokeBeforeMapMap(propertyPath, collectionPropertiesMapper);
 			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-			                                	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+																				InvokeBeforeMapMap(propertyPath, collectionPropertiesMapper);
+																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 			                                	InvokeAfterMapMap(propertyPath, collectionPropertiesMapper);
 			                                }, mkrm.Map, cert.Map);
 		}
@@ -1103,9 +1103,9 @@ namespace NHibernate.Mapping.ByCode
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.Set(member, collectionPropertiesMapper =>
 			                                {
-			                                	InvokeBeforeMapSet(propertyPath, collectionPropertiesMapper);
 			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-			                                	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+																				InvokeBeforeMapSet(propertyPath, collectionPropertiesMapper);
+																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 			                                	InvokeAfterMapSet(propertyPath, collectionPropertiesMapper);
 			                                }, cert.Map);
 		}
@@ -1121,8 +1121,8 @@ namespace NHibernate.Mapping.ByCode
 			}
 			propertiesContainer.IdBag(member, collectionPropertiesMapper =>
 			{
-				InvokeBeforeMapIdBag(propertyPath, collectionPropertiesMapper);
 				cert.MapCollectionProperties(collectionPropertiesMapper);
+				InvokeBeforeMapIdBag(propertyPath, collectionPropertiesMapper);
 				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
 				InvokeAfterMapIdBag(propertyPath, collectionPropertiesMapper);
 			}, cert.Map);

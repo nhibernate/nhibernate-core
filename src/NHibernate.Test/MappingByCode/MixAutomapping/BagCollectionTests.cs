@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -20,6 +22,17 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			}
 
 			public string Simple { get; set; }
+		}
+
+		private class Parent
+		{
+			public int Id { get; set; }
+			public IEnumerable<Child> NickNames { get; set; }
+		}
+		private class Child
+		{
+			public int Id { get; set; }
+			public Parent AParent { get; set; }
 		}
 
 		[Test]
@@ -70,6 +83,18 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var inspector = (IModelInspector)autoinspector;
 
 			inspector.IsBag(mi).Should().Be.False();
+		}
+
+		[Test]
+		public void WhenSetKeyThroughEventThenUseEvent()
+		{
+			var autoinspector = new SimpleModelInspector();
+			var mapper = new ModelMapper(autoinspector);
+			mapper.BeforeMapBag += (insp, prop, map) => map.Key(km => km.Column(prop.GetContainerEntity(insp).Name + "Id"));
+
+			var hbmMapping = mapper.CompileMappingFor(new[] {typeof(Parent)});
+			var hbmBag = hbmMapping.RootClasses[0].Properties.OfType<HbmBag>().Single();
+			hbmBag.Key.Columns.Single().name.Should().Be("ParentId");
 		}
 	}
 }
