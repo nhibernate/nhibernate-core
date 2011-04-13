@@ -51,6 +51,23 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 
 		[Test]
+		public void WhenMapClassWithoutIdAndWithoutGeneratorThenTypeShouldHaveValue()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(ca => ca.Id(null, map =>
+			{
+				map.Column("MyClassId");
+			}));
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			hbmClass.Should().Not.Be.Null();
+			var hbmId = hbmClass.Id;
+			hbmId.Should().Not.Be.Null();
+			hbmId.column1.Should().Be("MyClassId");
+			hbmId.type1.Should().Not.Be.Null();
+		}
+
+		[Test]
 		public void WhenDuplicatePropertiesDoesNotDuplicateMapping()
 		{
 			var mapper = new ModelMapper();

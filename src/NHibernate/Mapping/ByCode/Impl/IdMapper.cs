@@ -26,6 +26,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
+				hbmId.type1 = typeof(int).GetNhTypeName();
 				accessorMapper = new NoMemberPropertyMapper();
 			}
 		}
