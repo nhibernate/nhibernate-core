@@ -7,55 +7,46 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public NaturalIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null) {}
 
-		public override void Property<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IPropertyMapper> mapping)
+		protected override void RegisterPropertyMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
 			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
-			base.Property(property, mapping);
+			base.RegisterPropertyMapping(property, mapping);
 		}
 
-		public override void Property(FieldInfo member, System.Action<IPropertyMapper> mapping)
+		protected override void RegisterFieldMapping(FieldInfo member, System.Action<IPropertyMapper> mapping)
 		{
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
-			base.Property(member, mapping);
+			base.RegisterFieldMapping(member, mapping);
 		}
 
-		public override void Component<TComponent>(System.Linq.Expressions.Expression<System.Func<TEntity, TComponent>> property, System.Action<IComponentMapper<TComponent>> mapping)
-		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			ExplicitDeclarationsHolder.AddAsNaturalId(member);
-			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
-			base.Component(property, mapping);
-		}
-
-		public override void Any<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Type idTypeOfMetaType, System.Action<IAnyMapper> mapping)
+		protected override void RegisterComponentMapping<TComponent>(System.Linq.Expressions.Expression<System.Func<TEntity, TComponent>> property, System.Action<IComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
 			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
-			base.Any(property, idTypeOfMetaType, mapping);
+			base.RegisterComponentMapping(property, mapping);
 		}
 
-		public override void ManyToOne<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property)
+		protected override void RegisterAnyMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Type idTypeOfMetaType, System.Action<IAnyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
 			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
-			base.ManyToOne(property);
+			base.RegisterAnyMapping(property, idTypeOfMetaType, mapping);
 		}
 
-		public override void ManyToOne<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IManyToOneMapper> mapping)
+		protected override void RegisterManyToOneMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IManyToOneMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
 			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
-			base.ManyToOne(property, mapping);
+			base.RegisterManyToOneMapping(property, mapping);
 		}
 	}
 }
