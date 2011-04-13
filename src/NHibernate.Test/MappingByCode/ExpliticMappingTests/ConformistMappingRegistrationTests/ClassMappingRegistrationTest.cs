@@ -15,6 +15,14 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			public string Something { get; set; }
 		}
 
+		private class MyClassBaseMap<T> : ClassMapping<T> where T:MyClass
+		{
+			public MyClassBaseMap()
+			{
+				Id(x => x.Id, map => map.Column("MyClassId"));
+			}
+		}
+
 		private class MyClassMap: ClassMapping<MyClass>
 		{
 			public MyClassMap()
@@ -62,7 +70,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		public void WhenRegisterClassMappingThroughCollectionOfTypeThenFilterValidMappings()
 		{
 			var mapper = new ModelMapper();
-			mapper.Executing(x=> x.AddMappings(new[] { typeof(object), typeof(MyClassMap), typeof(MyClass) })).NotThrows();
+			mapper.Executing(x => x.AddMappings(new[] { typeof(object), typeof(MyClassMap), typeof(MyClass), typeof(MyClassBaseMap<>) })).NotThrows();
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			ModelIsWellFormed(hbmMapping);

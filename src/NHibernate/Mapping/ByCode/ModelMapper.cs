@@ -1645,7 +1645,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			foreach (var type in types.Where(x=> typeof(IConformistHoldersProvider).IsAssignableFrom(x)))
+			foreach (var type in types.Where(x=> typeof(IConformistHoldersProvider).IsAssignableFrom(x) && !x.IsGenericTypeDefinition))
 			{
 				AddMapping(type);
 			}
