@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Persister.Entity;
@@ -78,6 +79,18 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Persister<T>() where T : IEntityPersister
 		{
 			classMapping.persister = typeof (T).GetShortClassName(MapDoc);
+		}
+
+		public void Synchronize(params string[] table)
+		{
+			if (table == null)
+			{
+				return;
+			}
+			var existingSyncs = new HashSet<string>(classMapping.synchronize != null ? classMapping.synchronize.Select(x => x.table) : Enumerable.Empty<string>());
+			System.Array.ForEach(table.Where(x => x != null).Select(tableName => tableName.Trim()).Where(cleanedName => !"".Equals(cleanedName)).ToArray(),
+													 x => existingSyncs.Add(x.Trim()));
+			classMapping.synchronize = existingSyncs.Select(x => new HbmSynchronize { table = x }).ToArray();
 		}
 
 		#endregion

@@ -57,6 +57,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Persister<T>());
 		}
 
+		public void Synchronize(params string[] table)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Synchronize(table));
+		}
+
 		#endregion
 
 		#region Implementation of IEntitySqlsMapper

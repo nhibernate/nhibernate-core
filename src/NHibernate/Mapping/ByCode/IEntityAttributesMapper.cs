@@ -12,5 +12,6 @@ namespace NHibernate.Mapping.ByCode
 		void BatchSize(int value);
 		void SelectBeforeUpdate(bool value);
 		void Persister<T>() where T : IEntityPersister;
+		void Synchronize(params string[] table);
 	}
 }
