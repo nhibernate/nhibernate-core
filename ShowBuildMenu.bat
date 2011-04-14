@@ -117,64 +117,74 @@ goto end
 :grammar
 echo.
 echo --- GRAMMAR ---
-echo A.  Regenerate HqlLexer.cs and HqlParser.cs from Hql.g.
-echo B.  Regenerate HqlSqlWalker.cs from HqlSqlWalker.g.
-echo C.  Regenerate SqlGenerator.cs from SqlGenerator.g.
-echo D.  Regenerate Hql.g in debug mode.
-echo E.  Regenerate HqlSqlWalker.g in debug mode.
-echo F.  Regenerate SqlGenerator.g in debug mode.
-echo G.  Quick instructions on using debug mode.
+echo A.  Regenerate all grammars.
+echo         Hql.g           to  HqlLexer.cs
+echo         Hql.g           to  HqlParser.cs
+echo         HqlSqlWalker.g  to  HqlSqlWalker.cs
+echo         SqlGenerator.g  to  SqlGenerator.cs
+echo B.  Regenerate all grammars, with Hql.g in debug mode.
+echo C.  Regenerate all grammars, with HqlSqlWalker.g in debug mode.
+echo D.  Regenerate all grammars, with SqlGenerator.g in debug mode.
+echo E.  Quick instructions on using debug mode.
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto grammar-prompt-choice )
 goto grammar-prompt-set
 
 :grammar-prompt-choice
-choice /C:abcdefg
+choice /C:abcde
 
 if errorlevel 255 goto end
-if errorlevel 7 goto antlr-debug
-if errorlevel 6 goto antlr-sqlgenerator-debug
-if errorlevel 5 goto antlr-hqlsqlwalker-debug
-if errorlevel 4 goto antlr-hql-debug
-if errorlevel 3 goto antlr-sqlgenerator
-if errorlevel 2 goto antlr-hqlsqlwalker
-if errorlevel 1 goto antlr-hql
+if errorlevel 5 goto antlr-debug
+if errorlevel 4 goto antlr-sqlgenerator-debug
+if errorlevel 3 goto antlr-hqlsqlwalker-debug
+if errorlevel 2 goto antlr-hql-debug
+if errorlevel 1 goto antlr-all
 if errorlevel 0 goto end
 
 :grammar-prompt-set
-set /p OPT=[A, B, C, D, E, F, G]? 
+set /p OPT=[A, B, C, D, E]?
 
-if /I "%OPT%"=="A" goto antlr-hql
-if /I "%OPT%"=="B" goto antlr-hqlsqlwalker
-if /I "%OPT%"=="C" goto antlr-sqlgenerator
-if /I "%OPT%"=="D" goto antlr-hql-debug
-if /I "%OPT%"=="E" goto antlr-hqlsqlwalker-debug
-if /I "%OPT%"=="F" goto antlr-sqlgenerator
-if /I "%OPT%"=="G" goto antlr-debug
+if /I "%OPT%"=="A" goto antlr-all
+if /I "%OPT%"=="B" goto antlr-hql-debug
+if /I "%OPT%"=="C" goto antlr-hqlsqlwalker-debug
+if /I "%OPT%"=="D" goto antlr-sqlgenerator-debug
+if /I "%OPT%"=="E" goto antlr-debug
 goto grammar-prompt-set
 
-:antlr-hql
+:antlr-all
+echo *** Regenerating from Hql.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
-goto end
-
-:antlr-hqlsqlwalker
+echo *** Regenerating from HqlSqlWalker.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
-goto end
-
-:antlr-sqlgenerator
+echo *** Regenerating from SqlGenerator.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
 goto end
 
 :antlr-hql-debug
+echo *** Regenerating from Hql.g (Debug Enabled)
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlDebug.bat
+echo *** Regenerating from HqlSqlWalker.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
+echo *** Regenerating from SqlGenerator.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
 goto end
 
 :antlr-hqlsqlwalker-debug
+echo *** Regenerating from Hql.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
+echo *** Regenerating from HqlSqlWalker.g (Debug Enabled)
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalkerDebug.bat
+echo *** Regenerating from SqlGenerator.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
 goto end
 
 :antlr-sqlgenerator-debug
+echo *** Regenerating from Hql.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHql.bat
+echo *** Regenerating from HqlSqlWalker.g
+call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
+echo *** Regenerating from SqlGenerator.g (Debug Enabled)
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGeneratorDebug.bat
 goto end
 
@@ -184,8 +194,9 @@ echo   1.  Create a unit test that runs the hql parser on the input you're inter
 echo       The one you want to debug must be the first grammar parsed.
 echo   2.  Run the unit test.  It will appear to stall.
 echo   3.  Download and run AntlrWorks (java -jar AntlrWorks.jar).
-echo   4.  Choose "Debug Remote" and accept the default port.
-echo   5.  You should now be connected and able to step through your grammar.
+echo   4.  Open the grammar you intend to debug in AntlrWorks.
+echo   5.  Choose "Debug Remote" and accept the default port.
+echo   6.  You should now be connected and able to step through your grammar.
 goto end
 
 :teamcity-menu
