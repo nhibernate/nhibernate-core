@@ -133,6 +133,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterSetMapping(property, collectionMapping, mapping);
 		}
 
+		public void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+															Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping)
+		{
+			Set(property, collectionMapping, x => { });
+		}
+
 		protected virtual void RegisterSetMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
@@ -149,6 +155,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		                          Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterBagMapping(property, collectionMapping, mapping);
+		}
+		public void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+															Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping)
+		{
+			Bag(property, collectionMapping, x => { });
 		}
 
 		protected virtual void RegisterBagMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
@@ -168,6 +179,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			RegisterListMapping(property, collectionMapping, mapping);
 		}
+		public void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+															 Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping)
+		{
+			List(property, collectionMapping, x => { });
+		}
 
 		protected virtual void RegisterListMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
@@ -186,6 +202,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		                                Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterMapMapping(property, collectionMapping, keyMapping, mapping);
+		}
+		public void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+																		Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping)
+		{
+			Map(property, collectionMapping, keyMapping => { }, x => { });
 		}
 
 		protected virtual void RegisterMapMapping<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property, Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping, Action<IMapKeyRelation<TKey>> keyMapping, Action<ICollectionElementRelation<TElement>> mapping)
@@ -215,6 +236,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 													Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterIdBagMapping(property, collectionMapping, mapping);
+		}
+
+		public void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+													Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping)
+		{
+			RegisterIdBagMapping(property, collectionMapping, x => { });
 		}
 
 		protected virtual void RegisterIdBagMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
