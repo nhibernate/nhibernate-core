@@ -5,7 +5,7 @@ using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace NHibernate.Test.MappingByCode.MappersTests
+namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
 	public class ClassMapperWithJoinPropertiesTest
 	{

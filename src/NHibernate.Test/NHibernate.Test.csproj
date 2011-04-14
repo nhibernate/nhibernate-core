@@ -539,7 +539,7 @@
     <Compile Include="MappingByCode\ExpliticMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\MappersTests\AbstractPropertyContainerMapperTest.cs" />
-    <Compile Include="MappingByCode\MappersTests\ClassMapperWithJoinPropertiesTest.cs" />
+    <Compile Include="MappingByCode\MappersTests\ClassMapperTests\ClassMapperWithJoinPropertiesTest.cs" />
     <Compile Include="MappingByCode\MappersTests\CollectionIdMapperTests.cs" />
     <Compile Include="MappingByCode\MappersTests\FakeUserCollectionType.cs" />
     <Compile Include="MappingByCode\MappersTests\IdBagMapperTest.cs" />
