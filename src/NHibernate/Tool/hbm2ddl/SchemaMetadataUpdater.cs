@@ -19,7 +19,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public static void QuoteTableAndColumns(Configuration configuration)
 		{
-			ISet<string> reservedDb = GetReservedWords(configuration.Properties);
+			ISet<string> reservedDb = GetReservedWords(configuration.GetDerivedProperties());
 			foreach (var cm in configuration.ClassMappings)
 			{
 				QuoteTable(cm.Table, reservedDb);

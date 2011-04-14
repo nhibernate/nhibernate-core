@@ -163,5 +163,28 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			new SchemaExport(configuration).Drop(false, false);
 		}
 
+		[Test]
+		public void WhenConfiguredOnlyExplicitAutoQuote()
+		{
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			var configuredDialect = Dialect.Dialect.GetDialect();
+			if(!configuredDialect.DefaultProperties.ContainsKey(Environment.ConnectionDriver))
+			{
+				Assert.Ignore(GetType() + " does not apply to " + configuredDialect);
+			}
+			configuration.Properties.Remove(Environment.ConnectionDriver);
+			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
+																GetType().Assembly);
+
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+
+			var cm = configuration.GetClassMapping(typeof(Order));
+			Assert.That(cm.Table.IsQuoted);
+			var culs = new List<Column>(cm.Table.ColumnIterator);
+			Assert.That(GetColumnByName(culs, "From").IsQuoted);
+			Assert.That(GetColumnByName(culs, "And").IsQuoted);
+			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
+			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
+		}
 	}
 }
