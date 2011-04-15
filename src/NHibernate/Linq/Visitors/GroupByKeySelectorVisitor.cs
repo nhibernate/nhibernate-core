@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
