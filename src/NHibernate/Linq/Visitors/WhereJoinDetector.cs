@@ -8,8 +8,8 @@ namespace NHibernate.Linq.Visitors
 {
     /// <summary>
     /// The WhereJoinDetector creates the joins for the where clause, including
-    /// optimizations for inner joins. The algorithms are explained in a text
-    /// attached to JIRA entry NH-2583.
+    /// optimizations for inner joins. The algorithms are explained in 
+    /// the accompanying text file.
     /// </summary>
     internal class WhereJoinDetector : AbstractJoinDetector
     {

@@ -1,0 +1,309 @@
+[Commiter's Notes: As with the code, this design document was contributed by Harald Mueller.
+ By default in Linq, a member expression such as a.B.C is converted into left outer joins so if we have something like a => (a.B.C == 1 || a.D.E == 2) we don't lose records due to the join where B or D is null.
+ This document describes how we optimize to inner joins when outer joins are not required, such as in the simple case of a => a.B.C == 1.
+ There was significant discussion on the developers mailing list regarding this topic.  See also NH-2583.]
+
+Optimization of outer joins to inner joins for (||-4) semantics
+===============================================================
+
+It is interesting - and for some databases an advantage - to replace outer joins with inner joins if the outer joins are not necessary. "Not necessary" here means that the result must not be different whether using outer joins or inner joins. The question, obviously, is: For which joinable member expressions can we replace an outer join with an inner join without creating wrong results?
+
+It took me a few hours to find this out. Here is the result.
+
+A record (object) will be in the result if the evaluation of the condition in 3-value SQL logic will return true; it will not be in the result if the result is either logical-null or false. The difference between outer joining and inner joining is that with the latter, objects are missing from the set on which the condition is checked. Thus, inner joins "emulates" a result that is logical-null or false. And therefore, we can replace an outer join with an inner join only if the resulting condition was not true on the outer join in the first place when there was an "empty outer join" - i.e., the outer join had to add nulls because there was no joinable record.
+
+By the way, I will in the following call the nulls added by "dangling outer joins" "oj-nulls". They have to be distinguished from the two other sorts of nulls in SQL:
+* "value-null" - a NULL in a column of a table
+* "logical-null" - a NULL resulting from the evaluation of certain conditions on certain values (in SQL, at least one of these values must be a value-null or oj-null).
+In contrast to value-nulls, oj-nulls have the peculiar property that they can exist even for non-nullable columns.
+
+If we look at the evaluation tree of a condition, we can assign to each node and for each joinable member expression one of the following small sets:
+
+    t   definitely makes the node true when the member expression is emptily outer-joined (i.e., joining it creates oj-nulls for all the simple properties)
+    n   definitely makes the node logical-null when emptily outer-joined
+    f   definitely makes the node false when emptily outer-joined
+    tn  maybe makes it true, maybe logical-null when emptily outer-joined
+    tf  maybe makes it true, maybe false when emptily outer-joined
+    nf  maybe makes it logical-null, maybe false when emptily outer-joined
+    tnf maybe makes it true, maybe logical-null, maybe false when emptily outer-joined
+
+(An eighth set, the empty one, could only be assigned to a contradiction. We ignore such conditions in most of the following discussion).
+
+When we know these values at the top condition, we can then safely use inner joins for all member expressions for which the value does not contain t. 
+The reasoning is as follows: If for some result record, the empty outer join of a joinable member expression has made the top where condition logical-null or false, this record will be dropped from the result set - this is just the definition of how a query handles logical-null and false results. But an inner join cannot "do more harm" - it will also just drop the record from the result. Therefore, we can safely replace outer joins to such joinable member expressions with inner joins.
+
+In the following, we assemble the rules for computing the member expressions mappings introduced above. After a few examples, we look at the rules, and then more examples.
+
+(Remark: I use C# notation in the following, with the following semantics:
+* Generally, the semantics for condition evaluation is 3-valued SQL semantics with condition results of true, logical-null, or false
+* == null has the semantics of "is null"
+* != null the semantics of "is not null"
+* the final result contains objects where the condition evaluation yields true, but not logical-null or false - this is the standard mapping of 3-valued-semantics to 2-valued-semantics).
+
+As a first example, the condition
+
+    x.A.B == 4
+
+is logical-null when emptily outer-joining x.A, but never true or false. Thus, we have { x.A -> n }. Inner joining x.A (which drops records that are emptily joined) therefore yields the same 2-valued-logic result.
+
+On the other hand, the condition
+
+    x.A.B == null && x.E == null
+
+can be made true or false by emptily outer-joining x.A, but never logical-null (resaon: The right side can only be true or false; and the left side also; so the complete condition is either true or false - depending on x.E's value). So, { x.A -> tf }, and therefore we cannot inner join x.A (there is a t in the mapping!). By direct reasoning, we see that inner joining x.A will drop all the non-joinable records, hence inner and outer joining are different for records where x.E is null, and will yield a different 2-valued-logic result.
+
+Finally, the condition
+
+    x.A.B == null || x.E == null
+
+is always true when emptily outer-joining x.A, so { x.A -> t }. Hence, the result is always different from inner joining, where the empty join drops such records from the result.
+
+How can we compute the mapping from member expressions to possible values? First, we note that we can compute this mapping with different "preciseness". For example, one correct way would be to just collect all joinable member expressions into a set M, and then set { mE -> tnf } for all member expressions mE in M. Obviously, this prevents any inner joins. On the other hand, we can in principle quite precisely check condition like the following - the question is whether this is worth the effort:
+
+    x.A.B == null           x.A -> ...
+    !(x.A.B != null)        x.A -> ...
+    (x.A.B ?? 4) == 4       x.A -> ...
+    !((x.A.B ?? 4) != 4)    x.A -> ...
+    (x.A.B ?? x.E) == 4     x.A -> ...
+    (x.A.B ?? x.C.D) == 4   x.A -> ..., x.C -> ...
+
+In the following, I'll first give the rules for the 4 logical operators &&, ||, !, and ?!; then I'll give practical rules (I think) for common simple conditions; finally, I'll look at some more complex simple conditions.
+
+(a) && operator:
+
+    &&  t   n   f   tn  tf  nf  tnf -
+    t   t   n   f   tn  tf  nf  tnf tnf
+    n       n   f   n   nf  nf  nf  nf
+    f           f   f   f   f   f   f
+    tn              tn  tnf nf  tnf tnf
+    tf                  tf  nf  tnf tnf
+    nf                      nf  nf  nf
+    tnf                         tnf tnf
+    -                               -
+
+The single letters are easy: They follow the 3-valued SQL logic. E.g., if emptily joining a member expression will definitely return true for condition A and logical-null for condition B, it will definitely return (true && logical-null) = logical-null for A && B.
+For the multiple values, we have to compute the union of the values in the small sets. For example, tn && tf is { t && t, t && f, n && t, n && f } = { t,f,n,f } = tnf.
+If the member expression is missing on one side, we must assume any value for that side. After all, the condition on the other side could e.g. be 0 == 0, 0 == null, or 0 == 1. Therefore, the result is the same as if we would get tnf from the other side. See examples (ex.4) and (ex.5) below for some more thoughts on this.
+The values below the diagonal are symmetric to the upper ones.
+
+(b) || operator:
+
+    ||  t   n   f   tn  tf  nf  tnf -
+    t   t   t   t   t   t   t   t   t
+    n       n   n   tn  tn  n   tn  tn  
+    f           f   tn  tf  nf  tnf tnf  
+    tn              tn  tn  tn  tn  tn 
+    tf                  tf  tnf tnf tnf 
+    nf                      nf  tnf tnf 
+    tnf                         tnf tnf
+    -                               -
+
+The resoning is similar to &&.
+Again, the values below the diagonal are symmetric to the upper ones.
+
+(c) ! operator:
+
+    !   t   n   f   tn  tf  nf  tnf
+        f   n   t   nf  tf  tn  tnf
+
+The resoning is similar to &&.
+
+(d) Logical ?: operator: 
+
+A ? B : C is equivalent to A && B || !A && C. From this, one can compute the mappings (I would need a three-dimensional "cube matrix" for their presentation, which is hard in text ... ok, a tree also would work ...).
+
+Now let us look at simple conditions. The following are *possible* member expression mappings. As said above, one can also assign the values more crudely - e.g., always assign tnf to all member expressions. However, the assignments below are reasonable precise - i.e., they assign the minimal sets for practical values (if I did not make a mistake).
+
+(e) mE*.P <op> <constant(s)> (where <constant(s)> are not value-nulls)
+
+mE* here is a symbol for a "nested sequence of member expressions" mE1, mE2, ..., .P is the final property. E.g. in 
+
+    a.B.C.D.E == 4
+
+the member expressions are mE1=a.B, mE2=a.B.C, and mE3=a.B.C.D; the final property is E. In this case, we get { mE -> n } for all member expressions mE. Reason: Emptily outer joining any member expression will yield oj-null for P; but oj-null <op> <constant> is always logical-null.
+        
+(f) mE*.P [<op>s <constant>s] == me'*.Q [<op>s <constant>s]
+
+The result depends on the definition of ==: We can either use the Linq definition where null == null is true (which requires an SQL translation of ... = ... OR ... IS NULL AND ... IS NULL); or the SQL definition where null == null is logical-null.
+
+In the first case, we reason as follows:
+
+    - When one side (e.g. the left one) does empty outer-joining and yields oj-null for P, but the right side has non-oj-null values, the SQL
+        oj-null = value OR oj-null IS NULL AND value IS NULL
+      evaluates as logical-null OR true AND false, which is logical-null OR true, which is true.
+    - When both sides do empty outer-joining, we get
+        oj-null = oj-null OR oj-null IS NULL AND oj-null IS NULL
+      which is logical-null OR true AND true, which is true.
+
+So, empty outer joining will always yield true, and hence we get { mE -> t } for all member expressions mE. 
+    
+For the SQL definition of equality, we get the following:
+
+    - When one side (e.g. the left one) does empty outer-joining and yields oj-null for P, but the right side has non-oj-null values, the SQL
+        oj-null = value
+      evaluates as logical-null.
+    - When both sides do empty outer-joining, we get
+        oj-null = oj-null
+      which is logical-null.
+
+So, empty outer joining will always yield logical-null, and hence we get { mE -> n } for all member expressions mE. 
+
+(g) mE*.P [<op>s <constant>s] != me'*.Q [<op>s <constant>s]
+
+Again, the result depends on the definition of ==: We can either use the Linq definition where null != null is false (which requires an SQL translation of ... <> ... OR ... IS NULL AND ... IS NOT NULL OR ... IS NOT NULL AND ... IS NULL); or the SQL definition where null != null is logical-null.
+
+In the first case, we reason as follows:
+
+    - When one side (e.g. the left one) does empty outer-joining and yields oj-null for P, but the right side has non-oj-null values, the SQL
+        oj-null <> value OR oj-null IS NULL AND value IS NOT NULL OR oj-null IS NOT NULL AND value IS NULL
+      evaluates as logical-null OR true AND true OR false AND false, which is true.
+    - When both sides do empty outer-joining, we get
+        oj-null <> oj-null OR oj-null IS NULL AND oj-null IS NOT NULL OR oj-null IS NOT NULL AND oj-null IS NULL
+      which is logical-null OR false OR false, which is logical-null.
+
+So, empty outer joining will yield true or logical-null, and hence we get { mE -> tn } for all member expressions mE. 
+    
+For the SQL definition of equality, we get the following:
+
+    - When one side (e.g. the left one) does empty outer-joining and yields oj-null for P, but the right side has non-oj-null values, the SQL
+        oj-null <> value
+      evaluates as logical-null.
+    - When both sides do empty outer-joining, we get
+        oj-null <> oj-null
+      which is also logical-null.
+
+So, empty outer joining will always yield logical-null, and hence we get { mE -> n } for all member expressions mE. 
+
+(h) mE*.P != null
+    
+Here is a first attempt: Empty outer joining can only yield false, hence we get { mE -> f } for all member expressions mE.
+
+There is a small problem with this definition: If P itself is a pointer to a mapped entity, we would *not* record that P is guaranteed to point to a valid object. This hurts in the following query:
+
+    x.A != null && x.A.B != 4
+    
+According to (e), the right side will create the mapping { x.A -> n }. The left side does not have a joinable member expression (x.A is not joined! it is just evaluated on x's table), so the mapping is { }. According to (a), we get for the whole condition { x.A -> nf }. Actually, we know that the result should be { x.A -> f }: An empty outer join of x.A will yield "false" for the left hand side, and hence the complete condition will then always be false - never logical-null. The error is of course that we ignore the knowledge about x.A being a mapped entity. This does not disturb the inner join possibility here (the result does not contain t), and I cannot think of a case where it would - but it's wrong or at least imprecise nevertheless.
+A better definition would be:
+* If mE*.P does not reference an entity, then { mE -> f } for all member expressions mE.
+* Otherwise, also include { mE*.P -> f } in the result.
+
+(i) mE*.P == null
+
+Empty outer joining can only yield true, hence we get { mE -> t } for all member expressions mE. Example (ex.4) below hints at an idea that would make this mapping more precise (with questionable practical value).
+As above, we can add { mE*.P -> t } if mE*.P references an entity.
+
+(j) Other complex simple condition, e.g. (x.A.B ?? x.C.D) <op> <constant(s)>
+
+Here, I opt for the simple assignment { mE -> tnf } for all member expressions mE. It is probably possible to do better by analyzing coalesce operators (??).
+
+Now, we should do a few examples.
+
+(ex.1) a.B.C == 2
+
+        a.B.C == 2                  { a.B -> n }    (e)
+
+    In this simple case, we can actually inner join a.B. This is also true for conditions like a.B.C > 2 or a.B.C <= 2.
+
+(ex.2) Show that the typical "in-to-|| translation" will yield inner joins:
+
+    a.B.C == 1 || a.B.C == 2
+    
+        a.B.C == 1                  { a.B -> n }    (e)
+        a.B.C == 2                  { a.B -> n }    (e)
+        a.B.C == 1 || a.B.C == 2    { a.B -> n }    (b)
+
+    As a.B's mapping does not contain a t, we can inner join it.
+
+(ex.3) a.B.C == null
+
+        a.B.C == null               { a.B -> t }    (g)
+
+    Even in this simple case, we cannot inner join a.B!
+
+(ex.4) a.B == null || a.B.C == 1
+
+        a.B == null                 { a.B -> t }    (i)
+        a.B.C == 2                  { a.B -> n }    (e)
+        a.B == null || a.B.C == 2   { a.B -> t }    (b)
+
+    Also in this case, we cannot inner join a.B. The reason is that emptily outer-joining a.B can make the left hand side true (which it actually does). One could argue that we could derive a sharper bound by somehow looking at the meaning of a.B == null: Actually, we can be sure that this condition can only true when emptily outer-joining a.B, and not "true or logical-null or false" as the formal derivation assumes for a missing joinable member expression. Yet, in this example, we would not get a different final result (and I did not think about cases where the more precise reasoning could yield more inner joins).
+
+(ex.5) 
+    a.E == null || a.B.C == 1    // a.E is an integer property
+
+        a.E == null                 { }
+        a.B.C == 2                  { a.B -> n  }   (e)
+        a.B == null || a.B.C == 2   { a.B -> tn }   (b)
+
+    We could compute the result somewhat more precisely: a.E == null can only be true or false, but not logical-null. In such cases, we could tighten the result by also assigning a set of possible values to each node, independent of empty outer joins. With the knowledge that a.E can only map to tf, we would use this set in the || computation, instead of the general pessimistic tnf. Especially when having contradictions (like false or 0 == 1) or tautologies (like true or 0 == 0) in the tree, this would make the result more precise. An interesting example would be a.B.C != a.B.C with SQL equality semantics: It can return only logical-null or false, which could - if this expression occurs - reduce some results containing t and hence allow inner joins. However, all these examples seem artificial: In usual applications, neither contradictions nor tautologies nor a.B.C != a.B.C will occur often enough in queries to justify the additional complexity in the algorithms.
+    
+(ex.6)
+    a.B != null && a.B.C == 1
+
+    a.B != null                     { a.B -> f }    (h)
+    a.B.C == 1                      { a.B -> n }    (e)
+    a.B != null && a.B.C == 1       { a.B -> f }    (a)
+
+    Thus, we can inner join a.B here.    
+
+(ex.7)
+    a.B.C == a.D.E || a.B.C == a.D.E + 1
+    
+        a.B.C == a.D.E              { a.B -> n, a.D -> n }  (f)
+        a.B.C == a.D.E + 1          { a.B -> n, a.D -> n }  (f)
+        ...complete condition...    { a.B -> n, a.D -> n }  (b)
+
+    So we can inner join both a.B and a.D in this case!
+
+(ex.8)
+
+    a.B.C == 1 || a.D.E == 2
+    
+        a.B.C == 1                  { a.B -> n }                (e)
+        a.D.E == 2                  { a.D -> n }                (e)
+        ...complete condition...    { a.B -> tnf, a.D -> tnf }  (b)
+
+    We can*not* inner join a.B and a.D in this case.
+
+(ex.9)
+
+    a.B.C == 1 && a.D.E == 2
+    
+        a.B.C == 1                  { a.B -> n }                (e)
+        a.D.E == 1                  { a.D -> n }                (e)
+        ...complete condition...    { a.B -> nf, a.D -> nf }    (a)
+        
+    Just by replacing || with && in the previous example, we can inner join both a.B and a.D.
+
+
+The above rules guarantee that the inner joins yield exactly the same results as full outer joining. This, fortunately, has the consequence that the following *cannot* happen:
+
+    A query with conditon C yields a different result than condition C || F, where F is always false.
+
+Why did I fear that this could happen? In previous rules I had invented, the *operators* in the condition decided whether a joinable member expression was outer joined or inner joined. Especially, the || and ! operators essentially required outer joining for member expressions used in their sub-conditions. But with such a machinery, it could happen that some member expression
+
+* is *inner* joined for C alone (if there is no || or !)
+* is *outer* joined for C || F (as there is now an || operator).
+
+But this could give us maybe different results if not done perfectly. Actually, there are examples where F is definitely always false, but we still get different joinings for C and C || F with the rules above. Here are two - a simple and a not so simple one:
+
+(ex.10)
+    C is the condition x.A.B == 1.
+    F is the condition 0 == 1.
+
+(ex.11)
+    C is the condition x.A.B == 1.
+    F is the condition x.C.D * x.C.D < Math.Abs(x.C.D) - 1.
+    
+Elementary mathematics shows that F is always false in (ex.11) (for real numbers). But according to the rules above, we get in both (ex.10) and (ex.11)
+
+    for C alone:    { x.A -> n }
+    
+    for C || F:
+        C           { x.A -> n }               (f)
+        F           { x.C -> tnf }             (j)      // Actually, { } for (ex.10); which is treated like { x.C -> tnf } for ||.
+        C || F      { x.A -> tn, x.C -> tnf }  (b), (b)
+
+Therefore, we can inner join x.A for C alone, but not for C || F. Still, the arguments above show us that we can "carelessly" replace the inner joins with outer joins and still get the same results! So I sleep well with the rules above (I just have to implement them).
+
+As a final brain-teaser: What intelligence would NHib.Linq have to have to be able to create an inner join to x.A also for C || F in (ex.10) and (ex.11)?
