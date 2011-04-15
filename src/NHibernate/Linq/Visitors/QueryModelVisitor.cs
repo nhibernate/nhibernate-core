@@ -41,8 +41,8 @@ namespace NHibernate.Linq.Visitors
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
-            // Add left joins for references
-		    AddLeftJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
+            // Add joins for references
+            AddJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
@@ -202,12 +202,20 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
-            if (fromClause is LeftJoinClause)
+            if (fromClause is NhJoinClause)
             {
-                // It's a left join
-                _hqlTree.AddFromClause(_hqlTree.TreeBuilder.LeftJoin(
-                                     HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-                                     _hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+                if (((NhJoinClause)fromClause).IsInner)
+                {
+                    _hqlTree.AddFromClause(_hqlTree.TreeBuilder.Join(
+                        HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
+                        _hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+                }
+                else
+                {
+                    _hqlTree.AddFromClause(_hqlTree.TreeBuilder.LeftJoin(
+                        HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
+                        _hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+                }
             }
 			else if (fromClause.FromExpression is MemberExpression)
 			{

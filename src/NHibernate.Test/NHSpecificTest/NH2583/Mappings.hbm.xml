@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2583">
+
+  <class name="MyBO" table="MyBO">
+    <id name="Id" type="Int32" column="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="Name" type="String" column="Name"/>
+    <many-to-one
+          name="LeftSon"
+          column="LeftSonKey"
+          class="MyBO"
+		/>
+    <many-to-one
+          name="RightSon"
+          column="RightSonKey"
+          class="MyBO"
+		/>
+    <many-to-one
+          name="BO1"
+          column="BO1Key"
+          class="MyRef1"
+		/>
+    <many-to-one
+          name="OtherBO1"
+          column="OtherBO1Key"
+          class="MyRef1"
+		/>
+    <many-to-one
+          name="BO2"
+          column="BO2Key"
+          class="MyRef2"
+		/>
+    <property name="K1" type="Int32" column="K1" not-null="false"/>
+    <property name="K2" type="Int32" column="K2" not-null="true"/>
+    <property name="K3" type="Int32" column="K3" not-null="true"/>
+  </class>
+
+
+  <class name="MyRef1" table="MyRef1">
+    <id name="Id" type="Int32" column="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="I1" type="Int32" column="I1" not-null="false"/>
+    <property name="I2" type="Int32" column="I2" not-null="true"/>
+    <property name="I3" type="Int32" column="I3" not-null="true"/>
+    <many-to-one
+          name="BO2"
+          column="BO2Key"
+          class="MyRef2"
+		/>
+    <many-to-one
+          name="BO3"
+          column="BO3Key"
+          class="MyRef3"
+		/>
+  </class>
+
+  <class name="MyRef2" table="MyRef2">
+    <id name="Id" type="Int32" column="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="J1" type="Int32" column="J1" not-null="false"/>
+    <property name="J2" type="Int32" column="J2" not-null="true"/>
+    <property name="J3" type="Int32" column="J3" not-null="true"/>
+  </class>
+
+  <class name="MyRef3" table="MyRef3">
+    <id name="Id" type="Int32" column="Id">
+      <generator class="assigned"/>
+    </id>
+    <property name="L1" type="Int32" column="L1" not-null="true"/>
+  </class>
+</hibernate-mapping>

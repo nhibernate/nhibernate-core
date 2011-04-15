@@ -266,12 +266,17 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
+    <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
+    <Compile Include="Linq\Visitors\AbstractJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
+    <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
     <Compile Include="LockMode.cs" />
@@ -892,7 +897,6 @@
     <Compile Include="Linq\Expressions\NhMinExpression.cs" />
     <Compile Include="Linq\Expressions\NhSumExpression.cs" />
     <Compile Include="Impl\ExpressionQueryImpl.cs" />
-    <Compile Include="Linq\ReWriters\AddLeftJoinsReWriter.cs" />
     <Compile Include="Linq\Visitors\IHqlExpressionVisitor.cs" />
     <Compile Include="Linq\GroupJoin\IsAggregatingResults.cs" />
     <Compile Include="Linq\GroupJoin\GroupJoinAggregateDetectionVisitor.cs" />
@@ -908,7 +912,6 @@
     <Compile Include="Linq\Functions\StringGenerator.cs" />
     <Compile Include="Linq\Functions\QueryableGenerator.cs" />
     <Compile Include="Linq\ReWriters\RemoveUnnecessaryBodyOperators.cs" />
-    <Compile Include="Linq\Clauses\LeftJoinClause.cs" />
     <Compile Include="Linq\IntermediateHqlTree.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessCast.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessOfType.cs" />
@@ -922,7 +925,6 @@
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ResultOperatorProcessorBase.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessResultOperatorReturn.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\IResultOperatorProcessor.cs" />
-    <Compile Include="Linq\Visitors\LeftJoinDetector.cs" />
     <Compile Include="Linq\Visitors\NameGenerator.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregate.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAll.cs" />
