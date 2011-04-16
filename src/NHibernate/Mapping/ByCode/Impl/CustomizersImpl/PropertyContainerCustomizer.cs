@@ -64,6 +64,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			RegisterComponentMapping(property, mapping);
 		}
+		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property) where TComponent : class
+		{
+			RegisterComponentMapping(property, x => { });
+		}
 
 		protected virtual void RegisterComponentMapping<TComponent>(Expression<Func<TEntity, TComponent>> property, Action<IComponentMapper<TComponent>> mapping)
 			where TComponent : class

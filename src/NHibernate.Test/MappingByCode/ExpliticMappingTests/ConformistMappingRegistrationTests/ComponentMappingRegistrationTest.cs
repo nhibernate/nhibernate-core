@@ -29,7 +29,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 					map.Column("MyClassId");
 					map.Generator(Generators.HighLow);
 				});
-				Component(x => x.Name, z => { });
+				Component(x => x.Name);
 			}
 		}
 		private class NameMap : ComponentMapping<Name>
