@@ -3,7 +3,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity> where TEntity : class
+	public class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
 	{
 		private readonly IKeyMapper<TEntity> keyMapper;
 
@@ -122,6 +122,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Schema(string schemaName)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.Schema(schemaName));
+		}
+
+		#endregion
+
+		#region IConformistHoldersProvider Members
+
+		ICustomizersHolder IConformistHoldersProvider.CustomizersHolder
+		{
+			get { return CustomizersHolder; }
+		}
+
+		IModelExplicitDeclarationsHolder IConformistHoldersProvider.ExplicitDeclarationsHolder
+		{
+			get { return ExplicitDeclarationsHolder; }
 		}
 
 		#endregion
