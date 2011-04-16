@@ -3,7 +3,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class UnionSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IUnionSubclassMapper<TEntity> where TEntity : class
+	public class UnionSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IUnionSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
 	{
 		public UnionSubclassCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null)
@@ -108,6 +108,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Schema(string schemaName)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Schema(schemaName));
+		}
+
+		#endregion
+
+		#region IConformistHoldersProvider Members
+
+		ICustomizersHolder IConformistHoldersProvider.CustomizersHolder
+		{
+			get { return CustomizersHolder; }
+		}
+
+		IModelExplicitDeclarationsHolder IConformistHoldersProvider.ExplicitDeclarationsHolder
+		{
+			get { return ExplicitDeclarationsHolder; }
 		}
 
 		#endregion
