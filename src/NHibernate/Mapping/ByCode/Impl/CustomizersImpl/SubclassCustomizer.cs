@@ -4,7 +4,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class SubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, ISubclassMapper<TEntity> where TEntity : class
+	public class SubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, ISubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
 	{
 		private Dictionary<string, IJoinMapper<TEntity>> joinCustomizers;
 
@@ -120,6 +120,20 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Subselect(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Subselect(sql));
+		}
+
+		#endregion
+
+		#region IConformistHoldersProvider Members
+
+		ICustomizersHolder IConformistHoldersProvider.CustomizersHolder
+		{
+			get { return CustomizersHolder; }
+		}
+
+		IModelExplicitDeclarationsHolder IConformistHoldersProvider.ExplicitDeclarationsHolder
+		{
+			get { return ExplicitDeclarationsHolder; }
 		}
 
 		#endregion
