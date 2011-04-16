@@ -1598,14 +1598,18 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddMapping<T>() where T: IConformistHoldersProvider, new()
 		{
-			var mapping = new T();
+			AddMapping(new T());
+		}
+
+		public void AddMapping(IConformistHoldersProvider mapping)
+		{
 			var thisCustomizerHolder = customizerHolder as CustomizersHolder;
 			if (thisCustomizerHolder == null)
 			{
 				throw new NotSupportedException("To merge 'conformist' mappings, the instance of ICustomizersHolder, provided in the ModelMapper constructor, have to be a CustomizersHolder instance.");
 			}
 			var otherCustomizerHolder = mapping.CustomizersHolder as CustomizersHolder;
-			if(otherCustomizerHolder == null)
+			if (otherCustomizerHolder == null)
 			{
 				throw new NotSupportedException("The mapping class have to provide a CustomizersHolder instance.");
 			}
@@ -1630,18 +1634,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentOutOfRangeException("type", "The mapping class must be an implementation of IConformistHoldersProvider.");
 			}
-			var thisCustomizerHolder = customizerHolder as CustomizersHolder;
-			if (thisCustomizerHolder == null)
-			{
-				throw new NotSupportedException("To merge 'conformist' mappings, the instance of ICustomizersHolder, provided in the ModelMapper constructor, have to be a CustomizersHolder instance.");
-			}
-			var otherCustomizerHolder = mapping.CustomizersHolder as CustomizersHolder;
-			if (otherCustomizerHolder == null)
-			{
-				throw new NotSupportedException("The mapping class have to provide a CustomizersHolder instance.");
-			}
-			thisCustomizerHolder.Merge(otherCustomizerHolder);
-			explicitDeclarationsHolder.Merge(mapping.ExplicitDeclarationsHolder);
+			AddMapping(mapping);
 		}
 
 		public void AddMappings(IEnumerable<System.Type> types)
