@@ -7,6 +7,24 @@
 		* [NH-2593] - Form Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
 		* - ICollectionPersister added property to fix [NH-2489]
 		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
+Build 3.2.0.Aplha2 (rev5715)
+=============================
+** Bug
+    * [NH-2540] - Linq generates invalid boolean case statements (was: Linq ignoring configured query-substitutions)
+    * [NH-2640] - HQL Having clause is ignored without preceeding group by
+    * [NH-2641] - HQL does not throw exception on unexpected trailing tokens
+    * [NH-2642] - BatcherDataReaderWrapper.GetValue has a typo
+    * [NH-2643] - MSSQL configuration template is still using "use_outer_join"
+    * [NH-2652] - SchemaMetadataUpdater does not take Dialect default properties
+
+** Improvement
+    * [NH-2644] - schemaaction is not supported in joinedsubclass
+
+** New Feature
+    * [NH-2533] - Support paging in HQL
+
+** Task
+    * [NH-2653] - Remove just added ExpressionTreeVisitor class
 
 Build 3.2.0.Aplha1 (rev5664)
 =============================
