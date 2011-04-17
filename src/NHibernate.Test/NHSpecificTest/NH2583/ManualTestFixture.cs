@@ -13,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         /// This setup is used in most tests in here - but not all; and we might want to
         /// twist it for special tests. Therefore, the OnSetUp mechanism is not used.
         /// </summary>
-        [Test]
         private void StandardSetUp()
         {
             using (var session = OpenSession())
@@ -49,6 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
+        [Test]
         public void OrWithTrueShouldBeEqualToTrue()
         {
             StandardSetUp();

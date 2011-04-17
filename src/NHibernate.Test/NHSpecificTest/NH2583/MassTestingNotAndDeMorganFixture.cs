@@ -9,38 +9,41 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     public class MassTestingNotAndDeMorganFixture : AbstractMassTestingFixture
     {
-        protected override void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+        protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {
             var result = session.Query<MyBO>().Where(condition);
             AreEqual(expectedIds, result.Select(bo => bo.Id).ToArray());
+            return expectedIds.Count();
         }
 
         [Test]
-        public void Test_NotUnequalIsNotTheSameAsEqual()
+        public void Test_NotUnequalIsTheSameAsEqual()
         {
-            RunTest(x => !(x.BO1.I1 != 1),
-                    Setters<TBO1_I>(MyBO.SetBO1_I1));
-            // ... is the same as ...
-            RunTest(x => !(x.BO1.I1 != 1),
-                    Setters<TBO1_I>(MyBO.SetBO1_I1));
-            // ... is NOT the same as ...
-            RunTest(x => x.BO1.I1 == 1,
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
-            // The latter returns fewer results! - namely NOT the ones where BO1 is null.
+            int r1 = RunTest(x => !(x.BO1.I1 != 1),
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
+            int r2 = RunTest(x => x.BO1.I1 == 1,
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
+            Assert.AreEqual(r1, r2);
+            Assert.Greater(r1, 0);
+
+            r1 = RunTest(x => !(x.BO1.I1 != 1),
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            r2 = RunTest(x => x.BO1.I1 == 1,
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            Assert.AreEqual(r1, r2);
+            Assert.Greater(r1, 0);
         }
 
         [Test]
-        public void Test_NotEqualIsNotTheSameAsNotequal()
+        public void Test_NotEqualIsTheSameAsNotequal()
         {
-            RunTest(x => !(x.BO1.I1 == 1),
-                    Setters<TBO1_I>(MyBO.SetBO1_I1));
+            int r1 = RunTest(x => !(x.BO1.I1 == 1),
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
             // ... is the same as ...
-            RunTest(x => !(x.BO1.I1 == 1),
-                    Setters<TBO1_I>(MyBO.SetBO1_I1));
-            // ... is NOT the same as ...
-            RunTest(x => x.BO1.I1 != 1,
-                    Setters<TBO1_I>(MyBO.SetBO1_I1));
-            // As before, the latter returns fewer results! - namely NOT the ones where BO1 is null.
+            int r2 = RunTest(x => x.BO1.I1 != 1,
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
+            Assert.AreEqual(r1, r2);
+            Assert.Greater(r1, 0);
         }
         
         [Test]
@@ -64,22 +67,25 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         [Test]
         public void Test_DeMorganNotOr()
         {
-            RunTest(x => !(x.BO1.I1 != 1 || x.BO2.J1 != 1),
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
-            RunTest(x => !(x.BO1.I1 != 1 || x.BO2.J1 != 1),
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
-            RunTest(x => !(x.BO1.I1 != 1) && !(x.BO2.J1 != 1),
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
-            // ... is NOT the same as ...
-            RunTest(x => x.BO1.I1 == 1 && x.BO2.J1 == 1,
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            int r1 = RunTest(x => !(x.BO1.I1 != 1 || x.BO2.J1 != 1),
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            int r2 = RunTest(x => !(x.BO1.I1 != 1) && !(x.BO2.J1 != 1),
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            int r3 = RunTest(x => x.BO1.I1 == 1 && x.BO2.J1 == 1,
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            Assert.AreEqual(r1, r2);
+            Assert.AreEqual(r2, r3);
+            Assert.Greater(r1, 0);
         }
 
         [Test]
         public void Test_NotNotCanBeEliminated()
         {
-            RunTest(x => !(!(x.BO1.I1 != 1 && x.BO2.J1 != 1)),
-                    Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            int r1 = RunTest(x => !(!(x.BO1.I1 != 1 && x.BO2.J1 != 1)),
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            int r2 = RunTest(x => x.BO1.I1 != 1 && x.BO2.J1 != 1,
+                             Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            Assert.AreEqual(r1, r2);
         }
     }
 }

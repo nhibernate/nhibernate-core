@@ -9,10 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     public class MassTestingOneOrTreeFixture : AbstractMassTestingFixture
     {
-        protected override void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+        protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {
             var result = session.Query<MyBO>().Where(condition);
             AreEqual(expectedIds, result.Select(bo => bo.Id).ToArray());
+            return expectedIds.Count();
         }
 
         // Condition pattern: (A && B) && (C || D)

@@ -320,6 +320,22 @@ namespace NHibernate.Linq.Visitors
             }
         }
 
+        protected override Expression VisitConstantExpression(ConstantExpression expression)
+        {
+            if (expression.Type == typeof(bool))
+            {
+                if ((bool)expression.Value)
+                {
+                    _memberExpressionMapping = FixedMapping(new string[0], T);
+                }
+                else
+                {
+                    _memberExpressionMapping = FixedMapping(new string[0], F);
+                }
+            }
+            return expression;
+        }
+
         internal static void Find(Expression expression, NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
         {
             WhereJoinDetector f = new WhereJoinDetector(nameGenerator, isEntityDecider, joins, expressionMap);

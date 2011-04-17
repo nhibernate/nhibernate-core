@@ -9,13 +9,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     public class MassTestingOrderByFixture : AbstractMassTestingFixture
     {
-        protected override void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+        protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {
             IQueryable<MyBO> result = session.Query<MyBO>().Where(condition).OrderByDescending(bo => bo.BO1.I1 ?? bo.BO1.Id);
 
             var forceDBRun = result.ToList();
 
             AreEqual(expectedIds, forceDBRun.Select(bo => bo.Id).ToArray());
+
+            return expectedIds.Count();
         }
 
         // Condition pattern: (A && B) && (C || D) ORDER BY F
@@ -66,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 Setters<TK, TK, TBO1_I, TK>(MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_I1, MyBO.SetK3));
         }
 
-        [Test, Ignore("RED!")] // TODO: Analyze and repair!
+        [Test]
         public void Test_xyP_in_C_F____xy_OJ()
         {
             RunTest(x => (x.K1 == 1 && x.K1 == 1) && (x.BO1.Id > 0 && x.K2 == 1 || x.K3 == 1),

@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     public class MassTestingSelectFixture : AbstractMassTestingFixture
     {
-        protected override void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+        protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {
             IQueryable<int?> result = session.Query<MyBO>().Where(condition).Select(bo => (int?) bo.BO1.Id);
             
@@ -19,6 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 
             var expectedBO1Ids = session.Query<MyBO>().Where(bo => expectedIds.Contains(bo.Id)).Select(bo => bo.BO1 == null ? 0 : bo.BO1.Id).ToList();
             AreEqual(expectedBO1Ids, resultNullTo0.ToArray());
+            
+            // Unused result.
+            return -1;
         }
 
         // Condition pattern: (A && B) && (C || D) SELECT E
@@ -69,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 Setters<TK, TK, TBO1_I, TK>(MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_I1, MyBO.SetK3));
         }
 
-        [Test, Ignore("RED!")] // TODO: Analyze and repair!
+        [Test]
         public void Test_xyP_in_C_E____xy_OJ()
         {
             RunTest(x => (x.K1 == 1 && x.K1 == 1) && (x.BO1.Id > 0 && x.K2 == 1 || x.K3 == 1),

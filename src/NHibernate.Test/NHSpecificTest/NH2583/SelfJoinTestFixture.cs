@@ -54,7 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                               where bo.LeftSon.LeftSon.K1 == null
                                     || bo.RightSon.RightSon.K1 == null
                               select bo).ToList().Select(bo => bo.Name);
-                //Assert.That(() => result.ToList(), Is.EquivalentTo(new[] { "1", "2", "3", ...and many more... }));
+                Assert.That(!result.Contains("1"));
+                Assert.That(result.Count(), Is.EqualTo(18));
             }
         }
 
@@ -67,7 +68,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                               where bo.LeftSon.K1 == null
                                     || bo.RightSon.K1 == null
                               select bo).ToList().Select(bo => bo.Name);
-                //Assert.That(() => result.ToList(), Is.EquivalentTo(new[] { "1", "1L", "1R", "2", "2L", "2R", "3", "3L", "4", ...and many more... }));
+                Assert.That(!result.Contains("1"));
+                Assert.That(result.Count(), Is.EqualTo(18));
             }
         }
 
@@ -78,11 +80,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 using (var tx = session.BeginTransaction())
                 {
                     {
-                        var bLeftLeft = new MyBO { Id = 111, Name = "1LL", K2 = 1 };
+                        var bLeftLeft = new MyBO { Id = 111, Name = "1LL", K2 = 1, K1 = 1 };
                         var bLeftRight = new MyBO { Id = 112, Name = "1LR", K2 = 1 };
-                        var bLeft = new MyBO { Id = 11, Name = "1L", LeftSon = bLeftLeft, RightSon = bLeftRight };
-                        var bRightRight = new MyBO { Id = 122, Name = "1RR", K2 = 1 };
-                        var bRight = new MyBO { Id = 12, Name = "1R", RightSon = bRightRight };
+                        var bLeft = new MyBO { Id = 11, Name = "1L", LeftSon = bLeftLeft, RightSon = bLeftRight, K1 = 1 };
+                        var bRightRight = new MyBO { Id = 122, Name = "1RR", K2 = 1, K1 = 1 };
+                        var bRight = new MyBO { Id = 12, Name = "1R", RightSon = bRightRight, K1 = 1 };
                         var bRoot = new MyBO { Id = 1, Name = "1", LeftSon = bLeft, RightSon = bRight };
                         session.Save(bLeftLeft);
                         session.Save(bLeftRight);

@@ -11,14 +11,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
     {
         protected void RunTest<T1, T2, T3, T4, T5, T6, T7>(Expression<Func<MyBO, bool>> c1, Expression<Func<MyBO, bool>> c2, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters)
         {
-            RunTest(c1, setters);
-            RunTest(c2, setters);
+            int r1 = RunTest(c1, setters);
+            int r2 = RunTest(c2, setters);
+            Assert.AreEqual(r1, r2);
+            Assert.Greater(r1, 0);
         }
 
-        protected override void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+        protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {
             var result = session.Query<MyBO>().Where(condition);
             AreEqual(expectedIds, result.Select(bo => bo.Id).ToArray());
+            return expectedIds.Count();
         }
 
         // Condition pattern: (A || B) || (C || D), A || (B || (C || D))

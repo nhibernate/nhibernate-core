@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         }
 
 
-        protected void RunTest<T1, T2, T3, T4, T5, T6, T7>(Expression<Func<MyBO, bool>> condition, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters)
+        protected int RunTest<T1, T2, T3, T4, T5, T6, T7>(Expression<Func<MyBO, bool>> condition, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters)
         {
             if (condition == null)
             {
@@ -119,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                 {
                     using (session.BeginTransaction())
                     {
-                        TestAndAssert(condition, session, expectedIds);
+                        return TestAndAssert(condition, session, expectedIds);
                     }
                 }
 
@@ -141,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
-        protected abstract void TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
+        protected abstract int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
 
         protected static SetterTuple<T1, T2, T3, T4, T5, T6, T7> Setters<T1, T2, T3, T4, T5, T6, T7>(Action<MyBO, ISession, T1> set1,
             Action<MyBO, ISession, T2> set2,
