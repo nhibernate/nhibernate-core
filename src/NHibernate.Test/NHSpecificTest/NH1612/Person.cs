@@ -4,9 +4,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 {
 	public class Person
 	{
-		public virtual Guid PersonId { get; private set; }
-		public virtual string Name { get; private set; }
-		public virtual int Version { get; private set; }
+		public virtual Guid PersonId { get; protected set; }
+		public virtual string Name { get; protected set; }
+		public virtual int Version { get; protected set; }
 
 		protected Person() {}
 

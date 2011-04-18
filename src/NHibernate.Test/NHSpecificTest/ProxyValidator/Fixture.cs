@@ -240,6 +240,21 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		public void VirtualPublicImplementsInterface()
 		{
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(NonVirtualPublicImplementsInterface)));
-		} 
+		}
+
+		public class InvalidVirtualPrivateAutoProperty : ValidClass
+		{
+			public virtual int NonVirtualSetterProperty
+			{
+				get;
+				private set;
+			}
+		}
+
+		[Test]
+		public void PrivateSetterOnVirtualPropertyShouldThrows()
+		{
+			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidVirtualPrivateAutoProperty)));
+		}
 	}
 }

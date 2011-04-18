@@ -16,8 +16,8 @@ namespace NHibernate.Test.Insertordering
 		}
 
 		public virtual int Id { get; protected set; }
-		public virtual User User { get; private set; }
-		public virtual Group Group { get; private set; }
-		public virtual DateTime ActivationDate { get; private set; }
+		public virtual User User { get; protected set; }
+		public virtual Group Group { get; protected set; }
+		public virtual DateTime ActivationDate { get; protected set; }
 	}
 }

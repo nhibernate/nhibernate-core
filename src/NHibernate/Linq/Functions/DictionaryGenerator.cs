@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {

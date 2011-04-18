@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Linq;
+using NHibernate.Util;
 using NUnit.Framework;
 using SharpTestsEx;
 

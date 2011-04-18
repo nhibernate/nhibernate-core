@@ -4,10 +4,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 {
 	public abstract class Area
 	{
-		public virtual string Code { get; private set; }
-		public virtual string Name { get; private set; }
-		public virtual int Version { get; private set; }
-		public virtual IDictionary<int, AreaStatistics> Statistics { get; private set; }
+		public virtual string Code { get; protected set; }
+		public virtual string Name { get; protected set; }
+		public virtual int Version { get; protected set; }
+		public virtual IDictionary<int, AreaStatistics> Statistics { get; protected set; }
 
 		protected Area() {}
 

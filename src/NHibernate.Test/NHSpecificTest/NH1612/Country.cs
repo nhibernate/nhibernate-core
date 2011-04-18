@@ -4,8 +4,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 {
 	public class Country : Area
 	{
-		public virtual IList<string> Routes { get; private set; }
-		public virtual IList<City> Cities { get; private set; }
+		public virtual IList<string> Routes { get; protected set; }
+		public virtual IList<City> Cities { get; protected set; }
 
 		protected Country() {}
 

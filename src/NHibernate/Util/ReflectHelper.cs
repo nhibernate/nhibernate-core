@@ -689,5 +689,57 @@ namespace NHibernate.Util
 				}
 				return HasProperty(source.BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
 			}
-    }
+
+					/// <summary>
+		/// Check if a method is declared in a given <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="source">The method to check.</param>
+		/// <param name="realDeclaringType">The where the method is really declared.</param>
+		/// <returns>True if the method is an implementation of the method declared in <paramref name="realDeclaringType"/>; false otherwise. </returns>
+		public static bool IsMethodOf(this MethodInfo source, System.Type realDeclaringType)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+			if (realDeclaringType == null)
+			{
+				throw new ArgumentNullException("realDeclaringType");
+			}
+			var methodDeclaringType = source.DeclaringType;
+			if(realDeclaringType.Equals(methodDeclaringType))
+			{
+				return true;
+			}
+			if (methodDeclaringType.IsGenericType && !methodDeclaringType.IsGenericTypeDefinition && 
+				realDeclaringType.Equals(methodDeclaringType.GetGenericTypeDefinition()))
+			{
+				return true;
+			}
+			if (realDeclaringType.IsInterface)
+			{
+				var declaringTypeInterfaces = methodDeclaringType.GetInterfaces();
+				if(declaringTypeInterfaces.Contains(realDeclaringType))
+				{
+					var methodsMap = methodDeclaringType.GetInterfaceMap(realDeclaringType);
+					if(methodsMap.TargetMethods.Contains(source))
+					{
+						return true;
+					}
+				}
+				if (realDeclaringType.IsGenericTypeDefinition)
+				{
+					bool implements = declaringTypeInterfaces
+						.Where(t => t.IsGenericType && t.GetGenericTypeDefinition().Equals(realDeclaringType))
+						.Select(implementedGenericInterface => methodDeclaringType.GetInterfaceMap(implementedGenericInterface))
+						.Any(methodsMap => methodsMap.TargetMethods.Contains(source));
+					if (implements)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
 }

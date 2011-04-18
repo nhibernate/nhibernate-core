@@ -52,34 +52,42 @@ namespace NHibernate.Proxy
 				if (member is PropertyInfo)
 				{
 					var property = (PropertyInfo) member;
-					MethodInfo[] accessors = property.GetAccessors(false);
-
-					if (accessors != null)
+					if(property.ShouldBeProxiable())
 					{
-						foreach (var accessor in accessors)
+						MethodInfo[] accessors = property.GetAccessors(true);
+
+						if (accessors != null)
 						{
-							CheckMethodIsVirtual(type, accessor);
+							foreach (var accessor in accessors)
+							{
+								CheckMethodIsVirtual(type, accessor);
+							}
 						}
 					}
 				}
 				else if (member is MethodInfo)
 				{
-					if (member.DeclaringType == typeof (object) && member.Name == "GetType")
+					var methodInfo = (MethodInfo) member;
+					// avoid the check of properties getter and setter because already checked when the PropertyInfo was found.
+					if (!IsPropertyMethod(methodInfo) && methodInfo.ShouldBeProxiable())
 					{
-						// object.GetType is ignored
-						continue;
+						CheckMethodIsVirtual(type, methodInfo);
 					}
-					CheckMethodIsVirtual(type, (MethodInfo) member);
 				}
 				else if (member is FieldInfo)
 				{
 					var memberField = (FieldInfo) member;
 					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
 					{
-						EnlistError(type, "field " + member.Name + " should not be public nor internal");
+						EnlistError(type, "field " + member.Name + " should not be public nor internal (ecapsulate it in a property).");
 					}
 				}
 			}
+		}
+
+		private bool IsPropertyMethod(MethodInfo methodInfo)
+		{
+			return methodInfo.IsSpecialName && (methodInfo.Name.StartsWith("get_") || methodInfo.Name.StartsWith("set_"));
 		}
 
 		protected virtual void CheckMethodIsVirtual(System.Type type, MethodInfo method)
@@ -92,15 +100,9 @@ namespace NHibernate.Proxy
 
 		public virtual bool IsProxeable(MethodInfo method)
 		{
-			// In NET if IsVirtual is false or IsFinal is true, then the method cannot be overridden.
-			return !(method.DeclaringType != typeof (object) && !IsDisposeMethod(method)
-			       && (method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly)
-			       && (!method.IsVirtual || method.IsFinal || (method.IsVirtual && method.IsAssembly)));
-		}
-
-		protected static bool IsDisposeMethod(MethodBase method)
-		{
-			return method.Name.Equals("Dispose") && method.MemberType == MemberTypes.Method && method.GetParameters().Length == 0;
+			// NH: this method is used even when the proxy-validation at start-up is turned off to check each persistent property (only persistent properties).
+			// it must be in sync with what is really proxiable by the proxy-factory.
+			return method.IsProxiable();
 		}
 
 		protected virtual bool HasVisibleDefaultConstructor(System.Type type)

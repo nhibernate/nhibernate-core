@@ -173,18 +173,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			const BindingFlags candidateMethodsBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			return 
 				type.GetMethods(candidateMethodsBindingFlags)
-					.Where(method => IsProxiable(method))
+					.Where(method=> method.IsProxiable())
 					.Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods())).Distinct();
-		}
-
-		private bool IsProxiable(MethodInfo method)
-		{
-			return (
-				((method.IsPublic || method.IsFamily || method.IsAssembly || method.IsFamilyOrAssembly) && (method.IsVirtual || method.IsAbstract))
-				&& !method.IsFinal
-			  && (method.DeclaringType != typeof (MarshalByRefObject)))
-			  && (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name.ToLowerInvariant())
-				);
 		}
 
 		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder)

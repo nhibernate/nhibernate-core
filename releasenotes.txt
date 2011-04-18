@@ -4,9 +4,11 @@
 
 	##### Possible Breaking Changes #####
 		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
-		* [NH-2593] - Form Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
+		* [NH-2593] - For Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
 		* - ICollectionPersister added property to fix [NH-2489]
 		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
+		* For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
+
 Build 3.2.0.Aplha2 (rev5715)
 =============================
 ** Bug

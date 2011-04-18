@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 		public virtual Int64 Id
 		{
 			get;
-			private set;
+			protected set;
 		}
 		public virtual String Name
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 		public virtual IEnumerable<Order> Orders
 		{
 			get;
-			private set;
+			protected set;
 		}
 	} 
 
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 		public virtual Int32 Id
 		{
 			get;
-			private set;
+			protected set;
 		}
 
 		public virtual DateTime Date

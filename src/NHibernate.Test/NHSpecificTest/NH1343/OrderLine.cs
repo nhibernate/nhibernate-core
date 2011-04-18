@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 			Product = product;
 		}
 
-		public virtual int Id { get; private set; }
+		public virtual int Id { get; protected set; }
 
 		public virtual string Description { get; set; }
 

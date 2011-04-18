@@ -496,6 +496,7 @@
     <Compile Include="Properties\PascalCaseMUnderscoreStrategy.cs" />
     <Compile Include="Properties\PascalCaseUnderscoreStrategy.cs" />
     <Compile Include="Properties\PropertyAccessorFactory.cs" />
+    <Compile Include="Proxy\DefaultDynamicProxyMethodCheckerExtensions.cs" />
     <Compile Include="Proxy\DefaultLazyInitializer.cs" />
     <Compile Include="Proxy\DefaultProxyFactory.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultArgumentHandler.cs" />
@@ -680,7 +681,6 @@
     <Compile Include="Bytecode\HibernateByteCodeException.cs" />
     <Compile Include="Bytecode\IInjectableCollectionTypeFactoryClass.cs" />
     <Compile Include="Bytecode\IObjectsFactory.cs" />
-    <Compile Include="Bytecode\ProxyFactoryFactoryNotConfiguredException.cs" />
     <Compile Include="Bytecode\UnableToLoadProxyFactoryFactoryException.cs" />
     <Compile Include="Cache\FakeCache.cs" />
     <Compile Include="Cfg\BindMappingEventArgs.cs" />
