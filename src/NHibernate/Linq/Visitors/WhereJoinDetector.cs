@@ -289,7 +289,7 @@ namespace NHibernate.Linq.Visitors
             if (_memberExpressionDepth == 0 && _collectedPathMemberExpressionsInExpressions.Count == 0)
             {
                 if (expression.Type != typeof(bool))
-                    throw new AssertionFailure("Was expected a boolean member expression.");
+                    throw new AssertionFailure("Was expecting a boolean member expression.");
                 addOwnMemberExpressionMapping = true;
                 _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
             }
@@ -319,7 +319,7 @@ namespace NHibernate.Linq.Visitors
             if (_memberExpressionDepth == 0 && _collectedPathMemberExpressionsInExpressions.Count == 0)
             {
                 if (expression.Type != typeof(bool))
-                    throw new AssertionFailure("Was expected a boolean member expression.");
+                    throw new AssertionFailure("Was expecting a boolean member expression.");
                 addOwnMemberExpressionMapping = true;
                 _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
             }
