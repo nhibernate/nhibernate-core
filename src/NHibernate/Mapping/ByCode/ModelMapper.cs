@@ -1035,9 +1035,7 @@ namespace NHibernate.Mapping.ByCode
 			                                      	IEnumerable<MemberInfo> persistentProperties =
 			                                      		membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
 
-			                                      	MemberInfo parentReferenceProperty = modelInspector.IsComponent(propertiesContainerType)
-			                                      	                                     	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
-			                                      	                                     	: null;
+			                                      	MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, propertiesContainerType);
 			                                      	if (parentReferenceProperty != null)
 			                                      	{
 			                                      		componentMapper.Parent(parentReferenceProperty,
@@ -1052,6 +1050,13 @@ namespace NHibernate.Mapping.ByCode
 
 			                                      	MapProperties(propertyType, persistentProperties.Where(pi => pi != parentReferenceProperty), componentMapper, memberPath);
 			                                      });
+		}
+
+		protected MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, System.Type propertiesContainerType)
+		{
+			return modelInspector.IsComponent(propertiesContainerType)
+			       	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
+			       	: null;
 		}
 
 		private void MapBag(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
@@ -1232,26 +1237,24 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(ICollectionElementRelation relation)
 			{
 				relation.Component(x =>
-				                   {
-				                   	IEnumerable<MemberInfo> persistentProperties = GetPersistentProperties(componentType);
+													 {
+														 IEnumerable<MemberInfo> persistentProperties = GetPersistentProperties(componentType);
 
-														 MemberInfo parentReferenceProperty = domainInspector.IsComponent(ownerType)
-																																	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == ownerType)
-																																	: null;
-				                   	if (parentReferenceProperty != null)
-				                   	{
-				                   		x.Parent(parentReferenceProperty,
-				                   		         componentParentMapper =>
-				                   		         {
+														 MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(persistentProperties, ownerType);
+														 if (parentReferenceProperty != null)
+														 {
+															 x.Parent(parentReferenceProperty,
+																				componentParentMapper =>
+																				{
 																					/* TODO */
-				                   		         }
-				                   			);
-				                   	}
-				                   	customizersHolder.InvokeCustomizers(componentType, x);
+																				}
+																 );
+														 }
+														 customizersHolder.InvokeCustomizers(componentType, x);
 
-				                   	var propertyPath = new PropertyPath(null, collectionMember);
-				                   	MapProperties(componentType, propertyPath, x, persistentProperties.Where(pi => pi != parentReferenceProperty));
-				                   });
+														 var propertyPath = new PropertyPath(null, collectionMember);
+														 MapProperties(componentType, propertyPath, x, persistentProperties.Where(pi => pi != parentReferenceProperty));
+													 });
 			}
 
 			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) {}
@@ -1294,7 +1297,7 @@ namespace NHibernate.Mapping.ByCode
 
 						                                      	IEnumerable<MemberInfo> componentProperties = GetPersistentProperties(componentPropertyType);
 
-						                                      	MemberInfo parentReferenceProperty = componentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == componentOwnerType);
+																										MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(componentProperties, componentOwnerType);
 						                                      	if (parentReferenceProperty != null)
 						                                      	{
 						                                      		x.Parent(parentReferenceProperty, componentParentMapper =>
