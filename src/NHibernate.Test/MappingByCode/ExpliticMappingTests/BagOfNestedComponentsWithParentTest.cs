@@ -105,10 +105,14 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			collection.ElementRelationship.Should().Be.OfType<HbmCompositeElement>();
 			var elementRelation = (HbmCompositeElement)collection.ElementRelationship;
 			elementRelation.Class.Should().Contain("Address");
-			elementRelation.Properties.Should().Have.Count.EqualTo(2);
-			elementRelation.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Street", "Number");
-			elementRelation.Parent.Should().Not.Be.Null();
-			elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			
+			// This test was modified because when the "owner" is an entity it can be mapped as many-to-one or as parent and without an explicit
+			// definition of the property representing the bidiretional-relation we can't know is the mapping element (many-to-one or parent)
+			elementRelation.Properties.Should().Have.Count.EqualTo(3);
+			elementRelation.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Street", "Number", "Owner");
+			//elementRelation.Parent.Should().Not.Be.Null();
+			//elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			
 			// Nested
 			var propertyNestedRelation = elementRelation.Properties.FirstOrDefault(p => p.Name == "Number");
 			propertyNestedRelation.Should().Not.Be.Null().And.Be.OfType<HbmNestedCompositeElement>();

@@ -1030,14 +1030,23 @@ namespace NHibernate.Mapping.ByCode
 		{
 			propertiesContainer.Component(member, componentMapper =>
 			                                      {
-			                                      	InvokeBeforeMapComponent(memberPath, componentMapper);
+			                                      	InvokeBeforeMapComponent(memberPath, componentMapper); // <<== perhaps is better after find the parent
 			                                      	System.Type componentType = propertyType;
 			                                      	IEnumerable<MemberInfo> persistentProperties =
 			                                      		membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
 
-			                                      	MemberInfo parentReferenceProperty = persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType);
-
-			                                      	customizerHolder.InvokeCustomizers(componentType, componentMapper);
+			                                      	MemberInfo parentReferenceProperty = modelInspector.IsComponent(propertiesContainerType)
+			                                      	                                     	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
+			                                      	                                     	: null;
+			                                      	if (parentReferenceProperty != null)
+			                                      	{
+			                                      		componentMapper.Parent(parentReferenceProperty,
+			                                      		                       componentParentMapper =>
+			                                      		                       {
+			                                      		                       	/* TODO */
+			                                      		                       });
+			                                      	}
+																							customizerHolder.InvokeCustomizers(componentType, componentMapper);
 			                                      	ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, componentMapper));
 			                                      	InvokeAfterMapComponent(memberPath, componentMapper);
 
@@ -1225,7 +1234,10 @@ namespace NHibernate.Mapping.ByCode
 				relation.Component(x =>
 				                   {
 				                   	IEnumerable<MemberInfo> persistentProperties = GetPersistentProperties(componentType);
-				                   	MemberInfo parentReferenceProperty = persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == ownerType);
+
+														 MemberInfo parentReferenceProperty = domainInspector.IsComponent(ownerType)
+																																	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == ownerType)
+																																	: null;
 				                   	if (parentReferenceProperty != null)
 				                   	{
 				                   		x.Parent(parentReferenceProperty,
@@ -1281,6 +1293,7 @@ namespace NHibernate.Mapping.ByCode
 						                                      	System.Type componentPropertyType = propertyType;
 
 						                                      	IEnumerable<MemberInfo> componentProperties = GetPersistentProperties(componentPropertyType);
+
 						                                      	MemberInfo parentReferenceProperty = componentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == componentOwnerType);
 						                                      	if (parentReferenceProperty != null)
 						                                      	{

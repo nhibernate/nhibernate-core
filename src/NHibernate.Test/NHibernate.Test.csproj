@@ -537,6 +537,7 @@
     <Compile Include="MappingByCode\ExpliticMappingTests\IdBagMappingTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\NaturalIdTests.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\NestedComponetsTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\PoidTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\RootClassPropertiesSplitsTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\SubclassPropertiesSplitsTests.cs" />
