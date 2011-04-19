@@ -1038,11 +1038,7 @@ namespace NHibernate.Mapping.ByCode
 			                                      	MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, propertiesContainerType);
 			                                      	if (parentReferenceProperty != null)
 			                                      	{
-			                                      		componentMapper.Parent(parentReferenceProperty,
-			                                      		                       componentParentMapper =>
-			                                      		                       {
-			                                      		                       	/* TODO */
-			                                      		                       });
+			                                      		componentMapper.Parent(parentReferenceProperty);
 			                                      	}
 																							customizerHolder.InvokeCustomizers(componentType, componentMapper);
 			                                      	ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, componentMapper));
@@ -1243,12 +1239,7 @@ namespace NHibernate.Mapping.ByCode
 														 MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(persistentProperties, ownerType);
 														 if (parentReferenceProperty != null)
 														 {
-															 x.Parent(parentReferenceProperty,
-																				componentParentMapper =>
-																				{
-																					/* TODO */
-																				}
-																 );
+															 x.Parent(parentReferenceProperty);
 														 }
 														 customizersHolder.InvokeCustomizers(componentType, x);
 
@@ -1300,10 +1291,7 @@ namespace NHibernate.Mapping.ByCode
 																										MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(componentProperties, componentOwnerType);
 						                                      	if (parentReferenceProperty != null)
 						                                      	{
-						                                      		x.Parent(parentReferenceProperty, componentParentMapper =>
-						                                      		                                  {
-																																													/* TODO */
-						                                      		                                  });
+						                                      		x.Parent(parentReferenceProperty);
 						                                      	}
 						                                      	customizersHolder.InvokeCustomizers(componentPropertyType, x);
 						                                      	modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, x));

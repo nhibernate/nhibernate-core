@@ -22,6 +22,9 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapProperty += MemberNoSetterToField;
 			BeforeMapProperty += MemberReadOnlyAccessor;
 
+			BeforeMapComponent += ComponentParentToFieldAccessor;
+			BeforeMapComponent += ComponentParentNoSetterToField;
+
 			BeforeMapBag += MemberToFieldAccessor;
 			BeforeMapSet += MemberToFieldAccessor;
 			BeforeMapMap += MemberToFieldAccessor;
@@ -44,6 +47,32 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapManyToOne += MemberReadOnlyAccessor;
 			BeforeMapOneToOne += MemberReadOnlyAccessor;
 			BeforeMapAny += MemberReadOnlyAccessor;
+		}
+
+		protected virtual void ComponentParentToFieldAccessor(IModelInspector modelinspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+		{
+			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
+			IEnumerable<MemberInfo> persistentProperties =
+				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p));
+
+			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+			if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
+			{
+				componentMapper.Parent(parentReferenceProperty, cp=> cp.Access(Accessor.Field));
+			}
+		}
+
+		protected virtual void ComponentParentNoSetterToField(IModelInspector modelinspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+		{
+			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
+			IEnumerable<MemberInfo> persistentProperties =
+				MembersProvider.GetComponentMembers(componentType).Where(p => ModelInspector.IsPersistentProperty(p));
+
+			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+			if (parentReferenceProperty != null && MatchNoSetterProperty(parentReferenceProperty))
+			{
+				componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.NoSetter));
+			}
 		}
 
 		protected virtual void MemberReadOnlyAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
