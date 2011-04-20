@@ -295,6 +295,7 @@
     <Compile Include="Mapping\ByCode\Conformist\SubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\Conformist\UnionSubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\IDynamicComponentAttributesMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
     <Compile Include="Mapping\ByCode\PropertyToField.cs" />
     <Compile Include="Mapping\ByCode\SimpleModelInspector.cs" />
     <Compile Include="Mapping\ByCode\ExplicitlyDeclaredModel.cs" />
