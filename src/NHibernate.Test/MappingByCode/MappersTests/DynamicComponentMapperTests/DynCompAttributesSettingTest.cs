@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
@@ -62,5 +63,18 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			mapper.OptimisticLock(false);
 			component.OptimisticLock.Should().Be.False();
 		}
+
+		[Test]
+		public void CanAddSimpleProperty()
+		{
+			var mapdoc = new HbmMapping();
+			var component = new HbmDynamicComponent();
+			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
+			var dynObject = new { Pizza = 5 };
+			mapper.Property(dynObject.GetType().GetProperty("Pizza"), x => { });
+
+			component.Properties.Single().Should().Be.OfType<HbmProperty>().And.ValueOf.Name.Should().Be.EqualTo("Pizza");
+		}
+
 	}
 }

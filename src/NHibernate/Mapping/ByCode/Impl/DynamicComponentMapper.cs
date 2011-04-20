@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 
@@ -7,17 +8,24 @@ namespace NHibernate.Mapping.ByCode.Impl
 	public class DynamicComponentMapper : IDynamicComponentMapper
 	{
 		private readonly HbmDynamicComponent component;
+		private readonly HbmMapping mapDoc;
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
 
 		public DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, HbmMapping mapDoc)
 		{
 			this.component = component;
+			this.mapDoc = mapDoc;
 			accessorPropertyMapper = new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x);
 		}
 
-		protected void AddProperty(object property)
+		private void AddProperty(object property)
 		{
-			throw new NotImplementedException();
+			if (property == null)
+			{
+				throw new ArgumentNullException("property");
+			}
+			var toAdd = new[] { property };
+			component.Items = component.Items == null ? toAdd : component.Items.Concat(toAdd).ToArray();
 		}
 
 		public void Access(Accessor accessor)
@@ -72,7 +80,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
-			throw new NotImplementedException();
+			var hbmProperty = new HbmProperty { name = property.Name };
+			mapping(new PropertyMapper(property, hbmProperty));
+			AddProperty(hbmProperty);
 		}
 
 		public void Component(MemberInfo property, Action<IComponentMapper> mapping)
