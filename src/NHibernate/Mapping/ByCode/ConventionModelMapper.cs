@@ -22,6 +22,9 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapProperty += MemberNoSetterToField;
 			BeforeMapProperty += MemberReadOnlyAccessor;
 
+			BeforeMapComponent += MemberToFieldAccessor;
+			BeforeMapComponent += MemberNoSetterToField;
+			BeforeMapComponent += MemberReadOnlyAccessor;
 			BeforeMapComponent += ComponentParentToFieldAccessor;
 			BeforeMapComponent += ComponentParentNoSetterToField;
 
