@@ -53,6 +53,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public virtual void Component(MemberInfo property, Action<IDynamicComponentMapper> mapping)
+		{
+			throw new NotImplementedException();
+		}
+
 		public virtual void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
 		{
 			var hbm = new HbmManyToOne {name = property.Name};

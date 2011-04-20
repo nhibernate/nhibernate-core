@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -76,6 +77,13 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member)));
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			mapping(new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, memberOf)));
+		}
+
+		public void Component<TComponent>(Expression<Func<TEntity, IDictionary>> property,
+													 TComponent dynamicComponentTemplate,
+													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			throw new NotImplementedException();
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IManyToOneMapper> mapping)
