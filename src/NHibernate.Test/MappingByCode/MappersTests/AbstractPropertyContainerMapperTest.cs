@@ -88,7 +88,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		public void CallAnyMapper()
 		{
 			var properties = new List<object>();
-			var map = new StubPropertyContainerMapper<EntitySimple>(properties);
+			var map = new StubPropertyContainerMapper<MyClass>(properties);
 			var called = false;
 			map.Any(typeof(MyClass).GetProperty("Reference"), typeof(int), x => called = true);
 
