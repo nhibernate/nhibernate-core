@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -30,6 +32,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		private class MyClassWithDictionary
 		{
 			public IDictionary<string, string> Dictionary { get; set; }
+		}
+		private class MyClassWithDynamic
+		{
+			public IDictionary DynCompo { get; set; }
 		}
 
 		[Test]
@@ -109,6 +115,25 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			collectionPropsCalled.Should().Be.True();
 			keyRelationCalled.Should().Be.True();
 			elementRelationCalled.Should().Be.True();
+		}
+
+		[Test]
+		public void AddDynamicComponentProperty()
+		{
+			var properties = new List<object>();
+			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
+			map.Component(For<MyClassWithDynamic>.Property(x => x.DynCompo), (IDynamicComponentMapper cp) => { });
+			properties.Single().Should().Be.OfType<HbmDynamicComponent>().And.ValueOf.Name.Should().Be.EqualTo("DynCompo");
+		}
+
+		[Test]
+		public void CallDynamicComponentMapper()
+		{
+			var properties = new List<object>();
+			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
+			var called = false;
+			map.Component(For<MyClassWithDynamic>.Property(x=> x.DynCompo), (IDynamicComponentMapper cp) => called = true);
+			called.Should().Be.True();
 		}
 
 		private class HackPropertyContainerMapper : AbstractPropertyContainerMapper

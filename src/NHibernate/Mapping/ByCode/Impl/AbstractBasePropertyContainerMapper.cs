@@ -68,7 +68,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentOutOfRangeException("property", "Can't add a property of another graph");
 			}
-			throw new NotImplementedException();
+			var hbm = new HbmDynamicComponent { name = property.Name };
+			mapping(new DynamicComponentMapper(hbm, property, MapDoc));
+			AddProperty(hbm);
 		}
 
 		public virtual void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
