@@ -302,8 +302,9 @@ namespace NHibernate.Linq.Visitors
             {
                 if (addOwnMemberExpressionMapping)
                 {
-                    // Same mapping as the not-null (in)equality clause in VisitBinaryExpression.
-                    FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), N);
+                    // We would often get the same mapping as the not-null (in)equality clause in VisitBinaryExpression.
+                    // However, it's possible a method call will convert the null value from the failed join into any one of True, False, or Null.
+                    FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), TNF);
                 }
             }
         }
