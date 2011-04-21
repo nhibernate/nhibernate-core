@@ -1,3 +1,4 @@
+// FIXME - Are there other things that can convert N into T?  What about the ?: operator?
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -28,6 +29,8 @@ namespace NHibernate.Linq.Visitors
         private static readonly int[,] AND = new int[8, 8];
         private static readonly int[,] OR = new int[8, 8];
         private static readonly int[] NOT = new int[8];
+        private static readonly int[] ISNULL = new int[8];
+        private static readonly int[] ISNOTNULL = new int[8];
 
         /// <summary>
         /// Setup of <see cref="AND"/>, <see cref="OR"/>, <see cref="NOT"/>.
@@ -38,6 +41,12 @@ namespace NHibernate.Linq.Visitors
             NOT[T] = F;
             NOT[N] = N;
             NOT[F] = T;
+            ISNULL[T] = F;
+            ISNULL[N] = T;
+            ISNULL[F] = F;
+            ISNOTNULL[T] = T;
+            ISNOTNULL[N] = F;
+            ISNOTNULL[F] = T;
 
             foreach (var p in new[] { T, N, F })
             {
@@ -66,15 +75,21 @@ namespace NHibernate.Linq.Visitors
             foreach (var p in allValues)
             {
                 int[] splitP = split[p];
-                // We only need to compute NOT for compound values.
+                // We only need to compute unary operations for compound values.
                 if (splitP.Length > 1)
                 {
                     int notResult = 0;
+                    int isNullResult = 0;
+                    int isNotNullResult = 0;
                     foreach (var p0 in splitP)
                     {
                         notResult |= NOT[p0];
+                        isNullResult |= ISNULL[p0];
+                        isNotNullResult |= ISNOTNULL[p0];
                     }
                     NOT[p] = notResult;
+                    ISNULL[p] = isNullResult;
+                    ISNOTNULL[p] = isNotNullResult;
                 }
                 foreach (var q in allValues)
                 {
@@ -106,13 +121,30 @@ namespace NHibernate.Linq.Visitors
         private Stack<Dictionary<string, int>> _memberExpressionMappings = new Stack<Dictionary<string, int>>();
 
         // The following two are used for member expressions traversal.
-        private Stack<HashSet<string>> _collectedPathMemberExpressionsInExpressions = new Stack<HashSet<string>>();
         private int _memberExpressionDepth = 0;
 
         internal
             WhereJoinDetector(NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
             : base(nameGenerator, isEntityDecider, joins, expressionMap)
         {
+        }
+
+        internal static void Find(Expression expression, NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
+        {
+            WhereJoinDetector f = new WhereJoinDetector(nameGenerator, isEntityDecider, joins, expressionMap);
+
+            f._memberExpressionMappings.Push(new Dictionary<string, int>());
+
+            f.VisitExpression(expression);
+
+            foreach (var mapping in f._memberExpressionMappings.Pop())
+            {
+                // If outer join can never produce true, we can safely inner join.
+                if ((mapping.Value & T) == 0)
+                {
+                    f.MakeInnerIfJoined(mapping.Key);
+                }
+            }
         }
 
         protected override Expression VisitBinaryExpression(BinaryExpression expression)
@@ -131,7 +163,7 @@ namespace NHibernate.Linq.Visitors
                 var newRight = VisitExpression(expression.Right);
                 var rightMapping = _memberExpressionMappings.Pop();
 
-                BinaryMapping(_memberExpressionMappings.Peek(), leftMapping, rightMapping, AND);
+                BinaryMapping(leftMapping, rightMapping, AND);
 
                 // The following is copy-pasted from Relinq's visitor, as I had to split the code above.
                 var newConversion = (LambdaExpression)VisitExpression(expression.Conversion);
@@ -149,7 +181,7 @@ namespace NHibernate.Linq.Visitors
                 var newRight = VisitExpression(expression.Right);
                 var rightMapping = _memberExpressionMappings.Pop();
 
-                BinaryMapping(_memberExpressionMappings.Peek(), leftMapping, rightMapping, OR);
+                BinaryMapping(leftMapping, rightMapping, OR);
 
                 // Again, the following is copy-pasted from Relinq's visitor, as I had to split the code above.
                 var newConversion = (LambdaExpression)VisitExpression(expression.Conversion);
@@ -157,39 +189,22 @@ namespace NHibernate.Linq.Visitors
                     baseResult = Expression.MakeBinary(expression.NodeType, newLeft, newRight, expression.IsLiftedToNull, expression.Method, newConversion);
             }
             else if (expression.Type == typeof(bool)
-                && (expression.NodeType == ExpressionType.Equal && !IsNullConstantExpression(expression.Right) && !IsNullConstantExpression(expression.Left)
-                 || expression.NodeType == ExpressionType.NotEqual && !IsNullConstantExpression(expression.Right) && !IsNullConstantExpression(expression.Left)
-                 || expression.NodeType == ExpressionType.LessThan
-                 || expression.NodeType == ExpressionType.LessThanOrEqual
-                 || expression.NodeType == ExpressionType.GreaterThan
-                 || expression.NodeType == ExpressionType.GreaterThanOrEqual))
-            {
-                // Cases (e), (f).2, (g).2
-                _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
-
-                baseResult = base.VisitBinaryExpression(expression);
-
-                FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), N);
-            }
-            else if (expression.Type == typeof(bool)
-                && expression.NodeType == ExpressionType.NotEqual)
+                && expression.NodeType == ExpressionType.NotEqual
+                && (IsNullConstantExpression(expression.Right) || IsNullConstantExpression(expression.Left)))
             {
                 // Case (h)
-                _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
-
+                _memberExpressionMappings.Push(new Dictionary<string, int>());
                 baseResult = base.VisitBinaryExpression(expression);
-
-                FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), F);
+                UnaryMapping(_memberExpressionMappings.Pop(), ISNOTNULL);
             }
             else if (expression.Type == typeof(bool)
-                && expression.NodeType == ExpressionType.Equal)
+                && expression.NodeType == ExpressionType.Equal
+                && (IsNullConstantExpression(expression.Right) || IsNullConstantExpression(expression.Left)))
             {
                 // Case (i)
-                _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
-
+                _memberExpressionMappings.Push(new Dictionary<string, int>());
                 baseResult = base.VisitBinaryExpression(expression);
-
-                FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), T);
+                UnaryMapping(_memberExpressionMappings.Pop(), ISNULL);
             }
             else // +, * etc.
             {
@@ -197,51 +212,6 @@ namespace NHibernate.Linq.Visitors
                 baseResult = base.VisitBinaryExpression(expression);
             }
             return baseResult;
-        }
-
-        private static void FixedMapping(Dictionary<string, int> resultMapping, IEnumerable<string> collectedPathMemberExpressionsInExpression, int value)
-        {
-            foreach (var me in collectedPathMemberExpressionsInExpression)
-            {
-                // This ORing behavior was added without much thought to fix NHibernate.Test.NHSpecificTest.NH2378.Fixture.ShortEntityCanBeQueryCorrectlyUsingLinqProvider.
-                if (resultMapping.ContainsKey(me))
-                    resultMapping[me] |= value;
-                else
-                    resultMapping.Add(me, value);
-            }
-        }
-
-        private static void BinaryMapping(Dictionary<string, int> resultMapping, Dictionary<string, int> leftMapping, Dictionary<string, int> rightMapping, int[,] op)
-        {
-            // Compute mapping for all member expressions in leftMapping. If the member expression is missing
-            // in rightMapping, use TNF as a "pessimistic approximation" instead (inside the ?: operator). See
-            // the text for an explanation of this.
-            foreach (var lhs in leftMapping)
-            {
-                resultMapping.Add(lhs.Key, op[lhs.Value, rightMapping.ContainsKey(lhs.Key) ? rightMapping[lhs.Key] : TNF]);
-            }
-            // Compute mapping for all member expressions *only* in rightMapping (we did the common ones above).
-            // Again, use TNF as pessimistic approximation to result of left subcondition.
-            foreach (var rhs in rightMapping)
-            {
-                if (!leftMapping.ContainsKey(rhs.Key))
-                {
-                    resultMapping[rhs.Key] = op[rhs.Value, TNF];
-                }
-            }
-        }
-
-        private static bool IsNullConstantExpression(Expression expression)
-        {
-            if (expression is ConstantExpression)
-            {
-                var constant = (ConstantExpression)expression;
-                return constant.Value == null;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         protected override Expression VisitUnaryExpression(UnaryExpression expression)
@@ -254,12 +224,7 @@ namespace NHibernate.Linq.Visitors
                 // Case (c) from text at NH-2583.
                 _memberExpressionMappings.Push(new Dictionary<string, int>());
                 baseResult = VisitExpression(expression.Operand);
-                var opMapping = _memberExpressionMappings.Pop();
-
-                foreach (var m in opMapping)
-                {
-                    _memberExpressionMappings.Peek().Add(m.Key, NOT[m.Value]);
-                }
+                UnaryMapping(_memberExpressionMappings.Pop(), NOT);
             }
             else
             {
@@ -284,104 +249,105 @@ namespace NHibernate.Linq.Visitors
 
         protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
         {
-            // Similar logic to VisitMemberExpression, but for handling boolean method results instead of boolean members.
-            bool addOwnMemberExpressionMapping = false;
-            if (_memberExpressionDepth == 0 && _collectedPathMemberExpressionsInExpressions.Count == 0)
-            {
-                if (expression.Type != typeof(bool))
-                    throw new AssertionFailure("Was expecting a boolean member expression.");
-                addOwnMemberExpressionMapping = true;
-                _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
-            }
-
-            try
-            {
-                return base.VisitMethodCallExpression(expression);
-            }
-            finally
-            {
-                if (addOwnMemberExpressionMapping)
-                {
-                    // We would often get the same mapping as the not-null (in)equality clause in VisitBinaryExpression.
-                    // However, it's possible a method call will convert the null value from the failed join into any one of True, False, or Null.
-                    FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), TNF);
-                }
-            }
+            _memberExpressionMappings.Push(new Dictionary<string, int>());
+            Expression result = base.VisitMethodCallExpression(expression);
+            // We would usually get NULL if one of our inner member expresions was null. (Mapped to N)
+            // However, it's possible a method call will convert the null value from the failed join into any one of True, False, or Null. (Mapped to TNF)
+            // This could be optimized by actually checking what the method does.  For example StartsWith("s") would leave null as null and would still allow us to inner join.
+            FixedMapping(_memberExpressionMappings.Pop(), TNF);
+            return result;
         }
 
         protected override Expression VisitMemberExpression(MemberExpression expression)
         {
             ArgumentUtility.CheckNotNull("expression", expression);
 
-            // For the boolean part of expressions like: a => a.B.C == 1 && a.D.E
-            // There wouldn't have been a parent operator to collect paths for a.D.E.
-            // Below we add the same mapping as if we were doing a.D.E == true.
-            bool addOwnMemberExpressionMapping = false;
-            if (_memberExpressionDepth == 0 && _collectedPathMemberExpressionsInExpressions.Count == 0)
-            {
-                if (expression.Type != typeof(bool))
-                    throw new AssertionFailure("Was expecting a boolean member expression.");
-                addOwnMemberExpressionMapping = true;
-                _collectedPathMemberExpressionsInExpressions.Push(new HashSet<string>());
-            }
-
+            Expression newExpression;
             try
             {
-                Expression newExpression;
-                try
-                {
-                    _memberExpressionDepth++;
-                    newExpression = base.VisitExpression(expression.Expression);
-                }
-                finally
-                {
-                    _memberExpressionDepth--;
-                }
-                bool isEntity = _isEntityDecider.IsEntity(expression.Type);
-
-                if (isEntity)
-                {
-                    // See (h) why we do not check for _memberExpressionDepth here!
-                    _collectedPathMemberExpressionsInExpressions.Peek().Add(ExpressionKeyVisitor.Visit(expression, null));
-                }
-
-                if (_memberExpressionDepth > 0 && isEntity)
-                {
-                    return AddJoin(expression);
-                }
-                else
-                {
-                    if (newExpression != expression.Expression)
-                        return Expression.MakeMemberAccess(newExpression, expression.Member);
-                    return expression;
-                }
+                _memberExpressionDepth++;
+                newExpression = base.VisitExpression(expression.Expression);
             }
             finally
             {
-                if (addOwnMemberExpressionMapping)
+                _memberExpressionDepth--;
+            }
+            bool isEntity = _isEntityDecider.IsEntity(expression.Type);
+
+            if (isEntity)
+            {
+                // See (h) why we do not check for _memberExpressionDepth here!
+                AddPossibility(ExpressionKeyVisitor.Visit(expression, null), N);
+            }
+
+            if (_memberExpressionDepth > 0 && isEntity)
+            {
+                return AddJoin(expression);
+            }
+            else
+            {
+                if (newExpression != expression.Expression)
+                    return Expression.MakeMemberAccess(newExpression, expression.Member);
+                return expression;
+            }
+        }
+
+        private void FixedMapping(Dictionary<string, int> sourceMapping, int value)
+        {
+            foreach (var me in sourceMapping.Keys)
+            {
+                AddPossibility(me, value);
+            }
+        }
+
+        private void BinaryMapping(Dictionary<string, int> leftMapping, Dictionary<string, int> rightMapping, int[,] op)
+        {
+            // Compute mapping for all member expressions in leftMapping. If the member expression is missing
+            // in rightMapping, use TNF as a "pessimistic approximation" instead (inside the ?: operator). See
+            // the text for an explanation of this.
+            foreach (var lhs in leftMapping)
+            {
+                AddPossibility(lhs.Key, op[lhs.Value, rightMapping.ContainsKey(lhs.Key) ? rightMapping[lhs.Key] : TNF]);
+            }
+            // Compute mapping for all member expressions *only* in rightMapping (we did the common ones above).
+            // Again, use TNF as pessimistic approximation to result of left subcondition.
+            foreach (var rhs in rightMapping)
+            {
+                if (!leftMapping.ContainsKey(rhs.Key))
                 {
-                    // Same mapping as the not-null (in)equality clause in VisitBinaryExpression.
-                    FixedMapping(_memberExpressionMappings.Peek(), _collectedPathMemberExpressionsInExpressions.Pop(), N);
+                    AddPossibility(rhs.Key, op[rhs.Value, TNF]);
                 }
             }
         }
 
-        internal static void Find(Expression expression, NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
+        private void UnaryMapping(Dictionary<string, int> sourceMapping, int[] op)
         {
-            WhereJoinDetector f = new WhereJoinDetector(nameGenerator, isEntityDecider, joins, expressionMap);
-
-            f._memberExpressionMappings.Push(new Dictionary<string, int>());
-
-            f.VisitExpression(expression);
-
-            foreach (var mapping in f._memberExpressionMappings.Pop())
+            foreach (var item in sourceMapping)
             {
-                // If outer join can never produce true, we can safely inner join.
-                if ((mapping.Value & T) == 0)
-                {
-                    f.MakeInnerIfJoined(mapping.Key);
-                }
+                AddPossibility(item.Key, op[item.Value]);
             }
+        }
+
+        private static bool IsNullConstantExpression(Expression expression)
+        {
+            if (expression is ConstantExpression)
+            {
+                var constant = (ConstantExpression)expression;
+                return constant.Value == null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void AddPossibility(string memberPath, int value)
+        {
+            Dictionary<string, int> mapping = _memberExpressionMappings.Peek();
+            if (mapping.ContainsKey(memberPath))
+                mapping[memberPath] |= value;
+            else
+                mapping[memberPath] = value;
         }
     }
 }
