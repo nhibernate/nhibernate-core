@@ -26,6 +26,18 @@ namespace NHibernate.Mapping.ByCode.Impl
 			component.Items = component.Items == null ? toAdd : component.Items.Concat(toAdd).ToArray();
 		}
 
+		public override void Property(MemberInfo property, Action<IPropertyMapper> mapping)
+		{
+			var hbmProperty = new HbmProperty
+			                  {
+			                  	name = property.Name, 
+													type1 = property.GetPropertyOrFieldType().GetNhTypeName()
+			                  };
+
+			mapping(new PropertyMapper(property, hbmProperty, new NoMemberPropertyMapper()));
+			AddProperty(hbmProperty);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;

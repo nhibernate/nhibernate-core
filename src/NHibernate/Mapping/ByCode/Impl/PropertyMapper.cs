@@ -14,6 +14,21 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 		private readonly HbmProperty propertyMapping;
 
+		public PropertyMapper(MemberInfo member, HbmProperty propertyMapping, IAccessorPropertyMapper accessorMapper)
+		{
+			if (propertyMapping == null)
+			{
+				throw new ArgumentNullException("propertyMapping");
+			}
+			this.member = member;
+			this.propertyMapping = propertyMapping;
+			if (member == null)
+			{
+				this.propertyMapping.access = "none";
+			}
+			entityPropertyMapper = accessorMapper;
+		}
+
 		public PropertyMapper(MemberInfo member, HbmProperty propertyMapping)
 		{
 			if (propertyMapping == null)

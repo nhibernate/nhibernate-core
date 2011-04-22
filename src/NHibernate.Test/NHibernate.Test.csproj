@@ -557,6 +557,7 @@
     <Compile Include="MappingByCode\MappersTests\JoinedSubclassMapperTests\SetPersisterTests.cs" />
     <Compile Include="MappingByCode\MappersTests\JoinedSubclassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MappersTests\JoinMapperTests.cs" />
+    <Compile Include="MappingByCode\MappersTests\PropertyMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperTests\SetPersisterTests.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperWithJoinPropertiesTest.cs" />
