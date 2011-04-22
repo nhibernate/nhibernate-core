@@ -15,6 +15,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ICacheMapper cacheMapper;
 
 		public BagMapper(System.Type ownerType, System.Type elementType, HbmBag mapping)
+			: this(ownerType, elementType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping) {}
+
+		public BagMapper(System.Type ownerType, System.Type elementType, IAccessorPropertyMapper accessorMapper, HbmBag mapping)
 		{
 			if (ownerType == null)
 			{
@@ -36,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.key = new HbmKey();
 			}
 			keyMapper = new KeyMapper(ownerType, mapping.Key);
-			entityPropertyMapper = new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x);
+			entityPropertyMapper = accessorMapper;
 		}
 
 		public System.Type OwnerType { get; private set; }
