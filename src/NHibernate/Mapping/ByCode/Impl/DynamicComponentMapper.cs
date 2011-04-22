@@ -63,6 +63,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public override void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
+		{
+			var hbm = new HbmAny { name = property.Name };
+			mapping(new AnyMapper(property, idTypeOfMetaType, new NoMemberPropertyMapper(), hbm, MapDoc));
+			AddProperty(hbm);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;

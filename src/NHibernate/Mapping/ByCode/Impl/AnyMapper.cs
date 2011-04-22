@@ -20,6 +20,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 
 		public AnyMapper(MemberInfo member, System.Type foreignIdType, HbmAny any, HbmMapping mapDoc)
+			: this(member, foreignIdType, new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x), any, mapDoc) {}
+
+		public AnyMapper(MemberInfo member, System.Type foreignIdType, IAccessorPropertyMapper accessorMapper, HbmAny any, HbmMapping mapDoc)
 		{
 			this.member = member;
 			this.foreignIdType = foreignIdType;
@@ -29,14 +32,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				this.any.access = "none";
 			}
-			if (member == null)
-			{
-				entityPropertyMapper = new NoMemberPropertyMapper();
-			}
-			else
-			{
-				entityPropertyMapper = new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x);
-			}
+			entityPropertyMapper = member == null ? new NoMemberPropertyMapper() : accessorMapper;
 			if (foreignIdType == null)
 			{
 				throw new ArgumentNullException("foreignIdType");
@@ -53,7 +49,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			var classHbmColumn = new HbmColumn();
 			string classColumnName = member == null ? DefaultMetaColumnNameWhenNoProperty : member.Name + "Class";
 			classColumnMapper = new ColumnMapper(classHbmColumn, classColumnName);
-			any.column = new[] {classHbmColumn, idHbmColumn};
+			any.column = new[] { classHbmColumn, idHbmColumn };
 		}
 
 		#region Implementation of IAccessorPropertyMapper

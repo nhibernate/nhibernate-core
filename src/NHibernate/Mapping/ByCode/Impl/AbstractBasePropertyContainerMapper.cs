@@ -84,7 +84,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
-		public void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
+		public virtual void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
 		{
 			if (!IsMemberSupportedByMappedContainer(property))
 			{
