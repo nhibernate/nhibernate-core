@@ -97,6 +97,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public override void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		{
+			var hbm = new HbmList { name = property.Name };
+			System.Type propertyType = property.GetPropertyOrFieldType();
+			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			collectionMapping(new ListMapper(container, collectionElementType, new NoMemberPropertyMapper(), hbm));
+			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item1 = rel));
+			AddProperty(hbm);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;

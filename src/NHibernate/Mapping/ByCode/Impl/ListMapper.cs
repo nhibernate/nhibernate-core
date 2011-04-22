@@ -16,6 +16,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ICacheMapper cacheMapper;
 
 		public ListMapper(System.Type ownerType, System.Type elementType, HbmList mapping)
+			: this(ownerType, elementType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping) {}
+
+		public ListMapper(System.Type ownerType, System.Type elementType, IAccessorPropertyMapper accessorMapper, HbmList mapping)
 		{
 			if (ownerType == null)
 			{
@@ -40,7 +43,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			var listIndex = new HbmListIndex();
 			mapping.Item = listIndex;
 			listIndexMapper = new ListIndexMapper(ownerType, listIndex);
-			entityPropertyMapper = new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x);
+			entityPropertyMapper = accessorMapper;
 		}
 
 		public System.Type OwnerType { get; private set; }

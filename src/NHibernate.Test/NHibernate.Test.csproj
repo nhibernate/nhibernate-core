@@ -556,6 +556,7 @@
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\ComponentPropertyOnDynamicCompoTests.cs" />
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\DynCompAttributesSettingTest.cs" />
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\DynComponentPropertyOnDynamicCompoTests.cs" />
+    <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\ListPropertyOnDynamicCompoTests.cs" />
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\ManyToOnePropertyOnDynamicCompoTests.cs" />
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\OneToOnePropertyOnDynamicCompoTests.cs" />
     <Compile Include="MappingByCode\MappersTests\DynamicComponentMapperTests\SetPropertyOnDynamicCompoTests.cs" />
