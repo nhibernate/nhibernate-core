@@ -61,7 +61,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
-		public void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		public virtual void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmIdbag { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();

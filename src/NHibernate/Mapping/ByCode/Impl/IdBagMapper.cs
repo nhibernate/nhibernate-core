@@ -16,6 +16,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly CollectionIdMapper idMapper;
 
 		public IdBagMapper(System.Type ownerType, System.Type elementType, HbmIdbag mapping)
+			: this(ownerType, elementType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping) {}
+
+		public IdBagMapper(System.Type ownerType, System.Type elementType, IAccessorPropertyMapper accessorMapper, HbmIdbag mapping)
 		{
 			if (ownerType == null)
 			{
@@ -42,7 +45,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.collectionid = new HbmCollectionId();
 			}
 			idMapper = new CollectionIdMapper(mapping.collectionid);
-			entityPropertyMapper = new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x);
+			entityPropertyMapper = accessorMapper;
 		}
 
 		public System.Type OwnerType { get; private set; }
