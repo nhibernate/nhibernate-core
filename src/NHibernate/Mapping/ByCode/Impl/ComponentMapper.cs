@@ -12,11 +12,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ComponentParentMapper parentMapper;
 
 		public ComponentMapper(HbmComponent component, System.Type componentType, MemberInfo declaringTypeMember, HbmMapping mapDoc)
+			: this(component,componentType, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc)
+		{
+		}
+
+		public ComponentMapper(HbmComponent component, System.Type componentType, IAccessorPropertyMapper accessorMapper, HbmMapping mapDoc)
 			: base(componentType, mapDoc)
 		{
 			this.component = component;
 			component.@class = componentType.GetShortClassName(mapDoc);
-			accessorPropertyMapper = new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x);
+			accessorPropertyMapper = accessorMapper;
 		}
 
 		#region Overrides of AbstractPropertyContainerMapper

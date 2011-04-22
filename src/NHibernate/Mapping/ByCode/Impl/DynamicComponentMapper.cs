@@ -38,6 +38,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbmProperty);
 		}
 
+		public override void Component(MemberInfo property, Action<IComponentMapper> mapping)
+		{
+			var hbm = new HbmComponent { name = property.Name };
+			mapping(new ComponentMapper(hbm, property.GetPropertyOrFieldType(), new NoMemberPropertyMapper(), MapDoc));
+			AddProperty(hbm);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;
