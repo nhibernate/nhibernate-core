@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class DynamicComponentMapper : AbstractPropertyContainerMapper, IDynamicComponentMapper
+	public class DynamicComponentMapper : IDynamicComponentMapper
 	{
 		private readonly HbmDynamicComponent component;
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
@@ -14,13 +14,22 @@ namespace NHibernate.Mapping.ByCode.Impl
 			: this(component, declaringTypeMember, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc) {}
 
 		private DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, IAccessorPropertyMapper accessorMapper, HbmMapping mapDoc)
-			: base(declaringTypeMember.DeclaringType, mapDoc)
 		{
+			if (mapDoc == null)
+			{
+				throw new ArgumentNullException("mapDoc");
+			}
+			Container = declaringTypeMember.DeclaringType;
+			MapDoc = mapDoc;
+
 			this.component = component;
 			accessorPropertyMapper = accessorMapper;
 		}
 
-		protected override void AddProperty(object property)
+		private System.Type Container { get; set; }
+		private HbmMapping MapDoc { get; set; }
+
+		protected void AddProperty(object property)
 		{
 			if (property == null)
 			{
@@ -30,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			component.Items = component.Items == null ? toAdd : component.Items.Concat(toAdd).ToArray();
 		}
 
-		public override void Property(MemberInfo property, Action<IPropertyMapper> mapping)
+		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
 			var hbmProperty = new HbmProperty
 			                  {
@@ -42,97 +51,92 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbmProperty);
 		}
 
-		public override void Component(MemberInfo property, Action<IComponentMapper> mapping)
+		public void Component(MemberInfo property, Action<IComponentMapper> mapping)
 		{
 			var hbm = new HbmComponent { name = property.Name };
 			mapping(new ComponentMapper(hbm, property.GetPropertyOrFieldType(), new NoMemberPropertyMapper(), MapDoc));
 			AddProperty(hbm);
 		}
 
-		public override void Component(MemberInfo property, Action<IDynamicComponentMapper> mapping)
+		public void Component(MemberInfo property, Action<IDynamicComponentMapper> mapping)
 		{
 			var hbm = new HbmDynamicComponent { name = property.Name };
 			mapping(new DynamicComponentMapper(hbm, property, new NoMemberPropertyMapper(), MapDoc));
 			AddProperty(hbm);
 		}
 
-		public override void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
+		public void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
 		{
 			var hbm = new HbmManyToOne { name = property.Name };
 			mapping(new ManyToOneMapper(property, new NoMemberPropertyMapper(), hbm, MapDoc));
 			AddProperty(hbm);
 		}
 
-		public override void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
+		public void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping)
 		{
 			var hbm = new HbmAny { name = property.Name };
 			mapping(new AnyMapper(property, idTypeOfMetaType, new NoMemberPropertyMapper(), hbm, MapDoc));
 			AddProperty(hbm);
 		}
 
-		public override void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping)
+		public void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping)
 		{
 			var hbm = new HbmOneToOne { name = property.Name };
 			mapping(new OneToOneMapper(property, new NoMemberPropertyMapper(), hbm));
 			AddProperty(hbm);
 		}
 
-		public override void Bag(MemberInfo property, Action<IBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		public void Bag(MemberInfo property, Action<IBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmBag { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
-			collectionMapping(new BagMapper(container, collectionElementType, new NoMemberPropertyMapper(), hbm));
+			collectionMapping(new BagMapper(Container, collectionElementType, new NoMemberPropertyMapper(), hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
 		}
 
-		public override void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		public void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmSet { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
-			collectionMapping(new SetMapper(container, collectionElementType, new NoMemberPropertyMapper(), hbm));
+			collectionMapping(new SetMapper(Container, collectionElementType, new NoMemberPropertyMapper(), hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
 		}
 
-		public override void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		public void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmList { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
-			collectionMapping(new ListMapper(container, collectionElementType, new NoMemberPropertyMapper(), hbm));
+			collectionMapping(new ListMapper(Container, collectionElementType, new NoMemberPropertyMapper(), hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item1 = rel));
 			AddProperty(hbm);
 		}
 
-		public override void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping, Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
+		public void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping, Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmMap { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type dictionaryKeyType = propertyType.DetermineDictionaryKeyType();
 			System.Type dictionaryValueType = propertyType.DetermineDictionaryValueType();
 
-			collectionMapping(new MapMapper(container, dictionaryKeyType, dictionaryValueType, new NoMemberPropertyMapper(), hbm, mapDoc));
-			keyMapping(new MapKeyRelation(dictionaryKeyType, hbm, mapDoc));
+			collectionMapping(new MapMapper(Container, dictionaryKeyType, dictionaryValueType, new NoMemberPropertyMapper(), hbm, MapDoc));
+			keyMapping(new MapKeyRelation(dictionaryKeyType, hbm, MapDoc));
 			mapping(new CollectionElementRelation(dictionaryValueType, MapDoc, rel => hbm.Item1 = rel));
 			AddProperty(hbm);
 		}
 
-		public override void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
+		public void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmIdbag { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
-			collectionMapping(new IdBagMapper(container, collectionElementType, new NoMemberPropertyMapper(), hbm));
+			collectionMapping(new IdBagMapper(Container, collectionElementType, new NoMemberPropertyMapper(), hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
-		}
-
-		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
-		{
-			return true;
 		}
 
 		public void Access(Accessor accessor)
