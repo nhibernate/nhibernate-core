@@ -56,6 +56,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public override void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
+		{
+			var hbm = new HbmManyToOne { name = property.Name };
+			mapping(new ManyToOneMapper(property, new NoMemberPropertyMapper(), hbm, MapDoc));
+			AddProperty(hbm);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;

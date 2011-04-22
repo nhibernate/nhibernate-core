@@ -14,6 +14,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 
 		public ManyToOneMapper(MemberInfo member, HbmManyToOne manyToOne, HbmMapping mapDoc)
+			: this(member, new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x), manyToOne, mapDoc) {}
+
+		public ManyToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorPropertyMapper, HbmManyToOne manyToOne, HbmMapping mapDoc)
 		{
 			this.member = member;
 			this.manyToOne = manyToOne;
@@ -22,14 +25,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				this.manyToOne.access = "none";
 			}
-			if (member == null)
-			{
-				entityPropertyMapper = new NoMemberPropertyMapper();
-			}
-			else
-			{
-				entityPropertyMapper = new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x);
-			}
+			entityPropertyMapper = member == null ? new NoMemberPropertyMapper() : accessorPropertyMapper;
 		}
 
 		#region Implementation of IManyToOneMapper
