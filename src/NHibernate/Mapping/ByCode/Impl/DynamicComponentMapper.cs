@@ -10,10 +10,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HbmDynamicComponent component;
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
 
-		public DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, HbmMapping mapDoc) : base(declaringTypeMember.DeclaringType, mapDoc)
+		public DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, HbmMapping mapDoc)
+			: this(component, declaringTypeMember, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc) {}
+
+		private DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, IAccessorPropertyMapper accessorMapper, HbmMapping mapDoc)
+			: base(declaringTypeMember.DeclaringType, mapDoc)
 		{
 			this.component = component;
-			accessorPropertyMapper = new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x);
+			accessorPropertyMapper = accessorMapper;
 		}
 
 		protected override void AddProperty(object property)
@@ -42,6 +46,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			var hbm = new HbmComponent { name = property.Name };
 			mapping(new ComponentMapper(hbm, property.GetPropertyOrFieldType(), new NoMemberPropertyMapper(), MapDoc));
+			AddProperty(hbm);
+		}
+
+		public override void Component(MemberInfo property, Action<IDynamicComponentMapper> mapping)
+		{
+			var hbm = new HbmDynamicComponent { name = property.Name };
+			mapping(new DynamicComponentMapper(hbm, property, new NoMemberPropertyMapper(), MapDoc));
 			AddProperty(hbm);
 		}
 
