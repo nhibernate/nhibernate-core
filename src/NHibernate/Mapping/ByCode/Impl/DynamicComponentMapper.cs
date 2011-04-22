@@ -107,6 +107,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddProperty(hbm);
 		}
 
+		public override void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping, Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
+		{
+			var hbm = new HbmMap { name = property.Name };
+			System.Type propertyType = property.GetPropertyOrFieldType();
+			System.Type dictionaryKeyType = propertyType.DetermineDictionaryKeyType();
+			System.Type dictionaryValueType = propertyType.DetermineDictionaryValueType();
+
+			collectionMapping(new MapMapper(container, dictionaryKeyType, dictionaryValueType, new NoMemberPropertyMapper(), hbm, mapDoc));
+			keyMapping(new MapKeyRelation(dictionaryKeyType, hbm, mapDoc));
+			mapping(new CollectionElementRelation(dictionaryValueType, MapDoc, rel => hbm.Item1 = rel));
+			AddProperty(hbm);
+		}
+
 		protected override bool IsMemberSupportedByMappedContainer(MemberInfo property)
 		{
 			return true;

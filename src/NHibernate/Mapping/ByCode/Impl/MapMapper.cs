@@ -16,6 +16,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ICacheMapper cacheMapper;
 
 		public MapMapper(System.Type ownerType, System.Type keyType, System.Type valueType, HbmMap mapping, HbmMapping mapDoc)
+			: this(ownerType, keyType, valueType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping, mapDoc) {}
+
+		public MapMapper(System.Type ownerType, System.Type keyType, System.Type valueType, IAccessorPropertyMapper accessorMapper, HbmMap mapping, HbmMapping mapDoc)
 		{
 			if (ownerType == null)
 			{
@@ -52,7 +55,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.Item = new HbmMapKeyManyToMany {@class = KeyType.GetShortClassName(mapDoc)};
 			}
-			entityPropertyMapper = new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x);
+			entityPropertyMapper = accessorMapper;
 		}
 
 		public System.Type OwnerType { get; private set; }
