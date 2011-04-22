@@ -33,6 +33,8 @@ namespace NHibernate.Mapping.ByCode
 		bool IsArray(MemberInfo role);
 		bool IsDictionary(MemberInfo role);
 		bool IsProperty(MemberInfo member);
+		bool IsDynamicComponent(MemberInfo member);
+		System.Type GetDynamicComponentTemplate(MemberInfo member);
 		IEnumerable<string> GetPropertiesSplits(System.Type type);
 	}
 }

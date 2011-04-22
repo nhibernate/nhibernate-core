@@ -83,7 +83,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 													 TComponent dynamicComponentTemplate,
 													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
 		{
-			throw new NotImplementedException();
+			RegisterDynamicComponentMapping(property, mapping);
+		}
+
+		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			mapping(new DynamicComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member)));
+			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
+			mapping(new DynamicComponentCustomizer<TComponent>(explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, memberOf)));
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IManyToOneMapper> mapping)

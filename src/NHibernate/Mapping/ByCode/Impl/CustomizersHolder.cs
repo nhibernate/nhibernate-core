@@ -33,6 +33,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<PropertyPath, List<Action<IComponentAttributesMapper>>> componentPropertyCustomizers =
 			new Dictionary<PropertyPath, List<Action<IComponentAttributesMapper>>>();
 
+		private readonly Dictionary<PropertyPath, List<Action<IDynamicComponentAttributesMapper>>> dynamicComponentCustomizers =
+			new Dictionary<PropertyPath, List<Action<IDynamicComponentAttributesMapper>>>();
+
 		private readonly Dictionary<System.Type, List<Action<IJoinedSubclassAttributesMapper>>> joinedClassCustomizers =
 			new Dictionary<System.Type, List<Action<IJoinedSubclassAttributesMapper>>>();
 
@@ -159,6 +162,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddCustomizer(componentPropertyCustomizers, member, propertyCustomizer);
 		}
 
+		public void AddCustomizer(PropertyPath member, Action<IDynamicComponentAttributesMapper> propertyCustomizer)
+		{
+			AddCustomizer(dynamicComponentCustomizers, member, propertyCustomizer);
+		}
+
 		public void AddCustomizer(PropertyPath member, Action<IManyToManyMapper> collectionRelationManyToManyCustomizer)
 		{
 			AddCustomizer(collectionRelationManyToManyCustomizers, member, collectionRelationManyToManyCustomizer);
@@ -272,6 +280,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void InvokeCustomizers(PropertyPath member, IComponentAttributesMapper mapper)
 		{
 			InvokeCustomizers(componentPropertyCustomizers, member, mapper);
+		}
+
+		public void InvokeCustomizers(PropertyPath member, IDynamicComponentAttributesMapper mapper)
+		{
+			InvokeCustomizers(dynamicComponentCustomizers, member, mapper);
 		}
 
 		public void InvokeCustomizers(PropertyPath member, IManyToManyMapper mapper)

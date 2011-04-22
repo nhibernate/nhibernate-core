@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +20,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> properties = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> dynamicComponents = new HashSet<MemberInfo>();
+		private readonly Dictionary<MemberInfo, System.Type> dynamicComponentTemplates = new Dictionary<MemberInfo, System.Type>();
 		private readonly HashSet<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> rootEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> sets = new HashSet<MemberInfo>();
@@ -132,6 +133,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			get { return properties; }
 		}
 
+		public IEnumerable<MemberInfo> DynamicComponents
+		{
+			get { return dynamicComponents; }
+		}
+
 		public IEnumerable<MemberInfo> PersistentMembers
 		{
 			get { return persistentMembers; }
@@ -150,6 +156,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public string GetSplitGroupFor(MemberInfo member)
 		{
 			return null;
+		}
+
+		public System.Type GetDynamicComponentTemplate(MemberInfo member)
+		{
+			System.Type template;
+			dynamicComponentTemplates.TryGetValue(member, out template);
+			return template ?? typeof(object);
 		}
 
 		public void AddAsRootEntity(System.Type type)
@@ -260,6 +273,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddAsPropertySplit(SplitDefinition definition)
 		{
 			splitDefinitions.Add(definition);
+		}
+
+		public void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate)
+		{
+			dynamicComponents.Add(member);
+			dynamicComponentTemplates[member] = componentTemplate;
 		}
 
 		#endregion

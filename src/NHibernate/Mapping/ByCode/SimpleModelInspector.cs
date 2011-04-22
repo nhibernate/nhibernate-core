@@ -27,6 +27,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isVersion = (m, declared) => declared;
 
 		private Func<MemberInfo, bool, bool> isProperty = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isDynamicComponent = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isAny = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isManyToMany = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isManyToOne;
@@ -341,6 +342,11 @@ namespace NHibernate.Mapping.ByCode
 			get { return declaredModel.SplitDefinitions; }
 		}
 
+		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.DynamicComponents
+		{
+			get { return declaredModel.DynamicComponents; }
+		}
+
 		IEnumerable<string> IModelExplicitDeclarationsHolder.GetSplitGroupsFor(System.Type type)
 		{
 			return declaredModel.GetSplitGroupsFor(type);
@@ -459,6 +465,11 @@ namespace NHibernate.Mapping.ByCode
 		void IModelExplicitDeclarationsHolder.AddAsPropertySplit(SplitDefinition definition)
 		{
 			declaredModel.AddAsPropertySplit(definition);
+		}
+
+		void IModelExplicitDeclarationsHolder.AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate)
+		{
+			declaredModel.AddAsDynamicComponent(member, componentTemplate);
 		}
 
 		#endregion
@@ -601,6 +612,21 @@ namespace NHibernate.Mapping.ByCode
 		{
 			bool declaredResult = declaredModel.IsProperty(member);
 			return isProperty(member, declaredResult);
+		}
+
+		bool IModelInspector.IsDynamicComponent(MemberInfo member)
+		{
+			bool declaredResult = declaredModel.IsDynamicComponent(member);
+			return isDynamicComponent(member, declaredResult);
+		}
+
+		System.Type IModelInspector.GetDynamicComponentTemplate(MemberInfo member)
+		{
+			return declaredModel.GetDynamicComponentTemplate(member);
+		}
+		System.Type IModelExplicitDeclarationsHolder.GetDynamicComponentTemplate(MemberInfo member)
+		{
+			return declaredModel.GetDynamicComponentTemplate(member);
 		}
 
 		IEnumerable<string> IModelInspector.GetPropertiesSplits(System.Type type)
@@ -825,6 +851,15 @@ namespace NHibernate.Mapping.ByCode
 				return;
 			}
 			isTablePerClassSplit = match;
+		}
+
+		public void IsDynamicComponent(Func<MemberInfo, bool, bool> match)
+		{
+			if (match == null)
+			{
+				return;
+			}
+			isDynamicComponent = match;
 		}
 	}
 }

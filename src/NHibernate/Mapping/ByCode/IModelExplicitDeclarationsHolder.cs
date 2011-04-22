@@ -42,11 +42,13 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<MemberInfo> Arrays { get; }
 		IEnumerable<MemberInfo> Dictionaries { get; }
 		IEnumerable<MemberInfo> Properties { get; }
+		IEnumerable<MemberInfo> DynamicComponents { get; }
 		IEnumerable<MemberInfo> PersistentMembers { get; }
 		IEnumerable<SplitDefinition> SplitDefinitions { get; }
 
 		IEnumerable<string> GetSplitGroupsFor(System.Type type);
 		string GetSplitGroupFor(MemberInfo member);
+		System.Type GetDynamicComponentTemplate(MemberInfo member);
 
 		void AddAsRootEntity(System.Type type);
 		void AddAsComponent(System.Type type);
@@ -73,5 +75,6 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsProperty(MemberInfo member);
 		void AddAsPersistentMember(MemberInfo member);
 		void AddAsPropertySplit(SplitDefinition definition);
+		void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate);
 	}
 }

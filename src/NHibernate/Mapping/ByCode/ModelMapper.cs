@@ -903,6 +903,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					MapOneToOne(member, memberPath, propertiesContainer);
 				}
+				else if (modelInspector.IsDynamicComponent(property))
+				{
+					MapDynamicComponent(member, memberPath, propertyType, propertiesContainer);
+				}
 				else if (modelInspector.IsSet(property))
 				{
 					MapSet(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
@@ -936,6 +940,19 @@ namespace NHibernate.Mapping.ByCode
 					MapProperty(member, memberPath, propertiesContainer);
 				}
 			}
+		}
+
+		private void MapDynamicComponent(MemberInfo member, PropertyPath memberPath, System.Type propertyType, IPropertyContainerMapper propertiesContainer)
+		{
+			propertiesContainer.Component(member, (IDynamicComponentMapper componentMapper) =>
+			{
+				System.Type componentType = modelInspector.GetDynamicComponentTemplate(member);
+				IEnumerable<MemberInfo> persistentProperties = membersProvider.GetComponentMembers(componentType);
+
+				ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, componentMapper));
+
+				MapProperties(propertyType, persistentProperties, componentMapper, memberPath);
+			});
 		}
 
 		private void MapAny(MemberInfo member, PropertyPath memberPath, IBasePlainPropertyContainerMapper propertiesContainer)

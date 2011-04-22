@@ -21,6 +21,8 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> properties = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> dynamicComponents = new HashSet<MemberInfo>();
+		private readonly Dictionary<MemberInfo, System.Type> dynamicComponentTemplates = new Dictionary<MemberInfo, System.Type>();
 		private readonly HashSet<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
 		private readonly HashSet<System.Type> rootEntities = new HashSet<System.Type>();
 		private readonly HashSet<MemberInfo> sets = new HashSet<MemberInfo>();
@@ -133,6 +135,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Properties
 		{
 			get { return properties; }
+		}
+
+		public IEnumerable<MemberInfo> DynamicComponents
+		{
+			get { return dynamicComponents; }
 		}
 
 		public IEnumerable<MemberInfo> PersistentMembers
@@ -404,6 +411,13 @@ namespace NHibernate.Mapping.ByCode
 			splitDefinitions.Add(definition);
 		}
 
+		public void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate)
+		{
+			persistentMembers.Add(member);
+			dynamicComponents.Add(member);
+			dynamicComponentTemplates[member] = componentTemplate;
+		}
+
 		private void AddTypeSplits(System.Type propertyContainer, string splitGroupId)
 		{
 			HashSet<string> splitsGroupsIds;
@@ -536,6 +550,18 @@ namespace NHibernate.Mapping.ByCode
 		public virtual bool IsProperty(MemberInfo member)
 		{
 			return properties.Contains(member);
+		}
+
+		public bool IsDynamicComponent(MemberInfo member)
+		{
+			return dynamicComponents.Contains(member);
+		}
+
+		public System.Type GetDynamicComponentTemplate(MemberInfo member)
+		{
+			System.Type template;
+			dynamicComponentTemplates.TryGetValue(member, out template);
+			return template ?? typeof(object);
 		}
 
 		public IEnumerable<string> GetPropertiesSplits(System.Type type)

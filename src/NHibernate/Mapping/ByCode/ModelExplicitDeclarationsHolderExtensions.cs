@@ -36,6 +36,11 @@ namespace NHibernate.Mapping.ByCode
 			System.Array.ForEach(source.Properties.ToArray(), destination.AddAsProperty);
 			System.Array.ForEach(source.PersistentMembers.ToArray(), destination.AddAsPersistentMember);
 			System.Array.ForEach(source.SplitDefinitions.ToArray(), destination.AddAsPropertySplit);
+			foreach (var dynamicComponent in source.DynamicComponents)
+			{
+				var template = source.GetDynamicComponentTemplate(dynamicComponent);
+				destination.AddAsDynamicComponent(dynamicComponent, template);
+			}
 		}
 	}
 }
