@@ -43,11 +43,11 @@ namespace NHibernate.Loader.Collection
 			InitStatementString(elementPersister, alias, batchSize, subquery);
 		}
 
-		// NH-1747 FIX
-		//protected override string GenerateAliasForColumn(string rootAlias, string column)
-		//{
-		//  return elementPersister.GenerateTableAliasForColumn(rootAlias, column);
-		//}
+		protected override string GenerateAliasForColumn(string rootAlias, string column)
+		{
+			// NH-1747 FIX (see OneToManyPersister)
+			return elementPersister.GenerateTableAliasForColumn(rootAlias, column);
+		}
 
 		private void InitStatementString(IOuterJoinLoadable elementPersister, string alias, int batchSize, SqlString subquery)
 		{

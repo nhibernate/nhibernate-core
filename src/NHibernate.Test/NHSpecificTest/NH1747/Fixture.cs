@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 			}
 		}
 
-		[Test, Ignore("The fix was commented in the code. Look for NH-1747")]
+		[Test]
 		public void TraversingBagToJoinChildElementShouldWork()
 		{
 			using (ISession session = OpenSession())
