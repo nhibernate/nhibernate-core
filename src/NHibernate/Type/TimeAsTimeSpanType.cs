@@ -35,7 +35,7 @@ namespace NHibernate.Type
 				if(value is TimeSpan)
 					return (TimeSpan)value;
                 
-				return ((DateTime)value).Subtract(BaseDateValue);
+				return ((DateTime)value).TimeOfDay;
 			}
 			catch (Exception ex)
 			{
@@ -51,7 +51,7 @@ namespace NHibernate.Type
 				if (value is TimeSpan) //For those dialects where DbType.Time means TimeSpan.
 					return (TimeSpan)value;
 
-				return ((DateTime)value).Subtract(BaseDateValue);
+				return ((DateTime)value).TimeOfDay;
 			}
 			catch (Exception ex)
 			{
