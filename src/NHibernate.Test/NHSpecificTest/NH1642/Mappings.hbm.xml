@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH1642"
+				   assembly="NHibernate.Test">
+  <class name="AbstractRule" table="GENERIC_RULE">
+    <id name="id" column="RULE_ID">
+      <generator class="identity"/>
+    </id>
+    <discriminator column="RULE_TYPE" type="string"/>
+
+    <property name="name" />
+    <property name="description"/>
+
+    <subclass name="TrafficRule" discriminator-value="TRAFFIC">
+      <join table="TRAFFIC_RULE">
+        <key column="RULE_ID"/>
+
+        <property name="effectiveStartDate" column="start_date" />
+        <property name="effectiveEndDate" column="end_date" />
+
+        <many-to-one name="ruleSet" class="TrafficRuleSet" column="RULESET_ID"/>
+      </join>
+
+    </subclass>
+  </class>
+  <class name="TrafficRuleSet" table="TRAFFIC_RULSET">
+    <id name="id" column="RULESET_ID">
+      <generator class="identity"/>
+    </id>
+
+    <property name="name"/>
+    <property name="description" />
+
+    <bag name="rules" inverse="true" cascade="all">
+      <key column="RULESET_ID" on-delete="cascade" />
+      <one-to-many class="TrafficRule"/>
+    </bag>
+  </class>
+
+</hibernate-mapping>
