@@ -13,6 +13,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
 			explicitDeclarationsHolder.AddAsTablePerConcreteClassEntity(typeof (TEntity));
+
+			// Add an empty customizer as a way to register the class as explicity declared
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => { });
 		}
 
 		#region Implementation of IEntityAttributesMapper

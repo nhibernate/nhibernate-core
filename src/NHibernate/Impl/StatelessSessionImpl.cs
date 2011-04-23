@@ -53,7 +53,15 @@ namespace NHibernate.Impl
 
 		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
-			throw new SessionException("collections cannot be fetched by a stateless session");
+			if(temporaryPersistenceContext.IsLoadFinished)
+			{
+				throw new SessionException("Collections cannot be fetched by a stateless session. You can eager load it through specific query.");
+			}
+			CollectionEntry ce = temporaryPersistenceContext.GetCollectionEntry(collection);
+			if (!collection.WasInitialized)
+			{
+				ce.LoadedPersister.Initialize(ce.LoadedKey, this);
+			}
 		}
 
 		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
@@ -733,7 +741,10 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
-				temporaryPersistenceContext.Clear();
+				if (temporaryPersistenceContext.IsLoadFinished)
+				{
+					temporaryPersistenceContext.Clear();
+				}
 				return result;
 			}
 		}

@@ -1205,6 +1205,14 @@ namespace NHibernate.Engine
 			         oldEntry.LoadedWithLazyPropertiesUnfetched);
 		}
 
+		public bool IsLoadFinished
+		{
+			get
+			{
+				return loadCounter == 0;
+			}
+		}
+
 		#endregion
 
 		public override string ToString()

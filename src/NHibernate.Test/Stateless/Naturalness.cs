@@ -5,7 +5,7 @@ namespace NHibernate.Test.Stateless
 {
 	public abstract class Animal
 	{
-		public virtual int Id { get; private set; }
+		public virtual int Id { get; protected set; }
 		public virtual string Description { get; set; }
 	}
 
@@ -25,7 +25,7 @@ namespace NHibernate.Test.Stateless
 	{
 		private ISet<T> childs;
 
-		public virtual int Id { get; private set; }
+		public virtual int Id { get; protected set; }
 		public virtual T Father { get; set; }
 		public virtual T Mother { get; set; }
 		public virtual ISet<T> Childs

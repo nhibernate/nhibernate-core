@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.Stateless.Fetching">
+    <class name="User" table="User_">
+        <id name="Id" type="long">
+            <generator class="increment" />
+        </id>
+        <property name="Name" />
+    </class>
+
+    <class name="Resource">
+        <id name="Id" type="long">
+            <generator class="increment" />
+        </id>
+        <property name="Name" />
+        <many-to-one name="Owner"/>
+    </class>
+
+    <class name="Task">
+        <id name="Id" type="long">
+            <generator class="increment" />
+        </id>
+        <property name="Description" />
+        <many-to-one name="User" column="user_"/>
+        <many-to-one name="Resource"/>
+        <property name="DueDate" />
+        <property name="StartDate" />
+        <property name="CompletionDate" />
+    </class>
+
+</hibernate-mapping>

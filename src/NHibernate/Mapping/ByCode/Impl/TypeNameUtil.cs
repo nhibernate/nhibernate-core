@@ -49,14 +49,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			if (!string.IsNullOrEmpty(assembly) && string.IsNullOrEmpty(@namespace))
 			{
-				return string.Concat(type.Name, ", ", assembly);
+				return string.Concat(GetTypeNameForMapping(type), ", ", assembly);
 			}
 			if (string.IsNullOrEmpty(assembly) && !string.IsNullOrEmpty(@namespace))
 			{
 				return type.FullName;
 			}
 
-			return type.Name;
+			return GetTypeNameForMapping(type);
+		}
+
+		private static string GetTypeNameForMapping(System.Type type)
+		{
+			return !type.IsGenericType  ? type.Name: type.FullName;
 		}
 	}
 }

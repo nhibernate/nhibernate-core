@@ -393,5 +393,8 @@ namespace NHibernate.Engine
 		bool IsReadOnly(object entityOrProxy);
 		
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
+
+		/// <summary>Is in a two-phase load? </summary>
+		bool IsLoadFinished { get; }
 	}
 }
