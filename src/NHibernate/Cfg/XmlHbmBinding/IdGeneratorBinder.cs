@@ -40,12 +40,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var results = new Dictionary<string, string>();
 
 			if (schema != null)
-				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, schema);
-			else if (mappings.SchemaName != null)
-				results.Add(Id.PersistentIdGeneratorParmsNames.Schema, mappings.Dialect.QuoteForSchemaName(mappings.SchemaName));
+				results[Id.PersistentIdGeneratorParmsNames.Schema] = schema;
+			if (mappings.SchemaName != null)
+				results[Id.PersistentIdGeneratorParmsNames.Schema] = mappings.Dialect.QuoteForSchemaName(mappings.SchemaName);
 
 			foreach (HbmParam paramSchema in generatorMapping.param ?? new HbmParam[0])
-				results.Add(paramSchema.name, paramSchema.GetText());
+				results[paramSchema.name] = paramSchema.GetText();
 
 			return results;
 		}
