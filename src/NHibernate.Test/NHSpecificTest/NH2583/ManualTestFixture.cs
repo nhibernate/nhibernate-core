@@ -330,10 +330,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 
         private static void DeleteAll<T>(ISession session)
         {
-            foreach (var bo in session.Query<T>())
-            {
-                session.Delete(bo);
-            }
+					session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdate();
         }
     }
 }

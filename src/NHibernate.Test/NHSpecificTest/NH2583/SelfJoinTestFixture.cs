@@ -136,10 +136,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    foreach (var bo in session.Query<MyBO>())
-                    {
-                        session.Delete(bo);
-                    }
+									session.CreateQuery("delete from MyBO").ExecuteUpdate();
                     tx.Commit();
                 }
             }

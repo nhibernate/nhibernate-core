@@ -1,3 +1,4 @@
+using NHibernate.Cfg;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System;
@@ -201,10 +202,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 
         private static void DeleteAll<T>(ISession session)
         {
-            foreach (var bo in session.Query<T>())
-            {
-                session.Delete(bo);
-            }
+					session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdate();
         }
 
         private static IEnumerable<int> CreateObjects<T1, T2, T3, T4, T5, T6, T7>(ISession session, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters, Func<MyBO, bool> condition)
