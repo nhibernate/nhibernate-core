@@ -37,13 +37,38 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         [Test]
         public void Test_NotEqualIsTheSameAsNotequal()
         {
-            int r1 = RunTest(x => !(x.BO1.I1 == 1),
+            // Already the following yields different results for I1 == null even though
+            // it does NOT throw an exception in Linq2Objects:
+            //      ... RunTest(x => x.BO1.I1 != 1, ...);
+            // * In C# logic, we get null != 1 <=> true
+            // * In SQL logic, we get null != 1 <=> logical-null => false
+
+            // To exclude this case, we can either make it false in C# ...
+            int r1 = RunTest(x => x.BO1.I1 != null && x.BO1.I1 != 1,
                              Setters<TBO1_I>(MyBO.SetBO1_I1));
-            // ... is the same as ...
-            int r2 = RunTest(x => x.BO1.I1 != 1,
+            // ... or force it to true in SQL
+            int r2 = RunTest(x => x.BO1.I1 == null || x.BO1.I1 != 1,
                              Setters<TBO1_I>(MyBO.SetBO1_I1));
-            Assert.AreEqual(r1, r2);
+
+            // Also the following condition yields different results for I1 == null even 
+            // though it does NOT throw an exception in Linq2Objects:
+            //      ... RunTest(x => !(x.BO1.I1 == 1), ...);
+            // * In C# logic, we get !(null == 1) <=> !(false) <=> true
+            // * In SQL logic, we get !(null == 1) <=> !(logical-null) <=> logical-null => false
+
+            // Again, to exclude this case, we can either make the inner part true in C# ...
+            int r3 = RunTest(x => !(x.BO1.I1 == null || x.BO1.I1 == 1),
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
+            // ... or force it to false in SQL:
+            int r4 = RunTest(x => !(x.BO1.I1 != null && x.BO1.I1 == 1),
+                             Setters<TBO1_I>(MyBO.SetBO1_I1));
+
             Assert.Greater(r1, 0);
+            Assert.Greater(r2, 0);
+
+            // We also expect the !(==) versions to return the same result as the != versions.
+            Assert.AreEqual(r1, r3);
+            Assert.AreEqual(r2, r4);
         }
         
         [Test]
@@ -81,10 +106,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         [Test]
         public void Test_NotNotCanBeEliminated()
         {
-            int r1 = RunTest(x => !(!(x.BO1.I1 != 1 && x.BO2.J1 != 1)),
+            // The following condition does *not* return the same values if I1 and/or J1 are
+            // null in Linq2Objects and in Nhib.Linq:
+            //     x => x.BO1.I1 != 1 && x.BO2.J1 != 1,
+            // First, assume I1 == null and J1 == 0:
+            // * In C# (Linq2Objects), we get null != 1 && 0 != 1 <=> true && true <=> true
+            // * In SQL (NHib.Linq), we get null != 1 && <=> logical-null && true <=> logical-null => false
+            // For I1 == 0 and J1 == null we get the same problem, as the condition is symmetric.
+
+            // To repair this, we force "SQL" to true for nulls:
+            int r1 = RunTest(x => (x.BO1.I1 == null || x.BO1.I1 != 1) && (x.BO2.J1 == null || x.BO2.J1 != 1),
                              Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
-            int r2 = RunTest(x => x.BO1.I1 != 1 && x.BO2.J1 != 1,
+            int r2 = RunTest(x => !!((x.BO1.I1 == null || x.BO1.I1 != 1) && (x.BO2.J1 == null || x.BO2.J1 != 1)),
                              Setters<TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1));
+            Assert.Greater(r1, 0);
             Assert.AreEqual(r1, r2);
         }
     }

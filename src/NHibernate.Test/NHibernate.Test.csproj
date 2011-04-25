@@ -778,6 +778,7 @@
     <Compile Include="NHSpecificTest\NH2583\AbstractMassTestingFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2583\ManualTestFixture.cs" />
+    <Compile Include="NHSpecificTest\NH2583\MassTestingMoreOperatorsFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingNotAndDeMorganFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingOneOrTreeFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingOrderByFixture.cs" />
