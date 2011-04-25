@@ -213,17 +213,7 @@ namespace NHibernate.Linq.Visitors
                     // Need to check for boolean equality
                     if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
                     {
-                        lhs =
-                            _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(true)) },
-                                _hqlTreeBuilder.Constant(false));
-
-                        rhs =
-                            _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(true)) },
-                                _hqlTreeBuilder.Constant(false));
-
-                        return _hqlTreeBuilder.Equality(lhs, rhs);
+											return ResolveBooleanEquality(expression, lhs, rhs, (l, r) => _hqlTreeBuilder.Equality(l, r));
                     }
 
 					// Check for nulls on left or right.
@@ -246,23 +236,12 @@ namespace NHibernate.Linq.Visitors
 
                 case ExpressionType.NotEqual:
                     // Need to check for boolean in-equality
-                    if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
-                    {
-                        lhs =
-                            _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(lhs, _hqlTreeBuilder.Constant(true)) },
-                                _hqlTreeBuilder.Constant(false));
+										if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
+										{
+											return ResolveBooleanEquality(expression, lhs, rhs, (l, r) => _hqlTreeBuilder.Inequality(l, r));
+										}
 
-                        rhs =
-                            _hqlTreeBuilder.Case(
-                                new [] { _hqlTreeBuilder.When(rhs, _hqlTreeBuilder.Constant(true)) },
-                                _hqlTreeBuilder.Constant(false));
-
-                        return _hqlTreeBuilder.Inequality(lhs, rhs);
-
-                    }
-
-					// Check for nulls on left or right.
+            		// Check for nulls on left or right.
                     if (expression.Right is ConstantExpression
                         && expression.Right.Type.IsNullableOrReference()
                         && ((ConstantExpression)expression.Right).Value == null)
@@ -330,7 +309,49 @@ namespace NHibernate.Linq.Visitors
             throw new InvalidOperationException();
         }
 
-        protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
+    	private HqlTreeNode ResolveBooleanEquality(BinaryExpression expression, HqlExpression lhs, HqlExpression rhs,
+    	                                           Func<HqlExpression, HqlExpression, HqlTreeNode> applyResultExpressions)
+    	{
+    		if (!(lhs is HqlBooleanExpression) && !(rhs is HqlBooleanExpression))
+    		{
+    			throw new InvalidOperationException("Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
+    		}
+
+    		HqlExpression leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
+    		HqlExpression rightHqlExpression = GetExpressionForBooleanEquality(expression.Right, rhs);
+    		return applyResultExpressions(leftHqlExpression, rightHqlExpression);
+    	}
+
+    	private HqlExpression GetExpressionForBooleanEquality(Expression @operator, HqlExpression original)
+    	{
+    		//When the expression is a constant then use the constant
+    		var operandEx = @operator as ConstantExpression;
+				if (operandEx != null)
+    		{
+					NamedParameter namedParameter;
+					if (_parameters.ConstantToParameterMap.TryGetValue(operandEx, out namedParameter))
+					{
+						_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _parameters.RequiredHqlParameters.Count + 1 }, false));
+						return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
+					}
+
+					return _hqlTreeBuilder.Constant(operandEx.Value);
+    		}
+
+    		//When the expression is a member-access not nullable then use the HbmDot
+    		var memberAccessExpression = @operator as MemberExpression;
+    		if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof(bool).Equals(memberAccessExpression.Type))
+    		{
+					// this case make the difference when the property "Value" of a nullable type is used (ignore the null since the user is explicity checking the Value)
+    			return original;
+    		}
+
+    		//When the expression is a member-access nullable then use the "case" clause to transform it to boolean (to use always .NET meaning instead leave the DB the behavior for null)
+    		//When the expression is a complex-expression then use the "case" clause to transform it to boolean
+    		return _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(original, _hqlTreeBuilder.Constant(true))}, _hqlTreeBuilder.Constant(false));
+    	}
+
+    	protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
         {
             switch (expression.NodeType)
             {
