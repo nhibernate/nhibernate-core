@@ -613,7 +613,7 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						clazz = ReflectHelper.ClassForFullName(className);
+						clazz = ReflectHelper.ClassForFullNameOrNull(className);
 					}
 					catch (Exception)
 					{
