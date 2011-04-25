@@ -5,11 +5,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     public abstract class AbstractMassTestingFixture : BugTestCase
     {
+			public const int BatchSize = 200;
+			protected override void Configure(Configuration configuration)
+			{
+				base.Configure(configuration);
+				configuration.DataBaseIntegration(x => x.BatchSize = BatchSize+5);
+				List<string> cacheSettings = new List<string>(configuration.Properties.Keys.Where(x => x.Contains("cache")));
+				foreach (var cacheSetting in cacheSettings)
+				{
+					configuration.Properties.Remove(cacheSetting);
+				}
+				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
+
+			}
         private class ValueTuple<T1, T2, T3, T4, T5, T6, T7>
         {
             public T1 Item1;
@@ -87,62 +101,56 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
+				protected int RunTest<T1, T2, T3, T4, T5, T6, T7>(Expression<Func<MyBO, bool>> condition, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters)
+				{
+					if (condition == null)
+					{
+						throw new ArgumentNullException("condition");
+					}
+					if (setters == null)
+					{
+						throw new ArgumentNullException("setters");
+					}
+					IEnumerable<int> expectedIds;
 
-        protected int RunTest<T1, T2, T3, T4, T5, T6, T7>(Expression<Func<MyBO, bool>> condition, SetterTuple<T1, T2, T3, T4, T5, T6, T7> setters)
-        {
-            if (condition == null)
-            {
-                throw new ArgumentNullException("condition");
-            }
-            if (setters == null)
-            {
-                throw new ArgumentNullException("setters");
-            }
-            IEnumerable<int> expectedIds;
+					// Setup
+					using (var session = OpenSession())
+					{
+							expectedIds = CreateObjects(session, setters, condition.Compile());
+					}
 
-            // Setup
-            using (var session = OpenSession())
-            {
-                using (session.BeginTransaction())
-                {
-                    using (var tx = session.BeginTransaction())
-                    {
-                        expectedIds = CreateObjects(session, setters, condition.Compile());
-                        tx.Commit();
-                    }
-                }
-            }
+					try
+					{
+						// Test
+						using (var session = OpenSession())
+						{
+							session.CacheMode = CacheMode.Ignore;
+							session.DefaultReadOnly = true;
+							using (session.BeginTransaction())
+							{
+								return TestAndAssert(condition, session, expectedIds);
+							}
+						}
 
-            try
-            {
-                // Test
-                using (var session = OpenSession())
-                {
-                    using (session.BeginTransaction())
-                    {
-                        return TestAndAssert(condition, session, expectedIds);
-                    }
-                }
+					}
+					finally
+					{
+						// Teardown
+						using (var session = OpenSession())
+						{
+							using (var tx = session.BeginTransaction())
+							{
+								DeleteAll<MyBO>(session);
+								DeleteAll<MyRef1>(session);
+								DeleteAll<MyRef2>(session);
+								DeleteAll<MyRef3>(session);
+								tx.Commit();
+							}
+						}
+					}
+				}
 
-            }
-            finally
-            {
-                // Teardown
-                using (var session = OpenSession())
-                {
-                    using (var tx = session.BeginTransaction())
-                    {
-                        DeleteAll<MyBO>(session);
-                        DeleteAll<MyRef1>(session);
-                        DeleteAll<MyRef2>(session);
-                        DeleteAll<MyRef3>(session);
-                        tx.Commit();
-                    }
-                }
-            }
-        }
-
-        protected abstract int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
+    	protected abstract int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
 
         protected static SetterTuple<T1, T2, T3, T4, T5, T6, T7> Setters<T1, T2, T3, T4, T5, T6, T7>(Action<MyBO, ISession, T1> set1,
             Action<MyBO, ISession, T2> set2,
@@ -210,30 +218,49 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             var expectedIds = new List<int>();
             bool thereAreSomeWithTrue = false;
             bool thereAreSomeWithFalse = false;
-            foreach (var q in GetAllTestCases<T1, T2, T3, T4, T5, T6, T7>())
-            {
-                MyBO bo = new MyBO();
-                setters.Set(bo, session, q.Item1, q.Item2, q.Item3, q.Item4, q.Item5, q.Item6, q.Item7);
-                try
-                {
-                    if (condition(bo))
-                    {
-                        expectedIds.Add(bo.Id);
-                        thereAreSomeWithTrue = true;
-                    }
-                    else
-                    {
-                        thereAreSomeWithFalse = true;
-                    }
-                    session.Save(bo);
-                }
-                catch (NullReferenceException)
-                {
-                    // ignore - we only check consistency with Linq2Objects in non-failing cases;
-                    // emulating the outer-join logic for exceptional cases in Lin2Objects is IMO very hard.
-                }
-            }
-            if (!thereAreSomeWithTrue)
+        	var allTestCases = GetAllTestCases<T1, T2, T3, T4, T5, T6, T7>().ToList();
+					var i = 0;
+					foreach (var q in allTestCases)
+					{
+						MyBO bo = new MyBO();
+						setters.Set(bo, session, q.Item1, q.Item2, q.Item3, q.Item4, q.Item5, q.Item6, q.Item7);
+						try
+						{
+							if (condition(bo))
+							{
+								expectedIds.Add(bo.Id);
+								thereAreSomeWithTrue = true;
+							}
+							else
+							{
+								thereAreSomeWithFalse = true;
+							}
+							if ((i%BatchSize) == 0)
+							{
+								if (session.Transaction.IsActive)
+								{
+									session.Transaction.Commit();
+									session.Clear();
+								}
+								session.BeginTransaction();
+							}
+							session.Save(bo);
+							i++;
+						}
+						catch (NullReferenceException)
+						{
+							// ignore - we only check consistency with Linq2Objects in non-failing cases;
+							// emulating the outer-join logic for exceptional cases in Lin2Objects is IMO very hard.
+						}
+					}
+					if (session.Transaction.IsActive)
+					{
+						session.Transaction.Commit();
+						session.Clear();
+					}
+
+					Console.WriteLine("Congratulation!! you have saved "+ i +" entities.");
+        	if (!thereAreSomeWithTrue)
             {
                 throw new ArgumentException("Condition is false for all - not a good test", "condition");
             }
