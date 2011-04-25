@@ -1,4 +1,5 @@
-﻿using NHibernate.Impl;
+﻿using NHibernate.Driver;
+using NHibernate.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
@@ -121,7 +122,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
                     var events = logSpy.Appender.GetEvents();
                     Assert.AreEqual(1, events.Length);
                 	var wholeLog = logSpy.GetWholeLog();
-                	Assert.True(wholeLog.Contains("@p0 = 1 [Type: Int32 (0)], @p1 = 2 [Type: Int32 (0)]"));
+                    string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
+                	Assert.True(wholeLog.Contains(paramPrefix + "p0 = 1 [Type: Int32 (0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0)]"));
                 }
             }
 

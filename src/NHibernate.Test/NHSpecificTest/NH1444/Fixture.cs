@@ -1,4 +1,5 @@
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1444
@@ -22,7 +23,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 						.SetParameter("filternull", !filter.HasValue)
 						.SetParameter("filterval", filter.HasValue ? filter.Value : 0).List<xchild>();
 					var message = ls.GetWholeLog();
-					Assert.That(message, Is.StringContaining("xchild0_.ParentId=xparent1_.Id and (@p0=1 or xparent1_.A<@p1)"));
+				    string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
+					Assert.That(message, Is.StringContaining("xchild0_.ParentId=xparent1_.Id and (" + paramPrefix + "p0=" + Dialect.ToBooleanValueString(true) + " or xparent1_.A<" + paramPrefix + "p1)"));
 				}
 			}
 		}

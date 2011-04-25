@@ -41,15 +41,15 @@
   </class>
 
   <filter-def name="activeChild" use-many-to-one="false">
-    <filter-param name="active" type="int"/>
+    <filter-param name="active" type="bool"/>
   </filter-def>
 
   <filter-def name="active" use-many-to-one="false">
-    <filter-param name="active" type="int"/>
+    <filter-param name="active" type="bool"/>
   </filter-def>
 
   <filter-def name="alwaysValid">
-    <filter-param name="always" type="int"/>
+    <filter-param name="always" type="bool"/>
   </filter-def>
 </hibernate-mapping>
 

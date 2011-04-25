@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1941
@@ -18,6 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 		[Test]
 		public void CanOverrideStringEnumGetValue()
 		{
+		    string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -27,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 					s.Save(person);
 
 					string log = ls.GetWholeLog();
-					Assert.IsTrue(log.Contains("@p0 = 'M'"));
+					Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'M'"));
 				}
 
 				using (SqlLogSpy ls = new SqlLogSpy())
@@ -40,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 					Assert.That(person, Is.Null);
 
 					string log = ls.GetWholeLog();
-					Assert.IsTrue(log.Contains("@p0 = 'F'"));
+					Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'F'"));
 				}
 
 				tx.Rollback();

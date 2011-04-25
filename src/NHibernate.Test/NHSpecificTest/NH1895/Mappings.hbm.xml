@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
                    namespace="NHibernate.Test.NHSpecificTest.NH1895"
                    default-lazy="false">
-   <class name="Order" table="[Order]">
+   <class name="Order" table="`Order`">
       <id name="Id" type="guid" column="O_Id">
          <generator class="assigned" />
       </id>

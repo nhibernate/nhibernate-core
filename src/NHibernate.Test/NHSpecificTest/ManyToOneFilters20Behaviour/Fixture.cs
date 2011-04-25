@@ -29,9 +29,9 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 		private static void enableFilters(ISession s)
 		{
 			IFilter f = s.EnableFilter("activeChild");
-			f.SetParameter("active", 1);
+			f.SetParameter("active", true);
 			IFilter f2 = s.EnableFilter("alwaysValid");
-			f2.SetParameter("always", 1);
+			f2.SetParameter("always", true);
 		}
 
 		protected override void OnTearDown()
@@ -178,7 +178,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				IFilter f = s.EnableFilter("active");
-				f.SetParameter("active", 1);
+				f.SetParameter("active", true);
 				IList<Parent> resCriteria = joinGraphUsingCriteria(s);
 				IList<Parent> resHql = joinGraphUsingHql(s);
 
@@ -209,7 +209,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				IFilter f = s.EnableFilter("active");
-				f.SetParameter("active", 1);
+				f.SetParameter("active", true);
 				IList<Parent> resCriteria = s.CreateCriteria(typeof(Parent)).SetFetchMode("Children", FetchMode.Join).List<Parent>();
 				IList<Parent> resHql = s.CreateQuery("select p from Parent p join fetch p.Children").List<Parent>();
 

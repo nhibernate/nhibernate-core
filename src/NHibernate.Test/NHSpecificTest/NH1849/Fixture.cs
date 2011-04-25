@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -18,14 +19,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+	    private bool _OrignalDialectIsMsSql2005Dialect;
+
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect is MsSql2005Dialect;
+			return _OrignalDialectIsMsSql2005Dialect;
 		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
+
+            // Ugly hack.
+		    _OrignalDialectIsMsSql2005Dialect = Regex.IsMatch(configuration.GetProperty("dialect"), "MsSql200(5|8)Dialect");
 
 			configuration.SetProperty("dialect", "NHibernate.Test.NHSpecificTest.NH1849.CustomDialect, NHibernate.Test");
 		}
