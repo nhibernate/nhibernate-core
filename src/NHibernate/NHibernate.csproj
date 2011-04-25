@@ -157,6 +157,7 @@
     <Compile Include="Driver\OleDbDriver.cs" />
     <Compile Include="Driver\OracleClientDriver.cs" />
     <Compile Include="Driver\OracleDataClientDriver.cs" />
+    <Compile Include="Driver\Sql2008ClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
     <Compile Include="Driver\SQLiteDriver.cs" />

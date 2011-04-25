@@ -57,7 +57,7 @@ namespace NHibernate.AdoNet
 			factory = connectionManager.Factory;
 		}
 
-		private IDriver Driver
+		protected IDriver Driver
 		{
 			get { return factory.ConnectionProvider.Driver; }
 		}

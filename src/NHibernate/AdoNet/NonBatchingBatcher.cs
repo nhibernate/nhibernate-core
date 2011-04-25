@@ -36,6 +36,7 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			IDbCommand cmd = CurrentCommand;
+			Driver.AdjustCommand(cmd);
 			int rowCount = ExecuteNonQuery(cmd);
 			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
 		}

@@ -255,6 +255,7 @@ namespace NHibernate.Driver
 
 		public void PrepareCommand(IDbCommand command)
 		{
+			AdjustCommand(command);
 			OnBeforePrepare(command);
 
 			if (SupportsPreparingCommands && prepareSql)
@@ -269,6 +270,19 @@ namespace NHibernate.Driver
 		/// This is analagous to the RegisterResultSetOutParameter() function in Hibernate.
 		/// </summary>
 		protected virtual void OnBeforePrepare(IDbCommand command)
+		{
+		}
+
+		/// <summary>
+		/// Override to make any adjustments to each IDbCommand object before it added to the batcher.
+		/// </summary>
+		/// <param name="command">The command.</param>
+		/// <remarks>
+		/// This method is similar to the <see cref="OnBeforePrepare"/> but, instead be called just before execute the command (that can be a batch)
+		/// is executed before add each single command to the batcher and before <see cref="OnBeforePrepare"/> .
+		/// If you have to adjust parameters values/type (when the command is full filled) this is a good place where do it.
+		/// </remarks>
+		public virtual void AdjustCommand(IDbCommand command)
 		{
 		}
 

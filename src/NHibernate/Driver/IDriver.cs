@@ -73,7 +73,7 @@ namespace NHibernate.Driver
 		/// Prepare the <paramref name="command" /> by calling <see cref="IDbCommand.Prepare()" />.
 		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
 		/// </summary>
-		/// <param name="command"></param>
+		/// <param name="command">The command.</param>
 		void PrepareCommand(IDbCommand command);
 
 		/// <summary>
@@ -99,5 +99,15 @@ namespace NHibernate.Driver
 
 		IResultSetsCommand GetResultSetsCommand(ISessionImplementor session);
 		bool SupportsMultipleQueries { get; }
+
+		/// <summary>
+		/// Make any adjustments to each IDbCommand object before it is added to the batcher.
+		/// </summary>
+		/// <param name="command">The command.</param>
+		/// <remarks>
+		/// This method should be executed before add each single command to the batcher.
+		/// If you have to adjust parameters values/type (when the command is full filled) this is a good place where do it.
+		/// </remarks>
+		void AdjustCommand(IDbCommand command);
 	}
 }

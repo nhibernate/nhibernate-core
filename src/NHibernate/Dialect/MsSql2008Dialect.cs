@@ -1,5 +1,7 @@
 ﻿using System.Data;
+using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Driver;
 
 namespace NHibernate.Dialect
 {
@@ -29,6 +31,12 @@ namespace NHibernate.Dialect
 			RegisterKeyword("datetime2");
 			RegisterKeyword("time");
 			RegisterKeyword("hierarchyid");
+		}
+
+		protected override void RegisterDefaultProperties()
+		{
+			base.RegisterDefaultProperties();
+			DefaultProperties[Environment.ConnectionDriver] = typeof(Sql2008ClientDriver).AssemblyQualifiedName;
 		}
 	}
 }

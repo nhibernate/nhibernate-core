@@ -1,5 +1,7 @@
 ﻿using System;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -33,6 +35,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
         {
             return dialect is MsSql2008Dialect;
         }
+
+				protected override void Configure(Configuration configuration)
+				{
+					// to be sure we are using the new drive
+					base.Configure(configuration);
+					configuration.DataBaseIntegration(x=> x.Driver<Sql2008ClientDriver>());
+				}
 
         [Test, Ignore("workaround to sqlserver DP, not fixed yet")]
         public void ShouldBeAbleToQueryEntity()

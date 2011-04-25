@@ -1,5 +1,7 @@
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
@@ -49,7 +51,7 @@ namespace NHibernate.AdoNet
 		{
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			IDbCommand batchUpdate = CurrentCommand;
-
+			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
 			if (sqlStatementLogger.IsDebugEnabled || log.IsDebugEnabled)
