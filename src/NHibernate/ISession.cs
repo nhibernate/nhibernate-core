@@ -714,15 +714,33 @@ namespace NHibernate
 		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
-		/// <returns>An ICriteria&lt;T&gt; object</returns>
+		/// <returns>An IQueryOver&lt;T&gt; object</returns>
 		IQueryOver<T,T> QueryOver<T>() where T : class;
 
 		/// <summary>
 		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
-		/// <returns>An ICriteria&lt;T&gt; object</returns>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns>An IQueryOver&lt;T&gt; object</returns>
 		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
+
+		/// <summary>
+		/// Creates a new <c>IQueryOver{T};</c> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <param name="entityName">The name of the entity to Query</param>
+		/// <returns>An IQueryOver{T} object</returns>
+		IQueryOver<T, T> QueryOver<T>(string entityName) where T : class;
+
+		/// <summary>
+		/// Creates a new <c>IQueryOver{T}</c> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <param name="entityName">The name of the entity to Query</param>
+		/// <param name="alias">The alias of the entity</param>
+		/// <returns>An IQueryOver{T} object</returns>
+		IQueryOver<T, T> QueryOver<T>(string entityName, Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query string

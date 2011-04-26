@@ -31,6 +31,16 @@ namespace NHibernate.Criterion
 			return new QueryOver<T,T>(alias);
 		}
 
+		public static QueryOver<T, T> Of<T>(string entityName)
+		{
+			return new QueryOver<T, T>(entityName);
+		}
+
+		public static QueryOver<T, T> Of<T>(string entityName, Expression<Func<T>> alias)
+		{
+			return new QueryOver<T, T>(entityName, alias);
+		}
+
 		public ICriteria UnderlyingCriteria
 		{
 			get { return criteria; }
@@ -275,10 +285,23 @@ namespace NHibernate.Criterion
 			criteria = impl;
 		}
 
+		protected internal QueryOver(string entityName)
+		{
+			impl = new CriteriaImpl(entityName, null);
+			criteria = impl;
+		}
+
 		protected internal QueryOver(Expression<Func<TSubType>> alias)
 		{
 			string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
 			impl = new CriteriaImpl(typeof(TRoot), aliasPath, null);
+			criteria = impl;
+		}
+
+		protected internal QueryOver(string entityName, Expression<Func<TSubType>> alias)
+		{
+			string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
+			impl = new CriteriaImpl(entityName, aliasPath, null);
 			criteria = impl;
 		}
 
