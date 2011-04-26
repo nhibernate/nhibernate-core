@@ -295,6 +295,7 @@
     <Compile Include="Mapping\ByCode\Conformist\JoinedSubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\Conformist\SubclassMapping.cs" />
     <Compile Include="Mapping\ByCode\Conformist\UnionSubclassMapping.cs" />
+    <Compile Include="Mapping\ByCode\ICompositeIdMapper.cs" />
     <Compile Include="Mapping\ByCode\IDynamicComponentAttributesMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\DynamicComponentCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
