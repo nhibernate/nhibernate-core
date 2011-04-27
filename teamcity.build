@@ -35,7 +35,7 @@
 
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.dialect"												value="NHibernate.Test.DialectTest.FirebirdClientDialect, NHibernate.Test" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x86">
@@ -51,7 +51,7 @@
 		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
 		<property name="nunit.found" value="true" />
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
-		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
+		<property name="nhibernate.dialect"												value="NHibernate.Test.DialectTest.FirebirdClientDialect, NHibernate.Test" />
 		<property name="nhibernate.connection.connection_string"	value="Database=NHibernate.fdb;ServerType=1;UserID=SYSDBA" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/firebird/x64">
