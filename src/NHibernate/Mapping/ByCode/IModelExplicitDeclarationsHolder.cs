@@ -32,6 +32,7 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<MemberInfo> Any { get; }
 
 		IEnumerable<MemberInfo> Poids { get; }
+		IEnumerable<MemberInfo> ComposedIds { get; }
 		IEnumerable<MemberInfo> VersionProperties { get; }
 		IEnumerable<MemberInfo> NaturalIds { get; }
 
@@ -63,6 +64,7 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsAny(MemberInfo member);
 
 		void AddAsPoid(MemberInfo member);
+		void AddAsPartOfComposedId(MemberInfo member);
 		void AddAsVersionProperty(MemberInfo member);
 		void AddAsNaturalId(MemberInfo member);
 

@@ -24,6 +24,7 @@ namespace NHibernate.Mapping.ByCode
 			System.Array.ForEach(source.Any.ToArray(), destination.AddAsAny);
 
 			System.Array.ForEach(source.Poids.ToArray(), destination.AddAsPoid);
+			System.Array.ForEach(source.ComposedIds.ToArray(), destination.AddAsPartOfComposedId);
 			System.Array.ForEach(source.VersionProperties.ToArray(), destination.AddAsVersionProperty);
 			System.Array.ForEach(source.NaturalIds.ToArray(), destination.AddAsNaturalId);
 

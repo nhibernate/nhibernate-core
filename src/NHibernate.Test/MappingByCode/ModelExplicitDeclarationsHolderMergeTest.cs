@@ -271,6 +271,17 @@ namespace NHibernate.Test.MappingByCode
 			destination.GetDynamicComponentTemplate(property).Should().Be(typeof(MyClass));
 		}
 
+		[Test]
+		public void MergeComposedId()
+		{
+			var destination = new ExplicitDeclarationsHolder();
+			var source = new ExplicitDeclarationsHolder();
+			source.AddAsPartOfComposedId(property);
+
+			destination.Merge(source);
+			destination.ComposedIds.Should().Have.Count.EqualTo(1);
+		}
+
 		#region Nested type: MyClass
 
 		private class MyClass

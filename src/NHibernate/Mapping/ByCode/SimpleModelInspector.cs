@@ -472,6 +472,16 @@ namespace NHibernate.Mapping.ByCode
 			declaredModel.AddAsDynamicComponent(member, componentTemplate);
 		}
 
+		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.ComposedIds
+		{
+			get { return declaredModel.ComposedIds; }
+		}
+
+		void IModelExplicitDeclarationsHolder.AddAsPartOfComposedId(MemberInfo member)
+		{
+			declaredModel.AddAsPartOfComposedId(member);
+		}
+
 		#endregion
 
 		#region Implementation of IModelInspector
@@ -552,6 +562,11 @@ namespace NHibernate.Mapping.ByCode
 		{
 			bool declaredResult = declaredModel.IsPersistentId(member);
 			return isPersistentId(member, declaredResult);
+		}
+
+		bool IModelInspector.IsMemberOfComposedId(MemberInfo member)
+		{
+			return declaredModel.IsPersistentId(member);
 		}
 
 		bool IModelInspector.IsVersion(MemberInfo member)

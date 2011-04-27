@@ -19,6 +19,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HashSet<MemberInfo> oneToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> composedIds = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> properties = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> dynamicComponents = new HashSet<MemberInfo>();
 		private readonly Dictionary<MemberInfo, System.Type> dynamicComponentTemplates = new Dictionary<MemberInfo, System.Type>();
@@ -86,6 +87,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public IEnumerable<MemberInfo> Poids
 		{
 			get { return poids; }
+		}
+
+		public IEnumerable<MemberInfo> ComposedIds
+		{
+			get { return composedIds; }
 		}
 
 		public IEnumerable<MemberInfo> VersionProperties
@@ -218,6 +224,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddAsPoid(MemberInfo member)
 		{
 			poids.Add(member);
+		}
+
+		public void AddAsPartOfComposedId(MemberInfo member)
+		{
+			composedIds.Add(member);
 		}
 
 		public void AddAsVersionProperty(MemberInfo member)

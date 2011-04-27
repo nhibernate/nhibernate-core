@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +19,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly IEnumerable<MemberInfo> oneToManyRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> oneToOneRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> poids = Enumerable.Empty<MemberInfo>();
+		private readonly IEnumerable<MemberInfo> composedIds = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> properties = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> dynamicComponents = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> persistentMembers = new HashSet<MemberInfo>();
@@ -92,6 +92,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Poids
 		{
 			get { return poids; }
+		}
+
+		public IEnumerable<MemberInfo> ComposedIds
+		{
+			get { return composedIds; }
 		}
 
 		public IEnumerable<MemberInfo> VersionProperties
@@ -192,6 +197,7 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsAny(MemberInfo member) {}
 
 		public void AddAsPoid(MemberInfo member) {}
+		public void AddAsPartOfComposedId(MemberInfo member) {}
 
 		public void AddAsVersionProperty(MemberInfo member) {}
 

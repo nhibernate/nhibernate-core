@@ -21,6 +21,7 @@ namespace NHibernate.Mapping.ByCode
 		bool IsAny(MemberInfo member);
 
 		bool IsPersistentId(MemberInfo member);
+		bool IsMemberOfComposedId(MemberInfo member);
 		bool IsVersion(MemberInfo member);
 		bool IsMemberOfNaturalId(MemberInfo member);
 

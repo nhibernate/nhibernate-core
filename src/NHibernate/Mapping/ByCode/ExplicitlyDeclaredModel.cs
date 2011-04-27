@@ -17,6 +17,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> composedIds = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> poids = new HashSet<MemberInfo>();
@@ -90,6 +91,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> Poids
 		{
 			get { return poids; }
+		}
+
+		public IEnumerable<MemberInfo> ComposedIds
+		{
+			get { return composedIds; }
 		}
 
 		public IEnumerable<MemberInfo> VersionProperties
@@ -330,6 +336,12 @@ namespace NHibernate.Mapping.ByCode
 			poids.Add(member);
 		}
 
+		public void AddAsPartOfComposedId(MemberInfo member)
+		{
+			persistentMembers.Add(member);
+			composedIds.Add(member);
+		}
+
 		public void AddAsVersionProperty(MemberInfo member)
 		{
 			persistentMembers.Add(member);
@@ -500,6 +512,11 @@ namespace NHibernate.Mapping.ByCode
 		public virtual bool IsPersistentId(MemberInfo member)
 		{
 			return poids.Contains(member);
+		}
+
+		public bool IsMemberOfComposedId(MemberInfo member)
+		{
+			return composedIds.Contains(member);
 		}
 
 		public virtual bool IsVersion(MemberInfo member)
