@@ -353,6 +353,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			MergeDictionary(collectionRelationOneToManyCustomizers, source.collectionRelationOneToManyCustomizers);
 			MergeDictionary(mapKeyManyToManyCustomizers, source.mapKeyManyToManyCustomizers);
 			MergeDictionary(mapKeyElementCustomizers, source.mapKeyElementCustomizers);
+			MergeDictionary(dynamicComponentCustomizers, source.dynamicComponentCustomizers);
 		}
 
 		#endregion

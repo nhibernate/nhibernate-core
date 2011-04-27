@@ -328,5 +328,20 @@ namespace NHibernate.Test.MappingByCode
 
 			called.Should().Be.True();
 		}
+
+		[Test]
+		public void MergeShouldMergeDynamicComponentAttributesMapper()
+		{
+			var emptyHolder = new CustomizersHolder();
+			var holder = new CustomizersHolder();
+			var called = false;
+
+			holder.AddCustomizer(propertyPath, (IDynamicComponentAttributesMapper x) => called = true);
+			emptyHolder.Merge(holder);
+			emptyHolder.InvokeCustomizers(propertyPath, (IDynamicComponentAttributesMapper)null);
+
+			called.Should().Be.True();
+		}
+
 	}
 }
