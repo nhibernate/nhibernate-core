@@ -196,9 +196,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (naturalIdMapper == null)
 			{
-				var hbmNaturalId = new HbmNaturalId();
-				classMapping.naturalid = hbmNaturalId;
-				naturalIdMapper = new NaturalIdMapper(Container, hbmNaturalId, MapDoc);
+				naturalIdMapper = new NaturalIdMapper(Container, classMapping, MapDoc);
 			}
 			naturalIdMapping(naturalIdMapper);
 		}

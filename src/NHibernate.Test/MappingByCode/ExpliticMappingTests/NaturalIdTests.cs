@@ -27,7 +27,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 
 		[Test]
-		public void WhenDefineRootEntityThenRegister()
+		public void WhenDefineNaturalIdThenRegister()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
 			var mapper = new ModelMapper(inspector);
@@ -50,6 +50,20 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			inspector.IsMemberOfNaturalId(For<MyClass>.Property(x => x.Related)).Should().Be.True();
 			inspector.IsMemberOfNaturalId(For<MyClass>.Property(x => x.MyComponent)).Should().Be.True();
 			inspector.IsMemberOfNaturalId(For<MyClass>.Property(x => x.Any)).Should().Be.True();
+		}
+
+		[Test]
+		public void WhenDefineEmptyNaturalIdThenNoMapIt()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(map =>
+			{
+				map.Id(x => x.Id, idmap => { });
+				map.NaturalId(nidm =>{});
+			});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			hbmClass.naturalid.Should().Be.Null();
 		}
 	}
 }

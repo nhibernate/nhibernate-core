@@ -109,10 +109,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			HbmClass hbmClass = hbmMapping.RootClasses[0];
 			HbmCompositeId hbmCompositId = hbmClass.CompositeId;
 			hbmCompositId.Items.Should().Have.Count.EqualTo(2);
-			if(hbmClass.naturalid != null)
-			{
-				hbmClass.naturalid.Items.Should().Be.Null();
-			}
+			hbmClass.naturalid.Should().Be.Null();
 			hbmClass.Properties.Should().Be.Empty();
 		}
 	}
