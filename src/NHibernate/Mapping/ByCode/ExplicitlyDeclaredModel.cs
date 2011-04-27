@@ -177,7 +177,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (IsComponent(type))
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			rootEntities.Add(type);
 		}
@@ -187,7 +187,7 @@ namespace NHibernate.Mapping.ByCode
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			components.Add(type);
 		}
@@ -201,18 +201,18 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (IsComponent(type))
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
 				if (rootEntity.Equals(type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class strategy", type.FullName));
 				}
 				if (IsMappedFor(tablePerClassHierarchyEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerClassEntities.Add(rootEntity);
 			}
@@ -235,18 +235,18 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (IsComponent(type))
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
 				if (rootEntity.Equals(type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-class-hierarchy strategy", type.FullName));
 				}
 				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerConcreteClassEntities, type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerClassHierarchyEntities.Add(rootEntity);
 			}
@@ -269,18 +269,18 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (IsComponent(type))
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as entity and as component", type.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as entity and as component", type.FullName));
 			}
 			var rootEntity = GetRootEntityOrNull(type);
 			if (rootEntity != null)
 			{
 				if (rootEntity.Equals(type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-concrete-class strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered as root-entity and as subclass for table-per-concrete-class strategy", type.FullName));
 				}
 				if (IsMappedFor(tablePerClassEntities, type) || IsMappedFor(tablePerClassHierarchyEntities, type))
 				{
-					throw new MappingException(string.Format("Abiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
+					throw new MappingException(string.Format("Ambiguous mapping of {0}. It was registered with more than one class-hierarchy strategy", type.FullName));
 				}
 				tablePerConcreteClassEntities.Add(rootEntity);
 			}

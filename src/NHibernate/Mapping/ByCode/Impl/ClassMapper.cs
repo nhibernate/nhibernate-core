@@ -71,7 +71,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if(id == null)
 			{
 				var propertyDescription = idProperty != null ? " '" + idProperty.Name + "'" : ", with generator, ";
-				throw new MappingException(string.Format("Abiguous mapping of {0} id. A ComponentAsId or a ComposedId was used and you are trying to map the property{1} as id.",
+				throw new MappingException(string.Format("Ambiguous mapping of {0} id. A ComponentAsId or a ComposedId was used and you are trying to map the property{1} as id.",
 					Container.FullName, propertyDescription));
 			}
 			mapper(new IdMapper(idProperty, id));
@@ -93,12 +93,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			if (composedIdWasUsed)
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0} id. A composed id was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
+				throw new MappingException(string.Format("Ambiguous mapping of {0} id. A composed id was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
 					, Container.FullName, idProperty.GetPropertyOrFieldType().FullName, idProperty.Name));
 			}
 			if (simpleIdPropertyWasUsed)
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
+				throw new MappingException(string.Format("Ambiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
 					, Container.FullName, idProperty.GetPropertyOrFieldType().FullName, idProperty.Name));
 			}
 			var id = classMapping.Item as HbmCompositeId;
@@ -115,11 +115,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if(componentAsIdWasUsed)
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0} id. A Component as id was used and you are trying to map an id composed by various properties of {0}.", Container.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0} id. A Component as id was used and you are trying to map an id composed by various properties of {0}.", Container.FullName));
 			}
 			if (simpleIdPropertyWasUsed)
 			{
-				throw new MappingException(string.Format("Abiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map an id composed by various properties of {0}.", Container.FullName));
+				throw new MappingException(string.Format("Ambiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map an id composed by various properties of {0}.", Container.FullName));
 			}
 
 			var id = classMapping.Item as HbmCompositeId;
