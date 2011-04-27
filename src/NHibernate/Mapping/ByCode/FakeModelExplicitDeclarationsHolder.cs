@@ -182,8 +182,6 @@ namespace NHibernate.Mapping.ByCode
 
 		public void AddAsTablePerClassHierarchyEntity(System.Type type) {}
 
-		public void AddAsTablePerClassHierarchyJoinEntity(System.Type type) {}
-
 		public void AddAsTablePerConcreteClassEntity(System.Type type) {}
 
 		public void AddAsOneToOneRelation(MemberInfo member) {}
