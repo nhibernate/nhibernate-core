@@ -24,7 +24,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var mapdoc = new HbmMapping();
 			var compositeId = new HbmCompositeId();
-			var mapper = new ComposedIdMapper(compositeId, mapdoc);
+			var mapper = new ComposedIdMapper(typeof(Person), compositeId, mapdoc);
 
 			mapper.Property(For<Person>.Property(ts => ts.Email), x => { });
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var mapdoc = new HbmMapping();
 			var compositeId = new HbmCompositeId();
-			var mapper = new ComposedIdMapper(compositeId, mapdoc);
+			var mapper = new ComposedIdMapper(typeof(Person), compositeId, mapdoc);
 			var called = false;
 
 			mapper.Property(For<Person>.Property(ts => ts.Email), x => called = true);
@@ -51,7 +51,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var mapdoc = new HbmMapping();
 			var compositeId = new HbmCompositeId();
-			var mapper = new ComposedIdMapper(compositeId, mapdoc);
+			var mapper = new ComposedIdMapper(typeof(Person), compositeId, mapdoc);
 
 			mapper.ManyToOne(For<Person>.Property(ts => ts.User), x => { });
 
@@ -65,7 +65,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var mapdoc = new HbmMapping();
 			var compositeId = new HbmCompositeId();
-			var mapper = new ComposedIdMapper(compositeId, mapdoc);
+			var mapper = new ComposedIdMapper(typeof(Person), compositeId, mapdoc);
 			var called = false;
 
 			mapper.ManyToOne(For<Person>.Property(ts => ts.User), x => called = true);

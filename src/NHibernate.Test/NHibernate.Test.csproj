@@ -549,6 +549,8 @@
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\MappersTests\AbstractPropertyContainerMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\ClassMapperTests\ClassMapperWithJoinPropertiesTest.cs" />
+    <Compile Include="MappingByCode\MappersTests\ClassMapperTests\ComponetAsIdTests.cs" />
+    <Compile Include="MappingByCode\MappersTests\ClassMapperTests\ComposedIdTests.cs" />
     <Compile Include="MappingByCode\MappersTests\ClassMapperTests\SetPersisterTests.cs" />
     <Compile Include="MappingByCode\MappersTests\ClassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MappersTests\CollectionIdMapperTests.cs" />

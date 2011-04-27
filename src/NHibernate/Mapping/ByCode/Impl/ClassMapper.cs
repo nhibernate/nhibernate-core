@@ -68,6 +68,32 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapper(new IdMapper(idProperty, id));
 		}
 
+		public void ComponentAsId(MemberInfo idProperty, Action<IComponentAsIdMapper> mapper)
+		{
+			if (!IsMemberSupportedByMappedContainer(idProperty))
+			{
+				throw new ArgumentOutOfRangeException("idProperty", "Can't use, as component id property, a property of another graph");
+			}
+			var id = classMapping.Item as HbmCompositeId;
+			if(id == null)
+			{
+				id = new HbmCompositeId();
+				classMapping.Item = id;
+			}
+			mapper(new ComponentAsIdMapper(idProperty.GetPropertyOrFieldType(), idProperty, id, mapDoc));
+		}
+
+		public void ComposedId(Action<IComposedIdMapper> idPropertiesMapping)
+		{
+			var id = classMapping.Item as HbmCompositeId;
+			if (id == null)
+			{
+				id = new HbmCompositeId();
+				classMapping.Item = id;
+			}
+			idPropertiesMapping(new ComposedIdMapper(Container, id, mapDoc));
+		}
+
 		public void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping)
 		{
 			if (discriminatorMapper == null)

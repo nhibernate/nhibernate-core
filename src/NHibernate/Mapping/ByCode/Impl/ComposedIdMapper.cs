@@ -7,11 +7,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class ComposedIdMapper : IComposedIdMapper
 	{
+		private readonly System.Type container;
 		private readonly HbmCompositeId id;
 		private readonly HbmMapping mapDoc;
 
-		public ComposedIdMapper(HbmCompositeId id, HbmMapping mapDoc)
+		public ComposedIdMapper(System.Type container, HbmCompositeId id, HbmMapping mapDoc)
 		{
+			this.container = container;
 			this.id = id;
 			this.mapDoc = mapDoc;
 		}

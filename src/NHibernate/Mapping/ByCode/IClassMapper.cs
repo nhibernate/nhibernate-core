@@ -8,6 +8,10 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Id(Action<IIdMapper> idMapper);
 		void Id(MemberInfo idProperty, Action<IIdMapper> idMapper);
+
+		void ComponentAsId(MemberInfo idProperty, Action<IComponentAsIdMapper> idMapper);
+		void ComposedId(Action<IComposedIdMapper> idPropertiesMapping);
+
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
@@ -37,6 +41,12 @@ namespace NHibernate.Mapping.ByCode
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty);
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
 		void Id(FieldInfo idProperty, Action<IIdMapper> idMapper);
+
+		//void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class;
+		//void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
+
+		//void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
+
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
