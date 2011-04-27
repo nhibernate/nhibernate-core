@@ -731,7 +731,42 @@ namespace NHibernate.Mapping.ByCode
 			InvokeBeforeMapClass(type, classMapper);
 			InvokeClassCustomizers(type, classMapper);
 
-			MemberInfo[] naturalIdPropeties = persistentProperties.Where(mi => modelInspector.IsMemberOfNaturalId(mi)).ToArray();
+			if (poidPropertyOrField != null && modelInspector.IsComponent(poidPropertyOrField.GetPropertyOrFieldType()))
+			{
+				classMapper.ComponentAsId(poidPropertyOrField, compoAsId =>
+				                                               {
+				                                               	var memberPath = new PropertyPath(null, poidPropertyOrField);
+				                                               	var componentMapper = new ComponentAsIdLikeComponetAttributesMapper(compoAsId);
+				                                               	InvokeBeforeMapComponent(memberPath, componentMapper);
+
+				                                               	System.Type componentType = poidPropertyOrField.GetPropertyOrFieldType();
+				                                               	IEnumerable<MemberInfo> componentPersistentProperties =
+				                                               		membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
+
+				                                               	customizerHolder.InvokeCustomizers(componentType, componentMapper);
+				                                               	ForEachMemberPath(poidPropertyOrField, memberPath, pp => customizerHolder.InvokeCustomizers(pp, compoAsId));
+				                                               	InvokeAfterMapComponent(memberPath, componentMapper);
+
+				                                               	foreach (MemberInfo property in componentPersistentProperties)
+				                                               	{
+				                                               		MapComposedIdProperties(compoAsId, new PropertyPath(memberPath, property));
+				                                               	}
+				                                               });
+			}
+
+			MemberInfo[] composedIdPropeties = persistentProperties.Where(mi => modelInspector.IsMemberOfComposedId(mi)).ToArray();
+			if (composedIdPropeties.Length > 0)
+			{
+				classMapper.ComposedId(composedIdMapper =>
+				                       {
+				                       	foreach (MemberInfo property in composedIdPropeties)
+				                       	{
+				                       		MapComposedIdProperties(composedIdMapper, new PropertyPath(null, property));
+				                       	}
+				                       });
+			}
+
+			MemberInfo[] naturalIdPropeties = persistentProperties.Except(composedIdPropeties).Where(mi => modelInspector.IsMemberOfNaturalId(mi)).ToArray();
 			if (naturalIdPropeties.Length > 0)
 			{
 				classMapper.NaturalId(naturalIdMapper =>
@@ -743,7 +778,7 @@ namespace NHibernate.Mapping.ByCode
 				                      });
 			}
 			var splitGroups = modelInspector.GetPropertiesSplits(type);
-			var propertiesToMap = persistentProperties.Where(mi => !modelInspector.IsVersion(mi) && !modelInspector.IsVersion(mi.GetMemberFromDeclaringType())).Except(naturalIdPropeties).ToList();
+			var propertiesToMap = persistentProperties.Except(naturalIdPropeties).Except(composedIdPropeties).Where(mi => !modelInspector.IsVersion(mi) && !modelInspector.IsVersion(mi.GetMemberFromDeclaringType())).ToList();
 			var propertiesInSplits = new HashSet<MemberInfo>();
 			foreach (var splitGroup in splitGroups)
 			{
@@ -835,6 +870,34 @@ namespace NHibernate.Mapping.ByCode
 			foreach (System.Type entityType in typeAncestors.Where(t => !modelInspector.IsEntity(t)))
 			{
 				customizerHolder.InvokeCustomizers(entityType, classMapper);
+			}
+		}
+
+		private void MapComposedIdProperties(IMinimalPlainPropertyContainerMapper composedIdMapper, PropertyPath propertyPath)
+		{
+			MemberInfo member = propertyPath.LocalMember;
+			System.Type propertyType = member.GetPropertyOrFieldType();
+			var memberPath = propertyPath;
+			if (modelInspector.IsProperty(member))
+			{
+				MapProperty(member, memberPath, composedIdMapper);
+			}
+			else if (modelInspector.IsManyToOne(member))
+			{
+				MapManyToOne(member, memberPath, composedIdMapper);
+			}
+			else if (modelInspector.IsAny(member) || modelInspector.IsComponent(propertyType) ||
+							 modelInspector.IsOneToOne(member) || modelInspector.IsSet(member)
+							 || modelInspector.IsDictionary(member) || modelInspector.IsArray(member)
+							 || modelInspector.IsList(member) || modelInspector.IsBag(member))
+			{
+				throw new ArgumentOutOfRangeException("propertyPath",
+				                                      string.Format("The property {0} of {1} can't be part of composite-id.",
+																														member.Name, member.DeclaringType));
+			}
+			else
+			{
+				MapProperty(member, memberPath, composedIdMapper);
 			}
 		}
 
@@ -973,7 +1036,7 @@ namespace NHibernate.Mapping.ByCode
 			                                              });
 		}
 
-		private void MapProperty(MemberInfo member, PropertyPath propertyPath, IBasePlainPropertyContainerMapper propertiesContainer)
+		private void MapProperty(MemberInfo member, PropertyPath propertyPath, IMinimalPlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.Property(member, propertyMapper =>
 			                                     {
@@ -1165,7 +1228,7 @@ namespace NHibernate.Mapping.ByCode
 			                                     });
 		}
 
-		private void MapManyToOne(MemberInfo member, PropertyPath propertyPath, IBasePlainPropertyContainerMapper propertiesContainer)
+		private void MapManyToOne(MemberInfo member, PropertyPath propertyPath, IMinimalPlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.ManyToOne(member, manyToOneMapper =>
 			                                      {

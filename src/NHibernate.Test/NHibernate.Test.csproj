@@ -519,6 +519,8 @@
     <Compile Include="MappingByCode\ConventionModelMapperTests\VersionOnBaseClassIntegrationTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithComponentsTest.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\ComponentAsIdTests.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\ComposedIdTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ClassMappingRegistrationTest.cs" />
     <Compile Include="MappingByCode\CustomizerHolderMergeTest.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SplitPropertiesRegistrationTests.cs" />

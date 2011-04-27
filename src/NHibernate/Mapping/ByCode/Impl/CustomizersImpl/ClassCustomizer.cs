@@ -52,6 +52,23 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(idProperty, idMapper));
 		}
 
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class
+		{
+			ComponentAsId(idProperty, x => { });
+		}
+
+		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		{
+			var member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
+			var propertyPath = new PropertyPath(null, member);
+			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+		}
+
+		public void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping)
+		{
+			idPropertiesMapping(new ComposedIdCustomizer<TEntity>(ExplicitDeclarationsHolder, CustomizersHolder));
+		}
+
 		public void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassMapper m) => m.Discriminator(discriminatorMapping));
