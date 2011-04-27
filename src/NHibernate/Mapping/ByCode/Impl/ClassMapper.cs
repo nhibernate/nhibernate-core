@@ -11,6 +11,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 	{
 		private readonly HbmClass classMapping;
 		private readonly IIdMapper idMapper;
+		private bool simpleIdPropertyWasUsed;
+		private bool composedIdWasUsed;
+		private bool componentAsIdWasUsed;
 		private Dictionary<string, IJoinMapper> joinMappers;
 		private ICacheMapper cacheMapper;
 		private IDiscriminatorMapper discriminatorMapper;
@@ -64,15 +67,39 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Id(MemberInfo idProperty, Action<IIdMapper> mapper)
 		{
-			var id = (HbmId) classMapping.Item;
+			var id = classMapping.Item as HbmId;
+			if(id == null)
+			{
+				var propertyDescription = idProperty != null ? " '" + idProperty.Name + "'" : ", with generator, ";
+				throw new MappingException(string.Format("Abiguous mapping of {0} id. A ComponentAsId or a ComposedId was used and you are trying to map the property{1} as id.",
+					Container.FullName, propertyDescription));
+			}
 			mapper(new IdMapper(idProperty, id));
+			if(idProperty != null)
+			{
+				simpleIdPropertyWasUsed = true;
+			}
 		}
 
 		public void ComponentAsId(MemberInfo idProperty, Action<IComponentAsIdMapper> mapper)
 		{
+			if (idProperty == null)
+			{
+				return;
+			}
 			if (!IsMemberSupportedByMappedContainer(idProperty))
 			{
 				throw new ArgumentOutOfRangeException("idProperty", "Can't use, as component id property, a property of another graph");
+			}
+			if (composedIdWasUsed)
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0} id. A composed id was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
+					, Container.FullName, idProperty.GetPropertyOrFieldType().FullName, idProperty.Name));
+			}
+			if (simpleIdPropertyWasUsed)
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map the component {1}, of property '{2}', as id for {0}."
+					, Container.FullName, idProperty.GetPropertyOrFieldType().FullName, idProperty.Name));
 			}
 			var id = classMapping.Item as HbmCompositeId;
 			if(id == null)
@@ -81,10 +108,20 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.Item = id;
 			}
 			mapper(new ComponentAsIdMapper(idProperty.GetPropertyOrFieldType(), idProperty, id, mapDoc));
+			componentAsIdWasUsed = true;
 		}
 
 		public void ComposedId(Action<IComposedIdMapper> idPropertiesMapping)
 		{
+			if(componentAsIdWasUsed)
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0} id. A Component as id was used and you are trying to map an id composed by various properties of {0}.", Container.FullName));
+			}
+			if (simpleIdPropertyWasUsed)
+			{
+				throw new MappingException(string.Format("Abiguous mapping of {0} id. An id property, with generator, was defined and you are trying to map an id composed by various properties of {0}.", Container.FullName));
+			}
+
 			var id = classMapping.Item as HbmCompositeId;
 			if (id == null)
 			{
@@ -92,6 +129,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.Item = id;
 			}
 			idPropertiesMapping(new ComposedIdMapper(Container, id, mapDoc));
+			composedIdWasUsed = true;
 		}
 
 		public void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping)
