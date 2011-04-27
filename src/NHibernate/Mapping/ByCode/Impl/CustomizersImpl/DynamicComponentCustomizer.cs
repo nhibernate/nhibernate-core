@@ -22,27 +22,32 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Access(Accessor accessor)
 		{
-			throw new NotImplementedException();
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.Access(accessor));
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			throw new NotImplementedException();
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.Access(accessorType));
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
 		{
-			throw new NotImplementedException();
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.OptimisticLock(takeInConsiderationForOptimisticLock));
 		}
 
 		public void Update(bool consideredInUpdateQuery)
 		{
-			throw new NotImplementedException();
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.Update(consideredInUpdateQuery));
 		}
 
 		public void Insert(bool consideredInInsertQuery)
 		{
-			throw new NotImplementedException();
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.Insert(consideredInInsertQuery));
+		}
+
+		public void Unique(bool unique)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (IDynamicComponentAttributesMapper m) => m.Unique(unique));
 		}
 
 		#endregion

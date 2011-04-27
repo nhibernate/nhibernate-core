@@ -4,6 +4,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
+		void Unique(bool unique);
 	}
 
 	public interface IDynamicComponentMapper : IDynamicComponentAttributesMapper, IPropertyContainerMapper { }
@@ -12,6 +13,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
+		void Unique(bool unique);
 	}
 
 	public interface IDynamicComponentMapper<TComponent> : IDynamicComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent> where TComponent : class { }

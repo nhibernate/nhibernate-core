@@ -13,7 +13,12 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		private class Person
 		{
 			public int Id { get; set; }
-			public IDictionary Info { get; set; }
+			private IDictionary info;
+			public IDictionary Info
+			{
+				get { return info; }
+				set { info = value; }
+			}
 		}
 
 		[Test]
@@ -47,6 +52,33 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().Single();
 			hbmDynamicComponent.Properties.OfType<HbmProperty>().Select(x => x.type1).All(x=> x.Satisfy(value=> !string.IsNullOrEmpty(value)));
+		}
+
+		[Test]
+		public void WhenMapDynCompoAttributesThenMapAttributes()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(map =>
+			{
+				map.Id(x => x.Id, idmap => { });
+				map.Component(x => x.Info, new { MyInt = 5}, z =>
+				                                             {
+																											 z.Access(Accessor.Field);
+																											 z.Insert(false);
+																											 z.Update(false);
+																											 z.Unique(true);
+																											 z.OptimisticLock(false);
+				                                             });
+			});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			hbmDynamicComponent.access.Should().Contain("field");
+			hbmDynamicComponent.insert.Should().Be.False();
+			hbmDynamicComponent.update.Should().Be.False();
+			hbmDynamicComponent.optimisticlock.Should().Be.False();
+			hbmDynamicComponent.unique.Should().Be.True();
 		}
 	}
 }

@@ -163,5 +163,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			component.insert = consideredInInsertQuery;
 		}
+
+		public void Unique(bool unique)
+		{
+			component.unique = unique;
+		}
 	}
 }
