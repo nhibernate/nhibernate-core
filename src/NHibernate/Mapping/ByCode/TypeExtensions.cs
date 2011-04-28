@@ -420,6 +420,61 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		/// <summary>
+		/// Given a property or a field try to get the member from a given possible inherited type.
+		/// </summary>
+		/// <param name="member">The member to find.</param>
+		/// <param name="reflectedType">The type where find the member.</param>
+		/// <returns>The member from the reflected-type or the original <paramref name="member"/> where the <paramref name="member"/> is not accessible from <paramref name="reflectedType"/>.</returns>
+		public static MemberInfo GetMemberFromReflectedType(this MemberInfo member, System.Type reflectedType)
+		{
+			if (member == null)
+			{
+				throw new ArgumentNullException("member");
+			}
+			if (reflectedType == null)
+			{
+				throw new ArgumentNullException("reflectedType");
+			}
+			var field = member as FieldInfo;
+			if (field != null && field.IsPrivate)
+			{
+				return member;
+			}
+			var property = member as PropertyInfo;
+			if (property != null)
+			{
+				var propertyGetter = property.GetGetMethod(true);
+				if (propertyGetter.IsPrivate)
+				{
+					return member;
+				}
+				if (property.DeclaringType.IsInterface)
+				{
+					System.Type[] interfaces = reflectedType.GetInterfaces();
+					var @interface = property.DeclaringType;
+					if (!interfaces.Contains(@interface))
+					{
+						return member;
+					}
+					var reflectedCandidateProps = reflectedType.GetProperties(PropertiesOfClassHierarchy);
+					InterfaceMapping memberMap = reflectedType.GetInterfaceMap(@interface);
+					for (int i = 0; i < memberMap.TargetMethods.Length; i++)
+					{
+						if (memberMap.InterfaceMethods[i] == propertyGetter)
+						{
+							return reflectedCandidateProps.Single(pi => pi.GetGetMethod(true) == memberMap.TargetMethods[i]);
+						}
+					}
+					return member;
+				}
+			}
+			var reflectedTypeProperties = reflectedType.GetProperties(PropertiesOfClassHierarchy);
+			var members = reflectedTypeProperties.Cast<MemberInfo>().Concat(reflectedType.GetFields(PropertiesOfClassHierarchy));
+			var result = members.FirstOrDefault(m=> m.Name.Equals(member.Name) && m.GetPropertyOrFieldType().Equals(member.GetPropertyOrFieldType()));
+			return result ?? member;
+		}
+
+		/// <summary>
 		/// Try to find a property or field from a given type.
 		/// </summary>
 		/// <param name="source">The type</param>

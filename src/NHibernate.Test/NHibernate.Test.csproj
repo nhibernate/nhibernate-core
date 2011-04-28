@@ -612,6 +612,7 @@
     <Compile Include="MappingByCode\TypeExtensionsTests\GetFirstImplementorConcreteClassesTest.cs" />
     <Compile Include="MappingByCode\TypeExtensionsTests\GetFirstImplementorTest.cs" />
     <Compile Include="MappingByCode\TypeExtensionsTests\GetMemberFromInterfacesTest.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\GetMemberFromReflectedTest.cs" />
     <Compile Include="MappingByCode\TypeExtensionsTests\GetPropertyOrFieldMatchingNameTest.cs" />
     <Compile Include="MappingByCode\TypeExtensionsTests\TypeExtensionsTest.cs" />
     <Compile Include="MappingByCode\TypeNameUtilTests.cs" />
