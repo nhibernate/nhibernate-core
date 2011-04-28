@@ -608,6 +608,11 @@
     <Compile Include="MappingByCode\NatureDemo\Naturalness\StateProvince.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\User.cs" />
     <Compile Include="MappingByCode\NatureDemo\Naturalness\Zoo.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\CompatibilityWithCandidatePersistentMembers.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\GetFirstImplementorConcreteClassesTest.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\GetFirstImplementorTest.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\GetMemberFromInterfacesTest.cs" />
+    <Compile Include="MappingByCode\TypeExtensionsTests\TypeExtensionsTest.cs" />
     <Compile Include="MappingByCode\TypeNameUtilTests.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Fixture.cs" />
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
