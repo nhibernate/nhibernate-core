@@ -13,13 +13,6 @@ namespace NHibernate.Dialect.Schema
 		{
 			return new PostgreSQLTableMetadata(rs, this, extras);
 		}
-		
-		public override ISet<string> GetReservedWords()
-		{
-			// NpgsqlDriver does not currently (2011/03/30) support this feature, so the 
-			// base class implementation has to be overriden
-			return new HashedSet<string>();
-		}
 	}
 
 	public class PostgreSQLTableMetadata : AbstractTableMetadata
