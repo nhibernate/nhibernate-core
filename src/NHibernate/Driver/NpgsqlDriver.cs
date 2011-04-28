@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -72,5 +74,13 @@ namespace NHibernate.Driver
 		{
 			get { return true; }
 		}
+
+        protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
+        {
+            base.InitializeParameter(dbParam, name, sqlType);
+
+            if (sqlType.DbType == DbType.Currency)
+                dbParam.DbType = DbType.Decimal;
+        }
 	}
 }
