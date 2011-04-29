@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -202,6 +203,42 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => false).Should().Be.False();
 			typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => true).Should().Be.True();
+		}
+
+		private abstract class MyAbstract
+		{
+			protected int aField;
+			public abstract string Description { get; }
+		}
+
+		private class MyConcrete : MyAbstract
+		{
+			public override string Description
+			{
+				get { return "blah"; }
+			}
+		}
+
+		[Test]
+		public void GetMemberFromDeclaringClasses_WhenPropertyThenFindAbstract()
+		{
+			var member = typeof(MyConcrete).GetProperty("Description", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			var found = member.GetMemberFromDeclaringClasses().ToList();
+			found.Count.Should().Be(2);
+			var concreteMember = For<MyConcrete>.Property(x => x.Description).GetMemberFromReflectedType(typeof(MyConcrete));
+			var abstractMember = For<MyAbstract>.Property(x => x.Description);
+			found.Should().Have.SameValuesAs(concreteMember, abstractMember);
+		}
+
+		[Test]
+		public void GetMemberFromDeclaringClasses_WhenFieldThenFindAbstract()
+		{
+			var member = typeof(MyConcrete).GetField("aField", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			var found = member.GetMemberFromDeclaringClasses().ToList();
+			found.Count.Should().Be(1);
+			var foundMember = found.Single();
+			foundMember.DeclaringType.Should().Be(typeof(MyAbstract));
+			foundMember.ReflectedType.Should().Be(typeof(MyAbstract));
 		}
 	}
 }

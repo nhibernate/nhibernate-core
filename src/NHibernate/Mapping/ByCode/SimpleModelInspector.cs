@@ -530,108 +530,108 @@ namespace NHibernate.Mapping.ByCode
 
 		bool IModelInspector.IsOneToOne(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsOneToOne(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsOneToOne(m));
 			return isOneToOne(member, declaredResult);
 		}
 
 		bool IModelInspector.IsManyToOne(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsManyToOne(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToOne(m));
 			return isManyToOne(member, declaredResult);
 		}
 
 		bool IModelInspector.IsManyToMany(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsManyToMany(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToMany(m));
 			return isManyToMany(member, declaredResult);
 		}
 
 		bool IModelInspector.IsOneToMany(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsOneToMany(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsOneToMany(m));
 			return isOneToMany(member, declaredResult);
 		}
 
 		bool IModelInspector.IsAny(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsAny(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsAny(m));
 			return isAny(member, declaredResult);
 		}
 
 		bool IModelInspector.IsPersistentId(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsPersistentId(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsPersistentId(m));
 			return isPersistentId(member, declaredResult);
 		}
 
 		bool IModelInspector.IsMemberOfComposedId(MemberInfo member)
 		{
-			return declaredModel.IsPersistentId(member);
+			return declaredModel.IsMemberOfComposedId(member);
 		}
 
 		bool IModelInspector.IsVersion(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsVersion(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsVersion(m));
 			return isVersion(member, declaredResult);
 		}
 
 		bool IModelInspector.IsMemberOfNaturalId(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsMemberOfNaturalId(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsMemberOfNaturalId(m));
 			return isMemberOfNaturalId(member, declaredResult);
 		}
 
 		bool IModelInspector.IsPersistentProperty(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsPersistentProperty(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsPersistentProperty(m));
 			return isPersistentProperty(member, declaredResult);
 		}
 
 		bool IModelInspector.IsSet(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsSet(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsSet(m));
 			return isSet(role, declaredResult);
 		}
 
 		bool IModelInspector.IsBag(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsBag(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsBag(m));
 			return isBag(role, declaredResult);
 		}
 
 		bool IModelInspector.IsIdBag(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsIdBag(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsIdBag(m));
 			return isIdBag(role, declaredResult);
 		}
 
 		bool IModelInspector.IsList(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsList(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsList(m));
 			return isList(role, declaredResult);
 		}
 
 		bool IModelInspector.IsArray(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsArray(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsArray(m));
 			return isArray(role, declaredResult);
 		}
 
 		bool IModelInspector.IsDictionary(MemberInfo role)
 		{
-			bool declaredResult = declaredModel.IsDictionary(role);
+			bool declaredResult = DeclaredPolymorphicMatch(role, m => declaredModel.IsDictionary(m));
 			return isDictionary(role, declaredResult);
 		}
 
 		bool IModelInspector.IsProperty(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsProperty(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsProperty(m));
 			return isProperty(member, declaredResult);
 		}
 
 		bool IModelInspector.IsDynamicComponent(MemberInfo member)
 		{
-			bool declaredResult = declaredModel.IsDynamicComponent(member);
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsDynamicComponent(m));
 			return isDynamicComponent(member, declaredResult);
 		}
 
@@ -651,6 +651,13 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		#endregion
+
+		protected virtual bool DeclaredPolymorphicMatch(MemberInfo member, Func<MemberInfo, bool> declaredMatch)
+		{
+			return declaredMatch(member)
+						 || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
+						 || member.GetPropertyFromInterfaces().Any(declaredMatch);
+		}
 
 		public void IsRootEntity(Func<System.Type, bool, bool> match)
 		{

@@ -592,6 +592,7 @@
     <Compile Include="MappingByCode\MixAutomapping\ManyToOneTest.cs" />
     <Compile Include="MappingByCode\MixAutomapping\OneToManyTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PoidTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\PolymorphicPropertiesMapping.cs" />
     <Compile Include="MappingByCode\MixAutomapping\PropertiesExclusionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\RootEntityTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\SetCollectionTests.cs" />

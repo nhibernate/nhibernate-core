@@ -170,7 +170,34 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return source;
 			}
-			return source.DeclaringType.GetProperty(source.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			if (source is PropertyInfo)
+			{
+				return source.DeclaringType.GetProperty(source.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			}
+			if (source is FieldInfo)
+			{
+				return source.DeclaringType.GetField(source.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			}
+			return null;
+		}
+
+		public static IEnumerable<MemberInfo> GetMemberFromDeclaringClasses(this MemberInfo source)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+			if (source is PropertyInfo)
+			{
+				var reflectedType = source.ReflectedType;
+				var memberType = source.GetPropertyOrFieldType();
+				return reflectedType.GetPropertiesOfHierarchy().Cast<PropertyInfo>().Where(x => source.Name.Equals(x.Name) && memberType.Equals(x.PropertyType)).Cast<MemberInfo>();
+			}
+			if (source is FieldInfo)
+			{
+				return new[] { source.GetMemberFromDeclaringType() };
+			}
+			return Enumerable.Empty<MemberInfo>();
 		}
 
 		public static IEnumerable<MemberInfo> GetPropertyFromInterfaces(this MemberInfo source)
