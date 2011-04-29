@@ -33,11 +33,21 @@ namespace NHibernate.Mapping.ByCode
 		                   Action<ICollectionElementRelation<TElement>> mapping);
 		void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 											 Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping);
+		void Set<TElement>(string notVidiblePropertyOrFieldName,
+											 Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
+											 Action<ICollectionElementRelation<TElement>> mapping);
+		void Set<TElement>(string notVidiblePropertyOrFieldName,
+											 Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                   Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
 		                   Action<ICollectionElementRelation<TElement>> mapping);
 		void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+											 Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping);
+		void Bag<TElement>(string notVidiblePropertyOrFieldName,
+											 Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+											 Action<ICollectionElementRelation<TElement>> mapping);
+		void Bag<TElement>(string notVidiblePropertyOrFieldName,
 											 Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
@@ -45,22 +55,40 @@ namespace NHibernate.Mapping.ByCode
 		                    Action<ICollectionElementRelation<TElement>> mapping);
 		void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 												Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping);
+		void List<TElement>(string notVidiblePropertyOrFieldName,
+												Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
+												Action<ICollectionElementRelation<TElement>> mapping);
+		void List<TElement>(string notVidiblePropertyOrFieldName,
+												Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 		                         Action<IMapKeyRelation<TKey>> keyMapping,
 		                         Action<ICollectionElementRelation<TElement>> mapping);
-
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
 		                         Action<ICollectionElementRelation<TElement>> mapping);
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
+														 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping);
+		void Map<TKey, TElement>(string notVidiblePropertyOrFieldName,
+												 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+												 Action<IMapKeyRelation<TKey>> keyMapping,
+												 Action<ICollectionElementRelation<TElement>> mapping);
+		void Map<TKey, TElement>(string notVidiblePropertyOrFieldName,
+														 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+														 Action<ICollectionElementRelation<TElement>> mapping);
+		void Map<TKey, TElement>(string notVidiblePropertyOrFieldName,
 														 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping);
 
 		void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping,
 											 Action<ICollectionElementRelation<TElement>> mapping);
 		void IdBag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
+											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping);
+		void IdBag<TElement>(string notVidiblePropertyOrFieldName,
+											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+											 Action<ICollectionElementRelation<TElement>> mapping);
+		void IdBag<TElement>(string notVidiblePropertyOrFieldName,
 											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 	}
 
