@@ -214,10 +214,10 @@ namespace NHibernate.Mapping.ByCode
 				BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
 			var modelInspector = (IModelInspector) this;
-			return !subject.IsEnum && !subject.Namespace.StartsWith("System") /* hack */&& !modelInspector.IsEntity(subject)
-			       &&
-			       !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
-			       	subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
+			return !subject.IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
+							&& !modelInspector.IsEntity(subject)
+							&& !subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(
+			       		subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
 		}
 
 		protected bool MatchEntity(System.Type subject)

@@ -18,6 +18,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
 			explicitDeclarationsHolder.AddAsRootEntity(typeof (TEntity));
+
+			// Add an empty customizer as a way to register the class as explicity declared
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => { });
 		}
 
 		private Dictionary<string, IJoinMapper<TEntity>> JoinCustomizers

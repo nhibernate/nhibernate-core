@@ -48,5 +48,16 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			hbmProperty.access.Should().Be("field");
 			hbmProperty.length.Should().Be("150");
 		}
+
+		[Test]
+		public void WhenPrivateMemberDoesNotExistsThenThrow()
+		{
+			var mapper = new ModelMapper();
+			Executing.This(() =>
+			mapper.Class<MyClass>(ca =>
+			{
+				ca.Property("pizza", map => map.Length(150));
+			})).Should().Throw<MappingException>();
+		}
 	}
 }
