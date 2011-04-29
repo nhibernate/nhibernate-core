@@ -84,7 +84,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 			var mapper = new ModelMapper(autoinspector);
-			mapper.Class<MyEntity>(map => map.Property(ForClass<MyEntity>.Field("pizza"), x => { }));
+			mapper.Class<MyEntity>(map => map.Property("pizza", x => { }));
 			var inspector = (IModelInspector)autoinspector;
 
 			var pi = typeof(MyEntity).GetField("pizza", BindingFlags.Instance | BindingFlags.NonPublic);

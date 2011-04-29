@@ -28,7 +28,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property);
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IPropertyMapper> mapping);
-		void Property(FieldInfo member, Action<IPropertyMapper> mapping);
+		void Property(string notVidiblePropertyOrFieldName, Action<IPropertyMapper> mapping);
 
 		void ManyToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class;
 		void ManyToOne<TProperty>(Expression<Func<TContainer, TProperty>> property) where TProperty : class;

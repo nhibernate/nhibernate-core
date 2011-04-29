@@ -50,9 +50,8 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 		[Test]
 		public void WhenFieldAccessToField()
 		{
-			var member = typeof(MyClass).GetField("aField",BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			var mapper = new ConventionModelMapper();
-			mapper.Class<MyClass>(mc => mc.Property(member, x => { }));
+			mapper.Class<MyClass>(mc => mc.Property("aField", x => { }));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmMapping.RootClasses[0];

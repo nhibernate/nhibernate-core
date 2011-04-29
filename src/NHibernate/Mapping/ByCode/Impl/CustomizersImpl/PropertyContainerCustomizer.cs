@@ -49,15 +49,21 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
 
-		public void Property(FieldInfo member, Action<IPropertyMapper> mapping)
+		public void Property(string notVidiblePropertyOrFieldName, Action<IPropertyMapper> mapping)
 		{
-			RegisterFieldMapping(member, mapping);
+			RegisterNoVisiblePropertyMapping(notVidiblePropertyOrFieldName, mapping);
 		}
 
-		protected virtual void RegisterFieldMapping(FieldInfo member, Action<IPropertyMapper> mapping)
+		protected virtual void RegisterNoVisiblePropertyMapping(string notVidiblePropertyOrFieldName, Action<IPropertyMapper> mapping)
 		{
+			// even seems repetitive, before unify this registration with the registration using Expression take in account that reflection operations
+			// done unsing expressions are faster than those done with pure reflection.
+			MemberInfo member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
 			CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
+			CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, memberOf), mapping);
 			explicitDeclarationsHolder.AddAsProperty(member);
+			explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
 
 		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property,

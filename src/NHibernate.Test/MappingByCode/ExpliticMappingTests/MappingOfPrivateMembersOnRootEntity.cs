@@ -25,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 					map.Column("MyClassId");
 					map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
 				});
-				ca.Property(ForClass<MyClass>.Field("something"), map => map.Length(150));
+				ca.Property("something", map => map.Length(150));
 			});
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];

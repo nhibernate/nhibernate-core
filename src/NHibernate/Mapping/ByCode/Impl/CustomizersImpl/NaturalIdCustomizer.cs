@@ -16,10 +16,14 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			base.RegisterPropertyMapping(property, mapping);
 		}
 
-		protected override void RegisterFieldMapping(FieldInfo member, System.Action<IPropertyMapper> mapping)
+		protected override void RegisterNoVisiblePropertyMapping(string notVidiblePropertyOrFieldName, System.Action<IPropertyMapper> mapping)
 		{
+			MemberInfo member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
+
 			ExplicitDeclarationsHolder.AddAsNaturalId(member);
-			base.RegisterFieldMapping(member, mapping);
+			ExplicitDeclarationsHolder.AddAsNaturalId(memberOf);
+			base.RegisterNoVisiblePropertyMapping(notVidiblePropertyOrFieldName, mapping);
 		}
 
 		protected override void RegisterComponentMapping<TComponent>(System.Linq.Expressions.Expression<System.Func<TEntity, TComponent>> property, System.Action<IComponentMapper<TComponent>> mapping)
