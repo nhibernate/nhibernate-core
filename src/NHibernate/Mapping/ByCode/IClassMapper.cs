@@ -40,10 +40,12 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty);
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
-		void Id(FieldInfo idProperty, Action<IIdMapper> idMapper);
+		void Id(string notVidiblePropertyOrFieldName, Action<IIdMapper> idMapper);
 
 		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class;
 		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
+		void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName) where TComponent : class;
+		void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
 
 		void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
 
@@ -54,6 +56,7 @@ namespace NHibernate.Mapping.ByCode
 		void Schema(string schemaName);
 		void Mutable(bool isMutable);
 		void Version<TProperty>(Expression<Func<TEntity, TProperty>> versionProperty, Action<IVersionMapper> versionMapping);
+		void Version(string notVidiblePropertyOrFieldName, Action<IVersionMapper> versionMapping);
 		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping, Action<INaturalIdAttributesMapper> naturalIdMapping);
 		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping);
 		void Cache(Action<ICacheMapper> cacheMapping);
