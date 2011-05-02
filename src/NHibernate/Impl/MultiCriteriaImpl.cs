@@ -14,6 +14,7 @@ using NHibernate.Loader.Criteria;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -91,7 +92,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-
 		private IList ListUsingQueryCache()
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
@@ -141,21 +141,28 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
+			for (int i = 0; i < loaders.Count; i++)
+			{
+				CriteriaLoader loader = loaders[i];
+				results[i] = loader.GetResultList((IList)results[i], parameters[i].ResultTransformer);
+				IList tmpResults;
+				if (resultCollectionGenericType[i] == typeof (object))
+				{
+					tmpResults = new ArrayList();
+				}
+				else
+				{
+					tmpResults = (IList) Activator.CreateInstance(typeof (List<>).MakeGenericType(resultCollectionGenericType[i]));
+				}
+				ArrayHelper.AddAll(tmpResults, (IList)results[i]);
+
+				results[i] = tmpResults;
+			}
 			if (resultTransformer != null)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
 					results[i] = resultTransformer.TransformList((IList)results[i]);
-				}
-			}
-			else
-			{
-				for (int i = 0; i < results.Count; i++)
-				{
-					CriteriaImpl critImp = criteriaQueries[i] as CriteriaImpl;
-					if (critImp == null || critImp.ResultTransformer == null)
-						continue;
-					results[i] = critImp.ResultTransformer.TransformList((IList)results[i]);
 				}
 			}
 			return results;
@@ -205,15 +212,7 @@ namespace NHibernate.Impl
 						hydratedObjects[i] = entitySpan == 0 ? null : new ArrayList(entitySpan);
 						EntityKey[] keys = new EntityKey[entitySpan];
 						QueryParameters queryParameters = parameters[i];
-						IList tmpResults;
-						if (resultCollectionGenericType[i] == typeof(object))
-						{
-							tmpResults = new ArrayList();
-						}
-						else
-						{
-							tmpResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i]));
-						}
+						IList tmpResults = new ArrayList();
 
 						RowSelection selection = parameters[i].RowSelection;
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
@@ -238,6 +237,7 @@ namespace NHibernate.Impl
 							}
 							tmpResults.Add(o);
 						}
+
 						results.Add(tmpResults);
 						reader.NextResult();
 					}

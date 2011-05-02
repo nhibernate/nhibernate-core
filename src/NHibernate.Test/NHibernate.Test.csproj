@@ -810,6 +810,8 @@
     <Compile Include="NHSpecificTest\NH2632\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2660And2661\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH2660And2661\Test.cs" />
+    <Compile Include="NHSpecificTest\NH2673\Blog.cs" />
+    <Compile Include="NHSpecificTest\NH2673\CachingWithTrasformerTests.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />

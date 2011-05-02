@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 		private int timeout = RowSelection.NoValue;
 		private int fetchSize = RowSelection.NoValue;
 		private ISessionImplementor session;
-		private IResultTransformer resultTransformer = CriteriaSpecification.RootEntity;
+		private IResultTransformer resultTransformer;
 		private bool cacheable;
 		private string cacheRegion;
 		private CacheMode? cacheMode;

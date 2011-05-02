@@ -300,7 +300,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
 		}
 
-		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...
 			HolderInstantiator holderInstantiator = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer,

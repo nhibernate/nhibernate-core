@@ -628,7 +628,7 @@ namespace NHibernate.Loader
 				collectionPersister);
 		}
 
-		protected virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
+		public virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			return results;
 		}

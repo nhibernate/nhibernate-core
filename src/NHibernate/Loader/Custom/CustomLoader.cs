@@ -280,7 +280,7 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
 		}
 
-		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			// meant to handle dynamic instantiation queries...(Copy from QueryLoader)
 			HolderInstantiator holderInstantiator =

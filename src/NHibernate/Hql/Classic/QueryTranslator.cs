@@ -1512,7 +1512,7 @@ namespace NHibernate.Hql.Classic
 			}
 		}
 
-		protected override IList GetResultList(IList results, IResultTransformer resultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			HolderInstantiator holderInstantiator =
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, resultTransformer);

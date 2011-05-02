@@ -77,7 +77,7 @@ namespace NHibernate.Cache
 			IList cacheable = new List<object>(result.Count + 1) {ts};
 			for (int i = 0; i < result.Count; i++)
 			{
-				if (returnTypes.Length == 1)
+				if (returnTypes.Length == 1 && !key.HasResultTrasformer)
 				{
 					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
 				}

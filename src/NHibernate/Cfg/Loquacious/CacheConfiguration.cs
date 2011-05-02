@@ -35,15 +35,21 @@ namespace NHibernate.Cfg.Loquacious
 
 		public void Provider<TProvider>() where TProvider : ICacheProvider
 		{
-			cfg.SetProperty(Environment.CacheProvider, typeof (TProvider).AssemblyQualifiedName);
+			UseSecondLevelCache = true;
+			cfg.SetProperty(Environment.CacheProvider, typeof(TProvider).AssemblyQualifiedName);
 		}
 
 		public void QueryCache<TFactory>() where TFactory : IQueryCache
 		{
+			UseSecondLevelCache = true;
 			UseQueryCache = true;
 			cfg.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);
 		}
 
+		private bool UseSecondLevelCache
+		{
+			set { cfg.SetProperty(Environment.UseSecondLevelCache, value.ToString().ToLowerInvariant()); }
+		}
 		#endregion
 	}
 
@@ -66,6 +72,7 @@ namespace NHibernate.Cfg.Loquacious
 
 		public ICacheConfiguration Through<TProvider>() where TProvider : ICacheProvider
 		{
+			fc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			fc.Configuration.SetProperty(Environment.CacheProvider, typeof(TProvider).AssemblyQualifiedName);
 			return this;
 		}
@@ -106,6 +113,8 @@ namespace NHibernate.Cfg.Loquacious
 
 		public ICacheConfiguration Through<TFactory>() where TFactory : IQueryCache
 		{
+			cc.Configuration.SetProperty(Environment.UseSecondLevelCache, "true");
+			cc.Configuration.SetProperty(Environment.UseQueryCache, "true");
 			cc.Configuration.SetProperty(Environment.QueryCacheFactory, typeof(TFactory).AssemblyQualifiedName);
 			return cc;
 		}

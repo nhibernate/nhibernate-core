@@ -453,7 +453,8 @@ namespace NHibernate.Impl
 			for (int i = 0; i < len; ++i)
 			{
 				// First use the transformer of each query transformig each row and then the list
-				results[i] = GetTransformedResults((IList)results[i], GetQueryHolderInstantiator(i));
+				// DONE: The behavior when the query has a 'new' istead a trasformer is delegated to the Loader
+				results[i] = translators[i].Loader.GetResultList((IList)results[i], Parameters[i].ResultTransformer);
 				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
 				results[i] = GetTransformedResults((IList)results[i], multiqueryHolderInstatiator);
 			}
@@ -473,15 +474,6 @@ namespace NHibernate.Impl
 			}
 
 			return holderInstantiator.ResultTransformer.TransformList(source);
-		}
-
-		private HolderInstantiator GetQueryHolderInstantiator(int queryPosition)
-		{
-			// TODO : we need a test to check the behavior when the query has a 'new' istead a trasformer
-			// we should take the HolderInstantiator directly from QueryTranslator... taking care with Parameters.
-			return Parameters[queryPosition].ResultTransformer != null ?
-				new HolderInstantiator(Parameters[queryPosition].ResultTransformer, translators[queryPosition].ReturnAliases)
-				: HolderInstantiator.NoopInstantiator;
 		}
 
 		private HolderInstantiator GetMultiQueryHolderInstatiator()
