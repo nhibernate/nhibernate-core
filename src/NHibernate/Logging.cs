@@ -374,72 +374,86 @@ namespace NHibernate
 
 		public void Error(object message)
 		{
-			ErrorDelegate(logger, message);
+			if (IsErrorEnabled)
+				ErrorDelegate(logger, message);
 		}
 
 		public void Error(object message, Exception exception)
 		{
-			ErrorExceptionDelegate(logger,message,exception);
+			if (IsErrorEnabled)
+				ErrorExceptionDelegate(logger, message, exception);
 		}
 
 		public void ErrorFormat(string format, params object[] args)
 		{
-			ErrorFormatDelegate(logger, format, args);
+			if (IsErrorEnabled)
+				ErrorFormatDelegate(logger, format, args);
 		}
 
 		public void Fatal(object message)
 		{
-			FatalDelegate(logger, message);
+			if (IsFatalEnabled)
+				FatalDelegate(logger, message);
 		}
 
 		public void Fatal(object message, Exception exception)
 		{
-			FatalExceptionDelegate(logger,message,exception);
+			if (IsFatalEnabled)
+				FatalExceptionDelegate(logger, message, exception);
 		}
 
 		public void Debug(object message)
 		{
-			DebugDelegate(logger, message);
+			if (IsDebugEnabled)
+				DebugDelegate(logger, message);
 		}
 
 		public void Debug(object message, Exception exception)
 		{
-			DebugExceptionDelegate(logger, message, exception);
+			if (IsDebugEnabled)
+				DebugExceptionDelegate(logger, message, exception);
 		}
 
 		public void DebugFormat(string format, params object[] args)
 		{
-			DebugFormatDelegate(logger, format, args);
+			if (IsDebugEnabled)
+				DebugFormatDelegate(logger, format, args);
 		}
 
 		public void Info(object message)
 		{
-			InfoDelegate(logger, message);
+			if (IsInfoEnabled)
+				InfoDelegate(logger, message);
 		}
 
 		public void Info(object message, Exception exception)
 		{
-			InfoExceptionDelegate(logger, message, exception);
+			if (IsInfoEnabled)
+				InfoExceptionDelegate(logger, message, exception);
 		}
 
 		public void InfoFormat(string format, params object[] args)
 		{
-			InfoFormatDelegate(logger, format, args);
+			if (IsInfoEnabled)
+				InfoFormatDelegate(logger, format, args);
 		}
 
 		public void Warn(object message)
 		{
-			WarnDelegate(logger, message);
+			if (IsWarnEnabled)
+				WarnDelegate(logger, message);
 		}
 
 		public void Warn(object message, Exception exception)
 		{
-			WarnExceptionDelegate(logger, message, exception);
+			if (IsWarnEnabled)
+				WarnExceptionDelegate(logger, message, exception);
 		}
 
 		public void WarnFormat(string format, params object[] args)
 		{
-			WarnFormatDelegate(logger, format, args);
+			if (IsWarnEnabled)
+				WarnFormatDelegate(logger, format, args);
 		}
 	}
 }

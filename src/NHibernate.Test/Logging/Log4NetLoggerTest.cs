@@ -214,7 +214,7 @@ namespace NHibernate.Test.Logging
 				get
 				{
 					isDebugEnabled++;
-					return false;
+					return true;
 				}
 			}
 
@@ -223,7 +223,7 @@ namespace NHibernate.Test.Logging
 				get
 				{
 					isInfoEnabled++;
-					return false;
+					return true;
 				}
 			}
 
@@ -232,7 +232,7 @@ namespace NHibernate.Test.Logging
 				get
 				{
 					isWarnEnabled++;
-					return false;
+					return true;
 				}
 			}
 
@@ -241,7 +241,7 @@ namespace NHibernate.Test.Logging
 				get
 				{
 					isErrorEnabled++;
-					return false;
+					return true;
 				}
 			}
 
@@ -250,7 +250,7 @@ namespace NHibernate.Test.Logging
 				get
 				{
 					isFatalEnabled++;
-					return false;
+					return true;
 				}
 			}
 		} 
@@ -299,11 +299,11 @@ namespace NHibernate.Test.Logging
 			logMock.errorFormat.Should().Be(1);
 			logMock.fatal.Should().Be(1);
 			logMock.fatalException.Should().Be(1);
-			logMock.isDebugEnabled.Should().Be(1);
-			logMock.isInfoEnabled.Should().Be(1);
-			logMock.isWarnEnabled.Should().Be(1);
-			logMock.isErrorEnabled.Should().Be(1);
-			logMock.isFatalEnabled.Should().Be(1);
+			logMock.isDebugEnabled.Should().Be.GreaterThan(1);
+			logMock.isInfoEnabled.Should().Be.GreaterThan(1);
+			logMock.isWarnEnabled.Should().Be.GreaterThan(1);
+			logMock.isErrorEnabled.Should().Be.GreaterThan(1);
+			logMock.isFatalEnabled.Should().Be.GreaterThan(1);
 		}
 	}
 }
