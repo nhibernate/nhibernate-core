@@ -10,6 +10,8 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class ToListResultTransformer : IResultTransformer
 	{
+		private static readonly object Hasher = new object();
+
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
 			return new ArrayList(tuple);
@@ -18,6 +20,20 @@ namespace NHibernate.Transform
 		public IList TransformList(IList list)
 		{
 			return list;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+			{
+				return false;
+			}
+			return obj.GetHashCode() == Hasher.GetHashCode();
+		}
+
+		public override int GetHashCode()
+		{
+			return Hasher.GetHashCode();
 		}
 	}
 }

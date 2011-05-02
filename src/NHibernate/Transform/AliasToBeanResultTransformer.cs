@@ -111,5 +111,28 @@ namespace NHibernate.Transform
 		{
 			return collection;
 		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as AliasToBeanResultTransformer);
+		}
+
+		public bool Equals(AliasToBeanResultTransformer other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return Equals(other.resultClass, resultClass);
+		}
+
+		public override int GetHashCode()
+		{
+			return resultClass.GetHashCode();
+		}
 	}
 }

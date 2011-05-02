@@ -856,6 +856,7 @@
     <Compile Include="TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
     <Compile Include="TypesTest\DateTimeClass.cs" />

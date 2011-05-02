@@ -6,6 +6,8 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class PassThroughResultTransformer : IResultTransformer
 	{
+		private static readonly object Hasher = new object();
+
 		#region IResultTransformer Members
 
 		public object TransformTuple(object[] tuple, string[] aliases)
@@ -19,5 +21,19 @@ namespace NHibernate.Transform
 		}
 
 		#endregion
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+			{
+				return false;
+			}
+			return obj.GetHashCode() == Hasher.GetHashCode();
+		}
+
+		public override int GetHashCode()
+		{
+			return Hasher.GetHashCode();
+		}
 	}
 }

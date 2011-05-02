@@ -10,6 +10,7 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
+		private static readonly object Hasher = new object();
 
 		internal sealed class Identity
 		{
@@ -57,6 +58,20 @@ namespace NHibernate.Transform
 				                        list.Count, result.Count));
 			}
 			return result;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+			{
+				return false;
+			}
+			return obj.GetHashCode() == Hasher.GetHashCode();
+		}
+
+		public override int GetHashCode()
+		{
+			return Hasher.GetHashCode();
 		}
 	}
 }

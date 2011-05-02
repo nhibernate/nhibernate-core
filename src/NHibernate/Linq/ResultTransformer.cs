@@ -57,5 +57,33 @@ namespace NHibernate.Linq
             var list = new ArrayList {transformResult};
             return list;
         }
+
+    	public bool Equals(ResultTransformer other)
+    	{
+    		if (ReferenceEquals(null, other))
+    		{
+    			return false;
+    		}
+    		if (ReferenceEquals(this, other))
+    		{
+    			return true;
+    		}
+    		return Equals(other._listTransformation, _listTransformation) && Equals(other._itemTransformation, _itemTransformation);
+    	}
+
+    	public override bool Equals(object obj)
+    	{
+				return Equals(obj as ResultTransformer);
+    	}
+
+    	public override int GetHashCode()
+    	{
+    		unchecked
+    		{
+    			var lt = (_listTransformation != null ? _listTransformation.GetHashCode() : 0);
+    			var it = (_itemTransformation != null ? _itemTransformation.GetHashCode() : 0);
+    			return (lt * 397) ^ (it * 17);
+    		}
+    	}
     }
 }
