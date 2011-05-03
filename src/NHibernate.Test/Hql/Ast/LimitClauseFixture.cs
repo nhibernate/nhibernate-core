@@ -68,6 +68,20 @@ namespace NHibernate.Test.Hql.Ast
             s.Close();
         }
 
+				[Test, Ignore("Not supported yet.")]
+				public void SkipWithParameter()
+				{
+					ISession s = OpenSession();
+					ITransaction txn = s.BeginTransaction();
+
+					var actual = s.CreateQuery("from Human h order by h.bodyWeight skip :jump").SetInt32("jump", 2).List<Human>().Select(h => h.BodyWeight).ToArray();
+					var expected = new[] { 10, 15, 20 };
+					CollectionAssert.AreEqual(expected, actual);
+
+					txn.Commit();
+					s.Close();
+				}
+
         [Test]
         public void Take()
         {
@@ -82,6 +96,20 @@ namespace NHibernate.Test.Hql.Ast
             s.Close();
         }
 
+				[Test, Ignore("Not supported yet.")]
+				public void TakeWithParameter()
+				{
+					ISession s = OpenSession();
+					ITransaction txn = s.BeginTransaction();
+
+					var actual = s.CreateQuery("from Human h order by h.bodyWeight take :jump").SetInt32("jump", 2).List<Human>().Select(h => h.BodyWeight).ToArray();
+					var expected = new[] { 5, 6 };
+					CollectionAssert.AreEqual(expected, actual);
+
+					txn.Commit();
+					s.Close();
+				}
+
         [Test]
         public void SkipTake()
         {
@@ -95,6 +123,22 @@ namespace NHibernate.Test.Hql.Ast
             txn.Commit();
             s.Close();
         }
+
+				[Test, Ignore("Not supported yet.")]
+				public void SkipTakeWithParameter()
+				{
+					ISession s = OpenSession();
+					ITransaction txn = s.BeginTransaction();
+
+					var actual = s.CreateQuery("from Human h order by h.bodyWeight skip :pSkip take :pTake")
+						.SetInt32("pSkip", 1)
+						.SetInt32("pTake", 3).List<Human>().Select(h => h.BodyWeight).ToArray();
+					var expected = new[] { 6, 10, 15 };
+					CollectionAssert.AreEqual(expected, actual);
+
+					txn.Commit();
+					s.Close();
+				}
 
         [Test]
         public void TakeSkip()
