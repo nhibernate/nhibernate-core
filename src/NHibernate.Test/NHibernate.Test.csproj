@@ -804,6 +804,7 @@
     <Compile Include="NHSpecificTest\NH2583\MassTestingThreeOrTreesSideBySideFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingTwoOrTreesSideBySideFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\SelfJoinTestFixture.cs" />
+    <Compile Include="NHSpecificTest\NH2587\CachingWithLinq.cs" />
     <Compile Include="NHSpecificTest\NH2603\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2603\Model.cs" />
     <Compile Include="NHSpecificTest\NH2632\Domain.cs" />
