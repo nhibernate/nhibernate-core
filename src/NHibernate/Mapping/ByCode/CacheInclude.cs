@@ -7,13 +7,13 @@ namespace NHibernate.Mapping.ByCode
 		public static CacheInclude All = new AllCacheInclude();
 		public static CacheInclude NonLazy = new NonLazyCacheInclude();
 
-		public abstract HbmCacheInclude ToHbm();
+		internal abstract HbmCacheInclude ToHbm();
 
 		#region Nested type: AllCacheInclude
 
 		public class AllCacheInclude : CacheInclude
 		{
-			public override HbmCacheInclude ToHbm()
+			internal override HbmCacheInclude ToHbm()
 			{
 				return HbmCacheInclude.All;
 			}
@@ -25,7 +25,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public class NonLazyCacheInclude : CacheInclude
 		{
-			public override HbmCacheInclude ToHbm()
+			internal override HbmCacheInclude ToHbm()
 			{
 				return HbmCacheInclude.NonLazy;
 			}

@@ -8,13 +8,13 @@ namespace NHibernate.Mapping.ByCode
 		public static CollectionFetchMode Join = new JoinFetchMode();
 		public static CollectionFetchMode Subselect = new SubselectFetchMode();
 
-		public abstract HbmCollectionFetchMode ToHbm();
+		internal abstract HbmCollectionFetchMode ToHbm();
 
 		#region Nested type: JoinFetchMode
 
 		private class JoinFetchMode : CollectionFetchMode
 		{
-			public override HbmCollectionFetchMode ToHbm()
+			internal override HbmCollectionFetchMode ToHbm()
 			{
 				return HbmCollectionFetchMode.Join;
 			}
@@ -26,7 +26,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class SelectFetchMode : CollectionFetchMode
 		{
-			public override HbmCollectionFetchMode ToHbm()
+			internal override HbmCollectionFetchMode ToHbm()
 			{
 				return HbmCollectionFetchMode.Select;
 			}
@@ -38,7 +38,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class SubselectFetchMode : CollectionFetchMode
 		{
-			public override HbmCollectionFetchMode ToHbm()
+			internal override HbmCollectionFetchMode ToHbm()
 			{
 				return HbmCollectionFetchMode.Subselect;
 			}

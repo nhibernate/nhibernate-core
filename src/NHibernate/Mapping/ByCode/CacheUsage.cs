@@ -9,13 +9,13 @@ namespace NHibernate.Mapping.ByCode
 		public static CacheUsage NonstrictReadWrite = new NonstrictReadWriteUsage();
 		public static CacheUsage Transactional = new TransactionalUsage();
 
-		public abstract HbmCacheUsage ToHbm();
+		internal abstract HbmCacheUsage ToHbm();
 
 		#region Nested type: NonstrictReadWriteUsage
 
 		private class NonstrictReadWriteUsage : CacheUsage
 		{
-			public override HbmCacheUsage ToHbm()
+			internal override HbmCacheUsage ToHbm()
 			{
 				return HbmCacheUsage.NonstrictReadWrite;
 			}
@@ -27,7 +27,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class ReadOnlyUsage : CacheUsage
 		{
-			public override HbmCacheUsage ToHbm()
+			internal override HbmCacheUsage ToHbm()
 			{
 				return HbmCacheUsage.ReadOnly;
 			}
@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class ReadWriteUsage : CacheUsage
 		{
-			public override HbmCacheUsage ToHbm()
+			internal override HbmCacheUsage ToHbm()
 			{
 				return HbmCacheUsage.ReadWrite;
 			}
@@ -51,7 +51,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private class TransactionalUsage : CacheUsage
 		{
-			public override HbmCacheUsage ToHbm()
+			internal override HbmCacheUsage ToHbm()
 			{
 				return HbmCacheUsage.Transactional;
 			}
