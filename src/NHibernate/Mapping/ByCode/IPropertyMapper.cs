@@ -19,5 +19,6 @@ namespace NHibernate.Mapping.ByCode
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
 		void Lazy(bool isLazy);
+		void Generated(PropertyGeneration generation);
 	}
 }

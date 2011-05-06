@@ -259,6 +259,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			propertyMapping.lazy = isLazy;
 		}
 
+		public void Generated(PropertyGeneration generation)
+		{
+			if (generation == null)
+			{
+				return;
+			}
+			propertyMapping.generated = generation.ToHbm();
+		}
+
 		private void ResetColumnPlainValues()
 		{
 			propertyMapping.column = null;

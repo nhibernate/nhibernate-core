@@ -215,6 +215,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			// lazy is not supported by HbmKeyProperty
 		}
 
+		public void Generated(PropertyGeneration generation)
+		{
+			// generated is not supported by HbmKeyProperty
+		}
+
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
