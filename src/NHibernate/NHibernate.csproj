@@ -284,6 +284,7 @@
     <Compile Include="Mapping\Any.cs" />
     <Compile Include="Mapping\Array.cs" />
     <Compile Include="Mapping\Bag.cs" />
+    <Compile Include="Mapping\ByCode\AbstractExplicitlyDeclaredModel.cs" />
     <Compile Include="Mapping\ByCode\CacheInclude.cs" />
     <Compile Include="Mapping\ByCode\CacheUsage.cs" />
     <Compile Include="Mapping\ByCode\Cascade.cs" />

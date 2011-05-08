@@ -585,6 +585,7 @@
     <Compile Include="MappingByCode\MappersTests\UnionSubclassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ArrayCollectionTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\BagCollectionTests.cs" />
+    <Compile Include="MappingByCode\MixAutomapping\CallCustomConditions.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ComponentsTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\DefaultClassHierarchyRepresentationTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\DictionaryCollectionTests.cs" />

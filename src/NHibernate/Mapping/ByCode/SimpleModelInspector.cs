@@ -11,7 +11,150 @@ namespace NHibernate.Mapping.ByCode
 	/// </summary>
 	public class SimpleModelInspector : IModelInspector, IModelExplicitDeclarationsHolder
 	{
-		private readonly ExplicitlyDeclaredModel declaredModel = new ExplicitlyDeclaredModel();
+		private class MixinDeclaredModel : AbstractExplicitlyDeclaredModel
+		{
+			private readonly IModelInspector inspector;
+
+			public MixinDeclaredModel(IModelInspector inspector)
+			{
+				this.inspector = inspector;
+			}
+
+			public override bool IsComponent(System.Type type)
+			{
+				return Components.Contains(type);
+			}
+
+			public override bool IsRootEntity(System.Type entityType)
+			{
+				return inspector.IsRootEntity(entityType);
+			}
+
+			public bool IsEntity(System.Type type)
+			{
+				return RootEntities.Contains(type) || type.GetBaseTypes().Any(t => RootEntities.Contains(t)) || HasDelayedEntityRegistration(type);
+			}
+
+			public bool IsTablePerClass(System.Type type)
+			{
+				ExecuteDelayedTypeRegistration(type);
+				return IsMappedForTablePerClassEntities(type);
+			}
+
+			public bool IsTablePerClassSplit(System.Type type, object splitGroupId, MemberInfo member)
+			{
+				return Equals(splitGroupId, GetSplitGroupFor(member));
+			}
+
+			public bool IsTablePerClassHierarchy(System.Type type)
+			{
+				ExecuteDelayedTypeRegistration(type);
+				return IsMappedForTablePerClassHierarchyEntities(type);
+			}
+
+			public bool IsTablePerConcreteClass(System.Type type)
+			{
+				ExecuteDelayedTypeRegistration(type);
+				return IsMappedForTablePerConcreteClassEntities(type);
+			}
+
+			public bool IsOneToOne(MemberInfo member)
+			{
+				return OneToOneRelations.Contains(member);
+			}
+
+			public bool IsManyToOne(MemberInfo member)
+			{
+				return ManyToOneRelations.Contains(member);
+			}
+
+			public bool IsManyToMany(MemberInfo member)
+			{
+				return ManyToManyRelations.Contains(member);
+			}
+
+			public bool IsOneToMany(MemberInfo member)
+			{
+				return OneToManyRelations.Contains(member);
+			}
+
+			public bool IsAny(MemberInfo member)
+			{
+				return Any.Contains(member);
+			}
+
+			public bool IsPersistentId(MemberInfo member)
+			{
+				return Poids.Contains(member);
+			}
+
+			public bool IsMemberOfComposedId(MemberInfo member)
+			{
+				return ComposedIds.Contains(member);
+			}
+
+			public bool IsVersion(MemberInfo member)
+			{
+				return VersionProperties.Contains(member);
+			}
+
+			public bool IsMemberOfNaturalId(MemberInfo member)
+			{
+				return NaturalIds.Contains(member);
+			}
+
+			public bool IsPersistentProperty(MemberInfo member)
+			{
+				return PersistentMembers.Contains(member);
+			}
+
+			public bool IsSet(MemberInfo role)
+			{
+				return Sets.Contains(role);
+			}
+
+			public bool IsBag(MemberInfo role)
+			{
+				return Bags.Contains(role);
+			}
+
+			public bool IsIdBag(MemberInfo role)
+			{
+				return IdBags.Contains(role);
+			}
+
+			public bool IsList(MemberInfo role)
+			{
+				return Lists.Contains(role);
+			}
+
+			public bool IsArray(MemberInfo role)
+			{
+				return Arrays.Contains(role);
+			}
+
+			public bool IsDictionary(MemberInfo role)
+			{
+				return Dictionaries.Contains(role);
+			}
+
+			public bool IsProperty(MemberInfo member)
+			{
+				return Properties.Contains(member);
+			}
+
+			public bool IsDynamicComponent(MemberInfo member)
+			{
+				return DynamicComponents.Contains(member);
+			}
+
+			public IEnumerable<string> GetPropertiesSplits(System.Type type)
+			{
+				return GetSplitGroupsFor(type);
+			}
+		}
+
+		private readonly MixinDeclaredModel declaredModel;
 
 		private Func<System.Type, bool, bool> isEntity = (t, declared) => declared;
 		private Func<System.Type, bool, bool> isRootEntity;
@@ -56,11 +199,12 @@ namespace NHibernate.Mapping.ByCode
 			isDictionary = (m, declared) => declared || MatchCollection(m, MatchDictionaryMember);
 			isManyToOne = (m, declared) => declared || MatchManyToOne(m);
 			isOneToMany = (m, declared) => declared || MatchOneToMany(m);
+			declaredModel = new MixinDeclaredModel(this);
 		}
 
 		private bool MatchRootEntity(System.Type type)
 		{
-			return type.IsClass && typeof(object).Equals(type.BaseType);
+			return type.IsClass && typeof(object).Equals(type.BaseType) && ((IModelInspector)this).IsEntity(type);
 		}
 
 		private bool MatchTablePerClass(System.Type type)
@@ -213,6 +357,10 @@ namespace NHibernate.Mapping.ByCode
 			const BindingFlags flattenHierarchyMembers =
 				BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
+			if (declaredModel.IsEntity(subject))
+			{
+				return false;
+			}
 			var modelInspector = (IModelInspector) this;
 			return !subject.IsEnum && (subject.Namespace == null || !subject.Namespace.StartsWith("System")) /* hack */
 							&& !modelInspector.IsEntity(subject)
@@ -224,7 +372,10 @@ namespace NHibernate.Mapping.ByCode
 		{
 			const BindingFlags flattenHierarchyMembers =
 				BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-
+			if(declaredModel.Components.Contains(subject))
+			{
+				return false;
+			}
 			var modelInspector = (IModelInspector) this;
 			return subject.IsClass &&
 			       subject.GetProperties(flattenHierarchyMembers).Cast<MemberInfo>().Concat(subject.GetFields(flattenHierarchyMembers)).Any(m => modelInspector.IsPersistentId(m));
@@ -488,13 +639,13 @@ namespace NHibernate.Mapping.ByCode
 
 		bool IModelInspector.IsRootEntity(System.Type type)
 		{
-			bool declaredResult = declaredModel.IsRootEntity(type);
+			bool declaredResult = declaredModel.RootEntities.Contains(type);
 			return isRootEntity(type, declaredResult);
 		}
 
 		bool IModelInspector.IsComponent(System.Type type)
 		{
-			bool declaredResult = declaredModel.IsComponent(type);
+			bool declaredResult = declaredModel.Components.Contains(type);
 			return isComponent(type, declaredResult);
 		}
 

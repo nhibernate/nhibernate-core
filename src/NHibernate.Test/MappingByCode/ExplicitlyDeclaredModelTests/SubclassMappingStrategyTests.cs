@@ -50,17 +50,25 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
-			inspector.Executing(x => x.AddAsTablePerClassEntity(typeof(Inherited1))).Throws<MappingException>();
+			Executing.This(() =>
+										 {
+											 inspector.AddAsTablePerClassEntity(typeof(Inherited1));
+											 inspector.IsTablePerClass(typeof(Inherited1));
+										 }).Should().Throw<MappingException>();
 		}
 
 		[Test]
 		public void WhenRegisteredAsSubclassThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
+			inspector.AddAsRootEntity(typeof (MyClass));
+			inspector.AddAsTablePerClassHierarchyEntity(typeof (Inherited1));
 
-			inspector.Executing(x => x.AddAsTablePerConcreteClassEntity(typeof(Inherited1))).Throws<MappingException>();
+			Executing.This(() =>
+			               {
+			               	inspector.AddAsTablePerConcreteClassEntity(typeof (Inherited1));
+			               	inspector.IsTablePerClassHierarchy(typeof (Inherited1));
+			               }).Should().Throw<MappingException>();
 		}
 
 		[Test]

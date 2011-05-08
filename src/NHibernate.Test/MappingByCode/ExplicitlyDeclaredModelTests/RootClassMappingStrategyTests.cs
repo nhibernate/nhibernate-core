@@ -103,24 +103,36 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsRootThenCantRegisterAsSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.Executing(x=> x.AddAsTablePerClassEntity(typeof(MyClass))).Throws<MappingException>();
+			inspector.AddAsRootEntity(typeof (MyClass));
+			Executing.This(() =>
+			               {
+			               	inspector.AddAsTablePerClassHierarchyEntity(typeof (MyClass));
+			               	inspector.IsTablePerClassHierarchy(typeof (MyClass));
+			               }).Should().Throw<MappingException>();
 		}
 
 		[Test]
 		public void WhenRegisteredAsRootThenCantRegisterAsJoinedSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.Executing(x => x.AddAsTablePerClassEntity(typeof(MyClass))).Throws<MappingException>();
+			inspector.AddAsRootEntity(typeof (MyClass));
+			Executing.This(() =>
+			               {
+			               	inspector.AddAsTablePerClassEntity(typeof (MyClass));
+			               	inspector.IsTablePerClass(typeof (MyClass));
+			               }).Should().Throw<MappingException>();
 		}
 
 		[Test]
 		public void WhenRegisteredAsRootThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof(MyClass));
-			inspector.Executing(x => x.AddAsTablePerClassEntity(typeof(MyClass))).Throws<MappingException>();
+			inspector.AddAsRootEntity(typeof (MyClass));
+			Executing.This(() =>
+			               {
+			               	inspector.AddAsTablePerConcreteClassEntity(typeof (MyClass));
+			               	inspector.IsTablePerClass(typeof (MyClass));
+			               }).Should().Throw<MappingException>();
 		}
 
 		[Test]
@@ -130,6 +142,19 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 
 			inspector.IsEntity(typeof(MyClass)).Should().Be.True();
+		}
+
+		[Test]
+		public void WhenMultipleRootRegisteredThenThrowsMappingException()
+		{
+			var inspector = new ExplicitlyDeclaredModel();
+			inspector.AddAsRootEntity(typeof(MyClass));
+			inspector.AddAsRootEntity(typeof(Inherited1));
+			Executing.This(()=>
+			               {
+			               	inspector.AddAsTablePerClassEntity(typeof(Inherited2));
+											inspector.IsTablePerClass(typeof(Inherited2));
+			               }).Should().Throw<MappingException>();
 		}
 	}
 }
