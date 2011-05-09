@@ -10,6 +10,35 @@
 		* For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 
+Build 3.2.0.Aplha3 (rev5803)
+=============================
+** Sub-task
+    * [NH-1344] - QueryTranslator: Invalid Cast to object array when using IResultTransformer
+    * [NH-1642] - one-to-many collection doesn't work if the child is mapped using table per class
+
+** Bug
+    * [NH-1090] - Query cache does not work when using Criteria API to create a projection query with a result transformer
+    * [NH-1747] - Lazy load failure on items using <join> if FK for bag is in the secondary table
+    * [NH-2510] - Lazy-loading doesn't work with cache
+    * [NH-2569] - IDGeneratorBinding seems broken when mixing schemas
+    * [NH-2587] - .Cacheable().Fetch() throws 'Exception occurred getter of xxx'
+    * [NH-2661] - NHibernate cannot handle SQL Server TIME columns when built with the .NET 4 framework
+    * [NH-2673] - Nhibernate 2nd level cache and Result transformer
+    * [NH-2685] - Unnecessary proxy initialisation in CriteriaQueryTranslator
+    * [NH-2686] - Embedded ResultsTransformers should implements Equals/GetHashCode
+
+** Improvement
+    * [NH-2505] - Querries with WHERE containing SQL Server 'bit' datatype produce CASE construction
+    * [NH-2551] - Bad code practice. Function SessionFactoryImpl.GetImplementors: if type not found - value from ReflectHelper.ClassForFullName returns through TypeLoadException.
+    * [NH-2670] - Stateless Session load no-lazy collection
+    * [NH-2684] - More simple way to add NamedQueries by-code
+
+** New Feature
+    * [NH-2674] - QueryOver doesn't have support for entity-name
+
+** Patch
+    * [NH-2669] - Patch to prevent "NHibernate.AssertionFailure: possible non-threadsafe access to the session" error caused by stateless sessions
+
 Build 3.2.0.Aplha2 (rev5715)
 =============================
 ** Bug
