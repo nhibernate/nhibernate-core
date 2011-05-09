@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Context;
+using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
@@ -133,6 +134,26 @@ namespace NHibernate.Cfg
 			}
 			var mappings = GetMappings(configuration);
 			mappings.AddTypeDef(tdConfiguration.Alias, typeof(TDef).AssemblyQualifiedName, tdConfiguration.Properties.ToTypeParameters());
+			return configuration;
+		}
+
+		public static Configuration AddNamedQuery(this Configuration configuration, string queryIdentifier, Action<INamedQueryDefinitionBuilder> namedQueryDefinition)
+		{
+			if (configuration == null)
+			{
+				throw new ArgumentNullException("configuration");
+			}
+			if (queryIdentifier == null)
+			{
+				throw new ArgumentNullException("queryIdentifier");
+			}
+			if (namedQueryDefinition == null)
+			{
+				throw new ArgumentNullException("namedQueryDefinition");
+			}
+			var builder = new NamedQueryDefinitionBuilder();
+			namedQueryDefinition(builder);
+			configuration.NamedQueries.Add(queryIdentifier, builder.Build());
 			return configuration;
 		}
 
