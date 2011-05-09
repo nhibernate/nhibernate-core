@@ -656,6 +656,7 @@
     <Compile Include="NHSpecificTest\NH1869\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1925\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1925\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1965\ReattachWithCollectionTest.cs" />
     <Compile Include="NHSpecificTest\NH2037\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2037\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2043\Domain.cs" />
