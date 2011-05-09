@@ -662,6 +662,8 @@
     <Compile Include="NHSpecificTest\NH2043\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2043\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2056\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2100\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2100\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2111\A.cs" />
     <Compile Include="NHSpecificTest\NH2111\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2112\Fixture.cs" />

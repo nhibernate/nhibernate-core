@@ -29,14 +29,19 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapComponent += ComponentParentNoSetterToField;
 
 			BeforeMapBag += MemberToFieldAccessor;
+			BeforeMapIdBag += MemberToFieldAccessor;
 			BeforeMapSet += MemberToFieldAccessor;
 			BeforeMapMap += MemberToFieldAccessor;
 			BeforeMapList += MemberToFieldAccessor;
+
 			BeforeMapBag += MemberNoSetterToField;
+			BeforeMapIdBag += MemberNoSetterToField;
 			BeforeMapSet += MemberNoSetterToField;
 			BeforeMapMap += MemberNoSetterToField;
 			BeforeMapList += MemberNoSetterToField;
+
 			BeforeMapBag += MemberReadOnlyAccessor;
+			BeforeMapIdBag += MemberReadOnlyAccessor;
 			BeforeMapSet += MemberReadOnlyAccessor;
 			BeforeMapMap += MemberReadOnlyAccessor;
 			BeforeMapList += MemberReadOnlyAccessor;
