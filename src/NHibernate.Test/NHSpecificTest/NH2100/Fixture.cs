@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -22,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 			mapper.Class<Class1>(r => { r.IdBag(x => x.Class2List, map => map.Inverse(true), rel => rel.ManyToMany()); });
 			mapper.Class<Class2>(r => { r.IdBag<Class1>("_class1List", map => { }, rel => rel.ManyToMany()); });
 			HbmMapping mappings = mapper.CompileMappingFor(new[] {typeof (Class1), typeof (Class2)});
-			Console.WriteLine(mappings.AsString());
 			return mappings;
 		}
 
