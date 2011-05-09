@@ -784,6 +784,7 @@
     <Compile Include="NHSpecificTest\NH2505\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2507\Animal.cs" />
     <Compile Include="NHSpecificTest\NH2507\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2510\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2527\FixtureWithNoBatcher.cs" />
     <Compile Include="NHSpecificTest\NH2527\Model.cs" />
     <Compile Include="NHSpecificTest\NH2530\Domain.cs" />

@@ -61,10 +61,17 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public static object[] Assemble(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner)
 		{
-			object[] assembled = new object[row.Length];
+			var assembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
 			{
-				assembled[i] = types[i].Assemble(row[i], session, owner);
+				if (row[i] == LazyPropertyInitializer.UnfetchedProperty || row[i] == BackrefPropertyAccessor.Unknown)
+				{
+					assembled[i] = row[i];
+				}
+				else
+				{
+					assembled[i] = types[i].Assemble(row[i], session, owner);
+				}
 			}
 			return assembled;
 		}
@@ -110,10 +117,17 @@ namespace NHibernate.Type
 		public static object[] Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
 																	 object owner, IDictionary copiedAlready)
 		{
-			object[] copied = new object[original.Length];
+			var copied = new object[original.Length];
 			for (int i = 0; i < original.Length; i++)
 			{
-				copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);
+				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				{
+					copied[i] = target[i];
+				}
+				else
+				{
+					copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);
+				}
 			}
 			return copied;
 		}
@@ -225,7 +239,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < span; i++)
 			{
 				bool dirty =
-					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
+					currentState[i] != LazyPropertyInitializer.UnfetchedProperty &&
 					properties[i].IsDirtyCheckable(anyUninitializedProperties)
 					&& properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
 
@@ -276,7 +290,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < span; i++)
 			{
 				bool dirty =
-					// TODO H3: x[ i ] != LazyPropertyInitializer.UnfetchedProperty && //x is the "current" state
+					currentState[i] != LazyPropertyInitializer.UnfetchedProperty &&
 					properties[i].IsDirtyCheckable(anyUninitializedProperties)
 					&& properties[i].Type.IsModified(previousState[i], currentState[i], includeColumns[i], session);
 
