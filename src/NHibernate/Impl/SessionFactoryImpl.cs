@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Linq;
 using Iesi.Collections.Generic;
 
 using NHibernate.Cache;
@@ -29,6 +30,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 using HibernateDialect = NHibernate.Dialect.Dialect;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Impl
 {
@@ -133,6 +135,7 @@ namespace NHibernate.Impl
 		[NonSerialized] private readonly SQLFunctionRegistry sqlFunctionRegistry;
 		[NonSerialized] private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		[NonSerialized] private readonly UpdateTimestampsCache updateTimestampsCache;
+		[NonSerialized] private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ThreadSafeDictionary<string, string[]>(new Dictionary<string, string[]>(100));
 		private readonly string uuid;
 		private bool disposed;
 
@@ -590,6 +593,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		public string[] GetImplementors(string entityOrClassName)
 		{
+			string[] knownMap;
+			if(entityNameImplementorsMap.TryGetValue(entityOrClassName,out knownMap))
+			{
+				return knownMap;
+			}
 			System.Type clazz = null;
 
 			// NH Different implementation for performance: a class without at least a namespace sure can't be found by reflection
@@ -597,13 +605,15 @@ namespace NHibernate.Impl
 			{
 				IEntityPersister checkPersister;
 				// NH Different implementation: we have better performance checking, first of all, if we know the class
-				// and take the System.Type directly from the persister (className have high probability to be entityName)
+				// and take the System.Type directly from the persister (className have high probability to be entityName at least using Criteria or Linq)
 				if (entityPersisters.TryGetValue(entityOrClassName, out checkPersister))
 				{
 					if(!checkPersister.EntityMetamodel.HasPocoRepresentation)
 					{
 						// we found the persister but it is a dynamic entity without class
-						return new[] { entityOrClassName };
+						knownMap = new[] { entityOrClassName };
+						entityNameImplementorsMap[entityOrClassName] = knownMap;
+						return knownMap;
 					}
 					// NH : take care with this because we are forcing the Poco EntityMode
 					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
@@ -634,56 +644,58 @@ namespace NHibernate.Impl
 
 			if (clazz == null)
 			{
-				return new[] {entityOrClassName}; //for a dynamic-class
+				knownMap = new[] { entityOrClassName };
+				entityNameImplementorsMap[entityOrClassName] = knownMap;
+				return knownMap; //for a dynamic-class
 			}
 
-			List<string> results = new List<string>();
-			foreach (IEntityPersister p in entityPersisters.Values)
+			var results = new List<string>();
+			foreach (var q in entityPersisters.Values.OfType<IQueryable>())
 			{
-				IQueryable q = p as IQueryable;
-				if (q != null)
+				string registeredEntityName = q.EntityName;
+				// NH: as entity-name we are using the FullName but in HQL we allow just the Name, the class is mapped even when its FullName match the entity-name
+				bool isMappedClass = entityOrClassName.Equals(registeredEntityName) || clazz.FullName.Equals(registeredEntityName);
+				if (q.IsExplicitPolymorphism)
 				{
-					string registeredEntityName = q.EntityName;
-					// NH: as entity-name we are using the FullName but in HQL we allow just the Name, the class is mapped even when its FullName match the entity-name
-					bool isMappedClass = entityOrClassName.Equals(registeredEntityName) || clazz.FullName.Equals(registeredEntityName);
-					if (q.IsExplicitPolymorphism)
+					if (isMappedClass)
 					{
-						if (isMappedClass)
-						{
-							return new string[] {registeredEntityName}; // NOTE EARLY EXIT
-						}
+						knownMap = new[] { registeredEntityName };
+						entityNameImplementorsMap[entityOrClassName] = knownMap;
+						return knownMap; // NOTE EARLY EXIT
+					}
+				}
+				else
+				{
+					if (isMappedClass)
+					{
+						results.Add(registeredEntityName);
 					}
 					else
 					{
-						if (isMappedClass)
+						System.Type mappedClass = q.GetMappedClass(EntityMode.Poco);
+						if (mappedClass != null && clazz.IsAssignableFrom(mappedClass))
 						{
-							results.Add(registeredEntityName);
-						}
-						else
-						{
-							System.Type mappedClass = q.GetMappedClass(EntityMode.Poco);
-							if (mappedClass != null && clazz.IsAssignableFrom(mappedClass))
+							bool assignableSuperclass;
+							if (q.IsInherited)
 							{
-								bool assignableSuperclass;
-								if (q.IsInherited)
-								{
-									System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).GetMappedClass(EntityMode.Poco);
-									assignableSuperclass = clazz.IsAssignableFrom(mappedSuperclass);
-								}
-								else
-								{
-									assignableSuperclass = false;
-								}
-								if (!assignableSuperclass)
-								{
-									results.Add(registeredEntityName);
-								}
+								System.Type mappedSuperclass = GetEntityPersister(q.MappedSuperclass).GetMappedClass(EntityMode.Poco);
+								assignableSuperclass = clazz.IsAssignableFrom(mappedSuperclass);
+							}
+							else
+							{
+								assignableSuperclass = false;
+							}
+							if (!assignableSuperclass)
+							{
+								results.Add(registeredEntityName);
 							}
 						}
 					}
 				}
 			}
-			return results.ToArray();
+			knownMap = results.ToArray();
+			entityNameImplementorsMap[entityOrClassName] = knownMap;
+			return knownMap;
 		}
 
 		public string GetImportedClassName(string className)
