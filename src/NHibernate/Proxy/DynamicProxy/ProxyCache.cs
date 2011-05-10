@@ -8,12 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
 	public class ProxyCache : IProxyCache
 	{
-		private readonly Dictionary<ProxyCacheEntry, System.Type> cache = new Dictionary<ProxyCacheEntry, System.Type>();
+		private readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
 		private readonly object syncObject = new object();
 
 		#region IProxyCache Members
