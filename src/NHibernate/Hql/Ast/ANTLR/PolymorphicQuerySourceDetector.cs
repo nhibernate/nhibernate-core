@@ -20,34 +20,31 @@ namespace NHibernate.Hql.Ast.ANTLR
             _sessionFactoryHelper = new SessionFactoryHelper(sfi);
         }
 
-        public Dictionary<IASTNode, IASTNode[]> Process(IASTNode tree)
-        {
-            foreach (var querySource in new QuerySourceDetector(tree).LocateQuerySources())
-            {
-                var className = GetClassName(querySource);
-                var classType = _sessionFactoryHelper.GetImportedClass(className);
+				public Dictionary<IASTNode, IASTNode[]> Process(IASTNode tree)
+				{
+					foreach (var querySource in new QuerySourceDetector(tree).LocateQuerySources())
+					{
+						var className = GetClassName(querySource);
+						string[] implementors = _sfi.GetImplementors(className);
+						AddImplementorsToMap(querySource, className, implementors);
+					}
 
-                AddImplementorsToMap(querySource, classType == null ? className : classType.FullName);
-            }
+					return _map;
+				}
 
-            return _map;
-        }
+				private void AddImplementorsToMap(IASTNode querySource, string className, string[] implementors)
+				{
+					if (implementors.Length == 1 && implementors[0] == className)
+					{
+						// No need to change things
+						return;
+					}
 
-        private void AddImplementorsToMap(IASTNode querySource, string className)
-        {
-            var implementors = _sfi.GetImplementors(className);
+					_map.Add(querySource,
+					         implementors.Select(implementor => MakeIdent(querySource, implementor)).ToArray());
+				}
 
-            if (implementors.Length == 1 && implementors[0] == className)
-            {
-                // No need to change things
-                return;
-            }
-
-            _map.Add(querySource,
-                     implementors.Select(implementor => MakeIdent(querySource, implementor)).ToArray());
-        }
-
-        private static string GetClassName(IASTNode querySource)
+    	private static string GetClassName(IASTNode querySource)
         {
             switch (querySource.Type)
             {

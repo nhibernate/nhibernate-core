@@ -588,22 +588,22 @@ namespace NHibernate.Impl
 		/// given class or interface, accounting for implicit/explicit polymorphism settings
 		/// and excluding mapped subclasses/joined-subclasses of other classes in the result.
 		/// </summary>
-		public string[] GetImplementors(string className)
+		public string[] GetImplementors(string entityOrClassName)
 		{
 			System.Type clazz = null;
 
 			// NH Different implementation for performance: a class without at least a namespace sure can't be found by reflection
-			if (className.IndexOf('.') > 0)
+			if (entityOrClassName.IndexOf('.') > 0)
 			{
 				IEntityPersister checkPersister;
 				// NH Different implementation: we have better performance checking, first of all, if we know the class
 				// and take the System.Type directly from the persister (className have high probability to be entityName)
-				if (entityPersisters.TryGetValue(className, out checkPersister))
+				if (entityPersisters.TryGetValue(entityOrClassName, out checkPersister))
 				{
 					if(!checkPersister.EntityMetamodel.HasPocoRepresentation)
 					{
 						// we found the persister but it is a dynamic entity without class
-						return new[] { className };
+						return new[] { entityOrClassName };
 					}
 					// NH : take care with this because we are forcing the Poco EntityMode
 					clazz = checkPersister.GetMappedClass(EntityMode.Poco);
@@ -613,7 +613,7 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						clazz = ReflectHelper.ClassForFullNameOrNull(className);
+						clazz = ReflectHelper.ClassForFullNameOrNull(entityOrClassName);
 					}
 					catch (Exception)
 					{
@@ -624,7 +624,17 @@ namespace NHibernate.Impl
 
 			if (clazz == null)
 			{
-				return new[] {className}; //for a dynamic-class
+				// try to get the class from imported names
+				string importedName = GetImportedClassName(entityOrClassName);
+				if (importedName != null)
+				{
+					clazz = System.Type.GetType(importedName, false);
+				}
+			}
+
+			if (clazz == null)
+			{
+				return new[] {entityOrClassName}; //for a dynamic-class
 			}
 
 			List<string> results = new List<string>();
@@ -633,20 +643,21 @@ namespace NHibernate.Impl
 				IQueryable q = p as IQueryable;
 				if (q != null)
 				{
-					string testClassName = q.EntityName;
-					bool isMappedClass = className.Equals(testClassName);
+					string registeredEntityName = q.EntityName;
+					// NH: as entity-name we are using the FullName but in HQL we allow just the Name, the class is mapped even when its FullName match the entity-name
+					bool isMappedClass = entityOrClassName.Equals(registeredEntityName) || clazz.FullName.Equals(registeredEntityName);
 					if (q.IsExplicitPolymorphism)
 					{
 						if (isMappedClass)
 						{
-							return new string[] {testClassName}; // NOTE EARLY EXIT
+							return new string[] {registeredEntityName}; // NOTE EARLY EXIT
 						}
 					}
 					else
 					{
 						if (isMappedClass)
 						{
-							results.Add(testClassName);
+							results.Add(registeredEntityName);
 						}
 						else
 						{
@@ -665,7 +676,7 @@ namespace NHibernate.Impl
 								}
 								if (!assignableSuperclass)
 								{
-									results.Add(testClassName);
+									results.Add(registeredEntityName);
 								}
 							}
 						}

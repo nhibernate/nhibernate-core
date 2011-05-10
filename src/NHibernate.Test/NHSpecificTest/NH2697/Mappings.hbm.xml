@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2697">
+
+	<class name="ArticleItem" table="ARTICLES" lazy="true" dynamic-update="true"
+			entity-name="Article" polymorphism="explicit">
+		<id name="Articleid" column="ARTICLEID" type="int" unsaved-value="0">
+			<generator class="native" >
+				<param name="sequence">gen_articles_id</param>
+			</generator>
+		</id>
+		<property name="IsFavorite" column="ISFAVORITE" type="short" not-null="true"/>
+		<many-to-one name="Articlegroup" column="ARTICLEGROUPID" class="ArticleGroupItem" cascade="none" not-null="false"/>
+		<property name="Name" column="NAME" type="string" length="200" not-null="false"/>
+	</class>
+  
+	<class name="ArticleItem" table="ACTIVITY_ARTICLES" lazy="true" dynamic-update="true"
+			entity-name="ActivityArticle" polymorphism="explicit">
+		<id name="Articleid" column="ARTICLEID" type="int" unsaved-value="0">
+			<generator class="native" >
+				<param name="sequence">gen_articles_id</param>
+			</generator>
+		</id>
+		<property name="Name" column="NAME" type="string" length="200" not-null="false"/>
+	</class>
+
+	<class name="ArticleGroupItem" table="ARTICLEGROUPS" lazy="true" dynamic-update="true">
+		<id name="Articlegroupid" column="ARTICLEGROUPID" type="int" unsaved-value="0">
+			<generator class="native" >
+				<param name="sequence">gen_pk_ArticleGroups</param>
+			</generator>
+		</id>
+		<property name="Name" column="NAME" type="string" length="200" not-null="false"/>
+	</class>
+
+</hibernate-mapping>
