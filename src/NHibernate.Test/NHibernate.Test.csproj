@@ -820,6 +820,8 @@
     <Compile Include="NHSpecificTest\NH2660And2661\Test.cs" />
     <Compile Include="NHSpecificTest\NH2673\Blog.cs" />
     <Compile Include="NHSpecificTest\NH2673\CachingWithTrasformerTests.cs" />
+    <Compile Include="NHSpecificTest\NH2691\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2691\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2697\ArticleGroupItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\ArticleItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\SampleTest.cs" />

@@ -78,7 +78,7 @@ namespace NHibernate.Linq.Visitors
         {
             Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhShortCountExpression(nx) : expression;
+						return nx != expression.Expression ? expression.CreateNew(nx) : expression;
         }
 
         protected virtual Expression VisitNhSum(NhSumExpression expression)

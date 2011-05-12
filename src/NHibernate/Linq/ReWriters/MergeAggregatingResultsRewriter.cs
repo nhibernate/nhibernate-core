@@ -110,6 +110,10 @@ namespace NHibernate.Linq.ReWriters
 						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
 						                       e => new NhShortCountExpression(e),
                                                () => new CountResultOperator());
+					case "LongCount":
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
+						                       e => new NhLongCountExpression(e),
+						                       () => new LongCountResultOperator());
 					case "Min":
 						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 						                       e => new NhMinExpression(e),
