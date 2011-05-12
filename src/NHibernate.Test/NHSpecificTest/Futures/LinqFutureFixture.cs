@@ -105,7 +105,12 @@ namespace NHibernate.Test.NHSpecificTest.Futures
         [Test]
         public void CanUseFutureFetchQuery()
         {
-            using (var s = sessions.OpenSession())
+					IDriver driver = sessions.ConnectionProvider.Driver;
+					if (!driver.SupportsMultipleQueries)
+					{
+						Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+					}
+					using (var s = sessions.OpenSession())
             using (var tx = s.BeginTransaction())
             {
                 var p1 = new Person {Name = "Parent"};
