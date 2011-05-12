@@ -794,6 +794,8 @@
     <Compile Include="NHSpecificTest\NH2527\Model.cs" />
     <Compile Include="NHSpecificTest\NH2530\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2530\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2546\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2546\SetCommandParameterSizesFalseFixture.cs" />
     <Compile Include="NHSpecificTest\NH2554\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2554\Model.cs" />
     <Compile Include="NHSpecificTest\NH2565\Domain.cs" />
@@ -2667,6 +2669,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2546\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2697\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1642\Mappings.hbm.xml" />
     <EmbeddedResource Include="Stateless\Contact.hbm.xml" />
