@@ -515,7 +515,7 @@ namespace NHibernate.Impl
 						ITranslator translator = Translators[i];
 						QueryParameters parameter = Parameters[i];
 						IList tempResults;
-						if (resultCollectionGenericType[i] == typeof(object))
+						if (resultCollectionGenericType[i] == typeof(object) || parameter.ResultTransformer != null)
 						{
 							tempResults = new ArrayList();
 						}

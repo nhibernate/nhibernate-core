@@ -75,6 +75,83 @@ namespace NHibernate.Test.NHSpecificTest.Futures
         }
 
         [Test]
+        public void CanUseFutureQueryWithAnonymousType()
+        {
+            using (var s = sessions.OpenSession())
+            {
+                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+                var persons = s.Query<Person>()
+                    .Select(p => new {Id = p.Id, Name = p.Name})
+                    .ToFuture();
+                var persons5 = s.Query<Person>()
+                    .Select(p => new { Id = p.Id, Name = p.Name })
+                    .Take(5)
+                    .ToFuture();
+
+                using (var logSpy = new SqlLogSpy())
+                {
+                    persons5.ToList(); // initialize the enumerable
+                    persons.ToList();
+
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(1, events.Length);
+                }
+            }
+        }
+
+
+
+        [Test]
+        public void CanUseFutureFetchQuery()
+        {
+            using (var s = sessions.OpenSession())
+            using (var tx = s.BeginTransaction())
+            {
+                var p1 = new Person {Name = "Parent"};
+                var p2 = new Person {Parent = p1, Name = "Child"};
+                p1.Children.Add(p2);
+                s.Save(p1);
+                s.Save(p2);
+                tx.Commit();
+                
+                s.Clear(); // we don't want caching
+            }
+
+            using (var s = sessions.OpenSession())
+            {
+                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+                var persons = s.Query<Person>()
+                    .FetchMany(p => p.Children)
+                    .ToFuture();
+                var persons10 = s.Query<Person>()
+                    .FetchMany(p => p.Children)
+                    .Take(10)
+                    .ToFuture();
+               
+
+                using (var logSpy = new SqlLogSpy())
+                {
+
+                    Assert.That(persons.Any(x => x.Children.Any()), "No children found");
+                    Assert.That(persons10.Any(x => x.Children.Any()), "No children found");                 
+
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(1, events.Length);
+                }
+            }
+
+            using (ISession s = OpenSession())
+            using (ITransaction tx = s.BeginTransaction())
+            {
+                s.Delete("from Person");
+                tx.Commit();
+            }
+        }
+
+
+        [Test]
         public void TwoFuturesRunInTwoRoundTrips()
         {
             using (var s = sessions.OpenSession())

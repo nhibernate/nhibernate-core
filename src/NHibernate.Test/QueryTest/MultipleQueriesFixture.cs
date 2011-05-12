@@ -503,6 +503,48 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
+		[Test]
+		public void CanGetResultsInAGenericListClass()
+		{
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var item1 = new Item() { Id = 1,  Name = "test item"};
+				var item2 = new Item() { Id = 2,  Name = "test child", Parent = item1 };
+				s.Save(item1);
+				s.Save(item2);
+
+				tx.Commit();
+				s.Clear();
+			}
+
+
+			using (ISession s = OpenSession())
+			{
+				
+
+				IQuery getItems = s.CreateQuery("from Item");
+				IQuery parents = s.CreateQuery("select Parent from Item");
+
+				IList results = s.CreateMultiQuery()
+					.Add(getItems)
+					.Add<Item>(parents)
+					.List();
+
+				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[1], Is.InstanceOf<List<Item>>());
+			}
+
+			using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Item");
+				tx.Commit();
+			}
+		}
+
+		
+
 		public class ResultTransformerStub : IResultTransformer
 		{
 			private bool _wasTransformTupleCalled;

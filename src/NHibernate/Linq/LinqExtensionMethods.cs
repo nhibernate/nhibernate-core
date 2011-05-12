@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using Remotion.Linq;
 
 namespace NHibernate.Linq
 {
@@ -48,20 +49,20 @@ namespace NHibernate.Linq
 
         public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
         {
-            var nhQueryable = query as NhQueryable<T>;
+            var nhQueryable = query as QueryableBase<T>;
             if (nhQueryable == null)
-                throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
+                throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
 
-						var future = ((INhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+            var future = ((INhQueryProvider) nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
             return (IEnumerable<T>)future;
         }
 
         public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
         {
-            var nhQueryable = query as NhQueryable<T>;
+            var nhQueryable = query as QueryableBase<T>;
             if (nhQueryable == null)
-                throw new NotSupportedException("You can also use the AsFuture() method on NhQueryable");
+                throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
 						var future = ((INhQueryProvider)nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
             if(future is DelayedEnumerator<T>)
