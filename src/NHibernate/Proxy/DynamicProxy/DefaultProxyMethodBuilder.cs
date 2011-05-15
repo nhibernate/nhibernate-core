@@ -53,7 +53,12 @@ namespace NHibernate.Proxy.DynamicProxy
 					typeNames.Add(string.Format("T{0}", index));
 				}
 
-				methodBuilder.DefineGenericParameters(typeNames.ToArray());
+				var typeArgsBuilder = methodBuilder.DefineGenericParameters(typeNames.ToArray());
+
+				for (int index = 0; index < typeArgs.Length; index++)
+				{
+					typeArgsBuilder[index].SetInterfaceConstraints(typeArgs[index].GetGenericParameterConstraints());
+				}
 			}
 
 			ILGenerator IL = methodBuilder.GetILGenerator();
