@@ -20,7 +20,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 
 		public AnyMapper(MemberInfo member, System.Type foreignIdType, HbmAny any, HbmMapping mapDoc)
-			: this(member, foreignIdType, new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x), any, mapDoc) {}
+			: this(member, foreignIdType, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x), any, mapDoc) { }
 
 		public AnyMapper(MemberInfo member, System.Type foreignIdType, IAccessorPropertyMapper accessorMapper, HbmAny any, HbmMapping mapDoc)
 		{
