@@ -11,7 +11,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HbmOneToOne oneToOne;
 
 		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne)
-			: this(member, new AccessorPropertyMapper(member.DeclaringType, member.Name, x => oneToOne.access = x), oneToOne) {}
+			: this(member, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => oneToOne.access = x), oneToOne) { }
 
 		public OneToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorMapper, HbmOneToOne oneToOne)
 		{
