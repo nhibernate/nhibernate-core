@@ -79,7 +79,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if(hbmId.name == null)
 			{
 				// no member for the id
-				hbmId.type1 = generator.DefaultReturnType.GetNhTypeName();
+				var defaultReturnType = generator.DefaultReturnType;
+				// where a DefaultReturnType is not available, let NH discover it during the mapping-binding process
+				if (defaultReturnType != null)
+				{
+					hbmId.type1 = defaultReturnType.GetNhTypeName();
+				}
 			}
 			object generatorParameters = generator.Params;
 			if (generatorParameters != null)
