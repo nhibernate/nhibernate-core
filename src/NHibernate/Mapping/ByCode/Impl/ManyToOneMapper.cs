@@ -14,7 +14,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 
 		public ManyToOneMapper(MemberInfo member, HbmManyToOne manyToOne, HbmMapping mapDoc)
-			: this(member, new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x), manyToOne, mapDoc) {}
+			: this(member, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x), manyToOne, mapDoc) { }
 
 		public ManyToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorPropertyMapper, HbmManyToOne manyToOne, HbmMapping mapDoc)
 		{
