@@ -6,7 +6,7 @@ using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace NHibernate.Test.MappingByCode
+namespace NHibernate.Test.MappingByCode.MappersTests
 {
 	public class ManyToOneMapperTest
 	{
