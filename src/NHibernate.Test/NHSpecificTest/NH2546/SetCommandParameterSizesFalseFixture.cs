@@ -7,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2546
 	[TestFixture]
 	public class SetCommandParameterSizesFalseFixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is Dialect.MsSql2008Dialect;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = Sfi.OpenSession())
