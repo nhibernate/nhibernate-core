@@ -19,5 +19,20 @@ namespace NHibernate.Criterion
 			string aliasContainer = ExpressionProcessor.FindPropertyExpression(alias.Body);
 			return Projections.Alias(projection, aliasContainer);
 		}
+
+		/// <summary>
+		/// Project SQL function year()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static int Year(this DateTime dateTimeProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		internal static IProjection ProcessYear(MethodCallExpression methodCallExpression)
+		{
+			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			return Projections.SqlFunction("year", NHibernateUtil.DateTime, property);
+		}
 	}
 }

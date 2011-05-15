@@ -17,10 +17,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Lt("Age", 65))
-					.Add(Restrictions.Ge("personAlias.Age", 18))
-					.Add(Restrictions.Not(Restrictions.Ge("Age", 65)))
-					.Add(Restrictions.Not(Restrictions.Lt("personAlias.Age", 18)));
+					.Add(Restrictions.Lt(Projections.Property("Age"), 65))
+					.Add(Restrictions.Ge(Projections.Property("personAlias.Age"), 18))
+					.Add(Restrictions.Not(Restrictions.Ge(Projections.Property("Age"), 65)))
+					.Add(Restrictions.Not(Restrictions.Lt(Projections.Property("personAlias.Age"), 18)));
 
 			Person personAlias = null;
 			var actual =
@@ -92,11 +92,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.Add(Restrictions.Conjunction()
-							.Add(Restrictions.Eq("Name", "test"))
-							.Add(Restrictions.Eq("personAlias.Name", "test")))
+							.Add(Restrictions.Eq(Projections.Property("Name"), "test"))
+							.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test")))
 					.Add(Restrictions.Disjunction()
-							.Add(Restrictions.Eq("Name", "test"))
-							.Add(Restrictions.Eq("personAlias.Name", "test")));
+							.Add(Restrictions.Eq(Projections.Property("Name"), "test"))
+							.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test")));
 
 			Person personAlias = null;
 			var actual =
@@ -182,23 +182,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.IsNull("Name"))
-					.Add(Restrictions.IsNull("Name"))
-					.Add(Restrictions.IsNull("Name"))
-					.Add(Restrictions.IsNull("Father"))
-					.Add(Restrictions.IsNull("Father"))
-					.Add(Restrictions.IsNull("NullableGender"))
-					.Add(Restrictions.IsNull("NullableAge"))
-					.Add(Restrictions.IsNull("NullableIsParent"))
-					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
-					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
-					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
-					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
-					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
-					.Add(Restrictions.Not(Restrictions.IsNull("NullableGender")))
-					.Add(Restrictions.Not(Restrictions.IsNull("NullableAge")))
-					.Add(Restrictions.Not(Restrictions.IsNull("NullableIsParent")))
-					.Add(Restrictions.IsNull("personAlias.Name"));
+					.Add(Restrictions.IsNull(Projections.Property("Name")))
+					.Add(Restrictions.IsNull(Projections.Property("Name")))
+					.Add(Restrictions.IsNull(Projections.Property("Name")))
+					.Add(Restrictions.IsNull(Projections.Property("Father")))
+					.Add(Restrictions.IsNull(Projections.Property("Father")))
+					.Add(Restrictions.IsNull(Projections.Property("NullableGender")))
+					.Add(Restrictions.IsNull(Projections.Property("NullableAge")))
+					.Add(Restrictions.IsNull(Projections.Property("NullableIsParent")))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Father"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Father"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableGender"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableAge"))))
+					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableIsParent"))))
+					.Add(Restrictions.IsNull(Projections.Property("personAlias.Name")));
 
 			Person personAlias = null;
 			CustomPerson nullPerson = null;
@@ -251,6 +251,20 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => p.Name.IsIn(new string[] { "name1", "name2" }))
 					.And(p => p.Name.IsIn(new ArrayList() { "name3", "name4" }))
 					.And(p => p.Age.IsBetween(10).And(20));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void FunctionExtensions()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.Eq(Projections.SqlFunction("year", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1970));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.BirthDate.Year() == 1970);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

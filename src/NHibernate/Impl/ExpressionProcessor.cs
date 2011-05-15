@@ -31,14 +31,15 @@ namespace NHibernate.Impl
 	public static class ExpressionProcessor
 	{
 
-		private readonly static IDictionary<ExpressionType, Func<string, object, ICriterion>> _simpleExpressionCreators = null;
+		private readonly static IDictionary<ExpressionType, Func<IProjection, object, ICriterion>> _simpleExpressionCreators = null;
 		private readonly static IDictionary<ExpressionType, Func<string, string, ICriterion>> _propertyExpressionCreators = null;
 		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes = null;
 		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors = null;
+		private readonly static IDictionary<string, Func<MethodCallExpression, IProjection>> _customProjectionProcessors = null;
 
 		static ExpressionProcessor()
 		{
-			_simpleExpressionCreators = new Dictionary<ExpressionType, Func<string, object, ICriterion>>();
+			_simpleExpressionCreators = new Dictionary<ExpressionType, Func<IProjection, object, ICriterion>>();
 			_simpleExpressionCreators[ExpressionType.Equal] = Eq;
 			_simpleExpressionCreators[ExpressionType.NotEqual] = Ne;
 			_simpleExpressionCreators[ExpressionType.GreaterThan] = Gt;
@@ -86,36 +87,39 @@ namespace NHibernate.Impl
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new object[0]), RestrictionExtensions.ProcessIsInArray);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new List<object>()), RestrictionExtensions.ProcessIsInCollection);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
+
+			_customProjectionProcessors = new Dictionary<string, Func<MethodCallExpression, IProjection>>();
+			RegisterCustomProjection(() => ProjectionsExtensions.Year(default(DateTime)), ProjectionsExtensions.ProcessYear);
 		}
 
-		private static ICriterion Eq(string propertyName, object value)
+		private static ICriterion Eq(IProjection propertyName, object value)
 		{
 			return Restrictions.Eq(propertyName, value);
 		}
 
-		private static ICriterion Ne(string propertyName, object value)
+		private static ICriterion Ne(IProjection propertyName, object value)
 		{
 			return
 				NHibernate.Criterion.Restrictions.Not(
 					NHibernate.Criterion.Restrictions.Eq(propertyName, value));
 		}
 
-		private static ICriterion Gt(string propertyName, object value)
+		private static ICriterion Gt(IProjection propertyName, object value)
 		{
 			return NHibernate.Criterion.Restrictions.Gt(propertyName, value);
 		}
 
-		private static ICriterion Ge(string propertyName, object value)
+		private static ICriterion Ge(IProjection propertyName, object value)
 		{
 			return NHibernate.Criterion.Restrictions.Ge(propertyName, value);
 		}
 
-		private static ICriterion Lt(string propertyName, object value)
+		private static ICriterion Lt(IProjection propertyName, object value)
 		{
 			return NHibernate.Criterion.Restrictions.Lt(propertyName, value);
 		}
 
-		private static ICriterion Le(string propertyName, object value)
+		private static ICriterion Le(IProjection propertyName, object value)
 		{
 			return NHibernate.Criterion.Restrictions.Le(propertyName, value);
 		}
@@ -128,6 +132,23 @@ namespace NHibernate.Impl
 			var valueExpression = Expression.Lambda(expression).Compile();
 			object value = valueExpression.DynamicInvoke();
 			return value;
+		}
+
+		/// <summary>
+		/// Retrieves the projection for the expression
+		/// </summary>
+		public static IProjection FindMemberProjection(Expression expression)
+		{
+			if (expression is MethodCallExpression)
+			{
+				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
+
+				string signature = Signature(methodCallExpression.Method);
+				if (_customProjectionProcessors.ContainsKey(signature))
+					return _customProjectionProcessors[signature](methodCallExpression);
+			}
+
+			return Projections.Property(FindMemberExpression(expression));
 		}
 
 		/// <summary>
@@ -245,7 +266,8 @@ namespace NHibernate.Impl
 
 			if (expression is MethodCallExpression)
 			{
-				return typeof(System.Type);
+				var methodCallExpression = (MethodCallExpression)expression;
+				return methodCallExpression.Method.ReturnType;
 			}
 
 			throw new Exception("Could not determine member type from " + expression.ToString());
@@ -320,7 +342,7 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessSimpleExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
-			string property = FindMemberExpression(left);
+			IProjection property = FindMemberProjection(left);
 			System.Type propertyType = FindMemberType(left);
 
 			object value = FindValue(right);
@@ -332,7 +354,7 @@ namespace NHibernate.Impl
 			if (!_simpleExpressionCreators.ContainsKey(nodeType))
 				throw new Exception("Unhandled simple expression type: " + nodeType);
 
-			Func<string, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
+			Func<IProjection, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
 			ICriterion criterion = simpleExpressionCreator(property, value);
 			return criterion;
 		}
@@ -347,7 +369,7 @@ namespace NHibernate.Impl
 				return ProcessSimpleExpression(methodCall.Arguments[0], methodCall.Arguments[1], be.NodeType);
 		}
 
-		private static ICriterion ProcessSimpleNullExpression(string property, ExpressionType expressionType)
+		private static ICriterion ProcessSimpleNullExpression(IProjection property, ExpressionType expressionType)
 		{
 			if (expressionType == ExpressionType.Equal)
 				return Restrictions.IsNull(property);
@@ -613,6 +635,18 @@ namespace NHibernate.Impl
 			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
 			string signature = Signature(functionExpression.Method);
 			_customMethodCallProcessors.Add(signature, functionProcessor);
+		}
+
+		/// <summary>
+		/// Register a custom projection for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">Lambda expression demonstrating call of custom method</param>
+		/// <param name="functionProcessor">function to convert MethodCallExpression to IProjection</param>
+		public static void RegisterCustomProjection<T>(Expression<Func<T>> function, Func<MethodCallExpression, IProjection> functionProcessor)
+		{
+			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
+			string signature = Signature(functionExpression.Method);
+			_customProjectionProcessors.Add(signature, functionProcessor);
 		}
 
 	}
