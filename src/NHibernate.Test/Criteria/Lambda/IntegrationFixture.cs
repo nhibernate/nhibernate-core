@@ -70,6 +70,19 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 			}
+
+			using (ISession s = OpenSession())
+			{
+				Person personAlias = null;
+
+				IList<Person> actual =
+					s.QueryOver<Person>(() => personAlias)
+						.Where(() => personAlias.Name == "test person 2")
+						.And(() => personAlias.Age == 30)
+						.List();
+
+				Assert.That(actual.Count, Is.EqualTo(1));
+			}
 		}
 
 		[Test]
@@ -416,12 +429,13 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(simpleProjection.First().Name, Is.EqualTo("Name 1.1"));
 				Assert.That(simpleProjection.First().Age, Is.EqualTo(3));
 
+				Child childAlias = null;
 				var listProjection =
-					s.QueryOver<Child>()
+					s.QueryOver<Child>(() => childAlias)
 						.JoinQueryOver(c => c.Parent)
 							.Where(p => p.Name == "Name 1" && p.Age == 33)
 							.SelectList(list => list
-								.Select(c => c.Nickname)
+								.Select(c => childAlias.Nickname)
 								.Select(c => c.Age))
 							.List<object[]>()
 							.Select(props => new
@@ -551,6 +565,32 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(bigRowCount, Is.TypeOf<long>());
 				Assert.That(bigRowCount, Is.EqualTo(4));
 			}
+		}
+
+		[Test]
+		public void Functions()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) });
+				s.Save(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) });
+				s.Save(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 05) });
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDate.Year() == 2008)
+						.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p2");
+			}
+
 		}
 
 		[Test]

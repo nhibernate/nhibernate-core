@@ -18,6 +18,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Children = new List<Child>();
 			Blood = 'O';
+			BirthDate = new DateTime(1950, 01, 01);
 		}
 
 		public static string StaticName;
