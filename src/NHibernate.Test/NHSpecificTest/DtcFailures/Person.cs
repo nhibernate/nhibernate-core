@@ -7,6 +7,11 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 	{
 		private int id;
 
+        public Person()
+        {
+            NotNullData = "not-null";
+        }
+
         public virtual DateTime CreatedAt { get; set; }
 
 		public virtual int Id
@@ -14,5 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			get { return id; }
 			set { id = value; }
 		}
+
+		public virtual string NotNullData { get; set; }
 	}
 }

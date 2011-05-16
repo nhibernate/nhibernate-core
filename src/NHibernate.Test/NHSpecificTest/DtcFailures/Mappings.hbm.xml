@@ -8,6 +8,6 @@
 			<generator class="hilo"/>
 		</id>
     <property name="CreatedAt"/>
-		
+    <property name="NotNullData"/> <!-- NOT NULL will be set on created schema directly to avoid NH checks. -->
 	</class>
 </hibernate-mapping>

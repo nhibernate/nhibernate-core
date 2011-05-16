@@ -1,9 +1,14 @@
 using System;
 using System.Collections;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Transactions;
 using log4net;
 using log4net.Repository.Hierarchy;
+using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.DtcFailures
@@ -28,14 +33,39 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			return TestDialect.GetTestDialect(dialect).SupportsDistributedTransactions;
 		}
 
+        protected override void CreateSchema()
+        {
+            // Copied from Configure method.
+            Configuration config = new Configuration();
+			if (TestConfigurationHelper.hibernateConfigFile != null)
+				config.Configure(TestConfigurationHelper.hibernateConfigFile);
+
+            // Our override so we can set nullability on database column without NHibernate knowing about it.
+            config.BeforeBindMapping += BeforeBindMapping;
+
+            // Copied from AddMappings methods.
+			Assembly assembly = Assembly.Load(MappingsAssembly);
+			foreach (string file in Mappings)
+				config.AddResource(MappingsAssembly + "." + file, assembly);
+
+            // Copied from CreateSchema method, but we use our own config.
+            new SchemaExport(config).Create(false, true);
+        }
+
+        private void BeforeBindMapping(object sender, BindMappingEventArgs e)
+        {
+            HbmProperty prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
+            prop.notnull = true;
+            prop.notnullSpecified = true;
+        }
+
 		[Test]
 		public void WillNotCrashOnDtcPrepareFailure()
 		{
 			var tx = new TransactionScope();
 			using (ISession s = sessions.OpenSession())
 			{
-				s.Save(new Person {CreatedAt = DateTime.MinValue // will cause SQL date failure
-				                  });
+				s.Save(new Person {NotNullData = null});  // Cause a SQL not null constraint violation.
 			}
 
 			new ForceEscalationToDistributedTx();
