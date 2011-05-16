@@ -115,5 +115,17 @@ namespace NHibernate.Test.Linq.ByMethod
                 Assert.Greater(ids[0], ids[1]);
             }
         }
+
+		[Test]
+		public void OrderByDoesNotFilterResultsOnJoin()
+		{
+			// Check preconditions.
+			var allAnimalsWithNullFather = from a in db.Animals where a.Father == null select a;
+			Assert.Greater(allAnimalsWithNullFather.Count(), 0);
+			// Check join result.
+			var allAnimals = db.Animals;
+			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
+			Assert.AreEqual(allAnimals.Count(), orderedAnimals.Count());
+		}
     }
 }

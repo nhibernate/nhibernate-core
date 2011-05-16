@@ -54,6 +54,11 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _session.Query<Timesheet>(); }
         }
 
+    	public IQueryable<Animal> Animals
+    	{
+			get { return _session.Query<Animal>(); }
+    	}
+
         public IQueryable<Mammal> Mammals
         {
             get { return _session.Query<Mammal>(); }
