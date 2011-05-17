@@ -138,7 +138,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdDriver";
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdClientDriver";
 		}
 
 		/// <summary></summary>
