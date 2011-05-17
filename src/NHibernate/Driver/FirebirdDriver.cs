@@ -9,12 +9,12 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="FirebirdDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
-		/// Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly can not be loaded.
+		/// Thrown when the <c>FirebirdSql.Data.FirebirdClient</c> assembly can not be loaded.
 		/// </exception>
 		public FirebirdDriver() : base(
-			"FirebirdSql.Data.Firebird",
-			"FirebirdSql.Data.Firebird.FbConnection",
-			"FirebirdSql.Data.Firebird.FbCommand")
+			"FirebirdSql.Data.FirebirdClient",
+			"FirebirdSql.Data.FirebirdClient.FbConnection",
+			"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
 		}
 
