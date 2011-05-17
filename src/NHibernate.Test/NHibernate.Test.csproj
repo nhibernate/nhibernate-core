@@ -759,6 +759,9 @@
     <Compile Include="NHSpecificTest\NH2394\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2394\PhoneNumber.cs" />
     <Compile Include="NHSpecificTest\NH2394\PhoneNumberUserType.cs" />
+    <Compile Include="NHSpecificTest\NH2404\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2404\TestEntity.cs" />
+    <Compile Include="NHSpecificTest\NH2404\TestEntityDto.cs" />
     <Compile Include="NHSpecificTest\NH2409\Contest.cs" />
     <Compile Include="NHSpecificTest\NH2409\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2409\Message.cs" />
@@ -2678,6 +2681,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2404\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2705\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2546\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2697\Mappings.hbm.xml" />
