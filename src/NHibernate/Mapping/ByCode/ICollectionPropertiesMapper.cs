@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode
@@ -27,6 +28,7 @@ namespace NHibernate.Mapping.ByCode
 		void Cache(Action<ICacheMapper> cacheMapping);
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Fetch(CollectionFetchMode fetchMode);
+		void Persister(System.Type persister);
 	}
 
 	public interface ICollectionPropertiesMapper<TEntity, TElement> : IEntityPropertyMapper, ICollectionSqlsMapper where TEntity : class
@@ -50,5 +52,6 @@ namespace NHibernate.Mapping.ByCode
 		void Cache(Action<ICacheMapper> cacheMapping);
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Fetch(CollectionFetchMode fetchMode);
+		void Persister<TPersister>() where TPersister : ICollectionPersister;
 	}
 }

@@ -804,6 +804,7 @@
     <Compile Include="NHSpecificTest\NH2554\Model.cs" />
     <Compile Include="NHSpecificTest\NH2565\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2565\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2568\UsageOfCustomCollectionPersisterTests.cs" />
     <Compile Include="NHSpecificTest\NH2569\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2580\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\AbstractMassTestingFixture.cs" />

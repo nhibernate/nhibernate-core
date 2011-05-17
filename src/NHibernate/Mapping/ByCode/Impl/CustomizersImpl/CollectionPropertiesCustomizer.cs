@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
@@ -116,6 +117,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Fetch(CollectionFetchMode fetchMode)
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.Fetch(fetchMode));
+		}
+
+		public void Persister<TPersister>() where TPersister : ICollectionPersister
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.Persister(typeof(TPersister)));
 		}
 
 		#endregion

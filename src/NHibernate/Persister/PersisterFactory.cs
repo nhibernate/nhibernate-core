@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
@@ -35,6 +36,14 @@ namespace NHibernate.Persister
 			{
 				typeof(Mapping.Collection),
 				typeof(ICacheConcurrencyStrategy),
+				typeof(ISessionFactoryImplementor)
+			};
+
+		private static readonly System.Type[] CollectionPersisterConstructor2Args = new System.Type[]
+			{
+				typeof(Mapping.Collection),
+				typeof(ICacheConcurrencyStrategy),
+				typeof(Configuration),
 				typeof(ISessionFactoryImplementor)
 			};
 
@@ -78,7 +87,7 @@ namespace NHibernate.Persister
 			}
 			else
 			{
-				return Create(persisterClass, model, cache, factory);
+				return Create(persisterClass, model, cache, factory, cfg);
 			}
 		}
 
@@ -122,21 +131,41 @@ namespace NHibernate.Persister
 		}
 
 		public static ICollectionPersister Create(System.Type persisterClass, Mapping.Collection model,
-		                                          ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+		                                          ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, Configuration cfg)
 		{
 			ConstructorInfo pc;
+			var use4Parameters = false;
 			try
 			{
 				pc = persisterClass.GetConstructor(CollectionPersisterConstructorArgs);
+				if (pc == null)
+				{
+					use4Parameters = true;
+					pc = persisterClass.GetConstructor(CollectionPersisterConstructor2Args);
+				}
 			}
 			catch (Exception e)
 			{
 				throw new MappingException("Could not get constructor for " + persisterClass.Name, e);
 			}
-
+			if(pc == null)
+			{
+				var messageBuilder = new StringBuilder();
+				messageBuilder.AppendLine("Could not find a public constructor for " + persisterClass.Name +";");
+				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructorArgs.Length + " parameters of types (in order):");
+				System.Array.ForEach(CollectionPersisterConstructorArgs, t=> messageBuilder.AppendLine(t.FullName));
+				messageBuilder.AppendLine();
+				messageBuilder.AppendLine("- The ctor may have " + CollectionPersisterConstructor2Args.Length + " parameters of types (in order):");
+				System.Array.ForEach(CollectionPersisterConstructor2Args, t => messageBuilder.AppendLine(t.FullName));
+				throw new MappingException(messageBuilder.ToString());
+			}
 			try
 			{
-				return (ICollectionPersister) pc.Invoke(new object[] {model, cache, factory});
+				if (!use4Parameters)
+				{
+					return (ICollectionPersister) pc.Invoke(new object[] {model, cache, factory});
+				}
+				return (ICollectionPersister)pc.Invoke(new object[] { model, cache, cfg, factory });
 			}
 			catch (TargetInvocationException tie)
 			{

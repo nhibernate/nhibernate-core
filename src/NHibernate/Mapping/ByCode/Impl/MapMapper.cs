@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl
@@ -207,6 +208,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			mapping.fetch = fetchMode.ToHbm();
 			mapping.fetchSpecified = mapping.fetch != HbmCollectionFetchMode.Select;
+		}
+
+		public void Persister(System.Type persister)
+		{
+			if (persister == null)
+			{
+				throw new ArgumentNullException("persister");
+			}
+			if (!typeof(ICollectionPersister).IsAssignableFrom(persister))
+			{
+				throw new ArgumentOutOfRangeException("persister", "Expected type implementing ICollectionPersister.");
+			}
+			mapping.persister = persister.AssemblyQualifiedName;
 		}
 
 		#endregion

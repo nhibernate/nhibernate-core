@@ -531,6 +531,11 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		public void AddMapping(HbmMapping mappingDocument)
+		{
+			AddDeserializedMapping(mappingDocument, "mapping_by_code");
+		}
+
 		private void OnAfterBindMapping(BindMappingEventArgs bindMappingEventArgs)
 		{
 			var handler = AfterBindMapping;
