@@ -14,20 +14,8 @@
         <many-to-one class="SubItemDetails" name="Details" column="SubItemDetails_id"/>
       </component>
     </joined-subclass>
-    <joined-subclass name="ItemWithManyToOneSubItem">
-      <key column="ItemBase_id"/>
-      <many-to-one class="SubItemEntity" name="SubItem" column="SubItem_id"/>
-    </joined-subclass>
   </class>
   
-  <class name="SubItemEntity">
-    <id name="Id" type="int">
-      <generator class="native" />
-    </id>
-    <property name="Name" />
-    <many-to-one class="SubItemDetails" name="Details" column="SubItemDetails_id" />
-  </class>
-
   <class name="SubItemDetails">
     <id name="Id" type="int">
       <generator class="native" />

@@ -7,6 +7,4 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 	}
 
 	public class ItemWithComponentSubItem : ItemBase {}
-
-	public class ItemWithManyToOneSubItem : ItemBase {}
 }

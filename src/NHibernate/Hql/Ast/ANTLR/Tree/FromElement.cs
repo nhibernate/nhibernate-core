@@ -39,10 +39,33 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private string _withClauseFragment;
 		private string _withClauseJoinAlias;
 		private bool _filter;
-
+		private IToken _token;
 
 		public FromElement(IToken token) : base(token)
 		{
+			_token= token;
+		}
+
+		/// <summary>
+		/// Constructor form used to initialize <see cref="ComponentJoin"/>.
+		/// </summary>
+		/// <param name="fromClause">The FROM clause to which this element belongs.</param>
+		/// <param name="origin">The origin (LHS) of this element.</param>
+		/// <param name="alias">The alias applied to this element.</param>
+		protected FromElement(FromClause fromClause,FromElement origin,string alias):this(origin._token)
+		{
+			_fromClause = fromClause;
+			_origin = origin;
+			_classAlias = alias;
+			_tableAlias = origin.TableAlias;
+			base.Initialize(fromClause.Walker);
+		}
+
+		protected void InitializeComponentJoin(FromElementType elementType)
+		{
+			_elementType = elementType;
+			_fromClause.RegisterFromElement(this);
+			_initialized = true;
 		}
 
 		public void SetAllPropertyFetch(bool fetch)
@@ -429,7 +452,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return _elementType.GetPropertyType(propertyName, propertyPath);
 		}
 
-		public string GetIdentityColumn()
+		public virtual string GetIdentityColumn()
 		{
 			CheckInitialized();
 			string table = TableAlias;

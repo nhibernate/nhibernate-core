@@ -8,7 +8,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2705
 {
-	[TestFixture, Ignore("Not fixed yet")]
+	[TestFixture]
 	public class Test : BugTestCase
 	{
 		private static IEnumerable<T> GetAndFetch<T>(string name, ISession session) where T : ItemBase
@@ -30,22 +30,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 		}
 
 		[Test]
-		public void Fetch_OnManyToOne_ShouldNotThrow()
-		{
-			using (ISession s = OpenSession())
-			{
-				Executing.This(() => GetAndFetch<ItemWithManyToOneSubItem>("hello", s)).Should().NotThrow();
-			}
-		}
-
-		[Test]
 		public void HqlQueryWithFetch_WhenDerivedClassesUseComponentAndManyToOne_DoesNotGenerateInvalidSql()
 		{
 			using (ISession s = OpenSession())
 			{
 				using (var log = new SqlLogSpy())
 				{
-					Executing.This(() => s.CreateQuery("from ItemBase i left join fetch i.SubItem").List()
+					Executing.This(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem").List()
+						).Should().NotThrow();
+				}
+			}
+		}
+
+		[Test]
+		public void HqlQueryWithFetch_WhenDerivedClassesUseComponentAndEagerFetchManyToOne_DoesNotGenerateInvalidSql()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (var log = new SqlLogSpy())
+				{
+					Executing.This(() => s.CreateQuery("from ItemWithComponentSubItem i left join fetch i.SubItem.Details").List()
 						).Should().NotThrow();
 				}
 			}
@@ -64,9 +68,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 
 
 					// fetching second level properties should work too
-					Executing.This(() => s.Query<ItemBase>()
+					Executing.This(() => s.Query<ItemWithComponentSubItem>()
 					                     	.Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToList()
 						).Should().NotThrow();
+				}
+			}
+		}
+
+		[Test, Ignore("Locked by re-linq")]
+		public void LinqQueryWithFetch_WhenDerivedClassesUseComponentAndEagerFetchManyToOne_DoesNotGenerateInvalidSql()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (var log = new SqlLogSpy())
+				{
+					Executing.This(() => s.Query<ItemWithComponentSubItem>().Fetch(p => p.SubItem.Details).ToList()).Should().NotThrow();
 				}
 			}
 		}

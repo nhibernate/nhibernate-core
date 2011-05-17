@@ -342,7 +342,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string tableAlias = element.TableAlias;
 			if (tableAlias != null)
 			{
-				_fromElementByTableAlias.Add(tableAlias, element);
+				_fromElementByTableAlias[tableAlias] = element;
 			}
 		}
 

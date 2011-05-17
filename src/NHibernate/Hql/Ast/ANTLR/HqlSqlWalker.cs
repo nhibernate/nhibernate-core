@@ -678,23 +678,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// to the root dot node.
 			dot.Resolve( true, false, alias == null ? null : alias.Text );
 
-			FromElement fromElement = dot.GetImpliedJoin();
-
-			if (fromElement == null)
+			FromElement fromElement;
+			if (dot.DataType != null && dot.DataType.IsComponentType)
 			{
-				throw new InvalidPathException("Invalid join: " + dot.Path);
+				var factory = new FromElementFactory(CurrentFromClause, dot.GetLhs().FromElement, dot.PropertyPath, alias == null ? null : alias.Text, null, false);
+				fromElement = factory.CreateComponentJoin((ComponentType) dot.DataType);
 			}
-
-			fromElement.SetAllPropertyFetch(propertyFetch!=null);
-
-			if ( with != null )
+			else
 			{
-				if ( fetch )
+				fromElement = dot.GetImpliedJoin();
+				if (fromElement == null)
 				{
-					throw new SemanticException( "with-clause not allowed on fetched associations; use filters" );
+					throw new InvalidPathException("Invalid join: " + dot.Path);
 				}
+				fromElement.SetAllPropertyFetch(propertyFetch != null);
 
-				HandleWithFragment( fromElement, with );
+				if (with != null)
+				{
+					if (fetch)
+					{
+						throw new SemanticException("with-clause not allowed on fetched associations; use filters");
+					}
+
+					HandleWithFragment(fromElement, with);
+				}
 			}
 
 			if ( log.IsDebugEnabled )

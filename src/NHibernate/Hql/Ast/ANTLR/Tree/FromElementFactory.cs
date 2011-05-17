@@ -562,5 +562,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		public FromElement CreateComponentJoin(ComponentType type)
+		{
+			// need to create a "place holder" from-element that can store the component/alias for this	component join
+			return new ComponentJoin(_fromClause, _origin, _classAlias, _path, type);
+		}
 	}
 }

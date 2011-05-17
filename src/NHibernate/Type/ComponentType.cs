@@ -688,5 +688,18 @@ namespace NHibernate.Type
 		{
 			get { return true; }
 		}
+
+		public int GetPropertyIndex(string name)
+		{
+			string[] names = PropertyNames;
+			for (int i = 0; i < names.Length; i++)
+			{
+				if (names[i].Equals(name))
+				{
+					return i;
+				}
+			}
+			throw new PropertyNotFoundException(ReturnedClass, name);
+		}
 	}
 }

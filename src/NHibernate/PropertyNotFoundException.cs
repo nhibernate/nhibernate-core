@@ -38,7 +38,7 @@ namespace NHibernate
 		/// <param name="targetType">The <see cref="System.Type" /> that is missing the field</param>
 		/// <param name="propertyName">The name of the missing property</param>
 		public PropertyNotFoundException(System.Type targetType, string propertyName)
-			: base(String.Format("Could not find field '{0}' in class '{1}'",
+			: base(String.Format("Could not find property nor field '{0}' in class '{1}'",
 													 propertyName, targetType))
 		{
 			this.targetType = targetType;

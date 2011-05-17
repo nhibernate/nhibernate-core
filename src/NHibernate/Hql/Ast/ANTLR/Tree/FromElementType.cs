@@ -42,6 +42,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		protected FromElementType(FromElement fromElement)
+		{
+			_fromElement = fromElement;
+		}
+
 		public IEntityPersister EntityPersister
 		{
 			get { return _persister; }
@@ -57,7 +62,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _fromElement.CollectionTableAlias; }
 		}
 
-		public IType DataType
+		public virtual IType DataType
 		{
 			get
 			{
@@ -167,7 +172,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <param name="i">the sequence of the returned type</param>
 		/// <returns>the identifier select with the column alias.</returns>
-		public string RenderScalarIdentifierSelect(int i)
+		public virtual string RenderScalarIdentifierSelect(int i)
 		{
 			CheckInitialized();
 			string[] cols = GetPropertyMapping(Persister.Entity.EntityPersister.EntityID).ToColumns(TableAlias, Persister.Entity.EntityPersister.EntityID);
@@ -273,7 +278,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		public IPropertyMapping GetPropertyMapping(string propertyName)
+		public virtual IPropertyMapping GetPropertyMapping(string propertyName)
 		{
 			CheckInitialized();
 
@@ -317,7 +322,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <param name="propertyName">The last part of the full path to the property.</param>
 		/// <param name="propertyPath">The full property path.</param>
 		/// <returns>The type</returns>
-		public IType GetPropertyType(string propertyName, string propertyPath)
+		public virtual IType GetPropertyType(string propertyName, string propertyPath)
 		{
 			CheckInitialized();
 
@@ -359,7 +364,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return (_persister is IQueryable) ? (IQueryable) _persister : null; }
 		}
 
-		public IQueryableCollection QueryableCollection
+		public virtual IQueryableCollection QueryableCollection
 		{
 			get { return _queryableCollection; }
 			set
