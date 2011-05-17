@@ -657,6 +657,8 @@
     <Compile Include="NHSpecificTest\NH1836\Entity.cs" />
     <Compile Include="NHSpecificTest\NH1836\EntityDTO.cs" />
     <Compile Include="NHSpecificTest\NH1836\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1845\Category.cs" />
+    <Compile Include="NHSpecificTest\NH1845\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1869\Entities.cs" />
     <Compile Include="NHSpecificTest\NH1869\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1925\Fixture.cs" />
