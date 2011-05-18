@@ -75,7 +75,7 @@ namespace NHibernate.Loader.Criteria
 			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
 		                                               ISessionImplementor session)
 		{
 			object[] result;
@@ -107,9 +107,10 @@ namespace NHibernate.Loader.Criteria
 				result = row;
 			}
 
-			if (resultTransformer == null && result.Length == 1)
+			if (customResultTransformer == null)
 			{
-				return result[0];
+				// apply the defaut transformer of criteria aka RootEntityResultTransformer
+				return result[result.Length - 1];
 			}
 			return result;
 		}
@@ -164,20 +165,20 @@ namespace NHibernate.Loader.Criteria
 			return lockModesArray;
 		}
 
-		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer customResultTransformer)
 		{
-			var transformer = resultTransformer ?? CriteriaSpecification.RootEntity;
+			if (customResultTransformer == null)
+			{
+				// apply the defaut transformer of criteria aka RootEntityResultTransformer
+				return results;
+			}
 			for (int i = 0; i < results.Count; i++)
 			{
-				var row = results[i] as object[];
-				if(row == null)
-				{
-					row = new object[] { results[i] };
-				}
-				object result = transformer.TransformTuple(row, translator.HasProjection ? translator.ProjectedAliases : userAliases);
+				var row = results[i] as object[] ?? new object[] { results[i] };
+				object result = customResultTransformer.TransformTuple(row, translator.HasProjection ? translator.ProjectedAliases : userAliases);
 				results[i] = result;
 			}
-			return transformer.TransformList(results);
+			return customResultTransformer.TransformList(results);
 		}
 	}
 }

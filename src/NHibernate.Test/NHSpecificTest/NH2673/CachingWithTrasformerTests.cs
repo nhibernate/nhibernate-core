@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
@@ -149,6 +150,58 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 						.TransformUsing(transformer)
 						.Cacheable();
 					query.Executing(q => q.List<BlogAuthorDto>()).NotThrows();
+					tx.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void WhenEagerLoadingWithCriteriaThenNotThrows()
+		{
+			// reported in dev-list instead on JIRA
+			using (new Scenario(Sfi))
+			{
+				using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					var query = session.CreateCriteria<Blog>()
+						.SetFetchMode("Posts", FetchMode.Eager)
+						.SetCacheable(true);
+					query.Executing(q => q.List<Blog>()).NotThrows();
+					tx.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void WhenEagerLoadingWithMultiCriteriaThenNotThrows()
+		{
+			using (new Scenario(Sfi))
+			{
+				using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					var query = session.CreateCriteria<Blog>()
+						.SetFetchMode("Posts", FetchMode.Eager)
+						.SetCacheable(true);
+					query.Executing(q => q.Future<Blog>().ToList()).NotThrows();
+					tx.Commit();
+				}
+			}
+		}
+
+		[Test]
+		public void WhenEagerLoadingWithHqlThenNotThrows()
+		{
+			using (new Scenario(Sfi))
+			{
+				using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					var query = session.CreateQuery("select b from Blog b join fetch b.Posts where b.Author = : author")
+						.SetString("author", "Gabriel")
+						.SetCacheable(true);
+					query.Executing(q => q.List<Blog>()).NotThrows();
 					tx.Commit();
 				}
 			}
