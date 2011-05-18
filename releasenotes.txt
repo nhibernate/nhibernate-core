@@ -10,6 +10,26 @@
 		* For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 
+Build 3.2.0.Beta1 (rev5839)
+=============================
+** Bug
+    * [NH-2404] - Future queries crash (MultiQuery) when using projection queries using hql + result transformer or the linq provider (which compiles into hql) 
+    * [NH-2421] - NotSupportedException text in ToFuture and ToFutureValue does not make sense (or help)
+    * [NH-2422] - ToFuture throws NotSupportedException on IQueryable if Fetch is used.
+    * [NH-2559] - NH 3.0 Linq Provider : Issue using multiple filters on the same entity
+    * [NH-2615] - Linq Fetch cannot traverse through components
+    * [NH-2690] - Linq Select() broken with .ToFuture()
+    * [NH-2691] - Linq LongCount() behavior different from Count()
+    * [NH-2697] - Named parameter not found in HQL with mapping using "entity-name"
+    * [NH-2698] - Proxying fails for methods with generic type constraints
+
+** Improvement
+    * [NH-2568] - Create Custom Persister for Collection Type inherited from OneToManyPersister
+    * [NH-2695] - update default driver of firebird dialect to FirebirdClientDriver (FirebirdDriver is obsolete)
+
+** New Feature
+    * [NH-2699] - Sql Azure dialect
+
 Build 3.2.0.Aplha3 (rev5803)
 =============================
 ** Sub-task
@@ -513,6 +533,19 @@ Build 3.0.0.Alpha1 (rev5056)
 ** Task
     * [NH-2013] - HQL breaking change
     * [NH-2247] - Update FlushMode Documentation
+
+Build 2.1.2.GA (rev4854)
+=============================
+** Bug
+    * [NH-2011] - Many-to-many inside a component will not be saved when using SaveOrUpdateCopy or Merge
+    * [NH-2283] - CLONE -one-to-many collection with table per subclass, using discriminator: wrong proxies in collection
+
+** Improvement
+    * [NH-2022] - Allow overriding in Query By Example
+
+** Patch
+    * [NH-2007] - SesssionIdLoggingContext patch for big resultsets
+    * [NH-2019] - Clarification about the use of <import> for polymorphic queries
 
 Build 2.1.1.GA (rev4814)
 =============================
