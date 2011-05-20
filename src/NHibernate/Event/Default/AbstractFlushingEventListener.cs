@@ -84,7 +84,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private void FlushCollections(IEventSource session)
+		protected virtual void FlushCollections(IEventSource session)
 		{
 			log.Debug("Processing unreferenced collections");
 
@@ -133,7 +133,7 @@ namespace NHibernate.Event.Default
 		// 1. detect any dirty entities
 		// 2. schedule any entity updates
 		// 3. search out any reachable collections
-		private void FlushEntities(FlushEvent @event)
+		protected virtual void FlushEntities(FlushEvent @event)
 		{
 			log.Debug("Flushing entities and processing referenced collections");
 
@@ -166,7 +166,7 @@ namespace NHibernate.Event.Default
 		}
 
 		// Initialize the flags of the CollectionEntry, including the dirty check.
-		private void PrepareCollectionFlushes(ISessionImplementor session)
+		protected virtual void PrepareCollectionFlushes(ISessionImplementor session)
 		{
 			// Initialize dirty flags for arrays + collections with composite elements
 			// and reset reached, doupdate, etc.
@@ -182,7 +182,7 @@ namespace NHibernate.Event.Default
 		//process cascade save/update at the start of a flush to discover
 		//any newly referenced entity that must be passed to saveOrUpdate(),
 		//and also apply orphan delete
-		private void PrepareEntityFlushes(IEventSource session)
+		protected virtual void PrepareEntityFlushes(IEventSource session)
 		{
 			log.Debug("processing flush-time cascades");
 
@@ -199,7 +199,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private void CascadeOnFlush(IEventSource session, IEntityPersister persister, object key, object anything)
+		protected virtual void CascadeOnFlush(IEventSource session, IEntityPersister persister, object key, object anything)
 		{
 			session.PersistenceContext.IncrementCascadeLevel();
 			try
