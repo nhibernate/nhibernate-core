@@ -1,0 +1,31 @@
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2366">
+
+	<class name="One" table="one">
+		
+		<id name="Id" column="o_id_pk">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="Value" column="o_val" />
+		
+		<set name="Twos" lazy="false">
+			<key column="t_val" property-ref="Value" not-null="false" />
+			<one-to-many class="Two" />
+		</set>
+	
+	</class>
+	
+	<class name="Two" table="two">
+		
+		<id name="Id" column="t_id_pk">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="Value" column="t_val" />
+	
+	</class>
+
+</hibernate-mapping>
