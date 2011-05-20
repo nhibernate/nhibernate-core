@@ -34,6 +34,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			query.Executing(q=> q.ToList()).Throws();
 		}
 
+		[Test]
+		public void OrderByAfterCast()
+		{
+			// NH-2657
+			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a=> a.BodyWeight);
+			query.Executing(q => q.ToList()).NotThrows();
+		}
+
 		[Test, Ignore("Not fixed yet. The method OfType does not work as expected.")]
 		public void CastDowncastUsingOfType()
 		{
