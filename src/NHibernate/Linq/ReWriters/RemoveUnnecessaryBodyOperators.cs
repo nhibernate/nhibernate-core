@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -25,6 +26,10 @@ namespace NHibernate.Linq.ReWriters
 				{
 					queryModel.BodyClauses.Remove(orderby);
 				}
+			}
+			if (resultOperator is CastResultOperator)
+			{
+				Array.ForEach(queryModel.ResultOperators.OfType<CastResultOperator>().ToArray(), castOperator=> queryModel.ResultOperators.Remove(castOperator));
 			}
 
 			base.VisitResultOperator(resultOperator, queryModel, index);

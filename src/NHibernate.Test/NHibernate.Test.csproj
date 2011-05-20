@@ -481,6 +481,7 @@
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
+    <Compile Include="Linq\ByMethod\CastTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
