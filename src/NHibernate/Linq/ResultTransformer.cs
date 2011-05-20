@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Transform;
 
@@ -31,30 +32,25 @@ namespace NHibernate.Linq
 				return collection;
 			}
 
-			object transformResult = collection;
-
+			IEnumerable<object> toTransform;
 			if (collection.Count > 0 && collection[0] is object[])
 			{
-				if (((object[]) collection[0]).Length != 1)
+				if (((object[])collection[0]).Length != 1)
 				{
 					// We only expect single items
 					throw new NotSupportedException();
 				}
 
-				transformResult = _listTransformation.DynamicInvoke(collection.Cast<object[]>().Select(o => o[0]));
+				toTransform = collection.Cast<object[]>().Select(o => o[0]);
 			}
 			else
 			{
-				transformResult = _listTransformation.DynamicInvoke(collection);
+				toTransform = collection.Cast<object>().ToList();
 			}
+			object transformResult = _listTransformation.DynamicInvoke(toTransform);
 
-			if (transformResult is IList)
-			{
-				return (IList) transformResult;
-			}
-
-			var list = new ArrayList {transformResult};
-			return list;
+			var resultList = transformResult as IList;
+			return resultList ?? new List<object> { transformResult };
 		}
 
 		#endregion

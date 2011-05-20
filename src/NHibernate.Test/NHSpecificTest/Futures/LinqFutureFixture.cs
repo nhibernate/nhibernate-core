@@ -42,7 +42,56 @@ namespace NHibernate.Test.NHSpecificTest.Futures
                 tx.Commit();
             }
         }
-        [Test]
+
+				[Test]
+				public void CanUseSkipAndFetchManyWithToFuture()
+				{
+					using (var s = sessions.OpenSession())
+					using (var tx = s.BeginTransaction())
+					{
+						var p1 = new Person {Name = "Parent"};
+						var p2 = new Person {Parent = p1, Name = "Child"};
+						p1.Children.Add(p2);
+						s.Save(p1);
+						s.Save(p2);
+						tx.Commit();
+
+						s.Clear(); // we don't want caching
+					}
+
+					using (var s = sessions.OpenSession())
+					{
+						IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+						var persons10 = s.Query<Person>()
+							.FetchMany(p => p.Children)
+							.Skip(5)
+							.Take(10)
+							.ToFuture();
+
+						var persons5 = s.Query<Person>()
+							.ToFuture();
+
+						using (var logSpy = new SqlLogSpy())
+						{
+							foreach (var person in persons5) {}
+
+							foreach (var person in persons10) {}
+
+							var events = logSpy.Appender.GetEvents();
+							Assert.AreEqual(1, events.Length);
+						}
+					}
+
+					using (ISession s = OpenSession())
+					using (ITransaction tx = s.BeginTransaction())
+					{
+						s.Delete("from Person");
+						tx.Commit();
+					}
+				}
+
+    	[Test]
         public void CanUseFutureQuery()
         {
             using (var s = sessions.OpenSession())
