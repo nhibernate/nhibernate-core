@@ -45,7 +45,7 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				toTransform = collection.Cast<object>().ToList();
+				toTransform = collection.Cast<object>();
 			}
 			object transformResult = _listTransformation.DynamicInvoke(toTransform);
 
