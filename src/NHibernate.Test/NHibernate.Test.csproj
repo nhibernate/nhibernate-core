@@ -647,6 +647,8 @@
     <Compile Include="NHSpecificTest\NH1136\Person.cs" />
     <Compile Include="NHSpecificTest\NH1136\ReverseSortComparer.cs" />
     <Compile Include="NHSpecificTest\NH1136\TemporalAddressType.cs" />
+    <Compile Include="NHSpecificTest\NH1270\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1270\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1323\CheckViability.cs" />
     <Compile Include="NHSpecificTest\NH1323\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1421\AnEntity.cs" />

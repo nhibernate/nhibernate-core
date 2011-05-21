@@ -60,6 +60,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(propertyPath, (IManyToManyMapper x) => x.Lazy(lazyRelation));
 		}
 
+		public void ForeignKey(string foreingKeyName)
+		{
+			customizersHolder.AddCustomizer(propertyPath, (IManyToManyMapper x) => x.ForeignKey(foreingKeyName));
+		}
+
 		#endregion
 	}
 }

@@ -7,5 +7,6 @@ namespace NHibernate.Mapping.ByCode
 		void NotFound(NotFoundMode mode);
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
+		void ForeignKey(string foreingKeyName);
 	}
 }

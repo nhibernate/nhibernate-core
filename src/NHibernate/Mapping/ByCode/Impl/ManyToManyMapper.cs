@@ -161,6 +161,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
+		public void ForeignKey(string foreingKeyName)
+		{
+			manyToMany.foreignkey = foreingKeyName;
+		}
+
 		#endregion
 	}
 }
