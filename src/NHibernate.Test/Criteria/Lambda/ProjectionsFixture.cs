@@ -137,6 +137,39 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void SelectSingleFunction()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetProjection(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDate")));
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.Select(p => p.BirthDate.YearPart());
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SelectMultipleFunction()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.SetProjection(Projections.ProjectionList()
+						.Add(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDate")))
+						.Add(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("personAlias.BirthDate"))));
+
+			Person personAlias = null;
+			var actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.SelectList(list => list
+						.Select(p => p.BirthDate.YearPart())
+						.Select(() => personAlias.BirthDate.MonthPart()));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

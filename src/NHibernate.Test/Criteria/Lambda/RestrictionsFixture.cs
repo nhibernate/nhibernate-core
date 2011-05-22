@@ -260,12 +260,12 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Eq(Projections.SqlFunction("year", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1970))
-					.Add(Restrictions.Eq(Projections.SqlFunction("day", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1))
-					.Add(Restrictions.Eq(Projections.SqlFunction("month", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1))
-					.Add(Restrictions.Eq(Projections.SqlFunction("hour", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1))
-					.Add(Restrictions.Eq(Projections.SqlFunction("minute", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1))
-					.Add(Restrictions.Eq(Projections.SqlFunction("second", NHibernateUtil.DateTime, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1970))
+					.Add(Restrictions.Eq(Projections.SqlFunction("day", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("hour", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("minute", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("second", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("sqrt", NHibernateUtil.Int32, Projections.Property("Height")), 10))
 					.Add(Restrictions.Eq(Projections.SqlFunction("lower", NHibernateUtil.String, Projections.Property("Name")), "test"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("upper", NHibernateUtil.String, Projections.Property("Name")), "TEST"))

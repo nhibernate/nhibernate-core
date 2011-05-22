@@ -32,7 +32,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessYearPart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("year", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("year", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessDayPart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("day", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("day", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessMonthPart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("month", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("month", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessHourPart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("hour", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("hour", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessMinutePart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("minute", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("minute", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>
@@ -107,7 +107,7 @@ namespace NHibernate.Criterion
 		internal static IProjection ProcessSecondPart(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("second", NHibernateUtil.DateTime, property);
+			return Projections.SqlFunction("second", NHibernateUtil.Int32, property);
 		}
 
 		/// <summary>

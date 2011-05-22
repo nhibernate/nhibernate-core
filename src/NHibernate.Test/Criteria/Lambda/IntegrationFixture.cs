@@ -591,6 +591,17 @@ namespace NHibernate.Test.Criteria.Lambda
 				persons[0].Name.Should().Be("p2");
 			}
 
+			using (ISession s = OpenSession())
+			{
+				var yearOfBirth =
+					s.QueryOver<Person>()
+						.Where(p => p.Name == "p2")
+						.Select(p => p.BirthDate.YearPart())
+						.SingleOrDefault<object>();
+
+				yearOfBirth.GetType().Should().Be(typeof(int));
+				yearOfBirth.Should().Be(2008);
+			}
 		}
 
 		[Test]

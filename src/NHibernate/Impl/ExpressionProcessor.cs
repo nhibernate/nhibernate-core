@@ -163,6 +163,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static IProjection FindMemberProjection(Expression expression)
 		{
+			if (expression is UnaryExpression)
+			{
+				UnaryExpression unaryExpression = (UnaryExpression)expression;
+
+				if (unaryExpression.NodeType != ExpressionType.Convert)
+					throw new Exception("Cannot interpret member from " + expression.ToString());
+
+				return FindMemberProjection(unaryExpression.Operand);
+			}
+
 			if (expression is MethodCallExpression)
 			{
 				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;

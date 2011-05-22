@@ -392,7 +392,7 @@ namespace NHibernate.Criterion
 			List<IProjection> projectionList = new List<IProjection>();
 
 			foreach (var projection in projections)
-				projectionList.Add(Projections.Property(ExpressionProcessor.FindMemberExpression(projection.Body)));
+				projectionList.Add(ExpressionProcessor.FindMemberProjection(projection.Body));
 
 			criteria.SetProjection(projectionList.ToArray());
 			return this;
