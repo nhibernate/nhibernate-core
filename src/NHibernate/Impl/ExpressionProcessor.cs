@@ -109,7 +109,7 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.CharIndex(string.Empty, string.Empty, 0), ProjectionsExtensions.ProcessCharIndex);
 			RegisterCustomProjection(() => ProjectionsExtensions.Coalesce<DBNull>(null, null), ProjectionsExtensions.ProcessCoalesce);
 			RegisterCustomProjection(() => ProjectionsExtensions.Coalesce<int>(null, 0), ProjectionsExtensions.ProcessCoalesce);
-			RegisterCustomProjection(() => ProjectionsExtensions.ConcatStr(string.Empty, string.Empty), ProjectionsExtensions.ProcessConcatStr);
+			RegisterCustomProjection(() => Projections.Concat(null), Projections.ProcessConcat);
 			RegisterCustomProjection(() => ProjectionsExtensions.Mod(0, 0), ProjectionsExtensions.ProcessMod);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(int)), ProjectionsExtensions.ProcessIntAbs);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(double)), ProjectionsExtensions.ProcessDoubleAbs);
@@ -163,6 +163,9 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static IProjection FindMemberProjection(Expression expression)
 		{
+			if (!IsMemberExpression(expression))
+				return Projections.Constant(FindValue(expression));
+
 			if (expression is UnaryExpression)
 			{
 				UnaryExpression unaryExpression = (UnaryExpression)expression;
@@ -309,6 +312,9 @@ namespace NHibernate.Impl
 
 		private static bool IsMemberExpression(Expression expression)
 		{
+			if (expression is ParameterExpression)
+				return true;
+
 			if (expression is MemberExpression)
 			{
 				MemberExpression memberExpression = (MemberExpression)expression;
@@ -318,6 +324,13 @@ namespace NHibernate.Impl
 
 				if (memberExpression.Expression.NodeType == ExpressionType.Parameter)
 					return true;
+
+				if (IsNullableOfT(memberExpression.Member.DeclaringType))
+				{
+					// it's a Nullable<T>, so ignore any .Value
+					if (memberExpression.Member.Name == "Value")
+						return IsMemberExpression(memberExpression.Expression);
+				}
 
 				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess)
 				{
@@ -335,6 +348,25 @@ namespace NHibernate.Impl
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
 				return IsMemberExpression(unaryExpression.Operand);
+			}
+
+			if (expression is MethodCallExpression)
+			{
+				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
+
+				string signature = Signature(methodCallExpression.Method);
+				if (_customProjectionProcessors.ContainsKey(signature))
+					return true;
+
+				if (methodCallExpression.Method.Name == "GetType"
+					|| methodCallExpression.Method.Name == "get_Item"
+					|| methodCallExpression.Method.Name == "First")
+				{
+					if (IsMemberExpression(methodCallExpression.Object))
+						return true;
+
+					return EvaluatesToNull(methodCallExpression.Object);
+				}
 			}
 
 			return false;

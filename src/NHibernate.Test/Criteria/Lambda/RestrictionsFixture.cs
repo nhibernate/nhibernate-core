@@ -277,7 +277,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Eq(Projections.SqlFunction("locate", NHibernateUtil.String, Projections.Constant("e"), Projections.Property("Name"), Projections.Constant(1)), 2))
 					.Add(Restrictions.Eq(Projections.SqlFunction("coalesce", NHibernateUtil.Object, Projections.Property("Name"), Projections.Constant("not-null-val")), "test"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("coalesce", NHibernateUtil.Object, Projections.Property("NullableIsParent"), Projections.Constant(true)), true))
-					.Add(Restrictions.Eq(Projections.SqlFunction("concat", NHibernateUtil.String, Projections.Property("Name"), Projections.Constant(string.Empty), Projections.Constant("A")), "testA"))
+					.Add(Restrictions.Eq(Projections.SqlFunction("concat", NHibernateUtil.String, Projections.Property("Name"), Projections.Constant(", "), Projections.Property("Name")), "test, test"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int32, Projections.Property("Height"), Projections.Constant(10)), 0));
 
 			IQueryOver<Person> actual =
@@ -299,7 +299,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => p.Name.CharIndex("e", 1) == 2)
 					.And(p => p.Name.Coalesce("not-null-val") == "test")
 					.And(p => p.NullableIsParent.Coalesce(true) == true)
-					.And(p => p.Name.ConcatStr("A") == "testA")
+					.And(p => Projections.Concat(p.Name, ", ", p.Name) == "test, test")
 					.And(p => p.Height.Mod(10) == 0);
 
 			AssertCriteriaAreEqual(expected, actual);

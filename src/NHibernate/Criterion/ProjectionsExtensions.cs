@@ -341,22 +341,6 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Project SQL function concat()
-		/// Note: throws an exception outside of a QueryOver expression
-		/// </summary>
-		public static string ConcatStr(this string stringProperty, string value)
-		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
-		}
-
-		internal static IProjection ProcessConcatStr(MethodCallExpression methodCallExpression)
-		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			object concatWithValue = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Projections.SqlFunction("concat", NHibernateUtil.String, property, Projections.Constant(string.Empty), Projections.Constant(concatWithValue));
-		}
-
-		/// <summary>
 		/// Project SQL function mod()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>

@@ -451,5 +451,25 @@ namespace NHibernate.Criterion
 		{
 			return Projections.Sum(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
+
+		/// <summary>
+		/// Project SQL function concat()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static string Concat(params string[] strings)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)
+		{
+			NewArrayExpression args = (NewArrayExpression)methodCallExpression.Arguments[0];
+			IProjection[] projections = new IProjection[args.Expressions.Count];
+
+			for (var i=0; i<args.Expressions.Count; i++)
+				projections[i] = ExpressionProcessor.FindMemberProjection(args.Expressions[i]);
+
+			return Projections.SqlFunction("concat", NHibernateUtil.String, projections);
+		}
 	}
 }
