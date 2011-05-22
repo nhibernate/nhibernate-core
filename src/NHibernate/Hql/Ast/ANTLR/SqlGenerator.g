@@ -39,8 +39,8 @@ selectStatement
 		( ^(GROUP { Out(" group by "); } groupExprs ) )?
 		( ^(HAVING { Out(" having "); } booleanExpr[false]) )?
 		( ^(ORDER { Out(" order by "); } orderExprs ) )?
-		( ^(SKIP si=NUM_INT) { Skip($si); })?
-		( ^(TAKE ti=NUM_INT) { Take($ti); })?
+		( ^(SKIP si=limitValue) { Skip($si.start); })?
+		( ^(TAKE ti=limitValue) { Take($ti.start); })?
 		{ EndQuery(); }
 	)
 	;
@@ -358,6 +358,12 @@ arguments
 parameter
 	: n=NAMED_PARAM { Out(n); }
 	| p=PARAM { Out(p); }
+	;
+
+limitValue
+	: NUM_INT
+	| NAMED_PARAM
+	| PARAM
 	;
 
 addrExpr

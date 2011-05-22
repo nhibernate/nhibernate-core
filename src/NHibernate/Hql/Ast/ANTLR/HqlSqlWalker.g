@@ -148,11 +148,11 @@ orderExprs
 	;
 
 skipClause
-	: ^(SKIP NUM_INT)
+	: ^(SKIP (NUM_INT | parameter))
 	;
 
 takeClause
-	: ^(TAKE NUM_INT)
+	: ^(TAKE (NUM_INT | parameter))
 	;
 
 groupClause

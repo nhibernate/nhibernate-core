@@ -303,11 +303,16 @@ orderByClause
 	;
 
 skipClause
-	: SKIP^ NUM_INT
+	: SKIP^ (NUM_INT | parameter)
 	;
 
 takeClause
-	: TAKE^ NUM_INT
+	: TAKE^ (NUM_INT | parameter)
+	;
+
+parameter
+	: COLON^ identifier
+	| PARAM^ (NUM_INT)?
 	;
 
 orderElement

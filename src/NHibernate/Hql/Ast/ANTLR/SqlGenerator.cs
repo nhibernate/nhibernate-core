@@ -331,12 +331,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 
         private void Skip(IASTNode node)
         {
+					if(node is ParameterNode)
+					{
+						throw new NotSupportedException("Parameter limits is not supported yet.");
+					}
             ((QueryWriter) writer).Skip = Convert.ToInt32(node.Text);
         }
 
         private void Take(IASTNode node)
         {
-            ((QueryWriter)writer).Take = Convert.ToInt32(node.Text);
+					if (node is ParameterNode)
+					{
+						throw new NotSupportedException("Parameter limits is not supported yet.");
+					}
+					((QueryWriter)writer).Take = Convert.ToInt32(node.Text);
         }
 
 		#region Nested type: DefaultWriter

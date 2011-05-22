@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-04-11 10:19:40
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 Hql.g 2011-05-22 07:45:50
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -17,15 +17,15 @@ using Hashtable 	= System.Collections.Hashtable;
 namespace  NHibernate.Hql.Ast.ANTLR 
 {
 public partial class HqlLexer : Lexer {
-    public const int LT = 107;
+    public const int LT = 109;
     public const int EXPONENT = 130;
-    public const int STAR = 118;
+    public const int STAR = 120;
     public const int FLOAT_SUFFIX = 131;
     public const int LITERAL_by = 56;
     public const int CASE = 57;
     public const int NEW = 37;
     public const int FILTER_ENTITY = 76;
-    public const int PARAM = 123;
+    public const int PARAM = 106;
     public const int COUNT = 12;
     public const int NOT = 38;
     public const int EOF = -1;
@@ -33,7 +33,7 @@ public partial class HqlLexer : Lexer {
     public const int QUOTED_String = 124;
     public const int ESCqs = 128;
     public const int WEIRD_IDENT = 93;
-    public const int OPEN_BRACKET = 120;
+    public const int OPEN_BRACKET = 122;
     public const int FULL = 23;
     public const int ORDER_ELEMENT = 85;
     public const int IS_NULL = 80;
@@ -45,10 +45,10 @@ public partial class HqlLexer : Lexer {
     public const int EQ = 102;
     public const int SELECT = 45;
     public const int INTO = 30;
-    public const int NE = 105;
-    public const int GE = 110;
+    public const int NE = 107;
+    public const int GE = 112;
     public const int TAKE = 50;
-    public const int CONCAT = 111;
+    public const int CONCAT = 113;
     public const int ID_LETTER = 127;
     public const int NULL = 39;
     public const int ELSE = 59;
@@ -75,9 +75,9 @@ public partial class HqlLexer : Lexer {
     public const int ALIAS = 72;
     public const int JAVA_CONSTANT = 100;
     public const int CONSTANT = 94;
-    public const int GT = 108;
+    public const int GT = 110;
     public const int QUERY = 86;
-    public const int BNOT = 112;
+    public const int BNOT = 114;
     public const int INDEX_OP = 78;
     public const int NUM_FLOAT = 98;
     public const int FROM = 22;
@@ -87,7 +87,7 @@ public partial class HqlLexer : Lexer {
     public const int CONSTRUCTOR = 73;
     public const int T__133 = 133;
     public const int T__134 = 134;
-    public const int CLOSE_BRACKET = 121;
+    public const int CLOSE_BRACKET = 123;
     public const int WHERE = 55;
     public const int CLASS = 11;
     public const int MEMBER = 67;
@@ -96,7 +96,7 @@ public partial class HqlLexer : Lexer {
     public const int ORDER = 41;
     public const int MAX = 35;
     public const int UPDATE = 53;
-    public const int SQL_NE = 106;
+    public const int SQL_NE = 108;
     public const int AND = 6;
     public const int SUM = 49;
     public const int ASCENDING = 8;
@@ -111,11 +111,11 @@ public partial class HqlLexer : Lexer {
     public const int LEFT = 33;
     public const int SOME = 48;
     public const int ALL = 4;
-    public const int BOR = 113;
+    public const int BOR = 115;
     public const int IDENT = 125;
     public const int CASE2 = 74;
-    public const int BXOR = 114;
-    public const int PLUS = 116;
+    public const int BXOR = 116;
+    public const int PLUS = 118;
     public const int EXISTS = 19;
     public const int DOT = 15;
     public const int WITH = 63;
@@ -132,23 +132,23 @@ public partial class HqlLexer : Lexer {
     public const int HAVING = 25;
     public const int MIN = 36;
     public const int IS_NOT_NULL = 79;
-    public const int MINUS = 117;
+    public const int MINUS = 119;
     public const int ELEMENTS = 17;
-    public const int BAND = 115;
+    public const int BAND = 117;
     public const int TRUE = 51;
     public const int JOIN = 32;
     public const int IN_LIST = 77;
     public const int UNION = 52;
     public const int OPEN = 103;
-    public const int COLON = 122;
+    public const int COLON = 105;
     public const int ANY = 5;
     public const int CLOSE = 104;
     public const int WHEN = 61;
-    public const int DIV = 119;
+    public const int DIV = 121;
     public const int DESCENDING = 14;
     public const int AGGREGATE = 71;
     public const int BETWEEN = 10;
-    public const int LE = 109;
+    public const int LE = 111;
 
     // delegates
     // delegators
@@ -1810,8 +1810,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = EQ;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:684:3: ( '=' )
-            // Hql.g:684:5: '='
+            // Hql.g:689:3: ( '=' )
+            // Hql.g:689:5: '='
             {
             	Match('='); if (state.failed) return ;
 
@@ -1833,8 +1833,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:685:3: ( '<' )
-            // Hql.g:685:5: '<'
+            // Hql.g:690:3: ( '<' )
+            // Hql.g:690:5: '<'
             {
             	Match('<'); if (state.failed) return ;
 
@@ -1856,8 +1856,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:686:3: ( '>' )
-            // Hql.g:686:5: '>'
+            // Hql.g:691:3: ( '>' )
+            // Hql.g:691:5: '>'
             {
             	Match('>'); if (state.failed) return ;
 
@@ -1879,8 +1879,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = SQL_NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:687:7: ( '<>' )
-            // Hql.g:687:9: '<>'
+            // Hql.g:692:7: ( '<>' )
+            // Hql.g:692:9: '<>'
             {
             	Match("<>"); if (state.failed) return ;
 
@@ -1903,7 +1903,7 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = NE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:688:3: ( '!=' | '^=' )
+            // Hql.g:693:3: ( '!=' | '^=' )
             int alt1 = 2;
             int LA1_0 = input.LA(1);
 
@@ -1926,7 +1926,7 @@ public partial class HqlLexer : Lexer {
             switch (alt1) 
             {
                 case 1 :
-                    // Hql.g:688:5: '!='
+                    // Hql.g:693:5: '!='
                     {
                     	Match("!="); if (state.failed) return ;
 
@@ -1934,7 +1934,7 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // Hql.g:688:12: '^='
+                    // Hql.g:693:12: '^='
                     {
                     	Match("^="); if (state.failed) return ;
 
@@ -1959,8 +1959,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = LE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:689:3: ( '<=' )
-            // Hql.g:689:5: '<='
+            // Hql.g:694:3: ( '<=' )
+            // Hql.g:694:5: '<='
             {
             	Match("<="); if (state.failed) return ;
 
@@ -1983,8 +1983,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = GE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:690:3: ( '>=' )
-            // Hql.g:690:5: '>='
+            // Hql.g:695:3: ( '>=' )
+            // Hql.g:695:5: '>='
             {
             	Match(">="); if (state.failed) return ;
 
@@ -2007,8 +2007,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:692:5: ( '|' )
-            // Hql.g:692:8: '|'
+            // Hql.g:697:5: ( '|' )
+            // Hql.g:697:8: '|'
             {
             	Match('|'); if (state.failed) return ;
 
@@ -2030,8 +2030,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BXOR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:693:6: ( '^' )
-            // Hql.g:693:8: '^'
+            // Hql.g:698:6: ( '^' )
+            // Hql.g:698:8: '^'
             {
             	Match('^'); if (state.failed) return ;
 
@@ -2053,8 +2053,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BAND;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:694:6: ( '&' )
-            // Hql.g:694:8: '&'
+            // Hql.g:699:6: ( '&' )
+            // Hql.g:699:8: '&'
             {
             	Match('&'); if (state.failed) return ;
 
@@ -2076,8 +2076,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = BNOT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:695:6: ( '!' )
-            // Hql.g:695:8: '!'
+            // Hql.g:700:6: ( '!' )
+            // Hql.g:700:8: '!'
             {
             	Match('!'); if (state.failed) return ;
 
@@ -2099,8 +2099,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COMMA;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:697:6: ( ',' )
-            // Hql.g:697:8: ','
+            // Hql.g:702:6: ( ',' )
+            // Hql.g:702:8: ','
             {
             	Match(','); if (state.failed) return ;
 
@@ -2122,8 +2122,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:699:5: ( '(' )
-            // Hql.g:699:7: '('
+            // Hql.g:704:5: ( '(' )
+            // Hql.g:704:7: '('
             {
             	Match('('); if (state.failed) return ;
 
@@ -2145,8 +2145,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:700:6: ( ')' )
-            // Hql.g:700:8: ')'
+            // Hql.g:705:6: ( ')' )
+            // Hql.g:705:8: ')'
             {
             	Match(')'); if (state.failed) return ;
 
@@ -2168,8 +2168,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = OPEN_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:701:13: ( '[' )
-            // Hql.g:701:15: '['
+            // Hql.g:706:13: ( '[' )
+            // Hql.g:706:15: '['
             {
             	Match('['); if (state.failed) return ;
 
@@ -2191,8 +2191,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CLOSE_BRACKET;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:702:14: ( ']' )
-            // Hql.g:702:16: ']'
+            // Hql.g:707:14: ( ']' )
+            // Hql.g:707:16: ']'
             {
             	Match(']'); if (state.failed) return ;
 
@@ -2214,8 +2214,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = CONCAT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:704:7: ( '||' )
-            // Hql.g:704:9: '||'
+            // Hql.g:709:7: ( '||' )
+            // Hql.g:709:9: '||'
             {
             	Match("||"); if (state.failed) return ;
 
@@ -2238,8 +2238,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PLUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:705:5: ( '+' )
-            // Hql.g:705:7: '+'
+            // Hql.g:710:5: ( '+' )
+            // Hql.g:710:7: '+'
             {
             	Match('+'); if (state.failed) return ;
 
@@ -2261,8 +2261,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = MINUS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:706:6: ( '-' )
-            // Hql.g:706:8: '-'
+            // Hql.g:711:6: ( '-' )
+            // Hql.g:711:8: '-'
             {
             	Match('-'); if (state.failed) return ;
 
@@ -2284,8 +2284,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = STAR;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:707:5: ( '*' )
-            // Hql.g:707:7: '*'
+            // Hql.g:712:5: ( '*' )
+            // Hql.g:712:7: '*'
             {
             	Match('*'); if (state.failed) return ;
 
@@ -2307,8 +2307,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = DIV;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:708:4: ( '/' )
-            // Hql.g:708:6: '/'
+            // Hql.g:713:4: ( '/' )
+            // Hql.g:713:6: '/'
             {
             	Match('/'); if (state.failed) return ;
 
@@ -2330,8 +2330,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = COLON;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:709:6: ( ':' )
-            // Hql.g:709:8: ':'
+            // Hql.g:714:6: ( ':' )
+            // Hql.g:714:8: ':'
             {
             	Match(':'); if (state.failed) return ;
 
@@ -2353,8 +2353,8 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = PARAM;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:710:6: ( '?' )
-            // Hql.g:710:8: '?'
+            // Hql.g:715:6: ( '?' )
+            // Hql.g:715:8: '?'
             {
             	Match('?'); if (state.failed) return ;
 
@@ -2376,11 +2376,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = IDENT;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:713:2: ( ID_START_LETTER ( ID_LETTER )* )
-            // Hql.g:713:4: ID_START_LETTER ( ID_LETTER )*
+            // Hql.g:718:2: ( ID_START_LETTER ( ID_LETTER )* )
+            // Hql.g:718:4: ID_START_LETTER ( ID_LETTER )*
             {
             	mID_START_LETTER(); if (state.failed) return ;
-            	// Hql.g:713:20: ( ID_LETTER )*
+            	// Hql.g:718:20: ( ID_LETTER )*
             	do 
             	{
             	    int alt2 = 2;
@@ -2395,7 +2395,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt2) 
             		{
             			case 1 :
-            			    // Hql.g:713:22: ID_LETTER
+            			    // Hql.g:718:22: ID_LETTER
             			    {
             			    	mID_LETTER(); if (state.failed) return ;
 
@@ -2427,7 +2427,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:718:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
+            // Hql.g:723:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
             // Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
@@ -2457,7 +2457,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:727:5: ( ID_START_LETTER | '0' .. '9' )
+            // Hql.g:732:5: ( ID_START_LETTER | '0' .. '9' )
             // Hql.g:
             {
             	if ( input.LA(1) == '$' || (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'A' && input.LA(1) <= 'Z') || input.LA(1) == '_' || (input.LA(1) >= 'a' && input.LA(1) <= 'z') || (input.LA(1) >= '\u0080' && input.LA(1) <= '\uFFFE') ) 
@@ -2489,11 +2489,11 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = QUOTED_String;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:732:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
-            // Hql.g:732:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
+            // Hql.g:737:4: ( '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\'' )
+            // Hql.g:737:6: '\\'' ( ( ESCqs )=> ESCqs | ~ '\\'' )* '\\''
             {
             	Match('\''); if (state.failed) return ;
-            	// Hql.g:732:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
+            	// Hql.g:737:11: ( ( ESCqs )=> ESCqs | ~ '\\'' )*
             	do 
             	{
             	    int alt3 = 3;
@@ -2519,14 +2519,14 @@ public partial class HqlLexer : Lexer {
             	    switch (alt3) 
             		{
             			case 1 :
-            			    // Hql.g:732:13: ( ESCqs )=> ESCqs
+            			    // Hql.g:737:13: ( ESCqs )=> ESCqs
             			    {
             			    	mESCqs(); if (state.failed) return ;
 
             			    }
             			    break;
             			case 2 :
-            			    // Hql.g:732:31: ~ '\\''
+            			    // Hql.g:737:31: ~ '\\''
             			    {
             			    	if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&') || (input.LA(1) >= '(' && input.LA(1) <= '\uFFFF') ) 
             			    	{
@@ -2570,8 +2570,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:737:2: ( '\\'' '\\'' )
-            // Hql.g:738:3: '\\'' '\\''
+            // Hql.g:742:2: ( '\\'' '\\'' )
+            // Hql.g:743:3: '\\'' '\\''
             {
             	Match('\''); if (state.failed) return ;
             	Match('\''); if (state.failed) return ;
@@ -2592,10 +2592,10 @@ public partial class HqlLexer : Lexer {
     		{
             int _type = WS;
     	int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Hql.g:741:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
-            // Hql.g:741:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            // Hql.g:746:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+            // Hql.g:746:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             {
-            	// Hql.g:741:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            	// Hql.g:746:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             	int alt4 = 5;
             	switch ( input.LA(1) ) 
             	{
@@ -2638,21 +2638,21 @@ public partial class HqlLexer : Lexer {
             	switch (alt4) 
             	{
             	    case 1 :
-            	        // Hql.g:741:13: ' '
+            	        // Hql.g:746:13: ' '
             	        {
             	        	Match(' '); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 2 :
-            	        // Hql.g:742:7: '\\t'
+            	        // Hql.g:747:7: '\\t'
             	        {
             	        	Match('\t'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 3 :
-            	        // Hql.g:743:7: '\\r' '\\n'
+            	        // Hql.g:748:7: '\\r' '\\n'
             	        {
             	        	Match('\r'); if (state.failed) return ;
             	        	Match('\n'); if (state.failed) return ;
@@ -2660,14 +2660,14 @@ public partial class HqlLexer : Lexer {
             	        }
             	        break;
             	    case 4 :
-            	        // Hql.g:744:7: '\\n'
+            	        // Hql.g:749:7: '\\n'
             	        {
             	        	Match('\n'); if (state.failed) return ;
 
             	        }
             	        break;
             	    case 5 :
-            	        // Hql.g:745:7: '\\r'
+            	        // Hql.g:750:7: '\\r'
             	        {
             	        	Match('\r'); if (state.failed) return ;
 
@@ -2705,7 +2705,7 @@ public partial class HqlLexer : Lexer {
             IToken f4 = null;
 
             bool isDecimal=false; IToken t=null;
-            // Hql.g:754:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
+            // Hql.g:759:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
             int alt20 = 2;
             int LA20_0 = input.LA(1);
 
@@ -2728,14 +2728,14 @@ public partial class HqlLexer : Lexer {
             switch (alt20) 
             {
                 case 1 :
-                    // Hql.g:754:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    // Hql.g:759:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     {
                     	Match('.'); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	  _type = DOT;
                     	}
-                    	// Hql.g:755:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    	// Hql.g:760:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     	int alt8 = 2;
                     	int LA8_0 = input.LA(1);
 
@@ -2746,9 +2746,9 @@ public partial class HqlLexer : Lexer {
                     	switch (alt8) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:755:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+                    	        // Hql.g:760:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
                     	        {
-                    	        	// Hql.g:755:6: ( '0' .. '9' )+
+                    	        	// Hql.g:760:6: ( '0' .. '9' )+
                     	        	int cnt5 = 0;
                     	        	do 
                     	        	{
@@ -2764,7 +2764,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt5) 
                     	        		{
                     	        			case 1 :
-                    	        			    // Hql.g:755:7: '0' .. '9'
+                    	        			    // Hql.g:760:7: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -2784,7 +2784,7 @@ public partial class HqlLexer : Lexer {
                     	        	loop5:
                     	        		;	// Stops C# compiler whining that label 'loop5' has no statements
 
-                    	        	// Hql.g:755:18: ( EXPONENT )?
+                    	        	// Hql.g:760:18: ( EXPONENT )?
                     	        	int alt6 = 2;
                     	        	int LA6_0 = input.LA(1);
 
@@ -2795,7 +2795,7 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt6) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:755:19: EXPONENT
+                    	        	        // Hql.g:760:19: EXPONENT
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -2804,7 +2804,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	}
 
-                    	        	// Hql.g:755:30: (f1= FLOAT_SUFFIX )?
+                    	        	// Hql.g:760:30: (f1= FLOAT_SUFFIX )?
                     	        	int alt7 = 2;
                     	        	int LA7_0 = input.LA(1);
 
@@ -2815,7 +2815,7 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt7) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:755:31: f1= FLOAT_SUFFIX
+                    	        	        // Hql.g:760:31: f1= FLOAT_SUFFIX
                     	        	        {
                     	        	        	int f1Start1034 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
@@ -2857,9 +2857,9 @@ public partial class HqlLexer : Lexer {
                     }
                     break;
                 case 2 :
-                    // Hql.g:771:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    // Hql.g:776:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     {
-                    	// Hql.g:771:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+                    	// Hql.g:776:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
                     	int alt13 = 2;
                     	int LA13_0 = input.LA(1);
 
@@ -2882,14 +2882,14 @@ public partial class HqlLexer : Lexer {
                     	switch (alt13) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:771:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        // Hql.g:776:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        {
                     	        	Match('0'); if (state.failed) return ;
                     	        	if ( (state.backtracking==0) )
                     	        	{
                     	        	  isDecimal = true;
                     	        	}
-                    	        	// Hql.g:772:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+                    	        	// Hql.g:777:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
                     	        	int alt11 = 3;
                     	        	int LA11_0 = input.LA(1);
 
@@ -2904,16 +2904,16 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt11) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:772:6: ( 'x' ) ( HEX_DIGIT )+
+                    	        	        // Hql.g:777:6: ( 'x' ) ( HEX_DIGIT )+
                     	        	        {
-                    	        	        	// Hql.g:772:6: ( 'x' )
-                    	        	        	// Hql.g:772:7: 'x'
+                    	        	        	// Hql.g:777:6: ( 'x' )
+                    	        	        	// Hql.g:777:7: 'x'
                     	        	        	{
                     	        	        		Match('x'); if (state.failed) return ;
 
                     	        	        	}
 
-                    	        	        	// Hql.g:773:5: ( HEX_DIGIT )+
+                    	        	        	// Hql.g:778:5: ( HEX_DIGIT )+
                     	        	        	int cnt9 = 0;
                     	        	        	do 
                     	        	        	{
@@ -2979,7 +2979,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt9) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:780:7: HEX_DIGIT
+                    	        	        			    // Hql.g:785:7: HEX_DIGIT
                     	        	        			    {
                     	        	        			    	mHEX_DIGIT(); if (state.failed) return ;
 
@@ -3003,9 +3003,9 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // Hql.g:782:6: ( '0' .. '7' )+
+                    	        	        // Hql.g:787:6: ( '0' .. '7' )+
                     	        	        {
-                    	        	        	// Hql.g:782:6: ( '0' .. '7' )+
+                    	        	        	// Hql.g:787:6: ( '0' .. '7' )+
                     	        	        	int cnt10 = 0;
                     	        	        	do 
                     	        	        	{
@@ -3021,7 +3021,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt10) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:782:7: '0' .. '7'
+                    	        	        			    // Hql.g:787:7: '0' .. '7'
                     	        	        			    {
                     	        	        			    	MatchRange('0','7'); if (state.failed) return ;
 
@@ -3051,16 +3051,16 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:784:5: ( '1' .. '9' ) ( '0' .. '9' )*
+                    	        // Hql.g:789:5: ( '1' .. '9' ) ( '0' .. '9' )*
                     	        {
-                    	        	// Hql.g:784:5: ( '1' .. '9' )
-                    	        	// Hql.g:784:6: '1' .. '9'
+                    	        	// Hql.g:789:5: ( '1' .. '9' )
+                    	        	// Hql.g:789:6: '1' .. '9'
                     	        	{
                     	        		MatchRange('1','9'); if (state.failed) return ;
 
                     	        	}
 
-                    	        	// Hql.g:784:16: ( '0' .. '9' )*
+                    	        	// Hql.g:789:16: ( '0' .. '9' )*
                     	        	do 
                     	        	{
                     	        	    int alt12 = 2;
@@ -3075,7 +3075,7 @@ public partial class HqlLexer : Lexer {
                     	        	    switch (alt12) 
                     	        		{
                     	        			case 1 :
-                    	        			    // Hql.g:784:17: '0' .. '9'
+                    	        			    // Hql.g:789:17: '0' .. '9'
                     	        			    {
                     	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3100,7 +3100,7 @@ public partial class HqlLexer : Lexer {
 
                     	}
 
-                    	// Hql.g:786:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    	// Hql.g:791:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     	int alt19 = 3;
                     	int LA19_0 = input.LA(1);
 
@@ -3115,10 +3115,10 @@ public partial class HqlLexer : Lexer {
                     	switch (alt19) 
                     	{
                     	    case 1 :
-                    	        // Hql.g:786:5: ( 'l' )
+                    	        // Hql.g:791:5: ( 'l' )
                     	        {
-                    	        	// Hql.g:786:5: ( 'l' )
-                    	        	// Hql.g:786:6: 'l'
+                    	        	// Hql.g:791:5: ( 'l' )
+                    	        	// Hql.g:791:6: 'l'
                     	        	{
                     	        		Match('l'); if (state.failed) return ;
 
@@ -3132,14 +3132,14 @@ public partial class HqlLexer : Lexer {
                     	        }
                     	        break;
                     	    case 2 :
-                    	        // Hql.g:789:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        // Hql.g:794:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        {
                     	        	if ( !((isDecimal)) ) 
                     	        	{
                     	        	    if ( state.backtracking > 0 ) {state.failed = true; return ;}
                     	        	    throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
                     	        	}
-                    	        	// Hql.g:790:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                    	        	// Hql.g:795:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                     	        	int alt18 = 3;
                     	        	switch ( input.LA(1) ) 
                     	        	{
@@ -3171,10 +3171,10 @@ public partial class HqlLexer : Lexer {
                     	        	switch (alt18) 
                     	        	{
                     	        	    case 1 :
-                    	        	        // Hql.g:790:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+                    	        	        // Hql.g:795:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	Match('.'); if (state.failed) return ;
-                    	        	        	// Hql.g:790:12: ( '0' .. '9' )*
+                    	        	        	// Hql.g:795:12: ( '0' .. '9' )*
                     	        	        	do 
                     	        	        	{
                     	        	        	    int alt14 = 2;
@@ -3189,7 +3189,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	    switch (alt14) 
                     	        	        		{
                     	        	        			case 1 :
-                    	        	        			    // Hql.g:790:13: '0' .. '9'
+                    	        	        			    // Hql.g:795:13: '0' .. '9'
                     	        	        			    {
                     	        	        			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3204,7 +3204,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	loop14:
                     	        	        		;	// Stops C# compiler whining that label 'loop14' has no statements
 
-                    	        	        	// Hql.g:790:24: ( EXPONENT )?
+                    	        	        	// Hql.g:795:24: ( EXPONENT )?
                     	        	        	int alt15 = 2;
                     	        	        	int LA15_0 = input.LA(1);
 
@@ -3215,7 +3215,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt15) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:790:25: EXPONENT
+                    	        	        	        // Hql.g:795:25: EXPONENT
                     	        	        	        {
                     	        	        	        	mEXPONENT(); if (state.failed) return ;
 
@@ -3224,7 +3224,7 @@ public partial class HqlLexer : Lexer {
 
                     	        	        	}
 
-                    	        	        	// Hql.g:790:36: (f2= FLOAT_SUFFIX )?
+                    	        	        	// Hql.g:795:36: (f2= FLOAT_SUFFIX )?
                     	        	        	int alt16 = 2;
                     	        	        	int LA16_0 = input.LA(1);
 
@@ -3235,7 +3235,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt16) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:790:37: f2= FLOAT_SUFFIX
+                    	        	        	        // Hql.g:795:37: f2= FLOAT_SUFFIX
                     	        	        	        {
                     	        	        	        	int f2Start1236 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
@@ -3254,10 +3254,10 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 2 :
-                    	        	        // Hql.g:791:8: EXPONENT (f3= FLOAT_SUFFIX )?
+                    	        	        // Hql.g:796:8: EXPONENT (f3= FLOAT_SUFFIX )?
                     	        	        {
                     	        	        	mEXPONENT(); if (state.failed) return ;
-                    	        	        	// Hql.g:791:17: (f3= FLOAT_SUFFIX )?
+                    	        	        	// Hql.g:796:17: (f3= FLOAT_SUFFIX )?
                     	        	        	int alt17 = 2;
                     	        	        	int LA17_0 = input.LA(1);
 
@@ -3268,7 +3268,7 @@ public partial class HqlLexer : Lexer {
                     	        	        	switch (alt17) 
                     	        	        	{
                     	        	        	    case 1 :
-                    	        	        	        // Hql.g:791:18: f3= FLOAT_SUFFIX
+                    	        	        	        // Hql.g:796:18: f3= FLOAT_SUFFIX
                     	        	        	        {
                     	        	        	        	int f3Start1254 = CharIndex;
                     	        	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
@@ -3287,7 +3287,7 @@ public partial class HqlLexer : Lexer {
                     	        	        }
                     	        	        break;
                     	        	    case 3 :
-                    	        	        // Hql.g:792:8: f4= FLOAT_SUFFIX
+                    	        	        // Hql.g:797:8: f4= FLOAT_SUFFIX
                     	        	        {
                     	        	        	int f4Start1269 = CharIndex;
                     	        	        	mFLOAT_SUFFIX(); if (state.failed) return ;
@@ -3344,8 +3344,8 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:814:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
-            // Hql.g:814:4: ( '0' .. '9' | 'a' .. 'f' )
+            // Hql.g:819:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
+            // Hql.g:819:4: ( '0' .. '9' | 'a' .. 'f' )
             {
             	if ( (input.LA(1) >= '0' && input.LA(1) <= '9') || (input.LA(1) >= 'a' && input.LA(1) <= 'f') ) 
             	{
@@ -3374,17 +3374,17 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:820:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // Hql.g:820:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // Hql.g:825:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // Hql.g:825:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
-            	// Hql.g:820:4: ( 'e' )
-            	// Hql.g:820:5: 'e'
+            	// Hql.g:825:4: ( 'e' )
+            	// Hql.g:825:5: 'e'
             	{
             		Match('e'); if (state.failed) return ;
 
             	}
 
-            	// Hql.g:820:10: ( '+' | '-' )?
+            	// Hql.g:825:10: ( '+' | '-' )?
             	int alt21 = 2;
             	int LA21_0 = input.LA(1);
 
@@ -3415,7 +3415,7 @@ public partial class HqlLexer : Lexer {
 
             	}
 
-            	// Hql.g:820:21: ( '0' .. '9' )+
+            	// Hql.g:825:21: ( '0' .. '9' )+
             	int cnt22 = 0;
             	do 
             	{
@@ -3431,7 +3431,7 @@ public partial class HqlLexer : Lexer {
             	    switch (alt22) 
             		{
             			case 1 :
-            			    // Hql.g:820:22: '0' .. '9'
+            			    // Hql.g:825:22: '0' .. '9'
             			    {
             			    	MatchRange('0','9'); if (state.failed) return ;
 
@@ -3466,7 +3466,7 @@ public partial class HqlLexer : Lexer {
     {
     		try
     		{
-            // Hql.g:825:2: ( 'f' | 'd' | 'm' )
+            // Hql.g:830:2: ( 'f' | 'd' | 'm' )
             // Hql.g:
             {
             	if ( input.LA(1) == 'd' || input.LA(1) == 'f' || input.LA(1) == 'm' ) 
@@ -4170,8 +4170,8 @@ public partial class HqlLexer : Lexer {
 
     // $ANTLR start "synpred1_Hql"
     public void synpred1_Hql_fragment() {
-        // Hql.g:732:13: ( ESCqs )
-        // Hql.g:732:14: ESCqs
+        // Hql.g:737:13: ( ESCqs )
+        // Hql.g:737:14: ESCqs
         {
         	mESCqs(); if (state.failed) return ;
 

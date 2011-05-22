@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 SqlGenerator.g 2011-04-11 10:33:52
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 SqlGenerator.g 2011-05-22 07:45:52
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -136,6 +136,8 @@ public partial class SqlGenerator : TreeParser
 		"EQ", 
 		"OPEN", 
 		"CLOSE", 
+		"COLON", 
+		"PARAM", 
 		"NE", 
 		"SQL_NE", 
 		"LT", 
@@ -153,8 +155,6 @@ public partial class SqlGenerator : TreeParser
 		"DIV", 
 		"OPEN_BRACKET", 
 		"CLOSE_BRACKET", 
-		"COLON", 
-		"PARAM", 
 		"QUOTED_String", 
 		"IDENT", 
 		"ID_START_LETTER", 
@@ -186,8 +186,8 @@ public partial class SqlGenerator : TreeParser
 
     public const int SELECT_COLUMNS = 144;
     public const int EXPONENT = 130;
-    public const int LT = 107;
-    public const int STAR = 118;
+    public const int LT = 109;
+    public const int STAR = 120;
     public const int FLOAT_SUFFIX = 131;
     public const int FILTERS = 147;
     public const int LITERAL_by = 56;
@@ -196,7 +196,7 @@ public partial class SqlGenerator : TreeParser
     public const int CASE = 57;
     public const int NEW = 37;
     public const int FILTER_ENTITY = 76;
-    public const int PARAM = 123;
+    public const int PARAM = 106;
     public const int COUNT = 12;
     public const int NOT = 38;
     public const int EOF = -1;
@@ -204,7 +204,7 @@ public partial class SqlGenerator : TreeParser
     public const int QUOTED_String = 124;
     public const int WEIRD_IDENT = 93;
     public const int ESCqs = 128;
-    public const int OPEN_BRACKET = 120;
+    public const int OPEN_BRACKET = 122;
     public const int FULL = 23;
     public const int ORDER_ELEMENT = 85;
     public const int INSERT = 29;
@@ -219,11 +219,11 @@ public partial class SqlGenerator : TreeParser
     public const int VERSIONED = 54;
     public const int SELECT = 45;
     public const int INTO = 30;
-    public const int NE = 105;
-    public const int GE = 110;
+    public const int NE = 107;
+    public const int GE = 112;
     public const int TAKE = 50;
     public const int ID_LETTER = 127;
-    public const int CONCAT = 111;
+    public const int CONCAT = 113;
     public const int NULL = 39;
     public const int ELSE = 59;
     public const int SELECT_FROM = 89;
@@ -251,9 +251,9 @@ public partial class SqlGenerator : TreeParser
     public const int ALIAS = 72;
     public const int JAVA_CONSTANT = 100;
     public const int CONSTANT = 94;
-    public const int GT = 108;
+    public const int GT = 110;
     public const int QUERY = 86;
-    public const int BNOT = 112;
+    public const int BNOT = 114;
     public const int INDEX_OP = 78;
     public const int NUM_FLOAT = 98;
     public const int FROM = 22;
@@ -263,7 +263,7 @@ public partial class SqlGenerator : TreeParser
     public const int CONSTRUCTOR = 73;
     public const int T__133 = 133;
     public const int T__134 = 134;
-    public const int CLOSE_BRACKET = 121;
+    public const int CLOSE_BRACKET = 123;
     public const int WHERE = 55;
     public const int CLASS = 11;
     public const int MEMBER = 67;
@@ -276,7 +276,7 @@ public partial class SqlGenerator : TreeParser
     public const int JOIN_FRAGMENT = 137;
     public const int SUM = 49;
     public const int AND = 6;
-    public const int SQL_NE = 106;
+    public const int SQL_NE = 108;
     public const int ASCENDING = 8;
     public const int EXPR_LIST = 75;
     public const int AS = 7;
@@ -289,12 +289,12 @@ public partial class SqlGenerator : TreeParser
     public const int LEFT = 33;
     public const int AVG = 9;
     public const int SOME = 48;
-    public const int BOR = 113;
+    public const int BOR = 115;
     public const int ALL = 4;
     public const int IMPLIED_FROM = 136;
     public const int IDENT = 125;
-    public const int PLUS = 116;
-    public const int BXOR = 114;
+    public const int PLUS = 118;
+    public const int BXOR = 116;
     public const int CASE2 = 74;
     public const int EXISTS = 19;
     public const int DOT = 15;
@@ -313,25 +313,25 @@ public partial class SqlGenerator : TreeParser
     public const int SET = 46;
     public const int HAVING = 25;
     public const int MIN = 36;
-    public const int MINUS = 117;
+    public const int MINUS = 119;
     public const int IS_NOT_NULL = 79;
-    public const int BAND = 115;
+    public const int BAND = 117;
     public const int ELEMENTS = 17;
     public const int TRUE = 51;
     public const int JOIN = 32;
     public const int UNION = 52;
     public const int IN_LIST = 77;
-    public const int COLON = 122;
+    public const int COLON = 105;
     public const int OPEN = 103;
     public const int ANY = 5;
     public const int CLOSE = 104;
     public const int WHEN = 61;
     public const int ALIAS_REF = 141;
-    public const int DIV = 119;
+    public const int DIV = 121;
     public const int DESCENDING = 14;
     public const int BETWEEN = 10;
     public const int AGGREGATE = 71;
-    public const int LE = 109;
+    public const int LE = 111;
 
     // delegates
     // delegators
@@ -457,16 +457,18 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "selectStatement"
-    // SqlGenerator.g:34:1: selectStatement : ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= NUM_INT ) )? ( ^( TAKE ti= NUM_INT ) )? ) ;
+    // SqlGenerator.g:34:1: selectStatement : ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= limitValue ) )? ( ^( TAKE ti= limitValue ) )? ) ;
     public void selectStatement() // throws RecognitionException [1]
     {   
-        IASTNode si = null;
-        IASTNode ti = null;
+        SqlGenerator.limitValue_return si = default(SqlGenerator.limitValue_return);
+
+        SqlGenerator.limitValue_return ti = default(SqlGenerator.limitValue_return);
+
 
         try 
     	{
-            // SqlGenerator.g:35:2: ( ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= NUM_INT ) )? ( ^( TAKE ti= NUM_INT ) )? ) )
-            // SqlGenerator.g:35:4: ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= NUM_INT ) )? ( ^( TAKE ti= NUM_INT ) )? )
+            // SqlGenerator.g:35:2: ( ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= limitValue ) )? ( ^( TAKE ti= limitValue ) )? ) )
+            // SqlGenerator.g:35:4: ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= limitValue ) )? ( ^( TAKE ti= limitValue ) )? )
             {
             	Match(input,SELECT,FOLLOW_SELECT_in_selectStatement84); if (state.failed) return ;
 
@@ -616,7 +618,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// SqlGenerator.g:42:3: ( ^( SKIP si= NUM_INT ) )?
+            	// SqlGenerator.g:42:3: ( ^( SKIP si= limitValue ) )?
             	int alt6 = 2;
             	int LA6_0 = input.LA(1);
 
@@ -627,17 +629,20 @@ public partial class SqlGenerator : TreeParser
             	switch (alt6) 
             	{
             	    case 1 :
-            	        // SqlGenerator.g:42:5: ^( SKIP si= NUM_INT )
+            	        // SqlGenerator.g:42:5: ^( SKIP si= limitValue )
             	        {
             	        	Match(input,SKIP,FOLLOW_SKIP_in_selectStatement165); if (state.failed) return ;
 
             	        	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	        	si=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_selectStatement169); if (state.failed) return ;
+            	        	PushFollow(FOLLOW_limitValue_in_selectStatement169);
+            	        	si = limitValue();
+            	        	state.followingStackPointer--;
+            	        	if (state.failed) return ;
 
             	        	Match(input, Token.UP, null); if (state.failed) return ;
             	        	if ( (state.backtracking==0) )
             	        	{
-            	        	   Skip(si); 
+            	        	   Skip(((si != null) ? ((IASTNode)si.Start) : null)); 
             	        	}
 
             	        }
@@ -645,7 +650,7 @@ public partial class SqlGenerator : TreeParser
 
             	}
 
-            	// SqlGenerator.g:43:3: ( ^( TAKE ti= NUM_INT ) )?
+            	// SqlGenerator.g:43:3: ( ^( TAKE ti= limitValue ) )?
             	int alt7 = 2;
             	int LA7_0 = input.LA(1);
 
@@ -656,17 +661,20 @@ public partial class SqlGenerator : TreeParser
             	switch (alt7) 
             	{
             	    case 1 :
-            	        // SqlGenerator.g:43:5: ^( TAKE ti= NUM_INT )
+            	        // SqlGenerator.g:43:5: ^( TAKE ti= limitValue )
             	        {
             	        	Match(input,TAKE,FOLLOW_TAKE_in_selectStatement181); if (state.failed) return ;
 
             	        	Match(input, Token.DOWN, null); if (state.failed) return ;
-            	        	ti=(IASTNode)Match(input,NUM_INT,FOLLOW_NUM_INT_in_selectStatement185); if (state.failed) return ;
+            	        	PushFollow(FOLLOW_limitValue_in_selectStatement185);
+            	        	ti = limitValue();
+            	        	state.followingStackPointer--;
+            	        	if (state.failed) return ;
 
             	        	Match(input, Token.UP, null); if (state.failed) return ;
             	        	if ( (state.backtracking==0) )
             	        	{
-            	        	   Take(ti); 
+            	        	   Take(((ti != null) ? ((IASTNode)ti.Start) : null)); 
             	        	}
 
             	        }
@@ -1172,7 +1180,7 @@ public partial class SqlGenerator : TreeParser
             	int alt14 = 2;
             	int LA14_0 = input.LA(1);
 
-            	if ( ((LA14_0 >= ALL && LA14_0 <= ANY) || LA14_0 == COUNT || LA14_0 == DOT || LA14_0 == FALSE || LA14_0 == NULL || LA14_0 == SELECT || LA14_0 == SOME || (LA14_0 >= TRUE && LA14_0 <= UNION) || LA14_0 == CASE || LA14_0 == AGGREGATE || LA14_0 == CASE2 || LA14_0 == INDEX_OP || LA14_0 == METHOD_CALL || LA14_0 == UNARY_MINUS || LA14_0 == VECTOR_EXPR || (LA14_0 >= CONSTANT && LA14_0 <= JAVA_CONSTANT) || (LA14_0 >= BNOT && LA14_0 <= DIV) || (LA14_0 >= PARAM && LA14_0 <= IDENT) || LA14_0 == ALIAS_REF || LA14_0 == SQL_TOKEN || LA14_0 == NAMED_PARAM) )
+            	if ( ((LA14_0 >= ALL && LA14_0 <= ANY) || LA14_0 == COUNT || LA14_0 == DOT || LA14_0 == FALSE || LA14_0 == NULL || LA14_0 == SELECT || LA14_0 == SOME || (LA14_0 >= TRUE && LA14_0 <= UNION) || LA14_0 == CASE || LA14_0 == AGGREGATE || LA14_0 == CASE2 || LA14_0 == INDEX_OP || LA14_0 == METHOD_CALL || LA14_0 == UNARY_MINUS || LA14_0 == VECTOR_EXPR || (LA14_0 >= CONSTANT && LA14_0 <= JAVA_CONSTANT) || LA14_0 == PARAM || (LA14_0 >= BNOT && LA14_0 <= DIV) || (LA14_0 >= QUOTED_String && LA14_0 <= IDENT) || LA14_0 == ALIAS_REF || LA14_0 == SQL_TOKEN || LA14_0 == NAMED_PARAM) )
             	{
             	    alt14 = 1;
             	}
@@ -1229,7 +1237,7 @@ public partial class SqlGenerator : TreeParser
             	int alt15 = 2;
             	int LA15_0 = input.LA(1);
 
-            	if ( ((LA15_0 >= ALL && LA15_0 <= ANY) || LA15_0 == COUNT || LA15_0 == DOT || LA15_0 == FALSE || LA15_0 == NULL || LA15_0 == SELECT || LA15_0 == SOME || (LA15_0 >= TRUE && LA15_0 <= UNION) || LA15_0 == CASE || LA15_0 == AGGREGATE || LA15_0 == CASE2 || LA15_0 == INDEX_OP || LA15_0 == METHOD_CALL || LA15_0 == UNARY_MINUS || LA15_0 == VECTOR_EXPR || (LA15_0 >= CONSTANT && LA15_0 <= JAVA_CONSTANT) || (LA15_0 >= BNOT && LA15_0 <= DIV) || (LA15_0 >= PARAM && LA15_0 <= IDENT) || LA15_0 == ALIAS_REF || LA15_0 == SQL_TOKEN || LA15_0 == NAMED_PARAM) )
+            	if ( ((LA15_0 >= ALL && LA15_0 <= ANY) || LA15_0 == COUNT || LA15_0 == DOT || LA15_0 == FALSE || LA15_0 == NULL || LA15_0 == SELECT || LA15_0 == SOME || (LA15_0 >= TRUE && LA15_0 <= UNION) || LA15_0 == CASE || LA15_0 == AGGREGATE || LA15_0 == CASE2 || LA15_0 == INDEX_OP || LA15_0 == METHOD_CALL || LA15_0 == UNARY_MINUS || LA15_0 == VECTOR_EXPR || (LA15_0 >= CONSTANT && LA15_0 <= JAVA_CONSTANT) || LA15_0 == PARAM || (LA15_0 >= BNOT && LA15_0 <= DIV) || (LA15_0 >= QUOTED_String && LA15_0 <= IDENT) || LA15_0 == ALIAS_REF || LA15_0 == SQL_TOKEN || LA15_0 == NAMED_PARAM) )
             	{
             	    alt15 = 1;
             	}
@@ -1663,7 +1671,7 @@ public partial class SqlGenerator : TreeParser
             	    int alt22 = 2;
             	    int LA22_0 = input.LA(1);
 
-            	    if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == SELECT || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || (LA22_0 >= CONSTRUCTOR && LA22_0 <= CASE2) || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= CONSTANT && LA22_0 <= JAVA_CONSTANT) || (LA22_0 >= BNOT && LA22_0 <= DIV) || (LA22_0 >= PARAM && LA22_0 <= IDENT) || LA22_0 == ALIAS_REF || LA22_0 == SQL_TOKEN || LA22_0 == SELECT_EXPR || LA22_0 == NAMED_PARAM) )
+            	    if ( (LA22_0 == COUNT || LA22_0 == DOT || LA22_0 == FALSE || LA22_0 == SELECT || LA22_0 == TRUE || LA22_0 == CASE || LA22_0 == AGGREGATE || (LA22_0 >= CONSTRUCTOR && LA22_0 <= CASE2) || LA22_0 == METHOD_CALL || LA22_0 == UNARY_MINUS || (LA22_0 >= CONSTANT && LA22_0 <= JAVA_CONSTANT) || LA22_0 == PARAM || (LA22_0 >= BNOT && LA22_0 <= DIV) || (LA22_0 >= QUOTED_String && LA22_0 <= IDENT) || LA22_0 == ALIAS_REF || LA22_0 == SQL_TOKEN || LA22_0 == SELECT_EXPR || LA22_0 == NAMED_PARAM) )
             	    {
             	        alt22 = 1;
             	    }
@@ -1925,7 +1933,7 @@ public partial class SqlGenerator : TreeParser
                     	    int alt24 = 2;
                     	    int LA24_0 = input.LA(1);
 
-                    	    if ( (LA24_0 == COUNT || LA24_0 == DOT || LA24_0 == FALSE || LA24_0 == SELECT || LA24_0 == TRUE || LA24_0 == CASE || LA24_0 == AGGREGATE || (LA24_0 >= CONSTRUCTOR && LA24_0 <= CASE2) || LA24_0 == METHOD_CALL || LA24_0 == UNARY_MINUS || (LA24_0 >= CONSTANT && LA24_0 <= JAVA_CONSTANT) || (LA24_0 >= BNOT && LA24_0 <= DIV) || (LA24_0 >= PARAM && LA24_0 <= IDENT) || LA24_0 == ALIAS_REF || LA24_0 == SQL_TOKEN || LA24_0 == SELECT_EXPR || LA24_0 == NAMED_PARAM) )
+                    	    if ( (LA24_0 == COUNT || LA24_0 == DOT || LA24_0 == FALSE || LA24_0 == SELECT || LA24_0 == TRUE || LA24_0 == CASE || LA24_0 == AGGREGATE || (LA24_0 >= CONSTRUCTOR && LA24_0 <= CASE2) || LA24_0 == METHOD_CALL || LA24_0 == UNARY_MINUS || (LA24_0 >= CONSTANT && LA24_0 <= JAVA_CONSTANT) || LA24_0 == PARAM || (LA24_0 >= BNOT && LA24_0 <= DIV) || (LA24_0 >= QUOTED_String && LA24_0 <= IDENT) || LA24_0 == ALIAS_REF || LA24_0 == SQL_TOKEN || LA24_0 == SELECT_EXPR || LA24_0 == NAMED_PARAM) )
                     	    {
                     	        alt24 = 1;
                     	    }
@@ -2238,7 +2246,7 @@ public partial class SqlGenerator : TreeParser
             {
                 alt29 = 1;
             }
-            else if ( (LA29_0 == COUNT || LA29_0 == DOT || LA29_0 == FALSE || LA29_0 == NULL || LA29_0 == TRUE || LA29_0 == CASE || LA29_0 == AGGREGATE || LA29_0 == CASE2 || LA29_0 == INDEX_OP || LA29_0 == METHOD_CALL || LA29_0 == UNARY_MINUS || (LA29_0 >= CONSTANT && LA29_0 <= JAVA_CONSTANT) || (LA29_0 >= BNOT && LA29_0 <= DIV) || (LA29_0 >= PARAM && LA29_0 <= IDENT) || LA29_0 == ALIAS_REF || LA29_0 == SQL_TOKEN || LA29_0 == NAMED_PARAM) )
+            else if ( (LA29_0 == COUNT || LA29_0 == DOT || LA29_0 == FALSE || LA29_0 == NULL || LA29_0 == TRUE || LA29_0 == CASE || LA29_0 == AGGREGATE || LA29_0 == CASE2 || LA29_0 == INDEX_OP || LA29_0 == METHOD_CALL || LA29_0 == UNARY_MINUS || (LA29_0 >= CONSTANT && LA29_0 <= JAVA_CONSTANT) || LA29_0 == PARAM || (LA29_0 >= BNOT && LA29_0 <= DIV) || (LA29_0 >= QUOTED_String && LA29_0 <= IDENT) || LA29_0 == ALIAS_REF || LA29_0 == SQL_TOKEN || LA29_0 == NAMED_PARAM) )
             {
                 alt29 = 2;
             }
@@ -3832,7 +3840,7 @@ public partial class SqlGenerator : TreeParser
             	    {
             	        alt48 = 1;
             	    }
-            	    else if ( (LA48_0 == UP || LA48_0 == COUNT || LA48_0 == DOT || LA48_0 == FALSE || LA48_0 == NULL || LA48_0 == TRUE || LA48_0 == CASE || LA48_0 == AGGREGATE || LA48_0 == CASE2 || LA48_0 == INDEX_OP || LA48_0 == METHOD_CALL || LA48_0 == UNARY_MINUS || (LA48_0 >= CONSTANT && LA48_0 <= JAVA_CONSTANT) || (LA48_0 >= BNOT && LA48_0 <= DIV) || (LA48_0 >= PARAM && LA48_0 <= IDENT) || LA48_0 == ALIAS_REF || LA48_0 == SQL_TOKEN || LA48_0 == NAMED_PARAM) )
+            	    else if ( (LA48_0 == UP || LA48_0 == COUNT || LA48_0 == DOT || LA48_0 == FALSE || LA48_0 == NULL || LA48_0 == TRUE || LA48_0 == CASE || LA48_0 == AGGREGATE || LA48_0 == CASE2 || LA48_0 == INDEX_OP || LA48_0 == METHOD_CALL || LA48_0 == UNARY_MINUS || (LA48_0 >= CONSTANT && LA48_0 <= JAVA_CONSTANT) || LA48_0 == PARAM || (LA48_0 >= BNOT && LA48_0 <= DIV) || (LA48_0 >= QUOTED_String && LA48_0 <= IDENT) || LA48_0 == ALIAS_REF || LA48_0 == SQL_TOKEN || LA48_0 == NAMED_PARAM) )
             	    {
             	        alt48 = 2;
             	    }
@@ -3911,7 +3919,7 @@ public partial class SqlGenerator : TreeParser
             	    int alt49 = 2;
             	    int LA49_0 = input.LA(1);
 
-            	    if ( (LA49_0 == COUNT || LA49_0 == DOT || LA49_0 == FALSE || LA49_0 == NULL || LA49_0 == TRUE || LA49_0 == CASE || LA49_0 == AGGREGATE || LA49_0 == CASE2 || LA49_0 == INDEX_OP || LA49_0 == METHOD_CALL || LA49_0 == UNARY_MINUS || (LA49_0 >= CONSTANT && LA49_0 <= JAVA_CONSTANT) || (LA49_0 >= BNOT && LA49_0 <= DIV) || (LA49_0 >= PARAM && LA49_0 <= IDENT) || LA49_0 == ALIAS_REF || LA49_0 == SQL_TOKEN || LA49_0 == NAMED_PARAM) )
+            	    if ( (LA49_0 == COUNT || LA49_0 == DOT || LA49_0 == FALSE || LA49_0 == NULL || LA49_0 == TRUE || LA49_0 == CASE || LA49_0 == AGGREGATE || LA49_0 == CASE2 || LA49_0 == INDEX_OP || LA49_0 == METHOD_CALL || LA49_0 == UNARY_MINUS || (LA49_0 >= CONSTANT && LA49_0 <= JAVA_CONSTANT) || LA49_0 == PARAM || (LA49_0 >= BNOT && LA49_0 <= DIV) || (LA49_0 >= QUOTED_String && LA49_0 <= IDENT) || LA49_0 == ALIAS_REF || LA49_0 == SQL_TOKEN || LA49_0 == NAMED_PARAM) )
             	    {
             	        alt49 = 1;
             	    }
@@ -4000,6 +4008,7 @@ public partial class SqlGenerator : TreeParser
             case NUM_FLOAT:
             case NUM_LONG:
             case JAVA_CONSTANT:
+            case PARAM:
             case BNOT:
             case BOR:
             case BXOR:
@@ -4008,7 +4017,6 @@ public partial class SqlGenerator : TreeParser
             case MINUS:
             case STAR:
             case DIV:
-            case PARAM:
             case QUOTED_String:
             case IDENT:
             case ALIAS_REF:
@@ -4083,7 +4091,7 @@ public partial class SqlGenerator : TreeParser
                     	        int alt50 = 2;
                     	        int LA50_0 = input.LA(1);
 
-                    	        if ( ((LA50_0 >= ALL && LA50_0 <= ANY) || LA50_0 == COUNT || LA50_0 == DOT || LA50_0 == FALSE || LA50_0 == NULL || LA50_0 == SELECT || LA50_0 == SOME || (LA50_0 >= TRUE && LA50_0 <= UNION) || LA50_0 == CASE || LA50_0 == AGGREGATE || LA50_0 == CASE2 || LA50_0 == INDEX_OP || LA50_0 == METHOD_CALL || LA50_0 == UNARY_MINUS || LA50_0 == VECTOR_EXPR || (LA50_0 >= CONSTANT && LA50_0 <= JAVA_CONSTANT) || (LA50_0 >= BNOT && LA50_0 <= DIV) || (LA50_0 >= PARAM && LA50_0 <= IDENT) || LA50_0 == ALIAS_REF || LA50_0 == SQL_TOKEN || LA50_0 == NAMED_PARAM) )
+                    	        if ( ((LA50_0 >= ALL && LA50_0 <= ANY) || LA50_0 == COUNT || LA50_0 == DOT || LA50_0 == FALSE || LA50_0 == NULL || LA50_0 == SELECT || LA50_0 == SOME || (LA50_0 >= TRUE && LA50_0 <= UNION) || LA50_0 == CASE || LA50_0 == AGGREGATE || LA50_0 == CASE2 || LA50_0 == INDEX_OP || LA50_0 == METHOD_CALL || LA50_0 == UNARY_MINUS || LA50_0 == VECTOR_EXPR || (LA50_0 >= CONSTANT && LA50_0 <= JAVA_CONSTANT) || LA50_0 == PARAM || (LA50_0 >= BNOT && LA50_0 <= DIV) || (LA50_0 >= QUOTED_String && LA50_0 <= IDENT) || LA50_0 == ALIAS_REF || LA50_0 == SQL_TOKEN || LA50_0 == NAMED_PARAM) )
                     	        {
                     	            alt50 = 1;
                     	        }
@@ -5567,7 +5575,7 @@ public partial class SqlGenerator : TreeParser
             	        	    int alt66 = 2;
             	        	    int LA66_0 = input.LA(1);
 
-            	        	    if ( ((LA66_0 >= ALL && LA66_0 <= ANY) || LA66_0 == BETWEEN || LA66_0 == COUNT || LA66_0 == DOT || (LA66_0 >= EXISTS && LA66_0 <= FALSE) || LA66_0 == IN || LA66_0 == LIKE || LA66_0 == NULL || LA66_0 == SELECT || LA66_0 == SOME || (LA66_0 >= TRUE && LA66_0 <= UNION) || LA66_0 == CASE || LA66_0 == AGGREGATE || LA66_0 == CASE2 || (LA66_0 >= INDEX_OP && LA66_0 <= NOT_LIKE) || LA66_0 == UNARY_MINUS || LA66_0 == VECTOR_EXPR || (LA66_0 >= CONSTANT && LA66_0 <= JAVA_CONSTANT) || LA66_0 == EQ || LA66_0 == NE || (LA66_0 >= LT && LA66_0 <= GE) || (LA66_0 >= BNOT && LA66_0 <= DIV) || (LA66_0 >= PARAM && LA66_0 <= IDENT) || LA66_0 == ALIAS_REF || LA66_0 == SQL_TOKEN || LA66_0 == NAMED_PARAM) )
+            	        	    if ( ((LA66_0 >= ALL && LA66_0 <= ANY) || LA66_0 == BETWEEN || LA66_0 == COUNT || LA66_0 == DOT || (LA66_0 >= EXISTS && LA66_0 <= FALSE) || LA66_0 == IN || LA66_0 == LIKE || LA66_0 == NULL || LA66_0 == SELECT || LA66_0 == SOME || (LA66_0 >= TRUE && LA66_0 <= UNION) || LA66_0 == CASE || LA66_0 == AGGREGATE || LA66_0 == CASE2 || (LA66_0 >= INDEX_OP && LA66_0 <= NOT_LIKE) || LA66_0 == UNARY_MINUS || LA66_0 == VECTOR_EXPR || (LA66_0 >= CONSTANT && LA66_0 <= JAVA_CONSTANT) || LA66_0 == EQ || (LA66_0 >= PARAM && LA66_0 <= NE) || (LA66_0 >= LT && LA66_0 <= GE) || (LA66_0 >= BNOT && LA66_0 <= DIV) || (LA66_0 >= QUOTED_String && LA66_0 <= IDENT) || LA66_0 == ALIAS_REF || LA66_0 == SQL_TOKEN || LA66_0 == NAMED_PARAM) )
             	        	    {
             	        	        alt66 = 1;
             	        	    }
@@ -5631,7 +5639,7 @@ public partial class SqlGenerator : TreeParser
             	int alt68 = 2;
             	int LA68_0 = input.LA(1);
 
-            	if ( ((LA68_0 >= ALL && LA68_0 <= ANY) || LA68_0 == COUNT || LA68_0 == DOT || LA68_0 == FALSE || LA68_0 == NULL || LA68_0 == SELECT || LA68_0 == SOME || (LA68_0 >= TRUE && LA68_0 <= UNION) || LA68_0 == CASE || LA68_0 == AGGREGATE || LA68_0 == CASE2 || LA68_0 == INDEX_OP || LA68_0 == METHOD_CALL || LA68_0 == UNARY_MINUS || LA68_0 == VECTOR_EXPR || (LA68_0 >= CONSTANT && LA68_0 <= JAVA_CONSTANT) || (LA68_0 >= BNOT && LA68_0 <= DIV) || (LA68_0 >= PARAM && LA68_0 <= IDENT) || LA68_0 == ALIAS_REF || LA68_0 == SQL_TOKEN || LA68_0 == NAMED_PARAM) )
+            	if ( ((LA68_0 >= ALL && LA68_0 <= ANY) || LA68_0 == COUNT || LA68_0 == DOT || LA68_0 == FALSE || LA68_0 == NULL || LA68_0 == SELECT || LA68_0 == SOME || (LA68_0 >= TRUE && LA68_0 <= UNION) || LA68_0 == CASE || LA68_0 == AGGREGATE || LA68_0 == CASE2 || LA68_0 == INDEX_OP || LA68_0 == METHOD_CALL || LA68_0 == UNARY_MINUS || LA68_0 == VECTOR_EXPR || (LA68_0 >= CONSTANT && LA68_0 <= JAVA_CONSTANT) || LA68_0 == PARAM || (LA68_0 >= BNOT && LA68_0 <= DIV) || (LA68_0 >= QUOTED_String && LA68_0 <= IDENT) || LA68_0 == ALIAS_REF || LA68_0 == SQL_TOKEN || LA68_0 == NAMED_PARAM) )
             	{
             	    alt68 = 1;
             	}
@@ -5678,7 +5686,7 @@ public partial class SqlGenerator : TreeParser
             	    int alt70 = 2;
             	    int LA70_0 = input.LA(1);
 
-            	    if ( ((LA70_0 >= ALL && LA70_0 <= ANY) || LA70_0 == BETWEEN || LA70_0 == COUNT || LA70_0 == DOT || (LA70_0 >= EXISTS && LA70_0 <= FALSE) || LA70_0 == IN || LA70_0 == LIKE || LA70_0 == NULL || LA70_0 == SELECT || LA70_0 == SOME || (LA70_0 >= TRUE && LA70_0 <= UNION) || LA70_0 == CASE || LA70_0 == AGGREGATE || LA70_0 == CASE2 || (LA70_0 >= INDEX_OP && LA70_0 <= NOT_LIKE) || LA70_0 == UNARY_MINUS || LA70_0 == VECTOR_EXPR || (LA70_0 >= CONSTANT && LA70_0 <= JAVA_CONSTANT) || LA70_0 == EQ || LA70_0 == NE || (LA70_0 >= LT && LA70_0 <= GE) || (LA70_0 >= BNOT && LA70_0 <= DIV) || (LA70_0 >= PARAM && LA70_0 <= IDENT) || LA70_0 == ALIAS_REF || LA70_0 == SQL_TOKEN || LA70_0 == NAMED_PARAM) )
+            	    if ( ((LA70_0 >= ALL && LA70_0 <= ANY) || LA70_0 == BETWEEN || LA70_0 == COUNT || LA70_0 == DOT || (LA70_0 >= EXISTS && LA70_0 <= FALSE) || LA70_0 == IN || LA70_0 == LIKE || LA70_0 == NULL || LA70_0 == SELECT || LA70_0 == SOME || (LA70_0 >= TRUE && LA70_0 <= UNION) || LA70_0 == CASE || LA70_0 == AGGREGATE || LA70_0 == CASE2 || (LA70_0 >= INDEX_OP && LA70_0 <= NOT_LIKE) || LA70_0 == UNARY_MINUS || LA70_0 == VECTOR_EXPR || (LA70_0 >= CONSTANT && LA70_0 <= JAVA_CONSTANT) || LA70_0 == EQ || (LA70_0 >= PARAM && LA70_0 <= NE) || (LA70_0 >= LT && LA70_0 <= GE) || (LA70_0 >= BNOT && LA70_0 <= DIV) || (LA70_0 >= QUOTED_String && LA70_0 <= IDENT) || LA70_0 == ALIAS_REF || LA70_0 == SQL_TOKEN || LA70_0 == NAMED_PARAM) )
             	    {
             	        alt70 = 1;
             	    }
@@ -5697,7 +5705,7 @@ public partial class SqlGenerator : TreeParser
             			    	int alt69 = 2;
             			    	int LA69_0 = input.LA(1);
 
-            			    	if ( ((LA69_0 >= ALL && LA69_0 <= ANY) || LA69_0 == COUNT || LA69_0 == DOT || LA69_0 == FALSE || LA69_0 == NULL || LA69_0 == SELECT || LA69_0 == SOME || (LA69_0 >= TRUE && LA69_0 <= UNION) || LA69_0 == CASE || LA69_0 == AGGREGATE || LA69_0 == CASE2 || LA69_0 == INDEX_OP || LA69_0 == METHOD_CALL || LA69_0 == UNARY_MINUS || LA69_0 == VECTOR_EXPR || (LA69_0 >= CONSTANT && LA69_0 <= JAVA_CONSTANT) || (LA69_0 >= BNOT && LA69_0 <= DIV) || (LA69_0 >= PARAM && LA69_0 <= IDENT) || LA69_0 == ALIAS_REF || LA69_0 == SQL_TOKEN || LA69_0 == NAMED_PARAM) )
+            			    	if ( ((LA69_0 >= ALL && LA69_0 <= ANY) || LA69_0 == COUNT || LA69_0 == DOT || LA69_0 == FALSE || LA69_0 == NULL || LA69_0 == SELECT || LA69_0 == SOME || (LA69_0 >= TRUE && LA69_0 <= UNION) || LA69_0 == CASE || LA69_0 == AGGREGATE || LA69_0 == CASE2 || LA69_0 == INDEX_OP || LA69_0 == METHOD_CALL || LA69_0 == UNARY_MINUS || LA69_0 == VECTOR_EXPR || (LA69_0 >= CONSTANT && LA69_0 <= JAVA_CONSTANT) || LA69_0 == PARAM || (LA69_0 >= BNOT && LA69_0 <= DIV) || (LA69_0 >= QUOTED_String && LA69_0 <= IDENT) || LA69_0 == ALIAS_REF || LA69_0 == SQL_TOKEN || LA69_0 == NAMED_PARAM) )
             			    	{
             			    	    alt69 = 1;
             			    	}
@@ -5835,9 +5843,53 @@ public partial class SqlGenerator : TreeParser
     }
     // $ANTLR end "parameter"
 
+    public class limitValue_return : TreeRuleReturnScope
+    {
+    };
+
+    // $ANTLR start "limitValue"
+    // SqlGenerator.g:363:1: limitValue : ( NUM_INT | NAMED_PARAM | PARAM );
+    public SqlGenerator.limitValue_return limitValue() // throws RecognitionException [1]
+    {   
+        SqlGenerator.limitValue_return retval = new SqlGenerator.limitValue_return();
+        retval.Start = input.LT(1);
+
+        try 
+    	{
+            // SqlGenerator.g:364:2: ( NUM_INT | NAMED_PARAM | PARAM )
+            // SqlGenerator.g:
+            {
+            	if ( input.LA(1) == NUM_INT || input.LA(1) == PARAM || input.LA(1) == NAMED_PARAM ) 
+            	{
+            	    input.Consume();
+            	    state.errorRecovery = false;state.failed = false;
+            	}
+            	else 
+            	{
+            	    if ( state.backtracking > 0 ) {state.failed = true; return retval;}
+            	    MismatchedSetException mse = new MismatchedSetException(null,input);
+            	    throw mse;
+            	}
+
+
+            }
+
+        }
+        catch (RecognitionException re) 
+    	{
+            ReportError(re);
+            Recover(input,re);
+        }
+        finally 
+    	{
+        }
+        return retval;
+    }
+    // $ANTLR end "limitValue"
+
 
     // $ANTLR start "addrExpr"
-    // SqlGenerator.g:363:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
+    // SqlGenerator.g:369:1: addrExpr : ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
     public void addrExpr() // throws RecognitionException [1]
     {   
         IASTNode r = null;
@@ -5846,7 +5898,7 @@ public partial class SqlGenerator : TreeParser
 
         try 
     	{
-            // SqlGenerator.g:364:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
+            // SqlGenerator.g:370:2: ( ^(r= DOT . . ) | i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
             int alt73 = 3;
             switch ( input.LA(1) ) 
             {
@@ -5876,9 +5928,9 @@ public partial class SqlGenerator : TreeParser
             switch (alt73) 
             {
                 case 1 :
-                    // SqlGenerator.g:364:4: ^(r= DOT . . )
+                    // SqlGenerator.g:370:4: ^(r= DOT . . )
                     {
-                    	r=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExpr2095); if (state.failed) return ;
+                    	r=(IASTNode)Match(input,DOT,FOLLOW_DOT_in_addrExpr2116); if (state.failed) return ;
 
                     	Match(input, Token.DOWN, null); if (state.failed) return ;
                     	MatchAny(input); if (state.failed) return ;
@@ -5893,9 +5945,9 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 2 :
-                    // SqlGenerator.g:365:4: i= ALIAS_REF
+                    // SqlGenerator.g:371:4: i= ALIAS_REF
                     {
-                    	i=(IASTNode)Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_addrExpr2109); if (state.failed) return ;
+                    	i=(IASTNode)Match(input,ALIAS_REF,FOLLOW_ALIAS_REF_in_addrExpr2130); if (state.failed) return ;
                     	if ( (state.backtracking==0) )
                     	{
                     	   Out(i); 
@@ -5904,14 +5956,14 @@ public partial class SqlGenerator : TreeParser
                     }
                     break;
                 case 3 :
-                    // SqlGenerator.g:366:4: ^(j= INDEX_OP ( . )* )
+                    // SqlGenerator.g:372:4: ^(j= INDEX_OP ( . )* )
                     {
-                    	j=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExpr2119); if (state.failed) return ;
+                    	j=(IASTNode)Match(input,INDEX_OP,FOLLOW_INDEX_OP_in_addrExpr2140); if (state.failed) return ;
 
                     	if ( input.LA(1) == Token.DOWN )
                     	{
                     	    Match(input, Token.DOWN, null); if (state.failed) return ;
-                    	    // SqlGenerator.g:366:17: ( . )*
+                    	    // SqlGenerator.g:372:17: ( . )*
                     	    do 
                     	    {
                     	        int alt72 = 2;
@@ -5930,7 +5982,7 @@ public partial class SqlGenerator : TreeParser
                     	        switch (alt72) 
                     	    	{
                     	    		case 1 :
-                    	    		    // SqlGenerator.g:366:17: .
+                    	    		    // SqlGenerator.g:372:17: .
                     	    		    {
                     	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -5972,17 +6024,17 @@ public partial class SqlGenerator : TreeParser
 
 
     // $ANTLR start "sqlToken"
-    // SqlGenerator.g:369:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
+    // SqlGenerator.g:375:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
     public void sqlToken() // throws RecognitionException [1]
     {   
         IASTNode t = null;
 
         try 
     	{
-            // SqlGenerator.g:370:2: ( ^(t= SQL_TOKEN ( . )* ) )
-            // SqlGenerator.g:370:4: ^(t= SQL_TOKEN ( . )* )
+            // SqlGenerator.g:376:2: ( ^(t= SQL_TOKEN ( . )* ) )
+            // SqlGenerator.g:376:4: ^(t= SQL_TOKEN ( . )* )
             {
-            	t=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_sqlToken2139); if (state.failed) return ;
+            	t=(IASTNode)Match(input,SQL_TOKEN,FOLLOW_SQL_TOKEN_in_sqlToken2160); if (state.failed) return ;
 
             	if ( (state.backtracking==0) )
             	{
@@ -5992,7 +6044,7 @@ public partial class SqlGenerator : TreeParser
             	if ( input.LA(1) == Token.DOWN )
             	{
             	    Match(input, Token.DOWN, null); if (state.failed) return ;
-            	    // SqlGenerator.g:370:30: ( . )*
+            	    // SqlGenerator.g:376:30: ( . )*
             	    do 
             	    {
             	        int alt74 = 2;
@@ -6011,7 +6063,7 @@ public partial class SqlGenerator : TreeParser
             	        switch (alt74) 
             	    	{
             	    		case 1 :
-            	    		    // SqlGenerator.g:370:30: .
+            	    		    // SqlGenerator.g:376:30: .
             	    		    {
             	    		    	MatchAny(input); if (state.failed) return ;
 
@@ -6202,9 +6254,10 @@ public partial class SqlGenerator : TreeParser
             "\x07\x12\uffff\x01\x07\x05\uffff\x01\x07\x02\uffff\x01\x07\x02"+
             "\uffff\x02\x07\x04\uffff\x01\x07\x0d\uffff\x01\x07\x02\uffff"+
             "\x01\x07\x03\uffff\x01\x07\x02\uffff\x01\x07\x08\uffff\x01\x07"+
-            "\x01\uffff\x01\x07\x01\uffff\x07\x07\x0b\uffff\x01\x06\x01\x04"+
-            "\x01\x05\x01\x03\x01\x01\x01\x02\x02\x07\x03\uffff\x03\x07\x0f"+
-            "\uffff\x01\x07\x01\uffff\x01\x07\x05\uffff\x01\x07",
+            "\x01\uffff\x01\x07\x01\uffff\x07\x07\x05\uffff\x01\x07\x07\uffff"+
+            "\x01\x06\x01\x04\x01\x05\x01\x03\x01\x01\x01\x02\x02\x07\x02"+
+            "\uffff\x02\x07\x0f\uffff\x01\x07\x01\uffff\x01\x07\x05\uffff"+
+            "\x01\x07",
             "\x01\uffff",
             "\x01\uffff",
             "\x01\uffff",
@@ -6390,9 +6443,10 @@ public partial class SqlGenerator : TreeParser
             "\x0c\x12\uffff\x01\x0c\x05\uffff\x01\x0c\x02\uffff\x01\x0c\x02"+
             "\uffff\x02\x0c\x04\uffff\x01\x0a\x0d\uffff\x01\x0c\x02\uffff"+
             "\x01\x0b\x03\uffff\x01\x0c\x02\uffff\x01\x0c\x08\uffff\x01\x09"+
-            "\x01\uffff\x01\x0c\x01\uffff\x07\x0c\x0b\uffff\x01\x06\x01\x04"+
-            "\x01\x05\x01\x03\x01\x01\x01\x02\x01\x07\x01\x08\x03\uffff\x03"+
-            "\x0c\x0f\uffff\x01\x0c\x01\uffff\x01\x0c\x05\uffff\x01\x0c",
+            "\x01\uffff\x01\x0c\x01\uffff\x07\x0c\x05\uffff\x01\x0c\x07\uffff"+
+            "\x01\x06\x01\x04\x01\x05\x01\x03\x01\x01\x01\x02\x01\x07\x01"+
+            "\x08\x02\uffff\x02\x0c\x0f\uffff\x01\x0c\x01\uffff\x01\x0c\x05"+
+            "\uffff\x01\x0c",
             "\x01\uffff",
             "\x01\uffff",
             "\x01\uffff",
@@ -6652,9 +6706,9 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_ORDER_in_selectStatement149 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_orderExprs_in_selectStatement153 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_SKIP_in_selectStatement165 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_selectStatement169 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_limitValue_in_selectStatement169 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_TAKE_in_selectStatement181 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_NUM_INT_in_selectStatement185 = new BitSet(new ulong[]{0x0000000000000008UL});
+    public static readonly BitSet FOLLOW_limitValue_in_selectStatement185 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_UPDATE_in_updateStatement212 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_FROM_in_updateStatement220 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_fromTable_in_updateStatement222 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6667,22 +6721,22 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_INTO_in_insertStatement289 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_selectStatement_in_insertStatement299 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_SET_in_setClause319 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause323 = new BitSet(new ulong[]{0x0000000404080408UL,0x00007A40001D8000UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause330 = new BitSet(new ulong[]{0x0000000404080408UL,0x00007A40001D8000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause323 = new BitSet(new ulong[]{0x0000000404080408UL,0x0001E840001D8000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_setClause330 = new BitSet(new ulong[]{0x0000000404080408UL,0x0001E840001D8000UL});
     public static readonly BitSet FOLLOW_WHERE_in_whereClause348 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_whereClauseExpr_in_whereClause352 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_conditionList_in_whereClauseExpr371 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereClauseExpr376 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_orderExprs392 = new BitSet(new ulong[]{0x021920800010D132UL,0x38FF001FD4024480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_orderDirection_in_orderExprs399 = new BitSet(new ulong[]{0x0219208000109032UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_orderExprs392 = new BitSet(new ulong[]{0x021920800010D132UL,0x33FC041FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_orderDirection_in_orderExprs399 = new BitSet(new ulong[]{0x0219208000109032UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_orderExprs_in_orderExprs409 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_expr_in_groupExprs424 = new BitSet(new ulong[]{0x0219208000109032UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_groupExprs424 = new BitSet(new ulong[]{0x0219208000109032UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_groupExprs_in_groupExprs430 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_set_in_orderDirection0 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_filters_in_whereExpr465 = new BitSet(new ulong[]{0x0000014404080442UL,0x00007A40001F8000UL,0x0000000000048000UL});
-    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr473 = new BitSet(new ulong[]{0x0000014404080442UL,0x00007A40001F8000UL,0x0000000000008000UL});
+    public static readonly BitSet FOLLOW_filters_in_whereExpr465 = new BitSet(new ulong[]{0x0000014404080442UL,0x0001E840001F8000UL,0x0000000000048000UL});
+    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr473 = new BitSet(new ulong[]{0x0000014404080442UL,0x0001E840001F8000UL,0x0000000000008000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr484 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr494 = new BitSet(new ulong[]{0x0000014404080442UL,0x00007A40001F8000UL,0x0000000000008000UL});
+    public static readonly BitSet FOLLOW_thetaJoins_in_whereExpr494 = new BitSet(new ulong[]{0x0000014404080442UL,0x0001E840001F8000UL,0x0000000000008000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr502 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_whereExpr513 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_FILTERS_in_filters526 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -6692,15 +6746,15 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_sqlToken_in_conditionList557 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000000000000UL,0x0000000000008000UL});
     public static readonly BitSet FOLLOW_conditionList_in_conditionList563 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_SELECT_CLAUSE_in_selectClause578 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_distinctOrAll_in_selectClause581 = new BitSet(new ulong[]{0x0208208000109000UL,0x38FF001FC4024680UL,0x000000000022A000UL});
-    public static readonly BitSet FOLLOW_selectColumn_in_selectClause587 = new BitSet(new ulong[]{0x0208208000109008UL,0x38FF001FC4024680UL,0x000000000022A000UL});
+    public static readonly BitSet FOLLOW_distinctOrAll_in_selectClause581 = new BitSet(new ulong[]{0x0208208000109000UL,0x33FC041FC4024680UL,0x000000000022A000UL});
+    public static readonly BitSet FOLLOW_selectColumn_in_selectClause587 = new BitSet(new ulong[]{0x0208208000109008UL,0x33FC041FC4024680UL,0x000000000022A000UL});
     public static readonly BitSet FOLLOW_selectExpr_in_selectColumn605 = new BitSet(new ulong[]{0x0000000000000002UL,0x0000000000000000UL,0x0000000000010000UL});
     public static readonly BitSet FOLLOW_SELECT_COLUMNS_in_selectColumn610 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectAtom_in_selectExpr630 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_count_in_selectExpr637 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_CONSTRUCTOR_in_selectExpr643 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_set_in_selectExpr645 = new BitSet(new ulong[]{0x0208208000109000UL,0x38FF001FC4024680UL,0x000000000022A000UL});
-    public static readonly BitSet FOLLOW_selectColumn_in_selectExpr655 = new BitSet(new ulong[]{0x0208208000109008UL,0x38FF001FC4024680UL,0x000000000022A000UL});
+    public static readonly BitSet FOLLOW_set_in_selectExpr645 = new BitSet(new ulong[]{0x0208208000109000UL,0x33FC041FC4024680UL,0x000000000022A000UL});
+    public static readonly BitSet FOLLOW_selectColumn_in_selectExpr655 = new BitSet(new ulong[]{0x0208208000109008UL,0x33FC041FC4024680UL,0x000000000022A000UL});
     public static readonly BitSet FOLLOW_methodCall_in_selectExpr665 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_aggregate_in_selectExpr670 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_constant_in_selectExpr677 = new BitSet(new ulong[]{0x0000000000000002UL});
@@ -6708,7 +6762,7 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_parameter_in_selectExpr689 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_selectStatement_in_selectExpr698 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_COUNT_in_count712 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_distinctOrAll_in_count719 = new BitSet(new ulong[]{0x0208008000109000UL,0x38FF001FC5024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_distinctOrAll_in_count719 = new BitSet(new ulong[]{0x0208008000109000UL,0x33FC041FC5024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_countExpr_in_count725 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_DISTINCT_in_distinctOrAll740 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ALL_in_distinctOrAll748 = new BitSet(new ulong[]{0x0000000000000004UL});
@@ -6729,10 +6783,10 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_FROM_FRAGMENT_in_tableJoin943 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_tableJoin_in_tableJoin948 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000000UL,0x0000000000000280UL});
     public static readonly BitSet FOLLOW_AND_in_booleanOp968 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp970 = new BitSet(new ulong[]{0x0000014404080440UL,0x00007A40001F8000UL,0x0000000000008000UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp970 = new BitSet(new ulong[]{0x0000014404080440UL,0x0001E840001F8000UL,0x0000000000008000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp975 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_OR_in_booleanOp983 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp987 = new BitSet(new ulong[]{0x0000014404080440UL,0x00007A40001F8000UL,0x0000000000008000UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp987 = new BitSet(new ulong[]{0x0000014404080440UL,0x0001E840001F8000UL,0x0000000000008000UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp992 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_in_booleanOp1002 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_booleanExpr_in_booleanOp1006 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6743,38 +6797,38 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_binaryComparisonExpression_in_comparisonExpr1060 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_exoticComparisonExpression_in_comparisonExpr1067 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_EQ_in_binaryComparisonExpression1082 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1084 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1084 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1088 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NE_in_binaryComparisonExpression1095 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1097 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1097 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1101 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GT_in_binaryComparisonExpression1108 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1110 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1110 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1114 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_GE_in_binaryComparisonExpression1121 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1123 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1123 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1127 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LT_in_binaryComparisonExpression1134 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1136 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1136 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1140 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LE_in_binaryComparisonExpression1147 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1149 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1149 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_binaryComparisonExpression1153 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_LIKE_in_exoticComparisonExpression1167 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1169 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1169 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1173 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_likeEscape_in_exoticComparisonExpression1175 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_LIKE_in_exoticComparisonExpression1183 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1185 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1185 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1189 = new BitSet(new ulong[]{0x0000000000040008UL});
     public static readonly BitSet FOLLOW_likeEscape_in_exoticComparisonExpression1191 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BETWEEN_in_exoticComparisonExpression1198 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1200 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1204 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1200 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1204 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1208 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_NOT_BETWEEN_in_exoticComparisonExpression1215 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1217 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1221 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1217 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1221 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1225 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_IN_in_exoticComparisonExpression1232 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_exoticComparisonExpression1234 = new BitSet(new ulong[]{0x0000000000000000UL,0x0000000000002000UL});
@@ -6793,10 +6847,10 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_IN_LIST_in_inList1322 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_parenSelect_in_inList1328 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_simpleExprList_in_inList1332 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_simpleExpr_in_simpleExprList1353 = new BitSet(new ulong[]{0x0208008000109002UL,0x38FF001FC4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_simpleExpr_in_simpleExprList1353 = new BitSet(new ulong[]{0x0208008000109002UL,0x33FC041FC4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_simpleExpr_in_expr1372 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_VECTOR_EXPR_in_expr1379 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_expr1386 = new BitSet(new ulong[]{0x0219208000109038UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_expr1386 = new BitSet(new ulong[]{0x0219208000109038UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_parenSelect_in_expr1401 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_ANY_in_expr1407 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_quantified_in_expr1411 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6827,27 +6881,27 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_expr_in_arithmeticExpr1649 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_caseExpr_in_arithmeticExpr1655 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_PLUS_in_additiveExpr1667 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_additiveExpr1669 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_additiveExpr1669 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_additiveExpr1673 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_MINUS_in_additiveExpr1680 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_additiveExpr1682 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_additiveExpr1682 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_additiveExpr1686 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BAND_in_bitwiseExpr1699 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1701 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1701 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1705 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BOR_in_bitwiseExpr1712 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1714 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1714 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1718 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BXOR_in_bitwiseExpr1725 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1727 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_bitwiseExpr1727 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1731 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_BNOT_in_bitwiseExpr1738 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_nestedExpr_in_bitwiseExpr1742 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_STAR_in_multiplicativeExpr1756 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1758 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1758 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1762 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_DIV_in_multiplicativeExpr1769 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1771 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_nestedExpr_in_multiplicativeExpr1771 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_nestedExprAfterMinusDiv_in_multiplicativeExpr1775 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_additiveExpr_in_nestedExpr1797 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_bitwiseExpr_in_nestedExpr1812 = new BitSet(new ulong[]{0x0000000000000002UL});
@@ -6856,14 +6910,14 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_expr_in_nestedExprAfterMinusDiv1848 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_CASE_in_caseExpr1860 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_WHEN_in_caseExpr1870 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_booleanExpr_in_caseExpr1874 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_booleanExpr_in_caseExpr1874 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1879 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_ELSE_in_caseExpr1891 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1895 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_CASE2_in_caseExpr1911 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1915 = new BitSet(new ulong[]{0x2000000000000000UL});
     public static readonly BitSet FOLLOW_WHEN_in_caseExpr1922 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_expr_in_caseExpr1926 = new BitSet(new ulong[]{0x0219208000109030UL,0x38FF001FD4024480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_caseExpr1926 = new BitSet(new ulong[]{0x0219208000109030UL,0x33FC041FD4024480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1930 = new BitSet(new ulong[]{0x0000000000000008UL});
     public static readonly BitSet FOLLOW_ELSE_in_caseExpr1942 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_expr_in_caseExpr1946 = new BitSet(new ulong[]{0x0000000000000008UL});
@@ -6873,16 +6927,17 @@ public partial class SqlGenerator : TreeParser
     public static readonly BitSet FOLLOW_METHOD_NAME_in_methodCall1998 = new BitSet(new ulong[]{0x0000000000000008UL,0x0000000000000800UL});
     public static readonly BitSet FOLLOW_EXPR_LIST_in_methodCall2007 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_arguments_in_methodCall2010 = new BitSet(new ulong[]{0x0000000000000008UL});
-    public static readonly BitSet FOLLOW_expr_in_arguments2035 = new BitSet(new ulong[]{0x0219208404189432UL,0x38FF7A5FD41FC480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments2039 = new BitSet(new ulong[]{0x0219208404189432UL,0x38FF7A5FD41FC480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_expr_in_arguments2048 = new BitSet(new ulong[]{0x0219208404189432UL,0x38FF7A5FD41FC480UL,0x000000000020A000UL});
-    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments2052 = new BitSet(new ulong[]{0x0219208404189432UL,0x38FF7A5FD41FC480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_arguments2035 = new BitSet(new ulong[]{0x0219208404189432UL,0x33FDEC5FD41FC480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments2039 = new BitSet(new ulong[]{0x0219208404189432UL,0x33FDEC5FD41FC480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_expr_in_arguments2048 = new BitSet(new ulong[]{0x0219208404189432UL,0x33FDEC5FD41FC480UL,0x000000000020A000UL});
+    public static readonly BitSet FOLLOW_comparisonExpr_in_arguments2052 = new BitSet(new ulong[]{0x0219208404189432UL,0x33FDEC5FD41FC480UL,0x000000000020A000UL});
     public static readonly BitSet FOLLOW_NAMED_PARAM_in_parameter2070 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_PARAM_in_parameter2079 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_DOT_in_addrExpr2095 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_ALIAS_REF_in_addrExpr2109 = new BitSet(new ulong[]{0x0000000000000002UL});
-    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExpr2119 = new BitSet(new ulong[]{0x0000000000000004UL});
-    public static readonly BitSet FOLLOW_SQL_TOKEN_in_sqlToken2139 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_set_in_limitValue0 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_DOT_in_addrExpr2116 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_ALIAS_REF_in_addrExpr2130 = new BitSet(new ulong[]{0x0000000000000002UL});
+    public static readonly BitSet FOLLOW_INDEX_OP_in_addrExpr2140 = new BitSet(new ulong[]{0x0000000000000004UL});
+    public static readonly BitSet FOLLOW_SQL_TOKEN_in_sqlToken2160 = new BitSet(new ulong[]{0x0000000000000004UL});
     public static readonly BitSet FOLLOW_SQL_TOKEN_in_synpred1_SqlGenerator366 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_additiveExpr_in_synpred2_SqlGenerator1790 = new BitSet(new ulong[]{0x0000000000000002UL});
     public static readonly BitSet FOLLOW_bitwiseExpr_in_synpred3_SqlGenerator1805 = new BitSet(new ulong[]{0x0000000000000002UL});

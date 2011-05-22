@@ -60,7 +60,7 @@ namespace NHibernate.Test.Hql.Ast
             ISession s = OpenSession();
             ITransaction txn = s.BeginTransaction();
 
-            var actual = s.CreateQuery("from Human h order by h.bodyWeight skip 2").List<Human>().Select(h => h.BodyWeight).ToArray();
+						var actual = s.CreateQuery("from Human h where h.bodyWeight > :minW order by h.bodyWeight skip 2").SetDouble("minW", 0d).List<Human>().Select(h => h.BodyWeight).ToArray();
             var expected = new[] { 10, 15, 20 };
             CollectionAssert.AreEqual(expected, actual);
 
