@@ -89,7 +89,31 @@ namespace NHibernate.Impl
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
 
 			_customProjectionProcessors = new Dictionary<string, Func<MethodCallExpression, IProjection>>();
-			RegisterCustomProjection(() => ProjectionsExtensions.Year(default(DateTime)), ProjectionsExtensions.ProcessYear);
+			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), ProjectionsExtensions.ProcessYearPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), ProjectionsExtensions.ProcessDayPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), ProjectionsExtensions.ProcessMonthPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), ProjectionsExtensions.ProcessHourPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), ProjectionsExtensions.ProcessMinutePart);
+			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), ProjectionsExtensions.ProcessSecondPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessIntSqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessDoubleSqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(decimal)), ProjectionsExtensions.ProcessDecimalSqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(byte)), ProjectionsExtensions.ProcessByteSqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(Int64)), ProjectionsExtensions.ProcessInt64Sqrt);
+			RegisterCustomProjection(() => ProjectionsExtensions.Lower(string.Empty), ProjectionsExtensions.ProcessLower);
+			RegisterCustomProjection(() => ProjectionsExtensions.Upper(string.Empty), ProjectionsExtensions.ProcessUpper);
+			RegisterCustomProjection(() => ProjectionsExtensions.TrimStr(string.Empty), ProjectionsExtensions.ProcessTrimStr);
+			RegisterCustomProjection(() => ProjectionsExtensions.StrLength(string.Empty), ProjectionsExtensions.ProcessStrLength);
+			RegisterCustomProjection(() => ProjectionsExtensions.BitLength(string.Empty), ProjectionsExtensions.ProcessBitLength);
+			RegisterCustomProjection(() => ProjectionsExtensions.Substr(string.Empty, 0, 0), ProjectionsExtensions.ProcessSubstr);
+			RegisterCustomProjection(() => ProjectionsExtensions.CharIndex(string.Empty, string.Empty, 0), ProjectionsExtensions.ProcessCharIndex);
+			RegisterCustomProjection(() => ProjectionsExtensions.Coalesce<DBNull>(null, null), ProjectionsExtensions.ProcessCoalesce);
+			RegisterCustomProjection(() => ProjectionsExtensions.Coalesce<int>(null, 0), ProjectionsExtensions.ProcessCoalesce);
+			RegisterCustomProjection(() => ProjectionsExtensions.ConcatStr(string.Empty, string.Empty), ProjectionsExtensions.ProcessConcatStr);
+			RegisterCustomProjection(() => ProjectionsExtensions.Mod(0, 0), ProjectionsExtensions.ProcessMod);
+			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(int)), ProjectionsExtensions.ProcessIntAbs);
+			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(double)), ProjectionsExtensions.ProcessDoubleAbs);
+			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(Int64)), ProjectionsExtensions.ProcessInt64Abs);
 		}
 
 		private static ICriterion Eq(IProjection propertyName, object value)
@@ -204,7 +228,7 @@ namespace NHibernate.Impl
 				if (methodCallExpression.Method.Name == "First")
 					return FindMemberExpression(methodCallExpression.Arguments[0]);
 
-				throw new Exception("Unrecognised method call in epression " + expression.ToString());
+				throw new Exception("Unrecognised method call in expression " + expression.ToString());
 			}
 
 			throw new Exception("Could not determine member from " + expression.ToString());
@@ -484,8 +508,11 @@ namespace NHibernate.Impl
 				return "class";
 		}
 
-		private static string Signature(MethodInfo methodInfo)
+		public static string Signature(MethodInfo methodInfo)
 		{
+			while (methodInfo.IsGenericMethod && !methodInfo.IsGenericMethodDefinition)
+				methodInfo = methodInfo.GetGenericMethodDefinition();
+
 			return methodInfo.DeclaringType.FullName
 				+ ":" + methodInfo.ToString();
 		}

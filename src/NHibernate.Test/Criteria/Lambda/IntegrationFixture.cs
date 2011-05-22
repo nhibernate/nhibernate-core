@@ -584,7 +584,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons =
 					s.QueryOver<Person>()
-						.Where(p => p.BirthDate.Year() == 2008)
+						.Where(p => p.BirthDate.YearPart() == 2008)
 						.List();
 
 				persons.Count.Should().Be(1);
