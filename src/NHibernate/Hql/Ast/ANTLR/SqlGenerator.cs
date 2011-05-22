@@ -316,36 +316,38 @@ namespace NHibernate.Hql.Ast.ANTLR
 	        writer = new QueryWriter();
 	    }
 
-        private void EndQuery()
-        {
-            QueryWriter queryWriter = ((QueryWriter) writer);
-            SqlString sqlString = queryWriter.ToSqlString();
+		private void EndQuery()
+		{
+			var queryWriter = ((QueryWriter) writer);
+			SqlString sqlString = queryWriter.ToSqlString();
 
-            if (queryWriter.Take.HasValue || queryWriter.Skip.HasValue)
-                sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
+			if (queryWriter.Take.HasValue || queryWriter.Skip.HasValue)
+			{
+				sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
+			}
 
-            writer = outputStack[0];
-            outputStack.RemoveAt(0);
-            Out(sqlString);
-        }
+			writer = outputStack[0];
+			outputStack.RemoveAt(0);
+			Out(sqlString);
+		}
 
-        private void Skip(IASTNode node)
-        {
-					if(node is ParameterNode)
-					{
-						throw new NotSupportedException("Parameter limits is not supported yet.");
-					}
-            ((QueryWriter) writer).Skip = Convert.ToInt32(node.Text);
-        }
+		private void Skip(IASTNode node)
+		{
+			if (node is ParameterNode)
+			{
+				throw new NotSupportedException("Parameter limits is not supported yet.");
+			}
+			((QueryWriter) writer).Skip = Convert.ToInt32(node.Text);
+		}
 
-        private void Take(IASTNode node)
-        {
-					if (node is ParameterNode)
-					{
-						throw new NotSupportedException("Parameter limits is not supported yet.");
-					}
-					((QueryWriter)writer).Take = Convert.ToInt32(node.Text);
-        }
+		private void Take(IASTNode node)
+		{
+			if (node is ParameterNode)
+			{
+				throw new NotSupportedException("Parameter limits is not supported yet.");
+			}
+			((QueryWriter) writer).Take = Convert.ToInt32(node.Text);
+		}
 
 		#region Nested type: DefaultWriter
 
