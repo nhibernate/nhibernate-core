@@ -119,70 +119,46 @@ namespace NHibernate.Criterion
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessDoubleSqrt(MethodCallExpression methodCallExpression)
+		/// <summary>
+		/// Project SQL function sqrt()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static double Sqrt(this int numericProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		/// <summary>
+		/// Project SQL function sqrt()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static double Sqrt(this long numericProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		/// <summary>
+		/// Project SQL function sqrt()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static double Sqrt(this decimal numericProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		/// <summary>
+		/// Project SQL function sqrt()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		public static double Sqrt(this byte numericProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		internal static IProjection ProcessSqrt(MethodCallExpression methodCallExpression)
 		{
 			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			return Projections.SqlFunction("sqrt", NHibernateUtil.Double, property);
-		}
-
-		/// <summary>
-		/// Project SQL function sqrt()
-		/// Note: throws an exception outside of a QueryOver expression
-		/// </summary>
-		public static int Sqrt(this int numericProperty)
-		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
-		}
-
-		internal static IProjection ProcessIntSqrt(MethodCallExpression methodCallExpression)
-		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("sqrt", NHibernateUtil.Int32, property);
-		}
-
-		/// <summary>
-		/// Project SQL function sqrt()
-		/// Note: throws an exception outside of a QueryOver expression
-		/// </summary>
-		public static Int64 Sqrt(this Int64 numericProperty)
-		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
-		}
-
-		internal static IProjection ProcessInt64Sqrt(MethodCallExpression methodCallExpression)
-		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("sqrt", NHibernateUtil.Int64, property);
-		}
-
-		/// <summary>
-		/// Project SQL function sqrt()
-		/// Note: throws an exception outside of a QueryOver expression
-		/// </summary>
-		public static decimal Sqrt(this decimal numericProperty)
-		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
-		}
-
-		internal static IProjection ProcessDecimalSqrt(MethodCallExpression methodCallExpression)
-		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("sqrt", NHibernateUtil.Decimal, property);
-		}
-
-		/// <summary>
-		/// Project SQL function sqrt()
-		/// Note: throws an exception outside of a QueryOver expression
-		/// </summary>
-		public static byte Sqrt(this byte numericProperty)
-		{
-			throw new Exception("Not to be used directly - use inside QueryOver expression");
-		}
-
-		internal static IProjection ProcessByteSqrt(MethodCallExpression methodCallExpression)
-		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			return Projections.SqlFunction("sqrt", NHibernateUtil.Byte, property);
 		}
 
 		/// <summary>

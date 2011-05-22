@@ -573,7 +573,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) });
+				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07), Age = 90 });
 				s.Save(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) });
 				s.Save(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 05) });
 
@@ -601,6 +601,18 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				yearOfBirth.GetType().Should().Be(typeof(int));
 				yearOfBirth.Should().Be(2008);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var sqrtOfAge =
+					s.QueryOver<Person>()
+						.Where(p => p.Name == "p1")
+						.Select(p => p.Age.Sqrt())
+						.SingleOrDefault<object>();
+
+				sqrtOfAge.GetType().Should().Be(typeof(double));
+				string.Format("{0:0.00}", sqrtOfAge).Should().Be("9.49");
 			}
 		}
 

@@ -266,7 +266,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Eq(Projections.SqlFunction("hour", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("minute", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("second", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
-					.Add(Restrictions.Eq(Projections.SqlFunction("sqrt", NHibernateUtil.Int32, Projections.Property("Height")), 10))
+					.Add(Restrictions.Eq(Projections.SqlFunction("sqrt", NHibernateUtil.Double, Projections.Property("Height")), 10d))
 					.Add(Restrictions.Eq(Projections.SqlFunction("lower", NHibernateUtil.String, Projections.Property("Name")), "test"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("upper", NHibernateUtil.String, Projections.Property("Name")), "TEST"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("abs", NHibernateUtil.Int32, Projections.Property("Height")), 150))
