@@ -611,8 +611,8 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(p => p.Age.Sqrt())
 						.SingleOrDefault<object>();
 
-				sqrtOfAge.GetType().Should().Be(typeof(double));
-				string.Format("{0:0.00}", sqrtOfAge).Should().Be("9.49");
+				sqrtOfAge.Should().Be.InstanceOf<double>();
+				string.Format("{0:0.00}", sqrtOfAge).Should().Be((9.49).ToString());
 			}
 
 			using (ISession s = OpenSession())
