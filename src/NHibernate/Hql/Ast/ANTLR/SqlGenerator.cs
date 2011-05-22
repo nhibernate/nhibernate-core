@@ -129,9 +129,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Out(IASTNode n)
 		{
-			if (n is ParameterNode)
+			var parameterNode= n as ParameterNode;
+			if (parameterNode != null)
 			{
-				ParameterOut();
+				var namedParameterSpecification = parameterNode.HqlParameterSpecification as NamedParameterSpecification;
+				if(namedParameterSpecification != null)
+				{
+					var parameter = Parameter.Placeholder;
+					parameter.BackTrack = namedParameterSpecification.Name;
+					writer.PushParameter(parameter);
+				}
+				else
+				{
+					ParameterOut();
+				}
 			}
 			else if (n is SqlNode)
 			{
@@ -142,9 +153,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				Out(n.Text);
 			}
 
-			if (n is ParameterNode)
+			if (parameterNode != null)
 			{
-				collectedParameters.Add(((ParameterNode) n).HqlParameterSpecification);
+				collectedParameters.Add(parameterNode.HqlParameterSpecification);
 			}
 			else if (n is IParameterContainer)
 			{
@@ -318,35 +329,78 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void EndQuery()
 		{
-			var queryWriter = ((QueryWriter) writer);
-			SqlString sqlString = queryWriter.ToSqlString();
-
-			if (queryWriter.Take.HasValue || queryWriter.Skip.HasValue)
-			{
-				sqlString = sessionFactory.Dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
-			}
+			SqlString sqlString = GetSqlStringWithLimitsIfNeeded((QueryWriter) writer);
 
 			writer = outputStack[0];
 			outputStack.RemoveAt(0);
 			Out(sqlString);
 		}
 
+		private SqlString GetSqlStringWithLimitsIfNeeded(QueryWriter queryWriter)
+		{
+			SqlString sqlString = queryWriter.ToSqlString();
+			var skipIsParameter = queryWriter.SkipParameter != null;
+			var takeIsParameter = queryWriter.TakeParameter != null;
+			var hqlQueryHasLimits = queryWriter.Take.HasValue || queryWriter.Skip.HasValue || skipIsParameter || takeIsParameter;
+			if (!hqlQueryHasLimits)
+			{
+				return sqlString;
+			}
+			
+			var dialect = sessionFactory.Dialect;
+			
+			var hqlQueryHasFixedLimits = (queryWriter.Take.HasValue || queryWriter.Skip.HasValue) && !skipIsParameter && !takeIsParameter;
+			if(hqlQueryHasFixedLimits)
+			{
+				return dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
+			}
+			// Skip-Take in HQL should be supported just for Dialect supporting variable limits at least when users use parameters for skip-take.
+			if (!dialect.SupportsVariableLimit && (skipIsParameter || takeIsParameter))
+			{
+				throw new NotSupportedException("The dialect " + dialect.GetType().FullName + " does not supports variable limits");
+			}
+			// At this point at least one of the two limits is a parameter and that parameter should be of IExplicitValueParameterSpecification
+			Parameter skipParameter = null;
+			Parameter takeParameter = null;
+			if(queryWriter.SkipParameter != null)
+			{
+				skipParameter = Parameter.Placeholder;
+				skipParameter.BackTrack = queryWriter.SkipParameter.Name;
+			}
+			if (queryWriter.TakeParameter != null)
+			{
+				takeParameter = Parameter.Placeholder;
+				takeParameter.BackTrack = queryWriter.TakeParameter.Name;
+			}
+
+			sqlString = dialect.GetLimitString(sqlString, skipIsParameter ? 1 : queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue, skipParameter, takeParameter);
+			return sqlString;
+		}
+
 		private void Skip(IASTNode node)
 		{
-			if (node is ParameterNode)
+			var queryWriter = (QueryWriter)writer;
+			var pnode = node as ParameterNode;
+			if (pnode != null)
 			{
-				throw new NotSupportedException("Parameter limits is not supported yet.");
+				queryWriter.SkipParameter = (NamedParameterSpecification) pnode.HqlParameterSpecification;
+				collectedParameters.Add(pnode.HqlParameterSpecification);
+				return;
 			}
-			((QueryWriter) writer).Skip = Convert.ToInt32(node.Text);
+			queryWriter.Skip = Convert.ToInt32(node.Text);
 		}
 
 		private void Take(IASTNode node)
 		{
-			if (node is ParameterNode)
+			var queryWriter = (QueryWriter)writer;
+			var pnode = node as ParameterNode;
+			if (pnode != null)
 			{
-				throw new NotSupportedException("Parameter limits is not supported yet.");
+				queryWriter.TakeParameter = (NamedParameterSpecification)pnode.HqlParameterSpecification;
+				collectedParameters.Add(pnode.HqlParameterSpecification);
+				return;
 			}
-			((QueryWriter) writer).Take = Convert.ToInt32(node.Text);
+			queryWriter.Take = Convert.ToInt32(node.Text);
 		}
 
 		#region Nested type: DefaultWriter
@@ -380,6 +434,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 				generator.GetStringBuilder().AddParameter();
 			}
 
+			public void PushParameter(Parameter parameter)
+			{
+				generator.GetStringBuilder().Add(parameter);
+			}
+
 			public void CommaBetweenParameters(String comma)
 			{
 				generator.GetStringBuilder().Add(comma);
@@ -399,7 +458,12 @@ namespace NHibernate.Hql.Ast.ANTLR
         {
             private readonly SqlStringBuilder builder = new SqlStringBuilder();
 
-            #region ISqlWriter Members
+        	public NamedParameterSpecification TakeParameter { get; set; }
+        	public NamedParameterSpecification SkipParameter { get; set; }
+					public int? Skip { get; set; }
+					public int? Take { get; set; }
+
+        	#region ISqlWriter Members
 
             public void Clause(String clause)
             {
@@ -416,7 +480,12 @@ namespace NHibernate.Hql.Ast.ANTLR
                 builder.AddParameter();
             }
 
-            public void CommaBetweenParameters(String comma)
+        	public void PushParameter(Parameter parameter)
+        	{
+						builder.Add(parameter);
+        	}
+
+        	public void CommaBetweenParameters(String comma)
             {
                 builder.Add(comma);
             }
@@ -426,8 +495,6 @@ namespace NHibernate.Hql.Ast.ANTLR
                 return builder.ToSqlString();
             }
 
-            public int? Skip { get; set; }
-            public int? Take { get; set; }
 
             #endregion
         }
@@ -489,6 +556,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 			}
 
+			public void PushParameter(Parameter parameter)
+			{
+				if (argInd == args.Count)
+				{
+					args.Add(new SqlString(parameter));
+				}
+				else
+				{
+					args[argInd] = args[argInd].Append(new SqlString(parameter));
+				}
+			}
+
 			public void CommaBetweenParameters(string comma)
 			{
 				++argInd;
@@ -509,6 +588,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			void Clause(string clause);
 			void Clause(SqlString clause);
 			void Parameter();
+			void PushParameter(Parameter parameter);
 			/**
 			 * todo remove this hack
 			 * The parameter is either ", " or " , ". This is needed to pass sql generating tests as the old

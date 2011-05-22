@@ -487,7 +487,7 @@ namespace NHibernate.Engine
 
 					int span = typedval.Type.GetColumnSpan(factory);
 					string name = namedParameter.Key;
-					int[] locs = getNamedParameterLocations(name);
+					int[] locs = GetEffectiveNamedParameterLocations(sqlParameters, name) ?? getNamedParameterLocations(name);
 					for (int i = 0; i < locs.Length; i++)
 					{
 						int location = locs[i];
@@ -565,6 +565,23 @@ namespace NHibernate.Engine
 			}
 
 			return ConvertITypesToSqlTypes(paramTypeList, factory, totalSpan);
+		}
+
+		private int[] GetEffectiveNamedParameterLocations(IList<Parameter> sqlParameters, string name)
+		{
+			var locations = new List<int>(5);
+			for (int i = 0; i < sqlParameters.Count; i++)
+			{
+				if(name.Equals(sqlParameters[i].BackTrack))
+				{
+					locations.Add(i);
+				}
+			}
+			if(locations.Count == 0)
+			{
+				return null;
+			}
+			return locations.ToArray();
 		}
 
 		public int BindParameters(IDbCommand command, int start, ISessionImplementor session)

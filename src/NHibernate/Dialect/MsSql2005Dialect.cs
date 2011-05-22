@@ -42,22 +42,35 @@ namespace NHibernate.Dialect
 		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
-		/// <param name="limitParameterIndex">Optionally, the Limit parameter index</param>
+		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index in the sql</param>
+		/// <param name="limitParameterIndex">Optionally, the Limit parameter index in the sql</param>
 		/// <returns>A new <see cref="SqlString"/> with the <c>LIMIT</c> clause applied.</returns>
 		/// <remarks>
 		/// Note that we need to explicitly specify the columns, because we need to be able to use them in a paged subselect [NH-1155]
 		/// </remarks>
 		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
 		{
-            object limitObject = limitParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(limitParameterIndex.Value);
-		    object offsetObject = null;
-		    if (offset != 0)
-                offsetObject = offsetParameterIndex == null ? Parameter.Placeholder : Parameter.WithIndex(offsetParameterIndex.Value);
-		    return GetLimitString(querySqlString, offsetObject, limitObject);
+			object limitObject = limitParameterIndex == null ? (object) new SqlString(limit.ToString()) : Parameter.WithIndex(limitParameterIndex.Value);
+			object offsetObject = null;
+			if (offset != 0)
+			{
+				offsetObject = offsetParameterIndex == null ? (object) new SqlString(offset.ToString()) : Parameter.WithIndex(offsetParameterIndex.Value);
+			}
+			return GetLimitString(querySqlString, offsetObject, limitObject);
 		}
 
-        private SqlString GetLimitString(SqlString querySqlString, object offset, object limit)
+		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, Parameter offsetParameter, Parameter limitParameter)
+		{
+			object limitObject = limitParameter ?? (object) new SqlString(limit.ToString());
+			object offsetObject = null;
+			if (offset != 0)
+			{
+				offsetObject = offsetParameter ?? (object) new SqlString(offset.ToString());
+			}
+			return GetLimitString(querySqlString, offsetObject, limitObject);
+		}
+
+		private SqlString GetLimitString(SqlString querySqlString, object offset, object limit)
 		{
             if (offset == null && limit == null)
                 return querySqlString;

@@ -18,6 +18,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		public int? ParameterPosition;
 
+		public object BackTrack { get; set; }
 	    /// <summary>
 	    /// Used as a placeholder when parsing HQL or SQL queries.
 	    /// </summary>
@@ -32,6 +33,11 @@ namespace NHibernate.SqlCommand
 		public static Parameter WithIndex(int position)
 		{
 			return new Parameter() { ParameterPosition = position };
+		}
+
+		public Parameter Clone()
+		{
+			return new Parameter { BackTrack = this.BackTrack };
 		}
 
 		private Parameter()
