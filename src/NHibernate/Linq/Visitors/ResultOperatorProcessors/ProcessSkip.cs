@@ -1,22 +1,29 @@
 ﻿using System.Linq.Expressions;
+using NHibernate.Engine.Query;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public class ProcessSkip : IResultOperatorProcessor<SkipResultOperator>
-    {
-        public void Process(SkipResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
-        {
-            NamedParameter parameterName;
+	public class ProcessSkip : IResultOperatorProcessor<SkipResultOperator>
+	{
+		#region IResultOperatorProcessor<SkipResultOperator> Members
 
-            if (queryModelVisitor.VisitorParameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out parameterName))
-            {
-                tree.AddAdditionalCriteria((q, p) => q.SetFirstResult((int)p[parameterName.Name].First));
-            }
-            else
-            {
-                tree.AddAdditionalCriteria((q, p) => q.SetFirstResult(resultOperator.GetConstantCount()));
-            }
-        }
-    }
+		public void Process(SkipResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
+		{
+			VisitorParameters parameters = queryModelVisitor.VisitorParameters;
+			NamedParameter namedParameter;
+
+			if (parameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out namedParameter))
+			{
+				parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] {parameters.RequiredHqlParameters.Count + 1}, false));
+				tree.AddSkipClause(tree.TreeBuilder.Parameter(namedParameter.Name));
+			}
+			else
+			{
+				tree.AddSkipClause(tree.TreeBuilder.Constant(resultOperator.GetConstantCount()));
+			}
+		}
+
+		#endregion
+	}
 }

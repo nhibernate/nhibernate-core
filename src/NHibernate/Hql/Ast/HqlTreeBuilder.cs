@@ -176,6 +176,16 @@ namespace NHibernate.Hql.Ast
 			return new HqlOrderBy(_factory);
 		}
 
+		public HqlSkip Skip(HqlExpression parameter)
+		{
+			return new HqlSkip(_factory, parameter);
+		}
+
+		public HqlTake Take(HqlExpression parameter)
+		{
+			return new HqlTake(_factory, parameter);
+		}
+
 		public HqlSelect Select(HqlExpression expression)
 		{
 			return new HqlSelect(_factory, expression);

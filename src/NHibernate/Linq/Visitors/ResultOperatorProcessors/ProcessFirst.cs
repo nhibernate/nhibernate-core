@@ -13,7 +13,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
             AddClientSideEval(firstMethod, queryModelVisitor, tree);
 
-            tree.AddAdditionalCriteria((q, p) => q.SetMaxResults(1));
+						tree.AddTakeClause(tree.TreeBuilder.Constant(1));
         }
     }
 }

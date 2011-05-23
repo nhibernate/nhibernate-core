@@ -11,26 +11,45 @@ namespace NHibernate.Linq
 {
     public class IntermediateHqlTree
     {
-        private readonly bool _root;
+			/* NOTE:
+			 * Because common understanding of our users, we are flatting the behavior of Skip and Take methods.
+			 * In RAM a query like primeNumbers.Skip(2).Take(6).Where(x=> x > 10) has a completely different results than primeNumbers.Where(x=> x > 10).Skip(2).Take(6) that has
+			 * different results than primeNumbers.Take(6).Where(x=> x > 10).Skip(2) and so on.
+			 * We are flatting/override even the double-usage of Skip and Take in the same query as: primeNumbers.Skip(2).Where(x=> x > 10).Take(6).Skip(3)
+			 * We ***shouldn't*** change the behavior of the query just because we are translating it in SQL.
+			 */
+			private readonly bool isRoot;
         private readonly List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> _additionalCriteria = new List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>>();
         private readonly List<LambdaExpression> _listTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _itemTransformers = new List<LambdaExpression>();
         private readonly List<LambdaExpression> _postExecuteTransformers = new List<LambdaExpression>();
         private bool _hasDistinctRootOperator;
+				private HqlExpression skipCount;
+				private HqlExpression takeCount;
 
-        public HqlTreeNode Root { get; private set; }
-        public HqlTreeBuilder TreeBuilder { get; private set; }
+    	private HqlTreeNode root;
+    	public HqlTreeNode Root
+    	{
+    		get
+    		{
+					ExecuteAddSkipClause(skipCount);
+					ExecuteAddTakeClause(takeCount);
+					return root;
+    		}
+    	}
+
+    	public HqlTreeBuilder TreeBuilder { get; private set; }
 
         public IntermediateHqlTree(bool root)
         {
-            _root = root;
+            isRoot = root;
             TreeBuilder = new HqlTreeBuilder();
-            Root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
+            this.root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
         }
 
         public ExpressionToHqlTranslationResults GetTranslation()
         {
-            if (_root)
+            if (isRoot)
             {
                 DetectOuterExists();
             }
@@ -62,41 +81,86 @@ namespace NHibernate.Linq
 
         public void AddFromClause(HqlTreeNode from)
         {
-            Root.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
+            root.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
         }
 
         public void AddSelectClause(HqlTreeNode select)
         {
-            Root.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
+            root.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
         }
 
         public void AddGroupByClause(HqlGroupBy groupBy)
         {
-            Root.As<HqlQuery>().AddChild(groupBy);
+            root.As<HqlQuery>().AddChild(groupBy);
         }
 
         public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
         {
-            var orderByRoot = Root.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
+            var orderByRoot = root.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
 
             if (orderByRoot == null)
             {
                 orderByRoot = TreeBuilder.OrderBy();
-                Root.As<HqlQuery>().AddChild(orderByRoot);
+                root.As<HqlQuery>().AddChild(orderByRoot);
             }
 
             orderByRoot.AddChild(orderBy);
             orderByRoot.AddChild(direction);
         }
 
-        public void AddWhereClause(HqlBooleanExpression where)
+			public void AddSkipClause(HqlExpression toSkip)
+    	{
+    		skipCount = toSkip;
+    	}
+
+			public void AddTakeClause(HqlExpression toTake)
+			{
+				takeCount = toTake;
+			}
+
+			private void ExecuteAddTakeClause(HqlExpression toTake)
+    	{
+				if(toTake == null)
+				{
+					return;
+				}
+				
+				HqlQuery hqlQuery = root.NodesPreOrder.OfType<HqlQuery>().First();
+				HqlTreeNode takeRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlTake);
+
+    		// were present we ignore the new value
+    		if (takeRoot == null)
+    		{
+					//We should check the value instead delegate the behavior to the result SQL-> MSDN: If count is less than or equal to zero, source is not enumerated and an empty IEnumerable<T> is returned.
+					takeRoot = TreeBuilder.Take(toTake);
+    			hqlQuery.AddChild(takeRoot);
+    		}
+    	}
+
+			private void ExecuteAddSkipClause(HqlExpression toSkip)
+    	{
+				if (toSkip == null)
+				{
+					return;
+				}
+				// We should check the value instead delegate the behavior to the result SQL-> MSDN: If count is less than or equal to zero, all elements of source are yielded.
+				HqlQuery hqlQuery = root.NodesPreOrder.OfType<HqlQuery>().First();
+				HqlTreeNode skipRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlSkip);
+    		if (skipRoot == null)
+    		{
+    			skipRoot = TreeBuilder.Skip(toSkip);
+					hqlQuery.AddChild(skipRoot);
+    		}
+    	}
+
+    	public void AddWhereClause(HqlBooleanExpression where)
         {
-            var currentWhere = Root.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
+            var currentWhere = root.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
 
             if (currentWhere == null)
             {
                 currentWhere = TreeBuilder.Where(where);
-                Root.As<HqlQuery>().AddChild(currentWhere);
+                root.As<HqlQuery>().AddChild(currentWhere);
             }
             else
             {
@@ -109,16 +173,15 @@ namespace NHibernate.Linq
 
         private void DetectOuterExists()
         {
-            if (Root is HqlExists)
-            {
-                Root = Root.Children.First();
+					if (root is HqlExists)
+					{
+						AddTakeClause(TreeBuilder.Constant(1));
+						root = Root.Children.First();
 
-                _additionalCriteria.Add((q, p) => q.SetMaxResults(1));
+						Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
 
-                Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
-
-                _listTransformers.Add(x);
-            }
+						_listTransformers.Add(x);
+					}
         }
 
 
@@ -139,7 +202,7 @@ namespace NHibernate.Linq
 
         public void SetRoot(HqlTreeNode newRoot)
         {
-            Root = newRoot;
+            root = newRoot;
         }
     }
 }

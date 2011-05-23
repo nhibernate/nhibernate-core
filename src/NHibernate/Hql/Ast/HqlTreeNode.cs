@@ -363,6 +363,18 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlSkip : HqlStatement
+	{
+		public HqlSkip(IASTFactory factory, HqlExpression parameter)
+			: base(HqlSqlWalker.SKIP, "skip", factory, parameter) { }
+	}
+
+	public class HqlTake : HqlStatement
+	{
+		public HqlTake(IASTFactory factory, HqlExpression parameter)
+			: base(HqlSqlWalker.TAKE, "take", factory, parameter) {}
+	}
+
 	public class HqlConstant : HqlExpression
 	{
 		public HqlConstant(IASTFactory factory, int type, string value)
