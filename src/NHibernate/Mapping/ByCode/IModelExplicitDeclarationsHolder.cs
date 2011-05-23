@@ -29,6 +29,8 @@ namespace NHibernate.Mapping.ByCode
 		IEnumerable<MemberInfo> ManyToOneRelations { get; }
 		IEnumerable<MemberInfo> ManyToManyRelations { get; }
 		IEnumerable<MemberInfo> OneToManyRelations { get; }
+		IEnumerable<MemberInfo> ManyToAnyRelations { get; }
+
 		IEnumerable<MemberInfo> Any { get; }
 
 		IEnumerable<MemberInfo> Poids { get; }
@@ -61,6 +63,8 @@ namespace NHibernate.Mapping.ByCode
 		void AddAsManyToOneRelation(MemberInfo member);
 		void AddAsManyToManyRelation(MemberInfo member);
 		void AddAsOneToManyRelation(MemberInfo member);
+		void AddAsManyToAnyRelation(MemberInfo member);
+
 		void AddAsAny(MemberInfo member);
 
 		void AddAsPoid(MemberInfo member);

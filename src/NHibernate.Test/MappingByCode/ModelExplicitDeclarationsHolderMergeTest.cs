@@ -24,6 +24,7 @@ namespace NHibernate.Test.MappingByCode
 			private readonly HashSet<MemberInfo> idBags = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> lists = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
+			private readonly HashSet<MemberInfo> manyToAnyRelations = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
 			private readonly HashSet<MemberInfo> oneToManyRelations = new HashSet<MemberInfo>();
@@ -123,6 +124,15 @@ namespace NHibernate.Test.MappingByCode
 				{
 					PropertiesGettersUsed.Add("OneToManyRelations");
 					return oneToManyRelations;
+				}
+			}
+
+			public IEnumerable<MemberInfo> ManyToAnyRelations
+			{
+				get
+				{
+					PropertiesGettersUsed.Add("ManyToAnyRelations");
+					return manyToAnyRelations;
 				}
 			}
 
@@ -285,6 +295,8 @@ namespace NHibernate.Test.MappingByCode
 			public void AddAsManyToOneRelation(MemberInfo member) { }
 			public void AddAsManyToManyRelation(MemberInfo member) { }
 			public void AddAsOneToManyRelation(MemberInfo member) { }
+			public void AddAsManyToAnyRelation(MemberInfo member) {}
+
 			public void AddAsAny(MemberInfo member) { }
 			public void AddAsPoid(MemberInfo member) { }
 			public void AddAsPartOfComposedId(MemberInfo member) { }
@@ -464,6 +476,17 @@ namespace NHibernate.Test.MappingByCode
 
 			destination.Merge(source);
 			destination.OneToManyRelations.Should().Have.Count.EqualTo(1);
+		}
+
+		[Test]
+		public void MergeManyToAnyRelations()
+		{
+			var destination = new ExplicitDeclarationsHolder();
+			var source = new ExplicitDeclarationsHolder();
+			source.AddAsManyToAnyRelation(property);
+
+			destination.Merge(source);
+			destination.ManyToAnyRelations.Should().Have.Count.EqualTo(1);
 		}
 
 		[Test]

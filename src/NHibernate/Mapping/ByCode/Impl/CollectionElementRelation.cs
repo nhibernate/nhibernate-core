@@ -46,6 +46,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			elementRelationshipAssing(hbm);
 		}
 
+		public void ManyToAny(System.Type idTypeOfMetaType, Action<IManyToAnyMapper> mapping)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 }

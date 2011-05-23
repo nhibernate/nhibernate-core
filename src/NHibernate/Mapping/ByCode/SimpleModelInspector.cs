@@ -428,6 +428,11 @@ namespace NHibernate.Mapping.ByCode
 			get { return declaredModel.OneToManyRelations; }
 		}
 
+		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.ManyToAnyRelations
+		{
+			get { return declaredModel.ManyToAnyRelations; }
+		}
+
 		IEnumerable<MemberInfo> IModelExplicitDeclarationsHolder.Any
 		{
 			get { return declaredModel.Any; }
@@ -551,6 +556,11 @@ namespace NHibernate.Mapping.ByCode
 		void IModelExplicitDeclarationsHolder.AddAsOneToManyRelation(MemberInfo member)
 		{
 			declaredModel.AddAsOneToManyRelation(member);
+		}
+
+		void IModelExplicitDeclarationsHolder.AddAsManyToAnyRelation(MemberInfo member)
+		{
+			declaredModel.AddAsManyToAnyRelation(member);
 		}
 
 		void IModelExplicitDeclarationsHolder.AddAsAny(MemberInfo member)

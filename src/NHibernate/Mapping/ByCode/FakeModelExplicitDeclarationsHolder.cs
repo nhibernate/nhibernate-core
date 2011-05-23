@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly IEnumerable<MemberInfo> lists = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> manyToManyRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> manyToOneRelations = Enumerable.Empty<MemberInfo>();
+		private readonly IEnumerable<MemberInfo> manyToAnyRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> naturalIds = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> oneToManyRelations = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> oneToOneRelations = Enumerable.Empty<MemberInfo>();
@@ -82,6 +84,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> OneToManyRelations
 		{
 			get { return oneToManyRelations; }
+		}
+
+		public IEnumerable<MemberInfo> ManyToAnyRelations
+		{
+			get { return manyToAnyRelations; }
 		}
 
 		public IEnumerable<MemberInfo> Any
@@ -191,6 +198,7 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsManyToManyRelation(MemberInfo member) {}
 
 		public void AddAsOneToManyRelation(MemberInfo member) {}
+		public void AddAsManyToAnyRelation(MemberInfo member) {}
 
 		public void AddAsAny(MemberInfo member) {}
 

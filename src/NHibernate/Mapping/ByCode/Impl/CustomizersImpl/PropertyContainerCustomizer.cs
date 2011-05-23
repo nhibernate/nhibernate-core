@@ -185,7 +185,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), am => am.IdType(idTypeOfMetaType));
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), (IAnyMapper am) => am.IdType(idTypeOfMetaType));
 				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
 
 				explicitDeclarationsHolder.AddAsAny(member);

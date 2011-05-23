@@ -24,6 +24,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<PropertyPath, List<Action<IManyToManyMapper>>> collectionRelationManyToManyCustomizers =
 			new Dictionary<PropertyPath, List<Action<IManyToManyMapper>>>();
 
+		private readonly Dictionary<PropertyPath, List<Action<IManyToAnyMapper>>> collectionRelationManyToAnyCustomizers =
+			new Dictionary<PropertyPath, List<Action<IManyToAnyMapper>>>();
+
 		private readonly Dictionary<PropertyPath, List<Action<IOneToManyMapper>>> collectionRelationOneToManyCustomizers =
 			new Dictionary<PropertyPath, List<Action<IOneToManyMapper>>>();
 
@@ -190,6 +193,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			AddCustomizer(collectionRelationOneToManyCustomizers, member, collectionRelationOneToManyCustomizer);
 		}
 
+		public void AddCustomizer(PropertyPath member, Action<IManyToAnyMapper> collectionRelationManyToAnyCustomizer)
+		{
+			AddCustomizer(collectionRelationManyToAnyCustomizers, member, collectionRelationManyToAnyCustomizer);
+		}
+
 		public void AddCustomizer(PropertyPath member, Action<IMapKeyManyToManyMapper> mapKeyManyToManyCustomizer)
 		{
 			AddCustomizer(mapKeyManyToManyCustomizers, member, mapKeyManyToManyCustomizer);
@@ -198,6 +206,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddCustomizer(PropertyPath member, Action<IMapKeyMapper> mapKeyElementCustomizer)
 		{
 			AddCustomizer(mapKeyElementCustomizers, member, mapKeyElementCustomizer);
+		}
+
+		public void InvokeCustomizers(PropertyPath member, IManyToAnyMapper mapper)
+		{
+			InvokeCustomizers(collectionRelationManyToAnyCustomizers, member, mapper);
 		}
 
 		public IEnumerable<System.Type> GetAllCustomizedEntities()

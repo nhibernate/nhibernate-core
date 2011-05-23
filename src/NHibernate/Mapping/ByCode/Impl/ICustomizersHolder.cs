@@ -48,16 +48,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void InvokeCustomizers(PropertyPath member, IComponentAsIdAttributesMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IDynamicComponentAttributesMapper mapper);
 
-		#region Collection Element relations invokers
-
-		void InvokeCustomizers(PropertyPath member, IManyToManyMapper mapper);
-		void InvokeCustomizers(PropertyPath member, IElementMapper mapper);
-		void InvokeCustomizers(PropertyPath member, IOneToManyMapper mapper);
-
-		#endregion
-
 		#region Dictionary key relations
 
+		void AddCustomizer(PropertyPath member, Action<IMapKeyManyToManyMapper> mapKeyManyToManyCustomizer);
+		void AddCustomizer(PropertyPath member, Action<IMapKeyMapper> mapKeyElementCustomizer);
 		void InvokeCustomizers(PropertyPath member, IMapKeyManyToManyMapper mapper);
 		void InvokeCustomizers(PropertyPath member, IMapKeyMapper mapper);
 
@@ -68,13 +62,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		void AddCustomizer(PropertyPath member, Action<IManyToManyMapper> collectionRelationManyToManyCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IElementMapper> collectionRelationElementCustomizer);
 		void AddCustomizer(PropertyPath member, Action<IOneToManyMapper> collectionRelationOneToManyCustomizer);
-
-		#endregion
-
-		#region Dictionary key relations
-
-		void AddCustomizer(PropertyPath member, Action<IMapKeyManyToManyMapper> mapKeyManyToManyCustomizer);
-		void AddCustomizer(PropertyPath member, Action<IMapKeyMapper> mapKeyElementCustomizer);
+		void AddCustomizer(PropertyPath member, Action<IManyToAnyMapper> collectionRelationManyToAnyCustomizer);
+		void InvokeCustomizers(PropertyPath member, IManyToManyMapper mapper);
+		void InvokeCustomizers(PropertyPath member, IElementMapper mapper);
+		void InvokeCustomizers(PropertyPath member, IOneToManyMapper mapper);
+		void InvokeCustomizers(PropertyPath member, IManyToAnyMapper mapper);
 
 		#endregion
 

@@ -16,6 +16,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly HashSet<MemberInfo> idBags = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> lists = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> manyToAnyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> composedIds = new HashSet<MemberInfo>();
@@ -88,6 +89,11 @@ namespace NHibernate.Mapping.ByCode
 		public IEnumerable<MemberInfo> OneToManyRelations
 		{
 			get { return oneToManyRelations; }
+		}
+
+		public IEnumerable<MemberInfo> ManyToAnyRelations
+		{
+			get { return manyToAnyRelations; }
 		}
 
 		public IEnumerable<MemberInfo> Any
@@ -336,6 +342,12 @@ namespace NHibernate.Mapping.ByCode
 		{
 			persistentMembers.Add(member);
 			oneToManyRelations.Add(member);
+		}
+
+		public void AddAsManyToAnyRelation(MemberInfo member)
+		{
+			persistentMembers.Add(member);
+			manyToAnyRelations.Add(member);
 		}
 
 		public void AddAsAny(MemberInfo member)

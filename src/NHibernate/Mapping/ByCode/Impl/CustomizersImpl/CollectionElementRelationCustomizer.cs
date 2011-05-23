@@ -61,6 +61,21 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			mapping(componetElementCustomizer);
 		}
 
+		public void ManyToAny(System.Type idTypeOfMetaType, Action<IManyToAnyMapper> mapping)
+		{
+			if (mapping == null)
+			{
+				throw new ArgumentNullException("mapping");
+			}
+			var manyToAnyCustomizer = new ManyToAnyCustomizer(explicitDeclarationsHolder, propertyPath, customizersHolder);
+			mapping(manyToAnyCustomizer);
+		}
+
+		public void ManyToAny<TIdTypeOfMetaType>(Action<IManyToAnyMapper> mapping)
+		{
+			ManyToAny(typeof(TIdTypeOfMetaType), mapping);
+		}
+
 		#endregion
 	}
 }

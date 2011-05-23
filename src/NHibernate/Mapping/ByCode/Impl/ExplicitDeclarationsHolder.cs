@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HashSet<MemberInfo> lists = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> manyToOneRelations = new HashSet<MemberInfo>();
+		private readonly HashSet<MemberInfo> manyToAnyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> naturalIds = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToManyRelations = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> oneToOneRelations = new HashSet<MemberInfo>();
@@ -77,6 +79,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public IEnumerable<MemberInfo> OneToManyRelations
 		{
 			get { return oneToManyRelations; }
+		}
+
+		public IEnumerable<MemberInfo> ManyToAnyRelations
+		{
+			get { return manyToAnyRelations; }
 		}
 
 		public IEnumerable<MemberInfo> Any
@@ -214,6 +221,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void AddAsOneToManyRelation(MemberInfo member)
 		{
 			oneToManyRelations.Add(member);
+		}
+
+		public void AddAsManyToAnyRelation(MemberInfo member)
+		{
+			manyToAnyRelations.Add(member);
 		}
 
 		public void AddAsAny(MemberInfo member)
