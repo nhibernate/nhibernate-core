@@ -11,7 +11,7 @@ namespace NHibernate.Param
 		private readonly string _filterName;
 		private readonly string _parameterName;
 		private readonly IType _definedParameterType;
-
+		private readonly string idForBackTrack;
 		/// <summary>
 		/// Constructs a parameter specification for a particular filter parameter.
 		/// </summary>
@@ -26,6 +26,7 @@ namespace NHibernate.Param
 			_filterName = filterName;
 			_parameterName = parameterName;
 			_definedParameterType = definedParameterType;
+			idForBackTrack = "nhdf_" + _filterName + "_" + _parameterName + "_nhdf";
 		}
 
 		public int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int start)
@@ -62,6 +63,11 @@ namespace NHibernate.Param
 		public string RenderDisplayInfo()
 		{
 			return "dynamic-filter={filterName=" + _filterName + ",paramName=" + _parameterName + "}";
+		}
+
+		public object IdForBackTrack
+		{
+			get { return idForBackTrack; }
 		}
 	}
 }

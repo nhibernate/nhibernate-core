@@ -124,19 +124,16 @@ namespace NHibernate.Param
 	[Serializable]
 	public class ParameterInfo 
 	{
-		private readonly int[] originalLocation;
 		private readonly int[] sqlLocations;
 
 		public ParameterInfo(int[] sqlPositions, IType expectedType) 
 		{
-			originalLocation = (int[])sqlPositions.Clone();
 			sqlLocations = sqlPositions;
 			ExpectedType = expectedType;
 		}
 
 		public ParameterInfo(int sqlPosition, IType expectedType)
 		{
-			originalLocation = new[] { sqlPosition };
 			sqlLocations = new[] { sqlPosition };
 			ExpectedType = expectedType;
 		}

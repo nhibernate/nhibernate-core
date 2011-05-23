@@ -45,6 +45,11 @@ namespace NHibernate.Param
 			return ExpectedType != null ? string.Format(format, _name, ExpectedType) : string.Format(format, _name, "Unknow");
 		}
 
+		public override object IdForBackTrack
+		{
+			get { return _name; }
+		}
+
 		/// <summary>
 		/// Getter for property 'name'.
 		/// </summary>

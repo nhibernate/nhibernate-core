@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -31,6 +32,11 @@ namespace NHibernate.Param
 		public string RenderDisplayInfo()
 		{
 			return "version-seed, type=" + type;
+		}
+
+		public object IdForBackTrack
+		{
+			get { return "nhv_seed_nh"; }
 		}
 	}
 }

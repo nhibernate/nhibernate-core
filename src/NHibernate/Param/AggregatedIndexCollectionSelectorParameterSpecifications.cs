@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using NHibernate.Engine;
@@ -9,7 +10,7 @@ namespace NHibernate.Param
 	public class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
 	{
 		private readonly IList<IParameterSpecification> _paramSpecs;
-
+		private readonly Guid idForBackTrack = Guid.NewGuid();
 		public AggregatedIndexCollectionSelectorParameterSpecifications(IList<IParameterSpecification> paramSpecs) {
 			_paramSpecs = paramSpecs;
 		}
@@ -35,6 +36,11 @@ namespace NHibernate.Param
 		
 		{
 			return "index-selector [" + CollectDisplayInfo() + "]" ;
+		}
+
+		public object IdForBackTrack
+		{
+			get { return idForBackTrack; }
 		}
 
 		private string CollectDisplayInfo() 

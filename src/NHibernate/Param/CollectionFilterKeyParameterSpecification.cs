@@ -9,7 +9,8 @@ namespace NHibernate.Param
 	{
 		private readonly string _collectionRole;
 		private readonly IType _keyType;
-		private int _queryParameterPosition;
+		private readonly int _queryParameterPosition;
+		private readonly string idForBackTrack;
 
 		/// <summary>
 		/// Creates a specialized collection-filter collection-key parameter spec.
@@ -22,6 +23,7 @@ namespace NHibernate.Param
 			_collectionRole = collectionRole;
 			_keyType = keyType;
 			_queryParameterPosition = queryParameterPosition;
+			idForBackTrack = "nhcollkey_" + _collectionRole + "nh";
 		}
 
 		public int Bind(
@@ -44,6 +46,11 @@ namespace NHibernate.Param
 		public string RenderDisplayInfo()
 		{
 			return "collection-filter-key=" + _collectionRole;
+		}
+
+		public object IdForBackTrack
+		{
+			get { return idForBackTrack; }
 		}
 	}
 }

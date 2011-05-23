@@ -12,7 +12,7 @@ namespace NHibernate.Param
 	public class PositionalParameterSpecification : AbstractExplicitParameterSpecification 
 	{
 		private readonly int _hqlPosition;
-
+		private readonly string idForBackTrack;
 		/// <summary>
 		/// Constructs a position/ordinal parameter bind specification.
 		/// </summary>
@@ -22,6 +22,7 @@ namespace NHibernate.Param
 		public PositionalParameterSpecification(int sourceLine, int sourceColumn, int hqlPosition) : base(sourceLine, sourceColumn)
 		{
 			_hqlPosition = hqlPosition;
+			idForBackTrack = "nh" + hqlPosition + "nh"; //<= I don't think the user have the insane idea to use this name a named-parameter name
 		}
 
 		/// <summary>
@@ -44,6 +45,11 @@ namespace NHibernate.Param
 		public override string RenderDisplayInfo() 
 		{
 			return "ordinal=" + _hqlPosition + ", expectedType=" + ExpectedType;
+		}
+
+		public override object IdForBackTrack
+		{
+			get { return idForBackTrack; }
 		}
 
 		/// <summary>

@@ -132,17 +132,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var parameterNode= n as ParameterNode;
 			if (parameterNode != null)
 			{
-				var namedParameterSpecification = parameterNode.HqlParameterSpecification as NamedParameterSpecification;
-				if(namedParameterSpecification != null)
-				{
-					var parameter = Parameter.Placeholder;
-					parameter.BackTrack = namedParameterSpecification.Name;
-					writer.PushParameter(parameter);
-				}
-				else
-				{
-					ParameterOut();
-				}
+				var parameter = Parameter.Placeholder;
+				parameter.BackTrack = parameterNode.HqlParameterSpecification.IdForBackTrack;
+				writer.PushParameter(parameter);
 			}
 			else if (n is SqlNode)
 			{
@@ -365,12 +357,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if(queryWriter.SkipParameter != null)
 			{
 				skipParameter = Parameter.Placeholder;
-				skipParameter.BackTrack = queryWriter.SkipParameter.Name;
+				skipParameter.BackTrack = queryWriter.SkipParameter.IdForBackTrack;
 			}
 			if (queryWriter.TakeParameter != null)
 			{
 				takeParameter = Parameter.Placeholder;
-				takeParameter.BackTrack = queryWriter.TakeParameter.Name;
+				takeParameter.BackTrack = queryWriter.TakeParameter.IdForBackTrack;
 			}
 
 			sqlString = dialect.GetLimitString(sqlString, skipIsParameter ? 1 : queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue, skipParameter, takeParameter);
@@ -383,7 +375,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.SkipParameter = (NamedParameterSpecification) pnode.HqlParameterSpecification;
+				queryWriter.SkipParameter = pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -396,7 +388,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.TakeParameter = (NamedParameterSpecification)pnode.HqlParameterSpecification;
+				queryWriter.TakeParameter = pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -458,8 +450,8 @@ namespace NHibernate.Hql.Ast.ANTLR
         {
             private readonly SqlStringBuilder builder = new SqlStringBuilder();
 
-        	public NamedParameterSpecification TakeParameter { get; set; }
-        	public NamedParameterSpecification SkipParameter { get; set; }
+        	public IParameterSpecification TakeParameter { get; set; }
+        	public IParameterSpecification SkipParameter { get; set; }
 					public int? Skip { get; set; }
 					public int? Take { get; set; }
 

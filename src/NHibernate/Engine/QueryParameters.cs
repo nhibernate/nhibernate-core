@@ -567,12 +567,12 @@ namespace NHibernate.Engine
 			return ConvertITypesToSqlTypes(paramTypeList, factory, totalSpan);
 		}
 
-		private int[] GetEffectiveNamedParameterLocations(IList<Parameter> sqlParameters, string name)
+		private int[] GetEffectiveNamedParameterLocations(IList<Parameter> sqlParameters, object backTrackId)
 		{
 			var locations = new List<int>(5);
 			for (int i = 0; i < sqlParameters.Count; i++)
 			{
-				if(name.Equals(sqlParameters[i].BackTrack))
+				if (backTrackId.Equals(sqlParameters[i].BackTrack))
 				{
 					locations.Add(i);
 				}

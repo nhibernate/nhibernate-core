@@ -37,6 +37,7 @@ namespace NHibernate.Param
 		}
 
 		public abstract string RenderDisplayInfo();
+		public abstract object IdForBackTrack { get; }
 		public abstract int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position);
 	}
 }

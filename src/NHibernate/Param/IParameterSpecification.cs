@@ -33,5 +33,13 @@ namespace NHibernate.Param
 		/// </summary>
 		/// <returns>The displayable info</returns>
 		string RenderDisplayInfo();
+
+		/// <summary>
+		/// An object to unique identify this parameter inside an <see cref="NHibernate.SqlCommand.SqlString"/>.
+		/// </summary>
+		/// <remarks>
+		/// The <see cref="IdForBackTrack"/> is supposed to be unique in the context of a query.
+		/// </remarks>
+		object IdForBackTrack { get; }
 	}
 }
