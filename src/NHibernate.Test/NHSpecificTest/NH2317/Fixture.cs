@@ -5,7 +5,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2317
 {
-	[TestFixture, Ignore("Not fixed yet.")]
+	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
@@ -28,8 +28,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 			using (var session = sessions.OpenSession())
 			using(session.BeginTransaction())
 			{
-				// HQL show how should look the HQL tree in this case and in all others casses where Skip/Take are not the last sentences
-				var expected = session.CreateQuery("select a.id from Artist a where a in (from Artist take 3)").List<int>();
+				// The HQL : "select a.id from Artist a where a in (from Artist take 3)"
+				// shows how should look the HQL tree in the case where Skip/Take are not the last sentences.
+
+				// When the query has no where-clauses the the HQL can be reduced to: "select a.id from Artist a take 3)"
+
+				var expected = session.CreateQuery("select a.id from Artist a take 3").List<int>();
 				var actual = session.Query<Artist>().Take(3).Select(a => a.Id).ToArray();
 				actual.Should().Have.SameValuesAs(expected);
 			}
