@@ -10,38 +10,46 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter
 	{
+		private Parameter() {}
+
 		/// <summary>
-        /// We need to know what the position of the parameter was in a query
-        /// before we rearranged the query.
+		/// We need to know what the position of the parameter was in a query
+		/// before we rearranged the query.
 		/// This is the ADO parameter position that this SqlString parameter is
 		/// bound to.  The SqlString can be safely rearranged once this is set.
 		/// </summary>
-		public int? ParameterPosition;
+		public int? ParameterPosition; // NH TODO: remove this that is basically used by Criteria and use the more generic BackTrack
 
+		/// <summary>
+		/// Unique identifier of a parameter to be tracked back by its generator.
+		/// </summary>
+		/// <remarks>
+		/// We have various query-systems. Each one, at the end, give us a <see cref="SqlString"/>.
+		/// At the same time we have various bad-guys playing the game (hql function implementations, the dialect...).
+		/// A bad guy can rearrange a <see cref="SqlString"/> and the query-system can easly lost organization/sequence of parameters.
+		/// Using the <see cref="BackTrack"/> the query-system can easily find where are its parameters.
+		/// </remarks>
 		public object BackTrack { get; set; }
-	    /// <summary>
-	    /// Used as a placeholder when parsing HQL or SQL queries.
-	    /// </summary>
-	    public static Parameter Placeholder
-	    {
-            get { return new Parameter(); }
-	    }
+
+		/// <summary>
+		/// Used as a placeholder when parsing HQL or SQL queries.
+		/// </summary>
+		public static Parameter Placeholder
+		{
+			get { return new Parameter(); }
+		}
 
 		/// <summary>
 		/// Create a parameter with the specified position
 		/// </summary>
 		public static Parameter WithIndex(int position)
 		{
-			return new Parameter() { ParameterPosition = position };
+			return new Parameter {ParameterPosition = position};
 		}
 
 		public Parameter Clone()
 		{
-			return new Parameter { BackTrack = this.BackTrack };
-		}
-
-		private Parameter()
-		{
+			return new Parameter {BackTrack = BackTrack};
 		}
 
 		/// <summary>
@@ -51,7 +59,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>An array of <see cref="Parameter"/> objects</returns>
 		public static Parameter[] GenerateParameters(int count)
 		{
-			Parameter[] result = new Parameter[count];
+			var result = new Parameter[count];
 			for (int i = 0; i < count; i++)
 			{
 				result[i] = Placeholder;
@@ -70,7 +78,7 @@ namespace NHibernate.SqlCommand
 		public override bool Equals(object obj)
 		{
 			// All parameters are equal, this check that
-            // the other one is not null and a parameter
+			// the other one is not null and a parameter
 			return obj is Parameter;
 		}
 
@@ -78,7 +86,7 @@ namespace NHibernate.SqlCommand
 		/// Gets a hash code for the parameter.
 		/// </summary>
 		/// <returns>
-		/// An <see cref="Int32"/> value for the hash code.
+		/// An <see cref="int"/> value for the hash code.
 		/// </returns>
 		public override int GetHashCode()
 		{
@@ -91,34 +99,34 @@ namespace NHibernate.SqlCommand
 			return StringHelper.SqlParameter;
 		}
 
-        public static bool operator ==(Parameter a, Parameter b)
-        {
-            return Equals(a, b);
-        }
+		public static bool operator ==(Parameter a, Parameter b)
+		{
+			return Equals(a, b);
+		}
 
-        public static bool operator ==(object a, Parameter b)
-        {
-            return Equals(a, b);
-        }
+		public static bool operator ==(object a, Parameter b)
+		{
+			return Equals(a, b);
+		}
 
-        public static bool operator ==(Parameter a, object b)
-        {
-            return Equals(a, b);
-        }
+		public static bool operator ==(Parameter a, object b)
+		{
+			return Equals(a, b);
+		}
 
-	    public static bool operator !=(Parameter a, object b)
-	    {
-	        return !(a == b);
-	    }
+		public static bool operator !=(Parameter a, object b)
+		{
+			return !(a == b);
+		}
 
-	    public static bool operator !=(object a, Parameter b)
-	    {
-	        return !(a == b);
-	    }
+		public static bool operator !=(object a, Parameter b)
+		{
+			return !(a == b);
+		}
 
-	    public static bool operator !=(Parameter a, Parameter b)
-	    {
-	        return !(a == b);
-	    }
+		public static bool operator !=(Parameter a, Parameter b)
+		{
+			return !(a == b);
+		}
 	}
 }
