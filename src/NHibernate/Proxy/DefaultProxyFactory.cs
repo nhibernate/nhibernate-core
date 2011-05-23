@@ -7,7 +7,7 @@ namespace NHibernate.Proxy
 {
 	public class DefaultProxyFactory : AbstractProxyFactory
 	{
-		private static readonly ProxyFactory factory = new ProxyFactory();
+		private readonly ProxyFactory factory = new ProxyFactory();
 		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DefaultProxyFactory));
 
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
