@@ -28,7 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 			using (var session = sessions.OpenSession())
 			using(session.BeginTransaction())
 			{
-				var expected = session.CreateQuery("select a.id from Artist a").SetMaxResults(3).List<int>();
+				// HQL show how should look the HQL tree in this case and in all others casses where Skip/Take are not the last sentences
+				var expected = session.CreateQuery("select a.id from Artist a where a in (from Artist take 3)").List<int>();
 				var actual = session.Query<Artist>().Take(3).Select(a => a.Id).ToArray();
 				actual.Should().Have.SameValuesAs(expected);
 			}
