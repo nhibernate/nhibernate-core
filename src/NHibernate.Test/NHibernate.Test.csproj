@@ -793,6 +793,7 @@
     <Compile Include="NHSpecificTest\NH2470\Class1Class2Tests.cs" />
     <Compile Include="NHSpecificTest\NH2470\DomainObject.cs" />
     <Compile Include="NHSpecificTest\NH2470\DTO.cs" />
+    <Compile Include="NHSpecificTest\NH2477\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2484\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2484\Model.cs" />
     <Compile Include="NHSpecificTest\NH2488\Fixture.cs" />
