@@ -41,23 +41,6 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
-		{
-			var pagingBuilder = new SqlStringBuilder();
-
-			pagingBuilder.Add(querySqlString);
-			pagingBuilder.Add(" limit ");
-			if (offset > 0)
-			{
-				pagingBuilder.Add(offset.ToString());
-				pagingBuilder.Add(", ");
-			}
-
-			pagingBuilder.Add(limit.ToString());
-
-			return pagingBuilder.ToSqlString();
-		}
-
 		public override string SelectGUIDString
 		{
 			get

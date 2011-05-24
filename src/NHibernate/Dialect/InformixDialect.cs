@@ -376,36 +376,29 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary> Apply s limit clause to the query. </summary>
-		/// <param name="querySqlString">The query to which to apply the limit. </param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <returns> the modified SQL </returns>
-		/// <remarks>
-		/// Typically dialects utilize <see cref="SupportsVariableLimit"/>
-		/// limit caluses when they support limits.  Thus, when building the
-		/// select command we do not actually need to know the limit or the offest
-		/// since we will just be using placeholders.
-		/// <p/>
-		/// Here we do still pass along whether or not an offset was specified
-		/// so that dialects not supporting offsets can generate proper exceptions.
-		/// In general, dialects will override one or the other of this method and
-		/// <see cref="GetLimitString(SqlString,int,int)"/>.
-		/// </remarks>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			/*
              * "SELECT [SKIP x] FIRST y  rest-of-sql-statement"
              */
 
-			int insertIndex = GetAfterSelectInsertPoint(querySqlString);
+            // TODO - Check support for cases where only the offset is specified, but the limit is not.  Might need to use int.MaxValue.
 
-			if (offset > 0)
+			int insertIndex = GetAfterSelectInsertPoint(queryString);
+
+            SqlStringBuilder limitFragment = new SqlStringBuilder();
+            if (offset != null)
+            {
+                limitFragment.Add(" skip ");
+                limitFragment.Add(offset);
+            }
+			if (limit != null)
 			{
-				return querySqlString.Insert(insertIndex, " skip " + offset + " first " + limit);
+			    limitFragment.Add(" first ");
+			    limitFragment.Add(limit);
 			}
 
-			return querySqlString.Insert(insertIndex, " first " + limit);
+			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
 		/// <summary> 

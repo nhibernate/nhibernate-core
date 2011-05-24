@@ -27,7 +27,7 @@ namespace NHibernate.Test.DialectTest
         public void UseLimit()
         {
             SqlString sql = new SqlString("SELECT id, name, email FROM Users");
-            SqlString s = dialect.GetLimitString(sql, 5, 10);
+            SqlString s = dialect.GetLimitString(sql, new SqlString("5"), new SqlString("10"));
             Assert.AreEqual("SELECT id, name, email FROM Users limit 10 offset 5", s.ToString());
         }
 

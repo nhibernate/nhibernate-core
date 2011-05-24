@@ -205,16 +205,7 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
-		/// <param name="limitParameterIndex">Optionally, the Limit parameter index</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
+        public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
 			/*
 		     * "select * from (select row_number() over(orderby_clause) as rownum, "
@@ -230,19 +221,26 @@ namespace NHibernate.Dialect
 				.Add(querySqlString.Substring(7))
 				.Add(") as tempresult where rownum ");
 
-			if (offset > 0)
+			if (offset != null && limit != null)
 			{
 				pagingBuilder
 					.Add("between ")
-					.Add(Parameter.WithIndex(offsetParameterIndex.Value))
+					.Add(offset)
 					.Add("+1 and ")
-					.Add(Parameter.WithIndex(limitParameterIndex.Value));
+					.Add(limit);
 			}
-			else
+			else if (limit != null)
 			{
 				pagingBuilder
 					.Add("<= ")
-					.Add(Parameter.WithIndex(limitParameterIndex.Value));
+					.Add(limit);
+			}
+            else
+			{
+			    // We just have an offset.
+			    pagingBuilder
+			        .Add("> ")
+			        .Add(offset);
 			}
 
 			return pagingBuilder.ToSqlString();

@@ -149,11 +149,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override bool SupportsVariableLimit
-		{
-			get { return false; }
-		}
-
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }
@@ -244,28 +239,26 @@ namespace NHibernate.Dialect
 			get { return "DEFAULT VALUES"; }
 		}
 
-		/// <summary>
-		/// Add a LIMIT N clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offset">Offset of the first row to process in the result set</param>
-		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
-		{
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-			pagingBuilder.Add(querySqlString);
-			pagingBuilder.Add(" limit ");
-			pagingBuilder.Add(limit.ToString());
+        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+        {
+            SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+            pagingBuilder.Add(queryString);
 
-			if (offset > 0)
-			{
-				pagingBuilder.Add(" offset ");
-				pagingBuilder.Add(offset.ToString());
-			}
+            pagingBuilder.Add(" limit ");
+            if (limit != null)
+                pagingBuilder.Add(limit);
+            else
+                // We must have a limit present if we have an offset.
+                pagingBuilder.Add(int.MaxValue.ToString());
 
-			return pagingBuilder.ToSqlString();
-		}
+            if (offset != null)
+            {
+                pagingBuilder.Add(" offset ");
+                pagingBuilder.Add(offset);
+            }
+
+            return pagingBuilder.ToSqlString();
+        }
 
 		public override bool SupportsTemporaryTables
 		{

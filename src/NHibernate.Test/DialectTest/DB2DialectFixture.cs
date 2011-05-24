@@ -24,11 +24,11 @@ namespace NHibernate.Test.DialectTest
 						" order by a, x"
 					});
 
-			SqlString limited = dialect.GetLimitString(sql, 1, 2, -1, -2);
+            SqlString limited = dialect.GetLimitString(sql, new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
-				"select * from (select rownumber() over(order by a, x) as rownum, a, b, c from d where X = ? and Z = ? order by a, x) as tempresult where rownum between ?+1 and ?",
+				"select * from (select rownumber() over(order by a, x) as rownum, a, b, c from d where X = ? and Z = ? order by a, x) as tempresult where rownum between 111+1 and 222",
 				limited.ToString());
-			Assert.AreEqual(4, limited.GetParameterCount());
+			Assert.AreEqual(2, limited.GetParameterCount());
 		}
 	}
 }

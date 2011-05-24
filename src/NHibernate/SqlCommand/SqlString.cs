@@ -614,8 +614,13 @@ namespace NHibernate.SqlCommand
 			return lastIndex >= 0 ? Substring(lastIndex) : Empty;
 		}
 
-		public SqlString Insert(int index, string text)
-		{
+        public SqlString Insert(int index, string text)
+        {
+            return Insert(index, new SqlString(text));
+        }
+
+        public SqlString Insert(int index, SqlString sqlString)
+        {
 			if (index < 0)
 			{
 				throw new ArgumentException("index should be greater than or equal to 0", "index");
@@ -642,20 +647,22 @@ namespace NHibernate.SqlCommand
 				else if (nextOffset == index)
 				{
 					result.AddObject(part);
-					result.Add(text);
+                    result.Add(sqlString);
 					inserted = true;
 				}
 				else if (offset == index)
 				{
-					result.Add(text);
+                    result.Add(sqlString);
 					result.AddObject(part);
 					inserted = true;
 				}
 				else if (index > offset && index < nextOffset)
 				{
 					string partString = (string) part;
-					result.Add(partString.Insert(index - offset, text));
-					inserted = true;
+				    result.Add(partString.Substring(0, index - offset));
+					result.Add(sqlString);
+                    result.Add(partString.Substring(index - offset, partString.Length - (index - offset)));
+                    inserted = true;
 				}
 				else
 				{

@@ -177,28 +177,32 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Add a <c>FIRST x [SKIP] y</c> clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offset">Offset of the first row to process in the result set</param>
-		/// <returns>A new SqlString that contains the <c>FIRST</c> clause.</returns>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			/*
+            // FIXME - This should use the ROWS syntax in Firebird to avoid problems with subqueries metioned here:
+            // http://www.firebirdsql.org/refdocs/langrefupd20-select.html#langrefupd20-first-skip
+
+            /*
 			 * "SELECT FIRST x [SKIP y] rest-of-sql-statement"
 			 */
 
-			int insertIndex = GetAfterSelectInsertPoint(querySqlString);
-			if (offset > 0)
-			{
-				return querySqlString.Insert(insertIndex, " first " + limit.ToString() + " skip " + offset.ToString());
+			int insertIndex = GetAfterSelectInsertPoint(queryString);
+
+            SqlStringBuilder limitFragment = new SqlStringBuilder();
+
+            if (limit != null)
+            {
+                limitFragment.Add(" first ");
+                limitFragment.Add(limit);
+            }
+
+            if (offset != null)
+            {
+                limitFragment.Add(" skip ");
+                limitFragment.Add(offset);
 			}
-			else
-			{
-				return querySqlString.Insert(insertIndex, " first " + limit.ToString());
-			}
+
+            return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
 		public override bool SupportsVariableLimit

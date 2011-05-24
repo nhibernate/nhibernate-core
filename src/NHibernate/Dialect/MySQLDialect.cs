@@ -176,31 +176,24 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index</param>
-		/// <param name="limitParameterIndex">Optionally, the Limit parameter index</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
-		{
-			var pagingBuilder = new SqlStringBuilder();
-			pagingBuilder.Add(querySqlString);
-			pagingBuilder.Add(" limit ");
+        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+        {
+            var pagingBuilder = new SqlStringBuilder(queryString);
+            pagingBuilder.Add(" limit ");
 
-			if (offset > 0)
-			{
-				pagingBuilder.Add(Parameter.WithIndex(offsetParameterIndex.Value));
-				pagingBuilder.Add(", ");
-			}
+            if (offset != null)
+            {
+                pagingBuilder.Add(offset);
+                pagingBuilder.Add(", ");
+            }
 
-			pagingBuilder.Add(Parameter.WithIndex(limitParameterIndex.Value));
+            if (limit != null)
+                pagingBuilder.Add(limit);
+            else
+                pagingBuilder.Add(int.MaxValue.ToString());
 
-			return pagingBuilder.ToSqlString();
-		}
+            return pagingBuilder.ToSqlString();
+        }
 
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
 		                                                        string referencedTable, string[] primaryKey,

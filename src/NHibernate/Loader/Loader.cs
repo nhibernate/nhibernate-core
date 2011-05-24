@@ -1127,11 +1127,12 @@ namespace NHibernate.Loader
 
 			if (useLimit)
 			{
+				int max = GetMaxOrLimit(dialect, selection);
 				sqlString =
 					dialect.GetLimitString(
 						sqlString.Trim(),
-						useOffset ? GetFirstRow(selection) : 0,
-						GetMaxOrLimit(dialect, selection),
+						useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null,
+						max != int.MaxValue ? (int?)max : null,
 						queryParameters.OffsetParameterIndex,
 						queryParameters.LimitParameterIndex);
 			}
@@ -1216,19 +1217,12 @@ namespace NHibernate.Loader
 		internal static int GetMaxOrLimit(Dialect.Dialect dialect, RowSelection selection)
 		{
 			int firstRow = GetFirstRow(selection);
-			int lastRow = selection.MaxRows;
+			int rowCount = selection.MaxRows;
 
-			if (lastRow == RowSelection.NoValue)
+            if (rowCount == RowSelection.NoValue)
 				return int.MaxValue;
 
-			if (dialect.UseMaxForLimit)
-			{
-				return lastRow + firstRow;
-			}
-			else
-			{
-				return lastRow;
-			}
+            return dialect.GetLimitValue(firstRow, rowCount);
 		}
 
 		private int GetFirstLimitParameterCount(Dialect.Dialect dialect, bool useLimit, bool hasFirstRow, bool useOffset)
@@ -1748,11 +1742,12 @@ namespace NHibernate.Loader
 
 			if (useLimit)
 			{
+			    int max = GetMaxOrLimit(dialect, selection);
 				sqlString =
 					dialect.GetLimitString(
 						sqlString.Trim(),
-						useOffset ? GetFirstRow(selection) : 0,
-						GetMaxOrLimit(dialect, selection),
+                        useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null,
+						max != int.MaxValue ? (int?)max : null,
 						parameters.OffsetParameterIndex,
 						parameters.LimitParameterIndex);
 			}

@@ -1680,69 +1680,81 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit, Parameter offsetParameter, Parameter limitParameter)
-		{
-			if (!SupportsVariableLimit)
-				return GetLimitString(querySqlString, offset, limit);
+        /// <summary>
+        /// For limit clauses, indicates whether to use 0 or 1 as the offset that returns the first row.  Should be true if the first row is at offset 1.
+        /// </summary>
+        public virtual bool OffsetStartsAtOne
+        {
+            get { return false; }
+        }
 
-			if ((offsetParameter == null) && (limitParameter == null))
-				return GetLimitString(querySqlString, offset, limit);
+        /// <summary>
+        /// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
+        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+        /// </summary>
+        /// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
+        /// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
+        /// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
+        /// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
+        public virtual SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+        {
+            throw new NotSupportedException("Dialect does not have support for limit strings.");
+        }
 
-			throw new NotSupportedException("Override to support limits passed as parameters");
-		}
+        /// <summary>
+        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+        /// </summary>
+        internal SqlString GetLimitString(SqlString queryString, int? offset, int? limit, int? offsetParameterIndex, int? limitParameterIndex)
+        {
+            SqlString offsetParameter =
+                SupportsVariableLimit && offsetParameterIndex.HasValue ? new SqlString(Parameter.WithIndex(offsetParameterIndex.Value)) :
+                offset.HasValue ? new SqlString(offset.ToString()) :
+                null;
 
-		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
-		/// when the dialect supports variable limits (i.e. parameters for the limit constraints)
-		/// </summary>
-		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index in the sql</param>
-		/// <param name="limitParameterIndex">Optionally, the Limit parameter index in the sql</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
-		{
-			if (!SupportsVariableLimit)
-				return GetLimitString(querySqlString, offset, limit);
+            SqlString limitParameter =
+                SupportsVariableLimit && limitParameterIndex.HasValue ? new SqlString(Parameter.WithIndex(limitParameterIndex.Value)) :
+                limit.HasValue ? new SqlString(limit.ToString()) :
+                null;
 
-			if ((offsetParameterIndex == null) && (limitParameterIndex == null))
-				return GetLimitString(querySqlString, offset, limit);
+            return GetLimitString(queryString, offsetParameter, limitParameter);
+        }
 
-			throw new NotSupportedException("Override to support limits passed as parameters");
-		}
+        /// <summary>
+        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+        /// </summary>
+        internal SqlString GetLimitString(SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter)
+        {
+            SqlString o =
+                SupportsVariableLimit && offsetParameter != null ? new SqlString(offsetParameter) :
+                offset.HasValue ? new SqlString(offset.ToString()) :
+                null;
 
-		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">A Query in the form of a SqlString.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <returns>A new SqlString that contains the <c>LIMIT</c> clause.</returns>
-		public virtual SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
-		{
-			return GetLimitString(querySqlString, offset > 0);
-		}
+            SqlString l =
+                SupportsVariableLimit && limitParameter != null ? new SqlString(limitParameter) :
+                limit.HasValue ? new SqlString(limit.ToString()) :
+                null;
 
-		/// <summary> Apply s limit clause to the query. </summary>
-		/// <param name="querySqlString">The query to which to apply the limit. </param>
-		/// <param name="hasOffset">Is the query requesting an offset? </param>
-		/// <returns> the modified SQL </returns>
-		/// <remarks>
-		/// Typically dialects utilize <see cref="SupportsVariableLimit"/>
-		/// limit caluses when they support limits.  Thus, when building the
-		/// select command we do not actually need to know the limit or the offest
-		/// since we will just be using placeholders.
-		/// <p/>
-		/// Here we do still pass along whether or not an offset was specified
-		/// so that dialects not supporting offsets can generate proper exceptions.
-		/// In general, dialects will override one or the other of this method and
-		/// <see cref="GetLimitString(SqlString,int,int)"/>.
-		/// </remarks>
-		public virtual SqlString GetLimitString(SqlString querySqlString, bool hasOffset)
-		{
-			throw new NotSupportedException("Paged Queries not supported");
-		}
+            return GetLimitString(queryString, o, l);
+        }
+
+        internal int GetLimitValue(int offset, int limit)
+        {
+            if (limit == int.MaxValue)
+                return int.MaxValue;
+
+            if (UseMaxForLimit)
+                return GetOffsetValue(offset) + limit;
+
+            return limit;
+        }
+
+        internal int GetOffsetValue(int offset)
+        {
+            if (OffsetStartsAtOne)
+                return offset + 1;
+
+            return offset;
+        }
 
 		#endregion
 

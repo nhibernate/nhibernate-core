@@ -250,10 +250,9 @@ namespace NHibernate.Dialect
 			return new DecodeCaseFragment(this);
 		}
 
-		public override SqlString GetLimitString(SqlString sql, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
+        public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			sql = sql.Trim();
-			bool hasOffset = offset > 0;
 			bool isForUpdate = false;
 			if (sql.EndsWithCaseInsensitive(" for update"))
 			{
@@ -264,7 +263,7 @@ namespace NHibernate.Dialect
 			string selectColumns = ExtractColumnOrAliasNames(sql);
 
 			var pagingSelect = new SqlStringBuilder(sql.Parts.Count + 10);
-			if (hasOffset)
+			if (offset != null && limit != null)
 			{
 				pagingSelect.Add("select " + selectColumns + " from ( select row_.*, rownum rownum_ from ( ");
 			}
@@ -273,14 +272,19 @@ namespace NHibernate.Dialect
 				pagingSelect.Add("select " + selectColumns + " from ( ");
 			}
 			pagingSelect.Add(sql);
-			if (hasOffset)
+			if (offset != null && limit != null)
 			{
-				pagingSelect.Add(" ) row_ where rownum <=").AddParameter(limitParameterIndex.Value).Add(") where rownum_ >").AddParameter(offsetParameterIndex.Value);
+				pagingSelect.Add(" ) row_ where rownum <=").Add(limit).Add(") where rownum_ >").Add(offset);
 			}
-			else
+			else if (limit != null)
 			{
-				pagingSelect.Add(" ) where rownum <=").AddParameter(limitParameterIndex.Value);
+				pagingSelect.Add(" ) where rownum <=").Add(limit);
 			}
+            else
+			{
+			    // offset is specified, but limit is not.
+                pagingSelect.Add(" ) where rownum >").Add(offset);
+            }
 
 			if (isForUpdate)
 			{

@@ -29,89 +29,45 @@ namespace NHibernate.Dialect
 			RegisterKeyword("xml");
 		}
 
-        public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
-        {
-            return GetLimitString(querySqlString,
-                offset == 0 ? null : new SqlString(offset.ToString()),
-                limit == int.MaxValue ? null : new SqlString(limit.ToString()));
-        }
-
-		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>
-		/// </summary>
-		/// <param name="querySqlString">The <see cref="SqlString"/> to base the limit query off.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query (zero-based)</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query</param>
-		/// <param name="offsetParameterIndex">Optionally, the Offset parameter index in the sql</param>
-		/// <param name="limitParameterIndex">Optionally, the Limit parameter index in the sql</param>
-		/// <returns>A new <see cref="SqlString"/> with the <c>LIMIT</c> clause applied.</returns>
-		/// <remarks>
-		/// Note that we need to explicitly specify the columns, because we need to be able to use them in a paged subselect [NH-1155]
-		/// </remarks>
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, int? offsetParameterIndex, int? limitParameterIndex)
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			object limitObject = limitParameterIndex == null ? (object) new SqlString(limit.ToString()) : Parameter.WithIndex(limitParameterIndex.Value);
-			object offsetObject = null;
-			if (offset != 0)
-			{
-				offsetObject = offsetParameterIndex == null ? (object) new SqlString(offset.ToString()) : Parameter.WithIndex(offsetParameterIndex.Value);
-			}
-			return GetLimitString(querySqlString, offsetObject, limitObject);
-		}
-
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit, Parameter offsetParameter, Parameter limitParameter)
-		{
-			object limitObject = limitParameter ?? (object) new SqlString(limit.ToString());
-			object offsetObject = null;
-			if (offset != 0)
-			{
-				offsetObject = offsetParameter ?? (object) new SqlString(offset.ToString());
-			}
-			return GetLimitString(querySqlString, offsetObject, limitObject);
-		}
-
-		private SqlString GetLimitString(SqlString querySqlString, object offset, object limit)
-		{
-            if (offset == null && limit == null)
-                return querySqlString;
-
 			SqlStringBuilder result = new SqlStringBuilder();
 						
 			if (offset == null)
 			{
-				int insertPoint = this.GetAfterSelectInsertPoint(querySqlString);
+                int insertPoint = GetAfterSelectInsertPoint(queryString);
 				
 				return result
-					.Add(querySqlString.Substring(0, insertPoint))
+                    .Add(queryString.Substring(0, insertPoint))
 					.Add(" TOP (")
-					.AddObject(limit)
+					.Add(limit)
                     .Add(") ")
-					.Add(querySqlString.Substring(insertPoint))
+                    .Add(queryString.Substring(insertPoint))
 					.ToSqlString();
 			}
 
-			int fromIndex = GetFromIndex(querySqlString);
-			SqlString select = querySqlString.Substring(0, fromIndex);
+            int fromIndex = GetFromIndex(queryString);
+            SqlString select = queryString.Substring(0, fromIndex);
 
 			List<SqlString> columnsOrAliases;
 			Dictionary<SqlString, SqlString> aliasToColumn;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
-		
-			int orderIndex = querySqlString.LastIndexOfCaseInsensitive(" order by ");
+
+            int orderIndex = queryString.LastIndexOfCaseInsensitive(" order by ");
 			SqlString fromAndWhere;
 			SqlString[] sortExpressions;
 
 			//don't use the order index if it is contained within a larger statement(assuming
 			//a statement with non matching parenthesis is part of a larger block)
-			if (orderIndex > 0 && HasMatchingParens(querySqlString.Substring(orderIndex).ToString()))
+            if (orderIndex > 0 && HasMatchingParens(queryString.Substring(orderIndex).ToString()))
 			{
-				fromAndWhere = querySqlString.Substring(fromIndex, orderIndex - fromIndex).Trim();
-				SqlString orderBy = querySqlString.Substring(orderIndex).Trim();
+                fromAndWhere = queryString.Substring(fromIndex, orderIndex - fromIndex).Trim();
+                SqlString orderBy = queryString.Substring(orderIndex).Trim();
 				sortExpressions = orderBy.Substring(9).Split(",");
 			}
 			else
 			{
-				fromAndWhere = querySqlString.Substring(fromIndex).Trim();
+                fromAndWhere = queryString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
 				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
 			}
@@ -119,7 +75,7 @@ namespace NHibernate.Dialect
 			result.Add("SELECT ");
 
             if (limit != null)
-                result.Add("TOP (").AddObject(limit).Add(") ");
+                result.Add("TOP (").Add(limit).Add(") ");
 
             result
 				.Add(StringHelper.Join(", ", columnsOrAliases))
@@ -133,7 +89,7 @@ namespace NHibernate.Dialect
 				.Add(") as __hibernate_sort_row ")
 				.Add(fromAndWhere)
 				.Add(") as query WHERE query.__hibernate_sort_row > ")
-				.AddObject(offset)
+				.Add(offset)
 				.Add(" ORDER BY query.__hibernate_sort_row");
 			
 			return result.ToSqlString();

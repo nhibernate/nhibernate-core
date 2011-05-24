@@ -341,17 +341,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 			
 			var dialect = sessionFactory.Dialect;
 			
-			var hqlQueryHasFixedLimits = (queryWriter.Take.HasValue || queryWriter.Skip.HasValue) && !skipIsParameter && !takeIsParameter;
-			if(hqlQueryHasFixedLimits)
-			{
-				return dialect.GetLimitString(sqlString, queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue);
-			}
+            // FIXME - We need to adjust the parameters from the user according to dialect settings like UseMaxForLimit, OffsetStartsAtOne.  This will need to happen every time we query.            
+
 			// Skip-Take in HQL should be supported just for Dialect supporting variable limits at least when users use parameters for skip-take.
 			if (!dialect.SupportsVariableLimit && (skipIsParameter || takeIsParameter))
 			{
 				throw new NotSupportedException("The dialect " + dialect.GetType().FullName + " does not supports variable limits");
 			}
-			// At this point at least one of the two limits is a parameter and that parameter should be of IExplicitValueParameterSpecification
+
+			// If a limit is a parameter, it should be of type IExplicitValueParameterSpecification.
 			Parameter skipParameter = null;
 			Parameter takeParameter = null;
 			if(queryWriter.SkipParameter != null)
@@ -365,8 +363,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 				takeParameter.BackTrack = queryWriter.TakeParameter.IdForBackTrack;
 			}
 
-			sqlString = dialect.GetLimitString(sqlString, skipIsParameter ? 1 : queryWriter.Skip ?? 0, queryWriter.Take ?? int.MaxValue, skipParameter, takeParameter);
-			return sqlString;
+            // We allow the user to specify either constants or parameters for their limits.
+            return dialect.GetLimitString(sqlString,
+                queryWriter.Skip.HasValue ? (int?)dialect.GetOffsetValue(queryWriter.Skip.Value) : null,
+                queryWriter.Take.HasValue ? (int?)dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value) : null,
+                skipParameter,
+                takeParameter);
 		}
 
 		private void Skip(IASTNode node)

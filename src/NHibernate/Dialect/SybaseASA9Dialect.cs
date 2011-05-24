@@ -92,11 +92,29 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, int offset, int limit)
+        public override bool OffsetStartsAtOne
+        {
+	        get { return true; }
+        }
+
+        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			int intSelectInsertPoint = GetAfterSelectInsertPoint(querySqlString);
-			string strLimit = string.Format(" top {0} start at {1}", limit, offset + 1);
-			return querySqlString.Insert(intSelectInsertPoint, strLimit);
+            int intSelectInsertPoint = GetAfterSelectInsertPoint(queryString);
+
+            SqlStringBuilder limitFragment = new SqlStringBuilder();
+            limitFragment.Add(" top ");
+            if (limit != null)
+                limitFragment.Add(limit);
+            else
+                limitFragment.Add(int.MaxValue.ToString());
+
+            if (offset != null)
+            {
+                limitFragment.Add(" start at ");
+                limitFragment.Add(offset);
+            }
+
+            return queryString.Insert(intSelectInsertPoint, limitFragment.ToSqlString());
 		}
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)

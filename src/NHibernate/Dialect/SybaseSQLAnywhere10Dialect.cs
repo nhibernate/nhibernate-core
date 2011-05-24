@@ -446,59 +446,37 @@ namespace NHibernate.Dialect
 			return 0;
 		}
 
-		/// <summary>
-		/// SQL Anywhere 11 uses SELECT TOP n START AT m [ select list items ]
-		/// for LIMIT/OFFSET support.
-		///
-		/// Produce a parametertized SQL query using positional parameters for
-		/// TOP and START AT (if specified).
-		/// </summary>
-		public override SqlString GetLimitString(SqlString sql, bool hasOffset)
+        public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
-			int insertionPoint = GetAfterSelectInsertPoint(sql);
-			
-			if (insertionPoint > 0)
-			{
-				SqlStringBuilder limitBuilder = new SqlStringBuilder();
-				limitBuilder.Add("select");
-				if (insertionPoint > 6)
-				{
-					limitBuilder.Add(" distinct ");
-				}
-				limitBuilder.Add(" top ");
-				limitBuilder.Add(Parameter.Placeholder);
-				if (hasOffset)
-				{
-					limitBuilder.Add(" start at ");
-					limitBuilder.Add(Parameter.Placeholder);
-				}
-				limitBuilder.Add(sql.Substring(insertionPoint));
-				return limitBuilder.ToSqlString();
-			}
-			else
-			{
-				return sql; // unchanged
-			}
-		}
+            // SQL Anywhere 11 uses SELECT TOP n START AT m [ select list items ]
+            // for LIMIT/OFFSET support.  Does not support a limit of zero.
 
-		/// <summary>
-		/// SQL Anywhere 11 uses SELECT TOP n START AT m [ select list items ]
-		/// for LIMIT/OFFSET support.
-		///
-		/// Generate SELECT TOP n START AT m syntax using bound parameters
-		/// SQL Anywhere constraints: n > 0, m >= 0
-		/// </summary>
-		public override SqlString GetLimitString(SqlString sql, int offset, int limit)
-		{
-			if (offset < 0)
-			{
-				throw new NotSupportedException("SQL Anywhere does not support negative offsets");
-			}
-			if (limit <= 0)
-			{
-				throw new NotSupportedException("negative or zero TOP n (SQL limit) is not supported");
-			}
-			return GetLimitString(sql, offset > 0);
+            // FIXME - Add support for where offset is set, but limit is not.
+
+            int insertionPoint = GetAfterSelectInsertPoint(sql);
+
+            if (insertionPoint > 0)
+            {
+                SqlStringBuilder limitBuilder = new SqlStringBuilder();
+                limitBuilder.Add("select");
+                if (insertionPoint > 6)
+                {
+                    limitBuilder.Add(" distinct ");
+                }
+                limitBuilder.Add(" top ");
+                limitBuilder.Add(limit);
+                if (offset != null)
+                {
+                    limitBuilder.Add(" start at ");
+                    limitBuilder.Add(offset);
+                }
+                limitBuilder.Add(sql.Substring(insertionPoint));
+                return limitBuilder.ToSqlString();
+            }
+            else
+            {
+                return sql; // unchanged
+            }
 		}
 		
 		#endregion
