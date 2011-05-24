@@ -1264,6 +1264,10 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return new ComponentRelationMapper(property, ownerType, collectionElementType, membersProvider, modelInspector, customizerHolder, this);
 			}
+			if (modelInspector.IsManyToAny(property))
+			{
+				return new ManyToAnyRelationMapper(propertyPath, customizerHolder, this);
+			}
 			return new ElementRelationMapper(propertyPath, customizerHolder, this);
 		}
 
@@ -1613,6 +1617,35 @@ namespace NHibernate.Mapping.ByCode
 			}
 
 			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) {}
+
+			#endregion
+		}
+
+		#endregion
+
+		#region Nested type: ManyToAnyRelationMapper
+
+		private class ManyToAnyRelationMapper : ICollectionElementRelationMapper
+		{
+			private readonly ICustomizersHolder customizersHolder;
+			private readonly ModelMapper modelMapper;
+			private readonly PropertyPath propertyPath;
+
+			public ManyToAnyRelationMapper(PropertyPath propertyPath, ICustomizersHolder customizersHolder, ModelMapper modelMapper)
+			{
+				this.propertyPath = propertyPath;
+				this.customizersHolder = customizersHolder;
+				this.modelMapper = modelMapper;
+			}
+
+			#region Implementation of ICollectionElementRelationMapper
+
+			public void Map(ICollectionElementRelation relation)
+			{
+				relation.ManyToAny(typeof(int), x => customizersHolder.InvokeCustomizers(propertyPath, x));
+			}
+
+			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) { }
 
 			#endregion
 		}

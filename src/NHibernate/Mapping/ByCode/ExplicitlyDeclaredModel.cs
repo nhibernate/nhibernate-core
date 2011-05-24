@@ -66,6 +66,11 @@ namespace NHibernate.Mapping.ByCode
 			return OneToManyRelations.Contains(member);
 		}
 
+		public bool IsManyToAny(MemberInfo member)
+		{
+			return ManyToAnyRelations.Contains(member);
+		}
+
 		public virtual bool IsAny(MemberInfo member)
 		{
 			return Any.Contains(member);

@@ -48,7 +48,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void ManyToAny(System.Type idTypeOfMetaType, Action<IManyToAnyMapper> mapping)
 		{
-			throw new NotImplementedException();
+			var hbm = new HbmManyToAny();
+			mapping(new ManyToAnyMapper(collectionElementType, idTypeOfMetaType, hbm, mapDoc));
+			elementRelationshipAssing(hbm);
 		}
 
 		#endregion

@@ -311,6 +311,7 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\DynamicComponentCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ManyToAnyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\ManyToAnyMapper.cs" />
     <Compile Include="Mapping\ByCode\PropertyGeneration.cs" />
     <Compile Include="Mapping\ByCode\PropertyToField.cs" />
     <Compile Include="Mapping\ByCode\SimpleModelInspector.cs" />

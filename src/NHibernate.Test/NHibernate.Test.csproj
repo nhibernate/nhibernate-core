@@ -552,6 +552,11 @@
     <Compile Include="MappingByCode\ExpliticMappingTests\SubclassPropertiesSplitsTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2728\Cat.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2728\Dog.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2728\IAnimal.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2728\SampleTest.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2728\Toy.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\IdMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\ManyToOneMapperTest.cs" />

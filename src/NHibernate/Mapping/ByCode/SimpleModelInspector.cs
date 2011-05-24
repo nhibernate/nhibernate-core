@@ -78,6 +78,11 @@ namespace NHibernate.Mapping.ByCode
 				return OneToManyRelations.Contains(member);
 			}
 
+			public bool IsManyToAny(MemberInfo member)
+			{
+				return ManyToAnyRelations.Contains(member);
+			}
+
 			public bool IsAny(MemberInfo member)
 			{
 				return Any.Contains(member);
@@ -173,6 +178,7 @@ namespace NHibernate.Mapping.ByCode
 		private Func<MemberInfo, bool, bool> isDynamicComponent = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isAny = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isManyToMany = (m, declared) => declared;
+		private Func<MemberInfo, bool, bool> isManyToAny = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isManyToOne;
 		private Func<MemberInfo, bool, bool> isMemberOfNaturalId = (m, declared) => declared;
 		private Func<MemberInfo, bool, bool> isOneToMany;
@@ -713,6 +719,12 @@ namespace NHibernate.Mapping.ByCode
 			return isOneToMany(member, declaredResult);
 		}
 
+		bool IModelInspector.IsManyToAny(MemberInfo member)
+		{
+			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsManyToAny(m));
+			return isManyToAny(member, declaredResult);
+		}
+
 		bool IModelInspector.IsAny(MemberInfo member)
 		{
 			bool declaredResult = DeclaredPolymorphicMatch(member, m => declaredModel.IsAny(m));
@@ -908,6 +920,15 @@ namespace NHibernate.Mapping.ByCode
 				return;
 			}
 			isOneToMany = match;
+		}
+
+		public void IsManyToAny(Func<MemberInfo, bool, bool> match)
+		{
+			if (match == null)
+			{
+				return;
+			}
+			isManyToAny = match;
 		}
 
 		public void IsAny(Func<MemberInfo, bool, bool> match)
