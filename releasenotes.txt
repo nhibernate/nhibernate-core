@@ -3,6 +3,7 @@
 		* removed obsolete "use_outer_join" property from nhibernate-configuration.xsd (simply remove it from your xml configuration)
 
 	##### Possible Breaking Changes #####
+		* All Dialect.GetLimitString() methods replaced with a single GetLimitString method with a new signature.
 		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
 		* [NH-2593] - For Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
 		* - ICollectionPersister added property to fix [NH-2489]
