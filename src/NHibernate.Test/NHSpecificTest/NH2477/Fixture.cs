@@ -1,5 +1,5 @@
 using System;
-using System.Linq.Dynamic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
