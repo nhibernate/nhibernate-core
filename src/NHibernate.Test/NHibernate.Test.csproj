@@ -854,6 +854,9 @@
     <Compile Include="NHSpecificTest\NH2705\SubItemBase.cs" />
     <Compile Include="NHSpecificTest\NH2705\SubItemDetails.cs" />
     <Compile Include="NHSpecificTest\NH2705\Test.cs" />
+    <Compile Include="NHSpecificTest\NH2721\A.cs" />
+    <Compile Include="NHSpecificTest\NH2721\B.cs" />
+    <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2733\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2733\Model.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
@@ -2698,6 +2701,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2721\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2733\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2317\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2366\Mappings.hbm.xml" />
