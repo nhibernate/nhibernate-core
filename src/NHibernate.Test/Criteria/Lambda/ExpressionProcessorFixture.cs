@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,32 +20,162 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionReference()
 		{
 			Expression<Func<Person, string>> e = (Person p) => p.Name;
-			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
 			Assert.AreEqual("Name", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionReferenceAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<string>> e = () => personAlias.Name;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.Name", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionComponent()
+		{
+			Expression<Func<Person, string>> e = (Person p) => p.Father.Name;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("Father.Name", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionComponentAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<string>> e = () => personAlias.Father.Name;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.Father.Name", property);
 		}
 
 		[Test]
 		public void TestFindMemberExpressionValue()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.Age;
-			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
 			Assert.AreEqual("Age", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionValueAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.Age;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.Age", property);
 		}
 
 		[Test]
 		public void TestFindMemberExpressionSubCollectionIndex()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.PersonList[0].Children;
-			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
 			Assert.AreEqual("PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionIndexAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.PersonList[0].Children;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionFirst()
+		{
+			Expression<Func<Person, object>> e = (Person p) => p.PersonList.First().Children;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionFirstAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.PersonList.First().Children;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.PersonList.Children", property);
 		}
 
 		[Test]
 		public void TestFindMemberExpressionSubCollectionExtensionMethod()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.PersonList.First().Children;
-			string property = ExpressionProcessor.FindMemberExpression(e.Body);
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
 			Assert.AreEqual("PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionSubCollectionExtensionMethodAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.PersonList.First().Children;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.PersonList.Children", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionClass()
+		{
+			Expression<Func<Person, object>> e = (Person p) => p.GetType();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("class", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionClassAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.GetType();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.class", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionNullableValue()
+		{
+			Expression<Func<Person, object>> e = (Person p) => p.NullableGender.Value;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("NullableGender", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionNullableValueAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<object>> e = () => personAlias.NullableGender.Value;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.NullableGender", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionConstants()
+		{
+			var children = new List<Child> { new Child { Nickname = "test nickname" } };
+			Person person =
+				new Person()
+				{
+					Name = "test name",
+					NullableAge = 4,
+					Children = children,
+				};
+
+			Assert.That(Projection(() => person.Name), Is.EqualTo("test name"));
+			Assert.That(Projection(() => "test name"), Is.EqualTo("test name"));
+			Assert.That(Projection(() => person.NullableAge.Value), Is.EqualTo(4));
+			Assert.That(Projection(() => person.GetType()), Is.EqualTo(typeof(Person)));
+			Assert.That(Projection(() => person.Children.First().Nickname), Is.EqualTo("test nickname"));
+			Assert.That(Projection(() => children[0].Nickname), Is.EqualTo("test nickname"));
+		}
+
+		private T Projection<T>(Expression<Func<T>> e)
+		{
+			var constantProjection = ExpressionProcessor.FindMemberProjection(e.Body);
+			return (T)typeof(ConstantProjection).GetField("value", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(constantProjection);
 		}
 
 		[Test]

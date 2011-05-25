@@ -334,10 +334,14 @@ namespace NHibernate.Impl
 
 				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess)
 				{
-					// if the member has a null value, it was an alias
-					if (EvaluatesToNull(memberExpression.Expression))
+					if (IsMemberExpression(memberExpression.Expression))
 						return true;
+
+					// if the member has a null value, it was an alias
+					return EvaluatesToNull(memberExpression.Expression);
 				}
+
+				return IsMemberExpression(memberExpression.Expression);
 			}
 
 			if (expression is UnaryExpression)
@@ -358,9 +362,16 @@ namespace NHibernate.Impl
 				if (_customProjectionProcessors.ContainsKey(signature))
 					return true;
 
+				if (methodCallExpression.Method.Name == "First")
+				{
+					if (IsMemberExpression(methodCallExpression.Arguments[0]))
+						return true;
+
+					return EvaluatesToNull(methodCallExpression.Arguments[0]);
+				}
+
 				if (methodCallExpression.Method.Name == "GetType"
-					|| methodCallExpression.Method.Name == "get_Item"
-					|| methodCallExpression.Method.Name == "First")
+					|| methodCallExpression.Method.Name == "get_Item")
 				{
 					if (IsMemberExpression(methodCallExpression.Object))
 						return true;

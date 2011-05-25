@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2733"
+				   assembly="NHibernate.Test">
+
+  <class name="Item" table="`Item_Table`">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <component name="Details">
+      <property name="StartTime" />
+    </component>
+  </class>
+</hibernate-mapping>
