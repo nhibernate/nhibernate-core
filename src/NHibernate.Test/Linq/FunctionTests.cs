@@ -124,9 +124,10 @@ namespace NHibernate.Test.Linq
         {
             try
             {
-                session.Save(new AnotherEntity { Id = 100, Input = " hi " });
-                session.Save(new AnotherEntity { Id = 101, Input = "hi" });
-                session.Save(new AnotherEntity { Id = 102, Input = "heh" });
+                session.Save(new AnotherEntity { Input = " hi " });
+                session.Save(new AnotherEntity { Input = "hi" });
+                session.Save(new AnotherEntity { Input = "heh" });
+                session.Flush();
 
                 Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
                 Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
@@ -139,7 +140,8 @@ namespace NHibernate.Test.Linq
             }
             finally
             {
-                session.Delete("from AnotherEntity e where e.Id >= 100");
+                session.Delete("from AnotherEntity e where e.Id > 5");
+                session.Flush();
             }
         }
     }
