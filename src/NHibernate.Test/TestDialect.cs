@@ -53,6 +53,8 @@ namespace NHibernate.Test
 
         public virtual bool SupportsHavingWithoutGroupBy { get { return true; } }
 
+        public virtual bool IgnoresTrailingWhitespace { get { return false; } }
+
 	    public bool SupportsSqlType(SqlType sqlType)
 	    {
             try

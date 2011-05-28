@@ -118,5 +118,29 @@ namespace NHibernate.Test.Linq
         {
             Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
         }
+
+        [Test]
+        public void Trim()
+        {
+            try
+            {
+                session.Save(new AnotherEntity { Id = 100, Input = " hi " });
+                session.Save(new AnotherEntity { Id = 101, Input = "hi" });
+                session.Save(new AnotherEntity { Id = 102, Input = "heh" });
+
+                Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
+                Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
+                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
+
+                // Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
+                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
+                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
+                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
+            }
+            finally
+            {
+                session.Delete("from AnotherEntity where Id >= 100");
+            }
+        }
     }
 }

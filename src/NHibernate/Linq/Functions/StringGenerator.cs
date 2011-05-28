@@ -195,6 +195,46 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
+        public class TrimGenerator : BaseHqlGeneratorForMethod
+        {
+            public TrimGenerator()
+            {
+                SupportedMethods = new[]
+                                       {
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Trim()),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.Trim('a')),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.TrimStart('a')),
+                                           ReflectionHelper.GetMethodDefinition<string>(s => s.TrimEnd('a'))
+                                       };
+            }
+
+            public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+            {
+                string trimWhere;
+                if (method.Name == "TrimStart")
+                    trimWhere = "leading";
+                else if (method.Name == "TrimEnd")
+                    trimWhere = "trailing";
+                else
+                    trimWhere = "both";
+
+                string trimChars = "";
+                if (method.GetParameters().Length > 0)
+                    foreach (char c in (char[])((ConstantExpression)arguments[0]).Value)
+                        trimChars += c;
+
+
+                if (trimChars == "")
+                {
+                    return treeBuilder.MethodCall("trim", treeBuilder.Ident(trimWhere), treeBuilder.Ident("from"), visitor.Visit(targetObject).AsExpression());
+                }
+                else
+                {
+                    return treeBuilder.MethodCall("trim", treeBuilder.Ident(trimWhere), treeBuilder.Constant(trimChars), treeBuilder.Ident("from"), visitor.Visit(targetObject).AsExpression());
+                }
+            }
+        }
+
         public class ToStringRuntimeMethodHqlGenerator : IRuntimeMethodHqlGenerator
         {
             private readonly ToStringHqlGeneratorForMethod generator = new ToStringHqlGeneratorForMethod();
