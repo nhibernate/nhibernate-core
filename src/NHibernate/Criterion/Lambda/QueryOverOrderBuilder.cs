@@ -70,7 +70,10 @@ namespace NHibernate.Criterion.Lambda
 			if (projection != null)
 				root.UnderlyingCriteria.AddOrder(orderDelegate(projection));
 			else
-				root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate, isAlias));
+				if (isAlias)
+					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate));
+				else
+					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderDelegate));
 		}
 
 		public TReturn Asc

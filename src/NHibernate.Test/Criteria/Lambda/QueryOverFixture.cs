@@ -608,10 +608,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.AddOrder(Order.Asc("Name"))
-					.AddOrder(Order.Desc("Age"))
-					.AddOrder(Order.Desc("personAlias.Name"))
-					.AddOrder(Order.Asc("personAlias.Age"))
+					.AddOrder(Order.Asc(Projections.Property("Name")))
+					.AddOrder(Order.Desc(Projections.Property("Age")))
+					.AddOrder(Order.Desc(Projections.Property("personAlias.Name")))
+					.AddOrder(Order.Asc(Projections.Property("personAlias.Age")))
 					.AddOrder(Order.Asc("summary"))
 					.AddOrder(Order.Desc("Count"));
 
@@ -630,11 +630,26 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void OrderByFunction()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.AddOrder(Order.Desc(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("personAlias.BirthDate"))));
+
+			Person personAlias = null;
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.OrderBy(() => personAlias.BirthDate.YearPart()).Desc;
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
 		public void AllowSingleCallSyntax()
 		{
 			ICriteria expected = CreateTestCriteria(typeof(Person));
 			expected.Add(Restrictions.IsNotEmpty("Children"));
-			expected.AddOrder(Order.Asc("Name"));
+			expected.AddOrder(Order.Asc(Projections.Property("Name")));
 			expected.SetFetchMode("PersonList", FetchMode.Eager);
 			expected.SetLockMode(LockMode.UpgradeNoWait);
 

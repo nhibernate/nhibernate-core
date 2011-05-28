@@ -650,14 +650,26 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="expression">The lambda expression to convert</param>
 		/// <param name="orderDelegate">The appropriate order delegate (order direction)</param>
-		/// <param name="isAlias">Indicates if the path is an aliased projection</param>
 		/// <returns>NHibernate Order</returns>
 		public static Order ProcessOrder(	LambdaExpression expression,
-											Func<string, Order> orderDelegate,
-											bool isAlias)
+											Func<string, Order> orderDelegate)
 		{
-			string property = isAlias ? FindPropertyExpression(expression.Body) : FindMemberExpression(expression.Body);
+			string property = FindPropertyExpression(expression.Body);
 			Order order = orderDelegate(property);
+			return order;
+		}
+
+		/// <summary>
+		/// Convert a lambda expression to NHibernate Order
+		/// </summary>
+		/// <param name="expression">The lambda expression to convert</param>
+		/// <param name="orderDelegate">The appropriate order delegate (order direction)</param>
+		/// <returns>NHibernate Order</returns>
+		public static Order ProcessOrder(	LambdaExpression expression,
+											Func<IProjection, Order> orderDelegate)
+		{
+			IProjection projection = FindMemberProjection(expression.Body);
+			Order order = orderDelegate(projection);
 			return order;
 		}
 
