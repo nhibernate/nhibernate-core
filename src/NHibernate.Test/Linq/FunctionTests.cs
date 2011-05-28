@@ -139,7 +139,7 @@ namespace NHibernate.Test.Linq
             }
             finally
             {
-                session.Delete("from AnotherEntity where Id >= 100");
+                session.Delete("from AnotherEntity e where e.Id >= 100");
             }
         }
     }
