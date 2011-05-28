@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -109,6 +111,12 @@ namespace NHibernate.Test.Linq
                         select ol;
 
             Assert.AreEqual(498, query.Count());
+        }
+
+        [Test]
+        public void Coalesce()
+        {
+            Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
         }
     }
 }
