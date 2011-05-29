@@ -52,7 +52,9 @@
 		
 		<if test="${not NHibernate.dll.uptodate}">
 			<mkdir dir="${bin.dir}/merged" />
-			<copy file="${bin.dir}/unmerged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
+      
+      <!-- Merge everything that should be internal -->
+      <copy file="${bin.dir}/unmerged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<copy file="${bin.dir}/unmerged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 			
 			<exec program="../../Tools/ILMerge/ILMerge.exe">
@@ -62,14 +64,28 @@
 				<arg value="/out:${bin.dir}/merged/NHibernate.dll" />
 				<arg value="${bin.dir}/NHibernate.dll" />
 				<arg value="${bin.dir}/Antlr3.Runtime.dll" />
-				<arg value="${bin.dir}/Remotion.Linq.dll" />
 			</exec>
-			
-			<move file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
+
+      <delete file="${bin.dir}/Antlr3.Runtime.dll" />
+      
+      <!-- Merge everything that should be accessible -->
+      <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
+      <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
+
+      <exec program="../../Tools/ILMerge/ILMerge.exe">
+        <arg value="/t:library" />
+        <arg value="/keyfile:../NHibernate.snk" />
+        <arg value="/out:${bin.dir}/merged/NHibernate.dll" />
+        <arg value="${bin.dir}/NHibernate.dll" />
+        <arg value="${bin.dir}/Remotion.Linq.dll" />
+      </exec>
+
+      <delete file="${bin.dir}/Remotion.Linq.dll" />
+      
+      <!-- Put merged files in appropriate places -->
+      <move file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<move file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 			<delete dir="${bin.dir}/merged" />
-			<delete file="${bin.dir}/Antlr3.Runtime.dll" />
-			<delete file="${bin.dir}/Remotion.Linq.dll" />
 		</if>
 	</target>
 	
