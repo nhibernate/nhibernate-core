@@ -4,6 +4,8 @@
 
 	##### Possible Breaking Changes #####
 		* All Dialect.GetLimitString() methods replaced with a single GetLimitString method with a new signature.
+		  For dialects the developers don't perform routine tests on, efforts were made to ensure the new limit string
+		  method conforms to the database documentation.  Please report any limit-related bugs discovered at runtime.
 		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
 		* [NH-2593] - For Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
 		* - ICollectionPersister added property to fix [NH-2489]

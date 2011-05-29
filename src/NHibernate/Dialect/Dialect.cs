@@ -1702,28 +1702,34 @@ namespace NHibernate.Dialect
         }
 
         /// <summary>
+        /// Generates a string to limit the result set to a number of maximum results with a specified offset into the results.
         /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+        /// Performs error checking based on the various dialect limit support options.  If both parameters and fixed valeus are
+        /// specified, this will use the parameter option if possible.  Otherwise, it will fall back to a fixed string.
         /// </summary>
-        internal SqlString GetLimitString(SqlString queryString, int? offset, int? limit, int? offsetParameterIndex, int? limitParameterIndex)
+        /// <param name="queryString"></param>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="offsetParameter"></param>
+        /// <param name="limitParameter"></param>
+        /// <returns></returns>
+        public SqlString GetLimitString(SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter)
         {
-            SqlString offsetParameter =
-                SupportsVariableLimit && offsetParameterIndex.HasValue ? new SqlString(Parameter.WithIndex(offsetParameterIndex.Value)) :
-                offset.HasValue ? new SqlString(offset.ToString()) :
-                null;
+            if (offset == null && limit == null && offsetParameter == null && limitParameter == null)
+                return queryString;
 
-            SqlString limitParameter =
-                SupportsVariableLimit && limitParameterIndex.HasValue ? new SqlString(Parameter.WithIndex(limitParameterIndex.Value)) :
-                limit.HasValue ? new SqlString(limit.ToString()) :
-                null;
+            if (!SupportsLimit)
+                throw new NotSupportedException("Dialect does not support limits.");
 
-            return GetLimitString(queryString, offsetParameter, limitParameter);
-        }
+            if (!SupportsVariableLimit && offsetParameter != null && offset == null)
+                throw new NotSupportedException("Dialect does not support variable limits.");
 
-        /// <summary>
-        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
-        /// </summary>
-        internal SqlString GetLimitString(SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter)
-        {
+            if (!SupportsVariableLimit && limitParameter != null && limit == null)
+                throw new NotSupportedException("Dialect does not support variable limits.");
+
+            if (!SupportsLimitOffset && (offset != null || offsetParameter != null))
+                throw new NotSupportedException("Dialect does not support limits with offsets.");
+
             SqlString o =
                 SupportsVariableLimit && offsetParameter != null ? new SqlString(offsetParameter) :
                 offset.HasValue ? new SqlString(offset.ToString()) :
@@ -1737,7 +1743,15 @@ namespace NHibernate.Dialect
             return GetLimitString(queryString, o, l);
         }
 
-        internal int GetLimitValue(int offset, int limit)
+        /// <summary>
+        /// Some databases require that a limit statement contain the maximum row number
+        /// instead of the number of rows to retrieve.  This method adjusts source
+        /// limit and offset values to account for this.
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public int GetLimitValue(int offset, int limit)
         {
             if (limit == int.MaxValue)
                 return int.MaxValue;
@@ -1748,7 +1762,13 @@ namespace NHibernate.Dialect
             return limit;
         }
 
-        internal int GetOffsetValue(int offset)
+        /// <summary>
+        /// Some databases use limit row offsets that start at one instead of zero.
+        /// This method adjusts a desired offset using the OffsetStartsAtOne flag.
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public int GetOffsetValue(int offset)
         {
             if (OffsetStartsAtOne)
                 return offset + 1;

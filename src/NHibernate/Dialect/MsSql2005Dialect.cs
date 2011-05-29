@@ -76,6 +76,9 @@ namespace NHibernate.Dialect
 
             if (limit != null)
                 result.Add("TOP (").Add(limit).Add(") ");
+            else
+                // ORDER BY can only be used in subqueries if TOP is also specified.
+                result.Add("TOP (" + int.MaxValue + ") ");
 
             result
 				.Add(StringHelper.Join(", ", columnsOrAliases))
