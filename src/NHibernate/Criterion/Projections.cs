@@ -324,7 +324,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Avg<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Avg(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Avg(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -332,7 +332,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Avg(Expression<Func<object>> expression)
 		{
-			return Projections.Avg(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Avg(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -340,7 +340,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection Count<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Count(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Count(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -348,7 +348,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection Count(Expression<Func<object>> expression)
 		{
-			return Projections.Count(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Count(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -388,7 +388,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Max<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Max(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Max(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -396,7 +396,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Max(Expression<Func<object>> expression)
 		{
-			return Projections.Max(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Max(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -404,7 +404,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Min<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Min(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Min(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -412,7 +412,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Min(Expression<Func<object>> expression)
 		{
-			return Projections.Min(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Min(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -441,7 +441,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Sum<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Sum(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Sum(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>
@@ -449,7 +449,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Sum(Expression<Func<object>> expression)
 		{
-			return Projections.Sum(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Projections.Sum(ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		/// <summary>

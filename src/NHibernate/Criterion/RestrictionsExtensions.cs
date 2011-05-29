@@ -89,17 +89,17 @@ namespace NHibernate.Criterion
 
 		public static ICriterion ProcessIsLike(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object value = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.Like(property, value);
+			return Restrictions.Like(projection, value);
 		}
 
 		public static ICriterion ProcessIsLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Restrictions.Like(property, value, matchMode);
+			return Restrictions.Like(projection, value, matchMode);
 		}
 
 		public static ICriterion ProcessIsLikeMatchModeEscapeChar(MethodCallExpression methodCallExpression)
@@ -113,40 +113,40 @@ namespace NHibernate.Criterion
 
 		public static ICriterion ProcessIsInsensitiveLike(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object value = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.InsensitiveLike(property, value);
+			return Restrictions.InsensitiveLike(projection, value);
 		}
 
 		public static ICriterion ProcessIsInsensitiveLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Restrictions.InsensitiveLike(property, value, matchMode);
+			return Restrictions.InsensitiveLike(projection, value, matchMode);
 		}
 
 		public static ICriterion ProcessIsInArray(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object[] values = (object[])ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.In(property, values);
+			return Restrictions.In(projection, values);
 		}
 
 		public static ICriterion ProcessIsInCollection(MethodCallExpression methodCallExpression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			ICollection values = (ICollection)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.In(property, values);
+			return Restrictions.In(projection, values);
 		}
 
 		public static ICriterion ProcessIsBetween(MethodCallExpression methodCallExpression)
 		{
 			MethodCallExpression betweenFunction = (MethodCallExpression)methodCallExpression.Object;
-			string property = ExpressionProcessor.FindMemberExpression(betweenFunction.Arguments[0]);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(betweenFunction.Arguments[0]);
 			object lo = ExpressionProcessor.FindValue(betweenFunction.Arguments[1]);
 			object hi = ExpressionProcessor.FindValue(methodCallExpression.Arguments[0]);
-			return Restrictions.Between(property, lo, hi);
+			return Restrictions.Between(projection, lo, hi);
 		}
 	}
 }

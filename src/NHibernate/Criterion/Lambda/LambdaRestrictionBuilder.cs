@@ -14,13 +14,13 @@ namespace NHibernate.Criterion.Lambda
 	{
 		public class LambdaBetweenBuilder
 		{
-			private string propertyName;
+			private IProjection projection;
 			private object lo;
 			private bool isNot;
 
-			public LambdaBetweenBuilder(string propertyName, object lo, bool isNot)
+			public LambdaBetweenBuilder(IProjection projection, object lo, bool isNot)
 			{
-				this.propertyName = propertyName;
+				this.projection = projection;
 				this.lo = lo;
 				this.isNot = isNot;
 			}
@@ -28,13 +28,13 @@ namespace NHibernate.Criterion.Lambda
 			public AbstractCriterion And(object hi)
 			{
 				if (isNot)
-					return Restrictions.Not(Restrictions.Between(propertyName, lo, hi));
+					return Restrictions.Not(Restrictions.Between(projection, lo, hi));
 
-				return Restrictions.Between(propertyName, lo, hi);
+				return Restrictions.Between(projection, lo, hi);
 			}
 		}
 
-		private string propertyName;
+		private IProjection projection;
 		private bool isNot;
 
 		private AbstractCriterion Process(AbstractCriterion criterion)
@@ -48,9 +48,9 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Constructed with property name
 		/// </summary>
-		public LambdaRestrictionBuilder(string propertyName)
+		public LambdaRestrictionBuilder(IProjection projection)
 		{
-			this.propertyName = propertyName;
+			this.projection = projection;
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public LambdaBetweenBuilder IsBetween(object lo)
 		{
-			return new LambdaBetweenBuilder(propertyName, lo, isNot);
+			return new LambdaBetweenBuilder(projection, lo, isNot);
 		}
 
 		public LambdaRestrictionBuilder Not
@@ -75,7 +75,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsIn(ICollection values)
 		{
-			return Process(Restrictions.In(propertyName, values));
+			return Process(Restrictions.In(projection, values));
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsIn(object[] values)
 		{
-			return Process(Restrictions.In(propertyName, values));
+			return Process(Restrictions.In(projection, values));
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsInG<T>(ICollection<T> values)
 		{
-			return Process(Restrictions.InG(propertyName, values));
+			return Process(Restrictions.InG(projection, values));
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsInsensitiveLike(object value)
 		{
-			return Process(Restrictions.InsensitiveLike(propertyName, value));
+			return Process(Restrictions.InsensitiveLike(projection, value));
 		}
 		
 		/// <summary>
@@ -107,7 +107,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsInsensitiveLike(string value, MatchMode matchMode)
 		{
-			return Process(Restrictions.InsensitiveLike(propertyName, value, matchMode));
+			return Process(Restrictions.InsensitiveLike(projection, value, matchMode));
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsEmpty
 		{
-			get { return Process(Restrictions.IsEmpty(propertyName)); }
+			get { return Process(Restrictions.IsEmpty(ExpressionProcessor.FindProperty(projection))); }
 		}
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsNotEmpty
 		{
-			get { return Process(Restrictions.IsNotEmpty(propertyName)); }
+			get { return Process(Restrictions.IsNotEmpty(ExpressionProcessor.FindProperty(projection))); }
 		}
 
 		/// <summary>
@@ -131,7 +131,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsNull
 		{
-			get { return Process(Restrictions.IsNull(propertyName)); }
+			get { return Process(Restrictions.IsNull(projection)); }
 		}
 
 		/// <summary>
@@ -139,7 +139,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsNotNull
 		{
-			get { return Process(Restrictions.IsNotNull(propertyName)); }
+			get { return Process(Restrictions.IsNotNull(projection)); }
 		}
 
 		/// <summary>
@@ -147,7 +147,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsLike(object value)
 		{
-			return Process(Restrictions.Like(propertyName, value));
+			return Process(Restrictions.Like(projection, value));
 		}
 		
 		/// <summary>
@@ -155,7 +155,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsLike(string value, MatchMode matchMode)
 		{
-			return Process(Restrictions.Like(propertyName, value, matchMode));
+			return Process(Restrictions.Like(projection, value, matchMode));
 		}
 		
 		/// <summary>
@@ -163,7 +163,7 @@ namespace NHibernate.Criterion.Lambda
 		/// </summary>
 		public AbstractCriterion IsLike(string value, MatchMode matchMode, char? escapeChar)
 		{
-			return Process(Restrictions.Like(propertyName, value, matchMode, escapeChar));
+			return Process(Restrictions.Like(ExpressionProcessor.FindProperty(projection), value, matchMode, escapeChar));
 		}
 		
 	}

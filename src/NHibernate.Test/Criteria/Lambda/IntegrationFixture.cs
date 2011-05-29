@@ -593,6 +593,19 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			using (ISession s = OpenSession())
 			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDate.YearPart().IsIn(new [] { 2008, 2009 }))
+						.OrderBy(p => p.Name).Asc
+						.List();
+
+				persons.Count.Should().Be(2);
+				persons[0].Name.Should().Be("p1");
+				persons[1].Name.Should().Be("p2");
+			}
+
+			using (ISession s = OpenSession())
+			{
 				var yearOfBirth =
 					s.QueryOver<Person>()
 						.Where(p => p.Name == "p2")
@@ -601,6 +614,17 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				yearOfBirth.GetType().Should().Be(typeof(int));
 				yearOfBirth.Should().Be(2008);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var avgYear =
+					s.QueryOver<Person>()
+						.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
+						.SingleOrDefault<object>();
+
+				avgYear.GetType().Should().Be(typeof(double));
+				string.Format("{0:0}", avgYear).Should().Be("2008");
 			}
 
 			using (ISession s = OpenSession())

@@ -741,6 +741,18 @@ namespace NHibernate.Impl
 			_customProjectionProcessors.Add(signature, functionProcessor);
 		}
 
+		/// <summary>
+		/// Retreive the property name from a supplied PropertyProjection
+		/// Note:  throws is the supplied IProjection is not a PropertyProjection
+		/// </summary>
+		public static string FindProperty(IProjection projection)
+		{
+			if (!(projection is PropertyProjection))
+				throw new Exception("Cannot determine property for " + projection.ToString());
+
+			return ((PropertyProjection)projection).PropertyName;
+		}
+
 	}
 
 }

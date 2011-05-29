@@ -344,12 +344,12 @@ namespace NHibernate.Criterion
 
 		public QueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		public QueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		public QueryOver<TRoot,TSubType> Where(Expression<Func<TSubType, bool>> expression)
@@ -379,12 +379,12 @@ namespace NHibernate.Criterion
 
 		public QueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		public QueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
 		public QueryOver<TRoot,TSubType> Select(params Expression<Func<TRoot, object>>[] projections)
@@ -791,10 +791,10 @@ namespace NHibernate.Criterion
 		{ return AndNot(expression); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Where(Expression<Func<TSubType, bool>> expression)
 		{ return Where(expression); }
@@ -812,10 +812,10 @@ namespace NHibernate.Criterion
 		{ return WhereNot(expression); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
 		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereRestrictionOn(Expression<Func<object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberExpression(expression.Body)); }
+		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
 		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Select(params Expression<Func<TRoot, object>>[] projections)
 		{ return Select(projections); }

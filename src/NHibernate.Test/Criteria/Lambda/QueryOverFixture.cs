@@ -151,7 +151,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.Add(Restrictions.Or(
 						Restrictions.Not(Restrictions.Eq(Projections.Property("Name"), "test name")),
-						Restrictions.Not(Restrictions.Like("personAlias.Name", "%test%"))));
+						Restrictions.Not(Restrictions.Like(Projections.Property("personAlias.Name"), "%test%"))));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =

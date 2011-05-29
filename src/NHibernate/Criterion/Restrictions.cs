@@ -790,8 +790,8 @@ namespace NHibernate.Criterion
 		/// <returns>returns LambdaRestrictionBuilder</returns>
 		public static LambdaRestrictionBuilder On<T>(Expression<Func<T, object>> expression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return new LambdaRestrictionBuilder(property);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(expression.Body);
+			return new LambdaRestrictionBuilder(projection);
 		}
 
 		/// <summary>
@@ -801,8 +801,8 @@ namespace NHibernate.Criterion
 		/// <returns>returns LambdaRestrictionBuilder</returns>
 		public static LambdaRestrictionBuilder On(Expression<Func<object>> expression)
 		{
-			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return new LambdaRestrictionBuilder(property);
+			IProjection projection = ExpressionProcessor.FindMemberProjection(expression.Body);
+			return new LambdaRestrictionBuilder(projection);
 		}
 
 	}
