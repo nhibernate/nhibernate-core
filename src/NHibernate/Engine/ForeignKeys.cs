@@ -262,7 +262,8 @@ namespace NHibernate.Engine
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(
-							string.Format("object references an unsaved transient instance - save the transient instance before flushing. Type: {0}, Entity: {1}", entityName, entityString));
+							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
+
 					}
 					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity, session.EntityMode);
 				}

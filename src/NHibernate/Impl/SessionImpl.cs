@@ -1318,7 +1318,7 @@ namespace NHibernate.Impl
 				if (entry == null)
 				{
 					throw new TransientObjectException(
-						"object references an unsaved transient instance - save the transient instance before flushing: "
+						"object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave: "
 						+ obj.GetType().FullName);
 				}
 				return entry.Persister.EntityName;

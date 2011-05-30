@@ -377,7 +377,7 @@ namespace NHibernate.Engine
 						string propertyName = persister.PropertyNames[propertyIndex];
 						throw new TransientObjectException(
 							string.Format(
-								"object references an unsaved transient instance - save the transient instance before flushing: {0}.{1} -> {2}",
+								"object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave: {0}.{1} -> {2}",
 								parentEntiytName, propertyName, childEntityName));
 					}
 				}
