@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -50,7 +51,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new SemanticException( "right-hand operand of a binary operator was null" );
 			}
-
+			ProcessMetaTypeDiscriminatorIfNecessary(lhs, rhs);
 			IType lhsType = ExtractDataType( lhs );
 			IType rhsType = ExtractDataType( rhs );
 
@@ -264,6 +265,41 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			return type;
+		}
+
+		private void ProcessMetaTypeDiscriminatorIfNecessary(IASTNode lhs, IASTNode rhs)
+		{
+			// this method inserts the discriminator value for the rhs node so that .class queries on <any> mappings work with the class name
+			var lhsNode = lhs as SqlNode;
+			var rhsNode = rhs as SqlNode;
+			if (lhsNode == null || rhsNode == null)
+			{
+				return;
+			}
+			if (rhsNode.Text == null)
+			{
+				var lhsNodeMetaType = lhsNode.DataType as MetaType;
+				if (lhsNodeMetaType != null)
+				{
+					string className = SessionFactoryHelper.GetImportedClassName(rhsNode.OriginalText);
+
+					object discriminatorValue = lhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
+					rhsNode.Text = discriminatorValue.ToString();
+					return;
+				}
+			}
+			if (lhsNode.Text == null)
+			{
+				var rhsNodeMetaType = rhsNode.DataType as MetaType;
+				if (rhsNodeMetaType != null)
+				{
+					string className = SessionFactoryHelper.GetImportedClassName(lhsNode.OriginalText);
+
+					object discriminatorValue = rhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
+					lhsNode.Text = discriminatorValue.ToString();
+					return;
+				}
+			}
 		}
 	}
 }

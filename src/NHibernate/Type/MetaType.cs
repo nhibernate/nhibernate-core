@@ -117,5 +117,9 @@ namespace NHibernate.Type
 			return (string)value; //value is the entity name
 		}
 
+	    internal object GetMetaValue(string className)
+	    {
+	        return keys[className];
+	    }
 	}
 }

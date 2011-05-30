@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		}
 
 		[Test]
-		[Ignore("VisitTypeBinaryExpression generates HQL tree with string constant, but DB has a number")]
 		public void AnyIs_Linq()
 		{
 			using (ISession s = OpenSession())
@@ -72,13 +71,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 		}
 
 		[Test]
-		[Description("Is this right? - the HQL translation should turn the class-string to an int, not the user?")]
-		public void AnyIs_HqlRequiresNumberIn()
+		public void AnyIs_HqlWorksWithClassNameInTheRight()
 		{
 			using (ISession s = OpenSession())
 			{
 				var boxes =
-					s.CreateQuery("from ToyBox t where t.Shape.class = 2")
+					s.CreateQuery("from ToyBox t where t.Shape.class = Square")
+						.List<ToyBox>();
+
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
+
+		[Test]
+		public void AnyIs_HqlWorksWithClassNameInTheLeft()
+		{
+			using (ISession s = OpenSession())
+			{
+				var boxes =
+					s.CreateQuery("from ToyBox t where Square = t.Shape.class")
 						.List<ToyBox>();
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
