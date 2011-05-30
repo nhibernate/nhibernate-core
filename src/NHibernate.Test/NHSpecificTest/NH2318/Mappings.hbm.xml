@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2318">
+	<class name="A" table="a" lazy="false">
+		<id name="Id" column="id" unsaved-value="null">
+			<generator class="native" />
+		</id>
+		<property name="Name" column="aname" />
+	</class>
+</hibernate-mapping>
