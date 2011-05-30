@@ -56,8 +56,11 @@ namespace NHibernate.Param
 			object value = queryParameters.PositionalParameterValues[hqlPosition];
 
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
-			int position = sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId).Single(); // an HQL positional parameter can't appear more than once
-			type.NullSafeSet(command, value, position, session);
+			// an HQL positional parameter can appear more than once because a custom HQL-Function can duplicate it
+			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
+			{
+				type.NullSafeSet(command, value, position, session);
+			}
 		}
 
 		public override void SetEffectiveType(QueryParameters queryParameters)

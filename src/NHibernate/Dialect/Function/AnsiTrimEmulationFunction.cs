@@ -111,7 +111,7 @@ namespace NHibernate.Dialect.Function
 			// are present and "do the right thing"
 			bool leading = true; // should leading trim-characters be trimmed?
 			bool trailing = true; // should trailing trim-characters be trimmed?
-			string trimCharacter = null; // the trim-character
+			object trimCharacter = null; // the trim-character
 			object trimSource = null; // the trim-source
 
 			// potentialTrimCharacterArgIndex = 1 assumes that a
@@ -147,7 +147,7 @@ namespace NHibernate.Dialect.Function
 			}
 			else
 			{
-				trimCharacter = potentialTrimCharacter.ToString();
+				trimCharacter = potentialTrimCharacter;
 				if (StringHelper.EqualsCaseInsensitive("from", args[potentialTrimCharacterArgIndex + 1].ToString()))
 				{
 					trimSource = args[potentialTrimCharacterArgIndex + 2];
@@ -158,9 +158,7 @@ namespace NHibernate.Dialect.Function
 				}
 			}
 
-			IList argsToUse = new List<object>();
-			argsToUse.Add(trimSource);
-			argsToUse.Add(trimCharacter);
+			IList argsToUse = new List<object> {trimSource, trimCharacter};
 
 			if (trimCharacter.Equals("' '"))
 			{

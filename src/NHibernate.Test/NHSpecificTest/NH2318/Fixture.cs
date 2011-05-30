@@ -70,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         }
 
         [Test]
-        [Ignore]
         public void LinqTrimFunctionsWithParameters()
         {
             AddObjects();
@@ -94,7 +93,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         }
 
         [Test]
-        [Ignore]
         public void HqlTrimFunctionsWithParameters()
         {
             AddObjects();
