@@ -48,6 +48,11 @@ namespace NHibernate.Loader
 			get { return rhsAlias; }
 		}
 
+		public SqlString On
+		{
+			get { return on; }
+		}
+
 		private bool IsOneToOne
 		{
 			get

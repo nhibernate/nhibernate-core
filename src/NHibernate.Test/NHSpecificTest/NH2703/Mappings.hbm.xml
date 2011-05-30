@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2703"
+				   assembly="NHibernate.Test">
+
+  <class name="Parent" table="`Parent_Table`">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <list name="A" cascade="all">
+      <key column="parent_id" />
+      <index column="a_index" />
+      <one-to-many class="A" />
+    </list>
+    <list name="B" cascade="all">
+      <key column="parent_id" />
+      <index column="b_index" />
+      <one-to-many class="B" />
+    </list>
+    <list name="C" cascade="all">
+      <key column="parent_id" />
+      <index column="c_index" />
+      <one-to-many class="C" />
+    </list>
+  </class>
+
+  <class name="A" table="`A_Table`">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="PropA" type="String(15)"/>
+  </class>
+
+  <class name="B" table="`B_Table`">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="PropB" type="String(15)"/>
+  </class>
+
+  <class name="C" table="`C_Table`">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="PropC" type="String(15)"/>
+  </class>
+</hibernate-mapping>

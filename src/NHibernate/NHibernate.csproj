@@ -281,6 +281,7 @@
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
+    <Compile Include="Loader\TopologicalSorter.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
     <Compile Include="LockMode.cs" />

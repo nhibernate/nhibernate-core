@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,6 +19,7 @@ namespace NHibernate.Loader
 		private readonly ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
+		private readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -110,6 +112,14 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
+		public class DependentAlias
+		{
+			public string Alias { get; set; }
+			public string[] DependsOn { get; set; }
+		}
+
+		readonly List<DependentAlias> _dependentAliases = new List<DependentAlias>();
+
 		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			this.factory = factory;
@@ -149,7 +159,7 @@ namespace NHibernate.Loader
 			OuterJoinableAssociation assoc =
 				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
 			assoc.ValidateJoin(path);
-			associations.Add(assoc);
+			AddAssociation(subalias, assoc);
 
 			int nextDepth = currentDepth + 1;
 
@@ -165,6 +175,64 @@ namespace NHibernate.Loader
 				if (qc != null)
 					WalkCollectionTree(qc, subalias, path, nextDepth);
 			}
+		}
+
+		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
+		{
+			TopologicalSorter g = new TopologicalSorter(fields.Count);
+			Dictionary<string, int> _indexes = new Dictionary<string, int>();
+
+			// add vertices
+			for (int i = 0; i < fields.Count; i++)
+			{
+				_indexes[fields[i].Alias.ToLower()] = g.AddVertex(i);
+			}
+
+			// add edges
+			for (int i = 0; i < fields.Count; i++)
+			{
+				if (fields[i].DependsOn != null)
+				{
+					for (int j = 0; j < fields[i].DependsOn.Length; j++)
+					{
+						var dependentField = fields[i].DependsOn[j].ToLower();
+						if (_indexes.ContainsKey(dependentField))
+						{
+							g.AddEdge(i, _indexes[dependentField]);
+						}
+					}
+				}
+			}
+
+			return g.Sort();
+		}
+
+		/// <summary>
+		/// Adds an association and extracts the aliases the association's 'with clause' is dependent on
+		/// </summary>
+		private void AddAssociation(string subalias, OuterJoinableAssociation association)
+		{
+			subalias = subalias.ToLower();
+
+			var dependencies = new List<string>();
+			var on = association.On.ToString();
+			if (!String.IsNullOrEmpty(on))
+			{
+				foreach (Match match in aliasRegex.Matches(on))
+				{
+					string alias = match.Groups[1].Value;
+					if (alias == subalias) continue;
+					dependencies.Add(alias.ToLower());
+				}
+			}
+
+			_dependentAliases.Add(new DependentAlias
+			{
+				Alias = subalias,
+				DependsOn = dependencies.ToArray()
+			});
+
+			associations.Add(association);
 		}
 
 		/// <summary>
@@ -559,10 +627,18 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected JoinFragment MergeOuterJoins(IList<OuterJoinableAssociation> associations)
 		{
+			IList<OuterJoinableAssociation> sortedAssociations = new List<OuterJoinableAssociation>();
+
+			var indices = GetTopologicalSortOrder(_dependentAliases);
+			for (int index = indices.Length - 1; index >= 0; index--)
+			{
+				sortedAssociations.Add(associations[indices[index]]);
+			}
+
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
 			OuterJoinableAssociation last = null;
-			foreach (OuterJoinableAssociation oj in associations)
+			foreach (OuterJoinableAssociation oj in sortedAssociations)
 			{
 				if (last != null && last.IsManyToManyWith(oj))
 				{
