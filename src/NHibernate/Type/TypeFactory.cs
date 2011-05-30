@@ -517,11 +517,25 @@ namespace NHibernate.Type
 					}
 					else if (typeClass.IsEnum)
 					{
-						type = (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(typeClass));
+						try
+						{
+							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass));
+						}
+						catch (Exception e)
+						{
+							throw new MappingException("Can't instantiate enum "+ typeClass.FullName +"; The enum can't be empty", e);
+						}
 					}
 					else if (IsNullableEnum(typeClass))
 					{
-						type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass.GetGenericArguments()[0]));
+						try
+						{
+							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass.GetGenericArguments()[0]));
+						}
+						catch (Exception e)
+						{
+							throw new MappingException("Can't instantiate enum " + typeClass.FullName + "; The enum can't be empty", e);
+						}
 					}
 					else if (typeClass.IsSerializable)
 					{
