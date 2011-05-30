@@ -52,6 +52,16 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.Key(x => x.ForeignKey(foreingKeyName)));
 		}
 
+		public void NotNullable(bool notnull)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Key(x => x.NotNullable(notnull)));
+		}
+
+		public void Unique(bool unique)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Key(x => x.Unique(unique)));
+		}
+
 		#endregion
 	}
 }

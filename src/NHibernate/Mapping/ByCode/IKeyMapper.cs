@@ -15,6 +15,8 @@ namespace NHibernate.Mapping.ByCode
 		void OnDelete(OnDeleteAction deleteAction);
 		void PropertyRef(MemberInfo property);
 		void Update(bool consideredInUpdateQuery);
+		void NotNullable(bool notnull);
+		void Unique(bool unique);
 
 		/// <summary>
 		/// Set the Foreing-Key name
@@ -33,5 +35,7 @@ namespace NHibernate.Mapping.ByCode
 		void PropertyRef<TProperty>(Expression<Func<TEntity, TProperty>> propertyGetter);
 		void Update(bool consideredInUpdateQuery);
 		void ForeignKey(string foreingKeyName);
+		void NotNullable(bool notnull);
+		void Unique(bool unique);
 	}
 }

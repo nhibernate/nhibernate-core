@@ -55,6 +55,16 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(propertyPath, (ICollectionPropertiesMapper m) => m.Key(x => x.ForeignKey(foreingKeyName)));
 		}
 
+		public void NotNullable(bool notnull)
+		{
+			CustomizersHolder.AddCustomizer(propertyPath, (ICollectionPropertiesMapper m) => m.Key(x => x.NotNullable(notnull)));
+		}
+
+		public void Unique(bool unique)
+		{
+			// Do nothing (a collection with the key as unique... no thanks!)
+		}
+
 		#endregion
 	}
 }

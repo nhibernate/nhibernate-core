@@ -50,8 +50,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			else
 			{
 				mapping.column1 = !DefaultColumnName(ownerEntityType).Equals(hbm.name) ? hbm.name : null;
-				mapping.notnull = hbm.notnull;
-				mapping.unique = hbm.unique;
+				NotNullable(hbm.notnull);
+				Unique(hbm.unique);
 			}
 		}
 
@@ -107,6 +107,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			mapping.update = consideredInUpdateQuery;
 			mapping.updateSpecified = true;
+		}
+
+		public void NotNullable(bool notnull)
+		{
+			mapping.notnull = mapping.notnullSpecified = notnull;
+		}
+
+		public void Unique(bool unique)
+		{
+			mapping.unique = mapping.uniqueSpecified = unique;
 		}
 
 		public void ForeignKey(string foreingKeyName)
