@@ -75,5 +75,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 
 			Assert.AreEqual(1, query.List<Event>().Count);
 		}
+
+		[Test]
+		public void NH2213()
+		{
+			IQuery query = session.CreateQuery("SELECT e FROM Event e " +
+			                                   " inner join fetch e.descriptions d " +
+			                                   " WHERE (e.SendedBy in( :dev)) " +
+			                                   " AND (e.Date >= :from) " +
+			                                   " AND (e.Date <= :to)" +
+			                                   " ORDER BY d.Value");
+			var devices = new List<Device>();
+			devices.Add(device);
+			query.SetParameterList("dev", devices);
+			query.SetDateTime("from", date);
+			query.SetDateTime("to", date.AddMonths(1));
+
+			Assert.AreEqual(1, query.List<Event>().Count);
+		}
 	}
 }
