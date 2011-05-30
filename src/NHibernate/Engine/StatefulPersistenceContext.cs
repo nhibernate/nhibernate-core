@@ -81,6 +81,11 @@ namespace NHibernate.Engine
 		private Dictionary<CollectionKey, IPersistentCollection> unownedCollections;
 
 		private bool hasNonReadOnlyEntities;
+		
+		// Parent entities cache by their child for cascading
+		// May be empty or not contains all relation
+		[NonSerialized]
+		private IDictionary parentsByChild;
 
 		[NonSerialized]
 		private int cascading;
@@ -116,6 +121,7 @@ namespace NHibernate.Engine
 			collectionEntries = IdentityMap.InstantiateSequenced(InitCollectionSize);
 			collectionsByKey = new Dictionary<CollectionKey, IPersistentCollection>(InitCollectionSize);
 			arrayHolders = IdentityMap.Instantiate(InitCollectionSize);
+			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
 			nullifiableEntityKeys = new HashedSet<EntityKey>();
 			InitTransientState();
 		}
@@ -279,6 +285,7 @@ namespace NHibernate.Engine
 			{
 				loadContexts.Cleanup();
 			}
+			parentsByChild.Clear();
 		}
 
 		/// <summary>False if we know for certain that all the entities are read-only</summary>
@@ -458,6 +465,7 @@ namespace NHibernate.Engine
 			nullifiableEntityKeys.Remove(key);
 			BatchFetchQueue.RemoveBatchLoadableEntityKey(key);
 			BatchFetchQueue.RemoveSubselect(key);
+			parentsByChild.Clear();
 			return entity;
 		}
 
@@ -1084,19 +1092,163 @@ namespace NHibernate.Engine
 		/// Search the persistence context for an owner for the child object,
 		/// given a collection role
 		/// </summary>
-		public object GetOwnerId(string entity, string property, object childObject, IDictionary mergeMap)
+		public object GetOwnerId(string entityName, string propertyName, object childEntity, IDictionary mergeMap)
 		{
-			throw new NotImplementedException();
-			// TODO persistent context (BackrefPropertyAccessor)
+			string collectionRole = entityName + '.' + propertyName;
+			IEntityPersister persister = session.Factory.GetEntityPersister(entityName);
+			ICollectionPersister collectionPersister = session.Factory.GetCollectionPersister(collectionRole);
+
+			object parent = parentsByChild[childEntity];
+			if (parent != null)
+			{
+				var entityEntry = (EntityEntry) entityEntries[parent];
+				//there maybe more than one parent, filter by type
+				if (persister.IsSubclassEntityName(entityEntry.EntityName) && IsFoundInParent(propertyName, childEntity, persister, collectionPersister, parent))
+				{
+					return GetEntry(parent).Id;
+				}
+				parentsByChild.Remove(childEntity); // remove wrong entry
+			}
+
+			// iterate all the entities currently associated with the persistence context.
+			foreach (DictionaryEntry entry in entityEntries)
+			{
+				var entityEntry = (EntityEntry) entry.Value;
+				// does this entity entry pertain to the entity persister in which we are interested (owner)?
+				if (persister.IsSubclassEntityName(entityEntry.EntityName))
+				{
+					object entityEntryInstance = entry.Key;
+
+					//check if the managed object is the parent
+					bool found = IsFoundInParent(propertyName, childEntity, persister, collectionPersister, entityEntryInstance);
+
+					if (!found && mergeMap != null)
+					{
+						//check if the detached object being merged is the parent
+						object unmergedInstance = mergeMap[entityEntryInstance];
+						object unmergedChild = mergeMap[childEntity];
+						if (unmergedInstance != null && unmergedChild != null)
+						{
+							found = IsFoundInParent(propertyName, unmergedChild, persister, collectionPersister, unmergedInstance);
+						}
+					}
+
+					if (found)
+					{
+						return entityEntry.Id;
+					}
+				}
+			}
+
+			// if we get here, it is possible that we have a proxy 'in the way' of the merge map resolution...
+			// 		NOTE: decided to put this here rather than in the above loop as I was nervous about the performance
+			//		of the loop-in-loop especially considering this is far more likely the 'edge case'
+			if (mergeMap != null)
+			{
+				foreach (DictionaryEntry mergeMapEntry in mergeMap)
+				{
+					var proxy = mergeMapEntry.Key as INHibernateProxy;
+					if (proxy != null)
+					{
+						if (persister.IsSubclassEntityName(proxy.HibernateLazyInitializer.EntityName))
+						{
+							bool found = IsFoundInParent(propertyName, childEntity, persister, collectionPersister, mergeMap[proxy]);
+							if (!found)
+							{
+								found = IsFoundInParent(propertyName, mergeMap[childEntity], persister, collectionPersister, mergeMap[proxy]);
+							}
+							if (found)
+							{
+								return proxy.HibernateLazyInitializer.Identifier;
+							}
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
+		private bool IsFoundInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
+		{
+			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			return collection != null && NHibernateUtil.IsInitialized(collection) && collectionPersister.CollectionType.Contains(collection, childEntity, session);
 		}
 
 		/// <summary>
 		/// Search the persistence context for an index of the child object, given a collection role
 		/// </summary>
-		public object GetIndexInOwner(string entity, string property, object childObject, IDictionary mergeMap)
+		public object GetIndexInOwner(string entity, string property, object childEntity, IDictionary mergeMap)
 		{
-			throw new NotImplementedException();
-			// TODO persistent context (IndexPropertyAccessor)
+			IEntityPersister persister = session.Factory.GetEntityPersister(entity);
+			ICollectionPersister cp = session.Factory.GetCollectionPersister(entity + '.' + property);
+
+			// try cache lookup first
+			object parent = parentsByChild[childEntity];
+			if (parent != null)
+			{
+				var entityEntry = (EntityEntry) entityEntries[parent];
+				//there maybe more than one parent, filter by type
+				if (persister.IsSubclassEntityName(entityEntry.EntityName))
+				{
+					Object index = GetIndexInParent(property, childEntity, persister, cp, parent);
+
+					if (index == null && mergeMap != null)
+					{
+						Object unmergedInstance = mergeMap[parent];
+						Object unmergedChild = mergeMap[childEntity];
+						if (unmergedInstance != null && unmergedChild != null)
+						{
+							index = GetIndexInParent(property, unmergedChild, persister, cp, unmergedInstance);
+						}
+					}
+					if (index != null)
+					{
+						return index;
+					}
+				}
+				else
+				{
+					parentsByChild.Remove(childEntity); // remove wrong entry
+				}
+			}
+
+			//Not found in cache, proceed
+			foreach (DictionaryEntry me in entityEntries)
+			{
+				var ee = (EntityEntry) me.Value;
+				if (persister.IsSubclassEntityName(ee.EntityName))
+				{
+					object instance = me.Key;
+					object index = GetIndexInParent(property, childEntity, persister, cp, instance);
+
+					if (index == null && mergeMap != null)
+					{
+						object unmergedInstance = mergeMap[instance];
+						object unmergedChild = mergeMap[childEntity];
+						if (unmergedInstance != null && unmergedChild != null)
+						{
+							index = GetIndexInParent(property, unmergedChild, persister, cp, unmergedInstance);
+						}
+					}
+
+					if (index != null)
+					{
+						return index;
+					}
+				}
+			}
+			return null;
+		}
+
+		private object GetIndexInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
+		{
+			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			if (collection != null && NHibernateUtil.IsInitialized(collection))
+			{
+				return collectionPersister.CollectionType.IndexOf(collection, childEntity);
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -1196,9 +1348,10 @@ namespace NHibernate.Engine
 			object entity = tempObject;
 			object tempObject2 = entityEntries[entity];
 			entityEntries.Remove(entity);
-			EntityEntry oldEntry = (EntityEntry) tempObject2;
+			var oldEntry = (EntityEntry) tempObject2;
+			parentsByChild.Clear();
 
-			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
+			var newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
 			         oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
@@ -1211,6 +1364,16 @@ namespace NHibernate.Engine
 			{
 				return loadCounter == 0;
 			}
+		}
+
+		public void AddChildParent(object child, object parent)
+		{
+			parentsByChild[child] = parent;
+		}
+
+		public void RemoveChildParent(object child)
+		{
+			parentsByChild.Remove(child);
 		}
 
 		#endregion
@@ -1240,6 +1403,7 @@ namespace NHibernate.Engine
 			// collections to this session, as well as the EntityEntry and
 			// CollectionEntry instances; these associations are transient
 			// because serialization is used for different things.
+			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
 
 			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
 			foreach (DictionaryEntry collectionEntry in collectionEntries)

@@ -396,5 +396,18 @@ namespace NHibernate.Engine
 
 		/// <summary>Is in a two-phase load? </summary>
 		bool IsLoadFinished { get; }
+
+		/// <summary>
+		/// Add child/parent relation to cache for cascading operations
+		/// </summary>
+		/// <param name="child">The child.</param>
+		/// <param name="parent">The parent.</param>
+		void AddChildParent(object child, object parent);
+
+		/// <summary>
+		/// Remove child/parent relation from cache
+		/// </summary>
+		/// <param name="child">The child.</param>
+		void RemoveChildParent(object child);
 	}
 }
