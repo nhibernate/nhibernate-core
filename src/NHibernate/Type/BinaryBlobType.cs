@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class BinaryBlobType : BinaryType
 	{
-		internal BinaryBlobType(): base(new BinaryBlobSqlType()) {}
+		public BinaryBlobType(): base(new BinaryBlobSqlType()) {}
 		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType) {}
 
 		/// <summary></summary>
