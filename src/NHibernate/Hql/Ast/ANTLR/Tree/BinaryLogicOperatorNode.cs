@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using NHibernate.Engine;
 using NHibernate.Param;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -13,9 +15,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class BinaryLogicOperatorNode : HqlSqlWalkerNode, IBinaryOperatorNode
+	public class BinaryLogicOperatorNode : HqlSqlWalkerNode, IBinaryOperatorNode, IParameterContainer
 	{
-		public BinaryLogicOperatorNode(IToken token) : base(token)
+		private List<IParameterSpecification> embeddedParameters;
+
+		public BinaryLogicOperatorNode(IToken token)
+			: base(token)
 		{
 		}
 
@@ -58,13 +63,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				rhsType = lhsType;
 			}
 
-			if ( typeof(IExpectedTypeAwareNode).IsAssignableFrom( lhs.GetType() ) ) 
+			var lshExpectedTypeAwareNode = lhs as IExpectedTypeAwareNode;
+			if (lshExpectedTypeAwareNode != null)
 			{
-				( ( IExpectedTypeAwareNode ) lhs ).ExpectedType = rhsType;
+				lshExpectedTypeAwareNode.ExpectedType = rhsType;
 			}
-			if ( typeof(IExpectedTypeAwareNode).IsAssignableFrom( rhs.GetType() ) ) 
+			var rshExpectedTypeAwareNode = rhs as IExpectedTypeAwareNode;
+			if (rshExpectedTypeAwareNode != null)
 			{
-				( ( IExpectedTypeAwareNode ) rhs ).ExpectedType = lhsType;
+				rshExpectedTypeAwareNode.ExpectedType = lhsType;
 			}
 
 			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );
@@ -122,131 +129,138 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		 */
 		private void MutateRowValueConstructorSyntax(int valueElements) 
 		{
+			// Reduce the new tree in just one SqlFragment, to manage parameters
+
 			// mutation depends on the types of nodes invloved...
-			int comparisonType = Type;
-			string comparisonText = Text;
-			Type = HqlSqlWalker.AND;
-			Text = "AND";
+			string comparisonText = "==".Equals(Text) ? "=" : Text;
+			Type = HqlSqlWalker.SQL_TOKEN;
+			string[] lhsElementTexts = ExtractMutationTexts(LeftHandOperand, valueElements);
+			string[] rhsElementTexts = ExtractMutationTexts(RightHandOperand, valueElements);
 
-			String[] lhsElementTexts = ExtractMutationTexts( LeftHandOperand, valueElements );
-			String[] rhsElementTexts = ExtractMutationTexts( RightHandOperand, valueElements );
+			var lho = LeftHandOperand as ParameterNode;
+			IParameterSpecification lhsEmbeddedCompositeParameterSpecification = (lho == null) ? null : lho.HqlParameterSpecification;
 
-			IParameterSpecification lhsEmbeddedCompositeParameterSpecification =
-					LeftHandOperand == null || ( !(LeftHandOperand is ParameterNode))
-							? null
-							: ( ( ParameterNode ) LeftHandOperand ).HqlParameterSpecification;
+			var rho = RightHandOperand as ParameterNode;
+			IParameterSpecification rhsEmbeddedCompositeParameterSpecification = (rho == null) ? null : rho.HqlParameterSpecification;
 
-			IParameterSpecification rhsEmbeddedCompositeParameterSpecification =
-					RightHandOperand == null || ( !(RightHandOperand is ParameterNode))
-							? null
-							: ( ( ParameterNode ) RightHandOperand ).HqlParameterSpecification;
+			var multicolumnComparisonClause = Translate(valueElements, comparisonText, lhsElementTexts, rhsElementTexts);
 
-			IASTNode container = this;
-
-			for ( int i = valueElements - 1; i > 0; i-- ) 
+			if (lhsEmbeddedCompositeParameterSpecification != null)
 			{
-				if ( i == 1 ) 
-				{
-					container.ClearChildren();
-
-					container.AddChildren(
-						ASTFactory.CreateNode(
-							comparisonType, comparisonText,
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, lhsElementTexts[0]),
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, rhsElementTexts[0])
-							),
-						ASTFactory.CreateNode(
-							comparisonType, comparisonText,
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, lhsElementTexts[1]),
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, rhsElementTexts[1])
-							));
-
-					// "pass along" our initial embedded parameter node(s) to the first generated
-					// sql fragment so that it can be handled later for parameter binding...
-					SqlFragment fragment = ( SqlFragment ) container.GetChild(0).GetChild(0);
-					if ( lhsEmbeddedCompositeParameterSpecification != null ) {
-						fragment.AddEmbeddedParameter( lhsEmbeddedCompositeParameterSpecification );
-					}
-					if ( rhsEmbeddedCompositeParameterSpecification != null ) {
-						fragment.AddEmbeddedParameter( rhsEmbeddedCompositeParameterSpecification );
-					}
-				}
-				else
-				{
-					container.ClearChildren();
-					container.AddChildren(
-						ASTFactory.CreateNode(HqlSqlWalker.AND, "AND"),
-						ASTFactory.CreateNode(
-							comparisonType, comparisonText,
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, lhsElementTexts[i]),
-							ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, rhsElementTexts[i])
-							));
-
-					container = container.GetChild(0);
-				}
+				AddEmbeddedParameter(lhsEmbeddedCompositeParameterSpecification);
 			}
+			if (rhsEmbeddedCompositeParameterSpecification != null)
+			{
+				AddEmbeddedParameter(rhsEmbeddedCompositeParameterSpecification);
+			}
+			ClearChildren();
+			Text = multicolumnComparisonClause;
+		}
+
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
+		{
+			if(!HasEmbeddedParameters)
+			{
+				// this expression was not changed by MutateRowValueConstructorSyntax
+				return base.RenderText(sessionFactory);
+			}
+			var result = SqlString.Parse(Text);
+			// query-parameter = the parameter specified in the NHibernate query
+			// sql-parameter = real parameter/s inside the final SQL
+			// here is where we suppose the SqlString has all sql-parameters in sequence for a given query-parameter.
+			// This happen when the query-parameter spans multiple columns (components,custom-types and so on).
+			var parameters = result.GetParameters().ToArray();
+			var sqlParameterPos = 0;
+			var paramTrackers = embeddedParameters.SelectMany(specification => specification.GetIdsForBackTrack(sessionFactory));
+			foreach (var paramTracker in paramTrackers)
+			{
+				parameters[sqlParameterPos++].BackTrack = paramTracker;
+			}
+			return result;
+		}
+
+		public void AddEmbeddedParameter(IParameterSpecification specification)
+		{
+			if (embeddedParameters == null)
+			{
+				embeddedParameters = new List<IParameterSpecification>();
+			}
+			embeddedParameters.Add(specification);
+		}
+
+		public bool HasEmbeddedParameters
+		{
+			get { return embeddedParameters != null && embeddedParameters.Count != 0; }
+		}
+
+		public IParameterSpecification[] GetEmbeddedParameters()
+		{
+			return embeddedParameters.ToArray();
+		}
+
+		private string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
+		{
+			var multicolumnComparisonClauses = new List<string>();
+			for (int i = 0; i < valueElements; i++)
+			{
+				multicolumnComparisonClauses.Add(string.Format("{0} {1} {2}", lhsElementTexts[i], comparisonText, rhsElementTexts[i]));
+			}
+			return "(" + string.Join(" and ", multicolumnComparisonClauses.ToArray()) + ")";
 		}
 
 		private static string[] ExtractMutationTexts(IASTNode operand, int count) 
 		{
 			if ( operand is ParameterNode ) 
 			{
-				string[] rtn = new string[count];
-				for ( int i = 0; i < count; i++ ) 
-				{
-					rtn[i] = "?";
-				}
-				return rtn;
+				return Enumerable.Repeat("?", count).ToArray();
 			}
-			else if ( operand.Type == HqlSqlWalker.VECTOR_EXPR ) 
-			{
-				string[] rtn = new string[operand.ChildCount];
-
-				for (int x = 0; x < operand.ChildCount; x++)
-				{
-					rtn[ x++ ] = operand.GetChild(x).Text;
-					
-				}
-				return rtn;
-			}
-			else if ( operand is SqlNode ) 
+			if (operand is SqlNode)
 			{
 				string nodeText = operand.Text;
 
-				if ( nodeText.StartsWith( "(" ) ) 
+				if (nodeText.StartsWith("("))
 				{
-					nodeText = nodeText.Substring( 1 );
+					nodeText = nodeText.Substring(1);
 				}
-				if ( nodeText.EndsWith( ")" ) ) 
+				if (nodeText.EndsWith(")"))
 				{
-					nodeText = nodeText.Substring( 0, nodeText.Length - 1 );
+					nodeText = nodeText.Substring(0, nodeText.Length - 1);
 				}
 				string[] splits = nodeText.Split(new[] { ", " }, StringSplitOptions.None);
 
-				if ( count != splits.Length ) 
+				if (count != splits.Length)
 				{
-					throw new HibernateException( "SqlNode's text did not reference expected number of columns" );
+					throw new HibernateException("SqlNode's text did not reference expected number of columns");
 				}
 				return splits;
 			}
-			else
+			if (operand.Type == HqlSqlWalker.VECTOR_EXPR) 
 			{
-				throw new HibernateException( "dont know how to extract row value elements from node : " + operand );
+				var rtn = new string[operand.ChildCount];
+
+				for (int x = 0; x < operand.ChildCount; x++)
+				{
+					rtn[ x ] = operand.GetChild(x).Text;
+				}
+				return rtn;
 			}
+			throw new HibernateException( "dont know how to extract row value elements from node : " + operand );
 		}
 
 		protected static IType ExtractDataType(IASTNode operand) 
 		{
 			IType type = null;
 
-			if ( operand is SqlNode ) 
+			var sqlNode = operand as SqlNode;
+			if (sqlNode != null)
 			{
-				type = ( ( SqlNode ) operand ).DataType;
+				type = sqlNode.DataType;
 			}
 
-			if ( type == null && operand is IExpectedTypeAwareNode ) 
+			var expectedTypeAwareNode = operand as IExpectedTypeAwareNode;
+			if (type == null && expectedTypeAwareNode != null)
 			{
-				type = ( ( IExpectedTypeAwareNode ) operand ).ExpectedType;
+				type = expectedTypeAwareNode.ExpectedType;
 			}
 
 			return type;

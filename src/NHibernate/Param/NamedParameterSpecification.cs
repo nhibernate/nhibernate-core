@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Param
 {
 	/// <summary>
 	/// Parameter bind specification for an explicit named parameter.
-	/// Author: Steve Ebersole
-	/// Ported by: Steve Strong
 	/// </summary>
-	public class NamedParameterSpecification : AbstractExplicitParameterSpecification 
+	public class NamedParameterSpecification : AbstractExplicitParameterSpecification
 	{
-		private readonly string _name;
+		private const string NamedParameterIdTemplate = "<nnh{0}_span{1}>";
+
+		private readonly string name;
 
 		/// <summary>
 		/// Constructs a named parameter bind specification.
@@ -19,43 +22,70 @@ namespace NHibernate.Param
 		/// <param name="sourceLine">sourceLine</param>
 		/// <param name="sourceColumn">sourceColumn</param>
 		/// <param name="name">The named parameter name.</param>
-		public NamedParameterSpecification(int sourceLine, int sourceColumn, String name) : base ( sourceLine, sourceColumn )
+		public NamedParameterSpecification(int sourceLine, int sourceColumn, string name) : base(sourceLine, sourceColumn)
 		{
-			_name = name;
+			this.name = name;
 		}
 
 		/// <summary>
-		/// Bind the appropriate value into the given statement at the specified position.
+		/// The user parameter name.
 		/// </summary>
-		/// <param name="statement">The statement into which the value should be bound.</param>
-		/// <param name="qp">The defined values for the current query execution.</param>
-		/// <param name="session">The session against which the current execution is occuring.</param>
-		/// <param name="position">The position from which to start binding value(s).</param>
-		/// <returns>The number of sql bind positions "eaten" by this bind operation.</returns>
-		public override int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
+		public string Name
 		{
-			TypedValue typedValue = qp.NamedParameters[_name];
-			typedValue.Type.NullSafeSet(statement, typedValue.Value, position, session );
-			return typedValue.Type.GetColumnSpan( session.Factory );
+			get { return name; }
 		}
 
 		public override string RenderDisplayInfo()
 		{
 			const string format = "name={0}, expectedType={1}";
-			return ExpectedType != null ? string.Format(format, _name, ExpectedType) : string.Format(format, _name, "Unknow");
+			return ExpectedType != null ? string.Format(format, name, ExpectedType) : string.Format(format, name, "Unknow");
 		}
 
-		public override object IdForBackTrack
+		public override IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory)
 		{
-			get { return _name; }
+			int paremeterSpan = GetParemeterSpan(sessionFactory);
+			for (int i = 0; i < paremeterSpan; i++)
+			{
+				yield return string.Format(NamedParameterIdTemplate, name, i);
+			}
 		}
 
-		/// <summary>
-		/// Getter for property 'name'.
-		/// </summary>
-		public string Name
+		public override void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			get { return _name; }
+			TypedValue typedValue = queryParameters.NamedParameters[name];
+			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
+			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
+			{
+				ExpectedType.NullSafeSet(command, typedValue.Value, position, session);
+			}
+		}
+
+		public override void SetEffectiveType(QueryParameters queryParameters)
+		{
+			ExpectedType = queryParameters.NamedParameters[name].Type;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj as NamedParameterSpecification);
+		}
+
+		public bool Equals(NamedParameterSpecification other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return Equals(other.name, name);
+		}
+
+		public override int GetHashCode()
+		{
+			return name.GetHashCode() ^ 211;
 		}
 	}
 }

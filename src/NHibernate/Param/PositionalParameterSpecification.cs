@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Param
 {
 	/// <summary>
 	/// Parameter bind specification for an explicit  positional (or ordinal) parameter.
-	/// Author: Steve Ebersole
-	/// Ported by: Steve Strong
 	/// </summary>
-	public class PositionalParameterSpecification : AbstractExplicitParameterSpecification 
+	public class PositionalParameterSpecification : AbstractExplicitParameterSpecification
 	{
-		private readonly int _hqlPosition;
-		private readonly string idForBackTrack;
+		private const string PositionalParameterIdTemplate = "<pos{0}_span{1}>";
+
+		private readonly int hqlPosition;
+
 		/// <summary>
 		/// Constructs a position/ordinal parameter bind specification.
 		/// </summary>
@@ -21,35 +25,7 @@ namespace NHibernate.Param
 		/// <param name="hqlPosition">The position in the source query, relative to the other source positional parameters.</param>
 		public PositionalParameterSpecification(int sourceLine, int sourceColumn, int hqlPosition) : base(sourceLine, sourceColumn)
 		{
-			_hqlPosition = hqlPosition;
-			idForBackTrack = "nh" + hqlPosition + "nh"; //<= I don't think the user have the insane idea to use this name a named-parameter name
-		}
-
-		/// <summary>
-		/// Bind the appropriate value into the given statement at the specified position.
-		/// </summary>
-		/// <param name="statement">The statement into which the value should be bound.</param>
-		/// <param name="qp">The defined values for the current query execution.</param>
-		/// <param name="session">The session against which the current execution is occuring.</param>
-		/// <param name="position">The position from which to start binding value(s).</param>
-		/// <returns>The number of sql bind positions "eaten" by this bind operation.</returns>
-		public override int  Bind(IDbCommand statement, Engine.QueryParameters qp, Engine.ISessionImplementor session, int position)
-		{
-			IType type = qp.PositionalParameterTypes[_hqlPosition];
-			Object value = qp.PositionalParameterValues[_hqlPosition];
-
-			type.NullSafeSet(statement, value, position, session );
-			return type.GetColumnSpan( session.Factory );
-		}
-
-		public override string RenderDisplayInfo() 
-		{
-			return "ordinal=" + _hqlPosition + ", expectedType=" + ExpectedType;
-		}
-
-		public override object IdForBackTrack
-		{
-			get { return idForBackTrack; }
+			this.hqlPosition = hqlPosition;
 		}
 
 		/// <summary>
@@ -57,7 +33,59 @@ namespace NHibernate.Param
 		/// </summary>
 		public int HqlPosition
 		{
-			get { return _hqlPosition; }
+			get { return hqlPosition; }
+		}
+
+		public override string RenderDisplayInfo()
+		{
+			return "ordinal=" + hqlPosition + ", expectedType=" + ExpectedType;
+		}
+
+		public override IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory)
+		{
+			int paremeterSpan = GetParemeterSpan(sessionFactory);
+			for (int i = 0; i < paremeterSpan; i++)
+			{
+				yield return string.Format(PositionalParameterIdTemplate, hqlPosition, i);
+			}
+		}
+
+		public override void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			IType type = ExpectedType;
+			object value = queryParameters.PositionalParameterValues[hqlPosition];
+
+			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
+			int position = sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId).Single(); // an HQL positional parameter can't appear more than once
+			type.NullSafeSet(command, value, position, session);
+		}
+
+		public override void SetEffectiveType(QueryParameters queryParameters)
+		{
+			ExpectedType = queryParameters.PositionalParameterTypes[hqlPosition];
+		}
+
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj as PositionalParameterSpecification);
+		}
+
+		public bool Equals(PositionalParameterSpecification other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return other.hqlPosition == hqlPosition;
+		}
+
+		public override int GetHashCode()
+		{
+			return hqlPosition ^ 751;
 		}
 	}
 }

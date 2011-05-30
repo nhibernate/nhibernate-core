@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -11,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -109,9 +110,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						List<IParameterSpecification> whereParams = (new List<IParameterSpecification>(allParams)).GetRange(
 							parameterStart, allParams.Count - parameterStart);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, GetParametersTypes(whereParams));
+						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
+						SqlType[] parameterTypes = whereParams.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						BindParameters(whereParams, ps, parameters, session);
+						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						foreach (var parameterSpecification in whereParams)
+						{
+							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
+						}
+
 						resultCount = session.Batcher.ExecuteNonQuery(ps);
 					}
 					finally
@@ -139,8 +146,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, updates[i], GetParametersTypes(hqlParameters[i]));
-							BindParameters(hqlParameters[i], ps, parameters, session);
+							var sqlQueryParametersList = updates[i].GetParameters().ToList();
+							var paramsSpec = hqlParameters[i];
+							SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
+
+							ps = session.Batcher.PrepareCommand(CommandType.Text, updates[i], parameterTypes);
+							foreach (var parameterSpecification in paramsSpec)
+							{
+								parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
+							}
+
 							session.Batcher.ExecuteNonQuery(ps);
 						}
 						finally
@@ -162,34 +177,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			finally
 			{
 				DropTemporaryTableIfNecessary(persister, session);
-			}
-		}
-
-		private SqlType[] GetParametersTypes(IEnumerable<IParameterSpecification> specifications)
-		{
-			if (specifications == null)
-			{
-				return new SqlType[0];
-			}
-			var result = new List<SqlType>();
-			foreach (var specification in specifications)
-			{
-				result.AddRange(specification.ExpectedType.SqlTypes(Factory));
-			}
-			return result.ToArray();
-		}
-
-		private static void BindParameters(IEnumerable<IParameterSpecification> specifications, IDbCommand command,
-		                                   QueryParameters parameters, ISessionImplementor session)
-		{
-			if (specifications == null)
-			{
-				return;
-			}
-			int position = 0; // ADO params are 0-based
-			foreach (var specification in specifications)
-			{
-				position += specification.Bind(command, parameters, session, position);
 			}
 		}
 

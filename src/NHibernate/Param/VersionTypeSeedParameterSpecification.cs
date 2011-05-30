@@ -1,12 +1,16 @@
-using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Param
 {
 	public class VersionTypeSeedParameterSpecification : IParameterSpecification
 	{
+		private const string IdBackTrack = "<nhv_seed_nh>";
+		private readonly string[] idForBackTracks = new[] {IdBackTrack};
 		private readonly IVersionType type;
 
 		public VersionTypeSeedParameterSpecification(IVersionType type)
@@ -14,10 +18,12 @@ namespace NHibernate.Param
 			this.type = type;
 		}
 
-		public int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
+		#region IParameterSpecification Members
+
+		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			type.NullSafeSet(statement, type.Seed(session), position, session);
-			return 1;
+			int position = sqlQueryParametersList.GetEffectiveParameterLocations(IdBackTrack).Single(); // version parameter can't appear more than once
+			type.NullSafeSet(command, type.Seed(session), position, session);
 		}
 
 		public IType ExpectedType
@@ -34,9 +40,11 @@ namespace NHibernate.Param
 			return "version-seed, type=" + type;
 		}
 
-		public object IdForBackTrack
+		public IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory)
 		{
-			get { return "nhv_seed_nh"; }
+			return idForBackTracks;
 		}
+
+		#endregion
 	}
 }

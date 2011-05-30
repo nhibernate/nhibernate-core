@@ -324,7 +324,7 @@ namespace NHibernate.Engine
 			{
 				if (part is Parameter)
 				{
-					result.AddParameter();
+					result.Add(((Parameter)part).Clone());
 
 					// (?) can be a position parameter or a named parameter (already substituted by (?),
 					// but only the positional parameters are available at this point. Adding them in the
@@ -487,7 +487,7 @@ namespace NHibernate.Engine
 
 					int span = typedval.Type.GetColumnSpan(factory);
 					string name = namedParameter.Key;
-					int[] locs = GetEffectiveNamedParameterLocations(sqlParameters, name) ?? getNamedParameterLocations(name);
+					int[] locs = getNamedParameterLocations(name);
 					for (int i = 0; i < locs.Length; i++)
 					{
 						int location = locs[i];
@@ -567,23 +567,6 @@ namespace NHibernate.Engine
 			return ConvertITypesToSqlTypes(paramTypeList, factory, totalSpan);
 		}
 
-		private int[] GetEffectiveNamedParameterLocations(IList<Parameter> sqlParameters, object backTrackId)
-		{
-			var locations = new List<int>(5);
-			for (int i = 0; i < sqlParameters.Count; i++)
-			{
-				if (backTrackId.Equals(sqlParameters[i].BackTrack))
-				{
-					locations.Add(i);
-				}
-			}
-			if(locations.Count == 0)
-			{
-				return null;
-			}
-			return locations.ToArray();
-		}
-
 		public int BindParameters(IDbCommand command, int start, ISessionImplementor session)
 		{
 			int location = start;
@@ -651,6 +634,12 @@ namespace NHibernate.Engine
 			return span;
 		}
 
+		internal SqlString ProcessedSql
+		{
+			get { return processedSQL; }
+			set { processedSQL = value; }
+		}
+
 		public SqlString FilteredSQL
 		{
 			get { return processedSQL; }
@@ -659,16 +648,19 @@ namespace NHibernate.Engine
 		public IList<IType> FilteredParameterTypes
 		{
 			get { return filteredParameterTypes; }
+			internal set { filteredParameterTypes = value; }
 		}
 
 		public IList<object> FilteredParameterValues
 		{
 			get { return filteredParameterValues; }
+			internal set { filteredParameterValues = value; }
 		}
 
 		public IList<int> FilteredParameterLocations
 		{
 			get { return filteredParameterLocations; }
+			internal set { filteredParameterLocations = value; }
 		}
 
 		public bool NaturalKeyLookup { get; set; }

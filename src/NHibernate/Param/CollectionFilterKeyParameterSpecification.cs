@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	class CollectionFilterKeyParameterSpecification : IParameterSpecification
+	public class CollectionFilterKeyParameterSpecification : IParameterSpecification
 	{
-		private readonly string _collectionRole;
-		private readonly IType _keyType;
-		private readonly int _queryParameterPosition;
-		private readonly string idForBackTrack;
+		private const string CollectionFilterParameterIdTemplate = "<collfilter{0}{1}_{2}>";
+
+		private readonly string collectionRole;
+		private readonly IType keyType;
+		private readonly int queryParameterPosition;
 
 		/// <summary>
 		/// Creates a specialized collection-filter collection-key parameter spec.
@@ -20,37 +24,66 @@ namespace NHibernate.Param
 		/// <param name="queryParameterPosition">The position within QueryParameters where we can find the appropriate param value to bind.</param>
 		public CollectionFilterKeyParameterSpecification(string collectionRole, IType keyType, int queryParameterPosition)
 		{
-			_collectionRole = collectionRole;
-			_keyType = keyType;
-			_queryParameterPosition = queryParameterPosition;
-			idForBackTrack = "nhcollkey_" + _collectionRole + "nh";
+			this.collectionRole = collectionRole;
+			this.keyType = keyType;
+			this.queryParameterPosition = queryParameterPosition;
 		}
 
-		public int Bind(
-			IDbCommand statement,
-			QueryParameters qp,
-			ISessionImplementor session,
-			int position)
-		{
-			object value = qp.PositionalParameterValues[_queryParameterPosition];
-			_keyType.NullSafeSet(statement, value, position, session);
-			return _keyType.GetColumnSpan(session.Factory);
-		}
+		#region IParameterSpecification Members
 
 		public IType ExpectedType
 		{
-			get { return _keyType; }
+			get { return keyType; }
 			set { throw new InvalidOperationException(); }
 		}
 
 		public string RenderDisplayInfo()
 		{
-			return "collection-filter-key=" + _collectionRole;
+			return "collection-filter-key=" + collectionRole;
 		}
 
-		public object IdForBackTrack
+		public IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory)
 		{
-			get { return idForBackTrack; }
+			int paremeterSpan = keyType.GetColumnSpan(sessionFactory);
+			for (int i = 0; i < paremeterSpan; i++)
+			{
+				yield return string.Format(CollectionFilterParameterIdTemplate, collectionRole, queryParameterPosition, i);
+			}
+		}
+
+		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			IType type = keyType;
+			object value = queryParameters.PositionalParameterValues[queryParameterPosition];
+
+			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
+			int position = sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId).Single(); // an HQL positional parameter can't appear more than once
+			type.NullSafeSet(command, value, position, session);
+		}
+
+		#endregion
+
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj as CollectionFilterKeyParameterSpecification);
+		}
+
+		public bool Equals(CollectionFilterKeyParameterSpecification other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return other.queryParameterPosition == queryParameterPosition;
+		}
+
+		public override int GetHashCode()
+		{
+			return queryParameterPosition ^ 877;
 		}
 	}
 }

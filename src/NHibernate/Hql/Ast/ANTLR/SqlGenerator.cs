@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Dialect.Function;
@@ -92,11 +93,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			writer.Clause(s);
 		}
 
-		private void ParameterOut()
-		{
-			writer.Parameter();
-		}
-
 		/// <summary>
 		/// Add a aspace if the previous token was not a space or a parenthesis.
 		/// </summary>
@@ -129,11 +125,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Out(IASTNode n)
 		{
-			var parameterNode= n as ParameterNode;
+			var parameterNode = n as ParameterNode;
 			if (parameterNode != null)
 			{
 				var parameter = Parameter.Placeholder;
-				parameter.BackTrack = parameterNode.HqlParameterSpecification.IdForBackTrack;
+				// supposed to be simplevalue
+				parameter.BackTrack = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Single();
 				writer.PushParameter(parameter);
 			}
 			else if (n is SqlNode)
@@ -151,13 +148,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else if (n is IParameterContainer)
 			{
-				if (((IParameterContainer) n).HasEmbeddedParameters)
+				var parameterContainer = (IParameterContainer) n;
+				if (parameterContainer.HasEmbeddedParameters)
 				{
-					IParameterSpecification[] specifications = ((IParameterContainer) n).GetEmbeddedParameters();
-					if (specifications != null)
-					{
-						collectedParameters.AddRange(specifications);
-					}
+					IParameterSpecification[] specifications = parameterContainer.GetEmbeddedParameters();
+					collectedParameters.AddRange(specifications);
 				}
 			}
 		}
@@ -340,8 +335,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			
 			var dialect = sessionFactory.Dialect;
-			
-            // FIXME - We need to adjust the parameters from the user according to dialect settings like UseMaxForLimit, OffsetStartsAtOne.  This will need to happen every time we query.            
 
 			// Skip-Take in HQL should be supported just for Dialect supporting variable limits at least when users use parameters for skip-take.
 			if (!dialect.SupportsVariableLimit && (skipIsParameter || takeIsParameter))
@@ -349,26 +342,28 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new NotSupportedException("The dialect " + dialect.GetType().FullName + " does not supports variable limits");
 			}
 
-			// If a limit is a parameter, it should be of type IExplicitValueParameterSpecification.
 			Parameter skipParameter = null;
 			Parameter takeParameter = null;
 			if(queryWriter.SkipParameter != null)
 			{
+				queryWriter.SkipParameter.ExpectedType = NHibernateUtil.Int32;
 				skipParameter = Parameter.Placeholder;
-				skipParameter.BackTrack = queryWriter.SkipParameter.IdForBackTrack;
+				skipParameter.BackTrack = queryWriter.SkipParameter.GetIdsForBackTrack(sessionFactory).First();
 			}
 			if (queryWriter.TakeParameter != null)
 			{
+				queryWriter.TakeParameter.ExpectedType = NHibernateUtil.Int32;
 				takeParameter = Parameter.Placeholder;
-				takeParameter.BackTrack = queryWriter.TakeParameter.IdForBackTrack;
+				takeParameter.BackTrack = queryWriter.TakeParameter.GetIdsForBackTrack(sessionFactory).First();
 			}
 
-            // We allow the user to specify either constants or parameters for their limits.
-            return dialect.GetLimitString(sqlString,
-                queryWriter.Skip.HasValue ? (int?)dialect.GetOffsetValue(queryWriter.Skip.Value) : null,
-                queryWriter.Take.HasValue ? (int?)dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value) : null,
-                skipParameter,
-                takeParameter);
+			// We allow the user to specify either constants or parameters for their limits.
+			// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
+			return dialect.GetLimitString(sqlString,
+			                              queryWriter.Skip.HasValue ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value) : null,
+			                              queryWriter.Take.HasValue ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value) : null,
+			                              skipParameter,
+			                              takeParameter);
 		}
 
 		private void Skip(IASTNode node)

@@ -1,16 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -83,19 +82,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					try
 					{
 						var paramsSpec = Walker.Parameters;
-						var parameterTypes = new List<SqlType>(paramsSpec.Count);
+						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
+						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
+
+						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
 						foreach (var parameterSpecification in paramsSpec)
 						{
-							parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
+							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes.ToArray());
-						// NH Different behavior: The inital value is 0 (initialized to 1 in JAVA)
-						int pos = 0;
-						foreach (var specification in paramsSpec)
-						{
-							pos += specification.Bind(ps, parameters, session, pos);
-						}
 						resultCount = session.Batcher.ExecuteNonQuery(ps);
 					}
 					finally

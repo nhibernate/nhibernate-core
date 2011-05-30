@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2736">
+
+	<class name="SalesOrder">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Number" />
+		<bag name="Items" inverse="true" cascade="all-delete-orphan">
+			<key column="SalesOrder" />
+			<one-to-many class="Item"/>
+		</bag>
+	</class>
+
+	<class name="Item">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Quantity" />
+		<many-to-one name="SalesOrder" class="SalesOrder" />
+	</class>
+
+</hibernate-mapping>

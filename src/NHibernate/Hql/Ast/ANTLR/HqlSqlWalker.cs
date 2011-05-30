@@ -907,6 +907,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (_namedParameters.Count > 0)
 			{
+				// NH TODO: remove this limitation
 				throw new SemanticException("cannot define positional parameter after any named parameters have been defined");
 			}
 			ParameterNode parameter = (ParameterNode)adaptor.Create(PARAM, "?");
@@ -1081,7 +1082,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				sql.whereExpr();
 
-				fromElement.SetWithClauseFragment(visitor.GetJoinAlias(), "(" + sql.GetSQL() + ")");
+				var withClauseFragment = new SqlString("(", sql.GetSQL(), ")");
+				fromElement.SetWithClauseFragment(visitor.GetJoinAlias(), withClauseFragment);
 			}
 			catch (SemanticException)
 			{

@@ -18,7 +18,16 @@ namespace NHibernate.SqlCommand
 		/// This is the ADO parameter position that this SqlString parameter is
 		/// bound to.  The SqlString can be safely rearranged once this is set.
 		/// </summary>
-		public int? ParameterPosition; // NH TODO: remove this that is basically used by Criteria and use the more generic BackTrack
+		private int? parameterPosition;
+
+		/// <summary>
+		/// Used to determine the parameter's name (p0,p1 etc.)
+		/// </summary>
+		public int? ParameterPosition
+		{
+			get { return parameterPosition; }
+			set { parameterPosition = value; }
+		}
 
 		/// <summary>
 		/// Unique identifier of a parameter to be tracked back by its generator.
@@ -49,6 +58,7 @@ namespace NHibernate.SqlCommand
 
 		public Parameter Clone()
 		{
+			// Note: don't clone parameterPosition
 			return new Parameter {BackTrack = BackTrack};
 		}
 

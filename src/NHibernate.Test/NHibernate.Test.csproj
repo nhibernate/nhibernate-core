@@ -39,7 +39,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
+    <DefineConstants>NET,NET_2_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -859,6 +859,8 @@
     <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2733\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2733\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2736\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2736\Fixture.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -2701,6 +2703,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2736\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2721\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2733\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2317\Mappings.hbm.xml" />

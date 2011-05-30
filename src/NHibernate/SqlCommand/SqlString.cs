@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using NHibernate.Util;
 
@@ -101,50 +102,57 @@ namespace NHibernate.SqlCommand
 		/// Combines all SqlParts that are strings and next to each other into
 		/// one SqlPart.
 		/// </remarks>
-		private SqlString Compact()
+		public SqlString Compact()
 		{
 			if (isCompacted)
 			{
 				return this;
 			}
 
-			StringBuilder builder = new StringBuilder();
-			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
+			var builder = new StringBuilder(200);
+			var sqlBuilder = new SqlStringBuilder();
 
-			foreach (object part in sqlParts)
-			{
-				SqlString sqlStringPart = part as SqlString;
-				string stringPart = part as string;
-				if (sqlStringPart != null)
-				{
-					sqlBuilder.Add(sqlStringPart.Compact());
-				}
-				else if (stringPart != null)
-				{
-					builder.Append(stringPart);
-				}
-				else
-				{
-					// don't add an empty string into the new compacted SqlString
-					if (builder.Length > 0)
-					{
-						sqlBuilder.Add(builder.ToString());
-					}
-
-					builder.Length = 0;
-					sqlBuilder.Add((Parameter)part);
-				}
-			}
-
-			// make sure the contents of the builder have been added to the sqlBuilder
-			if (builder.Length > 0)
-			{
-				sqlBuilder.Add(builder.ToString());
-			}
+			Compact(sqlBuilder, sqlParts, builder);
 
 			SqlString result = sqlBuilder.ToSqlString();
 			result.isCompacted = true;
 			return result;
+		}
+
+		private void Compact(SqlStringBuilder destination, IEnumerable<object> parts, StringBuilder pendingString)
+		{
+			foreach (object part in parts)
+			{
+				var stringPart = part as string;
+				if (stringPart != null)
+				{
+					pendingString.Append(stringPart);
+					continue;
+				}
+
+				var sqlStringPart = part as SqlString;
+				if (sqlStringPart != null)
+				{
+					Compact(destination, sqlStringPart.sqlParts, pendingString);
+					continue;
+				}
+
+				AppendPendigStringAndResetUsedString(destination, pendingString);
+				destination.Add((Parameter) part);
+			}
+
+			// make sure the contents of the builder have been added to the sqlBuilder
+			AppendPendigStringAndResetUsedString(destination, pendingString);
+		}
+
+		private void AppendPendigStringAndResetUsedString(SqlStringBuilder destination, StringBuilder pendingString)
+		{
+			// don't add an empty string into the new compacted SqlString
+			if (pendingString.Length > 0)
+			{
+				destination.Add(pendingString.ToString());
+			}
+			pendingString.Length = 0; // <= reset the string builder
 		}
 
 		/// <summary>
@@ -675,16 +683,7 @@ namespace NHibernate.SqlCommand
 
 		public int GetParameterCount()
 		{
-			int count = 0;
-			foreach (object part in sqlParts)
-			{
-				if (part is Parameter)
-				{
-					count++;
-				}
-			}
-
-			return count;
+			return GetParameters().Count();
 		}
 
 		public void Visit(ISqlStringVisitor visitor)
@@ -768,6 +767,34 @@ namespace NHibernate.SqlCommand
 		public ICollection Parts
 		{
 			get { return sqlParts; }
+		}
+
+		public IEnumerable<Parameter> GetParameters()
+		{
+			return GetSqlParameters(this);
+		}
+
+		private IEnumerable<Parameter> GetSqlParameters(SqlString sqlString)
+		{
+			var parts = sqlString.Parts;
+			foreach (object part in parts)
+			{
+				var parameterPart = part as Parameter;
+				if (parameterPart != null)
+				{
+					yield return parameterPart;
+					continue;
+				}
+
+				var sqlStringPart = part as SqlString;
+				if (sqlStringPart != null)
+				{
+					foreach (var sqlParameter in GetSqlParameters(sqlStringPart))
+					{
+						yield return sqlParameter;
+					}
+				}
+			}
 		}
 
 		public SqlString GetSubselectString()

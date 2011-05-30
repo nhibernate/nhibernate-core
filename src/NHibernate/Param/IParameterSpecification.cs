@@ -1,26 +1,24 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Param
 {
 	/// <summary>
-	/// Maintains information relating to parameters which need to get bound into a
-	/// JDBC {@link PreparedStatement}.
-	/// Author: Steve Ebersole
-	/// Ported by: Steve Strong
+	/// Maintains information relating to parameters which need to get bound into a <see cref="IDbCommand"/>.
 	/// </summary>
 	public interface IParameterSpecification
 	{
 		/// <summary>
-		/// Bind the appropriate value into the given statement at the specified position.
+		/// Bind the appropriate value into the given command.
 		/// </summary>
-		/// <param name="statement">The statement into which the value should be bound.</param>
-		/// <param name="qp">The defined values for the current query execution.</param>
+		/// <param name="command">The command into which the value should be bound.</param>
+		/// <param name="sqlQueryParametersList">The list of Sql query parameter in the exact sequence they are present in the query.</param>
+		/// <param name="queryParameters">The defined values for the current query execution.</param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
-		/// <param name="position">The position from which to start binding value(s).</param>
-		/// <returns>The number of sql bind positions "eaten" by this bind operation.</returns>
-		int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position);
+		void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
 
 		/// <summary>
 		/// Get or set the type which we are expeting for a bind into this parameter based
@@ -35,11 +33,15 @@ namespace NHibernate.Param
 		string RenderDisplayInfo();
 
 		/// <summary>
-		/// An object to unique identify this parameter inside an <see cref="NHibernate.SqlCommand.SqlString"/>.
+		/// An string array to unique identify this parameter-span inside an <see cref="NHibernate.SqlCommand.SqlString"/>.
 		/// </summary>
+		/// <param name="sessionFactory">The session-factory (used only because required by IType).</param>
 		/// <remarks>
-		/// The <see cref="IdForBackTrack"/> is supposed to be unique in the context of a query.
+		/// The each id-for-backtrack is supposed to be unique in the context of a query.
+		/// <para>
+		/// The number of elements returned depend on the column-span of the <see cref="ExpectedType"/>.
+		/// </para>
 		/// </remarks>
-		object IdForBackTrack { get; }
+		IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory);
 	}
 }

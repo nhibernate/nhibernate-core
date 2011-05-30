@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 
@@ -9,9 +10,9 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -59,24 +60,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
-					var parameterTypes = new List<SqlType>(Parameters.Count);
+
+					var sqlQueryParametersList = sql.GetParameters().ToList();
+					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
+
+					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
 					foreach (var parameterSpecification in Parameters)
 					{
-						if (parameterSpecification.ExpectedType == null)
-						{
-							throw new QuerySyntaxException("Can't determine SqlType of parameter " + parameterSpecification.RenderDisplayInfo()+"\n Possible cause: wrong case-sensitive property-name.");
-						}
-						parameterTypes.AddRange(parameterSpecification.ExpectedType.SqlTypes(Factory));
+						parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session);
 					}
-					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes.ToArray());
-					IEnumerator<IParameterSpecification> paramSpecifications = Parameters.GetEnumerator();
-					// NH Different behavior: The inital value is 0 (initialized to 1 in JAVA)
-					int pos = 0;
-					while (paramSpecifications.MoveNext())
-					{
-						var paramSpec = paramSpecifications.Current;
-						pos += paramSpec.Bind(st, parameters, session, pos);
-					}
+
 					if (selection != null)
 					{
 						if (selection.Timeout != RowSelection.NoValue)

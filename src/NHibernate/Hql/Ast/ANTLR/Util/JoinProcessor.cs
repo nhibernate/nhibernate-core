@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using NHibernate.Engine;
@@ -129,11 +130,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					log.Debug( "Using FROM fragment [" + fromFragment + "]" );
 				}
 
-				ProcessDynamicFilterParameters(
-						fromFragment,
-						fromElement,
-						_walker
-				);
+				ProcessDynamicFilterParameters(fromFragment,fromElement,_walker);
 			}
 
 			_syntheticAndFactory.AddWhereFragment( 
@@ -167,43 +164,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				return;
 			}
 
-			Dialect.Dialect dialect = walker.SessionFactoryHelper.Factory.Dialect;
-
-			string symbols = new StringBuilder().Append( ParserHelper.HqlSeparators )
-					.Append( dialect.OpenQuote)
-					.Append( dialect.CloseQuote)
-					.ToString();
-
-			StringTokenizer tokens = new StringTokenizer( sqlFragment.ToString(), symbols, true );
-			StringBuilder result = new StringBuilder();
-
-			foreach (string token in tokens)
-			{
-				if ( token.StartsWith( ParserHelper.HqlVariablePrefix ) ) 
-				{
-					string filterParameterName = token.Substring( 1 );
-					string[] parts = StringHelper.ParseFilterParameterName( filterParameterName );
-					FilterImpl filter = ( FilterImpl ) walker.EnabledFilters[parts[0]];
-					Object value = filter.GetParameter( parts[1] );
-					IType type = filter.FilterDefinition.GetParameterType( parts[1] );
-					String typeBindFragment = StringHelper.Join(
-							",",
-							ArrayHelper.FillArray( "?", type.GetColumnSpan( walker.SessionFactoryHelper.Factory ) )
-					);
-					string bindFragment = ( value != null && value is ICollection)
-							? StringHelper.Join( ",", ArrayHelper.FillArray( typeBindFragment, ( ( ICollection ) value ).Count ) )
-							: typeBindFragment;
-					//result.Append( bindFragment );
-					result.Append(token);
-					container.AddEmbeddedParameter( new DynamicFilterParameterSpecification( parts[0], parts[1], type ) );
-				}
-				else 
-				{
-					result.Append( token );
-				}
-			}
-
-			container.Text = result.ToString();
+			container.Text = sqlFragment.ToString(); // dynamic-filters are processed altogether by Loader
 		}
 
 		private static bool HasDynamicFilterParam(SqlString sqlFragment)

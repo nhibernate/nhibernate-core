@@ -139,7 +139,7 @@ namespace NHibernate.Engine
 		public JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
 			bool includeExtraJoins,
-			string withClauseFragment,
+			SqlString withClauseFragment,
 			string withClauseJoinAlias)
 		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
@@ -164,7 +164,7 @@ namespace NHibernate.Engine
 			{
 				Join join = joins[i];
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				string condition;
+				SqlString condition = new SqlString();
 				if (last != null &&
 						IsManyToManyRoot(last) &&
 						((IQueryableCollection)last).ElementType == join.AssociationType)
@@ -174,36 +174,38 @@ namespace NHibernate.Engine
 					// defined specifically on the many-to-many
 					string manyToManyFilter = ((IQueryableCollection)last)
 						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
-					condition = "".Equals(manyToManyFilter)
+					condition = new SqlString("".Equals(manyToManyFilter)
 												? on
 												: "".Equals(on)
 														? manyToManyFilter
-														: on + " and " + manyToManyFilter;
+														: on + " and " + manyToManyFilter);
 				}
 				else
 				{
 					// NH Different behavior : NH1179 and NH1293
 					// Apply filters in Many-To-One association
 					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
+					condition = new SqlString(string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
 					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
-					            	: on;
+					            	: on);
 				}
 
 				if (withClauseFragment != null)
 				{
 					if (join.Alias.Equals(withClauseJoinAlias))
 					{
-						condition += " and " + withClauseFragment;
+						condition = condition.Append(" and ").Append(withClauseFragment);
 					}
 				}
+
+				// NH: the variable "condition" have to be a SqlString because it may contains Parameter instances with BackTrack
 				joinFragment.AddJoin(
 					join.Joinable.TableName,
 					join.Alias,
 					join.LHSColumns,
 					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
 					join.JoinType,
-					new SqlString(condition)
+					condition
 					);
 				if (includeExtraJoins)
 				{

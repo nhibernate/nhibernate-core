@@ -91,6 +91,14 @@ namespace NHibernate.Test.SqlCommandTest
 		}
 
 		[Test]
+		public void StartsWithWhenContainsParameters()
+		{
+			SqlString sql = new SqlString(" and ", "(", new SqlString("blah = ", Parameter.Placeholder), ")");
+			Assert.IsTrue(sql.StartsWithCaseInsensitive(" and"));
+			Assert.IsFalse(sql.StartsWithCaseInsensitive("blah"));
+		}
+
+		[Test]
 		public void StartsWithEmptyString()
 		{
 			SqlString sql = new SqlString(new string[] {"", "select", " from table"});

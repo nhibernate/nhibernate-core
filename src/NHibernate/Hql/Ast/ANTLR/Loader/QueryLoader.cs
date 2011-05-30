@@ -1,21 +1,24 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Hql.Classic;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Loader
 {
@@ -23,7 +26,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 	public class QueryLoader : BasicLoader
 	{
 		private readonly QueryTranslatorImpl _queryTranslator;
-		private SelectClause _selectClause;
 
 		private bool _hasScalars;
 		private string[][] _scalarColumnNames;
@@ -49,7 +51,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			: base(factory)
 		{
 			_queryTranslator = queryTranslator;
-			_selectClause = selectClause;
 
 			Initialize(selectClause);
 			PostInstantiate();
@@ -433,6 +434,242 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWath.Elapsed);
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
+		/// named parameters, and limit parameters.
+		/// </summary>
+		/// <remarks>
+		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
+		/// database to Load an Entity.
+		/// </remarks>
+		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
+		/// <param name="scroll">TODO: find out where this is used...</param>
+		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
+		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
+		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
+		{
+			// NH: In this QueryLoader we can know better all parameters used so we can simplify the IDbCommand construction
+			// NH: would be very useful if we can do the same with Criteria. This method works just for HQL and LINQ.
+
+			// A distinct-copy of parameter specifications collected during query construction
+			var parameterSpecs = new HashSet<IParameterSpecification>(_queryTranslator.CollectedParameterSpecifications);
+			SqlString sqlString = SqlString.Copy();
+
+			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+
+			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+
+			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
+			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
+
+			// After the last modification to the SqlString we can collect all parameters types.
+			ResetEffectiveExpectedType(parameterSpecs, queryParameters); // <= TODO: remove this method when we can infer the type during the parse
+			var sqlQueryParametersList = sqlString.GetParameters().ToList();
+			SqlType[] parameterTypes = parameterSpecs.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
+			
+			parameterSpecs.SetQueryParameterLocations(sqlQueryParametersList, session.Factory);
+
+			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, parameterTypes);
+
+			try
+			{
+				RowSelection selection = queryParameters.RowSelection;
+				if (selection != null && selection.Timeout != RowSelection.NoValue)
+				{
+					command.CommandTimeout = selection.Timeout;
+				}
+
+				BindParametersValues(command, sqlQueryParametersList, parameterSpecs, queryParameters, session);
+
+				session.Batcher.ExpandQueryParameters(command, sqlString);
+			}
+			catch (HibernateException)
+			{
+				session.Batcher.CloseCommand(command, null);
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				session.Batcher.CloseCommand(command, null);
+				ADOExceptionReporter.LogExceptions(sqle);
+				throw;
+			}
+			return command;
+		}
+
+		private void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, ISessionImplementor session, QueryParameters queryParameters)
+		{
+			// TODO: Remove this when all parameters are managed using IParameterSpecification (QueryParameters does not need to have decomposed values for filters)
+
+			var dynamicFilterParameterSpecifications = parameterSpecs.OfType<DynamicFilterParameterSpecification>().ToList();
+			var filteredParameterValues = new List<object>();
+			var filteredParameterTypes = new List<IType>();
+			var filteredParameterLocations = new List<int>();
+
+			if (dynamicFilterParameterSpecifications.Count != 0)
+			{
+				var sqlQueryParametersList = sqlString.GetParameters().ToList();
+				foreach (DynamicFilterParameterSpecification specification in dynamicFilterParameterSpecifications)
+				{
+					string backTrackId = specification.GetIdsForBackTrack(session.Factory).First();
+					object value = session.GetFilterParameterValue(specification.FilterParameterFullName);
+					var elementType = specification.ExpectedType;
+					foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
+					{
+						filteredParameterValues.Add(value);
+						filteredParameterTypes.Add(elementType);
+						filteredParameterLocations.Add(position);
+					}
+				}
+			}
+
+			queryParameters.ProcessedSql = sqlString;
+			queryParameters.FilteredParameterLocations = filteredParameterLocations;
+			queryParameters.FilteredParameterTypes = filteredParameterTypes;
+			queryParameters.FilteredParameterValues = filteredParameterValues;
+		}
+
+		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
+		{
+			var enabledFilters = session.EnabledFilters;
+			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			{
+				return sqlString;
+			}
+
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+
+			var originSql = sqlString.Compact();
+			var result = new SqlStringBuilder();
+			foreach (var sqlPart in originSql.Parts)
+			{
+				var parameter = sqlPart as Parameter;
+				if (parameter != null)
+				{
+					result.Add(parameter);
+					continue;
+				}
+
+				var sqlFragment = sqlPart.ToString();
+				var tokens = new StringTokenizer(sqlFragment, symbols, true);
+
+				foreach (string token in tokens)
+				{
+					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					{
+						string filterParameterName = token.Substring(1);
+						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
+						string filterName = parts[0];
+						string parameterName = parts[1];
+						var filter = (FilterImpl)enabledFilters[filterName];
+
+						object value = filter.GetParameter(parameterName);
+						IType type = filter.FilterDefinition.GetParameterType(parameterName);
+						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
+						var collectionValue = value as ICollection;
+						int? collectionSpan = null;
+
+						// Add query chunk
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string bindFragment;
+						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						{
+							collectionSpan = collectionValue.Count;
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+						}
+						else
+						{
+							bindFragment = typeBindFragment;
+						}
+
+						// dynamic-filter parameter tracking
+						var filterParameterFragment = SqlString.Parse(bindFragment);
+						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
+						var parameters = filterParameterFragment.GetParameters().ToArray();
+						var sqlParameterPos = 0;
+						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
+						foreach (var paramTracker in paramTrackers)
+						{
+							parameters[sqlParameterPos++].BackTrack = paramTracker;
+						}
+
+						parameterSpecs.Add(dynamicFilterParameterSpecification);
+						result.Add(filterParameterFragment);
+					}
+					else
+					{
+						result.Add(token);
+					}
+				}
+			}
+			return result.ToSqlString().Compact();
+		}
+
+		private SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			var sessionFactory = session.Factory;
+			Dialect.Dialect dialect = sessionFactory.Dialect;
+
+			RowSelection selection = queryParameters.RowSelection;
+			bool useLimit = UseLimit(selection, dialect);
+			if (useLimit)
+			{
+				bool hasFirstRow = GetFirstRow(selection) > 0;
+				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
+				int max = GetMaxOrLimit(dialect, selection);
+				int? skip = useOffset ? (int?) dialect.GetOffsetValue(GetFirstRow(selection)) : null;
+				int? take = max != int.MaxValue ? (int?) max : null;
+
+				Parameter skipSqlParameter = null;
+				Parameter takeSqlParameter = null;
+				if (skip.HasValue)
+				{
+					var skipParameter = new QuerySkipParameterSpecification();
+					skipSqlParameter = Parameter.Placeholder;
+					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
+					parameterSpecs.Add(skipParameter);
+				}
+				if (take.HasValue)
+				{
+					var takeParameter = new QueryTakeParameterSpecification();
+					takeSqlParameter = Parameter.Placeholder;
+					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
+					parameterSpecs.Add(takeParameter);
+				}
+				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
+				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
+			}
+			return sqlString;
+		}
+
+		private void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
+		{
+			foreach (var parameterSpecification in parameterSpecs.OfType<IExplicitParameterSpecification>())
+			{
+				parameterSpecification.SetEffectiveType(queryParameters);
+			}
+		}
+
+		/// <summary>
+		/// Bind all parameters values.
+		/// </summary>
+		/// <param name="command">The command where bind each value.</param>
+		/// <param name="sqlQueryParametersList">The list of Sql query parameter in the exact sequence they are present in the query.</param>
+		/// <param name="parameterSpecs">All parameter-specifications collected during query construction.</param>
+		/// <param name="queryParameters">The encapsulation of the parameter values to be bound.</param>
+		/// <param name="session">The session from where execute the query.</param>
+		private void BindParametersValues(IDbCommand command, IList<Parameter> sqlQueryParametersList, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			foreach (var parameterSpecification in parameterSpecs)
+			{
+				parameterSpecification.Bind(command, sqlQueryParametersList, queryParameters, session);
+			}
 		}
 	}
 }

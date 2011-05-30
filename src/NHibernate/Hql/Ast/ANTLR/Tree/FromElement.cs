@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Antlr.Runtime;
@@ -10,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -36,7 +38,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private bool _collectionJoin;
 		private string _role;
 		private bool _initialized;
-		private string _withClauseFragment;
+		private SqlString _withClauseFragment;
 		private string _withClauseJoinAlias;
 		private bool _filter;
 		private IToken _token;
@@ -73,7 +75,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_isAllPropertyFetch = fetch;
 		}
 
-		public void SetWithClauseFragment(String withClauseJoinAlias, string withClauseFragment)
+		public void SetWithClauseFragment(String withClauseJoinAlias, SqlString withClauseFragment)
 		{
 			_withClauseJoinAlias = withClauseJoinAlias;
 			_withClauseFragment = withClauseFragment;
@@ -296,7 +298,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		public string WithClauseFragment
+		public SqlString WithClauseFragment
 		{
 			get { return _withClauseFragment; }
 		}
@@ -330,7 +332,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)
 		{
-			return SqlString.Parse(Text);
+			var result = SqlString.Parse(Text);
+			// query-parameter = the parameter specified in the NHibernate query
+			// sql-parameter = real parameter/s inside the final SQL
+			// here is where we suppose the SqlString has all sql-parameters in sequence for a given query-parameter.
+			// This happen when the query-parameter spans multiple columns (components,custom-types and so on).
+			if (HasEmbeddedParameters)
+			{
+				var parameters = result.GetParameters().ToArray();
+				var sqlParameterPos = 0;
+				var paramTrackers = _embeddedParameters.SelectMany(specification => specification.GetIdsForBackTrack(sessionFactory));
+				foreach (var paramTracker in paramTrackers)
+				{
+					parameters[sqlParameterPos++].BackTrack = paramTracker;
+				}
+			}
+			return result;
 		}
 
 		public string RenderCollectionSelectFragment(int size, int k)
