@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 		public virtual int Id { get; set; }
 	}
 
-	[Ignore("Not fixed yet")]
 	public class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 			                      	rc.Id(x => x.Id, map => map.Generator(Generators.HighLow));
 			                      	rc.Bag(x => x.Relateds, map =>
 			                      	                        {
-			                      	                        	map.Key(km => km.Column(cm => cm.NotNullable(true)));
+																												map.Key(km => km.NotNullable(true));
 			                      	                        	map.Cascade(Mapping.ByCode.Cascade.All);
 			                      	                        }, rel => rel.OneToMany());
 			                      });

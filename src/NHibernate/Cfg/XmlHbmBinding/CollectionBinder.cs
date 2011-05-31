@@ -760,6 +760,21 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			
 			BindCache(collectionMapping.Cache, model);
+
+			if (model.IsOneToMany && !model.IsInverse && !model.Key.IsNullable)
+			{
+				// for non-inverse one-to-many, with a not-null fk, add a backref!
+				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				PersistentClass referenced = mappings.GetClass(entityName);
+				Backref prop = new Backref();
+				prop.Name = '_' + model.OwnerEntityName + "." + collectionMapping.Name + "Backref";
+				prop.IsUpdateable = false;
+				prop.IsSelectable = false;
+				prop.CollectionRole = model.Role;
+				prop.EntityName = model.Owner.EntityName;
+				prop.Value = model.Key;
+				referenced.AddProperty(prop);
+			}
 		}
 
 		private void BindManyToMany(HbmManyToMany manyToManyMapping, Mapping.Collection model)
