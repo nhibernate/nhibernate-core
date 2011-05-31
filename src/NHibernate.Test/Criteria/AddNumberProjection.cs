@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
@@ -31,7 +32,7 @@ namespace NHibernate.Test.Criteria
 				.Add("(")
 				.Add(projection[0])
 				.Add(" + ")
-				.Add(criteriaQuery.NewQueryParameter())
+				.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.Int32).Single())
 				.Add(") as ")
 				.Add(GetColumnAliases(0)[0])
 				.ToSqlString();

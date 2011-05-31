@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -68,6 +69,7 @@ namespace NHibernate.Criterion
 			
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
+			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{
@@ -88,7 +90,7 @@ namespace NHibernate.Criterion
 					{
 						result.Add(StringHelper.CommaSpace);
 					}
-					result.Add(criteriaQuery.NewQueryParameter());
+					result.Add(parameters[i]);
 				}
 
 				result.Add(")");

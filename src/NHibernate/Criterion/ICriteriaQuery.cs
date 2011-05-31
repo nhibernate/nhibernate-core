@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -72,8 +71,9 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Create a new query parameter to use in a <see cref="ICriterion"/>
 		/// </summary>
+		/// <param name="parameterType">The expected type of the parameter.</param>
 		/// <returns>A new instance of a query parameter to be added to a <see cref="SqlString"/>.</returns>
-		Parameter NewQueryParameter();
+		IEnumerable<Parameter> NewQueryParameter(IType parameterType);
 
 		/// <summary>
 		/// Creates a dummy parameter index for the supplied paged value.

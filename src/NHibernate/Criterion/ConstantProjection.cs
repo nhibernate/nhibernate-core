@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -43,7 +44,7 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			return new SqlStringBuilder()
-				.Add(criteriaQuery.NewQueryParameter())
+				.Add(criteriaQuery.NewQueryParameter(type).Single())
 				.Add(" as ")
 				.Add(GetColumnAliases(position)[0])
 				.ToSqlString();

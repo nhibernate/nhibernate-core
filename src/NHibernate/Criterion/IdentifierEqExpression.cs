@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Criterion
@@ -32,6 +34,8 @@ namespace NHibernate.Criterion
 		{
 			//Implementation changed from H3.2 to use SqlString
 			string[] columns = criteriaQuery.GetIdentifierColumns(criteria);
+			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+
 			SqlStringBuilder result = new SqlStringBuilder(4 * columns.Length + 2);
 			if (columns.Length > 1)
 			{
@@ -48,7 +52,7 @@ namespace NHibernate.Criterion
 				result.Add(columns[i])
 					.Add(" = ");
 
-				AddValueOrProjection(criteria, criteriaQuery, enabledFilters, result);
+				AddValueOrProjection(parameters, i, criteria, criteriaQuery, enabledFilters, result);
 			}
 
 			if (columns.Length > 1)
@@ -58,15 +62,15 @@ namespace NHibernate.Criterion
 			return result.ToSqlString();
 		}
 
-		private void AddValueOrProjection(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder result)
+		private void AddValueOrProjection(Parameter[] parameters, int paramIndex, ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder result)
 		{
 			if (_projection == null)
 			{
-				result.Add(criteriaQuery.NewQueryParameter());
+				result.Add(parameters[paramIndex]);
 			}
 			else
 			{
-				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(),criteriaQuery, enabledFilters);
+				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(), criteriaQuery, enabledFilters);
 				result.Add(StringHelper.RemoveAsAliasesFromSql(sql));
 			}
 		}

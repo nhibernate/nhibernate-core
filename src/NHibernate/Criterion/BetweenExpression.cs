@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
@@ -49,7 +51,9 @@ namespace NHibernate.Criterion
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			//IType propertyType = criteriaQuery.GetTypeUsingProjection( criteria, _propertyName );
+			IType[] parametersTypes = GetTypedValues(criteria, criteriaQuery).Select(x=> x.Type).ToArray();
+			IType lowType = parametersTypes[0];
+			IType highType = parametersTypes[1];
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 
@@ -58,14 +62,15 @@ namespace NHibernate.Criterion
 				sqlBuilder
 					.Add(columnNames[0])
 					.Add(" between ")
-					.Add(criteriaQuery.NewQueryParameter())
+					.Add(criteriaQuery.NewQueryParameter(lowType).Single())
 					.Add(" and ")
-					.Add(criteriaQuery.NewQueryParameter());
+					.Add(criteriaQuery.NewQueryParameter(highType).Single());
 			}
 			else
 			{
 				bool andNeeded = false;
 
+				var lowParameters = criteriaQuery.NewQueryParameter(lowType).ToArray();
 				for (int i = 0; i < columnNames.Length; i++)
 				{
 					if (andNeeded)
@@ -76,15 +81,16 @@ namespace NHibernate.Criterion
 
 					sqlBuilder.Add(columnNames[i])
 						.Add(" >= ")
-						.Add(criteriaQuery.NewQueryParameter());
+						.Add(lowParameters[i]);
 				}
 
+				var highParameters = criteriaQuery.NewQueryParameter(highType).ToArray();
 				for (int i = 0; i < columnNames.Length; i++)
 				{
 					sqlBuilder.Add(" AND ")
 						.Add(columnNames[i])
 						.Add(" <= ")
-						.Add(criteriaQuery.NewQueryParameter());
+						.Add(highParameters[i]);
 				}
 			}
 

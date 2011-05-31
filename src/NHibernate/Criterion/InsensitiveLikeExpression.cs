@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -84,7 +85,7 @@ namespace NHibernate.Criterion
 					.Add(" like ");
 			}
 
-			sqlBuilder.Add(criteriaQuery.NewQueryParameter());
+			sqlBuilder.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single());
 
 			return sqlBuilder.ToSqlString();
 		}

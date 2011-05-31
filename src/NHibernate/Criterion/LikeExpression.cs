@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -79,11 +80,11 @@ namespace NHibernate.Criterion
 				lhs.Add(" like ")
 					.Add(dialect.LowercaseFunction)
 					.Add(StringHelper.OpenParen)
-					.Add(criteriaQuery.NewQueryParameter())
+					.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single())
 					.Add(StringHelper.ClosedParen);
 			}
 			else
-				lhs.Add(" like ").Add(criteriaQuery.NewQueryParameter());
+				lhs.Add(" like ").Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single());
 
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");

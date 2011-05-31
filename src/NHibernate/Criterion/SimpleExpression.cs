@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Criterion
@@ -86,6 +88,8 @@ namespace NHibernate.Criterion
 					this, 
 					value);
 
+			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+
 			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -101,7 +105,7 @@ namespace NHibernate.Criterion
 					.Add(columnNames[0])
 					.Add(StringHelper.ClosedParen)
 					.Add(Op)
-					.Add(criteriaQuery.NewQueryParameter())
+					.Add(parameters.FirstOrDefault())
 					.ToSqlString();
 			}
 			else
@@ -117,7 +121,7 @@ namespace NHibernate.Criterion
 
 					sqlBuilder.Add(columnNames[i])
 						.Add(Op)
-						.Add(criteriaQuery.NewQueryParameter());
+						.Add(parameters[i]);
 				}
 				return sqlBuilder.ToSqlString();
 			}

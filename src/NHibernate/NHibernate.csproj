@@ -496,6 +496,7 @@
     <Compile Include="NonUniqueResultException.cs" />
     <Compile Include="ObjectDeletedException.cs" />
     <Compile Include="ObjectNotFoundException.cs" />
+    <Compile Include="Param\CriteriaNamedParameterSpecification.cs" />
     <Compile Include="Param\ParametersBackTrackExtensions.cs" />
     <Compile Include="Param\QuerySkipParameterSpecification.cs" />
     <Compile Include="Param\QueryTakeParameterSpecification.cs" />

@@ -8,6 +8,7 @@ using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate_Persister_Entity = NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -19,10 +20,10 @@ namespace NHibernate.Loader.Criteria
 	public class CriteriaQueryTranslator : ICriteriaQuery
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
-
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
 		
 		private const int AliasCount = 0;
+		private readonly string queryTranslatorId = Guid.NewGuid().ToString("N");
 		
 		private readonly ICriteriaQuery outerQueryTranslator;
 		private readonly CriteriaImpl rootCriteria;
@@ -44,6 +45,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
 		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
+		private readonly IList<IParameterSpecification> collectedParameterSpecifications = new List<IParameterSpecification>();
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private SessionFactoryHelper helper;
 
@@ -772,9 +774,18 @@ namespace NHibernate.Loader.Criteria
 			return indexForAlias++;
 		}
 
-		public Parameter NewQueryParameter()
+		public IEnumerable<Parameter> NewQueryParameter(IType parameterType)
 		{
-			return Parameter.Placeholder;
+			// the queryTranslatorId is to avoid possible conflicts using sub-queries
+			string parameterName = string.Format("cr_{0}_p{1}", queryTranslatorId, collectedParameterSpecifications.Count);
+			var specification = new CriteriaNamedParameterSpecification(parameterName, parameterType);
+			collectedParameterSpecifications.Add(specification);
+			return specification.GetIdsForBackTrack(Factory).Select(x =>
+			                                                        {
+			                                                        	Parameter p = Parameter.Placeholder;
+			                                                        	p.BackTrack = x;
+			                                                        	return p;
+			                                                        });
 		}
 
 		public int? CreatePagingParameter(int value)
