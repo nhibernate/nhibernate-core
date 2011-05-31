@@ -25,12 +25,12 @@ namespace NHibernate.Properties
 
 		public IGetter GetGetter(System.Type theClass, string propertyName)
 		{
-			throw new NotImplementedException();
+			return new IndexGetter(this);
 		}
 
 		public ISetter GetSetter(System.Type theClass, string propertyName)
 		{
-			throw new NotImplementedException();
+			return new IndexSetter();
 		}
 
 		public bool CanAccessThroughReflectionOptimizer

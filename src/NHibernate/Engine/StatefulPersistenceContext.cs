@@ -1191,12 +1191,12 @@ namespace NHibernate.Engine
 				//there maybe more than one parent, filter by type
 				if (persister.IsSubclassEntityName(entityEntry.EntityName))
 				{
-					Object index = GetIndexInParent(property, childEntity, persister, cp, parent);
+					object index = GetIndexInParent(property, childEntity, persister, cp, parent);
 
 					if (index == null && mergeMap != null)
 					{
-						Object unmergedInstance = mergeMap[parent];
-						Object unmergedChild = mergeMap[childEntity];
+						object unmergedInstance = mergeMap[parent];
+						object unmergedChild = mergeMap[childEntity];
 						if (unmergedInstance != null && unmergedChild != null)
 						{
 							index = GetIndexInParent(property, unmergedChild, persister, cp, unmergedInstance);

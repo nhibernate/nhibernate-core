@@ -79,8 +79,7 @@ namespace NHibernate.Type
 			int i = list.IndexOf(element);
 			if (i < 0) 
 				return null;
-			else 
-				return list[i];
+			return i;
 		}
 	}
 }

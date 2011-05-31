@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH941
 {
-	public class Fixture : TestCaseMappingByCode
+	public class FixtureUsingList : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -13,11 +13,12 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 			mapper.Class<MyClass>(rc =>
 			                      {
 			                      	rc.Id(x => x.Id, map => map.Generator(Generators.HighLow));
-			                      	rc.Bag(x => x.Relateds, map =>
-			                      	                        {
-																												map.Key(km => km.NotNullable(true));
-			                      	                        	map.Cascade(Mapping.ByCode.Cascade.All);
-			                      	                        }, rel => rel.OneToMany());
+			                      	rc.List(x => x.Relateds, map =>
+			                      	                         {
+			                      	                         	map.Key(km => km.NotNullable(true));
+			                      	                         	map.Cascade(Mapping.ByCode.Cascade.All);
+																												map.Index(idxm=> idxm.Column(colmap=> colmap.NotNullable(true)));
+			                      	                         }, rel => rel.OneToMany());
 			                      });
 			mapper.Class<Related>(rc => rc.Id(x => x.Id, map => map.Generator(Generators.HighLow)));
 			HbmMapping mappings = mapper.CompileMappingForAllExplicitAddedEntities();

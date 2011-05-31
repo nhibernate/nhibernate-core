@@ -517,6 +517,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 					model.BaseIndex = Convert.ToInt32(listMapping.ListIndex.@base);
 			}
+
+			if (model.IsOneToMany && !model.Key.IsNullable && !model.IsInverse)
+			{
+				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				PersistentClass referenced = mappings.GetClass(entityName);
+				var ib = new IndexBackref();
+				ib.Name = '_' + model.OwnerEntityName + "." + listMapping.Name + "IndexBackref";
+				ib.IsUpdateable = false;
+				ib.IsSelectable = false;
+				ib.CollectionRole = model.Role;
+				ib.EntityName = model.Owner.EntityName;
+				ib.Value = model.Index;
+				referenced.AddProperty(ib);
+			}
 		}
 
 		private void BindArraySecondPass(HbmArray arrayMapping, List model,
@@ -663,6 +677,21 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				var any = new Any(model.CollectionTable);
 				BindIndexManyToAny(indexManyToAnyMapping, any, model.IsOneToMany);
 				model.Index = any;				
+			}
+
+			bool indexIsFormula = model.Index.ColumnIterator.Any(x=> x.IsFormula);
+			if (model.IsOneToMany && !model.Key.IsNullable && !model.IsInverse && !indexIsFormula)
+			{
+				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				PersistentClass referenced = mappings.GetClass(entityName);
+				var ib = new IndexBackref();
+				ib.Name = '_' + model.OwnerEntityName + "." + mapMapping.Name + "IndexBackref";
+				ib.IsUpdateable = false;
+				ib.IsSelectable = false;
+				ib.CollectionRole = model.Role;
+				ib.EntityName = model.Owner.EntityName;
+				ib.Value = model.Index;
+				referenced.AddProperty(ib);
 			}
 		}
 
