@@ -33,8 +33,8 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				BasicClass bc = new BasicClass();
-                if (!TestDialect.SupportsNullCharactersInUtfStrings)
-                    bc.CharacterProperty = 'a';
+				if (!TestDialect.SupportsNullCharactersInUtfStrings)
+					bc.CharacterProperty = 'a';
 				bc.Id = 1;
 				bc.ValueOfPrivateField = 5;
 				s.Save(bc);
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest
 				tx.Commit();
 			}
 		}
-
+		
 		[Test]
 		public void Caching()
 		{
@@ -58,8 +58,8 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				BasicClass bc = new BasicClass();
-                if (!TestDialect.SupportsNullCharactersInUtfStrings)
-                    bc.CharacterProperty = 'a';
+				if (!TestDialect.SupportsNullCharactersInUtfStrings)
+					bc.CharacterProperty = 'a';
 				bc.Id = 1;
 				s.Save(bc);
 				tx.Commit();
@@ -320,7 +320,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			index++;
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -385,7 +385,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -403,7 +403,6 @@ namespace NHibernate.Test.NHSpecificTest
 			// verify the delete went through
 			AssertDelete(id);
 		}
-
 
 		[Test]
 		public void TestPrimitiveArrayCRUD()
@@ -456,7 +455,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -526,7 +525,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -595,7 +594,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -680,7 +679,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -798,7 +797,7 @@ namespace NHibernate.Test.NHSpecificTest
 			index++;
 
 
-			// VERIFY PREVIOUS UPDATE & PERFORM DELETE 
+			// VERIFY PREVIOUS UPDATE & PERFORM DELETE
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
@@ -823,8 +822,8 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			BasicClass bc = new BasicClass();
-            if (!TestDialect.SupportsNullCharactersInUtfStrings)
-                bc.CharacterProperty = 'a';
+			if (!TestDialect.SupportsNullCharactersInUtfStrings)
+				bc.CharacterProperty = 'a';
 
 			int id = 1;
 
@@ -904,6 +903,29 @@ namespace NHibernate.Test.NHSpecificTest
 				trans.Commit();
 			}
 		}
+
+		/// <summary>
+		/// Test for NH-2415
+		/// </summary>
+		[Test]
+		public void TestHqlParameterizedDictionaryLookupProducesCorrectSqlParameterOrder()
+		{
+			var bc = InsertBasicClass(1);
+			
+			using (var session = OpenSession())
+			using (var trans = session.BeginTransaction())
+			{
+				var hql = "from BasicClass bc where (bc.StringProperty = :prop) and (bc.StringMap[:key] = :value)";
+				bc = session.CreateQuery(hql)
+					.SetParameter("prop", "string property")
+					.SetParameter("key", "keyZero")
+					.SetParameter("value", "string zero")
+					.UniqueResult<BasicClass>();
+				Assert.NotNull(bc);
+				session.Delete(bc);
+				trans.Commit();
+			}
+		}
 		
 		internal void AssertDelete(int id)
 		{
@@ -944,7 +966,6 @@ namespace NHibernate.Test.NHSpecificTest
 			return bc;
 		}
 
-
 		/// <summary>
 		/// Compares the non Collection Properties of the BasicClass
 		/// </summary>
@@ -963,6 +984,7 @@ namespace NHibernate.Test.NHSpecificTest
 		/// </summary>
 		/// <param name="expected">The expected values.</param>
 		/// <param name="actual">The Actual values.</param>
+		/// <param name="includeCollections"></param>
 		internal void AssertPropertiesEqual(BasicClass expected, BasicClass actual, bool includeCollections)
 		{
 			Assert.AreEqual(expected.Id, actual.Id, "Id");
@@ -989,7 +1011,6 @@ namespace NHibernate.Test.NHSpecificTest
 				ObjectAssert.AreEqual(expected.StringSet, actual.StringSet);
 			}
 		}
-
 
 		private void InitializeBasicClass(int id, ref BasicClass basicClass)
 		{
