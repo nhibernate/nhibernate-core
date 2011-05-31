@@ -418,11 +418,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				generator.GetStringBuilder().Add(clause);
 			}
 
-			public void Parameter()
-			{
-				generator.GetStringBuilder().AddParameter();
-			}
-
 			public void PushParameter(Parameter parameter)
 			{
 				generator.GetStringBuilder().Add(parameter);
@@ -462,11 +457,6 @@ namespace NHibernate.Hql.Ast.ANTLR
             public void Clause(SqlString clause)
             {
                 builder.Add(clause);
-            }
-
-            public void Parameter()
-            {
-                builder.AddParameter();
             }
 
         	public void PushParameter(Parameter parameter)
@@ -533,18 +523,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 			}
 
-			public void Parameter()
-			{
-				if (argInd == args.Count)
-				{
-					args.Add(new SqlString(SqlCommand.Parameter.Placeholder));
-				}
-				else
-				{
-					args[argInd] = args[argInd].Append(new SqlString(SqlCommand.Parameter.Placeholder));
-				}
-			}
-
 			public void PushParameter(Parameter parameter)
 			{
 				if (argInd == args.Count)
@@ -576,7 +554,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			void Clause(string clause);
 			void Clause(SqlString clause);
-			void Parameter();
 			void PushParameter(Parameter parameter);
 			/**
 			 * todo remove this hack
