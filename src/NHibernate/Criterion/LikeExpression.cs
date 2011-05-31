@@ -79,11 +79,11 @@ namespace NHibernate.Criterion
 				lhs.Add(" like ")
 					.Add(dialect.LowercaseFunction)
 					.Add(StringHelper.OpenParen)
-					.AddParameter()
+					.Add(criteriaQuery.NewQueryParameter())
 					.Add(StringHelper.ClosedParen);
 			}
 			else
-				lhs.Add(" like ").AddParameter();
+				lhs.Add(" like ").Add(criteriaQuery.NewQueryParameter());
 
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");

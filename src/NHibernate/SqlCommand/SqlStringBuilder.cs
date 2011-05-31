@@ -110,11 +110,6 @@ namespace NHibernate.SqlCommand
 			return Add(Parameter.Placeholder);
 		}
 
-		public SqlStringBuilder AddParameter(int position)
-		{
-			return Add(Parameter.WithIndex(position));
-		}
-
 		/// <summary>
 		/// Attempts to discover what type of object this is and calls the appropriate
 		/// method.

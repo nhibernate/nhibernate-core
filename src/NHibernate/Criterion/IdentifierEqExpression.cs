@@ -62,7 +62,7 @@ namespace NHibernate.Criterion
 		{
 			if (_projection == null)
 			{
-				result.AddParameter();
+				result.Add(criteriaQuery.NewQueryParameter());
 			}
 			else
 			{

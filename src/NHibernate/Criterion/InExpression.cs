@@ -88,7 +88,7 @@ namespace NHibernate.Criterion
 					{
 						result.Add(StringHelper.CommaSpace);
 					}
-					result.AddParameter();
+					result.Add(criteriaQuery.NewQueryParameter());
 				}
 
 				result.Add(")");

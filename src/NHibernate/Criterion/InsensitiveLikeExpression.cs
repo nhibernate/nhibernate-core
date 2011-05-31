@@ -84,7 +84,7 @@ namespace NHibernate.Criterion
 					.Add(" like ");
 			}
 
-			sqlBuilder.AddParameter();
+			sqlBuilder.Add(criteriaQuery.NewQueryParameter());
 
 			return sqlBuilder.ToSqlString();
 		}

@@ -58,9 +58,9 @@ namespace NHibernate.Criterion
 				sqlBuilder
 					.Add(columnNames[0])
 					.Add(" between ")
-					.AddParameter()
+					.Add(criteriaQuery.NewQueryParameter())
 					.Add(" and ")
-					.AddParameter();
+					.Add(criteriaQuery.NewQueryParameter());
 			}
 			else
 			{
@@ -76,7 +76,7 @@ namespace NHibernate.Criterion
 
 					sqlBuilder.Add(columnNames[i])
 						.Add(" >= ")
-						.AddParameter();
+						.Add(criteriaQuery.NewQueryParameter());
 				}
 
 				for (int i = 0; i < columnNames.Length; i++)
@@ -84,7 +84,7 @@ namespace NHibernate.Criterion
 					sqlBuilder.Add(" AND ")
 						.Add(columnNames[i])
 						.Add(" <= ")
-						.AddParameter();
+						.Add(criteriaQuery.NewQueryParameter());
 				}
 			}
 

@@ -772,6 +772,11 @@ namespace NHibernate.Loader.Criteria
 			return indexForAlias++;
 		}
 
+		public Parameter NewQueryParameter()
+		{
+			return Parameter.Placeholder;
+		}
+
 		public int? CreatePagingParameter(int value)
 		{
 			if (!Factory.Dialect.SupportsVariableLimit)

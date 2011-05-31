@@ -101,7 +101,7 @@ namespace NHibernate.Criterion
 					.Add(columnNames[0])
 					.Add(StringHelper.ClosedParen)
 					.Add(Op)
-					.AddParameter()
+					.Add(criteriaQuery.NewQueryParameter())
 					.ToSqlString();
 			}
 			else
@@ -117,7 +117,7 @@ namespace NHibernate.Criterion
 
 					sqlBuilder.Add(columnNames[i])
 						.Add(Op)
-						.AddParameter();
+						.Add(criteriaQuery.NewQueryParameter());
 				}
 				return sqlBuilder.ToSqlString();
 			}
