@@ -686,7 +686,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle </entry> 
+                            <entry>Oracle</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle8iDialect</literal></entry>
                             <entry></entry>
                         </row>
@@ -701,13 +701,35 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Sybase Adaptive Server Enterprise</entry> 
-                            <entry><literal>NHibernate.Dialect.SybaseDialect</literal></entry>
+                            <entry>Sybase Adaptive Server Enterprise 15</entry> 
+                            <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Sybase Adaptive Server Anywhere</entry>
-                            <entry><literal>NHibernate.Dialect.SybaseAnywhereDialect</literal></entry>
+                            <entry>Sybase Adaptive Server Anywhere 9</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASA9Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Sybase Adaptive Server Anywhere 10</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASA10Dialect</literal></entry>
+                            <entry>
+                                Deprecated. Use the Sybase SQL Anywhere 10 Dialect instead.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>Sybase SQL Anywhere 10</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere10Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Sybase SQL Anywhere 11</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere11Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 7</entry> 
+                            <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
@@ -718,17 +740,16 @@ ISession session = sessions.OpenSession(conn);
                         <row>
                             <entry>Microsoft SQL Server 2005</entry> 
                             <entry><literal>NHibernate.Dialect.MsSql2005Dialect</literal></entry>
-                            <entry>
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server 2005 Everywhere Edition</entry>
-                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
-                        </row>
-                        <row>
-                            <entry>Microsoft SQL Server 7</entry> 
-                            <entry><literal>NHibernate.Dialect.MsSql7Dialect</literal></entry>
                             <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server 2008</entry> 
+                            <entry><literal>NHibernate.Dialect.MsSql2008Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Microsoft SQL Server Compact Edition</entry>
+                            <entry><literal>NHibernate.Dialect.MsSqlCeDialect</literal></entry>
                         </row>
                         <row>
                             <entry>Firebird</entry> 
@@ -747,11 +768,6 @@ ISession session = sessions.OpenSession(conn);
                                 <literal>NHibernate.Driver.SQLite20Driver</literal>
                                 for System.Data.SQLite provider for .NET 2.0.
                             </entry>
-                        </row>
-                        <row>
-                            <entry>Ingres 3.0</entry>
-                            <entry><literal>NHibernate.Dialect.IngresDialect</literal></entry>
-                            <entry></entry>
                         </row>
                     </tbody>
                 </tgroup>
