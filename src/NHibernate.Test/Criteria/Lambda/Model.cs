@@ -50,7 +50,10 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	}
 
-	public class CustomPerson : Person { }
+	public class CustomPerson : Person
+	{
+		public virtual string MiddleName { get; set; }
+	}
 
 	public class Child
 	{

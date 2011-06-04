@@ -212,6 +212,10 @@ namespace NHibernate.Impl
 
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
 				}
+				else if (memberExpression.Expression.NodeType == ExpressionType.Convert)
+				{
+					return (FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name).TrimStart('.');
+				}
 				else
 				{
 					return memberExpression.Member.Name;
@@ -243,6 +247,9 @@ namespace NHibernate.Impl
 
 				throw new Exception("Unrecognised method call in expression " + expression.ToString());
 			}
+
+			if (expression is ParameterExpression)
+				return "";
 
 			throw new Exception("Could not determine member from " + expression.ToString());
 		}
@@ -322,26 +329,11 @@ namespace NHibernate.Impl
 				if (memberExpression.Expression == null)
 					return false;  // it's a member of a static class
 
-				if (memberExpression.Expression.NodeType == ExpressionType.Parameter)
+				if (IsMemberExpression(memberExpression.Expression))
 					return true;
 
-				if (IsNullableOfT(memberExpression.Member.DeclaringType))
-				{
-					// it's a Nullable<T>, so ignore any .Value
-					if (memberExpression.Member.Name == "Value")
-						return IsMemberExpression(memberExpression.Expression);
-				}
-
-				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess)
-				{
-					if (IsMemberExpression(memberExpression.Expression))
-						return true;
-
-					// if the member has a null value, it was an alias
-					return EvaluatesToNull(memberExpression.Expression);
-				}
-
-				return IsMemberExpression(memberExpression.Expression);
+				// if the member has a null value, it was an alias
+				return EvaluatesToNull(memberExpression.Expression);
 			}
 
 			if (expression is UnaryExpression)

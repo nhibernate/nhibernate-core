@@ -25,12 +25,29 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void TestFindMemberExpressionReferenceCast()
+		{
+			Expression<Func<Person, string>> e = (Person p) => ((CustomPerson)p).MiddleName;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("MiddleName", property);
+		}
+
+		[Test]
 		public void TestFindMemberExpressionReferenceAlias()
 		{
 			Person personAlias = null;
 			Expression<Func<string>> e = () => personAlias.Name;
 			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
 			Assert.AreEqual("personAlias.Name", property);
+		}
+
+		[Test]
+		public void TestFindMemberExpressionReferenceCastAlias()
+		{
+			Person personAlias = null;
+			Expression<Func<string>> e = () => ((CustomPerson)personAlias).MiddleName;
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			Assert.AreEqual("personAlias.MiddleName", property);
 		}
 
 		[Test]
@@ -157,17 +174,19 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			var children = new List<Child> { new Child { Nickname = "test nickname" } };
 			Person person =
-				new Person()
+				new CustomPerson()
 				{
 					Name = "test name",
+					MiddleName = "test middle name",
 					NullableAge = 4,
 					Children = children,
 				};
 
 			Assert.That(Projection(() => person.Name), Is.EqualTo("test name"));
+			Assert.That(Projection(() => ((CustomPerson)person).MiddleName), Is.EqualTo("test middle name"));
 			Assert.That(Projection(() => "test name"), Is.EqualTo("test name"));
 			Assert.That(Projection(() => person.NullableAge.Value), Is.EqualTo(4));
-			Assert.That(Projection(() => person.GetType()), Is.EqualTo(typeof(Person)));
+			Assert.That(Projection(() => person.GetType()), Is.EqualTo(typeof(CustomPerson)));
 			Assert.That(Projection(() => person.Children.First().Nickname), Is.EqualTo("test nickname"));
 			Assert.That(Projection(() => children[0].Nickname), Is.EqualTo("test nickname"));
 		}

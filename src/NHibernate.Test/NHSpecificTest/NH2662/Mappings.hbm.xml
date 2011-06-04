@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2662">
+
+  <class name="Customer">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+
+    <many-to-one name="Order" class="Order" column="OrderId" cascade="save-update" />
+
+  </class>
+
+  <class name="Order" table="Orders">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    
+    <property name="OrderDate" />
+
+    <joined-subclass name="PizzaOrder" table="Pizzas">
+      <key column="OrderId" />
+      <property name="PizzaName" />
+    </joined-subclass>
+
+  </class>
+
+</hibernate-mapping>
