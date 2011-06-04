@@ -205,11 +205,6 @@ namespace NHibernate.Dialect
             return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
-		public override bool SupportsVariableLimit
-		{
-			get { return false; }
-		}
-
 		private static int GetAfterSelectInsertPoint(SqlString text)
 		{
 			if (text.StartsWithCaseInsensitive("select"))
