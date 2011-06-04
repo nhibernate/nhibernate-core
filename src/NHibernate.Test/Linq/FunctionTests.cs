@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -122,11 +123,18 @@ namespace NHibernate.Test.Linq
         [Test]
         public void Trim()
         {
+            List<int> idsToDelete = new List<int>();
             try
             {
-                session.Save(new AnotherEntity { Input = " hi " });
-                session.Save(new AnotherEntity { Input = "hi" });
-                session.Save(new AnotherEntity { Input = "heh" });
+                AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
+                AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
+                AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
+                session.Save(ae1);
+                idsToDelete.Add(ae1.Id);
+                session.Save(ae2);
+                idsToDelete.Add(ae2.Id);
+                session.Save(ae3);
+                idsToDelete.Add(ae3.Id);
                 session.Flush();
 
                 Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
@@ -139,7 +147,8 @@ namespace NHibernate.Test.Linq
             }
             finally
             {
-                session.Delete("from AnotherEntity e where e.Id > 5");
+                foreach (int idToDelete in idsToDelete)
+                    session.Delete(session.Get<AnotherEntity>(idToDelete));
                 session.Flush();
             }
         }
