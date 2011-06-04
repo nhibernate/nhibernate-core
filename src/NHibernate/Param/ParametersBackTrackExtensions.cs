@@ -52,13 +52,16 @@ namespace NHibernate.Param
 			{
 				string firstParameterId = specification.GetIdsForBackTrack(factory).First();
 				int[] effectiveParameterLocations = sqlQueryParametersList.GetEffectiveParameterLocations(firstParameterId).ToArray();
-				int firstParamNameIndex = effectiveParameterLocations.First();
-				foreach (int location in effectiveParameterLocations)
+				if (effectiveParameterLocations.Length > 0) // Parameters previously present might have been removed from the SQL at a later point.
 				{
-					int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);
-					for (int j = 0; j < parameterSpan; j++)
+					int firstParamNameIndex = effectiveParameterLocations.First();
+					foreach (int location in effectiveParameterLocations)
 					{
-						sqlQueryParametersList[location + j].ParameterPosition = firstParamNameIndex + j;
+						int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);
+						for (int j = 0; j < parameterSpan; j++)
+						{
+							sqlQueryParametersList[location + j].ParameterPosition = firstParamNameIndex + j;
+						}
 					}
 				}
 			}
