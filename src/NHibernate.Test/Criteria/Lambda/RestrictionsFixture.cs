@@ -305,6 +305,22 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Test]
+		public void FunctionExtensionsProperty()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.Add(Restrictions.EqProperty(
+						Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDate")),
+						Projections.SqlFunction("day", NHibernateUtil.Int32, Projections.Property("BirthDate"))));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>()
+					.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart());
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 	}
 
 }

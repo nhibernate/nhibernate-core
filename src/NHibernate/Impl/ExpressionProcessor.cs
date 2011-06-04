@@ -32,7 +32,7 @@ namespace NHibernate.Impl
 	{
 
 		private readonly static IDictionary<ExpressionType, Func<IProjection, object, ICriterion>> _simpleExpressionCreators = null;
-		private readonly static IDictionary<ExpressionType, Func<string, string, ICriterion>> _propertyExpressionCreators = null;
+		private readonly static IDictionary<ExpressionType, Func<IProjection, IProjection, ICriterion>> _propertyExpressionCreators = null;
 		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes = null;
 		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors = null;
 		private readonly static IDictionary<string, Func<MethodCallExpression, IProjection>> _customProjectionProcessors = null;
@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 			_simpleExpressionCreators[ExpressionType.LessThan] = Lt;
 			_simpleExpressionCreators[ExpressionType.LessThanOrEqual] = Le;
 
-			_propertyExpressionCreators = new Dictionary<ExpressionType, Func<string, string, ICriterion>>();
+			_propertyExpressionCreators = new Dictionary<ExpressionType, Func<IProjection, IProjection, ICriterion>>();
 			_propertyExpressionCreators[ExpressionType.Equal] = Restrictions.EqProperty;
 			_propertyExpressionCreators[ExpressionType.NotEqual] = Restrictions.NotEqProperty;
 			_propertyExpressionCreators[ExpressionType.GreaterThan] = Restrictions.GtProperty;
@@ -465,13 +465,13 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessMemberExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
-			string leftProperty = FindMemberExpression(left);
-			string rightProperty = FindMemberExpression(right);
+			IProjection leftProperty = FindMemberProjection(left);
+			IProjection rightProperty = FindMemberProjection(right);
 
 			if (!_propertyExpressionCreators.ContainsKey(nodeType))
 				throw new Exception("Unhandled property expression type: " + nodeType);
 
-			Func<string, string, ICriterion> propertyExpressionCreator = _propertyExpressionCreators[nodeType];
+			Func<IProjection, IProjection, ICriterion> propertyExpressionCreator = _propertyExpressionCreators[nodeType];
 			ICriterion criterion = propertyExpressionCreator(leftProperty, rightProperty);
 			return criterion;
 		}

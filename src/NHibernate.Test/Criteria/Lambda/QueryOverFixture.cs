@@ -61,12 +61,12 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Ge(Projections.Property("Name"), "test name"))
 					.Add(Restrictions.Lt(Projections.Property("Name"), "test name"))
 					.Add(Restrictions.Le(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.EqProperty("Name", "Name"))
-					.Add(Restrictions.Not(Restrictions.EqProperty("Name", "Name")))
-					.Add(Restrictions.GtProperty("Name", "Name"))
-					.Add(Restrictions.GeProperty("Name", "Name"))
-					.Add(Restrictions.LtProperty("Name", "Name"))
-					.Add(Restrictions.LeProperty("Name", "Name"));
+					.Add(Restrictions.EqProperty(Projections.Property("Name"), Projections.Property("Name")))
+					.Add(Restrictions.Not(Restrictions.EqProperty(Projections.Property("Name"), Projections.Property("Name"))))
+					.Add(Restrictions.GtProperty(Projections.Property("Name"), Projections.Property("Name")))
+					.Add(Restrictions.GeProperty(Projections.Property("Name"), Projections.Property("Name")))
+					.Add(Restrictions.LtProperty(Projections.Property("Name"), Projections.Property("Name")))
+					.Add(Restrictions.LeProperty(Projections.Property("Name"), Projections.Property("Name")));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -91,12 +91,12 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.EqProperty("Age", "Height"))
-					.Add(Restrictions.NotEqProperty("Age", "Height"))
-					.Add(Restrictions.GtProperty("Age", "Height"))
-					.Add(Restrictions.GeProperty("Age", "Height"))
-					.Add(Restrictions.LtProperty("Age", "Height"))
-					.Add(Restrictions.LeProperty("Age", "Height"));
+					.Add(Restrictions.EqProperty(Projections.Property("Age"), Projections.Property("Height")))
+					.Add(Restrictions.NotEqProperty(Projections.Property("Age"), Projections.Property("Height")))
+					.Add(Restrictions.GtProperty(Projections.Property("Age"), Projections.Property("Height")))
+					.Add(Restrictions.GeProperty(Projections.Property("Age"), Projections.Property("Height")))
+					.Add(Restrictions.LtProperty(Projections.Property("Age"), Projections.Property("Height")))
+					.Add(Restrictions.LeProperty(Projections.Property("Age"), Projections.Property("Height")));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()

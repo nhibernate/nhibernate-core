@@ -664,6 +664,31 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void FunctionsProperty()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) });
+				s.Save(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 07) });
+				s.Save(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 07) });
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart())
+						.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p2");
+			}
+		}
+
+		[Test]
 		public void FunctionsOrder()
 		{
 			using (ISession s = OpenSession())
