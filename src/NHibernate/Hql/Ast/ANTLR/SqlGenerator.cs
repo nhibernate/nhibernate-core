@@ -325,23 +325,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private SqlString GetSqlStringWithLimitsIfNeeded(QueryWriter queryWriter)
 		{
-			SqlString sqlString = queryWriter.ToSqlString();
-			var skipIsParameter = queryWriter.SkipParameter != null;
-			var takeIsParameter = queryWriter.TakeParameter != null;
-			var hqlQueryHasLimits = queryWriter.Take.HasValue || queryWriter.Skip.HasValue || skipIsParameter || takeIsParameter;
-			if (!hqlQueryHasLimits)
-			{
-				return sqlString;
-			}
-			
-			var dialect = sessionFactory.Dialect;
-
-			// Skip-Take in HQL should be supported just for Dialect supporting variable limits at least when users use parameters for skip-take.
-			if (!dialect.SupportsVariableLimit && (skipIsParameter || takeIsParameter))
-			{
-				throw new NotSupportedException("The dialect " + dialect.GetType().FullName + " does not supports variable limits");
-			}
-
 			Parameter skipParameter = null;
 			Parameter takeParameter = null;
 			if(queryWriter.SkipParameter != null)
@@ -358,8 +341,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			// We allow the user to specify either constants or parameters for their limits.
-			// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
-			return dialect.GetLimitString(sqlString,
+			// The dialect can move the given parameters where he need, what it can't do is generates new parameters, losing the BackTrack.
+			var dialect = sessionFactory.Dialect;
+			return dialect.GetLimitString(queryWriter.ToSqlString(),
 			                              queryWriter.Skip.HasValue ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value) : null,
 			                              queryWriter.Take.HasValue ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value) : null,
 			                              skipParameter,
