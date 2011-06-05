@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Engine;
@@ -23,15 +21,12 @@ namespace NHibernate.Loader.Criteria
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
 		
 		private const int AliasCount = 0;
-		private readonly string queryTranslatorId = Guid.NewGuid().ToString("N");
 		
 		private readonly ICriteriaQuery outerQueryTranslator;
 		private readonly CriteriaImpl rootCriteria;
 		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
-		private int indexForAlias = 0;		
-		private int _tempPagingParameterIndex = -1;
-		private IDictionary<int, int> _tempPagingParameterIndexes = new Dictionary<int, int>();
+		private int indexForAlias = 0;
 
 		private readonly IDictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
 			new Dictionary<ICriteria, ICriteriaInfoProvider>();
@@ -45,15 +40,19 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
 		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
 		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
-		private readonly IList<IParameterSpecification> collectedParameterSpecifications = new List<IParameterSpecification>();
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private SessionFactoryHelper helper;
+
+		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
+		private readonly ICollection<NamedParameter> namedParameters;
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 									   string rootSQLAlias, ICriteriaQuery outerQuery)
 			: this(factory, criteria, rootEntityName, rootSQLAlias)
 		{
 			outerQueryTranslator = outerQuery;
+			collectedParameterSpecifications = outerQuery.CollectedParameterSpecifications;
+			namedParameters = outerQuery.CollectedParameters;
 		}
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
@@ -64,6 +63,9 @@ namespace NHibernate.Loader.Criteria
 			sessionFactory = factory;
 			this.rootSQLAlias = rootSQLAlias;
 			helper = new SessionFactoryHelper(factory);
+
+			collectedParameterSpecifications = new List<IParameterSpecification>();
+			namedParameters = new List<NamedParameter>();
 
 			CreateAliasCriteriaMap();
 			CreateAssociationPathCriteriaMap();
@@ -112,21 +114,13 @@ namespace NHibernate.Loader.Criteria
 			selection.Timeout = rootCriteria.Timeout;
 			selection.FetchSize = rootCriteria.FetchSize;
 
-			Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>();
+			var lockModes = new Dictionary<string, LockMode>();
 			foreach (KeyValuePair<string, LockMode> me in rootCriteria.LockModes)
 			{
 				ICriteria subcriteria = GetAliasedCriteria(me.Key);
 				lockModes[GetSQLAlias(subcriteria)] = me.Value;
 			}
 			
-			List<TypedValue> typedValues = new List<TypedValue>();			
-			
-			// NH-specific: Get parameters for projections first
-			if (this.HasProjection)
-			{
-				typedValues.AddRange(rootCriteria.Projection.GetTypedValues(rootCriteria, this));
-			}
-
 			foreach (CriteriaImpl.Subcriteria subcriteria in rootCriteria.IterateSubcriteria())
 			{
 				LockMode lm = subcriteria.LockMode;
@@ -134,59 +128,15 @@ namespace NHibernate.Loader.Criteria
 				{
 					lockModes[GetSQLAlias(subcriteria)] = lm;
 				}
-				// Get parameters that may be used in JOINs
-				if (subcriteria.WithClause != null)
-				{
-					typedValues.AddRange(subcriteria.WithClause.GetTypedValues(subcriteria, this));
-			}
 			}
 			
-			List<TypedValue> groupedTypedValues = new List<TypedValue>();
-			
-			// Type and value gathering for the WHERE clause needs to come AFTER lock mode gathering,
-			// because the lock mode gathering loop now contains join clauses which can contain
-			// parameter bindings (as in the HQL WITH clause).
-			foreach(CriteriaImpl.CriterionEntry ce in rootCriteria.IterateExpressionEntries())
-			{
-				bool criteriaContainsGroupedProjections = false;
-				IProjection[] projections = ce.Criterion.GetProjections();
+			IDictionary<string, TypedValue> queryNamedParameters = CollectedParameters.ToDictionary(np => np.Name, np => new TypedValue(np.Type, np.Value, EntityMode.Poco));
 
-				if (projections != null)
-				{
-					foreach (IProjection projection in projections)
-					{
-						if (projection.IsGrouped)
-						{
-							criteriaContainsGroupedProjections = true;
-							break;
-						}
-					}
-				}
-				
-				if (criteriaContainsGroupedProjections)
-					// GROUP BY/HAVING parameters need to be added after WHERE parameters - so don't add them
-					// to typedValues yet
-					groupedTypedValues.AddRange(ce.Criterion.GetTypedValues(ce.Criteria, this));
-				else
-					typedValues.AddRange(ce.Criterion.GetTypedValues(ce.Criteria, this));
-			}
-			
-			// NH-specific: GROUP BY/HAVING parameters need to appear after WHERE parameters
-			if (groupedTypedValues.Count > 0)
-			{
-				typedValues.AddRange(groupedTypedValues);
-			}
-			
-			// NH-specific: To support expressions/projections used in ORDER BY
-			foreach(CriteriaImpl.OrderEntry oe in rootCriteria.IterateOrderings())
-			{
-				typedValues.AddRange(oe.Order.GetTypedValues(oe.Criteria, this));
-			}
-			
 			return
 				new QueryParameters(
-					typedValues.Select(tv => tv.Type).ToArray(),
-					typedValues.Select(tv => tv.Value).ToArray(),
+					new IType[0], 
+					new object[0],
+					queryNamedParameters,
 					lockModes,
 					selection,
 					rootCriteria.IsReadOnlyInitialized,
@@ -195,8 +145,7 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer,
-					_tempPagingParameterIndexes);
+					rootCriteria.ResultTransformer);
 		}
 		
 		public SqlString GetGroupBy()
@@ -774,12 +723,19 @@ namespace NHibernate.Loader.Criteria
 			return indexForAlias++;
 		}
 
-		public IEnumerable<Parameter> NewQueryParameter(IType parameterType)
+		public IEnumerable<Parameter> NewQueryParameter(TypedValue parameter)
 		{
 			// the queryTranslatorId is to avoid possible conflicts using sub-queries
-			string parameterName = string.Format("cr_{0}_p{1}", queryTranslatorId, collectedParameterSpecifications.Count);
-			var specification = new CriteriaNamedParameterSpecification(parameterName, parameterType);
+			const string parameterPrefix = "cp";
+			return NewQueryParameter(parameterPrefix, parameter);
+		}
+
+		private IEnumerable<Parameter> NewQueryParameter(string parameterPrefix, TypedValue parameter)
+		{
+			string parameterName = parameterPrefix + CollectedParameterSpecifications.Count;
+			var specification = new CriteriaNamedParameterSpecification(parameterName, parameter.Type);
 			collectedParameterSpecifications.Add(specification);
+			namedParameters.Add(new NamedParameter(parameterName, parameter.Value, parameter.Type));
 			return specification.GetIdsForBackTrack(Factory).Select(x =>
 			                                                        {
 			                                                        	Parameter p = Parameter.Placeholder;
@@ -788,13 +744,32 @@ namespace NHibernate.Loader.Criteria
 			                                                        });
 		}
 
-		public int? CreatePagingParameter(int value)
+		public ICollection<IParameterSpecification> CollectedParameterSpecifications
 		{
-			if (!Factory.Dialect.SupportsVariableLimit)
-				return null;
+			get
+			{
+				return collectedParameterSpecifications;
+			}
+		}
 
-			_tempPagingParameterIndexes.Add(_tempPagingParameterIndex, value);
-			return _tempPagingParameterIndex--;
+		public ICollection<NamedParameter> CollectedParameters
+		{
+			get
+			{
+				return namedParameters;
+			}
+		}
+
+		public Parameter CreateSkipParameter(int value)
+		{
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, EntityMode.Poco);
+			return NewQueryParameter("skip_", typedValue).Single();
+		}
+		
+		public Parameter CreateTakeParameter(int value)
+		{
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, EntityMode.Poco);
+			return NewQueryParameter("take_",typedValue).Single();
 		}
 
 		public SqlString GetHavingCondition(IDictionary<string, IFilter> enabledFilters)

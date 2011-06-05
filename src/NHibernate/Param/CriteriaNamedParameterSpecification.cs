@@ -10,7 +10,7 @@ namespace NHibernate.Param
 {
 	public class CriteriaNamedParameterSpecification : IParameterSpecification
 	{
-		private const string CriteriaNamedParameterIdTemplate = "<criteria-nh{0}_span{1}>";
+		private const string CriteriaNamedParameterIdTemplate = "<crnh-{0}_span{1}>";
 		private readonly string name;
 
 		public CriteriaNamedParameterSpecification(string name, IType expectedType)

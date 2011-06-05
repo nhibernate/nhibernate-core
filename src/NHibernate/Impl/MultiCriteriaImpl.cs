@@ -436,10 +436,14 @@ namespace NHibernate.Impl
 			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
 			ArrayList positionalParameterTypes = new ArrayList();
 			ArrayList positionalParameterValues = new ArrayList();
+			int index = 0;
 			foreach (QueryParameters queryParameters in parameters)
 			{
-				// There aren't any named params in criteria queries
-				//CopyNamedParametersDictionary(combinedQueryParameters.NamedParameters, queryParameters.NamedParameters);
+				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
+				{
+					combinedQueryParameters.NamedParameters.Add(dictionaryEntry.Key + index, dictionaryEntry.Value);
+				}
+				index += 1;
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}

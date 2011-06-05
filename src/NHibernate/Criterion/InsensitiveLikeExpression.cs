@@ -85,7 +85,7 @@ namespace NHibernate.Criterion
 					.Add(" like ");
 			}
 
-			sqlBuilder.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single());
+			sqlBuilder.Add(criteriaQuery.NewQueryParameter(GetParameterTypedValue(criteria, criteriaQuery)).Single());
 
 			return sqlBuilder.ToSqlString();
 		}
@@ -93,16 +93,24 @@ namespace NHibernate.Criterion
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			List<TypedValue> typedValues = new List<TypedValue>();
-			
+
 			if (projection != null)
 			{
 				typedValues.AddRange(projection.GetTypedValues(criteria, criteriaQuery));
-				typedValues.AddRange(CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, null, value.ToString().ToLower()));
 			}
-			else
-				typedValues.Add(criteriaQuery.GetTypedValue(criteria, propertyName, value.ToString().ToLower()));
+			typedValues.Add(GetParameterTypedValue(criteria, criteriaQuery));
 			
 			return typedValues.ToArray();
+		}
+
+		public TypedValue GetParameterTypedValue(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var matchValue = value.ToString().ToLower();
+			if (projection != null)
+			{
+				return CriterionUtil.GetTypedValues(criteriaQuery, criteria, projection, null, matchValue).Single();
+			}
+			return criteriaQuery.GetTypedValue(criteria, propertyName, matchValue);
 		}
 
 		public override IProjection[] GetProjections()

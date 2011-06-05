@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
+using NHibernate.Param;
 using NHibernate.Type;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 

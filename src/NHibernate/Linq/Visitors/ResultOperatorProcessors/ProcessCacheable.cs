@@ -1,4 +1,6 @@
-﻿namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
+﻿using NHibernate.Param;
+
+namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
     public class ProcessCacheable : IResultOperatorProcessor<CacheableResultOperator>
     {

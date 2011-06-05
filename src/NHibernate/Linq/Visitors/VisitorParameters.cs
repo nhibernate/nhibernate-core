@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Param;
 
 namespace NHibernate.Linq.Visitors
 {

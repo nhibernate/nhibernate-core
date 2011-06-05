@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using NHibernate.Engine.Query;
+using NHibernate.Param;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors

@@ -34,7 +34,7 @@ namespace NHibernate.Criterion
 		{
 			//Implementation changed from H3.2 to use SqlString
 			string[] columns = criteriaQuery.GetIdentifierColumns(criteria);
-			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 
 			SqlStringBuilder result = new SqlStringBuilder(4 * columns.Length + 2);
 			if (columns.Length > 1)

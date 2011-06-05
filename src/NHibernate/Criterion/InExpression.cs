@@ -69,7 +69,7 @@ namespace NHibernate.Criterion
 			
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
-			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -23,13 +25,18 @@ namespace NHibernate.Criterion
 			TypedValue[] superTv = base.GetTypedValues(criteria, criteriaQuery);
 			TypedValue[] result = new TypedValue[superTv.Length + 1];
 			superTv.CopyTo(result, 1);
-			result[0] = new TypedValue(GetTypes()[0], value, EntityMode.Poco);
+			result[0] = FirstTypedValue();
 			return result;
+		}
+
+		private TypedValue FirstTypedValue()
+		{
+			return new TypedValue(GetTypes()[0], value, EntityMode.Poco);
 		}
 
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return SqlString.Parameter;
+			return new SqlString(criteriaQuery.NewQueryParameter(FirstTypedValue()).First());
 		}
 	}
 }

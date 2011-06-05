@@ -78,6 +78,12 @@ namespace NHibernate.Engine
 			_tempPagingParameterIndexes = tempPagingParameterIndexes;
 		}
 
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
+		{
+			NaturalKeyLookup = isLookupByNaturalKey;
+		}
+
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
 			_positionalParameterTypes = positionalParameterTypes;

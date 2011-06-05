@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NHibernate.Param;
 using NHibernate.Type;
 
 namespace NHibernate.Linq

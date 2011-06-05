@@ -22,11 +22,14 @@ namespace NHibernate.Criterion
 		private char? escapeChar;
 		private readonly bool ignoreCase;
 		private readonly IProjection projection;
+		private readonly TypedValue typedValue;
 
 		public LikeExpression(string propertyName, string value, char? escapeChar, bool ignoreCase)
 		{
 			this.projection = Projections.Property(propertyName);
 			this.value = value;
+			typedValue = new TypedValue(NHibernateUtil.String, this.value, EntityMode.Poco);
+
 			this.escapeChar = escapeChar;
 			this.ignoreCase = ignoreCase;
 		}
@@ -35,6 +38,7 @@ namespace NHibernate.Criterion
 		{
 			this.projection = projection;
 			this.value = matchMode.ToMatchString(value);
+			typedValue = new TypedValue(NHibernateUtil.String, this.value, EntityMode.Poco);
 		}
 
 
@@ -80,11 +84,11 @@ namespace NHibernate.Criterion
 				lhs.Add(" like ")
 					.Add(dialect.LowercaseFunction)
 					.Add(StringHelper.OpenParen)
-					.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single())
+					.Add(criteriaQuery.NewQueryParameter(typedValue).Single())
 					.Add(StringHelper.ClosedParen);
 			}
 			else
-				lhs.Add(" like ").Add(criteriaQuery.NewQueryParameter(NHibernateUtil.String).Single());
+				lhs.Add(" like ").Add(criteriaQuery.NewQueryParameter(typedValue).Single());
 
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");
@@ -94,7 +98,7 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] { new TypedValue(NHibernateUtil.String, value, EntityMode.Poco) };
+			return new TypedValue[] { typedValue };
 		}
 
 		public override IProjection[] GetProjections()

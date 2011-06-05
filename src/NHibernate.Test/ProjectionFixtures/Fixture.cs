@@ -71,13 +71,12 @@ namespace NHibernate.Test.ProjectionFixtures
                 Assert.Ignore("Test checks for exact sql and expects an error to occur in a case which is not erroneous on all databases.");
 
         	string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
-        	string expectedMessage =
+        	string expectedMessagePart0 =
         		string.Format(
         			@"could not execute query
-[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]
-Positional parameters:  #0>2
-[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {1}]",
-        			pName, pName);
+[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
+        			pName);
+					string expectedMessagePart1 = string.Format(@"[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0}]",pName);
 					
             DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
                 .Add(Restrictions.Eq("child.Key.Id", 2))
@@ -100,7 +99,7 @@ Positional parameters:  #0>2
         	}
 					catch (Exception e)
         	{
-        		if(e.Message != expectedMessage)
+						if (!e.Message.Contains(expectedMessagePart0) || !e.Message.Contains(expectedMessagePart1))
         			throw;
         	}
         }

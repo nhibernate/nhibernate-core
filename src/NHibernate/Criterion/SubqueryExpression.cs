@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Criteria;
@@ -54,27 +55,30 @@ namespace NHibernate.Criterion
 
 			IOuterJoinLoadable persister = (IOuterJoinLoadable)factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
 
-			//buffer needs to be before CriteriaJoinWalker for sake of parameter order
-			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
-
 			//patch to generate joins on subqueries
 			//stolen from CriteriaLoader
 			CriteriaJoinWalker walker =
 				new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, enabledFilters);
 
+			parameters = innerQuery.GetQueryParameters(); // parameters can be inferred only after initialize the walker
+
 			SqlString sql = walker.SqlString;
 
 			if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
 			{
-			    int? offset = Loader.Loader.GetOffsetUsingDialect(parameters.RowSelection, factory.Dialect);
-			    int? limit = Loader.Loader.GetLimitUsingDialect(parameters.RowSelection, factory.Dialect);
-			    int? offsetParameterIndex = offset.HasValue ? criteriaQuery.CreatePagingParameter(offset.Value) : null;
-			    int? limitParameterIndex = limit.HasValue ? criteriaQuery.CreatePagingParameter(limit.Value) : null;
-                Parameter offsetParameter = offsetParameterIndex.HasValue ? Parameter.WithIndex(offsetParameterIndex.Value) : null;
-                Parameter limitParameter = limitParameterIndex.HasValue ? Parameter.WithIndex(limitParameterIndex.Value) : null;
-                sql = factory.Dialect.GetLimitString(sql, offset, limit, offsetParameter, limitParameter);
+				int? offset = Loader.Loader.GetOffsetUsingDialect(parameters.RowSelection, factory.Dialect);
+				int? limit = Loader.Loader.GetLimitUsingDialect(parameters.RowSelection, factory.Dialect);
+				Parameter offsetParameter = offset.HasValue ? innerQuery.CreateSkipParameter(offset.Value) : null;
+				Parameter limitParameter = limit.HasValue ? innerQuery.CreateTakeParameter(limit.Value) : null;
+				sql = factory.Dialect.GetLimitString(sql, offset, limit, offsetParameter, limitParameter);
 			}
 
+			// during CriteriaImpl.Clone we are doing a shallow copy of each criterion.
+			// this is not a problem for common criterion but not for SubqueryExpression because here we are holding the state of inner CriteriaTraslator (ICriteriaQuery).
+			// After execution (ToSqlString) we have to clean the internal state because the next execution may be performed in a different tree reusing the same istance of SubqueryExpression.
+			innerQuery = null;
+
+			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
 			if (op != null)
 			{
 				buf.Add(" ").Add(op).Add(" ");
@@ -105,15 +109,7 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			InitializeInnerQueryAndParameters(criteriaQuery);
-			IType[] paramTypes = parameters.PositionalParameterTypes;
-			Object[] values = parameters.PositionalParameterValues;
-			TypedValue[] tv = new TypedValue[paramTypes.Length];
-			for (int i = 0; i < paramTypes.Length; i++)
-			{
-				tv[i] = new TypedValue(paramTypes[i], values[i], EntityMode.Poco);
-			}
-			return tv;
+			return parameters.NamedParameters.Values.ToArray();
 		}
 
 		public override IProjection[] GetProjections()
@@ -126,24 +122,15 @@ namespace NHibernate.Criterion
 			if (innerQuery == null)
 			{
 				ISessionFactoryImplementor factory = criteriaQuery.Factory;
-				
-				innerQuery =
-					new CriteriaQueryTranslator(
-						factory,
-						criteriaImpl, //implicit polymorphism not supported (would need a union)
-						criteriaImpl.EntityOrClassName,
-						criteriaQuery.GenerateSQLAlias(),
-						criteriaQuery);
-				
-				if (innerQuery.HasProjection)
-				{
-					parameters = innerQuery.GetQueryParameters();
-					types = innerQuery.ProjectedTypes;
-				}
-				else
-				{
-					types = null;
-				}
+
+				innerQuery = new CriteriaQueryTranslator(
+					factory,
+					criteriaImpl, //implicit polymorphism not supported (would need a union)
+					criteriaImpl.EntityOrClassName,
+					criteriaQuery.GenerateSQLAlias(),
+					criteriaQuery);
+
+				types = innerQuery.HasProjection ? innerQuery.ProjectedTypes : null;
 			}
 		}
 

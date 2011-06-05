@@ -88,7 +88,7 @@ namespace NHibernate.Criterion
 					this, 
 					value);
 
-			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).Select(x => x.Type).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			Parameter[] parameters = criteriaQuery.NewQueryParameter(GetParameterTypedValue(criteria, criteriaQuery)).ToArray();
 
 			if (ignoreCase)
 			{
@@ -105,7 +105,7 @@ namespace NHibernate.Criterion
 					.Add(columnNames[0])
 					.Add(StringHelper.ClosedParen)
 					.Add(Op)
-					.Add(parameters.FirstOrDefault())
+					.Add(parameters.Single())
 					.ToSqlString();
 			}
 			else
@@ -129,18 +129,25 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			List<TypedValue> typedValues = new List<TypedValue>();
-			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
+			var typedValues = new List<TypedValue>();
 			
 			if (_projection != null)
 			{
 				typedValues.AddRange(_projection.GetTypedValues(criteria, criteriaQuery));
-				typedValues.AddRange(CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, null, icvalue));
 			}
-			else
-				typedValues.Add(criteriaQuery.GetTypedValue(criteria, propertyName, icvalue));
+			typedValues.Add(GetParameterTypedValue(criteria, criteriaQuery));
 			
 			return typedValues.ToArray();
+		}
+
+		public TypedValue GetParameterTypedValue(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
+			if (_projection != null)
+			{
+				return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, null, icvalue).Single();
+			}
+			return criteriaQuery.GetTypedValue(criteria, propertyName, icvalue);
 		}
 
 		public override IProjection[] GetProjections()

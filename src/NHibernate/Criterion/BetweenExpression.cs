@@ -51,9 +51,9 @@ namespace NHibernate.Criterion
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			IType[] parametersTypes = GetTypedValues(criteria, criteriaQuery).Select(x=> x.Type).ToArray();
-			IType lowType = parametersTypes[0];
-			IType highType = parametersTypes[1];
+			var parametersTypes = GetTypedValues(criteria, criteriaQuery).ToArray();
+			var lowType = parametersTypes[0];
+			var highType = parametersTypes[1];
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 

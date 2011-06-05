@@ -12,11 +12,13 @@ namespace NHibernate.Test.Criteria
 	{
 		private readonly string propertyName;
 		private readonly int numberToAdd;
+		private readonly TypedValue typedValue;
 
 		public AddNumberProjection(string propertyName, int numberToAdd)
 		{
 			this.propertyName = propertyName;
 			this.numberToAdd = numberToAdd;
+			typedValue = new TypedValue(NHibernateUtil.Int32, this.numberToAdd, EntityMode.Poco);
 		}
 
 		public override bool IsAggregate
@@ -32,7 +34,7 @@ namespace NHibernate.Test.Criteria
 				.Add("(")
 				.Add(projection[0])
 				.Add(" + ")
-				.Add(criteriaQuery.NewQueryParameter(NHibernateUtil.Int32).Single())
+				.Add(criteriaQuery.NewQueryParameter(typedValue).Single())
 				.Add(") as ")
 				.Add(GetColumnAliases(0)[0])
 				.ToSqlString();
@@ -46,7 +48,7 @@ namespace NHibernate.Test.Criteria
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] {new TypedValue(NHibernateUtil.Int32, numberToAdd, EntityMode.Poco)};
+			return new TypedValue[] {typedValue};
 		}
 
 		public override bool IsGrouped

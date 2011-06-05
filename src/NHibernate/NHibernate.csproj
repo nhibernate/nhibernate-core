@@ -979,7 +979,7 @@
     <Compile Include="Linq\Visitors\HqlGeneratorExpressionTreeVisitor.cs" />
     <Compile Include="Linq\LinqExtensionMethods.cs" />
     <Compile Include="Linq\ReWriters\MergeAggregatingResultsRewriter.cs" />
-    <Compile Include="Linq\NamedParameter.cs" />
+    <Compile Include="Param\NamedParameter.cs" />
     <Compile Include="Linq\Visitors\NhExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Expressions\NhNewExpression.cs" />
     <Compile Include="Linq\NhQueryable.cs" />
