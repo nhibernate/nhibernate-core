@@ -47,7 +47,7 @@ namespace NHibernate.Driver
 			get { return sqlString; }
 		}
 
-		public virtual IDataReader GetReader(QueryParameters[] queryParameters, int? commandTimeout)
+		public virtual IDataReader GetReader(Loader.Loader[] queryLoaders, QueryParameters[] queryParameters, int? commandTimeout)
 		{
 			SqlType[] sqlTypes = types.ToArray();
 			var command= batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
@@ -57,45 +57,45 @@ namespace NHibernate.Driver
 			}
 			log.Info(command.CommandText);
 
-			BindParameters(command, queryParameters);
+			BindParameters(command, queryLoaders, queryParameters);
 			return new BatcherDataReaderWrapper(batcher, command);
 		}
 
-		protected virtual void BindParameters(IDbCommand command, QueryParameters[] queryParameters)
+		protected virtual void BindParameters(IDbCommand command, Loader.Loader[] queryLoaders, QueryParameters[] queryParameters)
 		{
 			int colIndex = 0;
 
 			for (int queryIndex = 0; queryIndex < resultSetsCount; queryIndex++)
 			{
-				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryParameters[queryIndex], colIndex);
-				colIndex = BindQueryParameters(command, queryParameters[queryIndex], colIndex + limitParameterSpan);
-				colIndex += BindLimitParametersLastIfNeccesary(command, queryParameters[queryIndex], colIndex);
+				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryLoaders[queryIndex], queryParameters[queryIndex], colIndex);
+				colIndex = BindQueryParameters(command, queryLoaders[queryIndex], queryParameters[queryIndex], colIndex + limitParameterSpan);
+				colIndex += BindLimitParametersLastIfNeccesary(command, queryLoaders[queryIndex], queryParameters[queryIndex], colIndex);
 			}
 		}
 
-		protected virtual int BindLimitParametersLastIfNeccesary(IDbCommand command, QueryParameters parameter, int colIndex)
+		protected virtual int BindLimitParametersLastIfNeccesary(IDbCommand command, Loader.Loader queryLoader, QueryParameters parameter, int colIndex)
 		{
 			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
+			if (queryLoader.UseLimit(selection, dialect) && !dialect.BindLimitParametersFirst)
 			{
-				return Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
+				return queryLoader.BindLimitParameters(command, colIndex, selection, session);
 			}
 			return 0;
 		}
 
-		protected virtual int BindQueryParameters(IDbCommand command, QueryParameters parameter, int colIndex)
+		protected virtual int BindQueryParameters(IDbCommand command, Loader.Loader queryLoader, QueryParameters parameter, int colIndex)
 		{
 			colIndex += parameter.BindParameters(command, colIndex, session);
 			return colIndex;
 		}
 
-		protected virtual int BindLimitParametersFirstIfNeccesary(IDbCommand command, QueryParameters parameter, int colIndex)
+		protected virtual int BindLimitParametersFirstIfNeccesary(IDbCommand command, Loader.Loader queryLoader, QueryParameters parameter, int colIndex)
 		{
 			int limitParameterSpan = 0;
 			RowSelection selection = parameter.RowSelection;
-			if (Loader.Loader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
+			if (queryLoader.UseLimit(selection, dialect) && dialect.BindLimitParametersFirst)
 			{
-				limitParameterSpan += Loader.Loader.BindLimitParameters(command, colIndex, selection, session);
+				limitParameterSpan += queryLoader.BindLimitParameters(command, colIndex, selection, session);
 			}
 			return limitParameterSpan;
 		}

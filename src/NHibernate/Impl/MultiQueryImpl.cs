@@ -504,7 +504,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = resultSetsCommand.GetReader(translators.Select(t=> t.Loader).ToArray(), Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -527,7 +527,7 @@ namespace NHibernate.Impl
 						hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
 						RowSelection selection = parameter.RowSelection;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-						if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
+						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
 						{
 							Loader.Loader.Advance(reader, selection);
 						}

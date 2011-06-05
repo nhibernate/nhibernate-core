@@ -200,7 +200,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(parameters.ToArray(), null))
+				using (var reader = resultSetsCommand.GetReader(loaders.ToArray(), parameters.ToArray(), null))
 				{
 					ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -218,7 +218,7 @@ namespace NHibernate.Impl
 						createSubselects[i] = loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-						if (!dialect.SupportsLimitOffset || !Loader.Loader.UseLimit(selection, dialect))
+						if (!dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect))
 						{
 							Loader.Loader.Advance(reader, selection);
 						}

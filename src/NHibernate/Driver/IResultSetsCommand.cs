@@ -10,6 +10,6 @@ namespace NHibernate.Driver
 		int ParametersCount { get; }
 		bool HasQueries { get; }
 		SqlString Sql { get; }
-		IDataReader GetReader(QueryParameters[] queryParameters, int? commandTimeout);
+		IDataReader GetReader(Loader.Loader[] queryLoaders, QueryParameters[] queryParameters, int? commandTimeout);
 	}
 }

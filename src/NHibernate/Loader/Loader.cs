@@ -1093,7 +1093,7 @@ namespace NHibernate.Loader
 		/// <param name="selection"></param>
 		/// <param name="dialect"></param>
 		/// <returns></returns>
-		internal static bool UseLimit(RowSelection selection, Dialect.Dialect dialect)
+		internal bool UseLimit(RowSelection selection, Dialect.Dialect dialect)
 		{
 			return dialect.SupportsLimit && (HasMaxRows(selection) || HasOffset(selection));
 		}
@@ -1263,7 +1263,7 @@ namespace NHibernate.Loader
 		/// Bind parameters needed by the dialect-specific LIMIT clause
 		/// </summary>
 		/// <returns>The number of parameters bound</returns>
-		internal static int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
+		internal int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			if (!dialect.SupportsVariableLimit)
