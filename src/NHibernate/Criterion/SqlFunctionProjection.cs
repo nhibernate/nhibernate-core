@@ -73,26 +73,17 @@ namespace NHibernate.Criterion
 		                                      IDictionary<string, IFilter> enabledFilters)
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
-			var tokens = new ArrayList();
-			string replacemenToken = Guid.NewGuid().ToString("n");
-			for (int i = 0; i < args.Length; i++)
-			{
-				tokens.Add(replacemenToken);
-			}
-			string functionStatement = sqlFunction.Render(tokens, criteriaQuery.Factory).ToString();
-			string[] splitted = functionStatement.Split(new string[] {replacemenToken}, StringSplitOptions.RemoveEmptyEntries);
 
-			SqlStringBuilder sb = new SqlStringBuilder();
-			for (int i = 0; i < splitted.Length; i++)
-			{
-				sb.Add(splitted[i]);
-				if (i < args.Length)
-				{
-					int loc = (position + 1) * 1000 + i;
-					SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], loc, enabledFilters);
-					sb.Add(projectArg);
-				}
-			}
+			var arguments = new ArrayList();
+            for (int i = 0; i < args.Length; i++)
+            {
+                int loc = (position + 1) * 1000 + i;
+                SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], loc, enabledFilters);
+                arguments.Add(projectArg);
+            }
+
+            SqlStringBuilder sb = new SqlStringBuilder();
+            sb.Add(sqlFunction.Render(arguments, criteriaQuery.Factory));
 			sb.Add(" as ");
 			sb.Add(GetColumnAliases(position)[0]);
 			return sb.ToSqlString();
