@@ -77,8 +77,7 @@ namespace NHibernate.Criterion
 			var arguments = new ArrayList();
             for (int i = 0; i < args.Length; i++)
             {
-                int loc = (position + 1) * 1000 + i;
-                SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], loc, enabledFilters);
+                SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0, enabledFilters); // The loc parameter is unused.
                 arguments.Add(projectArg);
             }
 
