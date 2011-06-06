@@ -43,7 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         }
 
         [Test]
-        [Ignore]
         public void CriteriaTrimFunctionsWithParameters()
         {
             AddObjects();
