@@ -32,6 +32,11 @@ namespace NHibernate.Param
 			throw new NotImplementedException();
 		}
 
+		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IType ExpectedType
 		{
 			get { return null; }

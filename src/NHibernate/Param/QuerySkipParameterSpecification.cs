@@ -27,7 +27,13 @@ namespace NHibernate.Param
 
 		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			var effectiveParameterLocations = sqlQueryParametersList.GetEffectiveParameterLocations(limitParametersNameForThisQuery).ToArray();
+			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			// The QuerySkipParameterSpecification is unique so we can use multiSqlQueryParametersList
+			var effectiveParameterLocations = multiSqlQueryParametersList.GetEffectiveParameterLocations(limitParametersNameForThisQuery).ToArray();
 			if (effectiveParameterLocations.Length > 0)
 			{
 				// if the dialect does not support variable limits the parameter may was removed

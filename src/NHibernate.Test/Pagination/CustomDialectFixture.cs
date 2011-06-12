@@ -91,7 +91,7 @@ namespace NHibernate.Test.Pagination
 			}
 		}
 
-		[Test, Ignore("To be fixed")]
+		[Test]
 		public void LimitFirstMultiCriteria()
 		{
 			using (ISession s = OpenSession())

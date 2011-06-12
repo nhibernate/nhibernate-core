@@ -1,15 +1,19 @@
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Custom
 {
@@ -23,6 +27,7 @@ namespace NHibernate.Loader.Custom
 		private readonly SqlString sql;
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly IDictionary<string, object> namedParameterBindPoints;
+		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
 		private readonly int[] entityOwners;
@@ -37,6 +42,12 @@ namespace NHibernate.Loader.Custom
 
 		private IType[] resultTypes;
 		private string[] transformerAliases;
+
+		public CustomLoader(ICustomQuery customQuery, IEnumerable<IParameterSpecification> parametersSpecifications, ISessionFactoryImplementor factory)
+			: this(customQuery, factory)
+		{
+			this.parametersSpecifications = parametersSpecifications.ToList();
+		}
 
 		public CustomLoader(ICustomQuery customQuery, ISessionFactoryImplementor factory) : base(factory)
 		{
@@ -337,6 +348,92 @@ namespace NHibernate.Loader.Custom
 			transformerAliases = aliases.ToArray();
 		}
 
+		public override ISqlCommand CreateSqlCommandInfo(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			if(parametersSpecifications == null)
+			{
+				throw new InvalidOperationException("The custom SQL loader was not initialized with Parameters Specifications.");
+			}
+			// A distinct-copy of parameter specifications collected during query construction
+			var parameterSpecs = new HashSet<IParameterSpecification>(parametersSpecifications);
+			SqlString sqlString = SqlString.Copy();
+
+			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			//sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
+			//AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+
+			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+
+			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
+			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
+
+			// After the last modification to the SqlString we can collect all parameters types.
+			ResetEffectiveExpectedType(parameterSpecs, queryParameters); // <= TODO: remove this method when we can infer the type during the parse
+
+			return new SqlCommand.SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		}
+
+		private SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			var sessionFactory = session.Factory;
+			Dialect.Dialect dialect = sessionFactory.Dialect;
+
+			RowSelection selection = queryParameters.RowSelection;
+			bool useLimit = UseLimit(selection, dialect);
+			if (useLimit)
+			{
+				bool hasFirstRow = GetFirstRow(selection) > 0;
+				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
+				int max = GetMaxOrLimit(dialect, selection);
+				int? skip = useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null;
+				int? take = max != int.MaxValue ? (int?)max : null;
+
+				Parameter skipSqlParameter = null;
+				Parameter takeSqlParameter = null;
+				if (skip.HasValue)
+				{
+					var skipParameter = new QuerySkipParameterSpecification();
+					skipSqlParameter = Parameter.Placeholder;
+					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
+					parameterSpecs.Add(skipParameter);
+				}
+				if (take.HasValue)
+				{
+					var takeParameter = new QueryTakeParameterSpecification();
+					takeSqlParameter = Parameter.Placeholder;
+					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
+					parameterSpecs.Add(takeParameter);
+				}
+				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
+				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
+			}
+			return sqlString;
+		}
+
+		private void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
+		{
+			foreach (var parameterSpecification in parameterSpecs.OfType<IExplicitParameterSpecification>())
+			{
+				parameterSpecification.SetEffectiveType(queryParameters);
+			}
+		}
+
+		public IType[] ResultTypes
+		{
+			get { return resultTypes; }
+		}
+
+		public string[] ReturnAliases
+		{
+			get { return transformerAliases; }
+		}
+
+		public IEnumerable<string> NamedParameters
+		{
+			get { return namedParameterBindPoints.Keys; }
+		}
+
 		public class ResultRowProcessor
 		{
 			private readonly bool hasScalars;
@@ -400,21 +497,6 @@ namespace NHibernate.Loader.Custom
 					}
 				}
 			}
-		}
-
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
-		public string[] ReturnAliases
-		{
-			get { return transformerAliases; }
-		}
-
-		public IEnumerable<string> NamedParameters
-		{
-			get { return namedParameterBindPoints.Keys; }
 		}
 
 		public interface IResultColumnProcessor

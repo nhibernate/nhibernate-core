@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -20,6 +22,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly SqlString sql;
+		private List<IParameterSpecification> parametersSpecifications;
 
 		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
 		                      ISessionFactoryImplementor factory)
@@ -28,15 +31,21 @@ namespace NHibernate.Loader.Custom.Sql
 			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);
 			SQLQueryReturnProcessor.ResultAliasContext aliasContext = processor.Process();
 
-			SQLQueryParser parser = new SQLQueryParser(sqlQuery, new ParserContext(aliasContext));
+			SQLQueryParser parser = new SQLQueryParser(factory, sqlQuery, new ParserContext(aliasContext));
 			sql = parser.Process();
 			ArrayHelper.AddAll(namedParameterBindPoints, parser.NamedParameters);
 			ArrayHelper.AddAll(customQueryReturns, processor.GenerateCustomReturns(parser.QueryHasAliases));
+			parametersSpecifications = parser.CollectedParametersSpecifications.ToList();
 
 			if (additionalQuerySpaces != null)
 			{
 				querySpaces.AddAll(additionalQuerySpaces);
 			}
+		}
+
+		public IEnumerable<IParameterSpecification> CollectedParametersSpecifications
+		{
+			get { return parametersSpecifications; }
 		}
 
 		#region ICustomQuery Members

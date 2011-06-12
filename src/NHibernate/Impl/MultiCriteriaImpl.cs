@@ -183,8 +183,8 @@ namespace NHibernate.Impl
 				translators.Add(translator);
 				QueryParameters queryParameters = translator.GetQueryParameters();
 				parameters.Add(queryParameters);
-				SqlCommandInfo commandInfo = loader.GetQueryStringAndTypes(session, queryParameters, resultSetsCommand.ParametersCount);
-				resultSetsCommand.Append(commandInfo);
+				ISqlCommand singleCommand = loader.CreateSqlCommandInfo(queryParameters, session);
+				resultSetsCommand.Append(singleCommand);
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(loaders.ToArray(), parameters.ToArray(), null))
+				using (var reader = resultSetsCommand.GetReader(null))
 				{
 					ArrayList[] hydratedObjects = new ArrayList[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];

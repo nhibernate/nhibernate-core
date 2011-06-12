@@ -43,6 +43,7 @@ namespace NHibernate.Engine.Query
 		/// <exception cref="QueryException" />
 		public static void Parse(string sqlString, IRecognizer recognizer)
 		{
+			// TODO: WTF? "CALL"... it may work for ORACLE but what about others RDBMS ? (by FM)
 			bool hasMainOutputParameter = sqlString.IndexOf("call") > 0 &&
 										  sqlString.IndexOf("?") > 0 &&
 										  sqlString.IndexOf("=") > 0 &&

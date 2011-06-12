@@ -31,6 +31,16 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
+		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			IType type = keyType;
+			object value = queryParameters.PositionalParameterValues[queryParameterPosition];
+
+			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
+			int position = sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId).Single(); // an HQL positional parameter can't appear more than once
+			type.NullSafeSet(command, value, position + singleSqlParametersOffset, session);
+		}
+
 		public IType ExpectedType
 		{
 			get { return keyType; }
@@ -53,12 +63,7 @@ namespace NHibernate.Param
 
 		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			IType type = keyType;
-			object value = queryParameters.PositionalParameterValues[queryParameterPosition];
-
-			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
-			int position = sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId).Single(); // an HQL positional parameter can't appear more than once
-			type.NullSafeSet(command, value, position, session);
+			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
 		#endregion

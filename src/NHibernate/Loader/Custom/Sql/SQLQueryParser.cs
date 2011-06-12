@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -21,15 +24,18 @@ namespace NHibernate.Loader.Custom.Sql
 			IDictionary<string, string[]> GetPropertyResultsMapByAlias(string alias);
 		}
 
+		private readonly ISessionFactoryImplementor factory;
 		private readonly string originalQueryString;
 		private readonly IParserContext context;
 
 		private readonly Dictionary<string, object> namedParameters = new Dictionary<string, object>();
 
 		private long aliasesFound;
+		private IEnumerable<IParameterSpecification> parametersSpecifications;
 
-		public SQLQueryParser(string sqlQuery, IParserContext context)
+		public SQLQueryParser(ISessionFactoryImplementor factory, string sqlQuery, IParserContext context)
 		{
+			this.factory = factory;
 			originalQueryString = sqlQuery;
 			this.context = context;
 		}
@@ -47,6 +53,11 @@ namespace NHibernate.Loader.Custom.Sql
 		public SqlString Process()
 		{
 			return SubstituteParams(SubstituteBrackets());
+		}
+
+		public IEnumerable<IParameterSpecification> CollectedParametersSpecifications
+		{
+			get { return parametersSpecifications; }
 		}
 
 		// TODO: should "record" how many properties we have reffered to - and if we 
@@ -239,9 +250,9 @@ namespace NHibernate.Loader.Custom.Sql
 		/// <returns> The SQL query with parameter substitution complete. </returns>
 		private SqlString SubstituteParams(string sqlString)
 		{
-			ParameterSubstitutionRecognizer recognizer = new ParameterSubstitutionRecognizer();
+			var recognizer = new ParameterSubstitutionRecognizer(factory);
 			ParameterParser.Parse(sqlString, recognizer);
-
+			parametersSpecifications = recognizer.ParametersSpecifications.ToList();
 			namedParameters.Clear();
 			foreach (KeyValuePair<string, object> de in recognizer.namedParameterBindPoints)
 			{
@@ -253,24 +264,49 @@ namespace NHibernate.Loader.Custom.Sql
 
 		public class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer
 		{
+			private readonly ISessionFactoryImplementor factory;
 			internal SqlStringBuilder result = new SqlStringBuilder();
 			internal Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();
 			internal int parameterCount = 0;
+			private readonly List<IParameterSpecification> parametersSpecifications = new List<IParameterSpecification>();
+			private int positionalParameterCount;
+
+			public ParameterSubstitutionRecognizer(ISessionFactoryImplementor factory)
+			{
+				this.factory = factory;
+			}
+
+			public IEnumerable<IParameterSpecification> ParametersSpecifications
+			{
+				get { return parametersSpecifications; }
+			}
 
 			public void OutParameter(int position)
 			{
-				result.Add(Parameter.Placeholder);
+				var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
+				var parameter = Parameter.Placeholder;
+				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
+				parametersSpecifications.Add(paramSpec);
+				result.Add(parameter);
 			}
 
 			public void OrdinalParameter(int position)
 			{
-				result.Add(Parameter.Placeholder);
+				var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
+				var parameter = Parameter.Placeholder;
+				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
+				parametersSpecifications.Add(paramSpec);
+				result.Add(parameter);
 			}
 
 			public void NamedParameter(string name, int position)
 			{
 				AddNamedParameter(name);
-				result.Add(Parameter.Placeholder);
+				var paramSpec = new NamedParameterSpecification(1, position, name);
+				var parameter = Parameter.Placeholder;
+				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
+				parametersSpecifications.Add(paramSpec);
+				result.Add(parameter);
 			}
 
 			public void JpaPositionalParameter(string name, int position)

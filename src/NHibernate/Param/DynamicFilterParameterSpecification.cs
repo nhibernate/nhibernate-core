@@ -37,11 +37,16 @@ namespace NHibernate.Param
 
 		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
+			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 
-			// The same filterName-parameterName can appear more than once
+			// The same filterName-parameterName can appear more than once in the whole query
 			object value = session.GetFilterParameterValue(filterParameterFullName);
-			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
+			foreach (int position in multiSqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
 				ExpectedType.NullSafeSet(command, value, position, session);
 			}

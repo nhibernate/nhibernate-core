@@ -504,7 +504,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(translators.Select(t=> t.Loader).ToArray(), Parameters.ToArray(), commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -640,9 +640,8 @@ namespace NHibernate.Impl
 				{
 					translators.Add(translator);
 					parameters.Add(queryParameters);
-					queryParameters = GetFilteredQueryParameters(queryParameters, translator);
-					SqlCommandInfo commandInfo = translator.Loader.GetQueryStringAndTypes(session, queryParameters, resultSetsCommand.ParametersCount);
-					resultSetsCommand.Append(commandInfo);
+					ISqlCommand singleCommand = translator.Loader.CreateSqlCommandInfo(queryParameters, session);
+					resultSetsCommand.Append(singleCommand);
 				}
 			}
 		}
@@ -866,7 +865,7 @@ namespace NHibernate.Impl
 				var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
 				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
 				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
-				loader = new CustomLoader(sqlCustomQuery, sessionFactory);
+				loader = new CustomLoader(sqlCustomQuery, sqlCustomQuery.CollectedParametersSpecifications, sessionFactory);
 			}
 
 			public IType[] ReturnTypes

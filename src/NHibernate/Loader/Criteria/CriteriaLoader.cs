@@ -185,6 +185,26 @@ namespace NHibernate.Loader.Criteria
 			return customResultTransformer.TransformList(results);
 		}
 
+		public override ISqlCommand CreateSqlCommandInfo(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			// NOTE: repeated code PrepareQueryCommand
+			// A distinct-copy of parameter specifications collected during query construction
+			var parameterSpecs = new HashSet<IParameterSpecification>(translator.CollectedParameterSpecifications);
+			SqlString sqlString = SqlString.Copy();
+
+			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+
+			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+
+			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
+			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
+
+			return new SqlCommand.SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		}
+
 		/// <summary>
 		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
 		/// named parameters, and limit parameters.
@@ -199,9 +219,7 @@ namespace NHibernate.Loader.Criteria
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
 		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
 		{
-			// NH: In this Loader we can know better all parameters used so we can simplify the IDbCommand construction
-			// NH: would be very useful if we can do the same with Criteria. This method works just for HQL and LINQ.
-
+			// NOTE: repeated code CreateSqlCommandInfo (here we are reusing some other variables)
 			// A distinct-copy of parameter specifications collected during query construction
 			var parameterSpecs = new HashSet<IParameterSpecification>(translator.CollectedParameterSpecifications);
 			SqlString sqlString = SqlString.Copy();

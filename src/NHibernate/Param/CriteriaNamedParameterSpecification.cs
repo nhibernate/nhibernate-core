@@ -23,11 +23,16 @@ namespace NHibernate.Param
 
 		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
+			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
 			TypedValue typedValue = queryParameters.NamedParameters[name];
 			string backTrackId = GetIdsForBackTrack(session.Factory).First();
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				ExpectedType.NullSafeSet(command, typedValue.Value, position, session);
+				ExpectedType.NullSafeSet(command, typedValue.Value, position + singleSqlParametersOffset, session);
 			}
 		}
 

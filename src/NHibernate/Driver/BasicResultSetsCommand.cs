@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -14,9 +15,8 @@ namespace NHibernate.Driver
 		private readonly ISessionImplementor session;
 		private readonly Dialect.Dialect dialect;
 		private readonly IBatcher batcher;
-		private int resultSetsCount = 0;
-		private readonly List<SqlType> types = new List<SqlType>();
 		private SqlString sqlString = new SqlString();
+		private readonly List<ISqlCommand> commands= new List<ISqlCommand>();
 
 		public BasicResultSetsCommand(ISessionImplementor session)
 		{
@@ -25,21 +25,15 @@ namespace NHibernate.Driver
 			batcher = session.Batcher;
 		}
 
-		public virtual void Append(SqlCommandInfo commandInfo)
+		public void Append(ISqlCommand command)
 		{
-			resultSetsCount++;
-			sqlString = sqlString.Append(commandInfo.Text).Append(";").Append(Environment.NewLine);
-			types.AddRange(commandInfo.ParameterTypes);
-		}
-
-		public int ParametersCount
-		{
-			get { return types.Count; }
+			commands.Add(command);
+			sqlString = sqlString.Append(command.Query).Append(";").Append(Environment.NewLine);
 		}
 
 		public bool HasQueries
 		{
-			get { return resultSetsCount > 0; }
+			get { return commands.Count > 0; }
 		}
 
 		public SqlString Sql
@@ -47,17 +41,22 @@ namespace NHibernate.Driver
 			get { return sqlString; }
 		}
 
-		public virtual IDataReader GetReader(Loader.Loader[] queryLoaders, QueryParameters[] queryParameters, int? commandTimeout)
+		public IDataReader GetReader(int? commandTimeout)
 		{
-			SqlType[] sqlTypes = types.ToArray();
-			var command= batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
-			if(commandTimeout.HasValue)
+			SqlType[] sqlTypes = commands.SelectMany(c => c.ParameterTypes).ToArray();
+			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
+			if (commandTimeout.HasValue)
 			{
-				command.CommandTimeout = commandTimeout.Value;				
+				command.CommandTimeout = commandTimeout.Value;
 			}
 			log.Info(command.CommandText);
-
-			BindParameters(command, queryLoaders, queryParameters);
+			var wholeQueryParametersList = sqlString.GetParameters().ToList();
+			var singleQueryParameterOffset = 0;
+			foreach (var sqlLoaderCommand in commands)
+			{
+				sqlLoaderCommand.Bind(command, wholeQueryParametersList, singleQueryParameterOffset, session);
+				singleQueryParameterOffset += sqlLoaderCommand.ParameterTypes.Length;
+			}
 			return new BatcherDataReaderWrapper(batcher, command);
 		}
 
@@ -65,7 +64,7 @@ namespace NHibernate.Driver
 		{
 			int colIndex = 0;
 
-			for (int queryIndex = 0; queryIndex < resultSetsCount; queryIndex++)
+			for (int queryIndex = 0; queryIndex < commands.Count; queryIndex++)
 			{
 				int limitParameterSpan = BindLimitParametersFirstIfNeccesary(command, queryLoaders[queryIndex], queryParameters[queryIndex], colIndex);
 				colIndex = BindQueryParameters(command, queryLoaders[queryIndex], queryParameters[queryIndex], colIndex + limitParameterSpan);

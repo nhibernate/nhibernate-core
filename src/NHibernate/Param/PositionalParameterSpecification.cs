@@ -52,6 +52,11 @@ namespace NHibernate.Param
 
 		public override void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
+			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
+		public override void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
 			IType type = ExpectedType;
 			object value = queryParameters.PositionalParameterValues[hqlPosition];
 
@@ -59,7 +64,7 @@ namespace NHibernate.Param
 			// an HQL positional parameter can appear more than once because a custom HQL-Function can duplicate it
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				type.NullSafeSet(command, value, position, session);
+				type.NullSafeSet(command, value, position + singleSqlParametersOffset, session);
 			}
 		}
 

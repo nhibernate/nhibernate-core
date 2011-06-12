@@ -1785,6 +1785,11 @@ namespace NHibernate.Loader
 			return new SqlCommandInfo(sqlString, sqlTypes);
 		}
 
+		public virtual ISqlCommand CreateSqlCommandInfo(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			throw new NotSupportedException("This loader does not support extraction of single command.");
+		}
+
 		#endregion
 	}
 }
