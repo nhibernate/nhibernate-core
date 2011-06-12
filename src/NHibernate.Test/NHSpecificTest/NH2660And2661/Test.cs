@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 					configuration.DataBaseIntegration(x=> x.Driver<Sql2008ClientDriver>());
 				}
 
-        [Test, Ignore("workaround to sqlserver DP, not fixed yet")]
+        [Test]
         public void ShouldBeAbleToQueryEntity()
         {
             using (ISession session = OpenSession())
