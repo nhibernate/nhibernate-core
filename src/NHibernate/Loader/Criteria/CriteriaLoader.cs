@@ -187,12 +187,11 @@ namespace NHibernate.Loader.Criteria
 
 		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			// NOTE: repeated code PrepareQueryCommand
 			// A distinct-copy of parameter specifications collected during query construction
 			var parameterSpecs = new HashSet<IParameterSpecification>(translator.CollectedParameterSpecifications);
 			SqlString sqlString = SqlString.Copy();
 
-			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			// dynamic-filter parameters: during the Criteria parsing, filters can be added as string.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
 
@@ -202,7 +201,7 @@ namespace NHibernate.Loader.Criteria
 			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
 
-			return new SqlCommand.SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
 		/// <summary>
@@ -219,29 +218,14 @@ namespace NHibernate.Loader.Criteria
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
 		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
 		{
-			// NOTE: repeated code CreateSqlCommandInfo (here we are reusing some other variables)
-			// A distinct-copy of parameter specifications collected during query construction
-			var parameterSpecs = new HashSet<IParameterSpecification>(translator.CollectedParameterSpecifications);
-			SqlString sqlString = SqlString.Copy();
-
-			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
-			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
-
-			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
-
-			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
-			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
-
-			// After the last modification to the SqlString we can collect all parameters.
-			var sqlQueryParametersList = sqlString.GetParameters().ToList();
-			SqlType[] parameterTypes = parameterSpecs.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
+			var sqlCommand = (SqlCommandImpl)CreateSqlCommand(queryParameters, session);
+			var parameterSpecs = sqlCommand.Specifications;
+			var sqlString = sqlCommand.Query;
+			var sqlQueryParametersList = sqlCommand.SqlQueryParametersList;
 
 			parameterSpecs.SetQueryParameterLocations(sqlQueryParametersList, session.Factory);
 
-			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, parameterTypes);
-
+			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
 			try
 			{
 				RowSelection selection = queryParameters.RowSelection;
@@ -250,7 +234,7 @@ namespace NHibernate.Loader.Criteria
 					command.CommandTimeout = selection.Timeout;
 				}
 
-				BindParametersValues(command, sqlQueryParametersList, parameterSpecs, queryParameters, session);
+				sqlCommand.Bind(command, sqlQueryParametersList, 0, session);
 
 				session.Batcher.ExpandQueryParameters(command, sqlString);
 			}
@@ -417,22 +401,6 @@ namespace NHibernate.Loader.Criteria
 				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
 			}
 			return sqlString;
-		}
-
-		/// <summary>
-		/// Bind all parameters values.
-		/// </summary>
-		/// <param name="command">The command where bind each value.</param>
-		/// <param name="sqlQueryParametersList">The list of Sql query parameter in the exact sequence they are present in the query.</param>
-		/// <param name="parameterSpecs">All parameter-specifications collected during query construction.</param>
-		/// <param name="queryParameters">The encapsulation of the parameter values to be bound.</param>
-		/// <param name="session">The session from where execute the query.</param>
-		private void BindParametersValues(IDbCommand command, IList<Parameter> sqlQueryParametersList, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
-		{
-			foreach (var parameterSpecification in parameterSpecs)
-			{
-				parameterSpecification.Bind(command, sqlQueryParametersList, queryParameters, session);
-			}
 		}
 	}
 }

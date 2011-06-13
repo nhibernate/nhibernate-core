@@ -358,7 +358,7 @@ namespace NHibernate.Loader.Custom
 			var parameterSpecs = new HashSet<IParameterSpecification>(parametersSpecifications);
 			SqlString sqlString = SqlString.Copy();
 
-			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			// dynamic-filter parameters ?
 			//sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 			//AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
 
