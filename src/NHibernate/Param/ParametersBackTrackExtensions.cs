@@ -20,7 +20,7 @@ namespace NHibernate.Param
 			}
 		}
 
-		public static SqlType[] GetQueryParameterTypes(this ICollection<IParameterSpecification> parameterSpecs, List<Parameter> sqlQueryParametersList, ISessionFactoryImplementor factory)
+		public static SqlType[] GetQueryParameterTypes(this IEnumerable<IParameterSpecification> parameterSpecs, List<Parameter> sqlQueryParametersList, ISessionFactoryImplementor factory)
 		{
 			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
 			// here we can check and evetually Assert (see AssertionFailure) the supposition because each individual Parameter has its BackTrackId.
@@ -44,7 +44,7 @@ namespace NHibernate.Param
 		/// <param name="parameterSpecs"></param>
 		/// <param name="sqlQueryParametersList"></param>
 		/// <param name="factory"></param>
-		public static void SetQueryParameterLocations(this ICollection<IParameterSpecification> parameterSpecs, List<Parameter> sqlQueryParametersList, ISessionFactoryImplementor factory)
+		public static void SetQueryParameterLocations(this IEnumerable<IParameterSpecification> parameterSpecs, List<Parameter> sqlQueryParametersList, ISessionFactoryImplementor factory)
 		{
 			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
 			// this mean that found the first location of a parameter for the IType span, the others are in secuence

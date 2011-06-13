@@ -40,7 +40,7 @@ namespace NHibernate.SqlCommand
 			this.factory = factory;
 		}
 
-		private List<Parameter> SqlQueryParametersList
+		public List<Parameter> SqlQueryParametersList
 		{
 			get { return sqlQueryParametersList ?? (sqlQueryParametersList = query.GetParameters().ToList()); }
 		}

@@ -185,7 +185,7 @@ namespace NHibernate.Loader.Criteria
 			return customResultTransformer.TransformList(results);
 		}
 
-		public override ISqlCommand CreateSqlCommandInfo(QueryParameters queryParameters, ISessionImplementor session)
+		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			// NOTE: repeated code PrepareQueryCommand
 			// A distinct-copy of parameter specifications collected during query construction

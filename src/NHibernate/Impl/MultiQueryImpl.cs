@@ -640,7 +640,7 @@ namespace NHibernate.Impl
 				{
 					translators.Add(translator);
 					parameters.Add(queryParameters);
-					ISqlCommand singleCommand = translator.Loader.CreateSqlCommandInfo(queryParameters, session);
+					ISqlCommand singleCommand = translator.Loader.CreateSqlCommand(queryParameters, session);
 					resultSetsCommand.Append(singleCommand);
 				}
 			}

@@ -183,7 +183,7 @@ namespace NHibernate.Impl
 				translators.Add(translator);
 				QueryParameters queryParameters = translator.GetQueryParameters();
 				parameters.Add(queryParameters);
-				ISqlCommand singleCommand = loader.CreateSqlCommandInfo(queryParameters, session);
+				ISqlCommand singleCommand = loader.CreateSqlCommand(queryParameters, session);
 				resultSetsCommand.Append(singleCommand);
 			}
 		}

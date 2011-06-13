@@ -348,7 +348,7 @@ namespace NHibernate.Loader.Custom
 			transformerAliases = aliases.ToArray();
 		}
 
-		public override ISqlCommand CreateSqlCommandInfo(QueryParameters queryParameters, ISessionImplementor session)
+		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			if(parametersSpecifications == null)
 			{
