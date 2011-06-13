@@ -38,6 +38,15 @@ namespace NHibernate.Param
 			return typesSequence.SelectMany(t => t.SqlTypes(factory)).ToArray();
 		}
 
+		public static void ResetEffectiveExpectedType(this IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
+		{
+			// TODO: remove this method when we can infer the type during the parse
+			foreach (var parameterSpecification in parameterSpecs.OfType<IExplicitParameterSpecification>())
+			{
+				parameterSpecification.SetEffectiveType(queryParameters);
+			}
+		}
+
 		/// <summary>
 		/// Influence the final name of the parameter.
 		/// </summary>

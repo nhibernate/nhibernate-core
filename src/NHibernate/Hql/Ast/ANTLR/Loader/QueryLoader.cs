@@ -453,7 +453,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
 
 			// After the last modification to the SqlString we can collect all parameters types.
-			ResetEffectiveExpectedType(parameterSpecs, queryParameters); // <= TODO: remove this method when we can infer the type during the parse
+			parameterSpecs.ResetEffectiveExpectedType(queryParameters);
 
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
@@ -651,14 +651,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
 			}
 			return sqlString;
-		}
-
-		private void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
-		{
-			foreach (var parameterSpecification in parameterSpecs.OfType<IExplicitParameterSpecification>())
-			{
-				parameterSpecification.SetEffectiveType(queryParameters);
-			}
 		}
 	}
 }
