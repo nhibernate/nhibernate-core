@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -13,8 +14,10 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql.Classic;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -1753,41 +1756,155 @@ namespace NHibernate.Loader
 
 		#region NHibernate specific
 
-		public virtual SqlCommandInfo GetQueryStringAndTypes(ISessionImplementor session, QueryParameters parameters, int startParameterIndex)
-		{
-			SqlString sqlString = ProcessFilters(parameters, session);
-			Dialect.Dialect dialect = session.Factory.Dialect;
-
-			RowSelection selection = parameters.RowSelection;
-			bool useLimit = UseLimit(selection, dialect);
-			bool hasFirstRow = GetFirstRow(selection) > 0;
-			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
-			int limitParameterCount = GetFirstLimitParameterCount(dialect, useLimit, hasFirstRow, useOffset);
-
-			SqlType[] sqlTypes = parameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startParameterIndex + limitParameterCount, useLimit, useOffset);
-
-			if (useLimit)
-			{
-                int? offset = GetOffsetUsingDialect(selection, dialect);
-                int? limit = GetLimitUsingDialect(selection, dialect);
-                Parameter offsetParameter = parameters.OffsetParameterIndex.HasValue ? Parameter.WithIndex(parameters.OffsetParameterIndex.Value) : null;
-                Parameter limitParameter = parameters.LimitParameterIndex.HasValue ? Parameter.WithIndex(parameters.LimitParameterIndex.Value) : null;
-                sqlString =
-                    dialect.GetLimitString(
-                        sqlString.Trim(),
-                        useOffset ? offset : null,
-                        limit,
-                        useOffset ? offsetParameter : null,
-                        limitParameter);
-            }
-
-			sqlString = PreprocessSQL(sqlString, parameters, dialect);
-			return new SqlCommandInfo(sqlString, sqlTypes);
-		}
-
 		public virtual ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			throw new NotSupportedException("This loader does not support extraction of single command.");
+		}
+
+		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, ISessionImplementor session, QueryParameters queryParameters)
+		{
+			// TODO: Remove this when all parameters are managed using IParameterSpecification (QueryParameters does not need to have decomposed values for filters)
+
+			var dynamicFilterParameterSpecifications = parameterSpecs.OfType<DynamicFilterParameterSpecification>().ToList();
+			var filteredParameterValues = new List<object>();
+			var filteredParameterTypes = new List<IType>();
+			var filteredParameterLocations = new List<int>();
+
+			if (dynamicFilterParameterSpecifications.Count != 0)
+			{
+				var sqlQueryParametersList = sqlString.GetParameters().ToList();
+				foreach (DynamicFilterParameterSpecification specification in dynamicFilterParameterSpecifications)
+				{
+					string backTrackId = specification.GetIdsForBackTrack(session.Factory).First();
+					object value = session.GetFilterParameterValue(specification.FilterParameterFullName);
+					var elementType = specification.ExpectedType;
+					foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
+					{
+						filteredParameterValues.Add(value);
+						filteredParameterTypes.Add(elementType);
+						filteredParameterLocations.Add(position);
+					}
+				}
+			}
+
+			queryParameters.ProcessedSql = sqlString;
+			queryParameters.FilteredParameterLocations = filteredParameterLocations;
+			queryParameters.FilteredParameterTypes = filteredParameterTypes;
+			queryParameters.FilteredParameterValues = filteredParameterValues;
+		}
+
+		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
+		{
+			var enabledFilters = session.EnabledFilters;
+			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			{
+				return sqlString;
+			}
+
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+
+			var originSql = sqlString.Compact();
+			var result = new SqlStringBuilder();
+			foreach (var sqlPart in originSql.Parts)
+			{
+				var parameter = sqlPart as Parameter;
+				if (parameter != null)
+				{
+					result.Add(parameter);
+					continue;
+				}
+
+				var sqlFragment = sqlPart.ToString();
+				var tokens = new StringTokenizer(sqlFragment, symbols, true);
+
+				foreach (string token in tokens)
+				{
+					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					{
+						string filterParameterName = token.Substring(1);
+						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
+						string filterName = parts[0];
+						string parameterName = parts[1];
+						var filter = (FilterImpl)enabledFilters[filterName];
+
+						object value = filter.GetParameter(parameterName);
+						IType type = filter.FilterDefinition.GetParameterType(parameterName);
+						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
+						var collectionValue = value as ICollection;
+						int? collectionSpan = null;
+
+						// Add query chunk
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string bindFragment;
+						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						{
+							collectionSpan = collectionValue.Count;
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+						}
+						else
+						{
+							bindFragment = typeBindFragment;
+						}
+
+						// dynamic-filter parameter tracking
+						var filterParameterFragment = SqlString.Parse(bindFragment);
+						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
+						var parameters = filterParameterFragment.GetParameters().ToArray();
+						var sqlParameterPos = 0;
+						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
+						foreach (var paramTracker in paramTrackers)
+						{
+							parameters[sqlParameterPos++].BackTrack = paramTracker;
+						}
+
+						parameterSpecs.Add(dynamicFilterParameterSpecification);
+						result.Add(filterParameterFragment);
+					}
+					else
+					{
+						result.Add(token);
+					}
+				}
+			}
+			return result.ToSqlString().Compact();
+		}
+
+		protected SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			var sessionFactory = session.Factory;
+			Dialect.Dialect dialect = sessionFactory.Dialect;
+
+			RowSelection selection = queryParameters.RowSelection;
+			bool useLimit = UseLimit(selection, dialect);
+			if (useLimit)
+			{
+				bool hasFirstRow = GetFirstRow(selection) > 0;
+				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
+				int max = GetMaxOrLimit(dialect, selection);
+				int? skip = useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null;
+				int? take = max != int.MaxValue ? (int?)max : null;
+
+				Parameter skipSqlParameter = null;
+				Parameter takeSqlParameter = null;
+				if (skip.HasValue)
+				{
+					var skipParameter = new QuerySkipParameterSpecification();
+					skipSqlParameter = Parameter.Placeholder;
+					skipSqlParameter.BackTrack = EnumerableExtensions.First(skipParameter.GetIdsForBackTrack(sessionFactory));
+					parameterSpecs.Add(skipParameter);
+				}
+				if (take.HasValue)
+				{
+					var takeParameter = new QueryTakeParameterSpecification();
+					takeSqlParameter = Parameter.Placeholder;
+					takeSqlParameter.BackTrack = EnumerableExtensions.First(takeParameter.GetIdsForBackTrack(sessionFactory));
+					parameterSpecs.Add(takeParameter);
+				}
+				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
+				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
+			}
+			return sqlString;
 		}
 
 		#endregion

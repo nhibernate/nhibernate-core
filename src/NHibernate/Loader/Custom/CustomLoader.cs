@@ -374,43 +374,6 @@ namespace NHibernate.Loader.Custom
 			return new SqlCommand.SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
-		private SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)
-		{
-			var sessionFactory = session.Factory;
-			Dialect.Dialect dialect = sessionFactory.Dialect;
-
-			RowSelection selection = queryParameters.RowSelection;
-			bool useLimit = UseLimit(selection, dialect);
-			if (useLimit)
-			{
-				bool hasFirstRow = GetFirstRow(selection) > 0;
-				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
-				int max = GetMaxOrLimit(dialect, selection);
-				int? skip = useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null;
-				int? take = max != int.MaxValue ? (int?)max : null;
-
-				Parameter skipSqlParameter = null;
-				Parameter takeSqlParameter = null;
-				if (skip.HasValue)
-				{
-					var skipParameter = new QuerySkipParameterSpecification();
-					skipSqlParameter = Parameter.Placeholder;
-					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameterSpecs.Add(skipParameter);
-				}
-				if (take.HasValue)
-				{
-					var takeParameter = new QueryTakeParameterSpecification();
-					takeSqlParameter = Parameter.Placeholder;
-					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
-					parameterSpecs.Add(takeParameter);
-				}
-				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
-				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
-			}
-			return sqlString;
-		}
-
 		public IType[] ResultTypes
 		{
 			get { return resultTypes; }
