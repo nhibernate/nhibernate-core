@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq;
 using NHibernate.Action;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql.Classic;
+using NHibernate.Impl;
 using NHibernate.Loader.Custom.Sql;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -40,23 +43,6 @@ namespace NHibernate.Engine.Query
 			get { return customQuery; }
 		}
 
-		private int[] GetNamedParameterLocs(string name)
-		{
-			object loc = customQuery.NamedParameterBindPoints[name];
-			if (loc == null)
-			{
-				throw new QueryException("Named parameter does not appear in Query: " + name, customQuery.SQL.ToString());
-			}
-			if (Convert.GetTypeCode(loc) == TypeCode.Int32)
-			{
-				return new int[] {Convert.ToInt32(loc)};
-			}
-			else
-			{
-				return ArrayHelper.ToIntArray((IList)loc);
-			}
-		}
-
 		private void CoordinateSharedCacheCleanup(ISessionImplementor session)
 		{
 			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
@@ -84,9 +70,13 @@ namespace NHibernate.Engine.Query
 			int result;
 			try
 			{
-				queryParameters.ProcessFilters(customQuery.SQL, session);
-				SqlString sql = queryParameters.FilteredSQL;
-				SqlType[] sqlTypes = queryParameters.PrepareParameterTypes(sql, session.Factory, GetNamedParameterLocs, 0, false, false);
+				var parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
+				SqlString sql = ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
+				// After the last modification to the SqlString we can collect all parameters types.
+				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
+
+				var sqlParametersList = sql.GetParameters().ToList();
+				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
 				
 				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
@@ -97,12 +87,12 @@ namespace NHibernate.Engine.Query
 						// NH Difference : set Timeout for native query
 						ps.CommandTimeout = selection.Timeout;
 					}
-					// NH Different behavior:
-					// The inital value is 0 (initialized to 1 in JAVA)
-					// The responsibility of parameter binding was entirely moved to QueryParameters
-					// to deal with positionslParameter+NamedParameter+ParameterOfFilters
+
+					foreach (IParameterSpecification parameterSpecification in parametersSpecifications)
+					{
+						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
+					}
 					
-					queryParameters.BindParameters(ps, 0, session);
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally
@@ -124,6 +114,83 @@ namespace NHibernate.Engine.Query
 			}
 
 			return result;
+		}
+
+		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
+		{
+			var enabledFilters = session.EnabledFilters;
+			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			{
+				return sqlString;
+			}
+
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+
+			var originSql = sqlString.Compact();
+			var result = new SqlStringBuilder();
+			foreach (var sqlPart in originSql.Parts)
+			{
+				var parameter = sqlPart as Parameter;
+				if (parameter != null)
+				{
+					result.Add(parameter);
+					continue;
+				}
+
+				var sqlFragment = sqlPart.ToString();
+				var tokens = new StringTokenizer(sqlFragment, symbols, true);
+
+				foreach (string token in tokens)
+				{
+					if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+					{
+						string filterParameterName = token.Substring(1);
+						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
+						string filterName = parts[0];
+						string parameterName = parts[1];
+						var filter = (FilterImpl)enabledFilters[filterName];
+
+						object value = filter.GetParameter(parameterName);
+						IType type = filter.FilterDefinition.GetParameterType(parameterName);
+						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
+						var collectionValue = value as ICollection;
+						int? collectionSpan = null;
+
+						// Add query chunk
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan).ToArray());
+						string bindFragment;
+						if (collectionValue != null && !type.ReturnedClass.IsArray)
+						{
+							collectionSpan = collectionValue.Count;
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionValue.Count).ToArray());
+						}
+						else
+						{
+							bindFragment = typeBindFragment;
+						}
+
+						// dynamic-filter parameter tracking
+						var filterParameterFragment = SqlString.Parse(bindFragment);
+						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
+						var parameters = filterParameterFragment.GetParameters().ToArray();
+						var sqlParameterPos = 0;
+						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
+						foreach (var paramTracker in paramTrackers)
+						{
+							parameters[sqlParameterPos++].BackTrack = paramTracker;
+						}
+
+						parameterSpecs.Add(dynamicFilterParameterSpecification);
+						result.Add(filterParameterFragment);
+					}
+					else
+					{
+						result.Add(token);
+					}
+				}
+			}
+			return result.ToSqlString().Compact();
 		}
 	}
 }
