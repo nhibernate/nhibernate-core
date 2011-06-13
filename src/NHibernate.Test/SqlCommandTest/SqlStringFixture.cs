@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -374,10 +375,10 @@ namespace NHibernate.Test.SqlCommandTest
 			Parameter[] parameters1 = new Parameter[1];
 			Parameter[] parameters2 = new Parameter[1];
 			
-			SqlString parameterString1 = SqlString.Parameter;
+			SqlString parameterString1 = new SqlString(Parameter.Placeholder);
 			parameterString1.Parts.CopyTo(parameters1, 0);
 
-			SqlString parameterString2 = SqlString.Parameter;
+			SqlString parameterString2 = new SqlString(Parameter.Placeholder);
 			parameterString2.Parts.CopyTo(parameters2, 0);
 
 			Assert.AreEqual(parameterString1, parameterString2);
@@ -385,6 +386,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			parameters1[0].ParameterPosition = 231;
 			Assert.IsNull(parameters2[0].ParameterPosition);
+
+			// more simple version of the test
+			Parameter.Placeholder.Should().Not.Be.SameInstanceAs(Parameter.Placeholder);
 		}
 	}
 }

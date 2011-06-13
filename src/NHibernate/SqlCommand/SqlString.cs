@@ -690,19 +690,24 @@ namespace NHibernate.SqlCommand
 		{
 			foreach (object part in sqlParts)
 			{
-				string partString = part as string;
-				SqlString partSqlString = part as SqlString;
+				var partString = part as string;
 				if (partString != null)
 				{
 					visitor.String(partString);
+					continue;
 				}
-				else if (partSqlString != null && !SqlString.Parameter.Equals(partSqlString))
+
+				var partSqlString = part as SqlString;
+				if (partSqlString != null)
 				{
 					visitor.String(partSqlString);
+					continue;
 				}
-				else
+
+				var partParameter = part as Parameter;
+				if(partParameter != null)
 				{
-					visitor.Parameter((Parameter)part);
+					visitor.Parameter(partParameter);
 				}
 			}
 		}
