@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -21,6 +22,17 @@ namespace NHibernate.SqlCommand
 		/// <param name="singleSqlParametersOffset">The offset from where start the list of <see cref="IDataParameter"/>, in the given <paramref name="command"/>, for the this <see cref="SqlCommandImpl"/>. </param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
 		void Bind(IDbCommand command, IList<Parameter> commandQueryParametersList, int singleSqlParametersOffset, ISessionImplementor session);
+
+		/// <summary>
+		/// Bind the appropriate value into the given command.
+		/// </summary>
+		/// <param name="command">The command into which the value should be bound.</param>
+		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <remarks>
+		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
+		/// Use the overload <see cref="Bind(IDbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
+		/// </remarks>
+		void Bind(IDbCommand command, ISessionImplementor session);
 	}
 
 	public class SqlCommandImpl : ISqlCommand
@@ -77,6 +89,23 @@ namespace NHibernate.SqlCommand
 			foreach (IParameterSpecification parameterSpecification in Specifications)
 			{
 				parameterSpecification.Bind(command, commandQueryParametersList, singleSqlParametersOffset, SqlQueryParametersList, QueryParameters, session);
+			}
+		}
+
+		/// <summary>
+		/// Bind the appropriate value into the given command.
+		/// </summary>
+		/// <param name="command">The command into which the value should be bound.</param>
+		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <remarks>
+		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
+		/// Use the overload <see cref="Bind(IDbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
+		/// </remarks>
+		public void Bind(IDbCommand command, ISessionImplementor session)
+		{
+			foreach (IParameterSpecification parameterSpecification in Specifications)
+			{
+				parameterSpecification.Bind(command, SqlQueryParametersList, QueryParameters, session);
 			}
 		}
 	}

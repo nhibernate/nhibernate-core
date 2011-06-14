@@ -231,7 +231,7 @@ namespace NHibernate.Loader.Criteria
 					command.CommandTimeout = selection.Timeout;
 				}
 
-				sqlCommand.Bind(command, sqlQueryParametersList, 0, session);
+				sqlCommand.Bind(command, session);
 
 				session.Batcher.ExpandQueryParameters(command, sqlString);
 			}

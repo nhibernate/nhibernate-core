@@ -371,7 +371,7 @@ namespace NHibernate.Loader.Custom
 			// After the last modification to the SqlString we can collect all parameters types.
 			parameterSpecs.ResetEffectiveExpectedType(queryParameters);
 
-			return new SqlCommand.SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
 		public IType[] ResultTypes
