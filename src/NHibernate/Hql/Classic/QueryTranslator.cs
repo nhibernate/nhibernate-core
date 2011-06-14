@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
@@ -11,9 +12,9 @@ using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
-using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Loader;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -21,8 +22,8 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Dialect.Function;
-using System.Collections.Specialized;
 using System.Collections.Generic;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Classic
 {
@@ -79,6 +80,8 @@ namespace NHibernate.Hql.Classic
 		private bool hasScalars;
 		private bool shallowQuery;
 		private QueryTranslator superQuery;
+		private IList<IParameterSpecification> collectedParameters = new List<IParameterSpecification>();
+		private int positionalParameterFound;
 
 		private class FetchedCollections
 		{
@@ -266,6 +269,107 @@ namespace NHibernate.Hql.Classic
 			enabledFilters = superquery.EnabledFilters;
 
 			Compile();
+		}
+
+		private int GetPositionalParameterPosition()
+		{
+			return superQuery != null ? superQuery.GetPositionalParameterPosition() : positionalParameterFound++;
+		}
+
+		public SqlString GetNamedParameter(string name)
+		{
+			var parameterSpecification = new NamedParameterSpecification(1, 0, name);
+			var parameter = Parameter.Placeholder;
+			parameter.BackTrack = parameterSpecification.GetIdsForBackTrack(Factory).First();
+
+			AddNamedParameter(name);
+			collectedParameters.Add(parameterSpecification);
+			return new SqlString(parameter);
+		}
+
+		public SqlString GetPositionalParameter()
+		{
+			var parameterSpecification = new PositionalParameterSpecification(1, 0, GetPositionalParameterPosition());
+			var parameter = Parameter.Placeholder;
+			parameter.BackTrack = parameterSpecification.GetIdsForBackTrack(Factory).First();
+			collectedParameters.Add(parameterSpecification);
+			return new SqlString(parameter);
+		}
+
+		public IEnumerable<IParameterSpecification> CollectedParameterSpecifications
+		{
+			get { return ((superQuery != null) ? superQuery.CollectedParameterSpecifications:Enumerable.Empty<IParameterSpecification>()).Concat(collectedParameters); }
+		}
+
+		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			// A distinct-copy of parameter specifications collected during query construction
+			var parameterSpecs = new HashSet<IParameterSpecification>(CollectedParameterSpecifications);
+			SqlString sql = SqlString.Copy();
+
+			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			sql = ExpandDynamicFilterParameters(sql, parameterSpecs, session);
+			AdjustQueryParametersForSubSelectFetching(sql, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+
+			sql = AddLimitsParametersIfNeeded(sql, parameterSpecs, queryParameters, session);
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+
+			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
+			sql = PreprocessSQL(sql, queryParameters, session.Factory.Dialect);
+
+			// After the last modification to the SqlString we can collect all parameters types.
+			parameterSpecs.ResetEffectiveExpectedType(queryParameters);
+
+			return new SqlCommandImpl(sql, parameterSpecs, queryParameters, session.Factory);
+		}
+
+		/// <summary>
+		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
+		/// named parameters, and limit parameters.
+		/// </summary>
+		/// <remarks>
+		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
+		/// database to Load an Entity.
+		/// </remarks>
+		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
+		/// <param name="scroll">TODO: find out where this is used...</param>
+		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
+		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
+		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
+		{
+			var sqlCommand = (SqlCommandImpl)CreateSqlCommand(queryParameters, session);
+			var parameterSpecs = sqlCommand.Specifications;
+			var query = sqlCommand.Query;
+			var sqlQueryParametersList = sqlCommand.SqlQueryParametersList;
+
+			parameterSpecs.SetQueryParameterLocations(sqlQueryParametersList, session.Factory);
+
+			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, query, sqlCommand.ParameterTypes);
+
+			try
+			{
+				RowSelection selection = queryParameters.RowSelection;
+				if (selection != null && selection.Timeout != RowSelection.NoValue)
+				{
+					command.CommandTimeout = selection.Timeout;
+				}
+
+				sqlCommand.Bind(command, sqlQueryParametersList, 0, session);
+
+				session.Batcher.ExpandQueryParameters(command, query);
+			}
+			catch (HibernateException)
+			{
+				session.Batcher.CloseCommand(command, null);
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				session.Batcher.CloseCommand(command, null);
+				ADOExceptionReporter.LogExceptions(sqle);
+				throw;
+			}
+			return command;
 		}
 
 		/// <summary>
@@ -672,15 +776,17 @@ namespace NHibernate.Hql.Classic
 
 		internal void AppendOrderByToken(string token)
 		{
-			if (StringHelper.SqlParameter.Equals(token))
-				orderByTokens.Add(SqlString.Parameter);
-			else
-				orderByTokens.Add(new SqlString(token));
+			orderByTokens.Add(new SqlString(token));
+		}
+
+		internal void AppendOrderByParameter(string name)
+		{
+			orderByTokens.Add(GetNamedParameter(name));
 		}
 
 		internal void AppendOrderByParameter()
 		{
-			orderByTokens.Add(SqlString.Parameter);
+			orderByTokens.Add(GetPositionalParameter());
 		}
 
 		internal void AppendGroupByToken(string token)
@@ -688,9 +794,14 @@ namespace NHibernate.Hql.Classic
 			groupByTokens.Add(new SqlString(token));
 		}
 
+		internal void AppendGroupByParameter(string name)
+		{
+			groupByTokens.Add(GetNamedParameter(name));
+		}
+
 		internal void AppendGroupByParameter()
 		{
-			groupByTokens.Add(SqlString.Parameter);
+			groupByTokens.Add(GetPositionalParameter());
 		}
 
 		internal void AppendScalarSelectToken(string token)
@@ -703,9 +814,14 @@ namespace NHibernate.Hql.Classic
 			scalarSelectTokens.Add(new SqlString(tokens));
 		}
 
+		internal void AppendScalarSelectParameter(string name)
+		{
+			scalarSelectTokens.Add(GetNamedParameter(name));
+		}
+
 		internal void AppendScalarSelectParameter()
 		{
-			scalarSelectTokens.Add(SqlString.Parameter);
+			scalarSelectTokens.Add(GetPositionalParameter());
 		}
 
 		internal void AddJoin(string name, JoinSequence joinSequence)
@@ -1087,9 +1203,20 @@ namespace NHibernate.Hql.Classic
 			int parenCount = 1;
 			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
 			{
-				if (tokens[tokenIdx].StartsWithCaseInsensitive(ParserHelper.HqlVariablePrefix) || tokens[tokenIdx].ToString().Equals(StringHelper.SqlParameter))
+				if (tokens[tokenIdx].Parts.Count == 1 && (tokens[tokenIdx].Parts.First() is Parameter))
 				{
-					functionTokens.Add(SqlString.Parameter);
+					// the parameter was processed
+					functionTokens.Add(tokens[tokenIdx]);
+					continue;
+				}
+				if (tokens[tokenIdx].StartsWithCaseInsensitive(ParserHelper.HqlVariablePrefix))
+				{
+					string name = tokens[tokenIdx].Substring(1).ToString();
+					functionTokens.Add(GetNamedParameter(name));
+				}
+				else if (StringHelper.SqlParameter.Equals(tokens[tokenIdx].ToString()))
+				{
+					functionTokens.Add(GetPositionalParameter());
 				}
 				else
 				{

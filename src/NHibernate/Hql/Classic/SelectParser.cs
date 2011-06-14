@@ -170,7 +170,11 @@ namespace NHibernate.Hql.Classic
 
 				if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 				{
-					q.AddNamedParameter(token.Substring(1));
+					string name = token.Substring(1);
+					q.AppendScalarSelectParameter(name);
+				}
+				else if (token.Equals(StringHelper.SqlParameter))
+				{
 					q.AppendScalarSelectParameter();
 				}
 				else if (constantToken)
@@ -237,7 +241,11 @@ namespace NHibernate.Hql.Classic
 					}
 					else if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 					{
-						q.AddNamedParameter(token.Substring(1));
+						string name = token.Substring(1);
+						q.AppendScalarSelectParameter(name);
+					}
+					else if (token.Equals(StringHelper.SqlParameter))
+					{
 						q.AppendScalarSelectParameter();
 					}
 					else

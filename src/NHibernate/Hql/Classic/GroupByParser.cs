@@ -27,9 +27,13 @@ namespace NHibernate.Hql.Classic
 				q.AppendGroupByToken(pathExpressionParser.WhereColumn);
 				pathExpressionParser.AddAssociation(q);
 			}
-			else if (token.StartsWith(ParserHelper.HqlVariablePrefix))
+			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
-				q.AddNamedParameter(token.Substring(1));
+				var name = token.Substring(1);
+				q.AppendGroupByParameter(name);
+			}
+			else if (token.Equals(StringHelper.SqlParameter))
+			{
 				q.AppendGroupByParameter();
 			}
 			else

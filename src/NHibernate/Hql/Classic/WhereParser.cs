@@ -470,17 +470,17 @@ namespace NHibernate.Hql.Classic
 			}
 			else if (token.StartsWith(ParserHelper.HqlVariablePrefix)) //named query parameter
 			{
-				q.AddNamedParameter(token.Substring(1));
+				var name = token.Substring(1);
 				// this is only a temporary parameter to help with the parsing of hql - 
 				// when the type becomes known then this will be converted to its real
 				// parameter type.
-				AppendToken(q, SqlString.Parameter);
+				AppendToken(q, q.GetNamedParameter(name));
 			}
 			else if (token.Equals(StringHelper.SqlParameter))
 			{
 				//if the token is a "?" then we have a Parameter so convert it to a SqlCommand.Parameter
 				// instead of appending a "?" to the WhereTokens
-				AppendToken(q, SqlString.Parameter);
+				AppendToken(q, q.GetPositionalParameter());
 			}
 			else
 			{

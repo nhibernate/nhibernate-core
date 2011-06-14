@@ -26,11 +26,6 @@ namespace NHibernate.SqlCommand
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
 		
-		public static SqlString Parameter
-		{
-			get { return new SqlString(SqlCommand.Parameter.Placeholder); }
-		}
-
 		public SqlString(string sqlPart)
 		{
 			if (StringHelper.IsNotEmpty(sqlPart))

@@ -27,7 +27,11 @@ namespace NHibernate.Hql.Classic
 			}
 			else if (token.StartsWith(ParserHelper.HqlVariablePrefix))
 			{
-				q.AddNamedParameter(token.Substring(1));
+				var name = token.Substring(1);
+				q.AppendOrderByParameter(name);
+			}
+			else if (StringHelper.SqlParameter.Equals(token))
+			{
 				q.AppendOrderByParameter();
 			}
 			else
