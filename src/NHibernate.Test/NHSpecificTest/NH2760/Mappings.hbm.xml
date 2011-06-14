@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2760">
+
+	<class name="User" table="`User`">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+		<property name="Other" />
+		<set name="UserGroups" table="UserGroupUsers">
+			<key column="UserId" />
+			<many-to-many class="UserGroup" column="UserGroupId" />
+		</set>
+	</class>
+
+	<class name="UserGroup">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+		<property name="Other" />
+		<bag name="Users" table="UserGroupUsers" inverse="true">
+			<key column="UserGroupId" />
+			<many-to-many class="User" column="UserId" />
+		</bag>
+	</class>
+
+</hibernate-mapping>

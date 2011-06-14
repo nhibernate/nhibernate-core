@@ -140,7 +140,7 @@ unionedQuery!
 	;
 
 orderClause
-	: ^(ORDER { HandleClauseStart( ORDER ); } orderExprs)
+	: ^(ORDER { HandleClauseStart( ORDER ); } (orderExprs | query (ASCENDING | DESCENDING)? ))
 	;
 
 orderExprs
