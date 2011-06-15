@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Custom
@@ -42,5 +43,7 @@ namespace NHibernate.Loader.Custom
 		/// ADO result set to be expected and how to map this result set. 
 		/// </summary>
 		IList<IReturn> CustomQueryReturns { get; }
+
+		IEnumerable<IParameterSpecification> CollectedParametersSpecifications { get; }
 	}
 }

@@ -1136,83 +1136,25 @@ namespace NHibernate.Loader
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
-		protected internal virtual IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll,
-		                                                          ISessionImplementor session)
+		protected internal virtual IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
 		{
-			SqlString sqlString = ProcessFilters(queryParameters, session);
-			Dialect.Dialect dialect = session.Factory.Dialect;
+			ISqlCommand sqlCommand = CreateSqlCommand(queryParameters, session);
+			SqlString sqlString = sqlCommand.Query;
 
-			RowSelection selection = queryParameters.RowSelection;
-			bool useLimit = UseLimit(selection, dialect);
-			bool hasFirstRow = GetFirstRow(selection) > 0;
-			bool useOffset = hasFirstRow && useLimit && dialect.SupportsLimitOffset;
-			int startIndex = GetFirstLimitParameterCount(dialect, useLimit, hasFirstRow, useOffset);
-			// TODO NH bool callable = queryParameters.Callable;
-
-			SqlType[] parameterTypes = queryParameters.PrepareParameterTypes(sqlString, Factory, GetNamedParameterLocs, startIndex, useLimit, useOffset);
-
-			if (useLimit)
-			{
-			    int? offset = GetOffsetUsingDialect(selection, dialect);
-			    int? limit = GetLimitUsingDialect(selection, dialect);
-                Parameter offsetParameter = queryParameters.OffsetParameterIndex.HasValue ? Parameter.WithIndex(queryParameters.OffsetParameterIndex.Value) : null;
-                Parameter limitParameter = queryParameters.LimitParameterIndex.HasValue ? Parameter.WithIndex(queryParameters.LimitParameterIndex.Value) : null;
-				sqlString =
-					dialect.GetLimitString(
-						sqlString.Trim(),
-						useOffset ? offset : null,
-						limit,
-						useOffset ? offsetParameter : null,
-                        limitParameter);
-			}
-
-			sqlString = PreprocessSQL(sqlString, queryParameters, dialect);
-
-			// TODO NH: Callable for SP -> PrepareCallableQueryCommand
-			IDbCommand command =
-				session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, parameterTypes);
+			sqlCommand.ResetParametersIndexesForTheCommand(0);
+			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
 
 			try
 			{
-				// Added in NH - not in H2.1
+				RowSelection selection = queryParameters.RowSelection;
 				if (selection != null && selection.Timeout != RowSelection.NoValue)
 				{
 					command.CommandTimeout = selection.Timeout;
 				}
 
-				int colIndex = 0;
-
-				if (useLimit && dialect.BindLimitParametersFirst)
-				{
-					colIndex += BindLimitParameters(command, colIndex, selection, session);
-				}
-				// TODO NH
-				//if (callable)
-				//{
-				//  colIndex = dialect.RegisterResultSetOutParameter(command, col);
-				//}
-
-				colIndex += BindParameterValues(command, queryParameters, colIndex, session);
-
-				if (useLimit && !dialect.BindLimitParametersFirst)
-				{
-					BindLimitParameters(command, colIndex, selection, session);
-				}
+				sqlCommand.Bind(command, session);
 
 				session.Batcher.ExpandQueryParameters(command, sqlString);
-
-				if (!useLimit)
-				{
-					SetMaxRows(command, selection);
-				}
-				if (selection != null)
-				{
-					if (selection.Timeout != RowSelection.NoValue)
-					{
-						command.CommandTimeout = selection.Timeout;
-					}
-					// H2.1 handles FetchSize here - not ported
-				}
 			}
 			catch (HibernateException)
 			{
@@ -1225,7 +1167,6 @@ namespace NHibernate.Loader
 				ADOExceptionReporter.LogExceptions(sqle);
 				throw;
 			}
-
 			return command;
 		}
 
@@ -1758,7 +1699,41 @@ namespace NHibernate.Loader
 
 		public virtual ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			throw new NotSupportedException("This loader does not support extraction of single command.");
+			// The implementation of this method is itended to be used just for "internal" command (not for queries coming from users)
+			// Internally NH creates various commands, all using just positional-parameters, to then potentially apply dynamic-filters and pagination.
+			// In practice this method should be overriden by those loaders representing a user-query as CriteriaLoader, QueryLoader, classic QueryTraslator, CustomLoader (for custmon SQL queries).
+
+			// A distinct-copy of parameter specifications collected during query construction
+			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications(queryParameters, session.Factory));
+			SqlString sqlString = SqlString.Copy();
+
+			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+
+			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+
+			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
+			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
+
+			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		}
+
+		protected IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		{
+			// TODO FM: remove this implementation and put an abstract ParameterSpecifications in the Loader (each concrete implementation have to expose it) => NH1990, SubselectFetchFixture
+			var positionalSpecifications = queryParameters.PositionalParameterTypes.Select((t, i) => (IParameterSpecification)new PositionalParameterSpecification(1, 0, i) { ExpectedType = t });
+			var namedSpecifications = queryParameters.NamedParameters != null ? queryParameters.NamedParameters.Select(np => (IParameterSpecification)new NamedParameterSpecification(1, 0, np.Key) { ExpectedType = np.Value.Type }): Enumerable.Empty<IParameterSpecification>();
+			var specifications= positionalSpecifications.Concat(namedSpecifications).ToList();
+			var parameters = SqlString.GetParameters().ToArray();
+			var sqlParameterPos = 0;
+			var paramTrackers = specifications.SelectMany(specification => specification.GetIdsForBackTrack(sessionFactory));
+			foreach (var paramTracker in paramTrackers)
+			{
+				parameters[sqlParameterPos++].BackTrack = paramTracker;
+			}
+			return specifications;
 		}
 
 		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, ISessionImplementor session, QueryParameters queryParameters)

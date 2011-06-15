@@ -43,17 +43,12 @@ namespace NHibernate.Loader.Custom
 		private IType[] resultTypes;
 		private string[] transformerAliases;
 
-		public CustomLoader(ICustomQuery customQuery, IEnumerable<IParameterSpecification> parametersSpecifications, ISessionFactoryImplementor factory)
-			: this(customQuery, factory)
-		{
-			this.parametersSpecifications = parametersSpecifications.ToList();
-		}
-
 		public CustomLoader(ICustomQuery customQuery, ISessionFactoryImplementor factory) : base(factory)
 		{
 			sql = customQuery.SQL;
 			querySpaces.AddAll(customQuery.QuerySpaces);
 			namedParameterBindPoints = customQuery.NamedParameterBindPoints;
+			this.parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
 			List<int> entityowners = new List<int>();
@@ -350,10 +345,6 @@ namespace NHibernate.Loader.Custom
 
 		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			if(parametersSpecifications == null)
-			{
-				throw new InvalidOperationException("The custom SQL loader was not initialized with Parameters Specifications.");
-			}
 			// A distinct-copy of parameter specifications collected during query construction
 			var parameterSpecs = new HashSet<IParameterSpecification>(parametersSpecifications);
 			SqlString sqlString = SqlString.Copy();

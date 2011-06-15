@@ -201,52 +201,6 @@ namespace NHibernate.Loader.Criteria
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
-		/// <summary>
-		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
-		/// named parameters, and limit parameters.
-		/// </summary>
-		/// <remarks>
-		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
-		/// database to Load an Entity.
-		/// </remarks>
-		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the IDbCommand.</param>
-		/// <param name="scroll">TODO: find out where this is used...</param>
-		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
-		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
-		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
-		{
-			var sqlCommand = CreateSqlCommand(queryParameters, session);
-			var sqlString = sqlCommand.Query;
-
-			sqlCommand.ResetParametersIndexesForTheCommand(0);
-			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
-
-			try
-			{
-				RowSelection selection = queryParameters.RowSelection;
-				if (selection != null && selection.Timeout != RowSelection.NoValue)
-				{
-					command.CommandTimeout = selection.Timeout;
-				}
-
-				sqlCommand.Bind(command, session);
-
-				session.Batcher.ExpandQueryParameters(command, sqlString);
-			}
-			catch (HibernateException)
-			{
-				session.Batcher.CloseCommand(command, null);
-				throw;
-			}
-			catch (Exception sqle)
-			{
-				session.Batcher.CloseCommand(command, null);
-				ADOExceptionReporter.LogExceptions(sqle);
-				throw;
-			}
-			return command;
-		}
-
 		public override int[] GetNamedParameterLocs(string name)
 		{
 			return new int[0];

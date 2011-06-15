@@ -865,7 +865,7 @@ namespace NHibernate.Impl
 				var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
 				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
 				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
-				loader = new CustomLoader(sqlCustomQuery, sqlCustomQuery.CollectedParametersSpecifications, sessionFactory);
+				loader = new CustomLoader(sqlCustomQuery, sessionFactory);
 			}
 
 			public IType[] ReturnTypes
