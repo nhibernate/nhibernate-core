@@ -134,8 +134,6 @@ namespace NHibernate.Loader.Criteria
 
 			return
 				new QueryParameters(
-					new IType[0], 
-					new object[0],
 					queryNamedParameters,
 					lockModes,
 					selection,
