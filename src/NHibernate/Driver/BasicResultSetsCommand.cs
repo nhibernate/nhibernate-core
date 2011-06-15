@@ -43,6 +43,7 @@ namespace NHibernate.Driver
 		{
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
+			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset));
 			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
 			if (commandTimeout.HasValue)
 			{
@@ -56,10 +57,19 @@ namespace NHibernate.Driver
 		protected virtual void BindParameters(IDbCommand command)
 		{
 			var wholeQueryParametersList = Sql.GetParameters().ToList();
+			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.Bind(command, wholeQueryParametersList, offset, Session));
+		}
+
+		/// <summary>
+		/// Execute the given <paramref name="actionToDo"/> for each command of the resultset.
+		/// </summary>
+		/// <param name="actionToDo">The action to perform where the first parameter is the <see cref="ISqlCommand"/> and the second parameter is the parameters offset of the <see cref="ISqlCommand"/>.</param>
+		protected void ForEachSqlCommand(Action<ISqlCommand, int> actionToDo)
+		{
 			var singleQueryParameterOffset = 0;
 			foreach (var sqlLoaderCommand in Commands)
 			{
-				sqlLoaderCommand.Bind(command, wholeQueryParametersList, singleQueryParameterOffset, Session);
+				actionToDo(sqlLoaderCommand, singleQueryParameterOffset);
 				singleQueryParameterOffset += sqlLoaderCommand.ParameterTypes.Length;
 			}
 		}
