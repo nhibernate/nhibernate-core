@@ -337,13 +337,10 @@ namespace NHibernate.Hql.Classic
 		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
 		protected internal override IDbCommand PrepareQueryCommand(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
 		{
-			var sqlCommand = (SqlCommandImpl)CreateSqlCommand(queryParameters, session);
-			var parameterSpecs = sqlCommand.Specifications;
+			var sqlCommand = CreateSqlCommand(queryParameters, session);
 			var query = sqlCommand.Query;
-			var sqlQueryParametersList = sqlCommand.SqlQueryParametersList;
 
-			parameterSpecs.SetQueryParameterLocations(sqlQueryParametersList, session.Factory);
-
+			sqlCommand.ResetParametersIndexesForTheCommand(0);
 			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, query, sqlCommand.ParameterTypes);
 
 			try

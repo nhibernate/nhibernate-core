@@ -48,34 +48,5 @@ namespace NHibernate.Param
 				parameterSpecification.SetEffectiveType(queryParameters);
 			}
 		}
-
-		/// <summary>
-		/// Influence the final name of the parameter.
-		/// </summary>
-		/// <param name="parameterSpecs"></param>
-		/// <param name="sqlQueryParametersList"></param>
-		/// <param name="factory"></param>
-		public static void SetQueryParameterLocations(this IEnumerable<IParameterSpecification> parameterSpecs, List<Parameter> sqlQueryParametersList, ISessionFactoryImplementor factory)
-		{
-			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
-			// this mean that found the first location of a parameter for the IType span, the others are in secuence
-			foreach (IParameterSpecification specification in parameterSpecs)
-			{
-				string firstParameterId = specification.GetIdsForBackTrack(factory).First();
-				int[] effectiveParameterLocations = sqlQueryParametersList.GetEffectiveParameterLocations(firstParameterId).ToArray();
-				if (effectiveParameterLocations.Length > 0) // Parameters previously present might have been removed from the SQL at a later point.
-				{
-					int firstParamNameIndex = effectiveParameterLocations.First();
-					foreach (int location in effectiveParameterLocations)
-					{
-						int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);
-						for (int j = 0; j < parameterSpan; j++)
-						{
-							sqlQueryParametersList[location + j].ParameterPosition = firstParamNameIndex + j;
-						}
-					}
-				}
-			}
-		}
 	}
 }
