@@ -1170,12 +1170,6 @@ namespace NHibernate.Loader
 			return command;
 		}
 
-		protected virtual SqlString ProcessFilters(QueryParameters parameters, ISessionImplementor session)
-		{
-			parameters.ProcessFilters(SqlString, session);
-			return parameters.FilteredSQL;
-		}
-
 		/// <summary> 
 		/// Some dialect-specific LIMIT clauses require the maximium last row number
 		/// (aka, first_row_number + total_row_count), while others require the maximum
@@ -1244,23 +1238,6 @@ namespace NHibernate.Loader
 			//  // there is nothing in ADO.NET to do anything  similar
 			//  // to Java's PreparedStatement.setMaxRows(int)
 			//}
-		}
-
-		/// <summary> 
-		/// Bind all parameter values into the prepared statement in preparation for execution. 
-		/// </summary>
-		/// <param name="statement">The ADO prepared statement </param>
-		/// <param name="queryParameters">The encapsulation of the parameter values to be bound. </param>
-		/// <param name="startIndex">The position from which to start binding parameter values. </param>
-		/// <param name="session">The originating session. </param>
-		/// <returns> The number of ADO bind positions actually bound during this method execution. </returns>
-		protected virtual int BindParameterValues(IDbCommand statement, QueryParameters queryParameters,
-		                                                   int startIndex, ISessionImplementor session)
-		{
-			// NH Different behavior:
-			// The responsibility of parameter binding was entirely moved to QueryParameters
-			// to deal with positionslParameter+NamedParameter+ParameterOfFilters
-			return queryParameters.BindParameters(statement, startIndex, session);
 		}
 
 		public virtual int[] GetNamedParameterLocs(string name)
