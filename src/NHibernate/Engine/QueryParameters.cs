@@ -72,9 +72,9 @@ namespace NHibernate.Engine
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
-			_positionalParameterTypes = positionalParameterTypes;
-			_positionalParameterValues = positionalParameterValues;
-			_namedParameters = namedParameters;
+			_positionalParameterTypes = positionalParameterTypes ?? new IType[0];
+			_positionalParameterValues = positionalParameterValues ?? new IType[0];
+			_namedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
 			_lockModes = lockModes;
 			_rowSelection = rowSelection;
 			_cacheable = cacheable;
@@ -102,7 +102,7 @@ namespace NHibernate.Engine
 		public IDictionary<string, TypedValue> NamedParameters
 		{
 			get { return _namedParameters; }
-			set { _namedParameters = value; }
+			internal set { _namedParameters = value; }
 		}
 
 		/// <summary>
@@ -150,15 +150,6 @@ namespace NHibernate.Engine
 			get { return _isReadOnlyInitialized; }
 		}
 
-		private int SafeLength(Array array)
-		{
-			if (array == null)
-			{
-				return 0;
-			}
-			return array.Length;
-		}
-
 		public void LogParameters(ISessionFactoryImplementor factory)
 		{
 			var print = new Printer(factory);
@@ -200,8 +191,8 @@ namespace NHibernate.Engine
 		/// </exception>
 		public void ValidateParameters()
 		{
-			int typesLength = SafeLength(PositionalParameterTypes);
-			int valuesLength = SafeLength(PositionalParameterValues);
+			int typesLength = PositionalParameterTypes.Length;
+			int valuesLength = PositionalParameterValues.Length;
 
 			if (typesLength != valuesLength)
 			{
