@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
@@ -22,12 +23,8 @@ namespace NHibernate.Engine
 
 		private IType[] _positionalParameterTypes;
 		private object[] _positionalParameterValues;
-		private int[] _positionalParameterLocations;
 		private IDictionary<string, TypedValue> _namedParameters;
 		private IDictionary<string, LockMode> _lockModes;
-		private IList<IType> filteredParameterTypes;
-		private IList<object> filteredParameterValues;
-		private IList<int> filteredParameterLocations;
 		private RowSelection _rowSelection;
 		private bool _cacheable;
 		private string _cacheRegion;
@@ -116,11 +113,6 @@ namespace NHibernate.Engine
 		{
 			get { return _positionalParameterTypes; }
 			set { _positionalParameterTypes = value; }
-		}
-
-		public int[] PositionalParameterLocations
-		{
-			get { return _positionalParameterLocations; }
 		}
 
 		/// <summary>
@@ -284,11 +276,8 @@ namespace NHibernate.Engine
 			var copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues, _namedParameters, _lockModes,
 			                               selection, _isReadOnlyInitialized, _readOnly, _cacheable, _cacheRegion, _comment, _collectionKeys,
 			                               _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
-			copy._positionalParameterLocations = _positionalParameterLocations;
 			copy.processedSQL = processedSQL;
-			copy.filteredParameterTypes = filteredParameterTypes;
-			copy.filteredParameterValues = filteredParameterValues;
-			copy.filteredParameterLocations = filteredParameterLocations;
+			copy.ProcessedSqlParameters = ProcessedSqlParameters.ToList();
 			return copy;
 		}
 		
