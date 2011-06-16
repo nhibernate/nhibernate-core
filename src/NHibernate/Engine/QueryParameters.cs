@@ -17,35 +17,18 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		public delegate int[] GetNamedParameterLocations(string parameterName);
-
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
 
-		private IType[] _positionalParameterTypes;
-		private object[] _positionalParameterValues;
-		private IDictionary<string, TypedValue> _namedParameters;
-		private IDictionary<string, LockMode> _lockModes;
-		private RowSelection _rowSelection;
-		private bool _cacheable;
-		private string _cacheRegion;
-		private object[] _collectionKeys;
-		private object _optionalObject;
-		private string _optionalEntityName;
-		private object _optionalId;
-		private bool _isReadOnlyInitialized;
-		private string _comment;
-		private bool _readOnly;
-		private SqlString processedSQL;
-		private readonly IResultTransformer _resultTransformer;
-		
+		private bool readOnly;
+
 		public QueryParameters() : this(ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject, string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
 		{
-			_optionalObject = optionalObject;
-			_optionalId = optionalObjectId;
-			_optionalEntityName = optionalEntityName;
+			OptionalObject = optionalObject;
+			OptionalId = optionalObjectId;
+			OptionalEntityName = optionalEntityName;
 		}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
@@ -57,129 +40,144 @@ namespace NHibernate.Engine
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
+		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
 		{
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
-		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
-			: this(ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
+		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
+		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+			: this(
+				ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
+				transformer)
 		{
 			// used by CriteriaTranslator
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, IResultTransformer transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
+		                       string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
-			_positionalParameterTypes = positionalParameterTypes ?? new IType[0];
-			_positionalParameterValues = positionalParameterValues ?? new IType[0];
-			_namedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
-			_lockModes = lockModes;
-			_rowSelection = rowSelection;
-			_cacheable = cacheable;
-			_cacheRegion = cacheRegion;
-			_comment = comment;
-			_collectionKeys = collectionKeys;
-			_isReadOnlyInitialized = isReadOnlyInitialized;
-			_readOnly = readOnly;
-			_resultTransformer = transformer;
+			PositionalParameterTypes = positionalParameterTypes ?? new IType[0];
+			PositionalParameterValues = positionalParameterValues ?? new IType[0];
+			NamedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
+			LockModes = lockModes;
+			RowSelection = rowSelection;
+			Cacheable = cacheable;
+			CacheRegion = cacheRegion;
+			Comment = comment;
+			CollectionKeys = collectionKeys;
+			IsReadOnlyInitialized = isReadOnlyInitialized;
+			this.readOnly = readOnly;
+			ResultTransformer = transformer;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
-			: this(positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly,  cacheable, cacheRegion, comment, collectionKeys, transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
+		                       string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
+			: this(
+				positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, collectionKeys,
+				transformer)
 		{
-			_optionalEntityName = optionalEntityName;
-			_optionalId = optionalId;
-			_optionalObject = optionalObject;
+			OptionalEntityName = optionalEntityName;
+			OptionalId = optionalId;
+			OptionalObject = optionalObject;
 		}
 
 		public bool HasRowSelection
 		{
-			get { return _rowSelection != null; }
+			get { return RowSelection != null; }
 		}
 
-		public IDictionary<string, TypedValue> NamedParameters
-		{
-			get { return _namedParameters; }
-			internal set { _namedParameters = value; }
-		}
+		public IDictionary<string, TypedValue> NamedParameters { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets an array of <see cref="IType"/> objects that is stored at the index
 		/// of the Parameter.
 		/// </summary>
-		public IType[] PositionalParameterTypes
-		{
-			get { return _positionalParameterTypes; }
-			set { _positionalParameterTypes = value; }
-		}
+		public IType[] PositionalParameterTypes { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of <see cref="object"/> objects that is stored at the index
 		/// of the Parameter.
 		/// </summary>
-		public object[] PositionalParameterValues
-		{
-			get { return _positionalParameterValues; }
-			set { _positionalParameterValues = value; }
-		}
+		public object[] PositionalParameterValues { get; set; }
 
 		/// <summary>
 		/// Gets or sets the <see cref="RowSelection"/> for the Query.
 		/// </summary>
-		public RowSelection RowSelection
-		{
-			get { return _rowSelection; }
-			set { _rowSelection = value; }
-		}
+		public RowSelection RowSelection { get; set; }
 
 		/// <summary>
 		/// Gets or sets an <see cref="IDictionary"/> that contains the alias name of the
 		/// object from hql as the key and the <see cref="LockMode"/> as the value.
 		/// </summary>
 		/// <value>An <see cref="IDictionary"/> of lock modes.</value>
-		public IDictionary<string, LockMode> LockModes
+		public IDictionary<string, LockMode> LockModes { get; set; }
+
+		public bool IsReadOnlyInitialized { get; private set; }
+
+		public bool Cacheable { get; set; }
+
+		public string CacheRegion { get; set; }
+
+		public string Comment { get; set; }
+
+		public bool ForceCacheRefresh { get; set; }
+
+		public string OptionalEntityName { get; set; }
+
+		public object OptionalId { get; set; }
+
+		public object OptionalObject { get; set; }
+
+		public object[] CollectionKeys { get; set; }
+
+		public bool Callable { get; set; }
+
+		public bool ReadOnly
 		{
-			get { return _lockModes; }
-			set { _lockModes = value; }
+			get
+			{
+				if (!IsReadOnlyInitialized)
+				{
+					throw new InvalidOperationException("cannot call ReadOnly when IsReadOnlyInitialized returns false");
+				}
+
+				return readOnly;
+			}
+			set
+			{
+				readOnly = value;
+				IsReadOnlyInitialized = true;
+			}
 		}
 
-		public bool IsReadOnlyInitialized
-		{
-			get { return _isReadOnlyInitialized; }
-		}
+		public SqlString ProcessedSql { get; internal set; }
+
+		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
+
+		public bool NaturalKeyLookup { get; set; }
+
+		public IResultTransformer ResultTransformer { get; private set; }
+
+		public bool HasAutoDiscoverScalarTypes { get; set; }
 
 		public void LogParameters(ISessionFactoryImplementor factory)
 		{
 			var print = new Printer(factory);
-			if (_positionalParameterValues.Length != 0)
+			if (PositionalParameterValues.Length != 0)
 			{
-				log.Debug("parameters: " + print.ToString(_positionalParameterTypes, _positionalParameterValues));
+				log.Debug("parameters: " + print.ToString(PositionalParameterTypes, PositionalParameterValues));
 			}
 
-			if (_namedParameters != null)
+			if (NamedParameters != null)
 			{
-				log.Debug("named parameters: " + print.ToString(_namedParameters));
+				log.Debug("named parameters: " + print.ToString(NamedParameters));
 			}
-		}
-
-		public bool Cacheable
-		{
-			get { return _cacheable; }
-			set { _cacheable = value; }
-		}
-
-		public string CacheRegion
-		{
-			get { return _cacheRegion; }
-			set { _cacheRegion = value; }
-		}
-
-		public string Comment
-		{
-			get { return _comment; }
-			set { _comment = value; }
 		}
 
 		/// <summary>
@@ -191,8 +189,8 @@ namespace NHibernate.Engine
 		/// </exception>
 		public void ValidateParameters()
 		{
-			int typesLength = PositionalParameterTypes.Length;
-			int valuesLength = PositionalParameterValues.Length;
+			int typesLength = PositionalParameterTypes == null ? 0 : PositionalParameterTypes.Length;
+			int valuesLength = PositionalParameterValues == null ? 0 : PositionalParameterValues.Length;
 
 			if (typesLength != valuesLength)
 			{
@@ -201,80 +199,21 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public bool ForceCacheRefresh { get; set; }
-
-		public string OptionalEntityName
-		{
-			get { return _optionalEntityName; }
-			set { _optionalEntityName = value; }
-		}
-
-		public object OptionalId
-		{
-			get { return _optionalId; }
-			set { _optionalId = value; }
-		}
-
-		public object OptionalObject
-		{
-			get { return _optionalObject; }
-			set { _optionalObject = value; }
-		}
-
-		public object[] CollectionKeys
-		{
-			get { return _collectionKeys; }
-			set { _collectionKeys = value; }
-		}
-
-		public bool Callable { get; set; }
-		
-		public bool ReadOnly
-		{
-			get
-			{
-				if (!_isReadOnlyInitialized)
-					throw new InvalidOperationException("cannot call ReadOnly when IsReadOnlyInitialized returns false");
-
-				return _readOnly;
-			}
-			set
-			{
-				_readOnly = value;
-				_isReadOnlyInitialized = true;
-			}
-		}
-
-		public SqlString ProcessedSql
-		{
-			get { return processedSQL; }
-			internal set { processedSQL = value; }
-		}
-
-		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
-
-		public bool NaturalKeyLookup { get; set; }
-
-		public IResultTransformer ResultTransformer
-		{
-			get { return _resultTransformer; }
-		}
-
-		public bool HasAutoDiscoverScalarTypes { get; set; }
-
 		public QueryParameters CreateCopyUsing(RowSelection selection)
 		{
-			var copy = new QueryParameters(_positionalParameterTypes, _positionalParameterValues, _namedParameters, _lockModes,
-			                               selection, _isReadOnlyInitialized, _readOnly, _cacheable, _cacheRegion, _comment, _collectionKeys,
-			                               _optionalObject, _optionalEntityName, _optionalId, _resultTransformer);
-			copy.processedSQL = processedSQL;
-			copy.ProcessedSqlParameters = ProcessedSqlParameters.ToList();
+			var copy = new QueryParameters(PositionalParameterTypes, PositionalParameterValues, NamedParameters, LockModes,
+			                               selection, IsReadOnlyInitialized, readOnly, Cacheable, CacheRegion, Comment, CollectionKeys,
+			                               OptionalObject, OptionalEntityName, OptionalId, ResultTransformer)
+			           {
+			           	ProcessedSql = ProcessedSql,
+			           	ProcessedSqlParameters = ProcessedSqlParameters.ToList()
+			           };
 			return copy;
 		}
-		
+
 		public bool IsReadOnly(ISessionImplementor session)
 		{
-			return _isReadOnlyInitialized ? this.ReadOnly : session.PersistenceContext.DefaultReadOnly;
+			return IsReadOnlyInitialized ? ReadOnly : session.PersistenceContext.DefaultReadOnly;
 		}
 	}
 }
