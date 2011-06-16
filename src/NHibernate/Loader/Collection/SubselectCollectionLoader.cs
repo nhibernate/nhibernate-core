@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -14,6 +16,7 @@ namespace NHibernate.Loader.Collection
 		private readonly IDictionary<string, TypedValue> namedParameters;
 		private readonly IType[] types;
 		private readonly object[] values;
+		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SubselectCollectionLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
 		                                 QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
@@ -28,7 +31,9 @@ namespace NHibernate.Loader.Collection
 			}
 
 			namedParameters = queryParameters.NamedParameters;
+			
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
+			parametersSpecifications = queryParameters.ProcessedSqlParameters.ToList();
 			types = queryParameters.PositionalParameterTypes;
 			values = queryParameters.PositionalParameterValues;
 			this.namedParameterLocMap = namedParameterLocMap;
@@ -42,6 +47,11 @@ namespace NHibernate.Loader.Collection
 		public override int[] GetNamedParameterLocs(string name)
 		{
 			return namedParameterLocMap[name];
+		}
+
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		{
+			return parametersSpecifications;
 		}
 	}
 }

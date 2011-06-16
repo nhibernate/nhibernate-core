@@ -6,6 +6,7 @@ using System.Linq;
 
 using NHibernate.Hql.Classic;
 using NHibernate.Impl;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transform;
@@ -639,11 +640,13 @@ namespace NHibernate.Engine
 			return span;
 		}
 
-		internal SqlString ProcessedSql
+		public SqlString ProcessedSql
 		{
 			get { return processedSQL; }
-			set { processedSQL = value; }
+			internal set { processedSQL = value; }
 		}
+
+		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
 
 		public SqlString FilteredSQL
 		{

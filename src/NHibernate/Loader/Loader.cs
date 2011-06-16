@@ -1712,7 +1712,7 @@ namespace NHibernate.Loader
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
 
 			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
 
 			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
@@ -1720,7 +1720,7 @@ namespace NHibernate.Loader
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
-		protected IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		protected virtual IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
 		{
 			// TODO FM: remove this implementation and put an abstract ParameterSpecifications in the Loader (each concrete implementation have to expose it) => NH1990, SubselectFetchFixture
 			var positionalSpecifications = queryParameters.PositionalParameterTypes.Select((t, i) => (IParameterSpecification)new PositionalParameterSpecification(1, 0, i) { ExpectedType = t });
@@ -1763,6 +1763,7 @@ namespace NHibernate.Loader
 			}
 
 			queryParameters.ProcessedSql = sqlString;
+			queryParameters.ProcessedSqlParameters = parameterSpecs.ToList();
 			queryParameters.FilteredParameterLocations = filteredParameterLocations;
 			queryParameters.FilteredParameterTypes = filteredParameterTypes;
 			queryParameters.FilteredParameterValues = filteredParameterValues;
