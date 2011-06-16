@@ -309,7 +309,7 @@ namespace NHibernate.Hql.Classic
 
 			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
 			sql = ExpandDynamicFilterParameters(sql, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sql, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+			AdjustQueryParametersForSubSelectFetching(sql, parameterSpecs, queryParameters); // NOTE: see TODO below
 
 			sql = AddLimitsParametersIfNeeded(sql, parameterSpecs, queryParameters, session);
 			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries

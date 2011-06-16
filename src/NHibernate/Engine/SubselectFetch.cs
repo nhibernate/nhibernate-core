@@ -24,7 +24,7 @@ namespace NHibernate.Engine
 			this.loadable = loadable;
 			this.alias = alias;
 
-			queryString = queryParameters.FilteredSQL.GetSubselectString();
+			queryString = queryParameters.ProcessedSql.GetSubselectString();
 		}
 
 		public QueryParameters QueryParameters

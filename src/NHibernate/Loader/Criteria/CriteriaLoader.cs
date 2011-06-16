@@ -190,7 +190,7 @@ namespace NHibernate.Loader.Criteria
 
 			// dynamic-filter parameters: during the Criteria parsing, filters can be added as string.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
 
 			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
 			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor

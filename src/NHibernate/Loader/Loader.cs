@@ -1686,7 +1686,7 @@ namespace NHibernate.Loader
 
 			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
 
 			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
 			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
@@ -1713,37 +1713,11 @@ namespace NHibernate.Loader
 			return specifications;
 		}
 
-		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, ISessionImplementor session, QueryParameters queryParameters)
+		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
 			// TODO: Remove this when all parameters are managed using IParameterSpecification (QueryParameters does not need to have decomposed values for filters)
-
-			var dynamicFilterParameterSpecifications = parameterSpecs.OfType<DynamicFilterParameterSpecification>().ToList();
-			var filteredParameterValues = new List<object>();
-			var filteredParameterTypes = new List<IType>();
-			var filteredParameterLocations = new List<int>();
-
-			if (dynamicFilterParameterSpecifications.Count != 0)
-			{
-				var sqlQueryParametersList = sqlString.GetParameters().ToList();
-				foreach (DynamicFilterParameterSpecification specification in dynamicFilterParameterSpecifications)
-				{
-					string backTrackId = specification.GetIdsForBackTrack(session.Factory).First();
-					object value = session.GetFilterParameterValue(specification.FilterParameterFullName);
-					var elementType = specification.ExpectedType;
-					foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
-					{
-						filteredParameterValues.Add(value);
-						filteredParameterTypes.Add(elementType);
-						filteredParameterLocations.Add(position);
-					}
-				}
-			}
-
 			queryParameters.ProcessedSql = sqlString;
 			queryParameters.ProcessedSqlParameters = parameterSpecs.ToList();
-			queryParameters.FilteredParameterLocations = filteredParameterLocations;
-			queryParameters.FilteredParameterTypes = filteredParameterTypes;
-			queryParameters.FilteredParameterValues = filteredParameterValues;
 		}
 
 		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)

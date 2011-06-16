@@ -270,29 +270,6 @@ namespace NHibernate.Engine
 
 		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
 
-		public SqlString FilteredSQL
-		{
-			get { return processedSQL; }
-		}
-
-		public IList<IType> FilteredParameterTypes
-		{
-			get { return filteredParameterTypes; }
-			internal set { filteredParameterTypes = value; }
-		}
-
-		public IList<object> FilteredParameterValues
-		{
-			get { return filteredParameterValues; }
-			internal set { filteredParameterValues = value; }
-		}
-
-		public IList<int> FilteredParameterLocations
-		{
-			get { return filteredParameterLocations; }
-			internal set { filteredParameterLocations = value; }
-		}
-
 		public bool NaturalKeyLookup { get; set; }
 
 		public IResultTransformer ResultTransformer
