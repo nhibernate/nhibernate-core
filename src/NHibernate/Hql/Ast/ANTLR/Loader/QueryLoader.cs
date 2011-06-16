@@ -444,7 +444,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, session, queryParameters); // NOTE: see TODO below
 
 			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries
+			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
 
 			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
