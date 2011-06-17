@@ -36,7 +36,7 @@ namespace NHibernate.Cfg.Loquacious
 		void Dialect<TDialect>() where TDialect : Dialect.Dialect;
 		Hbm2DDLKeyWords KeywordsAutoImport { set; }
 		bool LogSqlInConsole { set; }
-		bool LogFormatedSql { set; }
+		bool LogFormattedSql { set; }
 
 		void ConnectionProvider<TProvider>() where TProvider : IConnectionProvider;
 		void Driver<TDriver>() where TDriver : IDriver;

@@ -304,7 +304,7 @@ namespace NHibernate.Cfg.Loquacious
 			set { configuration.SetProperty(Environment.ShowSql, value.ToString().ToLowerInvariant()); }
 		}
 
-		public bool LogFormatedSql
+		public bool LogFormattedSql
 		{
 			set { configuration.SetProperty(Environment.FormatSql, value.ToString().ToLowerInvariant()); }
 		}
