@@ -433,26 +433,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			return result;
 		}
 
-		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
+		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
-			// A distinct-copy of parameter specifications collected during query construction
-			var parameterSpecs = new HashSet<IParameterSpecification>(_queryTranslator.CollectedParameterSpecifications);
-			SqlString sqlString = SqlString.Copy();
-
-			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
-			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
-
-			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
-
-			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
-			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
-
-			// After the last modification to the SqlString we can collect all parameters types.
 			parameterSpecs.ResetEffectiveExpectedType(queryParameters);
+		}
 
-			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
+		{
+			return _queryTranslator.CollectedParameterSpecifications;
 		}
 	}
 }

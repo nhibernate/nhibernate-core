@@ -1641,15 +1641,11 @@ namespace NHibernate.Loader
 
 		public virtual ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
-			// The implementation of this method is itended to be used just for "internal" command (not for queries coming from users)
-			// Internally NH creates various commands, all using just positional-parameters, to then potentially apply dynamic-filters and pagination.
-			// In practice this method should be overriden by those loaders representing a user-query as CriteriaLoader, QueryLoader, classic QueryTraslator, CustomLoader (for custmon SQL queries).
-
 			// A distinct-copy of parameter specifications collected during query construction
-			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications(queryParameters, session.Factory));
+			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications());
 			SqlString sqlString = SqlString.Copy();
 
-			// dynamic-filter parameters: during the HQL->SQL parsing, filters can be added as SQL_TOKEN/string and the SqlGenerator will not find it
+			// dynamic-filter parameters: during the createion of the SqlString of allLoader implementation, filters can be added as SQL_TOKEN/string for this reason we have to re-parse the SQL.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
 
@@ -1659,24 +1655,18 @@ namespace NHibernate.Loader
 			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
 
+			// After the last modification to the SqlString we can collect all parameters types (there are cases where we can't infer the type during the creation of the query)
+			ResetEffectiveExpectedType(parameterSpecs, queryParameters);
+
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
 		}
 
-		protected virtual IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		protected virtual void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
-			// TODO FM: remove this implementation and put an abstract ParameterSpecifications in the Loader (each concrete implementation have to expose it) => NH1990, SubselectFetchFixture
-			var positionalSpecifications = queryParameters.PositionalParameterTypes.Select((t, i) => (IParameterSpecification)new PositionalParameterSpecification(1, 0, i) { ExpectedType = t });
-			var namedSpecifications = queryParameters.NamedParameters != null ? queryParameters.NamedParameters.Select(np => (IParameterSpecification)new NamedParameterSpecification(1, 0, np.Key) { ExpectedType = np.Value.Type }): Enumerable.Empty<IParameterSpecification>();
-			var specifications= positionalSpecifications.Concat(namedSpecifications).ToList();
-			var parameters = SqlString.GetParameters().ToArray();
-			var sqlParameterPos = 0;
-			var paramTrackers = specifications.SelectMany(specification => specification.GetIdsForBackTrack(sessionFactory));
-			foreach (var paramTracker in paramTrackers)
-			{
-				parameters[sqlParameterPos++].BackTrack = paramTracker;
-			}
-			return specifications;
+			// Have to be overridden just by those loaders that can't infer the type during the parse process
 		}
+
+		protected abstract IEnumerable<IParameterSpecification> GetParameterSpecifications();
 
 		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{

@@ -182,23 +182,9 @@ namespace NHibernate.Loader.Criteria
 			return customResultTransformer.TransformList(results);
 		}
 
-		public override ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
-			// A distinct-copy of parameter specifications collected during query construction
-			var parameterSpecs = new HashSet<IParameterSpecification>(translator.CollectedParameterSpecifications);
-			SqlString sqlString = SqlString.Copy();
-
-			// dynamic-filter parameters: during the Criteria parsing, filters can be added as string.
-			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
-
-			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
-
-			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
-			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
-
-			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+			return translator.CollectedParameterSpecifications;
 		}
 
 		public override int[] GetNamedParameterLocs(string name)

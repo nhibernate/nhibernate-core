@@ -63,7 +63,7 @@ namespace NHibernate.Loader.Collection
 			return specifications;
 		}
 
-		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications ?? (parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray());
 		}

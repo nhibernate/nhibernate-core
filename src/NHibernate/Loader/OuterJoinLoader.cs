@@ -14,7 +14,7 @@ namespace NHibernate.Loader
 	/// Generates an SQL select string containing all properties of those classes.
 	/// Tablse are joined using an ANSI-style left outer join.
 	/// </remarks>
-	public class OuterJoinLoader : BasicLoader
+	public abstract class OuterJoinLoader : BasicLoader
 	{
 		// Having these fields as protected prevents CLS compliance, so they are
 		// private in NHibernate, and setters are created for the relevant
@@ -32,7 +32,7 @@ namespace NHibernate.Loader
 
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
-		public OuterJoinLoader(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+		protected OuterJoinLoader(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory)
 		{
 			this.enabledFilters = enabledFilters;

@@ -33,9 +33,9 @@ namespace NHibernate.Loader.Collection
 				keys[i++] = entityKey.Identifier;
 			}
 
-			namedParameters = queryParameters.NamedParameters;
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
 			parametersSpecifications = queryParameters.ProcessedSqlParameters.ToList();
+			namedParameters = queryParameters.NamedParameters;
 			types = queryParameters.PositionalParameterTypes;
 			values = queryParameters.PositionalParameterValues;
 			this.namedParameterLocMap = namedParameterLocMap;
@@ -51,7 +51,7 @@ namespace NHibernate.Loader.Collection
 			return namedParameterLocMap[name];
 		}
 
-		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications;
 		}
