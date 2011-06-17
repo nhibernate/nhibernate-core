@@ -1293,7 +1293,6 @@
     <Compile Include="Engine\Query\OrdinalParameterDescriptor.cs" />
     <Compile Include="Engine\Query\ParameterMetadata.cs" />
     <Compile Include="Engine\Query\ParamLocationRecognizer.cs" />
-    <Compile Include="Engine\Query\QueryMetadata.cs" />
     <Compile Include="Engine\Query\QueryPlanCache.cs" />
     <Compile Include="Engine\Query\ReturnMetadata.cs" />
     <Compile Include="Engine\Query\FilterQueryPlan.cs" />
