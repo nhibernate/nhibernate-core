@@ -74,12 +74,6 @@ namespace NHibernate.Loader.Entity
 
 		protected IType UniqueKeyType { get; private set; }
 
-		protected override void InitFromWalker(JoinWalker walker)
-		{
-			base.InitFromWalker(walker);
-			parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray();
-		}
-
 		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
 		{
 			var specifications = new List<IParameterSpecification>();
@@ -100,7 +94,7 @@ namespace NHibernate.Loader.Entity
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
 		{
-			return parametersSpecifications;
+			return parametersSpecifications ?? (parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray());
 		}
 	}
 }

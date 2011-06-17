@@ -98,7 +98,7 @@ namespace NHibernate.Loader
 			get { return collectionPersisters; }
 		}
 
-		protected virtual void InitFromWalker(JoinWalker walker)
+		protected void InitFromWalker(JoinWalker walker)
 		{
 			persisters = walker.Persisters;
 			collectionPersisters = walker.CollectionPersisters;

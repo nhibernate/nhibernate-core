@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -19,6 +21,7 @@ namespace NHibernate.Loader.Entity
 		private readonly IType keyType;
 		private readonly IType indexType;
 		private readonly string entityName;
+		private IParameterSpecification[] parametersSpecifications;
 
 		public CollectionElementLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory,
 		                               IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
@@ -37,6 +40,28 @@ namespace NHibernate.Loader.Entity
 			PostInstantiate();
 
 			log.Debug("Static select for entity " + entityName + ": " + SqlString);
+		}
+
+		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
+		{
+			var specifications = new IParameterSpecification[]
+			                     {
+			                     	new PositionalParameterSpecification(1, 0, 0) {ExpectedType = keyType},
+			                     	new PositionalParameterSpecification(1, 0, 1) {ExpectedType = indexType},
+			                     };
+			Parameter[] parameters = sqlPatameters.ToArray();
+			int sqlParameterPos = 0;
+			IEnumerable<string> paramTrackers = specifications.SelectMany(specification => specification.GetIdsForBackTrack(Factory));
+			foreach (string paramTracker in paramTrackers)
+			{
+				parameters[sqlParameterPos++].BackTrack = paramTracker;
+			}
+			return specifications;
+		}
+
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		{
+			return parametersSpecifications ?? (parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray());
 		}
 
 		protected override bool IsSingleRowLoader
