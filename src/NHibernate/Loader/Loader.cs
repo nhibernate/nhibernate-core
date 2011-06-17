@@ -1680,7 +1680,6 @@ namespace NHibernate.Loader
 
 		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
-			// TODO: Remove this when all parameters are managed using IParameterSpecification (QueryParameters does not need to have decomposed values for filters)
 			queryParameters.ProcessedSql = sqlString;
 			queryParameters.ProcessedSqlParameters = parameterSpecs.ToList();
 		}
