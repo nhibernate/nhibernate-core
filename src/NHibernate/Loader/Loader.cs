@@ -1189,41 +1189,6 @@ namespace NHibernate.Loader
             return dialect.GetLimitValue(firstRow, rowCount);
 		}
 
-		private int GetFirstLimitParameterCount(Dialect.Dialect dialect, bool useLimit, bool hasFirstRow, bool useOffset)
-		{
-            if (!useLimit) return 0;
-			if (!dialect.SupportsVariableLimit) return 0;
-			if (!dialect.BindLimitParametersFirst) return 0;
-			return (hasFirstRow && useOffset) ? 2 : 1;
-		}
-
-		/// <summary>
-		/// Bind parameters needed by the dialect-specific LIMIT clause
-		/// </summary>
-		/// <returns>The number of parameters bound</returns>
-		internal int BindLimitParameters(IDbCommand st, int index, RowSelection selection, ISessionImplementor session)
-		{
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			if (!dialect.SupportsVariableLimit)
-			{
-				return 0;
-			}
-
-			int firstRow = GetFirstRow(selection);
-			int lastRow = GetMaxOrLimit(dialect, selection);
-
-			bool hasFirstRow = firstRow > 0 && dialect.SupportsLimitOffset;
-			bool reverse = dialect.BindLimitParametersInReverseOrder;
-
-			if (hasFirstRow)
-			{
-				((IDataParameter) st.Parameters[index + (reverse ? 1 : 0)]).Value = firstRow;
-			}
-			((IDataParameter) st.Parameters[index + ((reverse || !hasFirstRow) ? 0 : 1)]).Value = lastRow;
-
-			return hasFirstRow ? 2 : 1;
-		}
-
 		/// <summary>
 		/// Limits the number of rows returned by the Sql query if necessary.
 		/// </summary>

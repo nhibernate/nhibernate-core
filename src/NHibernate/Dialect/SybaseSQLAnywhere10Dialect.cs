@@ -415,23 +415,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		/// <summary>
-		/// SQL Anywhere syntax is SELECT TOP n START AT m
-		/// </summary>
-		public override bool BindLimitParametersInReverseOrder
-		{
-			get { return true; }
-		}
-
-		/// <summary>
-		/// SQL Anywhere 11 uses SELECT TOP n START AT m [ select list items ]
-		/// for LIMIT/OFFSET support.
-		/// </summary>
-		public override bool BindLimitParametersFirst
-		{
-			get { return true; }
-		}
-
 		private static int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			// Assume no common table expressions with the statement.

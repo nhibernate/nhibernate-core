@@ -205,21 +205,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 		
-		public override bool BindLimitParametersInReverseOrder
-		{
-			get { return true; }
-		}
-		
 		public override bool SupportsVariableLimit
 		{
 			get { return true; }
 		}
 		
-		public override bool BindLimitParametersFirst
-		{
-			get { return true; }
-		}
-
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
 			string schema = table.GetQuotedSchemaName(this);

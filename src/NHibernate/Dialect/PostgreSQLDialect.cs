@@ -128,11 +128,6 @@ namespace NHibernate.Dialect
             get { return true; }
         }
 
-		public override bool BindLimitParametersInReverseOrder
-		{
-			get { return true; }
-		}
-
         public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
         {
             SqlStringBuilder pagingBuilder = new SqlStringBuilder();

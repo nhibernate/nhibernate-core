@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect.SupportsLimit && !dialect.BindLimitParametersFirst;
+			return dialect.SupportsLimit;
 		}
 
 		protected override void OnTearDown()

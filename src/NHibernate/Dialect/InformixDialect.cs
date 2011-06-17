@@ -366,16 +366,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary>
-		/// Does the <c>LIMIT</c> clause come at the start of the 
-		/// <c>SELECT</c> statement rather than at the end?
-		/// </summary>
-		/// <value>false, unless overridden</value>
-		public override bool BindLimitParametersFirst
-		{
-			get { return true; }
-		}
-
         public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			/*

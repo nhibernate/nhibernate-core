@@ -394,11 +394,6 @@ namespace NHibernate.Dialect
 			return ForUpdateString + " of " + aliases + " nowait";
 		}
 
-		public override bool BindLimitParametersInReverseOrder
-		{
-			get { return true; }
-		}
-
 		public override bool UseMaxForLimit
 		{
 			get { return true; }

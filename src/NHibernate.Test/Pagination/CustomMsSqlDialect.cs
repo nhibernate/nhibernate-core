@@ -11,7 +11,6 @@ namespace NHibernate.Test.Pagination
 		public bool ForcedBindLimitParameterFirst;
 		public bool ForcedSupportsVariableLimit;
 
-		public override bool BindLimitParametersFirst { get { return ForcedBindLimitParameterFirst; } }
 		public override bool SupportsVariableLimit { get { return ForcedSupportsVariableLimit; } }
 	}
 }

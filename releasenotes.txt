@@ -12,6 +12,7 @@
 		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
 		* For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
+		* Dialect base: removed some no more needed properties
 
 Build 3.2.0.Beta1 (rev5839)
 =============================

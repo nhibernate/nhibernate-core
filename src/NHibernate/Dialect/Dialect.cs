@@ -1639,27 +1639,6 @@ namespace NHibernate.Dialect
 			get { return SupportsLimit; }
 		}
 
-		/// <summary>
-		/// Does the <c>LIMIT</c> clause specify arguments in the "reverse" order
-		/// limit, offset instead of offset, limit?
-		/// </summary>
-		/// <value>False, unless overridden.</value>
-		/// <remarks>Inheritors should return true if the correct order is limit, offset</remarks>
-		public virtual bool BindLimitParametersInReverseOrder
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Does the <c>LIMIT</c> clause come at the start of the 
-		/// <c>SELECT</c> statement rather than at the end?
-		/// </summary>
-		/// <value>false, unless overridden</value>
-		public virtual bool BindLimitParametersFirst
-		{
-			get { return false; }
-		}
-
 		/// <summary> 
 		/// Does the <tt>LIMIT</tt> clause take a "maximum" row number instead
 		/// of a total number of returned rows?

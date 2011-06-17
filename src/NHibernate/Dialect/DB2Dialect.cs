@@ -194,12 +194,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary></summary>
-		public override bool BindLimitParametersInReverseOrder
-		{
-			get { return false; }
-		}
-
-		/// <summary></summary>
 		public override bool UseMaxForLimit
 		{
 			get { return true; }
