@@ -98,7 +98,7 @@ namespace NHibernate.Loader
 			get { return collectionPersisters; }
 		}
 
-		protected void InitFromWalker(JoinWalker walker)
+		protected virtual void InitFromWalker(JoinWalker walker)
 		{
 			persisters = walker.Persisters;
 			collectionPersisters = walker.CollectionPersisters;
@@ -108,7 +108,7 @@ namespace NHibernate.Loader
 			collectionSuffixes = walker.CollectionSuffixes;
 			owners = walker.Owners;
 			collectionOwners = walker.CollectionOwners;
-			sql = walker.SqlString;
+			sql = walker.SqlString.Compact();
 			aliases = walker.Aliases;
 		}
 	}

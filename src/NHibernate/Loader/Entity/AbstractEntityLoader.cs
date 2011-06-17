@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq;
 using NHibernate.Engine;
+using NHibernate.Param;
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -16,13 +18,13 @@ namespace NHibernate.Loader.Entity
 	{
 		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
-		protected readonly IType uniqueKeyType;
 		protected readonly string entityName;
+		private IParameterSpecification[] parametersSpecifications;
 
-		public AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, ISessionFactoryImplementor factory,
+		protected AbstractEntityLoader(IOuterJoinLoadable persister, IType uniqueKeyType, ISessionFactoryImplementor factory,
 		                            IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
-			this.uniqueKeyType = uniqueKeyType;
+			UniqueKeyType = uniqueKeyType;
 			entityName = persister.EntityName;
 			this.persister = persister;
 		}
@@ -39,7 +41,7 @@ namespace NHibernate.Loader.Entity
 
 		protected virtual object Load(ISessionImplementor session, object id, object optionalObject, object optionalId)
 		{
-			IList list = LoadEntity(session, id, uniqueKeyType, optionalObject, entityName, optionalId, persister);
+			IList list = LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister);
 
 			if (list.Count == 1)
 			{
@@ -68,6 +70,37 @@ namespace NHibernate.Loader.Entity
 		                                               ISessionImplementor session)
 		{
 			return row[row.Length - 1];
+		}
+
+		protected IType UniqueKeyType { get; private set; }
+
+		protected override void InitFromWalker(JoinWalker walker)
+		{
+			base.InitFromWalker(walker);
+			parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray();
+		}
+
+		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
+		{
+			var specifications = new List<IParameterSpecification>();
+			int position = 0;
+			var parameters = sqlPatameters.ToArray();
+			for (var sqlParameterPos = 0; sqlParameterPos < parameters.Length;)
+			{
+				var specification = new PositionalParameterSpecification(1, 0, position++) {ExpectedType = UniqueKeyType};
+				var paramTrackers = specification.GetIdsForBackTrack(Factory);
+				foreach (var paramTracker in paramTrackers)
+				{
+					parameters[sqlParameterPos++].BackTrack = paramTracker;
+				}
+				specifications.Add(specification);
+			}
+			return specifications;
+		}
+
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications(QueryParameters queryParameters, ISessionFactoryImplementor sessionFactory)
+		{
+			return parametersSpecifications;
 		}
 	}
 }
