@@ -439,7 +439,7 @@ namespace NHibernate.Hql.Classic
                     new OrdinalParameterDescriptor(i,
                                                    parameterTranslations.SupportsOrdinalParameterMetadata
                                                     ? parameterTranslations.GetOrdinalParameterExpectedType(i)
-                                                    : null, locations[i - 1]);
+                                                    : null);
             }
 
             Dictionary<string, NamedParameterDescriptor> namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();

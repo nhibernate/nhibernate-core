@@ -8,13 +8,11 @@ namespace NHibernate.Engine.Query
 	{
 		private readonly int ordinalPosition;
 		private readonly IType expectedType;
-		private readonly int sourceLocation;
 
-		public OrdinalParameterDescriptor(int ordinalPosition, IType expectedType, int sourceLocation)
+		public OrdinalParameterDescriptor(int ordinalPosition, IType expectedType)
 		{
 			this.ordinalPosition = ordinalPosition;
 			this.expectedType = expectedType;
-			this.sourceLocation = sourceLocation;
 		}
 
 		public int OrdinalPosition
@@ -25,11 +23,6 @@ namespace NHibernate.Engine.Query
 		public IType ExpectedType
 		{
 			get { return expectedType; }
-		}
-
-		public int SourceLocation
-		{
-			get { return sourceLocation; }
 		}
 	}
 }

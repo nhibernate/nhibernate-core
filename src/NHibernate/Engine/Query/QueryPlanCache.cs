@@ -158,7 +158,7 @@ namespace NHibernate.Engine.Query
 			for (int i = 0; i < recognizer.OrdinalParameterLocationList.Count; i++)
 			{
 				int position = recognizer.OrdinalParameterLocationList[i];
-				ordinalDescriptors[i] = new OrdinalParameterDescriptor(i, null, position);
+				ordinalDescriptors[i] = new OrdinalParameterDescriptor(i, null);
 			}
 
 			IDictionary<string, NamedParameterDescriptor> namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();

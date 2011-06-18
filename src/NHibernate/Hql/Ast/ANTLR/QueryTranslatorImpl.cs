@@ -193,7 +193,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					new OrdinalParameterDescriptor(i,
 												   parameterTranslations.SupportsOrdinalParameterMetadata
 													   ? parameterTranslations.GetOrdinalParameterExpectedType(i)
-													   : null, parameterTranslations.GetOrdinalParameterSqlLocation(i));
+													   : null);
 			}
 
 			var namedDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
