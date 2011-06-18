@@ -1764,7 +1764,7 @@ namespace NHibernate.Hql.Classic
 
 		public IParameterTranslations GetParameterTranslations()
 		{
-			return new ParameterTranslations(this);
+			return new ParameterTranslationsImpl(CollectedParameterSpecifications);
 		}
 
 		public bool ContainsCollectionFetches
@@ -1782,50 +1782,6 @@ namespace NHibernate.Hql.Classic
 		}
 
 		#endregion
-
-		private class ParameterTranslations : IParameterTranslations
-		{
-			private readonly QueryTranslator queryTraslator;
-
-			public ParameterTranslations(QueryTranslator queryTraslator)
-			{
-				this.queryTraslator = queryTraslator;
-			}
-
-			#region IParameterTranslations Members
-
-			public bool SupportsOrdinalParameterMetadata
-			{
-				get { return false; }
-			}
-
-			public int OrdinalParameterCount
-			{
-				get { return 0; }
-			}
-
-			public int GetOrdinalParameterSqlLocation(int ordinalPosition)
-			{
-				return 0;
-			}
-
-			public IType GetOrdinalParameterExpectedType(int ordinalPosition)
-			{
-				return null;
-			}
-
-			public IEnumerable<string> GetNamedParameterNames()
-			{
-				return queryTraslator.namedParameters.Keys;
-			}
-
-			public IType GetNamedParameterExpectedType(string name)
-			{
-				return null;
-			}
-
-			#endregion
-		}
 
 		public override string QueryIdentifier
 		{
