@@ -448,8 +448,7 @@ namespace NHibernate.Hql.Classic
                 string name = entry.Key;
                 ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
                 namedParamDescriptorMap[name] =
-                    new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name),
-                                                 description.BuildPositionsArray(), description.JpaStyle);
+                    new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name), description.JpaStyle);
 
             }
             return new ParameterMetadata(ordinalParamDescriptors, namedParamDescriptorMap);
@@ -792,18 +791,6 @@ namespace NHibernate.Hql.Classic
 			{
 				o.Add(loc);
 			}
-		}
-
-		public override int[] GetNamedParameterLocs(string name)
-		{
-			List<int> o;
-			if (!namedParameters.TryGetValue(name, out o))
-			{
-				QueryException qe = new QueryException("Named parameter does not appear in Query: " + name);
-				qe.QueryString = queryString;
-				throw qe;
-			}
-			return o.ToArray();
 		}
 
 		public static string ScalarName(int x, int y)
@@ -1834,7 +1821,7 @@ namespace NHibernate.Hql.Classic
 
 			public int[] GetNamedParameterSqlLocations(string name)
 			{
-				return queryTraslator.GetNamedParameterLocs(name);
+				return new int[0];
 			}
 
 			public IType GetNamedParameterExpectedType(string name)

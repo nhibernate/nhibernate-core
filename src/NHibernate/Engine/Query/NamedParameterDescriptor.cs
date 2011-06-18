@@ -9,14 +9,12 @@ namespace NHibernate.Engine.Query
 	{
 		private readonly string name;
 		private readonly IType expectedType;
-		private readonly int[] sourceLocations;
 		private readonly bool jpaStyle;
 
-		public NamedParameterDescriptor(string name, IType expectedType, int[] sourceLocations, bool jpaStyle)
+		public NamedParameterDescriptor(string name, IType expectedType, bool jpaStyle)
 		{
 			this.name = name;
 			this.expectedType = expectedType;
-			this.sourceLocations = sourceLocations;
 			this.jpaStyle = jpaStyle;
 		}
 
@@ -28,11 +26,6 @@ namespace NHibernate.Engine.Query
 		public IType ExpectedType
 		{
 			get { return expectedType; }
-		}
-
-		public int[] SourceLocations
-		{
-			get { return sourceLocations; }
 		}
 
 		/// <summary>

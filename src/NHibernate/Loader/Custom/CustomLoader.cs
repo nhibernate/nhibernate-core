@@ -308,24 +308,6 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		public override int[] GetNamedParameterLocs(string name)
-		{
-			object loc = namedParameterBindPoints[name];
-			if (loc == null)
-			{
-				throw new QueryException("Named parameter does not appear in Query: " + name, sql.ToString());
-			}
-
-			if (loc is int)
-			{
-				return new int[] {(int) loc};
-			}
-			else
-			{
-				return ArrayHelper.ToIntArray((IList) loc);
-			}
-		}
-
 		protected override void AutoDiscoverTypes(IDataReader rs)
 		{
 			MetaData metadata = new MetaData(rs);

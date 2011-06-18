@@ -200,8 +200,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			foreach (var name in parameterTranslations.GetNamedParameterNames())
 			{
 				namedDescriptorMap[name] =
-					new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name),
-												 parameterTranslations.GetNamedParameterSqlLocations(name), false);// description.JpaStyle);
+					new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name), false);// description.JpaStyle);
 
 			}
 

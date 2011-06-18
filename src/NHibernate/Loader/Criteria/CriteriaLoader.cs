@@ -186,10 +186,5 @@ namespace NHibernate.Loader.Criteria
 		{
 			return translator.CollectedParameterSpecifications;
 		}
-
-		public override int[] GetNamedParameterLocs(string name)
-		{
-			return new int[0];
-		}
 	}
 }

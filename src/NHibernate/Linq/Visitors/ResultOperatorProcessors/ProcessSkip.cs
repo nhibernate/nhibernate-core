@@ -16,7 +16,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			if (parameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out namedParameter))
 			{
-				parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] {parameters.RequiredHqlParameters.Count + 1}, false));
+				parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
 				tree.AddSkipClause(tree.TreeBuilder.Parameter(namedParameter.Name));
 			}
 			else

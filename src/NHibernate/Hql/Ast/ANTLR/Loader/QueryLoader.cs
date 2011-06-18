@@ -137,16 +137,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 		}
 
 		/// <summary>
-		/// Returns the locations of all occurrences of the named parameter.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override int[] GetNamedParameterLocs(string name)
-		{
-			return _queryTranslator.GetParameterTranslations().GetNamedParameterSqlLocations(name);
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="lockModes">a collection of lock modes specified dynamically via the Query interface</param>

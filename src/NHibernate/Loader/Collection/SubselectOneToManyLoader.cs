@@ -54,11 +54,6 @@ namespace NHibernate.Loader.Collection
 			LoadCollectionSubselect(session, keys, values, types, namedParameters, KeyType);
 		}
 
-		public override int[] GetNamedParameterLocs(string name)
-		{
-			return new int[0];
-		}
-
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications;

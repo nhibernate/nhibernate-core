@@ -332,7 +332,7 @@ namespace NHibernate.Linq.Visitors
 					NamedParameter namedParameter;
 					if (_parameters.ConstantToParameterMap.TryGetValue(operandEx, out namedParameter))
 					{
-						_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _parameters.RequiredHqlParameters.Count + 1 }, false));
+						_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
 						return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 					}
 
@@ -402,7 +402,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out namedParameter))
 			{
-                _parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, new[] { _parameters.RequiredHqlParameters.Count + 1 }, false));
+                _parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
                 
                 if (namedParameter.Value is bool)
                 {

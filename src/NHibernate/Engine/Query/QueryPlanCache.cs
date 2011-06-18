@@ -168,7 +168,7 @@ namespace NHibernate.Engine.Query
 				string name = entry.Key;
 				ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
 				namedParamDescriptorMap[name] =
-					new NamedParameterDescriptor(name, null, description.BuildPositionsArray(), description.JpaStyle);				
+					new NamedParameterDescriptor(name, null, description.JpaStyle);				
 			}
 
 			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap);

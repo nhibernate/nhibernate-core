@@ -1186,11 +1186,6 @@ namespace NHibernate.Loader
 			//}
 		}
 
-		public virtual int[] GetNamedParameterLocs(string name)
-		{
-			throw new AssertionFailure("no named parameters");
-		}
-
 		/// <summary>
 		/// Fetch a <c>IDbCommand</c>, call <c>SetMaxRows</c> and then execute it,
 		/// advance to the first result and return an SQL <c>IDataReader</c>

@@ -76,11 +76,5 @@ namespace NHibernate.Engine.Query
 		{
 			return GetNamedParameterDescriptor(name).ExpectedType;
 		}
-
-		public int[] GetNamedParameterSourceLocations(string name)
-		{
-			return GetNamedParameterDescriptor(name).SourceLocations;
-		}
-
 	}
 }
