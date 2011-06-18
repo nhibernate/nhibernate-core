@@ -57,7 +57,7 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapAny += MemberReadOnlyAccessor;
 		}
 
-		protected virtual void ComponentParentToFieldAccessor(IModelInspector modelinspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+		protected virtual void ComponentParentToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
 		{
 			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
 			IEnumerable<MemberInfo> persistentProperties =
@@ -70,7 +70,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		protected virtual void ComponentParentNoSetterToField(IModelInspector modelinspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+		protected virtual void ComponentParentNoSetterToField(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
 		{
 			System.Type componentType = member.LocalMember.GetPropertyOrFieldType();
 			IEnumerable<MemberInfo> persistentProperties =

@@ -28,11 +28,11 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property);
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IPropertyMapper> mapping);
-		void Property(string notVidiblePropertyOrFieldName, Action<IPropertyMapper> mapping);
+		void Property(string notVisiblePropertyOrFieldName, Action<IPropertyMapper> mapping);
 
 		void ManyToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class;
 		void ManyToOne<TProperty>(Expression<Func<TContainer, TProperty>> property) where TProperty : class;
-		void ManyToOne<TProperty>(string notVidiblePropertyOrFieldName, Action<IManyToOneMapper> mapping) where TProperty : class;
+		void ManyToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IManyToOneMapper> mapping) where TProperty : class;
 	}
 
 	public interface IBasePlainPropertyContainerMapper<TContainer> : IMinimalPlainPropertyContainerMapper<TContainer>
@@ -44,20 +44,20 @@ namespace NHibernate.Mapping.ByCode
 		                           TComponent dynamicComponentTemplate,
 		                           Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
 
-		void Component<TComponent>(string notVidiblePropertyOrFieldName,
+		void Component<TComponent>(string notVisiblePropertyOrFieldName,
 															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
-		void Component<TComponent>(string notVidiblePropertyOrFieldName) where TComponent : class;
-		void Component<TComponent>(string notVidiblePropertyOrFieldName,
+		void Component<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class;
+		void Component<TComponent>(string notVisiblePropertyOrFieldName,
 															 TComponent dynamicComponentTemplate,
 															 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
 
 		void Any<TProperty>(Expression<Func<TContainer, TProperty>> property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
-		void Any<TProperty>(string notVidiblePropertyOrFieldName, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
+		void Any<TProperty>(string notVisiblePropertyOrFieldName, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
 	}
 
 	public interface IPlainPropertyContainerMapper<TContainer> : IBasePlainPropertyContainerMapper<TContainer>
 	{
 		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper> mapping) where TProperty : class;
-		void OneToOne<TProperty>(string notVidiblePropertyOrFieldName, Action<IOneToOneMapper> mapping) where TProperty : class;
+		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper> mapping) where TProperty : class;
 	}
 }

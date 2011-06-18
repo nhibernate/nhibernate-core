@@ -7,7 +7,7 @@ namespace NHibernate.Mapping.ByCode
 {
 	public class PropertyToField
 	{
-		private static readonly Dictionary<string, IFieldNamingStrategy> FieldNamningStrategies = new Dictionary<string, IFieldNamingStrategy>
+		private static readonly Dictionary<string, IFieldNamingStrategy> FieldNamingStrategies = new Dictionary<string, IFieldNamingStrategy>
 			{
 				{"camelcase", new CamelCaseStrategy()},
 				{"camelcase-underscore", new CamelCaseUnderscoreStrategy()},
@@ -27,14 +27,14 @@ namespace NHibernate.Mapping.ByCode
 			get
 			{
 				// please leave it as no read-only; the user may need to add his strategies or remove existing if he no want his people use it.
-				return FieldNamningStrategies;
+				return FieldNamingStrategies;
 			}
 		}
 
 		public static FieldInfo GetBackFieldInfo(PropertyInfo subject)
 		{
 			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			return (from s in FieldNamningStrategies.Values
+			return (from s in FieldNamingStrategies.Values
 			        let field = subject.DeclaringType.GetField(s.GetFieldName(subject.Name), defaultBinding)
 			        where field != null
 			        select field).FirstOrDefault();

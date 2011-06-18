@@ -35,7 +35,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			get { return joinCustomizers ?? (joinCustomizers = new Dictionary<string, IJoinMapper<TEntity>>()); }
 		}
 
-		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping)
 		{
 			// add the customizer only to ensure the creation of the JoinMapper instance for the group
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Join(splitGroupId, j => { }));
@@ -46,7 +46,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				joinCustomizer = new JoinCustomizer<TEntity>(splitGroupId, ExplicitDeclarationsHolder, CustomizersHolder);
 				JoinCustomizers.Add(splitGroupId, joinCustomizer);
 			}
-			splittedMapping(joinCustomizer);
+			splitMapping(joinCustomizer);
 		}
 
 		#region Implementation of IEntityAttributesMapper

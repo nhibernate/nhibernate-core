@@ -161,9 +161,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
-		public void ForeignKey(string foreingKeyName)
+		public void ForeignKey(string foreignKeyName)
 		{
-			manyToMany.foreignkey = foreingKeyName;
+			manyToMany.foreignkey = foreignKeyName;
 		}
 
 		#endregion

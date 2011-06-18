@@ -47,9 +47,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.Key(x => x.Update(consideredInUpdateQuery)));
 		}
 
-		public void ForeignKey(string foreingKeyName)
+		public void ForeignKey(string foreignKeyName)
 		{
-			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.Key(x => x.ForeignKey(foreingKeyName)));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.Key(x => x.ForeignKey(foreignKeyName)));
 		}
 
 		public void NotNullable(bool notnull)

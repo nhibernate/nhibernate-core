@@ -117,12 +117,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			base.RegisterPropertyMapping(property, mapping);
 		}
 
-		protected override void RegisterNoVisiblePropertyMapping(string notVidiblePropertyOrFieldName, System.Action<IPropertyMapper> mapping)
+		protected override void RegisterNoVisiblePropertyMapping(string notVisiblePropertyOrFieldName, System.Action<IPropertyMapper> mapping)
 		{
-			MemberInfo member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+			MemberInfo member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
 
 			ExplicitDeclarationsHolder.AddAsPropertySplit(new SplitDefinition(typeof(TEntity), splitGroupId, member));
-			base.RegisterNoVisiblePropertyMapping(notVidiblePropertyOrFieldName, mapping);
+			base.RegisterNoVisiblePropertyMapping(notVisiblePropertyOrFieldName, mapping);
 		}
 
 		protected override void RegisterComponentMapping<TComponent>(Expression<Func<TEntity, TComponent>> property, Action<IComponentMapper<TComponent>> mapping)

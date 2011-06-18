@@ -10,7 +10,7 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper
 	{
-		void Join(string splitGroupId, Action<IJoinMapper> splittedMapping);
+		void Join(string splitGroupId, Action<IJoinMapper> splitMapping);
 	}
 
 	public interface ISubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
@@ -20,6 +20,6 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
 	{
-		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping);
+		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping);
 	}
 }

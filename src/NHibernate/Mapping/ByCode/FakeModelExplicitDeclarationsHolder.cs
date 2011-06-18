@@ -198,11 +198,13 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsManyToManyRelation(MemberInfo member) {}
 
 		public void AddAsOneToManyRelation(MemberInfo member) {}
+
 		public void AddAsManyToAnyRelation(MemberInfo member) {}
 
 		public void AddAsAny(MemberInfo member) {}
 
 		public void AddAsPoid(MemberInfo member) {}
+
 		public void AddAsPartOfComposedId(MemberInfo member) {}
 
 		public void AddAsVersionProperty(MemberInfo member) {}
@@ -222,9 +224,13 @@ namespace NHibernate.Mapping.ByCode
 		public void AddAsMap(MemberInfo member) {}
 
 		public void AddAsProperty(MemberInfo member) {}
-		public void AddAsPersistentMember(MemberInfo member){}
+
+		public void AddAsPersistentMember(MemberInfo member) {}
+
 		public void AddAsPropertySplit(SplitDefinition definition) {}
+
 		public void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate) {}
+
 		#endregion
 	}
 }

@@ -259,7 +259,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			if (memberType.IsGenericType)
 			{
-				return memberType.GetGenericIntercafesTypeDefinitions().Contains(typeof(IDictionary<,>));
+				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(IDictionary<,>));
 			}
 			return false;
 		}
@@ -300,7 +300,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			if (memberType.IsGenericType)
 			{
-				return memberType.GetGenericIntercafesTypeDefinitions().Contains(typeof(Iesi.Collections.Generic.ISet<>));
+				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(Iesi.Collections.Generic.ISet<>));
 			}
 			return false;
 		}

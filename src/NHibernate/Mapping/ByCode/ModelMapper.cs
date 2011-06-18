@@ -667,7 +667,7 @@ namespace NHibernate.Mapping.ByCode
 				IJoinMapper joinMapper;
 				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
 				{
-					MapSplittedProperties(type, propertiesOfTheGroup, joinMapper);
+					MapSplitProperties(type, propertiesOfTheGroup, joinMapper);
 					propertiesInSplits.UnionWith(propertiesOfTheGroup);
 				}
 			}
@@ -704,13 +704,13 @@ namespace NHibernate.Mapping.ByCode
 
 		private System.Type GetEntityBaseType(System.Type type)
 		{
-			System.Type analizingType = type;
-			while (analizingType != null && analizingType != typeof (object))
+			System.Type analyzingType = type;
+			while (analyzingType != null && analyzingType != typeof (object))
 			{
-				analizingType = analizingType.BaseType;
-				if (modelInspector.IsEntity(analizingType))
+				analyzingType = analyzingType.BaseType;
+				if (modelInspector.IsEntity(analyzingType))
 				{
-					return analizingType;
+					return analyzingType;
 				}
 			}
 			return type.GetInterfaces().FirstOrDefault(i => modelInspector.IsEntity(i));
@@ -787,7 +787,7 @@ namespace NHibernate.Mapping.ByCode
 				IJoinMapper joinMapper;
 				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
 				{
-					MapSplittedProperties(type, propertiesOfTheGroup, joinMapper);
+					MapSplitProperties(type, propertiesOfTheGroup, joinMapper);
 					propertiesInSplits.UnionWith(propertiesOfTheGroup);
 				}
 			}
@@ -796,7 +796,7 @@ namespace NHibernate.Mapping.ByCode
 			InvokeAfterMapClass(type, classMapper);
 		}
 
-		private void MapSplittedProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap, IJoinMapper propertiesContainer)
+		private void MapSplitProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap, IJoinMapper propertiesContainer)
 		{
 			foreach (var property in propertiesToMap)
 			{

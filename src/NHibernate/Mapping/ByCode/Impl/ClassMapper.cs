@@ -236,7 +236,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.schemaaction = action.ToSchemaActionString();
 		}
 
-		public void Join(string splitGroupId, Action<IJoinMapper> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper> splitMapping)
 		{
 			IJoinMapper splitGroup;
 			if(!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
@@ -248,7 +248,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.Items1 = classMapping.Items1 == null ? toAdd : classMapping.Items1.Concat(toAdd).ToArray();
 			}
 
-			splittedMapping(splitGroup);
+			splitMapping(splitGroup);
 		}
 
 		#endregion

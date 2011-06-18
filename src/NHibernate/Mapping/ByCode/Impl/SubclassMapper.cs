@@ -59,7 +59,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
 
-		public void Join(string splitGroupId, Action<IJoinMapper> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper> splitMapping)
 		{
 			IJoinMapper splitGroup;
 			if (!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
@@ -71,7 +71,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.join = classMapping.join == null ? toAdd : classMapping.join.Concat(toAdd).ToArray();
 			}
 
-			splittedMapping(splitGroup);
+			splitMapping(splitGroup);
 		}
 
 		#endregion

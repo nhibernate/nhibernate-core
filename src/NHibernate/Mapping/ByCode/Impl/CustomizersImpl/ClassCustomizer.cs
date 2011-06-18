@@ -46,12 +46,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), m => m.Id(member, idMapper));
 		}
 
-		public void Id(string notVidiblePropertyOrFieldName, Action<IIdMapper> idMapper)
+		public void Id(string notVisiblePropertyOrFieldName, Action<IIdMapper> idMapper)
 		{
 			MemberInfo member = null;
-			if (notVidiblePropertyOrFieldName != null)
+			if (notVisiblePropertyOrFieldName != null)
 			{
-				member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+				member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
 				ExplicitDeclarationsHolder.AddAsPoid(member);
 			}
 			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(member, idMapper));
@@ -69,14 +69,14 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
 		}
 
-		public void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class
 		{
-			ComponentAsId<TComponent>(notVidiblePropertyOrFieldName, x => { });
+			ComponentAsId<TComponent>(notVisiblePropertyOrFieldName, x => { });
 		}
 
-		public void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
+		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
 		{
-			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
 			var propertyPath = new PropertyPath(null, member);
 			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
 		}
@@ -127,9 +127,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Version(member, versionMapping));
 		}
 
-		public void Version(string notVidiblePropertyOrFieldName, Action<IVersionMapper> versionMapping)
+		public void Version(string notVisiblePropertyOrFieldName, Action<IVersionMapper> versionMapping)
 		{
-			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVidiblePropertyOrFieldName);
+			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
 			ExplicitDeclarationsHolder.AddAsVersionProperty(member);
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Version(member, versionMapping));
 		}
@@ -165,7 +165,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SchemaAction(action));
 		}
 
-		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping)
+		public void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping)
 		{
 			// add the customizer only to create the JoinMapper instance
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Join(splitGroupId, j => { }));
@@ -176,7 +176,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				joinCustomizer = new JoinCustomizer<TEntity>(splitGroupId, ExplicitDeclarationsHolder, CustomizersHolder);
 				JoinCustomizers.Add(splitGroupId, joinCustomizer);
 			}
-			splittedMapping(joinCustomizer);
+			splitMapping(joinCustomizer);
 		}
 
 		public void EntityName(string value)

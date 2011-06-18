@@ -19,14 +19,14 @@ namespace NHibernate.Mapping.ByCode
 		void Unique(bool unique);
 
 		/// <summary>
-		/// Set the Foreing-Key name
+		/// Set the Foreign-Key name
 		/// </summary>
-		/// <param name="foreingKeyName">The name of the Foreing-Key</param>
+		/// <param name="foreignKeyName">The name of the Foreign-Key</param>
 		/// <remarks>
-		/// Where the <paramref name="foreingKeyName"/> is "none" or <see cref="string.Empty"/> or all white-spaces the FK won't be created.
+		/// Where the <paramref name="foreignKeyName"/> is "none" or <see cref="string.Empty"/> or all white-spaces the FK won't be created.
 		/// Use null to reset the default NHibernate's behavior.
 		/// </remarks>
-		void ForeignKey(string foreingKeyName);
+		void ForeignKey(string foreignKeyName);
 	}
 
 	public interface IKeyMapper<TEntity> : IColumnsMapper where TEntity : class
@@ -34,7 +34,7 @@ namespace NHibernate.Mapping.ByCode
 		void OnDelete(OnDeleteAction deleteAction);
 		void PropertyRef<TProperty>(Expression<Func<TEntity, TProperty>> propertyGetter);
 		void Update(bool consideredInUpdateQuery);
-		void ForeignKey(string foreingKeyName);
+		void ForeignKey(string foreignKeyName);
 		void NotNullable(bool notnull);
 		void Unique(bool unique);
 	}

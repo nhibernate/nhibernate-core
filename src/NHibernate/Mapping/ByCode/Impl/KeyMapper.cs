@@ -119,14 +119,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.unique = mapping.uniqueSpecified = unique;
 		}
 
-		public void ForeignKey(string foreingKeyName)
+		public void ForeignKey(string foreignKeyName)
 		{
-			if (foreingKeyName == null)
+			if (foreignKeyName == null)
 			{
 				mapping.foreignkey = null;
 				return;
 			}
-			string nameToAssign = foreingKeyName.Trim();
+			string nameToAssign = foreignKeyName.Trim();
 			if (string.Empty.Equals(nameToAssign))
 			{
 				mapping.foreignkey = "none";

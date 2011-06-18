@@ -32,20 +32,20 @@ namespace NHibernate.Mapping.ByCode
 		/// Using the Join, it is possible to split properties of one class to several tables, when there's a 1-to-1 relationship between the table
 		/// </summary>
 		/// <param name="splitGroupId">The split-group identifier. By default it is assigned to the join-table-name</param>
-		/// <param name="splittedMapping">The lambda to map the join.</param>
-		void Join(string splitGroupId, Action<IJoinMapper> splittedMapping);
+		/// <param name="splitMapping">The lambda to map the join.</param>
+		void Join(string splitGroupId, Action<IJoinMapper> splitMapping);
 	}
 
 	public interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty);
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
-		void Id(string notVidiblePropertyOrFieldName, Action<IIdMapper> idMapper);
+		void Id(string notVisiblePropertyOrFieldName, Action<IIdMapper> idMapper);
 
 		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty) where TComponent : class;
 		void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName) where TComponent : class;
-		void ComponentAsId<TComponent>(string notVidiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class;
+		void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class;
 
 		void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
 
@@ -56,7 +56,7 @@ namespace NHibernate.Mapping.ByCode
 		void Schema(string schemaName);
 		void Mutable(bool isMutable);
 		void Version<TProperty>(Expression<Func<TEntity, TProperty>> versionProperty, Action<IVersionMapper> versionMapping);
-		void Version(string notVidiblePropertyOrFieldName, Action<IVersionMapper> versionMapping);
+		void Version(string notVisiblePropertyOrFieldName, Action<IVersionMapper> versionMapping);
 		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping, Action<INaturalIdAttributesMapper> naturalIdMapping);
 		void NaturalId(Action<IBasePlainPropertyContainerMapper<TEntity>> naturalIdPropertiesMapping);
 		void Cache(Action<ICacheMapper> cacheMapping);
@@ -67,6 +67,6 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
 	{
-		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splittedMapping);
+		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping);
 	}
 }

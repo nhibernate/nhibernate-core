@@ -173,10 +173,10 @@ namespace NHibernate.Mapping.ByCode
 
 		public IEnumerable<string> GetSplitGroupsFor(System.Type type)
 		{
-			HashSet<string> splitsGroupsIds;
-			if (typeSplitGroups.TryGetValue(type, out splitsGroupsIds))
+			HashSet<string> splitGroupIds;
+			if (typeSplitGroups.TryGetValue(type, out splitGroupIds))
 			{
-				return splitsGroupsIds;
+				return splitGroupIds;
 			}
 			return Enumerable.Empty<string>();
 		}
@@ -222,7 +222,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if(!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitentitiesOf(type).ToArray(), root=> tablePerClassEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root=> tablePerClassEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerClassEntity(t, true));
 				return;
 			}
@@ -257,7 +257,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitentitiesOf(type).ToArray(), root => tablePerClassHierarchyEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root => tablePerClassHierarchyEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerClassHierarchyEntity(t, true));
 				return;
 			}
@@ -293,7 +293,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitentitiesOf(type).ToArray(), root => tablePerConcreteClassEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root => tablePerConcreteClassEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerConcreteClassEntity(t, true));
 				return;
 			}
@@ -477,7 +477,7 @@ namespace NHibernate.Mapping.ByCode
 
 		protected System.Type GetSingleRootEntityOrNull(System.Type entityType)
 		{
-			var rootTypes = GetRootEntitentitiesOf(entityType).ToList();
+			var rootTypes = GetRootEntitiesOf(entityType).ToList();
 			if(rootTypes.Count > 1)
 			{
 				var sb = new StringBuilder(1024);
@@ -494,7 +494,7 @@ namespace NHibernate.Mapping.ByCode
 			return rootTypes.SingleOrDefault(IsRootEntity);
 		}
 
-		protected IEnumerable<System.Type> GetRootEntitentitiesOf(System.Type entityType)
+		protected IEnumerable<System.Type> GetRootEntitiesOf(System.Type entityType)
 		{
 			if (entityType == null)
 			{

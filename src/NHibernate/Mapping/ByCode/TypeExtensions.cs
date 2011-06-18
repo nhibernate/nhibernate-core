@@ -30,11 +30,11 @@ namespace NHibernate.Mapping.ByCode
 		public static IEnumerable<System.Type> GetHierarchyFromBase(this System.Type type)
 		{
 			var typeHierarchy = new List<System.Type>();
-			System.Type analizingType = type;
-			while (analizingType != null && analizingType != typeof (object))
+			System.Type analyzingType = type;
+			while (analyzingType != null && analyzingType != typeof (object))
 			{
-				typeHierarchy.Add(analizingType);
-				analizingType = analizingType.BaseType;
+				typeHierarchy.Add(analyzingType);
+				analyzingType = analyzingType.BaseType;
 			}
 			return typeHierarchy.AsEnumerable().Reverse();
 		}
@@ -403,7 +403,7 @@ namespace NHibernate.Mapping.ByCode
 			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof (FlagsAttribute), false).Length > 0;
 		}
 
-		public static IEnumerable<System.Type> GetGenericIntercafesTypeDefinitions(this System.Type type)
+		public static IEnumerable<System.Type> GetGenericInterfaceTypeDefinitions(this System.Type type)
 		{
 			if (type.IsGenericType && type.IsInterface)
 			{
