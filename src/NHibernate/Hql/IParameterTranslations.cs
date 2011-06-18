@@ -15,8 +15,6 @@ namespace NHibernate.Hql
 
 		IEnumerable<string> GetNamedParameterNames();
 
-		int[] GetNamedParameterSqlLocations(string name);
-
 		IType GetNamedParameterExpectedType(string name);
 	}
 }

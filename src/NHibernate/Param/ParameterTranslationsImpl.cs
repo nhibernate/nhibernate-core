@@ -82,11 +82,6 @@ namespace NHibernate.Param
 			return _namedParameters.Keys;
 		}
 
-		public int[] GetNamedParameterSqlLocations(string name)
-		{
-			return GetNamedParameterInfo(name).SqlLocations;
-		}
-
 		public IType GetNamedParameterExpectedType(string name)
 		{
 			return GetNamedParameterInfo(name).ExpectedType;

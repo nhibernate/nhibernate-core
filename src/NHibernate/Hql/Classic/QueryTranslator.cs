@@ -1819,11 +1819,6 @@ namespace NHibernate.Hql.Classic
 				return queryTraslator.namedParameters.Keys;
 			}
 
-			public int[] GetNamedParameterSqlLocations(string name)
-			{
-				return new int[0];
-			}
-
 			public IType GetNamedParameterExpectedType(string name)
 			{
 				return null;
