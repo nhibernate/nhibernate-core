@@ -19,7 +19,6 @@ namespace NHibernate.Loader.Custom.Sql
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
-		private readonly Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
 		private readonly SqlString sql;
 		private List<IParameterSpecification> parametersSpecifications;
@@ -33,7 +32,6 @@ namespace NHibernate.Loader.Custom.Sql
 
 			SQLQueryParser parser = new SQLQueryParser(factory, sqlQuery, new ParserContext(aliasContext));
 			sql = parser.Process();
-			ArrayHelper.AddAll(namedParameterBindPoints, parser.NamedParameters);
 			ArrayHelper.AddAll(customQueryReturns, processor.GenerateCustomReturns(parser.QueryHasAliases));
 			parametersSpecifications = parser.CollectedParametersSpecifications.ToList();
 
@@ -53,11 +51,6 @@ namespace NHibernate.Loader.Custom.Sql
 		public SqlString SQL
 		{
 			get { return sql; }
-		}
-
-		public IDictionary<string, object> NamedParameterBindPoints
-		{
-			get { return namedParameterBindPoints; }
 		}
 
 		public ISet<string> QuerySpaces

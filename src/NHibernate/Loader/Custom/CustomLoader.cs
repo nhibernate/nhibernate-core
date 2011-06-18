@@ -26,7 +26,6 @@ namespace NHibernate.Loader.Custom
 
 		private readonly SqlString sql;
 		private readonly ISet<string> querySpaces = new HashedSet<string>();
-		private readonly IDictionary<string, object> namedParameterBindPoints;
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -47,8 +46,7 @@ namespace NHibernate.Loader.Custom
 		{
 			sql = customQuery.SQL;
 			querySpaces.AddAll(customQuery.QuerySpaces);
-			namedParameterBindPoints = customQuery.NamedParameterBindPoints;
-			this.parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
+			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
 			List<int> entityowners = new List<int>();
@@ -347,7 +345,7 @@ namespace NHibernate.Loader.Custom
 
 		public IEnumerable<string> NamedParameters
 		{
-			get { return namedParameterBindPoints.Keys; }
+			get { return parametersSpecifications.OfType<NamedParameterSpecification>().Select(np=> np.Name ); }
 		}
 
 		public class ResultRowProcessor

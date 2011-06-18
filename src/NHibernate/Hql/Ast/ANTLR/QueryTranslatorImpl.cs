@@ -37,7 +37,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private QueryLoader _queryLoader;
 		private IStatementExecutor _statementExecutor;
 		private IStatement _sqlAst;
-		private ParameterTranslationsImpl _paramTranslations;
 		private IDictionary<string, string> _tokenReplacements;
 		private HqlSqlGenerator _generator;
 

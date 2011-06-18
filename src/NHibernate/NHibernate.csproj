@@ -1007,7 +1007,6 @@
     <Compile Include="Param\IExplicitParameterSpecification.cs" />
     <Compile Include="Param\IParameterSpecification.cs" />
     <Compile Include="Param\NamedParameterSpecification.cs" />
-    <Compile Include="Param\ParameterTranslationsImpl.cs" />
     <Compile Include="Param\PositionalParameterSpecification.cs" />
     <Compile Include="Hql\Ast\ANTLR\QuerySyntaxException.cs" />
     <Compile Include="Hql\Ast\ANTLR\QueryTranslatorImpl.cs" />
@@ -1520,7 +1519,6 @@
     <Compile Include="Criterion\IsNotEmptyExpression.cs" />
     <Compile Include="Hql\HolderInstantiator.cs" />
     <Compile Include="Hql\IFilterTranslator.cs" />
-    <Compile Include="Hql\IParameterTranslations.cs" />
     <Compile Include="Hql\IQueryTranslator.cs" />
     <Compile Include="Hql\IQueryTranslatorFactory.cs" />
     <Compile Include="Hql\NameGenerator.cs" />

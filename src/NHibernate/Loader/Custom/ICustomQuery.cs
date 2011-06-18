@@ -22,22 +22,6 @@ namespace NHibernate.Loader.Custom
 		/// </summary>
 		ISet<string> QuerySpaces { get; }
 
-		/// <summary>
-		/// A map representing positions within the supplied <see cref="SQL"/> query to
-		/// which we need to bind named parameters.
-		/// </summary>
-		/// <remarks>
-		/// Optional, may return null if no named parameters.
-		/// The structure of the returned map (if one) as follows:
-		/// <ol>
-		/// <li>The keys into the map are the named parameter names</li>
-		/// <li>The corresponding value is either an if the
-		/// parameter occurs only once in the query; or a List of int if the
-		/// parameter occurs more than once</li>
-		/// </ol>
-		/// </remarks>
-		IDictionary<string, object> NamedParameterBindPoints { get; }
-
 		/// <summary> 
 		/// A collection of <see cref="IReturn"/> descriptors describing the
 		/// ADO result set to be expected and how to map this result set. 

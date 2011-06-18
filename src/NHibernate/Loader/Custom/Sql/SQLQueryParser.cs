@@ -28,8 +28,6 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly string originalQueryString;
 		private readonly IParserContext context;
 
-		private readonly Dictionary<string, object> namedParameters = new Dictionary<string, object>();
-
 		private long aliasesFound;
 		private IEnumerable<IParameterSpecification> parametersSpecifications;
 
@@ -38,11 +36,6 @@ namespace NHibernate.Loader.Custom.Sql
 			this.factory = factory;
 			originalQueryString = sqlQuery;
 			this.context = context;
-		}
-
-		public IDictionary<string, object> NamedParameters
-		{
-			get { return namedParameters; }
 		}
 
 		public bool QueryHasAliases
@@ -253,11 +246,6 @@ namespace NHibernate.Loader.Custom.Sql
 			var recognizer = new ParameterSubstitutionRecognizer(factory);
 			ParameterParser.Parse(sqlString, recognizer);
 			parametersSpecifications = recognizer.ParametersSpecifications.ToList();
-			namedParameters.Clear();
-			foreach (KeyValuePair<string, object> de in recognizer.namedParameterBindPoints)
-			{
-				namedParameters.Add(de.Key, de.Value);
-			}
 
 			return recognizer.result.ToSqlString();
 		}
@@ -266,7 +254,6 @@ namespace NHibernate.Loader.Custom.Sql
 		{
 			private readonly ISessionFactoryImplementor factory;
 			internal SqlStringBuilder result = new SqlStringBuilder();
-			internal Dictionary<string, object> namedParameterBindPoints = new Dictionary<string, object>();
 			internal int parameterCount = 0;
 			private readonly List<IParameterSpecification> parametersSpecifications = new List<IParameterSpecification>();
 			private int positionalParameterCount;
@@ -301,7 +288,6 @@ namespace NHibernate.Loader.Custom.Sql
 
 			public void NamedParameter(string name, int position)
 			{
-				AddNamedParameter(name);
 				var paramSpec = new NamedParameterSpecification(1, position, name);
 				var parameter = Parameter.Placeholder;
 				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
@@ -322,27 +308,6 @@ namespace NHibernate.Loader.Custom.Sql
 			public void Other(string sqlPart)
 			{
 				result.Add(sqlPart);
-			}
-
-			private void AddNamedParameter(string name)
-			{
-				int loc = parameterCount++;
-				object o;
-				if (!namedParameterBindPoints.TryGetValue(name, out o))
-				{
-					namedParameterBindPoints[name] = loc;
-				}
-				else if (o is int)
-				{
-					List<int> list = new List<int>(4);
-					list.Add((int) o);
-					list.Add(loc);
-					namedParameterBindPoints[name] = list;
-				}
-				else
-				{
-					((IList) o).Add(loc);
-				}
 			}
 		}
 	}
