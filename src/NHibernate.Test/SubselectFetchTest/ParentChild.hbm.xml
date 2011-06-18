@@ -8,7 +8,7 @@
 			<generator class="assigned" />
 		</id>
 		<bag name="Friends" fetch="subselect" table="ChildChild">
-			<key column="childName1" /><!-- H3 has not-null="true" -->
+			<key column="childName1" not-null="true" />
 			<many-to-many class="Child" column="childName2"/>
 		</bag>
 	</class>
@@ -18,12 +18,12 @@
 			<generator class="assigned" />
 		</id>
 		<list name="Children" fetch="subselect" cascade="all">
-			<key column="parentName" /><!-- H3 has not-null="true" -->
+			<key column="parentName" not-null="true"/>
 			<index column="loc"/>
 			<one-to-many class="Child"/>
 		</list>
 		<list name="MoreChildren" table="ParentChild" fetch="subselect">
-			<key column="parentName" /><!-- H3 has not-null="true" -->
+			<key column="parentName" not-null="true"/>
 			<index column="loc"/>
 			<many-to-many class="Child" column="childName"/>
 		</list>

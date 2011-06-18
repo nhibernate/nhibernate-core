@@ -157,8 +157,8 @@ namespace NHibernate.Engine
 		}
 
 		public SqlString ProcessedSql { get; internal set; }
-
 		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
+		public RowSelection ProcessedRowSelection { get; internal set; }
 
 		public bool NaturalKeyLookup { get; set; }
 

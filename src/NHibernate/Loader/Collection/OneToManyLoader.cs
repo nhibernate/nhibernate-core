@@ -30,6 +30,11 @@ namespace NHibernate.Loader.Collection
 		                       ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(oneToManyPersister, factory, enabledFilters)
 		{
+			InitializeFromWalker(oneToManyPersister, subquery, batchSize, enabledFilters, factory);
+		}
+
+		protected virtual void InitializeFromWalker(IQueryableCollection oneToManyPersister, SqlString subquery, int batchSize, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+		{
 			JoinWalker walker = new OneToManyJoinWalker(oneToManyPersister, batchSize, subquery, factory, enabledFilters);
 			InitFromWalker(walker);
 

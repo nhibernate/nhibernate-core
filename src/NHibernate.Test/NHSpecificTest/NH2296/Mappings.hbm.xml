@@ -1,0 +1,48 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	default-access="property"
+	auto-import="true"
+	default-cascade="none"
+	default-lazy="true"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2296">
+
+  <class mutable="true" name="Order" table="`Order`">
+
+    <id name="Id" type="System.Int32">
+      <column name="Id" />
+      <generator class="identity" />
+    </id>
+
+    <bag cascade="all-delete-orphan" fetch="subselect" inverse="true" name="Products" mutable="true">
+      <key>
+        <column name="Order_id" />
+      </key>
+      <one-to-many class="Product" />
+    </bag>
+
+    <property name="AccountName" type="System.String">
+      <column name="AccountName" />
+    </property>
+
+  </class>
+
+  <class mutable="true" name="Product" table="`Product`">
+
+    <id name="Id" type="System.Int32">
+      <column name="Id" />
+      <generator class="identity" />
+    </id>
+
+    <property name="StatusReason" type="System.String">
+      <column name="StatusReason" />
+    </property>
+
+    <many-to-one class="Order" name="Order">
+      <column name="Order_id" />
+    </many-to-one>
+
+  </class>
+
+</hibernate-mapping>

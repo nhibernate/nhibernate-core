@@ -723,6 +723,8 @@
     <Compile Include="NHSpecificTest\NH2288\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2293\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2294\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2296\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2296\Model.cs" />
     <Compile Include="NHSpecificTest\NH2302\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2302\StringLengthEntity.cs" />
     <Compile Include="NHSpecificTest\NH2303\Fixture.cs" />
@@ -2716,6 +2718,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2296\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2760\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2662\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2703\Mappings.hbm.xml" />

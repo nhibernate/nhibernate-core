@@ -11,6 +11,11 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SubselectClauseExtractor
 	{
+		/* 
+		 * NH TODO: this implementation will break, for MsSQL2005Dialect, a when the query is an HQL with skip/take because the last "ORDER BY" is there for pagination.
+		 * Because HQL skip/take are new features, we hope nobody will use it in conjuction with subselect fetching at least until MS-SQL will release a more modern
+		 * syntax for pagination.
+		*/
 		private const string FromClauseToken = " from ";
 		private const string OrderByToken = "order by";
 
@@ -92,6 +97,13 @@ namespace NHibernate.SqlCommand
 			RemoveLastOrderByClause();
 
 			return builder.ToSqlString();
+		}
+
+		public static bool HasOrderBy(SqlString subselect)
+		{
+			var extractor = new SubselectClauseExtractor((object[])subselect.Parts);
+			extractor.GetSqlString();
+			return extractor.lastOrderByPartIndex >= 0;
 		}
 
 		private int FindFromClauseInPart(string part)

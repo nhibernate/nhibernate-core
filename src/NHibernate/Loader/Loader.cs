@@ -1647,10 +1647,10 @@ namespace NHibernate.Loader
 
 			// dynamic-filter parameters: during the createion of the SqlString of allLoader implementation, filters can be added as SQL_TOKEN/string for this reason we have to re-parse the SQL.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
-			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters); // NOTE: see TODO below
+			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters);
 
+			// Add limits
 			sqlString = AddLimitsParametersIfNeeded(sqlString, parameterSpecs, queryParameters, session);
-			// TODO: for sub-select fetching we have to try to assign the QueryParameter.ProcessedSQL here (with limits) but only after use IParameterSpecification for any kind of queries and taking care about the work done by SubselectClauseExtractor
 
 			// The PreprocessSQL method can modify the SqlString but should never add parameters (or we have to override it)
 			sqlString = PreprocessSQL(sqlString, queryParameters, session.Factory.Dialect);
@@ -1668,10 +1668,14 @@ namespace NHibernate.Loader
 
 		protected abstract IEnumerable<IParameterSpecification> GetParameterSpecifications();
 
-		protected void AdjustQueryParametersForSubSelectFetching(SqlString sqlString, IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
+		protected void AdjustQueryParametersForSubSelectFetching(SqlString filteredSqlString, IEnumerable<IParameterSpecification> parameterSpecsWithFilters, QueryParameters queryParameters)
 		{
-			queryParameters.ProcessedSql = sqlString;
-			queryParameters.ProcessedSqlParameters = parameterSpecs.ToList();
+			queryParameters.ProcessedSql = filteredSqlString;
+			queryParameters.ProcessedSqlParameters = parameterSpecsWithFilters.ToList();
+			if (queryParameters.RowSelection != null)
+			{
+				queryParameters.ProcessedRowSelection = new RowSelection { FirstRow = queryParameters.RowSelection.FirstRow, MaxRows = queryParameters.RowSelection.MaxRows };
+			}
 		}
 
 		protected SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)

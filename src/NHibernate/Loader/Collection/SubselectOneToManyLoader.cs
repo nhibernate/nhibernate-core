@@ -5,7 +5,6 @@ using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
@@ -14,6 +13,7 @@ namespace NHibernate.Loader.Collection
 	/// </summary>
 	public class SubselectOneToManyLoader : OneToManyLoader
 	{
+		private const int BatchSizeForSubselectFetching = 1;
 		private readonly object[] keys;
 		private readonly IDictionary<string, int[]> namedParameterLocMap;
 		private readonly IDictionary<string, TypedValue> namedParameters;
@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Collection
 		public SubselectOneToManyLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
 		                                QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
 		                                ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-			: base(persister, 1, subquery, factory, enabledFilters)
+			: base(persister, BatchSizeForSubselectFetching, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];
 			int i = 0;
@@ -34,11 +34,21 @@ namespace NHibernate.Loader.Collection
 			}
 
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
+			namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
+			this.namedParameterLocMap = new Dictionary<string, int[]>(namedParameterLocMap);
 			parametersSpecifications = queryParameters.ProcessedSqlParameters.ToList();
-			namedParameters = queryParameters.NamedParameters;
+			var processedRowSelection = queryParameters.ProcessedRowSelection;
+			SqlString finalSubquery = subquery;
+			if (queryParameters.ProcessedRowSelection != null && !SubselectClauseExtractor.HasOrderBy(queryParameters.ProcessedSql))
+			{
+				// when the original query has an "ORDER BY" we can't re-apply the pagination.
+				// This is a simplification, we should actually check which is the "ORDER BY" clause because when the "ORDER BY" is just for the PK we can re-apply "ORDER BY" and pagination.
+				finalSubquery = GetSubSelectWithLimits(subquery, parametersSpecifications, processedRowSelection, namedParameters, this.namedParameterLocMap);
+			}
+			InitializeFromWalker(persister, finalSubquery, BatchSizeForSubselectFetching, enabledFilters, factory);
+
 			types = queryParameters.PositionalParameterTypes;
 			values = queryParameters.PositionalParameterValues;
-			this.namedParameterLocMap = namedParameterLocMap;
 		}
 
 		public override void Initialize(object id, ISessionImplementor session)
