@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
-using System.Linq;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
@@ -664,22 +662,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private static QueryParameters GetFilteredQueryParameters(QueryParameters queryParameters, ITranslator translator)
-		{
-			QueryParameters filteredQueryParameters = queryParameters;
-			Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
-			filteredQueryParameters.NamedParameters.Clear();
-			foreach (string paramName in translator.GetNamedParameterNames())
-			{
-				TypedValue v;
-				if (namedParameters.TryGetValue(paramName, out v))
-				{
-					filteredQueryParameters.NamedParameters.Add(paramName, v);
-				}
-			}
-			return filteredQueryParameters;
-		}
-
 		public object GetResult(string key)
 		{
 			if (queryResults == null)
@@ -818,7 +800,6 @@ namespace NHibernate.Impl
 			IType[] ReturnTypes { get; }
 			string[] ReturnAliases { get; }
 			ICollection<string> QuerySpaces { get; }
-			IEnumerable<string> GetNamedParameterNames();
 		}
 
 		private class HqlTranslatorWrapper : ITranslator
@@ -848,11 +829,6 @@ namespace NHibernate.Impl
 			public string[] ReturnAliases
 			{
 				get { return innerTranslator.ReturnAliases; }
-			}
-
-			public IEnumerable<string> GetNamedParameterNames()
-			{
-				return innerTranslator.GetParameterTranslations().GetNamedParameterNames();
 			}
 		}
 
@@ -886,11 +862,6 @@ namespace NHibernate.Impl
 			public string[] ReturnAliases
 			{
 				get { return loader.ReturnAliases; }
-			}
-
-			public IEnumerable<string> GetNamedParameterNames()
-			{
-				return loader.NamedParameters;
 			}
 		}
 	}
