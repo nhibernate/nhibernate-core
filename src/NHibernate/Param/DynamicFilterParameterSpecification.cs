@@ -90,7 +90,7 @@ namespace NHibernate.Param
 		
 		public override bool Equals(object obj)
 		{
-			return base.Equals(obj);
+			return Equals(obj as DynamicFilterParameterSpecification);
 		}
 
 		[Serializable]

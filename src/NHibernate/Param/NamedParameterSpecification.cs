@@ -72,7 +72,7 @@ namespace NHibernate.Param
 
 		public override bool Equals(object obj)
 		{
-			return base.Equals(obj as NamedParameterSpecification);
+			return Equals(obj as NamedParameterSpecification);
 		}
 
 		public bool Equals(NamedParameterSpecification other)

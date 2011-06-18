@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Iesi.Collections.Generic;
@@ -17,6 +18,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -183,28 +185,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public ParameterMetadata BuildParameterMetadata()
 		{
-			var parameterTranslations = GetParameterTranslations();
-
-			var ordinalDescriptors = new OrdinalParameterDescriptor[parameterTranslations.OrdinalParameterCount];
-
-			for (var i = 1; i <= ordinalDescriptors.Length; i++)
-			{
-				ordinalDescriptors[i - 1] =
-					new OrdinalParameterDescriptor(i,
-												   parameterTranslations.SupportsOrdinalParameterMetadata
-													   ? parameterTranslations.GetOrdinalParameterExpectedType(i)
-													   : null);
-			}
-
-			var namedDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
-			foreach (var name in parameterTranslations.GetNamedParameterNames())
-			{
-				namedDescriptorMap[name] =
-					new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name), false);// description.JpaStyle);
-
-			}
-
-			return new ParameterMetadata(ordinalDescriptors, namedDescriptorMap);
+			IList<IParameterSpecification> specifications = _sqlAst.Walker.Parameters;
+			IEnumerable<OrdinalParameterDescriptor> ordinals =
+				specifications.OfType<PositionalParameterSpecification>().Select(op => new OrdinalParameterDescriptor(op.HqlPosition, op.ExpectedType));
+			Dictionary<string, NamedParameterDescriptor> nameds = specifications.OfType<NamedParameterSpecification>()
+				.Distinct()
+				.Select(np => new {np.Name, Descriptor = new NamedParameterDescriptor(np.Name, np.ExpectedType, false)})
+				.ToDictionary(ep => ep.Name, ep => ep.Descriptor);
+			return new ParameterMetadata(ordinals, nameds);
 		}
 
 		public string[][] GetColumnNames()

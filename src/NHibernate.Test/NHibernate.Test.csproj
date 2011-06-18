@@ -883,6 +883,7 @@
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
+    <Compile Include="Parameters\NamedParameterSpecificationTest.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
