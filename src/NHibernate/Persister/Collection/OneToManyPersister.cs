@@ -382,7 +382,7 @@ namespace NHibernate.Persister.Collection
 		{
 			return
 				new SubselectOneToManyLoader(this, subselect.ToSubselectString(CollectionType.LHSPropertyName), subselect.Result,
-				                             subselect.QueryParameters, subselect.NamedParameterLocMap, session.Factory,
+				                             subselect.QueryParameters, session.Factory,
 				                             session.EnabledFilters);
 		}
 

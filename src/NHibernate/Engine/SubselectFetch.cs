@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -10,17 +9,15 @@ namespace NHibernate.Engine
 	{
 		private readonly string alias;
 		private readonly ILoadable loadable;
-		private readonly IDictionary<string, int[]> namedParameterLocMap;
 		private readonly QueryParameters queryParameters;
 		private readonly SqlString queryString;
 		private readonly ISet<EntityKey> resultingEntityKeys;
 
 		public SubselectFetch(string alias, ILoadable loadable, QueryParameters queryParameters,
-		                      ISet<EntityKey> resultingEntityKeys, IDictionary<string, int[]> namedParameterLocMap)
+		                      ISet<EntityKey> resultingEntityKeys)
 		{
 			this.resultingEntityKeys = resultingEntityKeys;
 			this.queryParameters = queryParameters;
-			this.namedParameterLocMap = namedParameterLocMap;
 			this.loadable = loadable;
 			this.alias = alias;
 
@@ -35,11 +32,6 @@ namespace NHibernate.Engine
 		public ISet<EntityKey> Result
 		{
 			get { return resultingEntityKeys; }
-		}
-
-		public IDictionary<string, int[]> NamedParameterLocMap
-		{
-			get { return namedParameterLocMap; }
 		}
 
 		public SqlString ToSubselectString(string ukname)

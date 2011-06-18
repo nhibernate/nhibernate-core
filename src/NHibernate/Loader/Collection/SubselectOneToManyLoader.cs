@@ -15,14 +15,13 @@ namespace NHibernate.Loader.Collection
 	{
 		private const int BatchSizeForSubselectFetching = 1;
 		private readonly object[] keys;
-		private readonly IDictionary<string, int[]> namedParameterLocMap;
 		private readonly IDictionary<string, TypedValue> namedParameters;
 		private readonly IType[] types;
 		private readonly object[] values;
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SubselectOneToManyLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
-		                                QueryParameters queryParameters, IDictionary<string, int[]> namedParameterLocMap,
+		                                QueryParameters queryParameters,
 		                                ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, BatchSizeForSubselectFetching, factory, enabledFilters)
 		{
@@ -35,7 +34,6 @@ namespace NHibernate.Loader.Collection
 
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
 			namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
-			this.namedParameterLocMap = new Dictionary<string, int[]>(namedParameterLocMap);
 			parametersSpecifications = queryParameters.ProcessedSqlParameters.ToList();
 			var processedRowSelection = queryParameters.ProcessedRowSelection;
 			SqlString finalSubquery = subquery;
@@ -43,7 +41,7 @@ namespace NHibernate.Loader.Collection
 			{
 				// when the original query has an "ORDER BY" we can't re-apply the pagination.
 				// This is a simplification, we should actually check which is the "ORDER BY" clause because when the "ORDER BY" is just for the PK we can re-apply "ORDER BY" and pagination.
-				finalSubquery = GetSubSelectWithLimits(subquery, parametersSpecifications, processedRowSelection, namedParameters, this.namedParameterLocMap);
+				finalSubquery = GetSubSelectWithLimits(subquery, parametersSpecifications, processedRowSelection, namedParameters);
 			}
 			InitializeFromWalker(persister, finalSubquery, BatchSizeForSubselectFetching, enabledFilters, factory);
 
@@ -58,7 +56,7 @@ namespace NHibernate.Loader.Collection
 
 		public override int[] GetNamedParameterLocs(string name)
 		{
-			return namedParameterLocMap[name];
+			return new int[0];
 		}
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()

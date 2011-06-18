@@ -521,8 +521,6 @@ namespace NHibernate.Loader
 
 				ISet<EntityKey>[] keySets = Transpose(keys);
 
-				IDictionary<string, int[]> namedParameterLocMap = BuildNamedParameterLocMap(queryParameters);
-
 				ILoadable[] loadables = EntityPersisters;
 				string[] aliases = Aliases;
 
@@ -533,29 +531,12 @@ namespace NHibernate.Loader
 						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
 						{
 							SubselectFetch subselectFetch =
-								new SubselectFetch(aliases[i], loadables[i], queryParameters, keySets[i], namedParameterLocMap);
+								new SubselectFetch(aliases[i], loadables[i], queryParameters, keySets[i]);
 
 							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
 						}
 					}
 				}
-			}
-		}
-
-		private IDictionary<string, int[]> BuildNamedParameterLocMap(QueryParameters queryParameters)
-		{
-			if (queryParameters.NamedParameters != null)
-			{
-				IDictionary<string, int[]> namedParameterLocMap = new Dictionary<string, int[]>();
-				foreach (string name in queryParameters.NamedParameters.Keys)
-				{
-					namedParameterLocMap[name] = GetNamedParameterLocs(name);
-				}
-				return namedParameterLocMap;
-			}
-			else
-			{
-				return null;
 			}
 		}
 

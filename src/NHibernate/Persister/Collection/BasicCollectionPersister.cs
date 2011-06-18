@@ -300,7 +300,7 @@ namespace NHibernate.Persister.Collection
 		{
 			return
 				new SubselectCollectionLoader(this, subselect.ToSubselectString(CollectionType.LHSPropertyName), subselect.Result,
-				                              subselect.QueryParameters, subselect.NamedParameterLocMap, session.Factory,
+				                              subselect.QueryParameters, session.Factory,
 				                              session.EnabledFilters);
 		}
 
