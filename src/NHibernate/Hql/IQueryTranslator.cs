@@ -99,11 +99,6 @@ namespace NHibernate.Hql
 		/// <returns>the column names in the generated SQL.</returns>
 		string[][] GetColumnNames();
 
-		/// <summary>
-		/// Information about any parameters encountered during translation.
-		/// </summary>
-		IParameterTranslations GetParameterTranslations();
-
 		// <summary>
 		// Validate the scrollability of the translated query.
 		// </summary>

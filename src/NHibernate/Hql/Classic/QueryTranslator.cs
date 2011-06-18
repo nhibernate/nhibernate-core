@@ -1730,11 +1730,6 @@ namespace NHibernate.Hql.Classic
 			return scalarColumnNames;
 		}
 
-		public IParameterTranslations GetParameterTranslations()
-		{
-			return new ParameterTranslationsImpl(CollectedParameterSpecifications);
-		}
-
 		public bool ContainsCollectionFetches
 		{
 			get { return false; }

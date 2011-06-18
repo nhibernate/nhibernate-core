@@ -201,16 +201,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return _sqlAst.Walker.SelectClause.ColumnNames;
 		}
 
-		public IParameterTranslations GetParameterTranslations()
-		{
-			if (_paramTranslations == null)
-			{
-				_paramTranslations = new ParameterTranslationsImpl(_sqlAst.Walker.Parameters);
-			}
-
-			return _paramTranslations;
-		}
-
 		public ISet<string> QuerySpaces
 		{
 			get { return _sqlAst.Walker.QuerySpaces; }
