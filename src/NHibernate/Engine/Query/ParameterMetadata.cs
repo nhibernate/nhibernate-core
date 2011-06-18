@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
+using System.Linq;
 using NHibernate.Type;
 
 namespace NHibernate.Engine.Query
@@ -9,28 +9,15 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class ParameterMetadata
 	{
-		private static readonly OrdinalParameterDescriptor[] EmptyOrdinals = new OrdinalParameterDescriptor[0];
-		private readonly OrdinalParameterDescriptor[] ordinalDescriptors;
 		private readonly Dictionary<string, NamedParameterDescriptor> namedDescriptorMap;
+		private readonly OrdinalParameterDescriptor[] ordinalDescriptors;
 
-		public ParameterMetadata(OrdinalParameterDescriptor[] ordinalDescriptors,
-			IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
+		public ParameterMetadata(IEnumerable<OrdinalParameterDescriptor> ordinalDescriptors,
+		                         IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
 		{
-			if (ordinalDescriptors == null)
-			{
-				this.ordinalDescriptors = EmptyOrdinals;
-			}
-			else
-			{
-				OrdinalParameterDescriptor[] copy = new OrdinalParameterDescriptor[ordinalDescriptors.Length];
-				Array.Copy(ordinalDescriptors, 0, copy, 0, ordinalDescriptors.Length);
-				this.ordinalDescriptors = copy;
-			}
+			this.ordinalDescriptors = ordinalDescriptors == null ? Enumerable.Empty<OrdinalParameterDescriptor>().ToArray() : ordinalDescriptors.ToArray();
 
-			if (namedDescriptorMap == null)
-				this.namedDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
-			else
-				this.namedDescriptorMap = new Dictionary<string, NamedParameterDescriptor>(namedDescriptorMap);
+			this.namedDescriptorMap = namedDescriptorMap == null ? new Dictionary<string, NamedParameterDescriptor>(1) : new Dictionary<string, NamedParameterDescriptor>(namedDescriptorMap);
 		}
 
 		public int OrdinalParameterCount
@@ -57,17 +44,14 @@ namespace NHibernate.Engine.Query
 			return GetOrdinalParameterDescriptor(position).ExpectedType;
 		}
 
-		public int GetOrdinalParameterSourceLocation(int position)
-		{
-			return GetOrdinalParameterDescriptor(position).SourceLocation;
-		}
-
 		public NamedParameterDescriptor GetNamedParameterDescriptor(string name)
 		{
 			NamedParameterDescriptor meta;
 			namedDescriptorMap.TryGetValue(name, out meta);
 			if (meta == null)
+			{
 				throw new QueryParameterException("could not locate named parameter [" + name + "]");
+			}
 
 			return meta;
 		}
