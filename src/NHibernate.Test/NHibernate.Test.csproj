@@ -855,6 +855,8 @@
     <Compile Include="NHSpecificTest\NH2673\CachingWithTrasformerTests.cs" />
     <Compile Include="NHSpecificTest\NH2691\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2691\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2693\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2693\Model.cs" />
     <Compile Include="NHSpecificTest\NH2697\ArticleGroupItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\ArticleItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\SampleTest.cs" />
@@ -2724,6 +2726,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2693\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2746\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2700\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2296\Mappings.hbm.xml" />

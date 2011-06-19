@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2693">
+  <class name="FirstLevel">
+    <!-- Id column must be same as key column of SecondLevels because of NH-2692 -->
+    <id name="Id" column="first_level_id">
+      <generator class="guid" />
+    </id>
+    <set name="SecondLevels">
+      <key column="first_level_id" />
+      <composite-element class="SecondLevelComponent">
+        <parent name="FirstLevel" />
+        <many-to-one name="ThirdLevel" />
+        <many-to-one name="SpecificThirdLevel" />
+        <property name="SomeBool" />
+      </composite-element>
+    </set>
+  </class>
+
+  <class name="ThirdLevel">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    <joined-subclass name="SpecificThirdLevel">
+      <key column="third_level_id" />
+      <set name="FourthLevels" cascade="all-delete-orphan" inverse="true">
+        <key column="third_level_id" />
+        <one-to-many class="FourthLevel"/>
+      </set>
+    </joined-subclass>
+  </class>
+
+  <class name="FourthLevel">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    <many-to-one name="SpecificThirdLevel" column="third_level_id"/>
+    <property name="SomeString" />
+  </class>
+</hibernate-mapping>
