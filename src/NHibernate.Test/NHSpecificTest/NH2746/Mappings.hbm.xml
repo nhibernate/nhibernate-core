@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH2746" assembly="NHibernate.Test">
+	<class xmlns="urn:nhibernate-mapping-2.2" mutable="true" name="T1" table="T1">
+		<id column="Id" name="Id" >
+			<generator class="native" />
+		</id>
+		
+		<property name="Name" column="Name" type="System.String" length="50" not-null="false" />
+		<set name="Children" inverse="true" >
+			<key column="T1Id" />
+			<one-to-many class="T2" />
+			<filter name="nameFilter" condition=":name=Name" />
+		</set>
+	</class>
+
+	<class name="T2" table="T2">
+		<id column="Id" name="Id" >
+			<generator class="native" />
+		</id>
+
+		<property name="Name" column="Name" type="System.String" length="50" not-null="false" />
+		<many-to-one name="Parent" column="T1Id" not-null="true" />
+	</class>
+
+	<filter-def name="nameFilter" >
+		<filter-param name="name" type="System.String" />
+	</filter-def>
+</hibernate-mapping>
