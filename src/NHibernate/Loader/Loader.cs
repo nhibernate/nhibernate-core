@@ -518,24 +518,37 @@ namespace NHibernate.Loader
 			if (keys.Count > 1)
 			{
 				//if we only returned one entity, query by key is more efficient
-
-				ISet<EntityKey>[] keySets = Transpose(keys);
-
-				ILoadable[] loadables = EntityPersisters;
-				string[] aliases = Aliases;
+				var subSelects = CreateSubselects(keys, queryParameters).ToArray();
 
 				foreach (EntityKey[] rowKeys in keys)
 				{
 					for (int i = 0; i < rowKeys.Length; i++)
 					{
-						if (rowKeys[i] != null && loadables[i].HasSubselectLoadableCollections)
+						if (rowKeys[i] != null && subSelects[i] != null)
 						{
-							SubselectFetch subselectFetch =
-								new SubselectFetch(aliases[i], loadables[i], queryParameters, keySets[i]);
-
-							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subselectFetch);
+							session.PersistenceContext.BatchFetchQueue.AddSubselect(rowKeys[i], subSelects[i]);
 						}
 					}
+				}
+			}
+		}
+
+		private IEnumerable<SubselectFetch> CreateSubselects(IList<EntityKey[]> keys, QueryParameters queryParameters)
+		{
+			// see NH-2123 NH-2125
+			ISet<EntityKey>[] keySets = Transpose(keys);
+			ILoadable[] loadables = EntityPersisters;
+			string[] aliases = Aliases;
+
+			for (int i = 0; i < loadables.Length; i++)
+			{
+				if (loadables[i].HasSubselectLoadableCollections)
+				{
+					yield return new SubselectFetch(aliases[i], loadables[i], queryParameters, keySets[i]);
+				}
+				else
+				{
+					yield return null;
 				}
 			}
 		}
