@@ -858,6 +858,9 @@
     <Compile Include="NHSpecificTest\NH2697\ArticleGroupItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\ArticleItem.cs" />
     <Compile Include="NHSpecificTest\NH2697\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH2700\CustomDialect.cs" />
+    <Compile Include="NHSpecificTest\NH2700\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2700\ModelClass.cs" />
     <Compile Include="NHSpecificTest\NH2703\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2703\Model.cs" />
     <Compile Include="NHSpecificTest\NH2705\ItemBase.cs" />
@@ -2719,6 +2722,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2700\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2296\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2760\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2662\Mappings.hbm.xml" />
