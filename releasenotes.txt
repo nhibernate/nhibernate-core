@@ -14,6 +14,53 @@
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 		* Dialect base: removed some no more needed properties
 
+Build 3.2.0.Beta2 (rev5964)
+=============================
+** Bug
+    * [NH-2206] - Cast is not supported by the new Linq provider
+    * [NH-2213] - CLONE -Wrong parameters order in IQuery with SetParameterList and Filter. SQL Server 2005
+    * [NH-2296] - Subselect fetching strategy with a "SetMaxResults" query generates *extremely* inefficient sql
+    * [NH-2317] - Select after Take does not work properly
+    * [NH-2318] - Template functions fail with certain combinations of arguments.
+    * [NH-2328] - Linq query on <Any/> fails
+    * [NH-2415] - HQL parameters not converted correctly to SQL
+    * [NH-2657] - OrderBy After Cast Not Working
+    * [NH-2662] - Casting a joined alias in QueryOver loses alias context and looks for property on QueryOver root
+    * [NH-2700] - SqlFunctionProjection does not honor parameter order
+    * [NH-2701] - Cannot use Linq Skip() in conjunction with FetchMany and ToFuture
+    * [NH-2703] - Using a "with" restriction in outer joins result in wrong SQL
+    * [NH-2708] - Cast<>() with a where clause fails with a NotSupportedException
+    * [NH-2712] - Linq query doesn't support enums in VB.NET
+    * [NH-2717] - Count() after Cast<>() causes InvalidOperationException
+    * [NH-2729] - Parameter values are not set using OffsetStartsAtOne
+    * [NH-2733] - Using an expression in QueryOver gives: Lambda Parameter not in scope
+    * [NH-2736] - Inverted parameters in HQL statement using take
+    * [NH-2739] - Can't get ByCode mapping to produce not nullable varbinary(max)
+    * [NH-2741] - CLONE -HQL .class query on <any> mapping does not work
+    * [NH-2746] - Invalid SQL generated for MSSQL when using Filter and paging subquery together [regression from 2.1]
+
+** Improvement
+    * [NH-941] - One-Many Requiring Nullable Foreign Keys
+    * [NH-1050] - Unidirectional One To Many Without Nullable Foreign Key
+    * [NH-2070] - Better error message for "object references an unsaved transient instance"
+    * [NH-2427] - Support querying HasValue on Nullable types
+    * [NH-2683] - Add common dialect functions as extension methods for QueryOver
+    * [NH-2702] - Support HQL pagination with parameters
+    * [NH-2728] - ManyToAny missing from ICollectionElementRelation<TElement>
+    * [NH-2732] - Dialect.GetLimitString simplifications and improvements
+    * [NH-2738] - Exception thrown when mapping contains empty enum
+    * [NH-2749] - Externalize Remotion.Linq namespace
+    * [NH-2753] - one-shot-insert for <list> and <map> for unidirectional one-to-many
+    * [NH-2760] - Unable to order by sub-collection's count
+    * [NH-2770] - Property spelling of IDbIntegrationConfigurationProperties.LogFormatedSql
+
+** New Feature
+    * [NH-2616] - Support Trim() function in Linq
+
+** Patch
+    * [NH-2125] - Solution for NH2123 - Subselect in combination with a disjuction query causes an enormous memory cons
+    * [NH-2363] - Patch for ComponentCollectionCriteriaInfoProvider, fixed persister.ElementType cast in constructor.
+
 Build 3.2.0.Beta1 (rev5839)
 =============================
 ** Bug
