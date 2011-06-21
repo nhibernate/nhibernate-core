@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1845
 															                              	map.Cascade(Mapping.ByCode.Cascade.All.Include(Mapping.ByCode.Cascade.DeleteOrphans));
 															                              }, rel => rel.OneToMany());
 			                       });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

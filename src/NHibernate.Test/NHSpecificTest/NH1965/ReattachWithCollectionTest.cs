@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 			                  	cm.Id(x => x.Id, map => map.Generator(Generators.Identity));
 													cm.Bag(x => x.Children, map => map.Cascade(Mapping.ByCode.Cascade.All.Include(Mapping.ByCode.Cascade.DeleteOrphans)), rel => rel.OneToMany());
 			                  });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

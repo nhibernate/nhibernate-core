@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 			                      	                        }, rel => rel.OneToMany());
 			                      });
 			mapper.Class<Related>(rc => rc.Id(x => x.Id, map => map.Generator(Generators.HighLow)));
-			HbmMapping mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

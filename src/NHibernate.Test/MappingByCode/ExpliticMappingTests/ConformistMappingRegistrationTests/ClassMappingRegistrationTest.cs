@@ -81,7 +81,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		{
 			var mapper = new ModelMapper();
 			mapper.AddMapping(typeof(MyClassMap));
-			var hbmMapping = mapper.CompileMappingForAllExplicitAddedEntities();
+			var hbmMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
 			ModelIsWellFormed(hbmMapping);
 		}

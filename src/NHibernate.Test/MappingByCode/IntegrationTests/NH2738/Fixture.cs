@@ -25,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2738
 															rc.Id(x => x.Id);
 															rc.Property(x => x.MyEmptyEnum);
 			                      });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
 			conf.AddMapping(mappings);
 

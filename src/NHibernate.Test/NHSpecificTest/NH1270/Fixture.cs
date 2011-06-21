@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 																							                          	mm.ForeignKey("FK_UserInRole");
 																							                          }));
 			                   });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 														cm.Property(x => x.Date);
 														cm.ManyToOne(x => x.Customer, map => map.Column("CUSTOMERID"));
 			                    });
-			return mapper.CompileMappingForAllExplicitAddedEntities();
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)

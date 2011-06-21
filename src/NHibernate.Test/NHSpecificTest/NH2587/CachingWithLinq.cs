@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 													mc.Id(x => x.Id);
 			                  	mc.ManyToOne(x=> x.Foo, map=> map.Column("FooId"));
 			                  });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

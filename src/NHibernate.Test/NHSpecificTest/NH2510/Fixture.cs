@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 														rc.Id(x=> x.Id);
 														rc.Property(x => x.Data, map=> map.Lazy(true));
 			                    });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

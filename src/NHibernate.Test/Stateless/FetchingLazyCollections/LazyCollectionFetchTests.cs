@@ -30,7 +30,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			                       });
 			mapper.AddMapping<FamilyMap<Reptile>>();
 			mapper.AddMapping<FamilyMap<Human>>();
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

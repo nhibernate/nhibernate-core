@@ -140,7 +140,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 																													 y.Property(c => c.Something);
 																												 });
 														});
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var hbmClass = mappings.RootClasses[0];
 			var hbmJoinedSubclass = mappings.JoinedSubclasses[0];
 			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
@@ -179,7 +179,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			                      });
 			mapper.Class<Inherited>(mc =>{});
 
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var hbmClass = mappings.RootClasses[0];
 			mappings.JoinedSubclasses.Should().Be.Empty();
 			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
@@ -212,7 +212,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			                                 	                           	y.Property(c => c.Something);
 			                                 	                           });
 			                                 });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var hbmClass = mappings.RootClasses[0];
 			var hbmJoinedSubclass = mappings.JoinedSubclasses[0];
 			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
@@ -251,7 +251,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			                      });
 			mapper.Class<Inherited>(mc => { });
 
-			HbmMapping mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			HbmClass hbmClass = mappings.RootClasses[0];
 			mappings.JoinedSubclasses.Should().Be.Empty();
 			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any",

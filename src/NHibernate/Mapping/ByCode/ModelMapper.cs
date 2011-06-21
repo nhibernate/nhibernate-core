@@ -1766,12 +1766,12 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		public HbmMapping CompileMappingForAllExplicitAddedEntities()
+		public HbmMapping CompileMappingForAllExplicitlyAddedEntities()
 		{
 			return CompileMappingFor(customizerHolder.GetAllCustomizedEntities());
 		}
 
-		public IEnumerable<HbmMapping> CompileMappingForEachExplicitAddedEntity()
+		public IEnumerable<HbmMapping> CompileMappingForEachExplicitlyAddedEntity()
 		{
 			return CompileMappingForEach(customizerHolder.GetAllCustomizedEntities());
 		}

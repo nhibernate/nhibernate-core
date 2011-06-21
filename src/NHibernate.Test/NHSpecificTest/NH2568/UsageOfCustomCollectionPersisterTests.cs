@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 			                       	rm.Id(x => x.Id);
 															rm.Bag(x => x.Relateds, am => am.Persister<MyCollectionPersister>(), rel=> rel.OneToMany());
 			                       });
-			var mappings = mapper.CompileMappingForAllExplicitAddedEntities();
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 

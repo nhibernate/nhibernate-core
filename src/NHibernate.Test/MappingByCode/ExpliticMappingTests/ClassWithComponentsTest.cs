@@ -49,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				cm.Component(person => person.Address, comp => { });
 			});
 
-			var hbmMapping = mapper.CompileMappingForAllExplicitAddedEntities();
+			var hbmMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
 			var hbmClass = hbmMapping.RootClasses[0];
 

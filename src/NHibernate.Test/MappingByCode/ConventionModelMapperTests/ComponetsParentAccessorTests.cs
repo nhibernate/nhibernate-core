@@ -57,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 				x.Component(c => c.Owner);
 				x.Property(c => c.Something);
 			});
-			return mapper.CompileMappingForAllExplicitAddedEntities();
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
 		[Test]
