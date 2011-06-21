@@ -6,7 +6,6 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using NHibernate.Util;
 
@@ -14,8 +13,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public class ProxyCache : IProxyCache
 	{
-		private readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
-		private readonly object syncObject = new object();
+		private static readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
 
 		#region IProxyCache Members
 
@@ -32,20 +30,14 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public System.Type GetProxyType(System.Type baseType, params System.Type[] baseInterfaces)
 		{
-			lock (syncObject)
-			{
-				var entry = new ProxyCacheEntry(baseType, baseInterfaces);
-				return cache[entry];
-			}
+			var entry = new ProxyCacheEntry(baseType, baseInterfaces);
+			return cache[entry];
 		}
 
 		public void StoreProxyType(System.Type result, System.Type baseType, params System.Type[] baseInterfaces)
 		{
-			lock (syncObject)
-			{
-				var entry = new ProxyCacheEntry(baseType, baseInterfaces);
-				cache[entry] = result;
-			}
+			var entry = new ProxyCacheEntry(baseType, baseInterfaces);
+			cache[entry] = result;
 		}
 
 		#endregion

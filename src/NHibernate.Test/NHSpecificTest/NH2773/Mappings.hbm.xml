@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2773">
+  <class name="MyEntity">
+    <id name="Id" column="id">
+      <generator class="guid" />
+    </id>
+    <many-to-one name="OtherEntity" />
+  </class>
+</hibernate-mapping>
