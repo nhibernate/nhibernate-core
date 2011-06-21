@@ -19,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
-		private readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
