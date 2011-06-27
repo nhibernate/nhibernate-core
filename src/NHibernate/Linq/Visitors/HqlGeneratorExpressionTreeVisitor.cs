@@ -291,6 +291,9 @@ namespace NHibernate.Linq.Visitors
                 case ExpressionType.Divide:
                     return _hqlTreeBuilder.Divide(lhs, rhs);
 
+                case ExpressionType.Modulo:
+                    return _hqlTreeBuilder.MethodCall("mod", lhs, rhs);
+
                 case ExpressionType.LessThan:
                     return _hqlTreeBuilder.LessThan(lhs, rhs);
 

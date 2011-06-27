@@ -502,6 +502,7 @@
     <Compile Include="Linq\NullComparisonTests.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />
     <Compile Include="Linq\ByMethod\OrderByTests.cs" />
+    <Compile Include="Linq\OperatorTests.cs" />
     <Compile Include="Linq\PagingTests.cs" />
     <Compile Include="Linq\ParameterisedQueries.cs" />
     <Compile Include="Linq\PatientTests.cs" />
