@@ -125,7 +125,8 @@ namespace NHibernate.Test.Linq.ByMethod
 			// Check join result.
 			var allAnimals = db.Animals;
 			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
-			Assert.AreEqual(allAnimals.Count(), orderedAnimals.Count());
+            // We to ToList() first or it skips the generation of the joins.
+			Assert.AreEqual(allAnimals.ToList().Count(), orderedAnimals.ToList().Count());
 		}
     }
 }
