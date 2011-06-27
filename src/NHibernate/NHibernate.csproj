@@ -278,6 +278,7 @@
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
     <Compile Include="Linq\Visitors\AbstractJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
@@ -1792,7 +1793,6 @@
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Linq\Visitors\WhereJoinDetectorDesignNotes.txt" />
     <Content Include="NamespaceSummary.xml" />
   </ItemGroup>
   <ItemGroup>

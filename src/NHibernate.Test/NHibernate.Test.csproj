@@ -833,6 +833,7 @@
     <Compile Include="NHSpecificTest\NH2580\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\AbstractMassTestingFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2583\InnerJoinFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\ManualTestFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingMoreOperatorsFixture.cs" />
     <Compile Include="NHSpecificTest\NH2583\MassTestingNotAndDeMorganFixture.cs" />
