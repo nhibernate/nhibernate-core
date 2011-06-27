@@ -90,6 +90,20 @@ namespace NHibernate.Test.Linq
         }
 
         [Test]
+        public void BooleanPropertyComparison()
+        {
+            var query = db.Timesheets.Where(t => t.Submitted == true);
+            Assert.AreEqual(2, query.ToList().Count);
+        }
+
+        [Test]
+        public void BooleanPropertyAlone()
+        {
+            var query = db.Timesheets.Where(t => t.Submitted);
+            Assert.AreEqual(2, query.ToList().Count);
+        }
+
+        [Test]
         public void MammalsViaDynamicInvokedExpression()
         {
             //simulate dynamically created where clause
