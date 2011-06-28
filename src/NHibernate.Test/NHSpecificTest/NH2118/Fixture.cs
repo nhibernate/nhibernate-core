@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 	}
 
 	[TestFixture]
-	[Ignore("Not fixed yet.")]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
