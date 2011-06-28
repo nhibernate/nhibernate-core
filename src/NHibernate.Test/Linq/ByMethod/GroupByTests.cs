@@ -28,20 +28,20 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
-		[Ignore("Not working yet.")]
 		public void SingleKeyGrouping()
 		{
 			var orders = db.Orders.GroupBy(o => o.Customer).ToList();
-			Assert.That(orders.Count, Is.EqualTo(830));
+            Assert.That(orders.Count(), Is.EqualTo(89));
+            Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 			CheckGrouping(orders, o => o.Customer);
 		}
 
 		[Test]
-		[Ignore("Not working yet.")]
 		public void MultipleKeyGrouping()
 		{
 			var orders = db.Orders.GroupBy(o => new { o.Customer, o.Employee }).ToList();
-			Assert.That(orders.Count, Is.EqualTo(830));
+            Assert.That(orders.Count(), Is.EqualTo(464));
+            Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 
 			CheckGrouping(
 				orders.Select(g => new TupGrouping<Customer, Employee, Order>(g.Key.Customer, g.Key.Employee, g)),
@@ -69,10 +69,8 @@ namespace NHibernate.Test.Linq.ByMethod
 			HashSet<object> used = new HashSet<object>();
 			foreach (IGrouping<Tup<TKey1, TKey2>, TElement> group in groupedItems)
 			{
-				Assert.IsFalse(used.Contains(group.Key.Item1));
-				used.Add(group.Key.Item1);
-				Assert.IsFalse(used.Contains(group.Key.Item2));
-				used.Add(group.Key.Item2);
+				Assert.IsFalse(used.Contains(group.Key));
+				used.Add(group.Key);
 
 				foreach (var item in group)
 				{
@@ -115,6 +113,24 @@ namespace NHibernate.Test.Linq.ByMethod
 				Item1 = item1;
 				Item2 = item2;
 			}
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null)
+                    return false;
+
+                if (obj.GetType() != GetType())
+                    return false;
+
+                Tup<T1, T2> other = (Tup<T1, T2>) obj;
+
+                return Equals(Item1, other.Item1) && Equals(Item2, other.Item2);
+            }
+
+            public override int GetHashCode()
+            {
+                return Item1.GetHashCode() ^ Item2.GetHashCode();
+            }
 		}
 	}
 }

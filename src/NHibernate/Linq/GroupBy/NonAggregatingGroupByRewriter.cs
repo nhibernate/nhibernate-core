@@ -18,6 +18,17 @@ namespace NHibernate.Linq.GroupBy
 
 		public static void ReWrite(QueryModel queryModel)
 		{
+            if (queryModel.ResultOperators.Count == 1 &&
+                queryModel.ResultOperators[0] is GroupResultOperator &&
+                IsNonAggregatingGroupBy(queryModel))
+            {
+                GroupResultOperator resultOperator = (GroupResultOperator)queryModel.ResultOperators[0];
+                queryModel.ResultOperators.Clear();
+                queryModel.ResultOperators.Add(new NonAggregatingGroupBy(resultOperator));
+
+                return;
+            }
+
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
 			if ((subQueryExpression != null) &&
