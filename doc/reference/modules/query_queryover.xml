@@ -156,6 +156,16 @@ IList<Cat> cats =
             Restrictions.Where<Cat>(c => c.Age > 5)
             Restrictions.On<Cat>(c => c.Name).IsIn(new string[] { "Max", "Paddy" })))]]></programlisting>
 
+        <para>
+            However, in addition to the additional restrictions factory methods, there are extension methods to allow
+            a more concise inline syntax for some of the operators.  So this:
+        </para>
+        <programlisting><![CDATA[        .WhereRestrictionOn(c => c.Name).IsLike("%anna%")]]></programlisting>
+        <para>
+            May also be written as:
+        </para>
+        <programlisting><![CDATA[        .Where(c => c..Name.IsLike("%anna%"))]]></programlisting>
+            
     </sect1>
 
     <sect1 id="queryqueryover-associations">
@@ -319,6 +329,24 @@ IList<CatSummary> catReport =
             .SelectAvg(c => c.Age).WithAlias(() => summaryDto.AverageAge))
         .TransformUsing(Transformers.AliasToBean<CatSummary>())
         .List<CatSummary>();]]></programlisting>
+
+    </sect1>
+
+    <sect1 id="queryqueryover-projectionfunctions">
+        <title>Projection Functions</title>
+
+        <para>
+            In addition to projecting properties, there are extension methods to allow certain common dialect-registered
+            functions to be applied.  For example you can write the following to extract just the year part of a date:
+        </para>
+        <programlisting><![CDATA[        .Where(p => p.BirthDate.YearPart() == 1971)]]></programlisting>
+        
+        <para>
+            The functions can also be used inside projections:
+        </para>
+        <programlisting><![CDATA[        .Select(
+            p => Projections.Concat(p.LastName, ", ", p.FirstName),
+            p => p.Height.Abs())]]></programlisting>
 
     </sect1>
 
