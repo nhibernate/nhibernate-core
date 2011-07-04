@@ -14,6 +14,21 @@
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 		* Dialect base: removed some no more needed properties
 
+Build 3.2.0.CR1 (rev5976)
+=============================
+** Bug
+    * [NH-2118] - GroupBy without Select doesnt work
+    * [NH-2387] - Postgres - Unable to run LINQ query using boolean predicate - ERROR: 42883: operator does not exist: boolean = integer
+    * [NH-2435] - No order by clause generated with self referencing orderby clause.
+    * [NH-2583] - Query with || operator and navigations (many-to-one) creates wrong joins
+    * [NH-2773] - ProxyObjectReference creates a new ProxyFactory for each deserialization which disables proxy caching
+
+** Improvement
+    * [NH-2748] - Support % operator
+
+** Patch
+    * [NH-2774] - Perf - reusing same regex object in joinwalker objects
+
 Build 3.2.0.Beta2 (rev5964)
 =============================
 ** Bug
