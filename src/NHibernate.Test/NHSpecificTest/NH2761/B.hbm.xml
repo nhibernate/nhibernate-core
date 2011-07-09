@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping default-lazy="false" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH2761" 
+                   assembly="NHibernate.Test"
+                   xmlns="urn:nhibernate-mapping-2.2">
+	<class name="B" lazy="false" table="`B`">
+		<id name="Id" access="property" column="`B_ID`">
+			<generator class="hilo" />
+		</id>
+		<property name="BProperty" column="`B_PROPERTY`" length="50"/>
+		<set name="As" inverse="true">
+			<key column="`B_ID`"/>
+			<one-to-many class="A"/>
+		</set>
+		<many-to-one name="C" class="C" column="`C_ID`" not-null="false" fetch="select"/>
+	</class>
+</hibernate-mapping>

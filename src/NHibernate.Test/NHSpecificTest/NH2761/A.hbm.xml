@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping default-lazy="false" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH2761" 
+                   assembly="NHibernate.Test"
+                   xmlns="urn:nhibernate-mapping-2.2">
+	<class name="A" lazy="false" table="`A`">
+		<id name="Id" access="property" column="`A_ID`">
+			<generator class="hilo" />
+		</id>
+		<property name="AProperty" column="`A_PROPERTY`" length="50"/>
+		<many-to-one name="B" class="B" column="`B_ID`" not-null="false" />
+		<many-to-one name="C" class="C" column="`C_ID`" not-null="false" />
+	</class>
+</hibernate-mapping>
