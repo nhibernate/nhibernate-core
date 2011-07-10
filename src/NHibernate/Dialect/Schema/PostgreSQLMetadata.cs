@@ -13,6 +13,16 @@ namespace NHibernate.Dialect.Schema
 		{
 			return new PostgreSQLTableMetadata(rs, this, extras);
 		}
+
+        public override bool StoresMixedCaseQuotedIdentifiers
+        {
+            get { return false; }
+        }
+
+        public override bool StoresLowerCaseIdentifiers
+        {
+            get { return true; }
+        }
 	}
 
 	public class PostgreSQLTableMetadata : AbstractTableMetadata
