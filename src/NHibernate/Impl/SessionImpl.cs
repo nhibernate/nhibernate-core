@@ -986,6 +986,16 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public T Merge<T>(T entity) where T : class
+		{
+			return (T) Merge((object) entity);
+		}
+
+		public T Merge<T>(string entityName, T entity) where T : class
+		{
+			return (T) Merge(entityName, (object) entity);
+		}
+
 		public object Merge(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
