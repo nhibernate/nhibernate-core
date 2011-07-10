@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Impl;
 using NHibernate.Loader.Criteria;
 using NUnit.Framework;
@@ -10,8 +11,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2700
     [TestFixture]
 	public class Fixture : BugTestCase
 	{
+        private Dialect.Dialect _originalDialect;
+
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return _originalDialect is MsSql2005Dialect;
+        }
+
         protected override void Configure(Cfg.Configuration configuration)
         {
+            _originalDialect = Dialect;
+
             cfg.SetProperty(Environment.Dialect, typeof(CustomDialect).AssemblyQualifiedName);
         }
 
