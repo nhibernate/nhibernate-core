@@ -41,7 +41,7 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-			throw new NotImplementedException();
+		    return Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
 
 		protected override IForeignKeyMetadata GetForeignKeyMetadata(DataRow rs)
