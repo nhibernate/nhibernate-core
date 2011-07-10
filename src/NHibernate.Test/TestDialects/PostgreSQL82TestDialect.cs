@@ -21,5 +21,13 @@ namespace NHibernate.Test.TestDialects
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Npgsql's DTC code seems to be somewhat broken as of 2.0.11.
+        /// </summary>
+        public override bool SupportsDistributedTransactions
+        {
+            get { return false; }
+        }
 	}
 }
