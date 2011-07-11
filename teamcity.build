@@ -75,8 +75,6 @@
 	</target>
 
 	<target name="setup-teamcity-sqlite64">
-		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
-		<property name="nunit.found" value="true" />
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.SQLite20Driver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.SQLiteDialect" />
 		<property name="nhibernate.connection.connection_string"	value="Data Source=NHibernate.db" />
@@ -85,13 +83,9 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlite/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-postgresql">
-		<property name="nunit-console" value="${tools.dir}/NUnit/nunit-console.exe" />
-		<property name="nunit.found" value="true" />
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.NpgsqlDriver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.PostgreSQL82Dialect" />
 		<property name="nhibernate.connection.connection_string"	value="Host=localhost;Port=5432;Database=nhibernate;Username=nhibernate;Password=nhibernate" />
@@ -100,8 +94,6 @@
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
-		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/postgresql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">
