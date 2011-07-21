@@ -26,6 +26,7 @@ namespace NHibernate.Proxy
 			return (method.DeclaringType != typeof (MarshalByRefObject)) &&
 			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name.ToLowerInvariant())) &&
 			       (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
+			       (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method
 			       !IsDisposeMethod(method) &&
 						 (method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly);
 		}
