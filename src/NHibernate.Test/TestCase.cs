@@ -84,6 +84,7 @@ namespace NHibernate.Test
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
+			bool schemaCreated = false;
 			try
 			{
 				Configure();
@@ -93,6 +94,7 @@ namespace NHibernate.Test
 				}
 
 				CreateSchema();
+				schemaCreated = true;
 				BuildSessionFactory();
 				if (!AppliesTo(sessions))
 				{
@@ -103,6 +105,9 @@ namespace NHibernate.Test
 			}
 			catch (Exception e)
 			{
+				if (schemaCreated)
+					DropSchema();
+				Cleanup();
 				log.Error("Error while setting up the test fixture", e);
 				throw;
 			}
