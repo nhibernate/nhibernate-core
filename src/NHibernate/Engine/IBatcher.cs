@@ -132,6 +132,14 @@ namespace NHibernate.Engine
 		int ExecuteNonQuery(IDbCommand cmd);
 
 		/// <summary>
+		/// Remove 'extra' parameters from the IDbCommand
+		/// </summary>
+		/// <remarks>
+		/// We sometimes create more parameters than necessary (see NH-2792 & also comments in SqlStringFormatter.ISqlStringVisitor.Parameter)
+		/// </remarks>
+		void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString);
+
+		/// <summary>
 		/// Expand the parameters of the cmd to have a single parameter for each parameter in the
 		/// sql string
 		/// </summary>

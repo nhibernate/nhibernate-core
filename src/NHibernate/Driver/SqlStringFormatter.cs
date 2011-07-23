@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Engine.Query;
@@ -12,12 +13,9 @@ namespace NHibernate.Driver
 		private int parameterIndex = 0;
 		private readonly ISqlParameterFormatter formatter;
 		private readonly string multipleQueriesSeparator;
-
-		private readonly Dictionary<int, int> queryIndexToNumberOfPreceedingParameters = new Dictionary<int, int>();
-		private readonly Dictionary<int, int> parameterIndexToQueryIndex = new Dictionary<int, int>();
-
-		private bool hasReturnParameter = false;
+		private bool hasReturnParameter;
 		private bool foundReturnParameter = false;
+		private IList<string> assignedParameterNames = new List<string>();
 
 		public SqlStringFormatter(ISqlParameterFormatter formatter, string multipleQueriesSeparator)
 		{
@@ -27,8 +25,7 @@ namespace NHibernate.Driver
 
 		public void Format(SqlString text)
 		{
-			DetermineNumberOfPreceedingParametersForEachQuery(text);
-			foundReturnParameter = false;
+			hasReturnParameter = DetermineIfSqlStringHasReturnParameter(text);
 			text.Visit(this);
 		}
 
@@ -52,6 +49,7 @@ namespace NHibernate.Driver
 			if (hasReturnParameter && !foundReturnParameter)
 			{
 				result.Append(parameter);
+				assignedParameterNames.Add(String.Empty);
 				foundReturnParameter = true;
 				return;
 			}
@@ -63,50 +61,25 @@ namespace NHibernate.Driver
 			// A candidateplace is making DriverBase.SetCommandParameters a little bit more intelligent... perhaps SqlString aware (see also DriverBase.SetCommandText, DriverBase.GenerateCommand)
 			string name = formatter.GetParameterName(parameter.ParameterPosition ?? parameterIndex);
 
+			assignedParameterNames.Add(name);
 			parameterIndex++;
 			result.Append(name);
 		}
 
-		private void DetermineNumberOfPreceedingParametersForEachQuery(SqlString text)
+		private bool DetermineIfSqlStringHasReturnParameter(SqlString text)
 		{
-			// NH: this code smell very bad. It look like specific for ORACLE and probably unused even for ORACLE
-			int currentParameterIndex = 0;
-			int currentQueryParameterCount = 0;
-			int currentQueryIndex = 0;
-			hasReturnParameter = false;
-			foundReturnParameter = false;
-
 			CallableParser.Detail callableDetail = CallableParser.Parse(text.ToString());
+			return (callableDetail.IsCallable && callableDetail.HasReturn);
+		}
 
-			if (callableDetail.IsCallable && callableDetail.HasReturn)
-				hasReturnParameter = true;
+		public bool HasReturnParameter
+		{
+			get { return foundReturnParameter; }
+		}
 
-			foreach (object part in text.Parts)
-			{
-				if (part.ToString().Equals(multipleQueriesSeparator))
-				{
-					queryIndexToNumberOfPreceedingParameters[currentQueryIndex] = currentParameterIndex - currentQueryParameterCount;
-					currentQueryParameterCount = 0;
-					currentQueryIndex++;
-					continue;
-				}
-
-				Parameter parameter = part as Parameter;
-
-				if (parameter != null)
-				{
-					if (hasReturnParameter && !foundReturnParameter)
-					{
-						foundReturnParameter = true;
-					}
-					else
-					{
-						parameterIndexToQueryIndex[currentParameterIndex] = currentQueryIndex;
-					}
-					currentQueryParameterCount++;
-					currentParameterIndex++;
-				}
-			}
+		public string[] AssignedParameterNames
+		{
+			get { return assignedParameterNames.ToArray(); }
 		}
 	}
 }

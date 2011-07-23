@@ -222,6 +222,11 @@ namespace NHibernate.AdoNet
 		    }
 		}
 
+		public void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString)
+		{
+			Driver.RemoveUnusedCommandParameters(cmd, sqlString);
+		}
+
 		public void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
 		{
 			Driver.ExpandQueryParameters(cmd, sqlString);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -211,6 +212,22 @@ namespace NHibernate.Driver
 			InitializeParameter(dbParam, name, sqlType);
 
 			return dbParam;
+		}
+
+		public void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString)
+		{
+			var formatter = GetSqlStringFormatter();
+			formatter.Format(sqlString);
+
+			cmd.Parameters
+				.Cast<IDbDataParameter>()
+				.Select(p => p.ParameterName)
+				.Except(formatter.AssignedParameterNames)
+				.ToList()
+				.ForEach(ununsedParameterName =>
+					{
+						cmd.Parameters.RemoveAt(ununsedParameterName);
+					});
 		}
 
 		public virtual void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)

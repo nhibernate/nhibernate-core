@@ -1148,6 +1148,7 @@ namespace NHibernate.Loader
 
 				sqlCommand.Bind(command, session);
 
+				session.Batcher.RemoveUnusedCommandParameters(command, sqlString);
 				session.Batcher.ExpandQueryParameters(command, sqlString);
 			}
 			catch (HibernateException)
