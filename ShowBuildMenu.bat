@@ -208,15 +208,17 @@ echo C.  NHibernate Trunk - Firebird (64-bit)
 echo D.  NHibernate Trunk - SQLite (32-bit)
 echo E.  NHibernate Trunk - SQLite (64-bit)
 echo F.  NHibernate Trunk - PostgreSQL
+echo G.  NHibernate Trunk - Oracle (32-bit)
 echo.
 
 if exist %SYSTEMROOT%\System32\choice.exe ( goto teamcity-menu-prompt-choice )
 goto teamcity-menu-prompt-set
 
 :teamcity-menu-prompt-choice
-choice /C:abcdef
+choice /C:abcdefg
 
 if errorlevel 255 goto end
+if errorlevel 7 goto teamcity-oracle32
 if errorlevel 6 goto teamcity-postgresql
 if errorlevel 5 goto teamcity-sqlite64
 if errorlevel 4 goto teamcity-sqlite32
@@ -226,7 +228,7 @@ if errorlevel 1 goto teamcity-trunk
 if errorlevel 0 goto end
 
 :teamcity-menu-prompt-set
-set /p OPT=[A, B, C, D, E, F]? 
+set /p OPT=[A, B, C, D, E, F, G]? 
 
 if /I "%OPT%"=="A" goto teamcity-trunk
 if /I "%OPT%"=="B" goto teamcity-firebird32
@@ -234,6 +236,7 @@ if /I "%OPT%"=="C" goto teamcity-firebird64
 if /I "%OPT%"=="D" goto teamcity-sqlite32
 if /I "%OPT%"=="E" goto teamcity-sqlite64
 if /I "%OPT%"=="F" goto teamcity-postgresql
+if /I "%OPT%"=="G" goto teamcity-oracle32
 goto teamcity-menu-prompt-set
 
 :teamcity-trunk
@@ -258,6 +261,10 @@ goto end
 
 :teamcity-postgresql
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=postgresql
+goto end
+
+:teamcity-oracle32
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle32
 goto end
 
 :end

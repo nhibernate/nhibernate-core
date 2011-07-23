@@ -1,0 +1,16 @@
+
+Installation steps for Oracle (Express Edition) for NH TeamCity:
+
+1.  Download Oracle Database 10g Express Edition (OracleXE.exe):  http://www.oracle.com/technetwork/database/express-edition/downloads/102xewinsoft-090667.html;
+2.  Run the installer ... choose any HTTP port for the listener (e.g., 8081);
+3.  Enter 'password' as the password for the SYS and SYSTEM accounts;
+4.  The setup should install Oracle (XE) on the machine;
+5.  Once the installation is complete, leave the option ticked to open the homepage for configuration.
+
+Creating the NH Schema:
+
+a.  Login to the homepage using login/password SYSTEM/password;
+b.  Select Administration->Database Users->Create User;
+c.  Enter Username=nhibernate, Password=nhibernate, and select the DBA role;
+d.  Click 'Create' to create the user/schema.
+

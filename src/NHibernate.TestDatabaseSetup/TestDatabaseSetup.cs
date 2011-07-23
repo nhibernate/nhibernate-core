@@ -20,6 +20,7 @@ namespace NHibernate.TestDatabaseSetup
 			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
 			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupSQLite);
 			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
+			SetupMethods.Add("NHibernate.Driver.OracleDataClientDriver", SetupOracle);
 		}
 
 		[Test]
@@ -124,6 +125,11 @@ namespace NHibernate.TestDatabaseSetup
 		{
 			if (File.Exists("NHibernate.db"))
 				File.Delete("NHibernate.db");
+		}
+
+		private static void SetupOracle(Cfg.Configuration cfg)
+		{
+			// not done (yet) - current setup is manual
 		}
 	}
 }
