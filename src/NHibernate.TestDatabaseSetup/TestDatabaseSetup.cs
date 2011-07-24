@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
+using NHibernate.Cfg;
 using Npgsql;
 using NUnit.Framework;
 
@@ -129,7 +130,33 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupOracle(Cfg.Configuration cfg)
 		{
-			// not done (yet) - current setup is manual
+			var connStr =
+				cfg.Properties[Cfg.Environment.ConnectionString]
+					.Replace("User ID=nhibernate", "User ID=SYSTEM")
+					.Replace("Password=nhibernate", "Password=password");
+
+			cfg.DataBaseIntegration(db =>
+				{
+					db.ConnectionString = connStr;
+					db.Dialect<NHibernate.Dialect.Oracle10gDialect>();
+					db.KeywordsAutoImport = Hbm2DDLKeyWords.None;
+				});
+
+			using (var sf = cfg.BuildSessionFactory())
+			{
+				try
+				{
+					using(var s = sf.OpenSession())
+						s.CreateSQLQuery("drop user nhibernate cascade").ExecuteUpdate();
+				}
+				catch {}
+
+				using (var s = sf.OpenSession())
+				{
+					s.CreateSQLQuery("create user nhibernate identified by nhibernate").ExecuteUpdate();
+					s.CreateSQLQuery("grant dba to nhibernate with admin option").ExecuteUpdate();
+				}
+			}
 		}
 	}
 }
