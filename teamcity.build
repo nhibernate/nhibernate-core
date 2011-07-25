@@ -232,16 +232,30 @@
 									if (beforeTestNames.Contains(result.Name))
 										afterExistingTests.Add(result);
 							
-								IList<Result> newTests = new List<Result>();
+								IList<Result> newFailingTests = new List<Result>();
+								IList<Result> newNotFailingTests = new List<Result>();
 								foreach(Result result in after)
 									if (!beforeTestNames.Contains(result.Name))
-										newTests.Add(result);
+										if (result.Executed && !result.Success)
+											newFailingTests.Add(result);
+										else
+											newNotFailingTests.Add(result);
 									
 								report.AppendLine();
-								report.AppendLine("*** Tests new since last recorded results ***");
-								if (newTests.Count > 0)
+								report.AppendLine("*** Tests new (not failing) since last recorded results ***");
+								if (newNotFailingTests.Count > 0)
 								{
-									foreach(Result result in newTests)
+									foreach(Result result in newNotFailingTests)
+										report.AppendLine(result.ToString());
+								}
+								else
+									report.AppendLine("None");
+							
+								report.AppendLine();
+								report.AppendLine("*** Tests new (failed) since last recorded results ***");
+								if (newFailingTests.Count > 0)
+								{
+									foreach(Result result in newFailingTests)
 										report.AppendLine(result.ToString());
 								}
 								else
@@ -315,6 +329,9 @@
 
 								string output = report.ToString();
 								File.WriteAllText(outputFile, output);
+							
+								//if (newFailingTests.Count > 0)
+								//	throw new Exception("New tests that fail have been added\n\n" + output);
 							
 								if (brokenTests.Count > 0)
 									throw new Exception("Previously passing tests have been broken\n\n" + output);
