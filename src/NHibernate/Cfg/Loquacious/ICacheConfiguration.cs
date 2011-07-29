@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.Loquacious
 		ICacheConfiguration Through<TProvider>() where TProvider : ICacheProvider;
 		ICacheConfiguration PrefixingRegionsWith(string regionPrefix);
 		ICacheConfiguration UsingMinimalPuts();
-		IFluentSessionFactoryConfiguration WithDefaultExpiration(byte seconds);
+		IFluentSessionFactoryConfiguration WithDefaultExpiration(int seconds);
 		IQueryCacheConfiguration Queries { get; }
 	}
 
@@ -15,7 +15,7 @@ namespace NHibernate.Cfg.Loquacious
 		bool UseMinimalPuts { set; }
 		bool UseQueryCache { set; }
 		string RegionsPrefix { set; }
-		byte DefaultExpiration { set; }
+		int DefaultExpiration { set; }
 		void Provider<TProvider>() where TProvider : ICacheProvider;
 		void QueryCache<TFactory>() where TFactory : IQueryCache;
 	}

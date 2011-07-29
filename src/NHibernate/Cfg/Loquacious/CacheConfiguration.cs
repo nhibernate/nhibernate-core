@@ -28,7 +28,7 @@ namespace NHibernate.Cfg.Loquacious
 			set { cfg.SetProperty(Environment.CacheRegionPrefix, value); }
 		}
 
-		public byte DefaultExpiration
+		public int DefaultExpiration
 		{
 			set { cfg.SetProperty(Environment.CacheDefaultExpiration, value.ToString()); }
 		}
@@ -89,7 +89,7 @@ namespace NHibernate.Cfg.Loquacious
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration WithDefaultExpiration(byte seconds)
+		public IFluentSessionFactoryConfiguration WithDefaultExpiration(int seconds)
 		{
 			fc.Configuration.SetProperty(Environment.CacheDefaultExpiration, seconds.ToString());
 			return fc;
