@@ -11,12 +11,12 @@ namespace NHibernate.Type
 	[Serializable]
 	public class DecimalType : PrimitiveType, IIdentifierType
 	{
-		internal DecimalType()
+		public DecimalType()
 			: this(SqlTypeFactory.Decimal)
 		{
 		}
 
-		internal DecimalType(SqlType sqlType) : base(sqlType)
+		public DecimalType(SqlType sqlType) : base(sqlType)
 		{
 		}
 

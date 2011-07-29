@@ -15,7 +15,7 @@ namespace NHibernate.Type
 		/// Initialize a new instance of the BooleanType
 		/// </summary>
 		/// <remarks>This is used when the Property is mapped to a native boolean type.</remarks>
-		internal BooleanType() : base(SqlTypeFactory.Boolean)
+		public BooleanType() : base(SqlTypeFactory.Boolean)
 		{
 		}
 
@@ -28,7 +28,7 @@ namespace NHibernate.Type
 		/// This is used when the Property is mapped to a string column
 		/// that stores true or false as a string.
 		/// </remarks>
-		internal BooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
+		public BooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
 		{
 		}
 

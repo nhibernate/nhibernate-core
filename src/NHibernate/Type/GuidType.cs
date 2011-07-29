@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public class GuidType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal GuidType() : base(SqlTypeFactory.Guid)
+		public GuidType() : base(SqlTypeFactory.Guid)
 		{
 		}
 

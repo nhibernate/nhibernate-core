@@ -12,11 +12,11 @@ namespace NHibernate.Type
 	public class DoubleType : PrimitiveType
 	{
 		/// <summary></summary>
-		internal DoubleType() : base(SqlTypeFactory.Double)
+		public DoubleType() : base(SqlTypeFactory.Double)
 		{
 		}
 
-		internal DoubleType(SqlType sqlType) : base(sqlType) {}
+		public DoubleType(SqlType sqlType) : base(sqlType) {}
 
 		/// <summary>
 		/// 

@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	{
 		private static readonly byte ZERO = 0;
 
-		internal ByteType() : base(SqlTypeFactory.Byte)
+		public ByteType() : base(SqlTypeFactory.Byte)
 		{
 		}
 

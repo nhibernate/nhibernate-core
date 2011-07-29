@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	public class SByteType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary></summary>
-		internal SByteType() : base(SqlTypeFactory.SByte)
+		public SByteType() : base(SqlTypeFactory.SByte)
 		{
 		}
 

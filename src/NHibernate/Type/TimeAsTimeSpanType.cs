@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	{
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-		internal TimeAsTimeSpanType()
+		public TimeAsTimeSpanType()
 			: base(SqlTypeFactory.Time)
 		{
 		}

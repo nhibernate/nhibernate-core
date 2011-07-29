@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	public class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		internal Int16Type() : base(SqlTypeFactory.Int16)
+		public Int16Type() : base(SqlTypeFactory.Int16)
 		{
 		}
 

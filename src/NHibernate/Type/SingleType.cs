@@ -16,11 +16,11 @@ namespace NHibernate.Type
 	public class SingleType : PrimitiveType
 	{
 		/// <summary></summary>
-		internal SingleType() : base(SqlTypeFactory.Single)
+		public SingleType() : base(SqlTypeFactory.Single)
 		{
 		}
 
-		internal SingleType(SqlType sqlType) : base(sqlType) {}
+		public SingleType(SqlType sqlType) : base(sqlType) {}
 
 		/// <summary></summary>
 		public override string Name

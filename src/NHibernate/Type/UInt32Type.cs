@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	public class UInt32Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
-		internal UInt32Type() : base(SqlTypeFactory.UInt32)
+		public UInt32Type() : base(SqlTypeFactory.UInt32)
 		{
 		}
 
