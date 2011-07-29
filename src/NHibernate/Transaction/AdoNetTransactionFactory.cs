@@ -13,7 +13,7 @@ namespace NHibernate.Transaction
 {
 	public class AdoNetTransactionFactory : ITransactionFactory
 	{
-		private readonly IInternalLogger isolaterLog = LoggerProvider.LoggerFor(typeof(Isolater));
+		private readonly IInternalLogger isolaterLog = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
 		public ITransaction CreateTransaction(ISessionImplementor session)
 		{

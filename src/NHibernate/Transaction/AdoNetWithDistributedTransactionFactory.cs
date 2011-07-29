@@ -10,7 +10,7 @@ namespace NHibernate.Transaction
 {
 	public class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(AbstractSessionImpl));
+		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
 		private readonly AdoNetTransactionFactory adoNetTransactionFactory = new AdoNetTransactionFactory();
 
