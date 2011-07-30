@@ -600,7 +600,7 @@ ISession session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             The classname of a custom <literal>ITransactionFactory</literal> implementation,
-                            defaults to the built-in <literal>AdoNetTransactionFactory</literal>.
+                            defaults to the built-in <literal>AdoNetWithDistributedTransactionFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 <literal>classname.of.TransactionFactory, assembly</literal>
