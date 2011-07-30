@@ -14,6 +14,22 @@
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 		* Dialect base: removed some no more needed properties
 
+Build 3.2.0.GA (rev6000)
+=============================
+** Bug
+    * [NH-2792] - Using a named parameter multiple times in a native SQL query results in invalid parameter binding (exception in some drivers)
+    * [NH-2813] - Cache DefaultExpiration type is "byte"
+
+** Improvement
+    * [NH-2571] - Full PostgreSQL Support
+    * [NH-2743] - Generic version of ISession.Merge()
+    * [NH-2800] - Change internal primitive type constructor to protected
+
+
+** Patch
+    * [NH-2811] - Wrong logger type into AdoNetTransactionFactory & AdoNetWithDistributedTransactionFactory classes
+    * [NH-2814] - Documentation Error: Section 3.5 - Table 3.2 - transaction.factory_class (with patch)
+
 Build 3.2.0.CR1 (rev5976)
 =============================
 ** Bug
