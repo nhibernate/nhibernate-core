@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace NHibernate
 {
@@ -81,16 +82,13 @@ namespace NHibernate
 			string nhibernateLoggerClass = null;
 			if (string.IsNullOrEmpty(nhibernateLogger))
 			{
-				// look for log4net.dll
-				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-				var log4NetDllPath = Path.Combine(binPath, "log4net.dll");
-
-				if (File.Exists(log4NetDllPath))
+				try
 				{
-					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
+					// look for log4net.dll
+					Assembly.Load("log4net");
+					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
+				catch { }
 			}
 			else
 			{
