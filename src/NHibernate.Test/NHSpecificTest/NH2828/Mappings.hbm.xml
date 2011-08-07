@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2828"
+				   assembly="NHibernate.Test">
+	<class name="Company">
+		<id name="Id" type="Guid">
+			<generator class="guid" />
+		</id>
+		<set name="Addresses" access="field.camelcase" inverse="true" cascade="all,delete-orphan">
+			<key column="CompanyId" on-delete="cascade" />
+			<one-to-many class="Address" />
+		</set>
+		<set name="BankAccounts" access="field.camelcase" inverse="true" cascade="all,delete-orphan">
+			<key column="CompanyId" on-delete="cascade" not-null="true" />
+			<one-to-many class="BankAccount" />
+		</set>
+		<property name="Name" />
+	</class>
+
+	<class name="BankAccount">
+		<id name="Id" type="Guid">
+			<generator class="guid" />
+		</id>
+		<property name="Name" />
+		<many-to-one name="Company"  column="CompanyId" />
+	</class>
+
+	<class name="Address">
+		<id name="Id" type="Guid">
+			<generator class="guid" />
+		</id>
+		<property name="Name" />
+		<many-to-one name="Company"  column="CompanyId" />
+	</class>
+
+</hibernate-mapping>

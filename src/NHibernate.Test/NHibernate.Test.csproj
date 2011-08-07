@@ -898,6 +898,8 @@
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
+    <Compile Include="NHSpecificTest\NH2828\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH2828\Fixture.cs" />
     <Compile Include="Parameters\NamedParameterSpecificationTest.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
@@ -2734,6 +2736,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\A.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\B.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\C.hbm.xml" />
