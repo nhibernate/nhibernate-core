@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 {
 	public class Fixture : BugTestCase
 	{
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void WhenPersistShouldNotFetchUninitializedCollection()
 		{
 			var companyId = CreateScenario();

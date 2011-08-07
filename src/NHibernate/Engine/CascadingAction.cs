@@ -324,7 +324,7 @@ namespace NHibernate.Engine
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
 				// persists don't cascade to uninitialized collections
-				return GetAllElementsIterator(session, collectionType, collection);
+				return GetLoadedElementsIterator(session, collectionType, collection);
 			}
 			public override bool DeleteOrphans
 			{
