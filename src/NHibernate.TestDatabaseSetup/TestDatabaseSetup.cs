@@ -130,33 +130,35 @@ namespace NHibernate.TestDatabaseSetup
 
 		private static void SetupOracle(Cfg.Configuration cfg)
 		{
-			var connStr =
-				cfg.Properties[Cfg.Environment.ConnectionString]
-					.Replace("User ID=nhibernate", "User ID=SYSTEM")
-					.Replace("Password=nhibernate", "Password=password");
+			// disabled until system password is set on TeamCity
 
-			cfg.DataBaseIntegration(db =>
-				{
-					db.ConnectionString = connStr;
-					db.Dialect<NHibernate.Dialect.Oracle10gDialect>();
-					db.KeywordsAutoImport = Hbm2DDLKeyWords.None;
-				});
+			//var connStr =
+			//    cfg.Properties[Cfg.Environment.ConnectionString]
+			//        .Replace("User ID=nhibernate", "User ID=SYSTEM")
+			//        .Replace("Password=nhibernate", "Password=password");
 
-			using (var sf = cfg.BuildSessionFactory())
-			{
-				try
-				{
-					using(var s = sf.OpenSession())
-						s.CreateSQLQuery("drop user nhibernate cascade").ExecuteUpdate();
-				}
-				catch {}
+			//cfg.DataBaseIntegration(db =>
+			//    {
+			//        db.ConnectionString = connStr;
+			//        db.Dialect<NHibernate.Dialect.Oracle10gDialect>();
+			//        db.KeywordsAutoImport = Hbm2DDLKeyWords.None;
+			//    });
 
-				using (var s = sf.OpenSession())
-				{
-					s.CreateSQLQuery("create user nhibernate identified by nhibernate").ExecuteUpdate();
-					s.CreateSQLQuery("grant dba to nhibernate with admin option").ExecuteUpdate();
-				}
-			}
+			//using (var sf = cfg.BuildSessionFactory())
+			//{
+			//    try
+			//    {
+			//        using(var s = sf.OpenSession())
+			//            s.CreateSQLQuery("drop user nhibernate cascade").ExecuteUpdate();
+			//    }
+			//    catch {}
+
+			//    using (var s = sf.OpenSession())
+			//    {
+			//        s.CreateSQLQuery("create user nhibernate identified by nhibernate").ExecuteUpdate();
+			//        s.CreateSQLQuery("grant dba to nhibernate with admin option").ExecuteUpdate();
+			//    }
+			//}
 		}
 	}
 }
