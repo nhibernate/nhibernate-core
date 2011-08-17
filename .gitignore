@@ -30,5 +30,5 @@ _ReSharper*/
 [Bb]uild[Ll]og.*
 *.[Pp]ublish.xml
 NHibernate.dll
-build\
+build/
 AssemblyInfo.cs
