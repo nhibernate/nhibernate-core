@@ -96,6 +96,47 @@
 
 	</target>
 
+	<target name="common.compile-tests-vb"
+		depends="common.clover-setup"
+		description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
+
+		<vbc 
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			keyfile="${key.file}"
+			output="${bin.dir}/${project::get-name()}.dll"
+			rootnamespace="${project::get-name()}"
+			if="${sign}"
+		>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+			<imports refid="project.imports" />
+		</vbc>
+
+		<vbc 
+			target="library"
+			define="${current.build.defines}"
+			debug="${build.debug}"
+			output="${bin.dir}/${project::get-name()}.dll"
+			rootnamespace="${project::get-name()}"
+			unless="${sign}"
+		>
+			<sources refid="project.sources" />
+			<references refid="project.references" />
+			<resources refid="project.resources" />
+			<imports refid="project.imports" />
+		</vbc>
+		
+		<copy 
+			file="App.config"
+			tofile="${bin.dir}/${project::get-name()}.dll.config"
+			if="${file::exists('App.config')}"
+		/>
+
+	</target>
+
 	<target name="common.compile-dll"
 		depends="common.clover-setup"
 		description="Compile sources into a DLL, using Clover if enabled">

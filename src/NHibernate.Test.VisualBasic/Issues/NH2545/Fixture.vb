@@ -6,7 +6,7 @@ Namespace Issues
 
     Namespace NH2545
 
-        <TestFixture()>
+        <TestFixture()> _
         Public Class Fixture
             Inherits IssueTestCase
 
@@ -39,7 +39,8 @@ Namespace Issues
 
             End Sub
 
-            <Test()>
+            <Test()> _
+            <Ignore()> _
             Public Sub LinqStringEquality()
 
                 Using session As ISession = OpenSession()
