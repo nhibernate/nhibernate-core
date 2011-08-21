@@ -114,6 +114,9 @@ namespace NHibernate.Linq.Visitors
                     if (expression is QuerySourceReferenceExpression)
                         return VisitQuerySourceReferenceExpression((QuerySourceReferenceExpression)expression);
 
+                    if (expression is VBStringComparisonExpression)
+                        return VisitVBStringComparisonExpression((VBStringComparisonExpression)expression);
+
                     switch ((NhExpressionType)expression.NodeType)
                     {
                         case NhExpressionType.Average:
@@ -201,6 +204,12 @@ namespace NHibernate.Linq.Visitors
         protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
         {
             return _hqlTreeBuilder.Ident(expression.ReferencedQuerySource.ItemName);
+        }
+
+        private HqlTreeNode VisitVBStringComparisonExpression(VBStringComparisonExpression expression)
+        {
+            // We ignore the case sensitivity flag in the same way that == does.
+            return VisitExpression(expression.Comparison);
         }
 
         protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)

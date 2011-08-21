@@ -40,7 +40,6 @@ Namespace Issues
             End Sub
 
             <Test()> _
-            <Ignore()> _
             Public Sub LinqStringEquality()
 
                 Using session As ISession = OpenSession()
