@@ -170,7 +170,7 @@ namespace NHibernate.Impl
 			{
 				UnaryExpression unaryExpression = (UnaryExpression)expression;
 
-				if (unaryExpression.NodeType != ExpressionType.Convert)
+				if (!IsConversion(unaryExpression.NodeType))
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
 				return FindMemberProjection(unaryExpression.Operand);
@@ -212,7 +212,7 @@ namespace NHibernate.Impl
 
 					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
 				}
-				else if (memberExpression.Expression.NodeType == ExpressionType.Convert)
+				else if (IsConversion(memberExpression.Expression.NodeType))
 				{
 					return (FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name).TrimStart('.');
 				}
@@ -226,7 +226,7 @@ namespace NHibernate.Impl
 			{
 				UnaryExpression unaryExpression = (UnaryExpression)expression;
 
-				if (unaryExpression.NodeType != ExpressionType.Convert)
+				if (!IsConversion(unaryExpression.NodeType))
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
 				return FindMemberExpression(unaryExpression.Operand);
@@ -302,7 +302,7 @@ namespace NHibernate.Impl
 			{
 				UnaryExpression unaryExpression = (UnaryExpression)expression;
 
-				if (unaryExpression.NodeType != ExpressionType.Convert)
+				if (!IsConversion(unaryExpression.NodeType))
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
 				return FindMemberType(unaryExpression.Operand);
@@ -340,7 +340,7 @@ namespace NHibernate.Impl
 			{
 				UnaryExpression unaryExpression = (UnaryExpression)expression;
 
-				if (unaryExpression.NodeType != ExpressionType.Convert)
+				if (!IsConversion(unaryExpression.NodeType))
 					throw new Exception("Cannot interpret member from " + expression.ToString());
 
 				return IsMemberExpression(unaryExpression.Operand);
@@ -373,6 +373,11 @@ namespace NHibernate.Impl
 			}
 
 			return false;
+		}
+
+		private static bool IsConversion(ExpressionType expressionType)
+		{
+			return (expressionType == ExpressionType.Convert || expressionType == ExpressionType.ConvertChecked);
 		}
 
 		private static object ConvertType(object value, System.Type type)

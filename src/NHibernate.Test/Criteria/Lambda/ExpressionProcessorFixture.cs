@@ -232,6 +232,28 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void TestUnaryConversionChecked()
+		{
+			checked
+			{
+				ICriterion before = Restrictions.Eq("Gender", PersonGender.Female);
+				ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.Gender == PersonGender.Female);
+				Assert.AreEqual(before.ToString(), after.ToString());
+			}
+		}
+
+		[Test]
+		public void TestUnaryConversionUnchecked()
+		{
+			unchecked
+			{
+				ICriterion before = Restrictions.Eq("Gender", PersonGender.Female);
+				ICriterion after = ExpressionProcessor.ProcessExpression<Person>(p => p.Gender == PersonGender.Female);
+				Assert.AreEqual(before.ToString(), after.ToString());
+			}
+		}
+
+		[Test]
 		public void TestEvaluateSubclass()
 		{
 			Person person = new CustomPerson();
