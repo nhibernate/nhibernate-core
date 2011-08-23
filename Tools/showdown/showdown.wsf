@@ -1,0 +1,44 @@
+<job id="IncludeExample">
+   <script language="JScript" src="showdown.js"/>
+   <script language="JScript">
+        
+        try
+        {
+            if (WScript.Arguments.length == 2)
+            {
+                var inputFile = WScript.Arguments.item(0);
+                var outputFile = WScript.Arguments.item(1);
+            
+                var fso = WScript.CreateObject("Scripting.FileSystemObject");
+                var text = fso.OpenTextFile(inputFile, 1).ReadAll();
+                var html = new Showdown.converter().makeHtml(text);
+
+                var stream = fso.OpenTextFile(outputFile, 2, true);
+                stream.Write(html);
+                stream.Close();
+                
+                WScript.Echo("HTML written to " + outputFile);
+            }
+            else
+            {
+                WScript.Echo("Usage: CScript.exe showdown.wsf <md input file> <html output file>");
+            }
+
+            WScript.Quit(0);
+        }
+        catch (e)
+        {
+            WScript.Echo("Error: " + e);
+            try
+            {
+                for(prop in e)
+                {
+                    WScript.Echo(prop + ": " + e[prop]);
+                }
+            }
+            catch (e) {}
+            WScript.Quit(1);
+        }
+
+    </script>
+</job>

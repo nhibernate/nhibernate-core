@@ -263,10 +263,12 @@
 		<property name="bin-pack.tests" value="${bin-pack.tmpdir}/Tests" />
 		
 		<copy file="releasenotes.txt" todir="${bin-pack.tmpdir}"/>
-		<copy file="readme.html" todir="${bin-pack.tmpdir}"/>
 		<copy file="lgpl.txt" todir="${bin-pack.tmpdir}/NHibernate.license.txt"/>
 		<copy file="gfdl.txt" todir="${bin-pack.tmpdir}"/>
 		<copy file="HowInstall.txt" todir="${bin-pack.tmpdir}"/>
+
+		<exec program="CScript.exe"
+			commandline="Tools\showdown\showdown.wsf README.md ${bin-pack.tmpdir}/readme.html"/>
 
 		<!--Configuration templates-->
 		<copy todir="${bin-pack.conf-template}">
