@@ -37,7 +37,7 @@ namespace NHibernate.Param
 			if (effectiveParameterLocations.Any())
 			{
 				// if the dialect does not support variable limits the parameter may was removed
-				int value = Loader.Loader.GetLimitUsingDialect(queryParameters.RowSelection, session.Factory.Dialect) ?? queryParameters.RowSelection.MaxRows;
+				int value = queryParameters.RowSelection.MaxRows;
 				int position = effectiveParameterLocations.Single();
 				type.NullSafeSet(command, value, position, session);
 			}
