@@ -32,3 +32,4 @@ _ReSharper*/
 NHibernate.dll
 build/
 AssemblyInfo.cs
+hibernate.cfg.xml
