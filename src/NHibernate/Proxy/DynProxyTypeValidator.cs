@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using NHibernate.Bytecode.Lightweight;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -107,11 +108,22 @@ namespace NHibernate.Proxy
 
 		protected virtual bool HasVisibleDefaultConstructor(System.Type type)
 		{
-			ConstructorInfo constructor =
-				type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
-				                    System.Type.EmptyTypes, null);
+            var constructorParms = BytecodeProviderImpl.EntityInjector.GetConstructorParameters(type);
+            if (constructorParms == null || constructorParms.Length == 0)
+            {
+                ConstructorInfo constructor =
+                type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
+                                    System.Type.EmptyTypes, null);
 
-			return constructor != null && !constructor.IsPrivate;
+                return constructor != null && !constructor.IsPrivate;
+            }
+            return true;
+
+            //ConstructorInfo constructor =
+            //    type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
+            //                        System.Type.EmptyTypes, null);
+
+            //return constructor != null && !constructor.IsPrivate;
 		}
 
 		protected void CheckNotSealed(System.Type type)

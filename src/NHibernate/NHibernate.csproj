@@ -90,9 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADOException.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
+    <Compile Include="Bytecode\DefaultEntityInjector.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
+    <Compile Include="Bytecode\IEntityInjector.cs" />
     <Compile Include="Cache\Access\ISoftLock.cs" />
     <Compile Include="Cache\CachedItem.cs" />
     <Compile Include="Cache\CacheException.cs" />
