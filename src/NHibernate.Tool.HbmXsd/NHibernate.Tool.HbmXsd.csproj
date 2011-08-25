@@ -61,7 +61,6 @@
       <Link>nhibernate-mapping.xsd</Link>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="HbmCodeGenerator.cs" />
     <Compile Include="ImproveEnumFieldsCommand.cs" />
     <Compile Include="ImproveHbmTypeNamesCommand.cs" />

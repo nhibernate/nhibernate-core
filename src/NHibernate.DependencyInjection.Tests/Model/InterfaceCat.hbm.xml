@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.DependencyInjection.Tests" namespace="NHibernate.DependencyInjection.Tests.Model">
+  <!-- interface strategy (proxy specified) -->
+  <class name="InterfaceCat" table="InterfaceCat" proxy="IInterfaceCat" >
+    <id name="Id" column="Id" type="int">
+      <generator class="native" />
+    </id>
+    <property name="Name" not-null="true" type="string" />
+    <set name="Kittens" cascade="all-delete-orphan" inverse="true" lazy="true">
+      <key column="ParentId" />
+      <one-to-many class="InterfaceCat"/>
+    </set>
+    <many-to-one class="InterfaceCat" column="ParentId" name="Parent" />
+  </class>
+</hibernate-mapping>
+
