@@ -85,7 +85,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 2147483647, "LONG NVARCHAR");
 			RegisterColumnType(DbType.Binary, "BINARY(1)");
 			RegisterColumnType(DbType.Binary, 32767, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, 2147483647, "LONG VARBINARY");
+			RegisterColumnType(DbType.Binary, 2147483647, "LONG BINARY");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 		}
 
