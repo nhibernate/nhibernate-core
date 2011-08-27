@@ -146,6 +146,7 @@
     <Compile Include="Dialect\SybaseASE15Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />
+    <Compile Include="Dialect\SybaseSQLAnywhere12Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Driver\SQLiteDriver.cs" />
     <Compile Include="Driver\SybaseAsaClientDriver.cs" />
     <Compile Include="Driver\SybaseAseClientDriver.cs" />
+    <Compile Include="Driver\SybaseSQLAnywhereDotNet4Driver.cs" />
     <Compile Include="Driver\SybaseSQLAnywhereDriver.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
