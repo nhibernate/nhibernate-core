@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHibernate.Driver
+﻿namespace NHibernate.Driver
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
@@ -39,25 +37,23 @@ namespace NHibernate.Driver
 		/// Thrown when the iAnywhere.Data.SQLAnywhere.v4.0 assembly is not and can not be loaded.
 		/// </exception>
 		public SybaseSQLAnywhereDotNet4Driver()
-			: base(
-				"iAnywhere.Data.SQLAnywhere", "iAnywhere.Data.SQLAnywhere.v4.0", "iAnywhere.Data.SQLAnywhere.SAConnection",
-				"iAnywhere.Data.SQLAnywhere.SACommand")
+			: base("iAnywhere.Data.SQLAnywhere", "iAnywhere.Data.SQLAnywhere.v4.0", "iAnywhere.Data.SQLAnywhere.SAConnection", "iAnywhere.Data.SQLAnywhere.SACommand")
 		{
 		}
 
 		public override bool UseNamedPrefixInSql
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override bool UseNamedPrefixInParameter
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override string NamedPrefix
 		{
-			get { return String.Empty; }
+			get { return ":"; }
 		}
 	}
 }

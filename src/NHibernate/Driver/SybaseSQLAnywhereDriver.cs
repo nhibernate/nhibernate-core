@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHibernate.Driver
+﻿namespace NHibernate.Driver
 {
 	/// <summary>
 	/// The SybaseSQLAnywhereDriver Driver provides a database driver for Sybase SQL Anywhere 10 and above
@@ -20,17 +18,17 @@ namespace NHibernate.Driver
 
 		public override bool UseNamedPrefixInSql
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override bool UseNamedPrefixInParameter
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override string NamedPrefix
 		{
-			get { return String.Empty; }
+			get { return ":"; }
 		}
 	}
 }
