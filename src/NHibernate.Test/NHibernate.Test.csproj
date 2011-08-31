@@ -494,6 +494,8 @@
     <Compile Include="Insertordering\Membership.cs" />
     <Compile Include="Insertordering\User.cs" />
     <Compile Include="KnownBugAttribute.cs" />
+    <Compile Include="Join\JoinedFilters.cs" />
+    <Compile Include="Join\TennisPlayer.cs" />
     <Compile Include="LazyOneToOne\Employee.cs" />
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
@@ -3120,6 +3122,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2907\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
+    <EmbeddedResource Include="Join\TennisPlayer.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\A.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\B.hbm.xml" />
