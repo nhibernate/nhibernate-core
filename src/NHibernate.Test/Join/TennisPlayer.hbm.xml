@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.Join"
+				   assembly="NHibernate.Test"
+>
+
+	<class name="TennisPlayer" table="tennis_player" lazy="true">
+
+		<id name="Id" column="person_id" unsaved-value="0">
+			<generator class="native"/>
+		</id>
+
+		<property name="Name" not-null="true" length="80"/>
+
+		<join table="racquet">
+			<key column="racquet_id"/>
+			<property name="Racquet"/>
+		</join>
+
+		<filter name="NameFilter" condition=":name = Name"/>
+		<filter name="RacquetFilter" condition=":racquet = Racquet"/>
+		
+	</class>
+
+	<filter-def name="NameFilter">
+		<filter-param name="name" type="System.String"/>
+	</filter-def>
+
+	<filter-def name="RacquetFilter">
+		<filter-param name="racquet" type="System.String"/>
+	</filter-def> 
+	
+</hibernate-mapping>
