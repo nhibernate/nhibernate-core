@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Properties;
 
 namespace NHibernate.Bytecode.Lightweight
@@ -12,6 +13,25 @@ namespace NHibernate.Bytecode.Lightweight
 	/// </remarks>
 	public class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
+        internal static IEntityInjector EntityInjector { get; private set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public BytecodeProviderImpl()
+        {
+            if (EntityInjector == null) EntityInjector = new DefaultEntityInjector();
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="entityInjector">Provide a IEntityInjector implementation to support dependency injection</param>
+        public BytecodeProviderImpl(IEntityInjector entityInjector)
+        {
+            if (entityInjector == null) throw new ArgumentNullException("entityInjector");
+            EntityInjector = entityInjector;
+        }
 
 		#region IBytecodeProvider Members
 

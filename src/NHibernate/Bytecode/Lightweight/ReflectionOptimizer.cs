@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
@@ -26,7 +27,12 @@ namespace NHibernate.Bytecode.Lightweight
 
 		public virtual object CreateInstance()
 		{
-			return createInstanceMethod != null ? createInstanceMethod() : null;
+			if (ReferenceEquals(mappedType, null)) return createInstanceMethod != null ? createInstanceMethod() : null;
+			if (ReferenceEquals(mappedType.FullName, null)) return createInstanceMethod != null ? createInstanceMethod() : null;
+			var constructorParms = BytecodeProviderImpl.EntityInjector.GetConstructorParameters(mappedType);
+			return (constructorParms == null || constructorParms.Length == 0)
+				? createInstanceMethod != null ? createInstanceMethod() : null
+				: Activator.CreateInstance(mappedType, constructorParms);
 		}
 
 		/// <summary>
@@ -94,6 +100,8 @@ namespace NHibernate.Bytecode.Lightweight
 
 		protected virtual void ThrowExceptionForNoDefaultCtor(System.Type type)
 		{
+			var constructorParms = BytecodeProviderImpl.EntityInjector.GetConstructorParameters(type);
+			if (constructorParms != null && constructorParms.Length > 0) return;
 			throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
 		}
 
@@ -162,7 +170,7 @@ namespace NHibernate.Bytecode.Lightweight
 				{
 					// using the getter itself via a callback
 					MethodInfo invokeMethod = typeof (GetterCallback).GetMethod("Invoke",
-					                                                            new[] {typeof (object), typeof (int)});
+																				new[] {typeof (object), typeof (int)});
 					il.Emit(OpCodes.Ldarg_1);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
@@ -224,7 +232,7 @@ namespace NHibernate.Bytecode.Lightweight
 				{
 					// using the setter itself via a callback
 					MethodInfo invokeMethod = typeof (SetterCallback).GetMethod("Invoke",
-					                                                            new[] {typeof (object), typeof (int), typeof (object)});
+																				new[] {typeof (object), typeof (int), typeof (object)});
 					il.Emit(OpCodes.Ldarg_2);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldc_I4, i);
