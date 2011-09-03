@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Cfg;
+using NHibernate.Test;
 using Npgsql;
 using NUnit.Framework;
 
@@ -27,7 +28,7 @@ namespace NHibernate.TestDatabaseSetup
 		[Test]
 		public void SetupDatabase()
 		{
-            var cfg = new Cfg.Configuration();
+            var cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			var driver = cfg.Properties[Cfg.Environment.ConnectionDriver];
 
 			Assert.That(SetupMethods.ContainsKey(driver), "No setup method found for " + driver);
