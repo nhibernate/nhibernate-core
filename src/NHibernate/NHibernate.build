@@ -109,7 +109,7 @@
     <copy file="${bin.dir}/NHibernate.dll" todir="${nuget.workingdir}"/>
     <copy file="${bin.dir}/NHibernate.xml" todir="${nuget.workingdir}"/>
     <copy file="${root.dir}/releasenotes.txt" tofile="${nuget.workingdir}/NHibernate.releasenotes.txt"/>
-    <copy file="${root.dir}/readme.html" tofile="${nuget.workingdir}/NHibernate.readme.html"/>
+    <exec program="CScript.exe" commandline="${root.dir}/Tools/showdown/showdown.wsf ${root.dir}/README.md ${nuget.workingdir}/NHibernate.readme.html"/>
     <copy file="${root.dir}/lgpl.txt" tofile="${nuget.workingdir}/NHibernate.license.txt"/>
     <copy todir="${nuget.workingdir}">
       <fileset basedir="${root.dir}/src/NHibernate">
