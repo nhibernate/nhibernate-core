@@ -8,8 +8,8 @@ for your own use before compile tests in VisualStudio.
 	<session-factory name="NHibernate.Test">
 		<property name="connection.driver_class">NHibernate.Driver.NpgsqlDriver</property>
 		<property name="connection.connection_string">
-			Server=localhost;initial catalog=nhibernate;User ID=nhibernate;Password=nhibernate;
+			Server=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;
 		</property>
-		<property name="dialect">NHibernate.Dialect.PostgreSQLDialect</property>
+		<property name="dialect">NHibernate.Dialect.PostgreSQL82Dialect</property>
 	</session-factory>
 </hibernate-configuration>
