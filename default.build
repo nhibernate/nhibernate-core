@@ -23,10 +23,10 @@
 		<include name="Iesi.Collections/Iesi.Collections.build" />
 		<include name="Iesi.Collections.Test/Iesi.Collections.Test.build" />
 		<include name="NHibernate/NHibernate.build" />
-    <include name="NHibernate.TestDatabaseSetup/TestDatabaseSetup.build" />
 		<include name="NHibernate.DomainModel/NHibernate.DomainModel.build" />
 		<include name="NHibernate.Test/NHibernate.Test.build" />
 		<include name="NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.build" />
+		<include name="NHibernate.TestDatabaseSetup/TestDatabaseSetup.build" />
 		<include name="NHibernate.Tool.HbmXsd/NHibernate.Tool.HbmXsd.build" />
 	</fileset>
 
