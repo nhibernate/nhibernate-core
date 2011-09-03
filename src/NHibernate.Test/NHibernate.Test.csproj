@@ -936,6 +936,7 @@
     <Compile Include="Subselect\Domain.cs" />
     <Compile Include="TestCaseMappingByCode.cs" />
     <Compile Include="TestDialect.cs" />
+    <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
