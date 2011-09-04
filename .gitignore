@@ -20,6 +20,7 @@
 *.lib
 *.sbr
 *.scc
+*.tokens
 [Bb]in
 [Db]ebug*/
 obj/
