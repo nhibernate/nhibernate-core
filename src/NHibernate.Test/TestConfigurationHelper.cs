@@ -56,6 +56,11 @@ namespace NHibernate.Test
             string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
             string folder = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
 
+            // Check for the file right in the working folder first.
+            if (File.Exists(Path.Combine(folder, filename)))
+                return Path.Combine(folder, filename);
+
+            // Look for a "current-test-configuration" folder up in all the parent folders.
             while (folder != null)
             {
                 string current = Path.Combine(Path.Combine(folder, CurrentTestConfiguration), filename);
