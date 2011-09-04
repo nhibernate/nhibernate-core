@@ -8,9 +8,8 @@ for your own use before compile tests in VisualStudio.
 	<session-factory name="NHibernate.Test">
 		<property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
 		<property name="connection.connection_string">
-			Data Source=nhibernate.db;Version=3
+			Data Source=nhibernate.db
 		</property>
 		<property name="dialect">NHibernate.Dialect.SQLiteDialect</property>
-		<property name="query.substitutions">true=1;false=0</property>
 	</session-factory>
 </hibernate-configuration>
