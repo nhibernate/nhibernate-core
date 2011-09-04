@@ -1,156 +1,198 @@
 @echo off
 pushd %~dp0
 
-set NANT=Tools\nant\bin\NAnt.exe -t:net-3.5
+set NANT=%~dp0Tools\nant\bin\NAnt.exe -t:net-3.5
+set BUILDTOOL=%~dp0Tools\BuildTool\bin\Release\BuildTool.exe
+set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
+set CURRENT_CONFIGURATION=%~dp0current-test-configuration
 
+:main-menu
+echo ========================= NHIBERNATE BUILD MENU ==========================
 echo --- SETUP ---
-echo A.  Set up for Visual Studio (creates AssemblyInfo.cs files).
+echo A. Set up for Visual Studio (creates AssemblyInfo.cs files).
 echo.
 echo --- TESTING ---
-echo B.  Learn how to set up database and connection string for testing.
-echo C.  How to increase the window scroll/size so you can see more test output.
-echo D.  Build and run all tests.
+echo B. (Step 1) Set up a new test configuration for a particular database.
+echo C. (Step 2) Activate a test configuration.
+echo D. (Step 3) Run tests using active configuration.
 echo.
 echo --- BUILD ---
-echo E.  Build NHibernate (Debug)
-echo F.  Build NHibernate (Release)
-echo G.  Build Release Package (Also runs tests and creates documentation)
+echo E. Build NHibernate (Debug)
+echo F. Build NHibernate (Release)
+echo G. Build Release Package (Also runs tests and creates documentation)
 echo.
 echo --- GRAMMAR ---
-echo H.  Grammar operations (related to Hql.g and HqlSqlWalker.g)
+echo H. Grammar operations (related to Hql.g and HqlSqlWalker.g)
 echo.
 echo --- TeamCity (CI) build options
-echo I.  TeamCity build menu
+echo I. TeamCity build menu
+echo.
+echo --- Exit ---
+echo X. Make the beautiful build menu go away.
 echo.
 
-if exist %SYSTEMROOT%\System32\choice.exe ( goto prompt-choice )
-goto prompt-set
+%BUILDTOOL% prompt ABCDEFGHIX
+if errorlevel 9 goto end
+if errorlevel 8 goto teamcity-menu
+if errorlevel 7 goto grammar-menu
+if errorlevel 6 goto build-release-package
+if errorlevel 5 goto build-release
+if errorlevel 4 goto build-debug
+if errorlevel 3 goto build-test
+if errorlevel 2 goto test-activate
+if errorlevel 1 goto test-setup-menu
+if errorlevel 0 goto build-visual-studio
 
-:prompt-choice
-choice /C:abcdefghi
+:test-setup-menu
+echo A. Add a test configuration for SQL Server.
+echo B. Add a test configuration for Firebird (x86).
+echo C. Add a test configuration for Firebird (x64).
+echo D. Add a test configuration for SQLite (x86).
+echo E. Add a test configuration for SQLite (x64).
+echo F. Add a test configuration for PostgreSQL.
+echo G. Add a test configuration for Oracle.
+echo.
+echo X.  Exit to main menu.
+echo.
 
-if errorlevel 255 goto end
-if errorlevel 9 goto teamcity-menu
-if errorlevel 8 goto grammar
-if errorlevel 7 goto build-release-package
-if errorlevel 6 goto build-release
-if errorlevel 5 goto build-debug
-if errorlevel 4 goto build-test
-if errorlevel 3 goto help-larger-window
-if errorlevel 2 goto help-test-setup
-if errorlevel 1 goto build-visual-studio
-if errorlevel 0 goto end
+%BUILDTOOL% prompt ABCDEFGX
+if errorlevel 7 goto main-menu
+if errorlevel 6 goto test-setup-oracle
+if errorlevel 5 goto test-setup-postgresql
+if errorlevel 4 goto test-setup-sqlitex64
+if errorlevel 3 goto test-setup-sqlitex86
+if errorlevel 2 goto test-setup-firebirdx64
+if errorlevel 1 goto test-setup-firebirdx86
+if errorlevel 0 goto test-setup-sqlserver
 
-:prompt-set
-set /p OPT=[A, B, C, D, E, F, G, H, I]? 
+:test-setup-sqlserver
+set CONFIG_NAME=MSSQL
+set PLATFORM=AnyCPU
+set LIB_FILES=
+set LIB_FILES2=
+goto test-setup-generic
 
-if /I "%OPT%"=="A" goto build-visual-studio
-if /I "%OPT%"=="B" goto help-test-setup
-if /I "%OPT%"=="C" goto help-larger-window
-if /I "%OPT%"=="D" goto build-test
-if /I "%OPT%"=="E" goto build-debug
-if /I "%OPT%"=="F" goto build-release
-if /I "%OPT%"=="G" goto build-release-package
-if /I "%OPT%"=="H" goto grammar
-if /I "%OPT%"=="I" goto teamcity-menu
-goto prompt-set
+:test-setup-firebirdx86
+set CONFIG_NAME=FireBird
+set PLATFORM=x86
+set LIB_FILES=lib\teamcity\firebird\*.dll
+set LIB_FILES2=lib\teamcity\firebird\x86\*
+goto test-setup-generic
 
-:help-test-setup
-echo.
-echo 1.  Install SQL Server 2008 (or use the database included with VS).
-echo 2.  Edit connection settings in build-common\nhibernate-properties.xml
-echo.
-echo 3.  If you want to run NUnit tests in Visual Studio directly,
-echo     edit src\NHibernate.Test\App.config and change this property:
-echo         connection.connection_string
-echo     Note that you will need a third party tool to run tests in VS.
-echo.
-echo     You will also need to create a database called "nhibernate"
-echo     if you just run the tests directly from VS.
-echo.
-goto end
+:test-setup-firebirdx64
+set CONFIG_NAME=FireBird
+set PLATFORM=x64
+set LIB_FILES=lib\teamcity\firebird\*.dll
+set LIB_FILES2=lib\teamcity\firebird\x64\*
+goto test-setup-generic
 
-:help-larger-window
-echo.
-echo 1.  Right click on the title bar of this window.
-echo 2.  Select "Properties".
-echo 3.  Select the "Layout" tab.
-echo 4.  Set the following options.
-echo         Screen Buffer Size
-echo             Width: 160
-echo             Height: 9999
-echo         Window Size
-echo             Width: 160
-echo             Height: 50
-echo.
-goto end
+:test-setup-sqlitex86
+set CONFIG_NAME=SQLite
+set PLATFORM=x86
+set LIB_FILES=lib\teamcity\sqlite\x86\*
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-sqlitex64
+set CONFIG_NAME=SQLite
+set PLATFORM=x64
+set LIB_FILES=lib\teamcity\sqlite\x64\*
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-postgresql
+set CONFIG_NAME=PostgreSQL
+set PLATFORM=AnyCPU
+set LIB_FILES=lib\teamcity\postgresql\*.dll
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-oracle
+set CONFIG_NAME=Oracle
+set PLATFORM=x86
+set LIB_FILES=lib\teamcity\oracle\x86\*.dll
+set LIB_FILES2=
+goto test-setup-generic
+
+:test-setup-generic
+set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
+if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
+mkdir %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+if /I "%LIB_FILES%"=="" goto test-setup-generic-skip-copy
+copy %LIB_FILES% %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+if /I "%LIB_FILES2%"=="" goto test-setup-generic-skip-copy
+copy %LIB_FILES2% %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+:test-setup-generic-skip-copy
+copy src\NHibernate.Config.Templates\%CONFIG_NAME%.cfg.xml %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
+echo Done setting up files.  Starting notepad to edit connection string in file:
+echo %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
+start notepad %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
+echo When you're done, don't forget to activate the configuration through the menu.
+goto main-menu
+
+
+:test-activate
+%BUILDTOOL% pick-folder %AVAILABLE_CONFIGURATIONS% folder.tmp "Which test configuration should be activated?"
+set /p FOLDER=<folder.tmp
+del folder.tmp
+mkdir %CURRENT_CONFIGURATION% 2> nul
+del /q %CURRENT_CONFIGURATION%\*
+copy %FOLDER%\* %CURRENT_CONFIGURATION%
+echo Configuration activated.
+goto main-menu
+
+:build-test
+%NANT% test
+goto main-menu
 
 :build-visual-studio
 %NANT% visual-studio
-goto end
+goto main-menu
 
 :build-debug
 %NANT% clean build
 echo.
 echo Assuming the build succeeded, your results will be in the build folder.
 echo.
-goto end
+goto main-menu
 
 :build-release
 %NANT% -D:project.config=release clean release
 echo.
 echo Assuming the build succeeded, your results will be in the build folder.
 echo.
-goto end
+goto main-menu
 
 :build-release-package
 %NANT% -D:project.config=release clean package
 echo.
 echo Assuming the build succeeded, your results will be in the build folder.
 echo.
-goto end
+goto main-menu
 
-:build-test
-%NANT% test
-goto end
-
-:grammar
+:grammar-menu
 echo.
 echo --- GRAMMAR ---
-echo A.  Regenerate all grammars.
-echo         Hql.g           to  HqlLexer.cs
-echo         Hql.g           to  HqlParser.cs
-echo         HqlSqlWalker.g  to  HqlSqlWalker.cs
-echo         SqlGenerator.g  to  SqlGenerator.cs
-echo B.  Regenerate all grammars, with Hql.g in debug mode.
-echo C.  Regenerate all grammars, with HqlSqlWalker.g in debug mode.
-echo D.  Regenerate all grammars, with SqlGenerator.g in debug mode.
-echo E.  Quick instructions on using debug mode.
+echo A. Regenerate all grammars.
+echo        Hql.g           to  HqlLexer.cs
+echo        Hql.g           to  HqlParser.cs
+echo        HqlSqlWalker.g  to  HqlSqlWalker.cs
+echo        SqlGenerator.g  to  SqlGenerator.cs
+echo B. Regenerate all grammars, with Hql.g in debug mode.
+echo C. Regenerate all grammars, with HqlSqlWalker.g in debug mode.
+echo D. Regenerate all grammars, with SqlGenerator.g in debug mode.
+echo E. Quick instructions on using debug mode.
+echo.
+echo X. Exit to main menu.
 echo.
 
-if exist %SYSTEMROOT%\System32\choice.exe ( goto grammar-prompt-choice )
-goto grammar-prompt-set
-
-:grammar-prompt-choice
-choice /C:abcde
-
-if errorlevel 255 goto end
-if errorlevel 5 goto antlr-debug
-if errorlevel 4 goto antlr-sqlgenerator-debug
-if errorlevel 3 goto antlr-hqlsqlwalker-debug
-if errorlevel 2 goto antlr-hql-debug
-if errorlevel 1 goto antlr-all
-if errorlevel 0 goto end
-
-:grammar-prompt-set
-set /p OPT=[A, B, C, D, E]?
-
-if /I "%OPT%"=="A" goto antlr-all
-if /I "%OPT%"=="B" goto antlr-hql-debug
-if /I "%OPT%"=="C" goto antlr-hqlsqlwalker-debug
-if /I "%OPT%"=="D" goto antlr-sqlgenerator-debug
-if /I "%OPT%"=="E" goto antlr-debug
-goto grammar-prompt-set
+%BUILDTOOL% prompt ABCDEX
+if errorlevel 5 goto main-menu
+if errorlevel 4 goto antlr-debug
+if errorlevel 3 goto antlr-sqlgenerator-debug
+if errorlevel 2 goto antlr-hqlsqlwalker-debug
+if errorlevel 1 goto antlr-hql-debug
+if errorlevel 0 goto antlr-all
 
 :antlr-all
 echo *** Regenerating from Hql.g
@@ -159,7 +201,7 @@ echo *** Regenerating from HqlSqlWalker.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
 echo *** Regenerating from SqlGenerator.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto end
+goto main-menu
 
 :antlr-hql-debug
 echo *** Regenerating from Hql.g (Debug Enabled)
@@ -168,7 +210,7 @@ echo *** Regenerating from HqlSqlWalker.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
 echo *** Regenerating from SqlGenerator.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto end
+goto main-menu
 
 :antlr-hqlsqlwalker-debug
 echo *** Regenerating from Hql.g
@@ -177,7 +219,7 @@ echo *** Regenerating from HqlSqlWalker.g (Debug Enabled)
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalkerDebug.bat
 echo *** Regenerating from SqlGenerator.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGenerator.bat
-goto end
+goto main-menu
 
 :antlr-sqlgenerator-debug
 echo *** Regenerating from Hql.g
@@ -186,87 +228,84 @@ echo *** Regenerating from HqlSqlWalker.g
 call src\NHibernate\Hql\Ast\ANTLR\AntlrHqlSqlWalker.bat
 echo *** Regenerating from SqlGenerator.g (Debug Enabled)
 call src\NHibernate\Hql\Ast\ANTLR\AntlrSqlGeneratorDebug.bat
-goto end
+goto main-menu
 
 :antlr-debug
 echo To use the debug grammar:
-echo   1.  Create a unit test that runs the hql parser on the input you're interested in.
+echo   1. Create a unit test that runs the hql parser on the input you're interested in.
 echo       The one you want to debug must be the first grammar parsed.
-echo   2.  Run the unit test.  It will appear to stall.
-echo   3.  Download and run AntlrWorks (java -jar AntlrWorks.jar).
-echo   4.  Open the grammar you intend to debug in AntlrWorks.
-echo   5.  Choose "Debug Remote" and accept the default port.
-echo   6.  You should now be connected and able to step through your grammar.
-goto end
+echo   2. Run the unit test.  It will appear to stall.
+echo   3. Download and run AntlrWorks (java -jar AntlrWorks.jar).
+echo   4. Open the grammar you intend to debug in AntlrWorks.
+echo   5. Choose "Debug Remote" and accept the default port.
+echo   6. You should now be connected and able to step through your grammar.
+goto main-menu
 
 :teamcity-menu
 echo.
 echo --- TeamCity (CI) build options
-echo A.  NHibernate Trunk (default SQL Server)
-echo B.  NHibernate Trunk - Firebird (32-bit)
-echo C.  NHibernate Trunk - Firebird (64-bit)
-echo D.  NHibernate Trunk - SQLite (32-bit)
-echo E.  NHibernate Trunk - SQLite (64-bit)
-echo F.  NHibernate Trunk - PostgreSQL
-echo G.  NHibernate Trunk - Oracle (32-bit)
+echo A. NHibernate Trunk (default SQL Server)
+echo B. NHibernate Trunk - Firebird (32-bit)
+echo C. NHibernate Trunk - Firebird (64-bit)
+echo D. NHibernate Trunk - SQLite (32-bit)
+echo E. NHibernate Trunk - SQLite (64-bit)
+echo F. NHibernate Trunk - PostgreSQL
+echo G. NHibernate Trunk - Oracle (32-bit)
+echo.
+echo X.  Exit to main menu.
 echo.
 
-if exist %SYSTEMROOT%\System32\choice.exe ( goto teamcity-menu-prompt-choice )
-goto teamcity-menu-prompt-set
-
-:teamcity-menu-prompt-choice
-choice /C:abcdefg
-
-if errorlevel 255 goto end
-if errorlevel 7 goto teamcity-oracle32
-if errorlevel 6 goto teamcity-postgresql
-if errorlevel 5 goto teamcity-sqlite64
-if errorlevel 4 goto teamcity-sqlite32
-if errorlevel 3 goto teamcity-firebird64
-if errorlevel 2 goto teamcity-firebird32
-if errorlevel 1 goto teamcity-trunk
-if errorlevel 0 goto end
-
-:teamcity-menu-prompt-set
-set /p OPT=[A, B, C, D, E, F, G]? 
-
-if /I "%OPT%"=="A" goto teamcity-trunk
-if /I "%OPT%"=="B" goto teamcity-firebird32
-if /I "%OPT%"=="C" goto teamcity-firebird64
-if /I "%OPT%"=="D" goto teamcity-sqlite32
-if /I "%OPT%"=="E" goto teamcity-sqlite64
-if /I "%OPT%"=="F" goto teamcity-postgresql
-if /I "%OPT%"=="G" goto teamcity-oracle32
-goto teamcity-menu-prompt-set
+%BUILDTOOL% prompt ABCDEFGX
+if errorlevel 7 goto main-menu
+if errorlevel 6 goto teamcity-oracle32
+if errorlevel 5 goto teamcity-postgresql
+if errorlevel 4 goto teamcity-sqlite64
+if errorlevel 3 goto teamcity-sqlite32
+if errorlevel 2 goto teamcity-firebird64
+if errorlevel 1 goto teamcity-firebird32
+if errorlevel 0 goto teamcity-trunk
 
 :teamcity-trunk
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-firebird32
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird32
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-firebird64
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird64
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-sqlite32
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite32
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-sqlite64
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite64
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-postgresql
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=postgresql
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :teamcity-oracle32
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle32
-goto end
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
 
 :end
 popd
-pause

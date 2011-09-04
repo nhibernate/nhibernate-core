@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace NHibernate.Test
 {
 	using System;
@@ -6,21 +8,34 @@ namespace NHibernate.Test
 
 	public static class TestConfigurationHelper
 	{
+	    private const string CurrentTestConfiguration = "current-test-configuration";
+
 		public static readonly string hibernateConfigFile;
 
 		static TestConfigurationHelper()
 		{
 			// Verify if hibernate.cfg.xml exists
-			hibernateConfigFile = TestConfigurationHelper.GetDefaultConfigurationFilePath();
+			hibernateConfigFile = GetDefaultConfigurationFilePath();
+
+            // Set up path to load extra binary files if needed (ex. Firebird).
+            if (hibernateConfigFile != null)
+                System.Environment.SetEnvironmentVariable("PATH", Path.GetDirectoryName(hibernateConfigFile) + ";" + System.Environment.GetEnvironmentVariable("PATH"));
+
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 		}
+
+        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            string simpleAssemblyName = args.Name.Split(',')[0];
+            string filename = FindCurrentTestConfigurationFile(simpleAssemblyName + ".dll");
+            if (filename != null)
+                return Assembly.LoadFrom(filename);
+            return null;
+        }
 
 		public static string GetDefaultConfigurationFilePath()
 		{
-			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-			string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-			string fullPath = Path.Combine(binPath, Cfg.Configuration.DefaultHibernateCfgFileName);
-			return File.Exists(fullPath) ? fullPath : null;
+		    return FindCurrentTestConfigurationFile(Configuration.DefaultHibernateCfgFileName);
 		}
 
 		/// <summary>
@@ -34,5 +49,21 @@ namespace NHibernate.Test
 				result.Configure(hibernateConfigFile);
 			return result;
 		}
+
+        private static string FindCurrentTestConfigurationFile(string filename)
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+            string folder = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+
+            while (folder != null)
+            {
+                string current = Path.Combine(Path.Combine(folder, CurrentTestConfiguration), filename);
+                if (File.Exists(current))
+                    return current;
+                folder = Path.GetDirectoryName(folder);
+            }
+            return null;
+        }
 	}
 }

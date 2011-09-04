@@ -34,3 +34,5 @@ NHibernate.dll
 build/
 AssemblyInfo.cs
 hibernate.cfg.xml
+available-test-configurations
+current-test-configuration
