@@ -34,11 +34,6 @@ namespace NHibernate.Linq.Visitors
 			return VisitExpression(expression);
 		}
 
-		public HqlTreeBuilder TreeBuilder
-		{
-			get { return _hqlTreeBuilder; }
-		}
-
 		protected HqlTreeNode VisitExpression(Expression expression)
 		{
 			if (expression == null)
