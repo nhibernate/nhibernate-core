@@ -127,11 +127,17 @@ namespace NHibernate.Test
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
-            if (!AppliesTo(Dialect))
-                return;
+			// If TestFixtureSetup fails due to an IgnoreException, it will still run the teardown.
+			// We don't want to try to clean up again since the setup would have already done so.
+			// If cfg is null already, that indicates it's already been cleaned up and we needn't.
+			if (cfg != null)
+			{
+				if (!AppliesTo(Dialect))
+					return;
 
-            DropSchema();
-			Cleanup();
+				DropSchema();
+				Cleanup();
+			}
 		}
 
 		protected virtual void OnSetUp()
@@ -225,9 +231,7 @@ namespace NHibernate.Test
 
 		private void Configure()
 		{
-			cfg = new Configuration();
-			if (TestConfigurationHelper.hibernateConfigFile != null)
-				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
+			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 
 			AddMappings(cfg);
 
@@ -278,7 +282,7 @@ namespace NHibernate.Test
 		{
 			if (cfg == null)
 			{
-				cfg = new Configuration();
+				cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			}
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
