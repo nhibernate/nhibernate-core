@@ -191,7 +191,7 @@ namespace NHibernate.Test
 			return true;
 		}
 
-		private bool CheckDatabaseWasCleaned()
+		protected virtual bool CheckDatabaseWasCleaned()
 		{
 			if (sessions.GetAllClassMetadata().Count == 0)
 			{
@@ -255,7 +255,7 @@ namespace NHibernate.Test
 			new SchemaExport(cfg).Create(OutputDdl, true);
 		}
 
-		private void DropSchema()
+		protected virtual void DropSchema()
 		{
 			new SchemaExport(cfg).Drop(OutputDdl, true);
 		}
@@ -337,7 +337,7 @@ namespace NHibernate.Test
 			return lastOpenedSession;
 		}
 
-		protected void ApplyCacheSettings(Configuration configuration)
+		protected virtual void ApplyCacheSettings(Configuration configuration)
 		{
 			if (CacheConcurrencyStrategy == null)
 			{
