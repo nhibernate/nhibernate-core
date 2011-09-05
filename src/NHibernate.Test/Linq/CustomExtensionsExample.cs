@@ -24,6 +24,13 @@ namespace NHibernate.Test.Linq
 
 			return Regex.IsMatch(source, pattern);
 		}
+
+        public static int IsOneInDbZeroInLocal(this string source)
+        {
+            
+
+            return 0;
+        }
 	}
 
 	public class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
@@ -32,6 +39,9 @@ namespace NHibernate.Test.Linq
 		{
 			RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 			                  new IsLikeGenerator());
+
+            RegisterGenerator(ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsOneInDbZeroInLocal(null)),
+                              new IsTrueInDbFalseInLocalGenerator());
 		}
 	}
 
@@ -50,6 +60,20 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
+    public class IsTrueInDbFalseInLocalGenerator : BaseHqlGeneratorForMethod
+    {
+        public IsTrueInDbFalseInLocalGenerator()
+        {
+            SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition(() => MyLinqExtensions.IsOneInDbZeroInLocal(null)) };
+        }
+        
+        public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
+            ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+        {
+            return treeBuilder.Constant(1);
+        }
+    }
+
 	public class CustomExtensionsExample : LinqTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
@@ -64,5 +88,13 @@ namespace NHibernate.Test.Linq
 			contacts.Count.Should().Be.GreaterThan(0);
 			contacts.Select(customer => customer.ContactName).All(c => c.Satisfy(customer => customer.Contains("Thomas")));
 		}
+
+        [Test]
+        public void CanUseMyCustomExtensionInProjection()
+        {
+            var boolProjection= (from c in db.Customers where c.ContactName.IsOneInDbZeroInLocal()==1 select c.ContactName.IsOneInDbZeroInLocal()).FirstOrDefault();
+            boolProjection.Should().Be(1);
+        
+        }
 	}
 }

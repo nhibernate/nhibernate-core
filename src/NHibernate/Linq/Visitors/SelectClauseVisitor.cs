@@ -35,7 +35,7 @@ namespace NHibernate.Linq.Visitors
         public void Visit(Expression expression)
         {
             // First, find the sub trees that can be expressed purely in HQL
-            _hqlNodes = new Nominator(CanBeEvaluatedInHqlSelectStatement, CanBeEvaluatedInHqlStatementShortcut).Nominate(expression);
+            _hqlNodes = new SelectClauseHqlNominator(_parameters).Nominate(expression);
 
             // Now visit the tree
             Expression projection = VisitExpression(expression);
