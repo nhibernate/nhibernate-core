@@ -46,9 +46,9 @@ if errorlevel 0 goto build-visual-studio
 :test-setup-menu
 echo A. Add a test configuration for SQL Server.
 echo B. Add a test configuration for Firebird (x86).
-echo C. Add a test configuration for Firebird (x64).
+echo C. Add a test configuration for Firebird (x64). [not recommended]
 echo D. Add a test configuration for SQLite (x86).
-echo E. Add a test configuration for SQLite (x64).
+echo E. Add a test configuration for SQLite (x64). [not recommended]
 echo F. Add a test configuration for PostgreSQL.
 echo G. Add a test configuration for Oracle.
 echo.
