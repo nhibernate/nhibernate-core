@@ -5,6 +5,7 @@ set NANT=%~dp0Tools\nant\bin\NAnt.exe -t:net-3.5
 set BUILDTOOL=%~dp0Tools\BuildTool\bin\Release\BuildTool.exe
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
+set NUNIT=%~dp0Tools\nunit\nunit-x86.exe
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -38,7 +39,7 @@ if errorlevel 7 goto grammar-menu
 if errorlevel 6 goto build-release-package
 if errorlevel 5 goto build-release
 if errorlevel 4 goto build-debug
-if errorlevel 3 goto build-test
+if errorlevel 3 goto test-run
 if errorlevel 2 goto test-activate
 if errorlevel 1 goto test-setup-menu
 if errorlevel 0 goto build-visual-studio
@@ -141,9 +142,13 @@ copy %FOLDER%\* %CURRENT_CONFIGURATION%
 echo Configuration activated.
 goto main-menu
 
-:build-test
-%NANT% test
+:test-run
+start %NUNIT% NHibernate.nunit
 goto main-menu
+
+rem :build-test
+rem %NANT% test
+rem goto main-menu
 
 :build-visual-studio
 %NANT% visual-studio
