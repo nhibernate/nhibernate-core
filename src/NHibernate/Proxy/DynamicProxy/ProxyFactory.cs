@@ -21,12 +21,12 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 
 		private static readonly MethodInfo getValue = typeof (SerializationInfo).GetMethod("GetValue", BindingFlags.Public | BindingFlags.Instance, null,
-																																											 new[] { typeof(string), typeof(System.Type) }, null);
+													new[] { typeof(string), typeof(System.Type) }, null);
 
 		private static readonly MethodInfo setType = typeof(SerializationInfo).GetMethod("SetType", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(System.Type) }, null);
 
 		private static readonly MethodInfo addValue = typeof (SerializationInfo).GetMethod("AddValue", BindingFlags.Public | BindingFlags.Instance, null,
-		                                                                                   new[] {typeof (string), typeof (object)}, null);
+														new[] { typeof(string), typeof(object) }, null);
 
 		public ProxyFactory()
 			: this(new DefaultyProxyMethodBuilder()) {}
@@ -106,10 +106,16 @@ namespace NHibernate.Proxy.DynamicProxy
 			// Use the proxy dummy as the base type 
 			// since we're not inheriting from any class type
 			System.Type parentType = baseType;
+			ConstructorInfo constructorInfo;
 			if (baseType.IsInterface)
 			{
 				parentType = typeof (ProxyDummy);
 				interfaces.Add(baseType);
+				constructorInfo = baseConstructor;
+			} 
+			else
+			{
+				constructorInfo = baseType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, System.Type.EmptyTypes, null) ?? baseConstructor;
 			}
 
 			// Add any inherited interfaces
@@ -124,7 +130,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
-			ConstructorBuilder defaultConstructor = DefineConstructor(typeBuilder);
+			ConstructorBuilder defaultConstructor = DefineConstructor(typeBuilder, constructorInfo);
 
 			// Implement IProxy
 			var implementor = new ProxyImplementor();
@@ -177,7 +183,7 @@ namespace NHibernate.Proxy.DynamicProxy
 					.Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods())).Distinct();
 		}
 
-		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder)
+		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, ConstructorInfo constructorInfo)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 			                                               MethodAttributes.HideBySig | MethodAttributes.SpecialName |
@@ -191,7 +197,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
 			IL.Emit(OpCodes.Ldarg_0);
-			IL.Emit(OpCodes.Call, baseConstructor);
+			IL.Emit(OpCodes.Call, constructorInfo);
 			IL.Emit(OpCodes.Ret);
 
 			return constructor;
