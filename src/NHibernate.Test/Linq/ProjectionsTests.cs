@@ -194,20 +194,51 @@ namespace NHibernate.Test.Linq
             Assert.IsTrue(query[2].Title.StartsWith("User nhibernate logged in at"));
         }
 
-				[Test]
-				public void CanUseConstantStringInProjection()
-				{
-					var query = from user in db.Users
-											select new
-											{
-												user.Name,
-												Category = "something"
-											};
+		[Test]
+		public void CanUseConstantStringInProjection()
+		{
+			var query = from user in db.Users
+									select new
+									{
+										user.Name,
+										Category = "something"
+									};
 
-					var firstUser = query.First();
-					Assert.IsNotNull(firstUser);
-					firstUser.Category.Should().Be("something");
-				}
+			var firstUser = query.First();
+			Assert.IsNotNull(firstUser);
+			firstUser.Category.Should().Be("something");
+		}
+
+        [Test]
+        public void CanProjectManyCollections()
+        {
+            var query = db.Orders.SelectMany(o => o.OrderLines);
+            var result = query.ToList();
+
+            Assert.Pass();
+        }
+
+
+        [Test]
+        [Ignore("Broken, please fix. See NH-2707")]
+        public void CanProjectCollections()
+        {
+            var query = db.Orders.Select(o => o.OrderLines);
+            var result = query.ToList();
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public void CanProjectCollectionsInsideAnonymousType()
+        {
+            // test for NH-2707
+
+            var query = db.Orders.Select(o => new { o.OrderId, o.OrderLines });
+            var result = query.ToList();
+
+            Assert.Pass();
+        } 
 
         private string FormatName(string name, DateTime? lastLoginDate)
         {
