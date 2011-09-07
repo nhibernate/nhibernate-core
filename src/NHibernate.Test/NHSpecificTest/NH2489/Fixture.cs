@@ -177,7 +177,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 					{
 						// accessing an invalid key should fail or throw an exception, depending on method
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
-						// null collection members don't seem to work, at least for lazy="extra" collectionsb
+						// null collection members don't seem to work, at least for lazy="extra" collections
 						entity.NamedChildren.Count.Should().Be.EqualTo(2);
 						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
 						Child child;
