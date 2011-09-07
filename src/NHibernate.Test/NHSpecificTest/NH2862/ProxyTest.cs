@@ -1,4 +1,5 @@
-﻿using NHibernate.Proxy.DynamicProxy;
+﻿using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2862
@@ -6,6 +7,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2862
     [TestFixture]
     public class ProxyTest
     {
+        #region proxy tests
+
         [Test]
         public void ProxyCallsParameterlessConstructorOfImmediateParentClass()
         {
@@ -26,6 +29,63 @@ namespace NHibernate.Test.NHSpecificTest.NH2862
             Assert.That(proxy.BaseMember, Is.Not.Null);
             Assert.That(proxy.DerivedMember, Is.Not.Null);
         }
+
+        [Test]
+        public void ProxyCallsBaseParameterlessConstructorIfDerivedDoesNotExplicityDeclareOne()
+        {
+            var pf = new ProxyFactory();
+            var proxy = pf.CreateProxy(typeof (EntityWithProtectedInternalConstructor), new Interceptor(), new[] {typeof (INHibernateProxy)}) as EntityWithProtectedInternalConstructor;
+
+            Assume.That(proxy, Is.Not.Null);
+            Assert.That(proxy.BaseMember, Is.Not.Null);
+
+        }
+
+        [Test]
+        public void ProxyIsConstructedCallingMostSpecificSafeConstructor()
+        {
+            var pf = new ProxyFactory();
+            var proxy = pf.CreateProxy(typeof(EntityWithPrivateConstructor), new Interceptor(), new[] { typeof(INHibernateProxy) }) as EntityWithPrivateConstructor;
+
+            Assume.That(proxy, Is.Not.Null);
+            Assert.That(proxy.BaseMember, Is.Not.Null);
+        }
+
+        #endregion
+
+
+        #region Constructor search tests
+
+        [Test]
+        public void FindsBaseConstructorWhenTypeHasPrivateDefaultConstructor()
+        {
+            var type = typeof (EntityWithPrivateConstructor);
+            var cs = ProxyFactory.GetMostSpecificSafeDefaultConstructorForType(type);
+
+            Assert.That(cs.DeclaringType, Is.EqualTo(type.BaseType));
+        }
+
+        [Test]
+        public void FindsConstructorWhenTypeHasProtectedDefaultConstructor()
+        {
+            var type = typeof (EntityWithProtectedConstructor);
+            var cs = ProxyFactory.GetMostSpecificSafeDefaultConstructorForType(type);
+
+            Assert.That(cs.DeclaringType, Is.EqualTo(type));
+        }
+
+        [Test]
+        public void FindsConstructorWhenTypeHasProtectedInternalDefaultConstructor()
+        {
+            var type = typeof (EntityWithProtectedInternalConstructor);
+            var cs = ProxyFactory.GetMostSpecificSafeDefaultConstructorForType(type);
+
+            Assert.That(cs.DeclaringType, Is.EqualTo(type));
+        }
+
+        #endregion
+
+
     }
 
     class Interceptor : Proxy.DynamicProxy.IInterceptor
@@ -75,6 +135,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2862
         {
             get { return _derivedMember; }
         }
+    }
+
+    public class EntityWithProtectedInternalConstructor : EntityBaseWithDefaultConstructor
+    {
+        protected internal EntityWithProtectedInternalConstructor(){}
+    }
+
+    public class EntityWithProtectedConstructor : EntityBaseWithDefaultConstructor
+    {
+        protected EntityWithProtectedConstructor() { }
+    }
+
+    public class EntityWithPrivateConstructor : EntityBaseWithDefaultConstructor
+    {
+        private EntityWithPrivateConstructor() {}
     }
 
     #endregion

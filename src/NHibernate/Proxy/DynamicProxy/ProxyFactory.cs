@@ -115,7 +115,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			} 
 			else
 			{
-				constructorInfo = baseType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, System.Type.EmptyTypes, null) ?? baseConstructor;
+				constructorInfo = GetMostSpecificSafeDefaultConstructorForType(baseType);
 			}
 
 			// Add any inherited interfaces
@@ -153,6 +153,17 @@ namespace NHibernate.Proxy.DynamicProxy
      assemblyBuilder.Save("generatedAssembly.dll");
 #endif
 			return proxyType;
+		}
+
+		public static ConstructorInfo GetMostSpecificSafeDefaultConstructorForType(System.Type type)
+		{
+			var ci = type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, System.Type.EmptyTypes, null);
+			if ((ci.Attributes & MethodAttributes.Public) == MethodAttributes.Public ||
+				(ci.Attributes & MethodAttributes.Family) == MethodAttributes.Family ||
+				(ci.Attributes & MethodAttributes.FamORAssem) == MethodAttributes.FamORAssem)
+				return ci;
+
+			return GetMostSpecificSafeDefaultConstructorForType(type.BaseType);
 		}
 
 		private IEnumerable<System.Type> GetInterfaces(System.Type currentType)
