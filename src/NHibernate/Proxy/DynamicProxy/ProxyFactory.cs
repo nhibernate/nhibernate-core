@@ -21,12 +21,12 @@ namespace NHibernate.Proxy.DynamicProxy
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 
 		private static readonly MethodInfo getValue = typeof (SerializationInfo).GetMethod("GetValue", BindingFlags.Public | BindingFlags.Instance, null,
-													new[] { typeof(string), typeof(System.Type) }, null);
+																																											 new[] { typeof(string), typeof(System.Type) }, null);
 
 		private static readonly MethodInfo setType = typeof(SerializationInfo).GetMethod("SetType", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(System.Type) }, null);
 
 		private static readonly MethodInfo addValue = typeof (SerializationInfo).GetMethod("AddValue", BindingFlags.Public | BindingFlags.Instance, null,
-														new[] { typeof(string), typeof(object) }, null);
+		                                                                                   new[] {typeof (string), typeof (object)}, null);
 
 		public ProxyFactory()
 			: this(new DefaultyProxyMethodBuilder()) {}
