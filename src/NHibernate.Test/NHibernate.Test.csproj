@@ -893,6 +893,7 @@
     <Compile Include="NHSpecificTest\NH2761\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2773\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2773\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2862\ProxyTest.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
