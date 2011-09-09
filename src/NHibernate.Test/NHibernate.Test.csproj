@@ -647,6 +647,8 @@
     <Compile Include="NHSpecificTest\EntityNameAndInheritance\Fixture.cs" />
     <Compile Include="NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
+    <Compile Include="NHSpecificTest\NH0000\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH0000\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1136\Address.cs" />
     <Compile Include="NHSpecificTest\NH1136\FeeMatrixType.cs" />
     <Compile Include="NHSpecificTest\NH1136\Fixture.cs" />
@@ -2740,6 +2742,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\A.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\B.hbm.xml" />
