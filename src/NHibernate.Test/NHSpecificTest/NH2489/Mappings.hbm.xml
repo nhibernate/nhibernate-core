@@ -20,6 +20,12 @@
         <column name="Child" not-null="false" />
       </many-to-many>
     </map>
+
+    <map name="OneToManyNamedChildren" lazy="extra" cascade="all" >
+      <key column="Bid" />
+      <index column="Name" type="string" />
+      <one-to-many class="AnotherChild"/>
+    </map>
   </class>
 
   <class name="Child">
@@ -27,5 +33,13 @@
       <generator class="increment"/>
     </id>
   </class>
-  
+
+  <class name="AnotherChild">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"></property>
+  </class>
+
+
 </hibernate-mapping>
