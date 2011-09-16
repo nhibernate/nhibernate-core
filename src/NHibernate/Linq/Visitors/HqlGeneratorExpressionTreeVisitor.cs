@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
@@ -90,9 +91,9 @@ namespace NHibernate.Linq.Visitors
 					return VisitMethodCallExpression((MethodCallExpression) expression);
 					//case ExpressionType.New:
 					//    return VisitNewExpression((NewExpression)expression);
-				case ExpressionType.NewArrayBounds:
-					//case ExpressionType.NewArrayInit:
-					//    return VisitNewArrayExpression((NewArrayExpression)expression);
+					//case ExpressionType.NewArrayBounds:
+				case ExpressionType.NewArrayInit:
+					return VisitNewArrayExpression((NewArrayExpression) expression);
 					//case ExpressionType.MemberInit:
 					//    return VisitMemberInitExpression((MemberInitExpression)expression);
 					//case ExpressionType.ListInit:
@@ -181,7 +182,7 @@ namespace NHibernate.Linq.Visitors
 		protected HqlTreeNode VisitNhDistinct(NhDistinctExpression expression)
 		{
 			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
-			return _hqlTreeBuilder.DistinctHolder(_hqlTreeBuilder.Distinct(), visitor.VisitExpression(expression.Expression));
+			return _hqlTreeBuilder.ExpressionSubTreeHolder(_hqlTreeBuilder.Distinct(), visitor.VisitExpression(expression.Expression));
 		}
 
 		protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
@@ -451,6 +452,13 @@ namespace NHibernate.Linq.Visitors
 		{
 			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false);
 			return query.Statement;
+		}
+
+		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
+		{
+			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
+			var expressionSubTree = expression.Expressions.Select(visitor.Visit);
+			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}
 }
