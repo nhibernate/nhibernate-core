@@ -987,7 +987,6 @@
     <Compile Include="Linq\Visitors\NhExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Expressions\NhNewExpression.cs" />
     <Compile Include="Linq\NhQueryable.cs" />
-    <Compile Include="Linq\Visitors\NhThrowingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\Visitors\Nominator.cs" />
     <Compile Include="Linq\ResultOperators\NonAggregatingGroupBy.cs" />
     <Compile Include="Linq\GroupBy\NonAggregatingGroupByRewriter.cs" />
