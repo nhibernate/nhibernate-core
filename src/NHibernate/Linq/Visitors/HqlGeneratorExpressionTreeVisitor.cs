@@ -457,7 +457,7 @@ namespace NHibernate.Linq.Visitors
 		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
 		{
 			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
-			var expressionSubTree = expression.Expressions.Select(visitor.Visit);
+			var expressionSubTree = expression.Expressions.Select(exp => visitor.Visit(exp));
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}
