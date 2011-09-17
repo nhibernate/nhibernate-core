@@ -893,6 +893,11 @@
     <Compile Include="NHSpecificTest\NH2761\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2773\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2773\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2869\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH2869\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2869\IsTrueInDbFalseInLocalGenerator.cs" />
+    <Compile Include="NHSpecificTest\NH2869\MyLinqExtensions.cs" />
+    <Compile Include="NHSpecificTest\NH2869\MyLinqToHqlGeneratorsRegistry.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2742,6 +2747,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\A.hbm.xml" />

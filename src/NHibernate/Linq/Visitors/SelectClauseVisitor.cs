@@ -2,15 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq.Expressions;
-using NHibernate.Linq.Functions;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
 	public class SelectClauseVisitor : ExpressionTreeVisitor
 	{
-		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 		private HashSet<Expression> _hqlNodes;
 		private readonly ParameterExpression _inputParameter;
 		private readonly VisitorParameters _parameters;
@@ -19,7 +16,6 @@ namespace NHibernate.Linq.Visitors
 
 		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
 		{
-			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 			_inputParameter = Expression.Parameter(inputType, "input");
 			_parameters = parameters;
 		}
@@ -34,8 +30,7 @@ namespace NHibernate.Linq.Visitors
 		public void Visit(Expression expression)
 		{
 			// First, find the sub trees that can be expressed purely in HQL
-			_hqlNodes =
-				new Nominator(CanBeEvaluatedInHqlSelectStatement, CanBeEvaluatedInHqlStatementShortcut).Nominate(expression);
+			_hqlNodes = new SelectClauseHqlNominator(_parameters).Nominate(expression);
 
 			// Now visit the tree
 			Expression projection = VisitExpression(expression);
@@ -63,40 +58,12 @@ namespace NHibernate.Linq.Visitors
 
 				_hqlTreeNodes.Add(hqlVisitor.Visit(expression).AsExpression());
 
-				return Expression.Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)),
-				                          expression.Type);
+				return Expression.Convert(
+					Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)), expression.Type);
 			}
 
 			// Can't handle this node with HQL.  Just recurse down, and emit the expression
 			return base.VisitExpression(expression);
-		}
-
-		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression)
-		{
-			if ((expression.NodeType == ExpressionType.MemberInit) || (expression.NodeType == ExpressionType.New) ||
-			    (expression.NodeType == ExpressionType.Constant))
-			{
-				// Hql can't do New or Member Init
-				return false;
-			}
-
-			if (expression.NodeType == ExpressionType.Call)
-			{
-				// Depends if it's in the function registry
-				IHqlGeneratorForMethod methodGenerator;
-				if (!_functionRegistry.TryGetGenerator(((MethodCallExpression) expression).Method, out methodGenerator))
-				{
-					return false;
-				}
-			}
-
-			// Assume all is good
-			return true;
-		}
-
-		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)
-		{
-			return ((NhExpressionType) expression.NodeType) == NhExpressionType.Count;
 		}
 	}
 
