@@ -47,7 +47,7 @@ namespace NHibernate.Criterion
 
 		public override IProjection[] GetProjections()
 		{
-			return null;
+			return _criterion.GetProjections();
 		}
 	}
 }
