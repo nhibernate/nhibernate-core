@@ -47,6 +47,9 @@ namespace NHibernate.Impl
 		private IProjection projection;
 		private ICriteria projectionCriteria;
 
+		private LazyPropertyFetchMode lazyPropertyFetchMode;
+		private readonly Dictionary<string, LazyPropertyFetchMode> lazyPropertyFetchModes = new Dictionary<string, LazyPropertyFetchMode>();
+
 		public CriteriaImpl(System.Type persistentClass, ISessionImplementor session)
 			: this(persistentClass.FullName, CriteriaSpecification.RootAlias, session)
 		{
@@ -117,6 +120,11 @@ namespace NHibernate.Impl
 		public string Alias
 		{
 			get { return rootAlias; }
+		}
+
+		public LazyPropertyFetchMode LazyPropertyFetchMode
+		{
+			get { return lazyPropertyFetchMode; }
 		}
 
 		public IProjection Projection
@@ -633,6 +641,18 @@ namespace NHibernate.Impl
 			return result;
 		}
 
+		public ICriteria SetLazyPropertyFetchMode(LazyPropertyFetchMode mode)
+		{
+			lazyPropertyFetchMode = mode;
+			return this;
+		}
+
+		public ICriteria SetLazyPropertyFetchMode(string associationPath, LazyPropertyFetchMode mode)
+		{
+			lazyPropertyFetchModes[associationPath] = mode;
+			return this;
+		}
+
 		[Serializable]
 		public sealed class Subcriteria : ICriteria
 		{
@@ -914,6 +934,18 @@ namespace NHibernate.Impl
 				return root.GetCriteriaByAlias(alias);
 			}
 
+			public ICriteria SetLazyPropertyFetchMode(LazyPropertyFetchMode fetchMode)
+			{
+				root.lazyPropertyFetchModes[Path] = fetchMode;
+				return this;
+			}
+
+			public ICriteria SetLazyPropertyFetchMode(string associationPath, LazyPropertyFetchMode mode)
+			{
+				root.SetLazyPropertyFetchMode(associationPath, mode);
+				return this;
+			}
+
 			public System.Type GetRootEntityTypeIfAvailable()
 			{
 				return root.GetRootEntityTypeIfAvailable();
@@ -1005,5 +1037,16 @@ namespace NHibernate.Impl
 				return persistentClass;
 			throw new HibernateException("Cannot provide root entity type because this criteria was initialized with an entity name.");
 		}
+
+	    public LazyPropertyFetchMode GetFetchAllProperties(string path)
+	    {
+	        LazyPropertyFetchMode mode;
+	        if (lazyPropertyFetchModes.TryGetValue(path, out mode))
+	        {
+	            return mode;
+	        }
+
+	        return LazyPropertyFetchMode.Default;
+	    }
 	}
 }

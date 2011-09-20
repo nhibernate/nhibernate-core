@@ -61,7 +61,7 @@ namespace NHibernate.Loader.Criteria
 			}
 			else
 			{
-				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
+				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None, translator.RootCriteria.LazyPropertyFetchMode);
 
 				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
 
@@ -162,6 +162,11 @@ namespace NHibernate.Loader.Criteria
 					}
 				}
 			}
+		}
+
+		protected override bool GetFetchAllProperties(string path)
+		{
+			return translator.RootCriteria.GetFetchAllProperties(path) >= LazyPropertyFetchMode.Select;
 		}
 
 		private static bool IsDefaultFetchMode(FetchMode fetchMode)

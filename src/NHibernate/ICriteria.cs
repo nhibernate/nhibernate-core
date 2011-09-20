@@ -392,6 +392,18 @@ namespace NHibernate
 		/// </remarks>
 		System.Type GetRootEntityTypeIfAvailable();
 
+		/// <summary>
+		/// Specify the behavior of how lazy properties fetched for this criteria
+		/// </summary>
+		ICriteria SetLazyPropertyFetchMode(LazyPropertyFetchMode fetchMode);
+
+		/// <summary>
+		/// Configures the lazy property fetch strategy for the specified <paramref name="associationPath"/>
+		/// </summary>
+		/// <param name="associationPath">A dot seperated property path.</param>
+		/// <param name="mode">The lazy property fetch mode.</param>
+		ICriteria SetLazyPropertyFetchMode(string associationPath, LazyPropertyFetchMode mode);
+
 		#endregion
 	}
 }

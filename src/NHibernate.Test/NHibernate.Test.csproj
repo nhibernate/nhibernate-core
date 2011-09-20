@@ -211,6 +211,10 @@
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
+    <Compile Include="Criteria\FetchAllProperties\Article.cs" />
+    <Compile Include="Criteria\FetchAllProperties\BlogPost.cs" />
+    <Compile Include="Criteria\FetchAllProperties\FetchAllPropertiesTests.cs" />
+    <Compile Include="Criteria\FetchAllProperties\FetchAllPropertiesTestsWithRelationships.cs" />
     <Compile Include="Criteria\Lambda\CriteriaAssertFixture.cs" />
     <Compile Include="Criteria\Lambda\ExpressionProcessorFixture.cs" />
     <Compile Include="Criteria\Lambda\FunctionsIntegrationFixture.cs" />
@@ -3343,6 +3347,8 @@
     <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Criteria\FetchAllProperties\BlogPost.hbm.xml" />
+    <EmbeddedResource Include="Criteria\FetchAllProperties\Article.hbm.xml" />
     <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1670,8 +1670,7 @@ namespace NHibernate.Persister.Collection
 
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
-		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-											  string currentCollectionSuffix, bool includeCollectionColumns);
+		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix, string currentCollectionSuffix, bool includeCollectionColumns, bool fetchAllProperties);
 
 		public abstract bool ConsumesCollectionAlias();
 

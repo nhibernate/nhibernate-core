@@ -20,10 +20,18 @@ namespace NHibernate.Loader
 		private readonly JoinType joinType;
 		private readonly SqlString on;
 		private readonly IDictionary<string, IFilter> enabledFilters;
+		private readonly bool featchAllProperties;
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
 										JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
-										IDictionary<string, IFilter> enabledFilters)
+		                                IDictionary<string, IFilter> enabledFilters)
+		    :this(joinableType, lhsAlias, lhsColumns, rhsAlias, joinType, withClause, factory, enabledFilters, false)
+		{
+		}
+		
+		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
+		                                JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
+		                                IDictionary<string, IFilter> enabledFilters, bool fetchAllProperties)
 		{
 			this.joinableType = joinableType;
 			this.lhsAlias = lhsAlias;
@@ -36,6 +44,7 @@ namespace NHibernate.Loader
 			if (SqlStringHelper.IsNotEmpty(withClause))
 				on = on.Append(" and ( ").Append(withClause).Append(" )");
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
+			this.featchAllProperties = fetchAllProperties;
 		}
 
 		public JoinType JoinType
@@ -87,6 +96,11 @@ namespace NHibernate.Loader
 		public IJoinable Joinable
 		{
 			get { return joinable; }
+		}
+
+		public bool FeatchAllProperties
+		{
+			get { return featchAllProperties; }
 		}
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)

@@ -1366,9 +1366,14 @@ namespace NHibernate.Persister.Entity
 			get { return identifierAliases; }
 		}
 
+		public string SelectFragment(string alias, string suffix, bool allProperties)
+		{
+			return IdentifierSelectFragment(alias, suffix) + PropertySelectFragment(alias, suffix, allProperties);
+		}
+
 		public string SelectFragment(string alias, string suffix)
 		{
-			return IdentifierSelectFragment(alias, suffix) + PropertySelectFragment(alias, suffix, false);
+			return SelectFragment(alias, suffix, false);
 		}
 
 		public string[] GetIdentifierAliases(string suffix)
@@ -3925,9 +3930,9 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
-			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+			string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool fetchAllProperties)
 		{
-			return SelectFragment(lhsAlias, entitySuffix);
+			return SelectFragment(lhsAlias, entitySuffix, fetchAllProperties);
 		}
 
 		public bool IsInstrumented(EntityMode entityMode)

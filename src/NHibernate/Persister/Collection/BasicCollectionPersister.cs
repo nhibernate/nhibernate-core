@@ -251,7 +251,7 @@ namespace NHibernate.Persister.Collection
 		}
 
 		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
-			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+			string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool fetchAllProperties)
 		{
 			// we need to determine the best way to know that two joinables
 			// represent a single many-to-many...

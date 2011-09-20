@@ -65,7 +65,7 @@ namespace NHibernate.Loader.Collection
 			JoinFragment ojf = MergeOuterJoins(associations);
 			SqlSelectBuilder select =
 				new SqlSelectBuilder(Factory).SetSelectClause(
-					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true)
+					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true, false)
 					+ SelectString(associations)).SetFromClause(elementPersister.FromTableFragment(alias)
 																+ oneToManyPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
 					whereString.ToSqlString()).SetOuterJoins(ojf.ToFromFragmentString,

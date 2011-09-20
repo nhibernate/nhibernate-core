@@ -285,6 +285,7 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="LazyPropertyFetchMode.cs" />
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
