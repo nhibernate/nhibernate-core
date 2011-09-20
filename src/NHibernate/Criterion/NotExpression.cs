@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 
@@ -12,7 +11,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class NotExpression : AbstractCriterion
 	{
-		private ICriterion _criterion;
+		private readonly ICriterion _criterion;
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NotExpression" /> class for an
@@ -27,7 +26,7 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: set default capacity
-			SqlStringBuilder builder = new SqlStringBuilder();
+			var builder = new SqlStringBuilder();
 			builder.Add("not (");
 			builder.Add(_criterion.ToSqlString(criteria, criteriaQuery, enabledFilters));
 			builder.Add(")");
@@ -47,7 +46,7 @@ namespace NHibernate.Criterion
 
 		public override IProjection[] GetProjections()
 		{
-			return null;
+			return _criterion.GetProjections();
 		}
 	}
 }

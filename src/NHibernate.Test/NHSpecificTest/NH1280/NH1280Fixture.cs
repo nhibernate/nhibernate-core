@@ -239,7 +239,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		}
 
 		[Test, Description("NH-2863")]
-		[Ignore]
 		public void HavingOnNotExpressionCount()
 		{
 			using (ISession s = OpenSession())
