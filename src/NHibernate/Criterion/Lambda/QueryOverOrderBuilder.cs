@@ -18,7 +18,7 @@ namespace NHibernate.Criterion.Lambda
 		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
 		{}
 
-		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, IProjection projection) : base(root, projection)
+		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
 		{}
 
 	}
@@ -32,7 +32,7 @@ namespace NHibernate.Criterion.Lambda
 		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
 		{}
 
-		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, IProjection projection) : base(root, projection)
+		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
 		{}
 
 	}
@@ -43,7 +43,7 @@ namespace NHibernate.Criterion.Lambda
 		protected TReturn root;
 		protected LambdaExpression path;
 		protected bool isAlias;
-		protected IProjection projection;
+		protected ExpressionProcessor.ProjectionInfo projection;
 
 		protected QueryOverOrderBuilderBase(TReturn root, Expression<Func<TSubType, object>> path)
 		{
@@ -59,21 +59,21 @@ namespace NHibernate.Criterion.Lambda
 			this.isAlias = isAlias;
 		}
 
-		protected QueryOverOrderBuilderBase(TReturn root, IProjection projection)
+		protected QueryOverOrderBuilderBase(TReturn root, ExpressionProcessor.ProjectionInfo projection)
 		{
 			this.root = root;
 			this.projection = projection;
 		}
 
-		private void AddOrder(Func<string, Order> orderStringDelegate, Func<IProjection, Order> orderDelegate)
+		private void AddOrder(Func<string, Order> orderStringDelegate, Func<IProjection, Order> orderProjectionDelegate)
 		{
 			if (projection != null)
-				root.UnderlyingCriteria.AddOrder(orderDelegate(projection));
+				root.UnderlyingCriteria.AddOrder(projection.CreateOrder(orderStringDelegate, orderProjectionDelegate));
 			else
 				if (isAlias)
 					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate));
 				else
-					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderDelegate));
+					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate, orderProjectionDelegate));
 		}
 
 		public TReturn Asc

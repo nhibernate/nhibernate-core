@@ -30,16 +30,86 @@ namespace NHibernate.Impl
 	/// </summary>
 	public static class ExpressionProcessor
 	{
+		public class ProjectionInfo
+		{
+			private string _property;
+			private IProjection _projection;
 
-		private readonly static IDictionary<ExpressionType, Func<IProjection, object, ICriterion>> _simpleExpressionCreators = null;
-		private readonly static IDictionary<ExpressionType, Func<IProjection, IProjection, ICriterion>> _propertyExpressionCreators = null;
+			protected ProjectionInfo() { }
+			public static ProjectionInfo ForProperty(string property) { return new ProjectionInfo() { _property = property }; }
+			public static ProjectionInfo ForProjection(IProjection projection) { return new ProjectionInfo() { _projection = projection }; }
+
+			public IProjection AsProjection() { return _projection ?? Projections.Property(_property); }
+
+			public ICriterion CreateCriterion(Func<string, ICriterion> stringFunc, Func<IProjection, ICriterion> projectionFunc)
+			{
+				return (_property != null)
+					? stringFunc(_property)
+					: projectionFunc(_projection);
+			}
+
+			public ICriterion CreateCriterion(Func<string, object, ICriterion> stringFunc, Func<IProjection, object, ICriterion> projectionFunc, object value)
+			{
+				return (_property != null)
+					? stringFunc(_property, value)
+					: projectionFunc(_projection, value);
+			}
+
+			public ICriterion CreateCriterion(ProjectionInfo rhs,
+												Func<string, string, ICriterion> ssFunc,
+												Func<string, IProjection, ICriterion> spFunc,
+												Func<IProjection, string, ICriterion> psFunc,
+												Func<IProjection, IProjection, ICriterion> ppFunc)
+			{
+				if (_property != null && rhs._property != null)
+					return ssFunc(_property, rhs._property);
+				else if (_property != null)
+					return spFunc(_property, rhs._projection);
+				else if (rhs._property != null)
+					return psFunc(_projection, rhs._property);
+				else
+					return ppFunc(_projection, rhs._projection);
+			}
+
+			public T Create<T>(Func<string, T> stringFunc, Func<IProjection, T> projectionFunc)
+			{
+				return (_property != null)
+					? stringFunc(_property)
+					: projectionFunc(_projection);
+			}
+
+			public Order CreateOrder(Func<string, Order> orderStringDelegate, Func<IProjection, Order> orderProjectionDelegate)
+			{
+				return (_property != null)
+					? orderStringDelegate(_property)
+					: orderProjectionDelegate(_projection);
+			}
+
+
+			/// <summary>
+			/// Retreive the property name from a supplied PropertyProjection
+			/// Note:  throws is the supplied IProjection is not a PropertyProjection
+			/// </summary>
+			public string AsProperty()
+			{
+				if (_property != null) return _property;
+
+				if (!(_projection is PropertyProjection))
+					throw new Exception("Cannot determine property for " + _projection.ToString());
+
+				return ((PropertyProjection)_projection).PropertyName;
+			}
+		}
+
+		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators = null;
+		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators = null;
 		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes = null;
 		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors = null;
 		private readonly static IDictionary<string, Func<MethodCallExpression, IProjection>> _customProjectionProcessors = null;
 
 		static ExpressionProcessor()
 		{
-			_simpleExpressionCreators = new Dictionary<ExpressionType, Func<IProjection, object, ICriterion>>();
+			_simpleExpressionCreators = new Dictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>>();
 			_simpleExpressionCreators[ExpressionType.Equal] = Eq;
 			_simpleExpressionCreators[ExpressionType.NotEqual] = Ne;
 			_simpleExpressionCreators[ExpressionType.GreaterThan] = Gt;
@@ -47,13 +117,13 @@ namespace NHibernate.Impl
 			_simpleExpressionCreators[ExpressionType.LessThan] = Lt;
 			_simpleExpressionCreators[ExpressionType.LessThanOrEqual] = Le;
 
-			_propertyExpressionCreators = new Dictionary<ExpressionType, Func<IProjection, IProjection, ICriterion>>();
-			_propertyExpressionCreators[ExpressionType.Equal] = Restrictions.EqProperty;
-			_propertyExpressionCreators[ExpressionType.NotEqual] = Restrictions.NotEqProperty;
-			_propertyExpressionCreators[ExpressionType.GreaterThan] = Restrictions.GtProperty;
-			_propertyExpressionCreators[ExpressionType.GreaterThanOrEqual] = Restrictions.GeProperty;
-			_propertyExpressionCreators[ExpressionType.LessThan] = Restrictions.LtProperty;
-			_propertyExpressionCreators[ExpressionType.LessThanOrEqual] = Restrictions.LeProperty;
+			_propertyExpressionCreators = new Dictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>>();
+			_propertyExpressionCreators[ExpressionType.Equal]				= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.EqProperty, Restrictions.EqProperty, Restrictions.EqProperty, Restrictions.EqProperty);
+			_propertyExpressionCreators[ExpressionType.NotEqual]			= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.NotEqProperty, Restrictions.NotEqProperty, Restrictions.NotEqProperty, Restrictions.NotEqProperty);
+			_propertyExpressionCreators[ExpressionType.GreaterThan]			= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.GtProperty, Restrictions.GtProperty, Restrictions.GtProperty, Restrictions.GtProperty);
+			_propertyExpressionCreators[ExpressionType.GreaterThanOrEqual]	= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.GeProperty, Restrictions.GeProperty, Restrictions.GeProperty, Restrictions.GeProperty);
+			_propertyExpressionCreators[ExpressionType.LessThan]			= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.LtProperty, Restrictions.LtProperty, Restrictions.LtProperty, Restrictions.LtProperty);
+			_propertyExpressionCreators[ExpressionType.LessThanOrEqual]		= (lhs, rhs) => lhs.CreateCriterion(rhs, Restrictions.LeProperty, Restrictions.LeProperty, Restrictions.LeProperty, Restrictions.LeProperty);
 
 			_subqueryExpressionCreatorTypes = new Dictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>>();
 			_subqueryExpressionCreatorTypes[LambdaSubqueryType.Exact] = new Dictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>();
@@ -116,36 +186,36 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(Int64)), ProjectionsExtensions.ProcessInt64Abs);
 		}
 
-		private static ICriterion Eq(IProjection propertyName, object value)
+		private static ICriterion Eq(ProjectionInfo property, object value)
 		{
-			return Restrictions.Eq(propertyName, value);
+			return property.CreateCriterion(Restrictions.Eq, Restrictions.Eq, value);
 		}
 
-		private static ICriterion Ne(IProjection propertyName, object value)
+		private static ICriterion Ne(ProjectionInfo property, object value)
 		{
 			return
-				NHibernate.Criterion.Restrictions.Not(
-					NHibernate.Criterion.Restrictions.Eq(propertyName, value));
+				Restrictions.Not(
+					property.CreateCriterion(Restrictions.Eq, Restrictions.Eq, value));
 		}
 
-		private static ICriterion Gt(IProjection propertyName, object value)
+		private static ICriterion Gt(ProjectionInfo property, object value)
 		{
-			return NHibernate.Criterion.Restrictions.Gt(propertyName, value);
+			return property.CreateCriterion(Restrictions.Gt, Restrictions.Gt, value);
 		}
 
-		private static ICriterion Ge(IProjection propertyName, object value)
+		private static ICriterion Ge(ProjectionInfo property, object value)
 		{
-			return NHibernate.Criterion.Restrictions.Ge(propertyName, value);
+			return property.CreateCriterion(Restrictions.Ge, Restrictions.Ge, value);
 		}
 
-		private static ICriterion Lt(IProjection propertyName, object value)
+		private static ICriterion Lt(ProjectionInfo property, object value)
 		{
-			return NHibernate.Criterion.Restrictions.Lt(propertyName, value);
+			return property.CreateCriterion(Restrictions.Lt, Restrictions.Lt, value);
 		}
 
-		private static ICriterion Le(IProjection propertyName, object value)
+		private static ICriterion Le(ProjectionInfo property, object value)
 		{
-			return NHibernate.Criterion.Restrictions.Le(propertyName, value);
+			return property.CreateCriterion(Restrictions.Le, Restrictions.Le, value);
 		}
 
 		/// <summary>
@@ -161,10 +231,10 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Retrieves the projection for the expression
 		/// </summary>
-		public static IProjection FindMemberProjection(Expression expression)
+		public static ProjectionInfo FindMemberProjection(Expression expression)
 		{
 			if (!IsMemberExpression(expression))
-				return Projections.Constant(FindValue(expression));
+				return ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression)));
 
 			if (expression is UnaryExpression)
 			{
@@ -182,10 +252,10 @@ namespace NHibernate.Impl
 
 				string signature = Signature(methodCallExpression.Method);
 				if (_customProjectionProcessors.ContainsKey(signature))
-					return _customProjectionProcessors[signature](methodCallExpression);
+					return ProjectionInfo.ForProjection(_customProjectionProcessors[signature](methodCallExpression));
 			}
 
-			return Projections.Property(FindMemberExpression(expression));
+			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
 		/// <summary>
@@ -416,7 +486,7 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessSimpleExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
-			IProjection property = FindMemberProjection(left);
+			ProjectionInfo property = FindMemberProjection(left);
 			System.Type propertyType = FindMemberType(left);
 
 			object value = FindValue(right);
@@ -428,7 +498,7 @@ namespace NHibernate.Impl
 			if (!_simpleExpressionCreators.ContainsKey(nodeType))
 				throw new Exception("Unhandled simple expression type: " + nodeType);
 
-			Func<IProjection, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
+			Func<ProjectionInfo, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
 			ICriterion criterion = simpleExpressionCreator(property, value);
 			return criterion;
 		}
@@ -443,14 +513,14 @@ namespace NHibernate.Impl
 				return ProcessSimpleExpression(methodCall.Arguments[0], methodCall.Arguments[1], be.NodeType);
 		}
 
-		private static ICriterion ProcessSimpleNullExpression(IProjection property, ExpressionType expressionType)
+		private static ICriterion ProcessSimpleNullExpression(ProjectionInfo property, ExpressionType expressionType)
 		{
 			if (expressionType == ExpressionType.Equal)
-				return Restrictions.IsNull(property);
+				return property.CreateCriterion(Restrictions.IsNull, Restrictions.IsNull);
 
 			if (expressionType == ExpressionType.NotEqual)
 				return Restrictions.Not(
-					Restrictions.IsNull(property));
+					property.CreateCriterion(Restrictions.IsNull, Restrictions.IsNull));
 
 			throw new Exception("Cannot supply null value to operator " + expressionType);
 		}
@@ -462,13 +532,13 @@ namespace NHibernate.Impl
 
 		private static ICriterion ProcessMemberExpression(Expression left, Expression right, ExpressionType nodeType)
 		{
-			IProjection leftProperty = FindMemberProjection(left);
-			IProjection rightProperty = FindMemberProjection(right);
+			ProjectionInfo leftProperty = FindMemberProjection(left);
+			ProjectionInfo rightProperty = FindMemberProjection(right);
 
 			if (!_propertyExpressionCreators.ContainsKey(nodeType))
 				throw new Exception("Unhandled property expression type: " + nodeType);
 
-			Func<IProjection, IProjection, ICriterion> propertyExpressionCreator = _propertyExpressionCreators[nodeType];
+			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator = _propertyExpressionCreators[nodeType];
 			ICriterion criterion = propertyExpressionCreator(leftProperty, rightProperty);
 			return criterion;
 		}
@@ -660,13 +730,15 @@ namespace NHibernate.Impl
 		/// Convert a lambda expression to NHibernate Order
 		/// </summary>
 		/// <param name="expression">The lambda expression to convert</param>
-		/// <param name="orderDelegate">The appropriate order delegate (order direction)</param>
+		/// <param name="orderStringDelegate">The appropriate order delegate (order direction)</param>
+		/// <param name="orderProjectionDelegate">The appropriate order delegate (order direction)</param>
 		/// <returns>NHibernate Order</returns>
 		public static Order ProcessOrder(	LambdaExpression expression,
-											Func<IProjection, Order> orderDelegate)
+											Func<string, Order> orderStringDelegate,
+											Func<IProjection, Order> orderProjectionDelegate)
 		{
-			IProjection projection = FindMemberProjection(expression.Body);
-			Order order = orderDelegate(projection);
+			ProjectionInfo projection = FindMemberProjection(expression.Body);
+			Order order = projection.CreateOrder(orderStringDelegate, orderProjectionDelegate);
 			return order;
 		}
 
@@ -736,18 +808,6 @@ namespace NHibernate.Impl
 			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
 			string signature = Signature(functionExpression.Method);
 			_customProjectionProcessors.Add(signature, functionProcessor);
-		}
-
-		/// <summary>
-		/// Retreive the property name from a supplied PropertyProjection
-		/// Note:  throws is the supplied IProjection is not a PropertyProjection
-		/// </summary>
-		public static string FindProperty(IProjection projection)
-		{
-			if (!(projection is PropertyProjection))
-				throw new Exception("Cannot determine property for " + projection.ToString());
-
-			return ((PropertyProjection)projection).PropertyName;
 		}
 
 	}

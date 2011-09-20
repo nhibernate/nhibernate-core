@@ -12,6 +12,10 @@
 		<property name="Age" />
 		<property name="BirthDate" />
 		<property name="Blood" />
+		<component name="Detail" class="PersonDetail">
+			<property name="MaidenName" />
+			<property name="Anniversary" />
+		</component>
 		<many-to-one name="Father" class="Person" />
 		<bag name="Children" inverse="true" cascade="all-delete-orphan">
 			<key column="Parent" />
