@@ -12,7 +12,14 @@ namespace NHibernate.Test.Join
 	{
 		protected override IList Mappings
 		{
-			get { return new [] {"Join.TennisPlayer.hbm.xml"}; }
+			get 
+			{ 
+				return new []
+			    {
+					"Join.TennisPlayer.hbm.xml",
+					"Join.Person.hbm.xml"
+			    }; 
+			}
 		}
 
 		protected override void OnTearDown()
@@ -38,9 +45,7 @@ namespace NHibernate.Test.Join
 			{
 				s.EnableFilter("NameFilter").SetParameter("name", "Nadal");
 
-				CreateAndSavePlayer(s, "Nadal", "Babolat");
-				CreateAndSavePlayer(s, "Rodick", "Wilson");
-				s.Flush();
+				CreatePlayers(s);
 
 				IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
 				Assert.AreEqual(1, people.Count);
@@ -56,23 +61,46 @@ namespace NHibernate.Test.Join
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.EnableFilter("RacquetFilter").SetParameter("racquet", "Babolat");
+				s.EnableFilter("MakeFilter").SetParameter("make", "Babolat");
 
-				CreateAndSavePlayer(s, "Nadal", "Babolat");
-				CreateAndSavePlayer(s, "Rodick", "Wilson");
-				s.Flush();
+				CreatePlayers(s);
 
 				IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
 				Assert.AreEqual(1, people.Count);
-				Assert.AreEqual("Babolat", people[0].Racquet);
+				Assert.AreEqual("Babolat", people[0].RacquetMake);
 
 				tx.Commit();
 			}
 		}
 
-		private static void CreateAndSavePlayer(ISession session, string name, string make)
+		[Test]
+		public void FilterOnJoinedTableWithRepeatedColumn()
 		{
-			var s = new TennisPlayer() {Name = name, Racquet = make};
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.EnableFilter("ModelFilter").SetParameter("model", "AeroPro Drive");
+
+				CreatePlayers(s);
+
+				IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
+				Assert.AreEqual(1, people.Count);
+				Assert.AreEqual("AeroPro Drive", people[0].RacquetModel);
+
+				tx.Commit();
+			}
+		}
+
+		private static void CreatePlayers(ISession s)
+		{
+			CreateAndSavePlayer(s, "Nadal", "Babolat", "AeroPro Drive");
+			CreateAndSavePlayer(s, "Federer", "Wilson", "Six.One Tour BLX");
+			s.Flush();
+		}
+
+		private static void CreateAndSavePlayer(ISession session, string name, string make, string model)
+		{
+			var s = new TennisPlayer() {Name = name, RacquetMake = make, RacquetModel = model};
 			session.Save(s);
 		}
 	}

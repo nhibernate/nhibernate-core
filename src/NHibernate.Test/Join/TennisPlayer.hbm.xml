@@ -10,24 +10,35 @@
 			<generator class="native"/>
 		</id>
 
+		<bag name="Coaches" cascade="all" inverse="true" access="property">
+			<key column="id"/>
+			<one-to-many class="Person"/>
+		</bag>
+
 		<property name="Name" not-null="true" length="80"/>
 
 		<join table="racquet">
 			<key column="racquet_id"/>
-			<property name="Racquet"/>
+			<property name="RacquetMake"/>
+			<property name="RacquetModel" column="Name"/>
 		</join>
 
-		<filter name="NameFilter" condition=":name = Name"/>
-		<filter name="RacquetFilter" condition=":racquet = Racquet"/>
-		
+		<filter name="NameFilter"/>
+		<filter name="MakeFilter"/>
+		<filter name="ModelFilter"/>
+
 	</class>
 
-	<filter-def name="NameFilter">
+	<filter-def name="NameFilter" condition=":name = Name">
 		<filter-param name="name" type="System.String"/>
 	</filter-def>
 
-	<filter-def name="RacquetFilter">
-		<filter-param name="racquet" type="System.String"/>
-	</filter-def> 
+	<filter-def name="MakeFilter" condition=":make = RacquetMake">
+		<filter-param name="make" type="System.String"/>
+	</filter-def>
+
+	<filter-def name="ModelFilter" condition=":model = RacquetModel">
+		<filter-param name="model" type="System.String"/>
+	</filter-def>
 	
 </hibernate-mapping>

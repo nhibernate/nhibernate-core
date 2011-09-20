@@ -55,9 +55,8 @@ namespace NHibernate.Util
 			Render(buffer, alias, new Dictionary<string, string>(), enabledFilters);
 		}
 
-		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propAliasMap, IDictionary<string, IFilter> enabledFilters)
+		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, IDictionary<string, IFilter> enabledFilters)
 		{
-			
 			if (filterNames != null)
 			{
 				int max = filterNames.Length;
@@ -71,7 +70,7 @@ namespace NHibernate.Util
 							if (StringHelper.IsNotEmpty(condition))
 							{
 								buffer.Append(" and ");
-								AddFilterString(buffer, defaultAlias, propAliasMap, condition);
+								AddFilterString(buffer, defaultAlias, propMap, condition);
 							}
 						}
 					}
@@ -79,7 +78,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propAliasMap, string condition)
+		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, string condition)
 		{
 			int i = condition.IndexOf(FilterImpl.MARKER);
 			int upTo = 0;
@@ -92,9 +91,9 @@ namespace NHibernate.Util
 				upTo = upTo >= 0 ? upTo : condition.Length;
 				string property = condition.Substring(startOfProperty, upTo - startOfProperty);
 
-				string alias = propAliasMap.ContainsKey(property) ? propAliasMap[property] : defaultAlias;
+				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format(string.Format("{0}.{1}", defaultAlias, property));
 
-				buffer.Append(string.Format("{0}.{1}", alias, property));
+				buffer.Append(fullColumn);
 
 				i = condition.IndexOf(FilterImpl.MARKER, upTo);
 			}

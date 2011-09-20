@@ -358,7 +358,7 @@ namespace NHibernate.Persister.Entity
 			foreach (Property prop in persistentClass.PropertyClosureIterator)
 			{
 				thisClassProperties.Add(prop);
-
+				
 				int span = prop.ColumnSpan;
 				propertyColumnSpans[i] = span;
 				propertySubclassNames[i] = prop.PersistentClass.EntityName;
@@ -3202,13 +3202,63 @@ namespace NHibernate.Persister.Entity
 
 		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
 		{
+			IDictionary<PropertyKey, string> propDictionary = new Dictionary<PropertyKey, string>();
+			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
+			{
+				string property = SubclassPropertyNameClosure[i];
+				string[] cols = subclassPropertyColumnNames[property];
+
+				if (cols.Length > 0)
+				{
+					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
+					propDictionary[key] = property;
+				}
+			}
+
 			IDictionary<string, string> dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
-				dict[SubclassColumnClosure[i]] = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+				string col = SubclassColumnClosure[i];
+				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+
+				string fullColumn = string.Format("{0}.{1}", alias, col);
+
+				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
+				if (propDictionary.ContainsKey(key))
+				{
+					dict[propDictionary[key]] = fullColumn;
+				}
+
+				if (!dict.ContainsKey(col))
+				{
+					dict[col] = fullColumn;	
+				}
 			}
 
 			return dict;
+		}
+
+		private class PropertyKey
+		{
+			public string Column { get; set; }
+			public int TableNumber { get; set; }
+
+			public PropertyKey(string column, int tableNumber)
+			{
+				Column = column;
+				TableNumber = tableNumber;
+			}
+
+			public override int GetHashCode()
+			{
+				return Column.GetHashCode() ^ TableNumber.GetHashCode();
+			}
+
+			public override bool Equals(object other)
+			{
+				PropertyKey otherTuple = other as PropertyKey;
+				return otherTuple == null ? false : Column.Equals(otherTuple.Column) && TableNumber.Equals(otherTuple.TableNumber);
+			}
 		}
 
 		public virtual string GenerateFilterConditionAlias(string rootAlias)

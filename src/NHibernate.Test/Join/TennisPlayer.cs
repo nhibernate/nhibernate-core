@@ -7,8 +7,11 @@ namespace NHibernate.Test.Join
 {
 	public class TennisPlayer
 	{
-		public virtual int Id { get; set; }
+		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }
-		public virtual string Racquet { get; set; }
+		public virtual string RacquetMake { get; set; }
+		public virtual string RacquetModel { get; set; }
+
+		public virtual IList<Person> Coaches { get; set; }
 	}
 }
