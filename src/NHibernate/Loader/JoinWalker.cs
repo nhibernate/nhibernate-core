@@ -24,6 +24,7 @@ namespace NHibernate.Loader
 		private string[] suffixes;
 		private string[] collectionSuffixes;
 		private ILoadable[] persisters;
+		private bool[] entityEagerPropertyFetches;
 		private int[] owners;
 		private EntityType[] ownerAssociationTypes;
 		private ICollectionPersister[] collectionPersisters;
@@ -86,6 +87,12 @@ namespace NHibernate.Loader
 			set { persisters = value; }
 		}
 
+		public bool[] EntityEagerPropertyFetches
+		{
+			get { return entityEagerPropertyFetches; }
+			set { entityEagerPropertyFetches = value; }
+		}
+
 		public SqlString SqlString
 		{
 			get { return sql; }
@@ -145,6 +152,11 @@ namespace NHibernate.Loader
 			return SqlString.Empty;
 		}
 
+		protected virtual bool GetFetchAllProperties(string path)
+		{
+			return false;
+		}
+
 		/// <summary>
 		/// Add on association (one-to-one, many-to-one, or a collection) to a list
 		/// of associations to be fetched by outerjoin
@@ -157,7 +169,7 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters, GetFetchAllProperties(path));
 			assoc.ValidateJoin(path);
 			AddAssociation(subalias, assoc);
 
@@ -811,6 +823,7 @@ namespace NHibernate.Loader
 			collectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collections);
 
 			persisters = new ILoadable[joins];
+			entityEagerPropertyFetches = new bool[joins];
 			aliases = new String[joins];
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
@@ -824,6 +837,7 @@ namespace NHibernate.Loader
 				if (!oj.IsCollection)
 				{
 					persisters[i] = (ILoadable)oj.Joinable;
+					entityEagerPropertyFetches[i] = oj.FeatchAllProperties;
 					aliases[i] = oj.RHSAlias;
 					owners[i] = oj.GetOwner(associations);
 					ownerAssociationTypes[i] = (EntityType)oj.JoinableType;
@@ -887,7 +901,7 @@ namespace NHibernate.Loader
 
 					string selectFragment =
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
-																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
+																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin, join.FeatchAllProperties);
 
 					if (selectFragment.Trim().Length > 0)
 					{

@@ -27,38 +27,38 @@ namespace NHibernate.Loader
 			alias = rootSqlAlias;
 		}
 
-		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
+		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode, LazyPropertyFetchMode lazyPropertyFetchMode = LazyPropertyFetchMode.Default)
 		{
 			WalkEntityTree(persister, Alias);
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
 				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-											 new CollectionHelper.EmptyMapClass<string, IFilter>()));
+											 new CollectionHelper.EmptyMapClass<string, IFilter>(), lazyPropertyFetchMode >= LazyPropertyFetchMode.Select));
 
 			InitPersisters(allAssociations, lockMode);
-			InitStatementString(whereString, orderByString, lockMode);
+			InitStatementString(whereString, orderByString, lockMode, lazyPropertyFetchMode);
 		}
 
 		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
 		{
 			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), havingString, lockMode);
+			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), havingString, lockMode, LazyPropertyFetchMode.Default);
 		}
 
-		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
+		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode, LazyPropertyFetchMode lazyPropertyFetchMode)
 		{
-			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode);
+			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode, lazyPropertyFetchMode);
 		}
 
-		private void InitStatementString(SqlString projection,SqlString condition, SqlString orderBy, string groupBy, SqlString having, LockMode lockMode)
+		private void InitStatementString(SqlString projection, SqlString condition, SqlString orderBy, string groupBy, SqlString having, LockMode lockMode, LazyPropertyFetchMode lazyPropertyFetchMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 			JoinFragment ojf = MergeOuterJoins(associations);
 
 			SqlString selectClause = 
-				projection ?? new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
+				projection ?? new SqlString(persister.SelectFragment(alias, Suffixes[joins], lazyPropertyFetchMode >= LazyPropertyFetchMode.Select) + SelectString(associations));
 			
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode)

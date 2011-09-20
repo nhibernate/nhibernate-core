@@ -20,6 +20,7 @@ namespace NHibernate.Loader
 		// private in NHibernate, and setters are created for the relevant
 		// properties.
 		private ILoadable[] persisters;
+		private bool[] entityEagerPropertyFetches;
 		private ICollectionPersister[] collectionPersisters;
 		private int[] collectionOwners;
 		private string[] aliases;
@@ -83,6 +84,11 @@ namespace NHibernate.Loader
 			get { return persisters; }
 		}
 
+		protected override bool[] EntityEagerPropertyFetches
+		{
+			get { return entityEagerPropertyFetches; }
+		}
+
 		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			return lockModeArray;
@@ -101,6 +107,7 @@ namespace NHibernate.Loader
 		protected void InitFromWalker(JoinWalker walker)
 		{
 			persisters = walker.Persisters;
+			entityEagerPropertyFetches = walker.EntityEagerPropertyFetches;
 			collectionPersisters = walker.CollectionPersisters;
 			ownerAssociationTypes = walker.OwnerAssociationTypes;
 			lockModeArray = walker.LockModeArray;

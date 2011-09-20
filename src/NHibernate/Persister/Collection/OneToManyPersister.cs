@@ -306,8 +306,8 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix,
-			string collectionSuffix, bool includeCollectionColumns)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, 
+			string collectionSuffix, bool includeCollectionColumns, bool fetchAllProperties)
 		{
 			StringBuilder buf = new StringBuilder();
 
@@ -317,7 +317,7 @@ namespace NHibernate.Persister.Collection
 			}
 
 			IOuterJoinLoadable ojl = (IOuterJoinLoadable) ElementPersister;
-			return buf.Append(ojl.SelectFragment(lhsAlias, entitySuffix)) //use suffix for the entity columns
+			return buf.Append(ojl.SelectFragment(lhsAlias, entitySuffix, fetchAllProperties)) //use suffix for the entity columns
 				.ToString();
 		}
 

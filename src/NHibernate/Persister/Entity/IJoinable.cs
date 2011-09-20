@@ -34,7 +34,7 @@ namespace NHibernate.Persister.Entity
 		/// All columns to select, when loading.
 		/// </summary>
 		string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-		                      string currentCollectionSuffix, bool includeCollectionColumns);
+		                      string currentCollectionSuffix, bool includeCollectionColumns, bool fetchAllProperties);
 
 		/// <summary>
 		/// Get the where clause part of any joins (optional operation)

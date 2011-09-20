@@ -55,7 +55,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.EntityName)};
 
-				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
+				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None, translator.RootCriteria.LazyPropertyFetchMode);
 			}
 
 			userAliasList.Add(criteria.Alias); //root entity comes *last*
@@ -144,6 +144,11 @@ namespace NHibernate.Loader.Criteria
 					}
 				}
 			}
+		}
+
+		protected override bool GetFetchAllProperties(string path)
+		{
+			return translator.RootCriteria.GetFetchAllProperties(path) >= LazyPropertyFetchMode.Select;
 		}
 
 		private static bool IsDefaultFetchMode(FetchMode fetchMode)

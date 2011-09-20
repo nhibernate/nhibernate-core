@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.Criteria.FetchAllProperties"
+	default-access="property"
+	default-lazy="true">
+
+  <class name="Article" table="Article">
+    <id name="Id" type="Int64">
+      <generator class="native"/>
+    </id>
+    <property name="Title" />
+    <property name="Description" lazy="true"/>
+    <set name="Comments" inverse="true" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <one-to-many class="Comment"/>
+    </set>
+
+    <one-to-one name="ArticleExtension" class="ArticleExtension" cascade="all" lazy="false" />
+  </class>
+
+  <class name="ArticleExtension" table="ArticleExtension">
+    <id name="Id" type="Int64">
+      <generator class="foreign">
+        <param name="property">Article</param>
+      </generator>
+    </id>
+
+    <property name="Rating" />
+    <property name="Notes" lazy="true" />
+
+    <one-to-one name="Article" class="Article" constrained="true" />
+  </class>
+
+  <class name="Comment" table="Comment">
+    <id name="Id" type="Int64">
+      <generator class="native" />
+    </id>
+    <property name="Subject" />
+    <property name="Text" lazy="true"/>
+    <many-to-one name="Article" column="article_id"/>
+  </class>
+
+</hibernate-mapping>
