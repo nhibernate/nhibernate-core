@@ -107,7 +107,7 @@ sess.Flush(); //force the SQL INSERT
 sess.Refresh(cat); //re-read the state (after the trigger executes)]]></programlisting>
 
         <para>
-            An important question usually appears at this point: How much does Hibernate load
+            An important question usually appears at this point: How much does NHibernate load
             from the database and how many SQL <literal>SELECT</literal>s will it use? This
             depends on the <emphasis>fetching strategy</emphasis> and is explained in
             <xref linkend="performance-fetching"/>.
@@ -484,7 +484,7 @@ secondSession.Update(mate); // update mate]]></programlisting>
             </para>
 
             <para>
-                Hibernate users have requested a general purpose method that either saves a
+                NHibernate users have requested a general purpose method that either saves a
                 transient instance by generating a new identifier or update the persistent
                 state associated with its current identifier. The <literal>SaveOrUpdate()</literal>
                 method now implements this functionality.

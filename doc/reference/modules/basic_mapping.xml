@@ -1700,7 +1700,7 @@
                 to identify natural keys for all entities. A natural key is a property or combination of
                 properties that is unique and non-null. If it is also immutable, even better. Map the
                 properties of the natural key inside the <literal>&lt;natural-id&gt;</literal> element.
-                Hibernate will generate the necessary unique key and nullability constraints, and your
+                NHibernate will generate the necessary unique key and nullability constraints, and your
                 mapping will be more self-documenting.
             </para>
             
@@ -2089,7 +2089,7 @@
            <para>
                A third option is to map only the concrete classes of an inheritance hierarchy
                to tables, (the table-per-concrete-class strategy) where each table defines all
-               persistent state of the class, including inherited state. In Hibernate, it is
+               persistent state of the class, including inherited state. In NHibernate, it is
                not absolutely necessary to explicitly map such inheritance hierarchies. You
                can simply map each class with a separate <literal>&lt;class&gt;</literal>
                declaration. However, if you wish use polymorphic associations (e.g. an association
@@ -2205,10 +2205,10 @@
                     <callout arearefs="join3">
                         <para>
                             <literal>fetch</literal> (optional - defaults to <literal>join</literal>):
-                            If set to <literal>join</literal>, the default, Hibernate will use an inner join
+                            If set to <literal>join</literal>, the default, NHibernate will use an inner join
                             to retrieve a <literal>&lt;join&gt;</literal> defined by a class or its superclasses
                             and an outer join for a <literal>&lt;join&gt;</literal> defined by a subclass.
-                            If set to <literal>select</literal> then Hibernate will use a sequential select for
+                            If set to <literal>select</literal> then NHibernate will use a sequential select for
                             a <literal>&lt;join&gt;</literal> defined on a subclass, which will be issued only
                             if a row turns out to represent an instance of the subclass. Inner joins will still
                             be used to retrieve a <literal>&lt;join&gt;</literal> defined by the class and its
@@ -2218,14 +2218,14 @@
                     <callout arearefs="join4">
                         <para>
                             <literal>inverse</literal> (optional - defaults to <literal>false</literal>):
-                            If enabled, Hibernate will not try to insert or update the properties defined
+                            If enabled, NHibernate will not try to insert or update the properties defined
                             by this join.
                         </para>
                     </callout>
                     <callout arearefs="join5">
                         <para>
                             <literal>optional</literal> (optional - defaults to <literal>false</literal>):
-                            If enabled, Hibernate will insert a row only if the properties defined by this
+                            If enabled, NHibernate will insert a row only if the properties defined by this
                             join are non-null and will always use an outer join to retrieve the properties.
                         </para>
                     </callout>
@@ -2582,8 +2582,8 @@
             </table>	
             
             <para>
-                NHibernate supports some additional type names for compatibility with Hibernate (useful for those coming over from
-                Hibernate or using some of the tools to generate <literal>hbm.xml</literal> files).
+                NHibernate supports some additional type names for compatibility with NHibernate (useful for those coming over from
+                NHibernate or using some of the tools to generate <literal>hbm.xml</literal> files).
                 A <literal>type="integer"</literal> or <literal>type="int"</literal> will map to an <literal>Int32</literal>
                 NHibernate type, <literal>type="short"</literal> to an <literal>Int16</literal> NHibernateType.
                 To see all of the conversions you can view the source of static constructor of the class

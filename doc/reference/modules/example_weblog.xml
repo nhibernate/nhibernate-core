@@ -88,7 +88,7 @@ namespace Eg
     </sect1>
 
     <sect1 id="example-weblog-mappings">
-        <title>Hibernate Mappings</title>
+        <title>NHibernate Mappings</title>
 
         <para>
             The XML mappings should now be quite straightforward.
