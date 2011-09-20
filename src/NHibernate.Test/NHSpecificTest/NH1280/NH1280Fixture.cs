@@ -237,5 +237,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				tx.Commit();
 			}
 		}
+
+		[Test, Description("NH-2863")]
+		[Ignore]
+		public void HavingOnNotExpressionCount()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				//Find the iq that two people share
+				int iq = s.CreateCriteria(typeof(Person))
+					.SetProjection(Projections.GroupProperty("IQ"))
+					.Add(Restrictions.Not(Restrictions.Le(Projections.Count("IQ"), 1)))
+					.UniqueResult<int>();
+
+				Assert.AreEqual(20, iq);
+				tx.Commit();
+			}
+		}
 	}
 }
