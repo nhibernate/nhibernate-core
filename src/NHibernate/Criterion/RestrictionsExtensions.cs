@@ -89,17 +89,17 @@ namespace NHibernate.Criterion
 
 		public static ICriterion ProcessIsLike(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object value = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.Like(projection, value);
+			return projection.CreateCriterion(Restrictions.Like, Restrictions.Like, value);
 		}
 
 		public static ICriterion ProcessIsLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Restrictions.Like(projection, value, matchMode);
+			return projection.Create<ICriterion>(s => Restrictions.Like(s, value, matchMode), p => Restrictions.Like(p, value, matchMode));
 		}
 
 		public static ICriterion ProcessIsLikeMatchModeEscapeChar(MethodCallExpression methodCallExpression)
@@ -113,40 +113,40 @@ namespace NHibernate.Criterion
 
 		public static ICriterion ProcessIsInsensitiveLike(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object value = ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.InsensitiveLike(projection, value);
+			return projection.CreateCriterion(Restrictions.InsensitiveLike, Restrictions.InsensitiveLike, value);
 		}
 
 		public static ICriterion ProcessIsInsensitiveLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			return Restrictions.InsensitiveLike(projection, value, matchMode);
+			return projection.Create<ICriterion>(s => Restrictions.InsensitiveLike(s, value, matchMode), p => Restrictions.InsensitiveLike(p, value, matchMode));
 		}
 
 		public static ICriterion ProcessIsInArray(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			object[] values = (object[])ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.In(projection, values);
+			return projection.Create<ICriterion>(s => Restrictions.In(s, values), p => Restrictions.In(p, values));
 		}
 
 		public static ICriterion ProcessIsInCollection(MethodCallExpression methodCallExpression)
 		{
-			IProjection projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
 			ICollection values = (ICollection)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			return Restrictions.In(projection, values);
+			return projection.Create<ICriterion>(s => Restrictions.In(s, values), p => Restrictions.In(p, values));
 		}
 
 		public static ICriterion ProcessIsBetween(MethodCallExpression methodCallExpression)
 		{
 			MethodCallExpression betweenFunction = (MethodCallExpression)methodCallExpression.Object;
-			IProjection projection = ExpressionProcessor.FindMemberProjection(betweenFunction.Arguments[0]);
+			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(betweenFunction.Arguments[0]);
 			object lo = ExpressionProcessor.FindValue(betweenFunction.Arguments[1]);
 			object hi = ExpressionProcessor.FindValue(methodCallExpression.Arguments[0]);
-			return Restrictions.Between(projection, lo, hi);
+			return projection.Create<ICriterion>(s => Restrictions.Between(s, lo, hi), p => Restrictions.Between(p, lo, hi));
 		}
 	}
 }

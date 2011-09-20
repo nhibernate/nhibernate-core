@@ -392,7 +392,7 @@ namespace NHibernate.Criterion
 			List<IProjection> projectionList = new List<IProjection>();
 
 			foreach (var projection in projections)
-				projectionList.Add(ExpressionProcessor.FindMemberProjection(projection.Body));
+				projectionList.Add(ExpressionProcessor.FindMemberProjection(projection.Body).AsProjection());
 
 			criteria.SetProjection(projectionList.ToArray());
 			return this;
@@ -422,7 +422,7 @@ namespace NHibernate.Criterion
 
 		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(IProjection projection)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, projection);
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
 		}
 
 		public QueryOverOrderBuilder<TRoot,TSubType> OrderByAlias(Expression<Func<object>> path)
@@ -442,7 +442,7 @@ namespace NHibernate.Criterion
 
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(IProjection projection)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, projection);
+			return new QueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
 		}
 
 		public QueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path)
@@ -833,7 +833,7 @@ namespace NHibernate.Criterion
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(IProjection projection)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, projection); }
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderByAlias(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
@@ -845,7 +845,7 @@ namespace NHibernate.Criterion
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(IProjection projection)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, projection); }
+		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
 
 		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenByAlias(Expression<Func<object>> path)
 		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }

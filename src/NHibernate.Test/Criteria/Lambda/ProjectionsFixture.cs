@@ -39,24 +39,24 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.SetProjection(Projections.ProjectionList()
-						.Add(Projections.Alias(Projections.Avg(Projections.Property("Age")), "personAgeProjectionAlias"))
-						.Add(Projections.Avg(Projections.Property("Age")), "personAgeProjectionAlias")
-						.Add(Projections.Avg(Projections.Property("personAlias.Age")), "Age")
-						.Add(Projections.Count(Projections.Property("Age")))
-						.Add(Projections.Count(Projections.Property("personAlias.Age")))
+						.Add(Projections.Alias(Projections.Avg("Age"), "personAgeProjectionAlias"))
+						.Add(Projections.Avg("Age"), "personAgeProjectionAlias")
+						.Add(Projections.Avg("personAlias.Age"), "Age")
+						.Add(Projections.Count("Age"))
+						.Add(Projections.Count("personAlias.Age"))
 						.Add(Projections.CountDistinct("Age"))
 						.Add(Projections.CountDistinct("personAlias.Age"))
 						.Add(Projections.GroupProperty("Age"))
 						.Add(Projections.GroupProperty("personAlias.Age"))
-						.Add(Projections.Max(Projections.Property("Age")))
-						.Add(Projections.Max(Projections.Property("personAlias.Age")))
-						.Add(Projections.Min(Projections.Property("Age")))
-						.Add(Projections.Min(Projections.Property("personAlias.Age")))
+						.Add(Projections.Max("Age"))
+						.Add(Projections.Max("personAlias.Age"))
+						.Add(Projections.Min("Age"))
+						.Add(Projections.Min("personAlias.Age"))
 						.Add(Projections.Property("Age"))
 						.Add(Projections.Property("personAlias.Age"))
 						.Add(Projections.SubQuery(DetachedCriteriaAge))
-						.Add(Projections.Sum(Projections.Property("Age")))
-						.Add(Projections.Sum(Projections.Property("personAlias.Age"))));
+						.Add(Projections.Sum("Age"))
+						.Add(Projections.Sum("personAlias.Age")));
 
 			Person personAlias = null;
 			Person personAgeProjectionAlias = null;
@@ -91,24 +91,24 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.SetProjection(Projections.ProjectionList()
-						.Add(Projections.Alias(Projections.Avg(Projections.Property("Age")), "personAgeProjectionAlias"))
+						.Add(Projections.Alias(Projections.Avg("Age"), "personAgeProjectionAlias"))
 						.Add(Projections.Avg("Age"))
-						.Add(Projections.Avg(Projections.Property("personAlias.Age")), "Age")
-						.Add(Projections.Count(Projections.Property("Age")))
-						.Add(Projections.Count(Projections.Property("personAlias.Age")))
+						.Add(Projections.Avg("personAlias.Age"), "Age")
+						.Add(Projections.Count("Age"))
+						.Add(Projections.Count("personAlias.Age"))
 						.Add(Projections.CountDistinct("Age"))
 						.Add(Projections.CountDistinct("personAlias.Age"))
 						.Add(Projections.GroupProperty("Age"))
 						.Add(Projections.GroupProperty("personAlias.Age"))
-						.Add(Projections.Max(Projections.Property("Age")))
-						.Add(Projections.Max(Projections.Property("personAlias.Age")))
-						.Add(Projections.Min(Projections.Property("Age")))
-						.Add(Projections.Min(Projections.Property("personAlias.Age")))
+						.Add(Projections.Max("Age"))
+						.Add(Projections.Max("personAlias.Age"))
+						.Add(Projections.Min("Age"))
+						.Add(Projections.Min("personAlias.Age"))
 						.Add(Projections.Property("Age"))
 						.Add(Projections.Property("personAlias.Age"))
 						.Add(Projections.SubQuery(DetachedCriteriaAge))
-						.Add(Projections.Sum(Projections.Property("Age")))
-						.Add(Projections.Sum(Projections.Property("personAlias.Age"))));
+						.Add(Projections.Sum("Age"))
+						.Add(Projections.Sum("personAlias.Age")));
 
 			Person personAlias = null;
 			Person personAgeProjectionAlias = null;

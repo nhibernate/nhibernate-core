@@ -371,6 +371,16 @@ namespace NHibernate.Hql.Ast
 			return new HqlDistinctHolder(_factory, children);
 		}
 
+		public HqlExpressionSubTreeHolder ExpressionSubTreeHolder(params HqlTreeNode[] children)
+		{
+			return new HqlExpressionSubTreeHolder(_factory, children);
+		}
+
+		public HqlExpressionSubTreeHolder ExpressionSubTreeHolder(IEnumerable<HqlTreeNode> children)
+		{
+			return new HqlExpressionSubTreeHolder(_factory, children);
+		}
+
 		public HqlIsNull IsNull(HqlExpression lhs)
 		{
 			return new HqlIsNull(_factory, lhs);
