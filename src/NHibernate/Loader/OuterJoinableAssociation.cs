@@ -24,7 +24,14 @@ namespace NHibernate.Loader
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
 		                                JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
-		                                IDictionary<string, IFilter> enabledFilters, bool fetchAllProperties = false)
+		                                IDictionary<string, IFilter> enabledFilters)
+		    :this(joinableType, lhsAlias, lhsColumns, rhsAlias, joinType, withClause, factory, enabledFilters, false)
+		{
+		}
+		
+		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
+		                                JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
+		                                IDictionary<string, IFilter> enabledFilters, bool fetchAllProperties)
 		{
 			this.joinableType = joinableType;
 			this.lhsAlias = lhsAlias;

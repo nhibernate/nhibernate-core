@@ -24,7 +24,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="suffix"></param>
 		/// <param name="allProperties"></param>
 		/// <returns></returns>
-		string SelectFragment(string alias, string suffix, bool allProperties = false);
+		string SelectFragment(string alias, string suffix, bool allProperties);
 
 		/// <summary>
 		/// How many properties are there, for this class and all subclasses? (optional operation)

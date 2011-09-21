@@ -27,7 +27,12 @@ namespace NHibernate.Loader
 			alias = rootSqlAlias;
 		}
 
-		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode, LazyPropertyFetchMode lazyPropertyFetchMode = LazyPropertyFetchMode.Default)
+		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
+		{
+			InitAll(whereString, orderByString, lockMode, LazyPropertyFetchMode.Default);
+		}
+
+		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode, LazyPropertyFetchMode lazyPropertyFetchMode)
 		{
 			WalkEntityTree(persister, Alias);
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
