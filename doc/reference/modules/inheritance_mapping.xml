@@ -43,7 +43,7 @@
             It is possible to use different mapping strategies for different
             branches of the same inheritance hierarchy, and then make use of implicit
             polymorphism to achieve polymorphism across the whole hierarchy. However, 
-            Hibernate does not support mixing <literal>&lt;subclass&gt;</literal>,
+            NHibernate does not support mixing <literal>&lt;subclass&gt;</literal>,
             and <literal>&lt;joined-subclass&gt;</literal> and 
             <literal>&lt;union-subclass&gt;</literal> mappings under the same root
             <literal>&lt;class&gt;</literal> element. It is possible to mix together
@@ -264,7 +264,7 @@
         <para>
             The limitation of this approach is that if a property is mapped on the 
             superclass, the column name must be the same on all subclass tables.
-            (We might relax this in a future release of Hibernate.) The identity
+            (We might relax this in a future release of NHibernate.) The identity
             generator strategy is not allowed in union subclass inheritance, indeed
             the primary key seed has to be shared accross all unioned subclasses
             of a hierarchy.

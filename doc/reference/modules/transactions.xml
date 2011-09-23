@@ -261,7 +261,7 @@ session.Close();]]></programlisting>
                 not a problem, but <emphasis>on update</emphasis> triggers in the database might be
                 executed even when no changes have been made to detached instances. You can customize
                 this behavior by setting  <literal>select-before-update="true"</literal> in the
-                <literal>&lt;class&gt;</literal> mapping, forcing Hibernate to <literal>SELECT</literal>
+                <literal>&lt;class&gt;</literal> mapping, forcing NHibernate to <literal>SELECT</literal>
                 the instance to ensure that changes did actually occur, before updating the row.
             </para>
 

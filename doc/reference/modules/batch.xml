@@ -2,7 +2,7 @@
     <title>Batch processing</title>
     
     <para>
-        A naive approach to inserting 100 000 rows in the database using Hibernate might 
+        A naive approach to inserting 100 000 rows in the database using NHibernate might 
         look like this:
     </para>
 
@@ -77,7 +77,7 @@ session.Close();]]></programlisting>
     <sect1 id="batch-statelesssession">
         <title>The StatelessSession interface</title>
         <para>
-            Alternatively, Hibernate provides a command-oriented API that may be used for 
+            Alternatively, NHibernate provides a command-oriented API that may be used for 
             streaming data to and from the database in the form of detached objects. A 
             <literal>IStatelessSession</literal> has no persistence context associated
             with it and does not provide many of the higher-level life cycle semantics.
@@ -86,7 +86,7 @@ session.Close();]]></programlisting>
             transactional write-behind or automatic dirty checking. Operations performed
             using a stateless session do not ever cascade to associated instances. Collections 
             are ignored by a stateless session. Operations performed via a stateless session 
-            bypass Hibernate's event model and interceptors. Stateless sessions are vulnerable 
+            bypass NHibernate's event model and interceptors. Stateless sessions are vulnerable 
             to data aliasing effects, due to the lack of a first-level cache. A stateless
             session is a lower-level abstraction, much closer to the underlying ADO.
         </para>
@@ -131,7 +131,7 @@ session.Close();]]></programlisting>
             with the management of object state. This implies that the object state is available
             in memory, hence manipulating (using the SQL <literal>Data Manipulation Language</literal>
             (DML) statements: <literal>INSERT</literal>, <literal>UPDATE</literal>, <literal>DELETE</literal>)
-            data directly in the database will not affect in-memory state. However, Hibernate provides methods
+            data directly in the database will not affect in-memory state. However, NHibernate provides methods
             for bulk SQL-style DML statement execution which are performed through the
             Hibernate Query Language (<link linkend="queryhql">HQL</link>).
         </para>
