@@ -275,7 +275,7 @@ namespace NHibernate.Tuple.Entity
 
 			for (int j = 0; j < entityMetamodel.PropertySpan; j++)
 			{
-				if (setAll || values[j] != LazyPropertyInitializer.UnfetchedProperty)
+				if (setAll || !Equals(LazyPropertyInitializer.UnfetchedProperty, values[j]))
 				{
 					setters[j].Set(entity, values[j]);
 				}

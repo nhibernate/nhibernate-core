@@ -177,7 +177,7 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsTransient(string entityName, object entity, bool? assumed, ISessionImplementor session)
 		{
-			if (entity == Intercept.LazyPropertyInitializer.UnfetchedProperty)
+			if (Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, entity))
 			{
 				// an unfetched association can only point to
 				// an entity that already exists in the db

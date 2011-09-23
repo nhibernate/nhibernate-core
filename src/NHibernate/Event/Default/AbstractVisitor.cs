@@ -129,7 +129,7 @@ namespace NHibernate.Event.Default
 
 		internal bool IncludeProperty(object[] values, int i)
 		{
-			return values[i] != Intercept.LazyPropertyInitializer.UnfetchedProperty;
+			return !Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, values[i]);
 		}
 	}
 }
