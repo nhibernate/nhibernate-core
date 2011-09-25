@@ -210,7 +210,7 @@ public class Base {
 
 
 	<section id="mapping-attributes-todo">
-		<title>Know issues and TODOs</title>
+		<title>Known issues and TODOs</title>
 		<para>First, read TODOs in the source code ;)</para>
 
 		<para>A <methodname>Position</methodname> property has been added to all attributes to order them. But there is still a problem:</para>
