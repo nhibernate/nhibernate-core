@@ -123,7 +123,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
-			//BLOB Functions
+            RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, ?3)"));
+            RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+            //BLOB Functions
 			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
 			//Trigonometric Functions
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
