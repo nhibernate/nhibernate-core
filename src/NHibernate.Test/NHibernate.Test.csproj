@@ -898,6 +898,7 @@
     <Compile Include="NHSpecificTest\NH2869\IsTrueInDbFalseInLocalGenerator.cs" />
     <Compile Include="NHSpecificTest\NH2869\MyLinqExtensions.cs" />
     <Compile Include="NHSpecificTest\NH2869\MyLinqToHqlGeneratorsRegistry.cs" />
+    <Compile Include="NHSpecificTest\NH2893\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
