@@ -74,6 +74,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void IndexOfFunctionProjection()
 		{
+			if (!TestDialect.SupportsLocate)
+				Assert.Ignore("Locate function not supported.");
+				
 			var query = from e in db.Employees
 						where e.FirstName.Contains("a")
 						select e.FirstName.IndexOf('A', 3);
