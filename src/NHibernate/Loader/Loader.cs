@@ -11,6 +11,7 @@ using Iesi.Collections.Generic;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
@@ -1148,8 +1149,9 @@ namespace NHibernate.Loader
 
 				sqlCommand.Bind(command, session);
 
-				session.Batcher.RemoveUnusedCommandParameters(command, sqlString);
-				session.Batcher.ExpandQueryParameters(command, sqlString);
+				IDriver driver = factory.ConnectionProvider.Driver;
+				driver.RemoveUnusedCommandParameters(command, sqlString);
+				driver.ExpandQueryParameters(command, sqlString);
 			}
 			catch (HibernateException)
 			{
