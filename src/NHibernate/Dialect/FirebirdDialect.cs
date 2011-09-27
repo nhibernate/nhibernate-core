@@ -123,7 +123,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
-            RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, ?3)"));
+            RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, cast(?3 as int))")); // The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  We have a unit test to cover this potential firebird bug.
             RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
             //BLOB Functions
 			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
