@@ -1172,6 +1172,8 @@ namespace NHibernate.Impl
 					return new ManagedWebSessionContext(this);
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
+                case "wcf_instance":
+                    return new WcfInstanceSessionContext(this);
 			}
 
 			try
