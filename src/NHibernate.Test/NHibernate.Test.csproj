@@ -640,6 +640,8 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NHXXXX\Entity.cs" />
+    <Compile Include="NHSpecificTest\NHXXXX\Fixture.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\Fixture.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\Model.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\TheUserType.cs" />
@@ -2747,6 +2749,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NHXXXX\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
@@ -3182,6 +3185,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="SampleTests\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
