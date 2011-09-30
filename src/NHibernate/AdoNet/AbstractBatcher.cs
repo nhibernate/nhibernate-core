@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Threading;
 using Iesi.Collections.Generic;
 
 using NHibernate.Driver;
@@ -12,38 +15,31 @@ using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Threading;
-
 	/// <summary>
 	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
 	/// </summary>
 	public abstract class AbstractBatcher : IBatcher
 	{
-		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractBatcher));
+		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(AbstractBatcher));
 
-		private static int openCommandCount;
-		private static int openReaderCount;
+		private static int _openCommandCount;
+		private static int _openReaderCount;
 
-		private readonly ConnectionManager connectionManager;
-		private readonly ISessionFactoryImplementor factory;
+		private readonly ConnectionManager _connectionManager;
+		private readonly ISessionFactoryImplementor _factory;
+		private readonly IInterceptor _interceptor;
 
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
 		// were being sent - however this could be just INSERT/DELETE/SELECT SQL statement not
 		// just update.  However I haven't seen this being used with read statements...
-		private IDbCommand batchCommand;
-		private SqlString batchCommandSql;
-		private SqlType[] batchCommandParameterTypes;
-
-		private readonly ISet<IDbCommand> commandsToClose = new HashedSet<IDbCommand>();
-		private readonly ISet<IDataReader> readersToClose = new HashedSet<IDataReader>();
-		private readonly IDictionary<IDataReader, Stopwatch> readersDuration = new Dictionary<IDataReader, Stopwatch>();
-		private IDbCommand lastQuery;
-
-		private bool releasing;
-
-		private readonly IInterceptor interceptor;
+		private IDbCommand _batchCommand;
+		private SqlString _batchCommandSql;
+		private SqlType[] _batchCommandParameterTypes;
+		private readonly ISet<IDbCommand> _commandsToClose = new HashedSet<IDbCommand>();
+		private readonly ISet<IDataReader> _readersToClose = new HashedSet<IDataReader>();
+		private readonly IDictionary<IDataReader, Stopwatch> _readersDuration = new Dictionary<IDataReader, Stopwatch>();
+		private IDbCommand _lastQuery;
+		private bool _releasing;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AbstractBatcher"/> class.
@@ -52,14 +48,14 @@ namespace NHibernate.AdoNet
 		/// <param name="interceptor"></param>
 		protected AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{
-			this.connectionManager = connectionManager;
-			this.interceptor = interceptor;
-			factory = connectionManager.Factory;
+			_connectionManager = connectionManager;
+			_interceptor = interceptor;
+			_factory = connectionManager.Factory;
 		}
 
 		protected IDriver Driver
 		{
-			get { return factory.ConnectionProvider.Driver; }
+			get { return _factory.ConnectionProvider.Driver; }
 		}
 
 		/// <summary>
@@ -68,20 +64,20 @@ namespace NHibernate.AdoNet
 		/// <value>The current <see cref="IDbCommand"/>.</value>
 		protected IDbCommand CurrentCommand
 		{
-			get { return batchCommand; }
+			get { return _batchCommand; }
 		}
 
 		public IDbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			SqlString sql = GetSQL(sqlString);
 
-			IDbCommand cmd = factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
+			IDbCommand cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
 			LogOpenPreparedCommand();
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("Building an IDbCommand object for the SqlString: " + sql);
+				Log.Debug("Building an IDbCommand object for the SqlString: " + sql);
 			}
-			commandsToClose.Add(cmd);
+			_commandsToClose.Add(cmd);
 			return cmd;
 		}
 
@@ -97,7 +93,7 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				IDbConnection sessionConnection = connectionManager.GetConnection();
+				IDbConnection sessionConnection = _connectionManager.GetConnection();
 
 				if (cmd.Connection != null)
 				{
@@ -113,7 +109,7 @@ namespace NHibernate.AdoNet
 					cmd.Connection = sessionConnection;
 				}
 
-				connectionManager.Transaction.Enlist(cmd);
+				_connectionManager.Transaction.Enlist(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
@@ -130,24 +126,24 @@ namespace NHibernate.AdoNet
 			 * The problem is that batchCommandSql as a value, batchCommand is not null
 			 * BUT batchCommand.CommandText is null (I don't know who clear it)
 			 */
-			bool forceCommandRecreate = batchCommand == null || string.IsNullOrEmpty(batchCommand.CommandText);
+			bool forceCommandRecreate = _batchCommand == null || string.IsNullOrEmpty(_batchCommand.CommandText);
 			/****************************************/
-			if (sql.Equals(batchCommandSql) &&
-				ArrayHelper.ArrayEquals(parameterTypes, batchCommandParameterTypes) && !forceCommandRecreate)
+			if (sql.Equals(_batchCommandSql) &&
+				ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes) && !forceCommandRecreate)
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("reusing command " + batchCommand.CommandText);
+					Log.Debug("reusing command " + _batchCommand.CommandText);
 				}
 			}
 			else
 			{
-				batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
-				batchCommandSql = sql;
-				batchCommandParameterTypes = parameterTypes;
+				_batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
+				_batchCommandSql = sql;
+				_batchCommandParameterTypes = parameterTypes;
 			}
 
-			return batchCommand;
+			return _batchCommand;
 		}
 
 		public IDbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
@@ -175,13 +171,13 @@ namespace NHibernate.AdoNet
 			// another open one Command is doing something then an exception will be 
 			// thrown.
 			IDbCommand command = Generate(type, sql, parameterTypes);
-			lastQuery = command;
+			_lastQuery = command;
 			return command;
 		}
 
 		public void AbortBatch(Exception e)
 		{
-			IDbCommand cmd = batchCommand;
+			IDbCommand cmd = _batchCommand;
 			InvalidateBatchCommand();
 			// close the statement closeStatement(cmd)
 			if (cmd != null)
@@ -192,80 +188,70 @@ namespace NHibernate.AdoNet
 
 		private void InvalidateBatchCommand()
 		{
-			batchCommand = null;
-			batchCommandSql = null;
-			batchCommandParameterTypes = null;
+			_batchCommand = null;
+			_batchCommandSql = null;
+			_batchCommandParameterTypes = null;
 		}
 
 		public int ExecuteNonQuery(IDbCommand cmd)
 		{
 			CheckReaders();
-            LogCommand(cmd);
-            Prepare(cmd);
+			LogCommand(cmd);
+			Prepare(cmd);
 			Stopwatch duration = null;
-			if(log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			try
-		    {
-		        return cmd.ExecuteNonQuery();
-		    }
-		    catch (Exception e)
-		    {
-		        e.Data["actual-sql-query"] = cmd.CommandText;
-		    	log.Error("Could not execute command: " + cmd.CommandText, e);
-		        throw;
-		    }
+			{
+				return cmd.ExecuteNonQuery();
+			}
+			catch (Exception e)
+			{
+				e.Data["actual-sql-query"] = cmd.CommandText;
+				Log.Error("Could not execute command: " + cmd.CommandText, e);
+				throw;
+			}
 			finally
-		    {
-				if (log.IsDebugEnabled && duration != null)
-					log.DebugFormat("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
-		    }
-		}
-
-		public void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString)
-		{
-			Driver.RemoveUnusedCommandParameters(cmd, sqlString);
-		}
-
-		public void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
-		{
-			Driver.ExpandQueryParameters(cmd, sqlString);
+			{
+				if (Log.IsDebugEnabled && duration != null)
+					Log.DebugFormat("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
+			}
 		}
 
 		public IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
-            LogCommand(cmd);
-            Prepare(cmd);
+			LogCommand(cmd);
+			Prepare(cmd);
 			Stopwatch duration = null;
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			IDataReader reader = null;
-		    try
-		    {
-		        reader = cmd.ExecuteReader();
-		    }
-		    catch (Exception e)
-		    {
-		        e.Data["actual-sql-query"] = cmd.CommandText;
-		    	log.Error("Could not execute query: " + cmd.CommandText, e);
-		        throw;
-		    }
+			try
+			{
+				reader = cmd.ExecuteReader();
+			}
+			catch (Exception e)
+			{
+				e.Data["actual-sql-query"] = cmd.CommandText;
+				Log.Error("Could not execute query: " + cmd.CommandText, e);
+				throw;
+			}
 			finally
-		    {
-		    	if(log.IsDebugEnabled && duration != null && reader != null)
-		    	{
-		    		log.DebugFormat("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
-					readersDuration[reader] = duration;
-		    	}
-		    }
+			{
+				if (Log.IsDebugEnabled && duration != null && reader != null)
+				{
+					Log.DebugFormat("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
+					_readersDuration[reader] = duration;
+				}
+			}
 
-		    if (!factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
+			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
 				reader = new NHybridDataReader(reader);
 			}
 
-			readersToClose.Add(reader);
+			_readersToClose.Add(reader);
 			LogOpenReader();
 			return reader;
 		}
@@ -277,12 +263,12 @@ namespace NHibernate.AdoNet
 		{
 			// early exit because we don't need to move an open IDataReader into memory
 			// since the Driver supports mult open readers.
-			if (factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
+			if (_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
 				return;
 			}
 
-			foreach (NHybridDataReader reader in readersToClose)
+			foreach (NHybridDataReader reader in _readersToClose)
 			{
 				reader.ReadIntoMemory();
 			}
@@ -290,10 +276,10 @@ namespace NHibernate.AdoNet
 
 		public void CloseCommands()
 		{
-			releasing = true;
+			_releasing = true;
 			try
 			{
-				foreach (IDataReader reader in new HashedSet<IDataReader>(readersToClose))
+				foreach (IDataReader reader in new HashedSet<IDataReader>(_readersToClose))
 				{
 					try
 					{
@@ -301,11 +287,11 @@ namespace NHibernate.AdoNet
 					}
 					catch (Exception e)
 					{
-						log.Warn("Could not close IDataReader", e);
+						Log.Warn("Could not close IDataReader", e);
 					}
 				}
 
-				foreach (IDbCommand cmd in commandsToClose)
+				foreach (IDbCommand cmd in _commandsToClose)
 				{
 					try
 					{
@@ -314,14 +300,14 @@ namespace NHibernate.AdoNet
 					catch (Exception e)
 					{
 						// no big deal
-						log.Warn("Could not close ADO.NET Command", e);
+						Log.Warn("Could not close ADO.NET Command", e);
 					}
 				}
-				commandsToClose.Clear();
+				_commandsToClose.Clear();
 			}
 			finally
 			{
-				releasing = false;
+				_releasing = false;
 			}
 		}
 
@@ -335,26 +321,26 @@ namespace NHibernate.AdoNet
 			}
 			catch (Exception e)
 			{
-				log.Warn("exception clearing maxRows/queryTimeout", e);
+				Log.Warn("exception clearing maxRows/queryTimeout", e);
 				return; // NOTE: early exit!
 			}
 			finally
 			{
-				if (!releasing)
+				if (!_releasing)
 				{
-					connectionManager.AfterStatement();
+					_connectionManager.AfterStatement();
 				}
 			}
 
-			if (lastQuery == cmd)
+			if (_lastQuery == cmd)
 			{
-				lastQuery = null;
+				_lastQuery = null;
 			}
 		}
 
 		public void CloseCommand(IDbCommand st, IDataReader reader)
 		{
-			commandsToClose.Remove(st);
+			_commandsToClose.Remove(st);
 			try
 			{
 				CloseReader(reader);
@@ -375,12 +361,12 @@ namespace NHibernate.AdoNet
 			 */
 			// TODO NH: Study a way to use directly IDbCommand.ExecuteReader() outsite the batcher
 			// An example of it's use is the management of generated ID.
-			if (reader == null) 
+			if (reader == null)
 				return;
 
 			ResultSetWrapper rsw = reader as ResultSetWrapper;
 			var actualReader = rsw == null ? reader : rsw.Target;
-			readersToClose.Remove(actualReader);
+			_readersToClose.Remove(actualReader);
 
 			try
 			{
@@ -389,32 +375,31 @@ namespace NHibernate.AdoNet
 			catch (Exception e)
 			{
 				// NH2205 - prevent exceptions when closing the reader from hiding any original exception
-				log.Warn("exception closing reader", e);
+				Log.Warn("exception closing reader", e);
 			}
 
 			LogCloseReader();
-			
-			if (!log.IsDebugEnabled) 
+
+			if (!Log.IsDebugEnabled)
 				return;
 
 			var nhReader = actualReader as NHybridDataReader;
 			actualReader = nhReader == null ? actualReader : nhReader.Target;
 
 			Stopwatch duration;
-			if (readersDuration.TryGetValue(actualReader, out duration)==false)
+			if (_readersDuration.TryGetValue(actualReader, out duration) == false)
 				return;
-			readersDuration.Remove(actualReader);
-			log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
+			_readersDuration.Remove(actualReader);
+			Log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
 		}
 
-		/// <summary></summary>
 		public void ExecuteBatch()
 		{
 			// if there is currently a command that a batch is
 			// being built for then execute it
-			if (batchCommand != null)
+			if (_batchCommand != null)
 			{
-				IDbCommand ps = batchCommand;
+				IDbCommand ps = _batchCommand;
 				InvalidateBatchCommand();
 				try
 				{
@@ -430,20 +415,16 @@ namespace NHibernate.AdoNet
 		protected void ExecuteBatchWithTiming(IDbCommand ps)
 		{
 			Stopwatch duration = null;
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			DoExecuteBatch(ps);
-			if (log.IsDebugEnabled && duration != null)
-				log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
+			if (Log.IsDebugEnabled && duration != null)
+				Log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="ps"></param>
 		protected abstract void DoExecuteBatch(IDbCommand ps);
 
 		protected abstract int CountOfStatementsInCurrentBatch { get; }
@@ -479,7 +460,7 @@ namespace NHibernate.AdoNet
 		/// </value>
 		protected ISessionFactoryImplementor Factory
 		{
-			get { return factory; }
+			get { return _factory; }
 		}
 
 		/// <summary>
@@ -487,57 +468,57 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		protected ConnectionManager ConnectionManager
 		{
-			get { return connectionManager; }
+			get { return _connectionManager; }
 		}
 
 		protected void LogCommand(IDbCommand command)
 		{
-			factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
+			_factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
 		}
 
 		private void LogOpenPreparedCommand()
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				int currentOpenCommandCount = Interlocked.Increment(ref openCommandCount);
-				log.Debug("Opened new IDbCommand, open IDbCommands: " + currentOpenCommandCount);
+				int currentOpenCommandCount = Interlocked.Increment(ref _openCommandCount);
+				Log.Debug("Opened new IDbCommand, open IDbCommands: " + currentOpenCommandCount);
 			}
 
-			if (factory.Statistics.IsStatisticsEnabled)
+			if (_factory.Statistics.IsStatisticsEnabled)
 			{
-				factory.StatisticsImplementor.PrepareStatement();
+				_factory.StatisticsImplementor.PrepareStatement();
 			}
 		}
 
 		private void LogClosePreparedCommand()
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				int currentOpenCommandCount = Interlocked.Decrement(ref openCommandCount);
-				log.Debug("Closed IDbCommand, open IDbCommands: " + currentOpenCommandCount);
+				int currentOpenCommandCount = Interlocked.Decrement(ref _openCommandCount);
+				Log.Debug("Closed IDbCommand, open IDbCommands: " + currentOpenCommandCount);
 			}
 
-			if (factory.Statistics.IsStatisticsEnabled)
+			if (_factory.Statistics.IsStatisticsEnabled)
 			{
-				factory.StatisticsImplementor.CloseStatement();
+				_factory.StatisticsImplementor.CloseStatement();
 			}
 		}
 
 		private static void LogOpenReader()
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				int currentOpenReaderCount = Interlocked.Increment(ref openReaderCount);
-				log.Debug("Opened IDataReader, open IDataReaders: " + currentOpenReaderCount);
+				int currentOpenReaderCount = Interlocked.Increment(ref _openReaderCount);
+				Log.Debug("Opened IDataReader, open IDataReaders: " + currentOpenReaderCount);
 			}
 		}
 
 		private static void LogCloseReader()
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				int currentOpenReaderCount = Interlocked.Decrement(ref openReaderCount);
-				log.Debug("Closed IDataReader, open IDataReaders :" + currentOpenReaderCount);
+				int currentOpenReaderCount = Interlocked.Decrement(ref _openReaderCount);
+				Log.Debug("Closed IDataReader, open IDataReaders :" + currentOpenReaderCount);
 			}
 		}
 
@@ -545,9 +526,9 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				if (lastQuery != null)
+				if (_lastQuery != null)
 				{
-					lastQuery.Cancel();
+					_lastQuery.Cancel();
 				}
 			}
 			catch (HibernateException)
@@ -563,7 +544,7 @@ namespace NHibernate.AdoNet
 
 		public bool HasOpenResources
 		{
-			get { return commandsToClose.Count > 0 || readersToClose.Count > 0; }
+			get { return _commandsToClose.Count > 0 || _readersToClose.Count > 0; }
 		}
 
 		protected Exception Convert(Exception sqlException, string message)
@@ -595,7 +576,7 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug("running BatcherImpl.Dispose(true)");
+			Log.Debug("running BatcherImpl.Dispose(true)");
 			Dispose(true);
 		}
 
@@ -634,7 +615,7 @@ namespace NHibernate.AdoNet
 
 		protected SqlString GetSQL(SqlString sql)
 		{
-			sql = interceptor.OnPrepareStatement(sql);
+			sql = _interceptor.OnPrepareStatement(sql);
 			if (sql == null || sql.Length == 0)
 			{
 				throw new AssertionFailure("Interceptor.OnPrepareStatement(SqlString) returned null or empty SqlString.");

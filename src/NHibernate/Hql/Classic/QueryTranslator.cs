@@ -593,7 +593,7 @@ namespace NHibernate.Hql.Classic
 
 		internal IQueryable GetPersisterUsingImports(string className)
 		{
-			return helper.FindQueryableUsingImports(className);
+			return Helper.FindQueryableUsingImports(className);
 		}
 
 		internal IQueryable GetPersister(string clazz)
@@ -1441,7 +1441,7 @@ namespace NHibernate.Hql.Classic
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
 						PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = helper.GetImportedClass(token);
+						System.Type clazz = Helper.GetImportedClass(token);
 						if (clazz != null)
 						{
 							string[] implementors = factory.GetImplementors(clazz.FullName);

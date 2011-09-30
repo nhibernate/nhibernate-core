@@ -38,7 +38,6 @@ namespace NHibernate.Test.Linq
 				.First();
 
 			Assert.That(result.Length, Is.EqualTo(3));
-			Assert.That(result[0], Is.EqualTo(1));
 			Assert.That(result[1], Is.EqualTo("ayende"));
 			Assert.That(result[2], Is.EqualTo(4));
 		}
@@ -86,7 +85,6 @@ namespace NHibernate.Test.Linq
 				.First();
 
 			Assert.That(result.Length, Is.EqualTo(4));
-			Assert.That(result[0], Is.EqualTo(1));
 			Assert.That(result[1], Is.EqualTo(pi));
 			Assert.That(result[2], Is.EqualTo(name));
 			Assert.That(result[3], Is.EqualTo(DateTime.MinValue));
@@ -100,7 +98,6 @@ namespace NHibernate.Test.Linq
 				.First();
 
 			Assert.That(result.Length, Is.EqualTo(3));
-			Assert.That(result[0], Is.EqualTo(1));
 			Assert.That(result[1], Is.EqualTo("Admin"));
 			Assert.That(result[2], Is.EqualTo("output"));
 		} 
