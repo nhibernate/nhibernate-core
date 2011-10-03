@@ -18,6 +18,7 @@ namespace NHibernate.Dialect
 		protected override void RegisterCharacterTypeMappings()
 		{
 			base.RegisterCharacterTypeMappings();
+            RegisterColumnType(DbType.Binary, "VARBINARY(MAX)");
 			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
 			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
 			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
