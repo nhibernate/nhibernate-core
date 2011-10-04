@@ -43,55 +43,78 @@ namespace NHibernate.Test.NHSpecificTest.Futures
             }
         }
 
-				[Test]
-				public void CanUseSkipAndFetchManyWithToFuture()
-				{
-					using (var s = sessions.OpenSession())
-					using (var tx = s.BeginTransaction())
-					{
-						var p1 = new Person {Name = "Parent"};
-						var p2 = new Person {Parent = p1, Name = "Child"};
-						p1.Children.Add(p2);
-						s.Save(p1);
-						s.Save(p2);
-						tx.Commit();
+        [Test]
+        [Ignore("Currently broken, see NH-2897")]
+        public void CanUseToFutureWithContains()
+        {
+            using (var s = sessions.OpenSession())
+            {
+                var ids = new[] { 1, 2, 3 };
+                var persons10 = s.Query<Person>()
+                    .Where(p => ids.Contains(p.Id))
+                    .FetchMany(p => p.Children)
+                    .Skip(5)
+                    .Take(10)
+                    .ToFuture().ToList();
+                
+                Assert.IsNotNull(persons10);
+                Assert.Pass();
+            }
+        }
 
-						s.Clear(); // we don't want caching
-					}
+        [Test]
+        public void CanUseSkipAndFetchManyWithToFuture()
+        {
+            using (var s = sessions.OpenSession())
+            using (var tx = s.BeginTransaction())
+            {
+                var p1 = new Person { Name = "Parent" };
+                var p2 = new Person { Parent = p1, Name = "Child" };
+                p1.Children.Add(p2);
+                s.Save(p1);
+                s.Save(p2);
+                tx.Commit();
 
-					using (var s = sessions.OpenSession())
-					{
-						IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+                s.Clear(); // we don't want caching
+            }
 
-						var persons10 = s.Query<Person>()
-							.FetchMany(p => p.Children)
-							.Skip(5)
-							.Take(10)
-							.ToFuture();
+            using (var s = sessions.OpenSession())
+            {
+                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-						var persons5 = s.Query<Person>()
-							.ToFuture();
+                var persons10 = s.Query<Person>()
+                    .FetchMany(p => p.Children)
+                    .Skip(5)
+                    .Take(10)
+                    .ToFuture();
 
-						using (var logSpy = new SqlLogSpy())
-						{
-							foreach (var person in persons5) {}
+                var persons5 = s.Query<Person>()
+                    .ToFuture();
 
-							foreach (var person in persons10) {}
+                using (var logSpy = new SqlLogSpy())
+                {
+                    foreach (var person in persons5)
+                    {
+                    }
 
-							var events = logSpy.Appender.GetEvents();
-							Assert.AreEqual(1, events.Length);
-						}
-					}
+                    foreach (var person in persons10)
+                    {
+                    }
 
-					using (ISession s = OpenSession())
-					using (ITransaction tx = s.BeginTransaction())
-					{
-						s.Delete("from Person");
-						tx.Commit();
-					}
-				}
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(1, events.Length);
+                }
+            }
 
-    	[Test]
+            using (ISession s = OpenSession())
+            using (ITransaction tx = s.BeginTransaction())
+            {
+                s.Delete("from Person");
+                tx.Commit();
+            }
+        }
+
+        [Test]
         public void CanUseFutureQuery()
         {
             using (var s = sessions.OpenSession())
