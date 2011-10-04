@@ -510,28 +510,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			_selectClause = (SelectClause) select;
 			_selectClause.InitializeExplicitSelectClause(_currentFromClause);
-
-            // Fix for NH-2707
-            var emptyNodes = new List<IASTNode>();
-            foreach (var child in _selectClause)
-            {
-                var node = child as DotNode;
-
-                if (node != null)
-                {
-                    if (node.Text == ".")
-                    {
-                        emptyNodes.Add(node);
-                        emptyNodes.Add(node.NextSibling); // the alias
-                    }
-                }
-            }
-
-            // remove empty nodes
-            foreach (var node in emptyNodes)
-            {
-                _selectClause.RemoveChild(node);
-            }
 		}
 
 		private void CreateSelectClauseFromFromClause(IASTNode qn)
