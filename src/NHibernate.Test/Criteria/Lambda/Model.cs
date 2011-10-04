@@ -33,6 +33,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual bool					IsParent	{ get; set; }
 		public virtual char					Blood		{ get; set; }
 		public virtual DateTime				BirthDate	{ get; set; }
+		public virtual PersonDetail			Detail		{ get; set; }
 
 		public virtual int?					NullableAge			{ get; set; }
 		public virtual PersonGender?		NullableGender		{ get; set; }
@@ -48,6 +49,12 @@ namespace NHibernate.Test.Criteria.Lambda
 			return this;
 		}
 
+	}
+
+	public class PersonDetail
+	{
+		public string	MaidenName	{ get; set; }
+		public DateTime Anniversary { get; set; }
 	}
 
 	public class CustomPerson : Person

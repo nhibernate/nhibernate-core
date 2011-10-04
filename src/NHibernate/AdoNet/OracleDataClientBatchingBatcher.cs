@@ -15,55 +15,54 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
-		private int batchSize;
-		private int countOfCommands = 0;
-		private int totalExpectedRowsAffected;
-		private IDbCommand currentBatch;
-		private IDictionary<string, List<object>> parameterValueListHashTable;
-		private IDictionary<string, bool> parameterIsAllNullsHashTable;
-        private StringBuilder currentBatchCommandsLog;
-
+		private int _batchSize;
+		private int _countOfCommands = 0;
+		private int _totalExpectedRowsAffected;
+		private IDbCommand _currentBatch;
+		private IDictionary<string, List<object>> _parameterValueListHashTable;
+		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
+		private StringBuilder _currentBatchCommandsLog;
 
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			: base(connectionManager, interceptor)
 		{
-			batchSize = Factory.Settings.AdoBatchSize;
-            //we always create this, because we need to deal with a scenario in which
-            //the user change the logging configuration at runtime. Trying to put this
-            //behind an if(log.IsDebugEnabled) will cause a null reference exception 
-            //at that point.
-            currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-        }
+			_batchSize = Factory.Settings.AdoBatchSize;
+			//we always create this, because we need to deal with a scenario in which
+			//the user change the logging configuration at runtime. Trying to put this
+			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
+			//at that point.
+			_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+		}
 
 		public override void AddToBatch(IExpectation expectation)
 		{
 			bool firstOnBatch = true;
-			totalExpectedRowsAffected += expectation.ExpectedRowCount;
-            string lineWithParameters = null;
-            var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-            if (sqlStatementLogger.IsDebugEnabled || log.IsDebugEnabled)
-            {
-                lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
-                var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-                lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-                currentBatchCommandsLog.Append("command ")
-                    .Append(countOfCommands)
-                    .Append(":")
-                    .AppendLine(lineWithParameters);
-            }
-            if (log.IsDebugEnabled)
-            {
-                log.Debug("Adding to batch:" + lineWithParameters);
-            }
+			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+			string lineWithParameters = null;
+			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			{
+				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
+				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+				_currentBatchCommandsLog.Append("command ")
+					.Append(_countOfCommands)
+					.Append(":")
+					.AppendLine(lineWithParameters);
+			}
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("Adding to batch:" + lineWithParameters);
+			}
 
-			if (currentBatch == null)
+			if (_currentBatch == null)
 			{
 				// use first command as the batching command
-				currentBatch = CurrentCommand;
-				parameterValueListHashTable = new Dictionary<string, List<object>>();
+				_currentBatch = CurrentCommand;
+				_parameterValueListHashTable = new Dictionary<string, List<object>>();
 				//oracle does not allow array containing all null values
 				// so this Dictionary is keeping track if all values are null or not
-				parameterIsAllNullsHashTable = new Dictionary<string, bool>();
+				_parameterIsAllNullsHashTable = new Dictionary<string, bool>();
 			}
 			else
 			{
@@ -72,53 +71,53 @@ namespace NHibernate.AdoNet
 
 			List<object> parameterValueList;
 			foreach (IDataParameter currentParameter in CurrentCommand.Parameters)
-			{                
+			{
 				if (firstOnBatch)
 				{
 					parameterValueList = new List<object>();
-					parameterValueListHashTable.Add(currentParameter.ParameterName, parameterValueList);
-					parameterIsAllNullsHashTable.Add(currentParameter.ParameterName, true);
+					_parameterValueListHashTable.Add(currentParameter.ParameterName, parameterValueList);
+					_parameterIsAllNullsHashTable.Add(currentParameter.ParameterName, true);
 				}
 				else
 				{
-					parameterValueList = parameterValueListHashTable[currentParameter.ParameterName];
+					parameterValueList = _parameterValueListHashTable[currentParameter.ParameterName];
 				}
 
 				if (currentParameter.Value != DBNull.Value)
 				{
-					parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
+					_parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
 				}
 				parameterValueList.Add(currentParameter.Value);
-			} 
-			
-			countOfCommands++;
+			}
 
-			if (countOfCommands >= batchSize)
+			_countOfCommands++;
+
+			if (_countOfCommands >= _batchSize)
 			{
-				ExecuteBatchWithTiming(currentBatch);
+				ExecuteBatchWithTiming(_currentBatch);
 			}
 		}
 
 		protected override void DoExecuteBatch(IDbCommand ps)
 		{
-			if (currentBatch != null)
+			if (_currentBatch != null)
 			{
 				int arraySize = 0;
-				countOfCommands = 0;
-			   
-				log.Info("Executing batch");
+				_countOfCommands = 0;
+
+				Log.Info("Executing batch");
 				CheckReaders();
-				Prepare(currentBatch);
+				Prepare(_currentBatch);
 
-                if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-                {
-                    Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-                    currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-                }
-
-				foreach (IDataParameter currentParameter in currentBatch.Parameters)
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
-					List<object> parameterValueArray = parameterValueListHashTable[currentParameter.ParameterName];
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
+					_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+				}
+
+				foreach (IDataParameter currentParameter in _currentBatch.Parameters)
+				{
+					List<object> parameterValueArray = _parameterValueListHashTable[currentParameter.ParameterName];
 					currentParameter.Value = parameterValueArray.ToArray();
 					arraySize = parameterValueArray.Count;
 				}
@@ -126,28 +125,28 @@ namespace NHibernate.AdoNet
 				// setting the ArrayBindCount on the OracleCommand
 				// this value is not a part of the ADO.NET API.
 				// It's and ODP implementation, so it is being set by reflection
-				SetObjectParam(currentBatch, "ArrayBindCount", arraySize);
+				SetObjectParam(_currentBatch, "ArrayBindCount", arraySize);
 				int rowsAffected;
 				try
 				{
-					rowsAffected = currentBatch.ExecuteNonQuery();
+					rowsAffected = _currentBatch.ExecuteNonQuery();
 				}
 				catch (DbException e)
 				{
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
-				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
 
-				totalExpectedRowsAffected = 0;
-				currentBatch = null;
-				parameterValueListHashTable = null; 
+				_totalExpectedRowsAffected = 0;
+				_currentBatch = null;
+				_parameterValueListHashTable = null;
 			}
 		}
 
 		protected override int CountOfStatementsInCurrentBatch
 		{
-			get { return countOfCommands; }
+			get { return _countOfCommands; }
 		}
 
 		private void SetObjectParam(Object obj, string paramName, object paramValue)
@@ -159,8 +158,8 @@ namespace NHibernate.AdoNet
 
 		public override int BatchSize
 		{
-			get { return batchSize; }
-			set { batchSize = value; }
+			get { return _batchSize; }
+			set { _batchSize = value; }
 		}
 	}
 }

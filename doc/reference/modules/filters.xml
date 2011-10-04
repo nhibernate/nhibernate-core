@@ -64,7 +64,7 @@
 
         <para>
             Note that methods on the <literal>NHibernate.IFilter</literal> interface do allow the method-chaining
-            common to much of Hibernate.
+            common to much of NHibernate.
         </para>
 
         <para>

@@ -21,13 +21,13 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Eq(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("Name"), "not test name")))
-					.Add(Restrictions.Gt(Projections.Property("Age"), 10))
-					.Add(Restrictions.Ge(Projections.Property("Age"), 11))
-					.Add(Restrictions.Lt(Projections.Property("Age"), 50))
-					.Add(Restrictions.Le(Projections.Property("Age"), 49))
-					.Add(Restrictions.Eq(Projections.Property("class"), typeof(Person)))
+					.Add(Restrictions.Eq("Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "not test name")))
+					.Add(Restrictions.Gt("Age", 10))
+					.Add(Restrictions.Ge("Age", 11))
+					.Add(Restrictions.Lt("Age", 50))
+					.Add(Restrictions.Le("Age", 49))
+					.Add(Restrictions.Eq("class", typeof(Person)))
 					.Add(Restrictions.Eq("class", typeof(Person).FullName));
 
 			IQueryOver<Person> actual =
@@ -55,18 +55,18 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Eq(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("Name"), "test name")))
-					.Add(Restrictions.Gt(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.Ge(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.Lt(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.Le(Projections.Property("Name"), "test name"))
-					.Add(Restrictions.EqProperty(Projections.Property("Name"), Projections.Property("Name")))
-					.Add(Restrictions.Not(Restrictions.EqProperty(Projections.Property("Name"), Projections.Property("Name"))))
-					.Add(Restrictions.GtProperty(Projections.Property("Name"), Projections.Property("Name")))
-					.Add(Restrictions.GeProperty(Projections.Property("Name"), Projections.Property("Name")))
-					.Add(Restrictions.LtProperty(Projections.Property("Name"), Projections.Property("Name")))
-					.Add(Restrictions.LeProperty(Projections.Property("Name"), Projections.Property("Name")));
+					.Add(Restrictions.Eq("Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
+					.Add(Restrictions.Gt("Name", "test name"))
+					.Add(Restrictions.Ge("Name", "test name"))
+					.Add(Restrictions.Lt("Name", "test name"))
+					.Add(Restrictions.Le("Name", "test name"))
+					.Add(Restrictions.EqProperty("Name", "Name"))
+					.Add(Restrictions.Not(Restrictions.EqProperty("Name", "Name")))
+					.Add(Restrictions.GtProperty("Name", "Name"))
+					.Add(Restrictions.GeProperty("Name", "Name"))
+					.Add(Restrictions.LtProperty("Name", "Name"))
+					.Add(Restrictions.LeProperty("Name", "Name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -91,12 +91,12 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.EqProperty(Projections.Property("Age"), Projections.Property("Height")))
-					.Add(Restrictions.NotEqProperty(Projections.Property("Age"), Projections.Property("Height")))
-					.Add(Restrictions.GtProperty(Projections.Property("Age"), Projections.Property("Height")))
-					.Add(Restrictions.GeProperty(Projections.Property("Age"), Projections.Property("Height")))
-					.Add(Restrictions.LtProperty(Projections.Property("Age"), Projections.Property("Height")))
-					.Add(Restrictions.LeProperty(Projections.Property("Age"), Projections.Property("Height")));
+					.Add(Restrictions.EqProperty("Age", "Height"))
+					.Add(Restrictions.NotEqProperty("Age", "Height"))
+					.Add(Restrictions.GtProperty("Age", "Height"))
+					.Add(Restrictions.GeProperty("Age", "Height"))
+					.Add(Restrictions.LtProperty("Age", "Height"))
+					.Add(Restrictions.LeProperty("Age", "Height"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -115,8 +115,8 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Eq(Projections.Property("Blood"), 'A'))
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("Blood"), 'B')));
+					.Add(Restrictions.Eq("Blood", 'A'))
+					.Add(Restrictions.Not(Restrictions.Eq("Blood", 'B')));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -132,9 +132,9 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.Add(Restrictions.And(
-						Restrictions.Eq(Projections.Property("Name"), "test name"),
+						Restrictions.Eq("Name", "test name"),
 						Restrictions.Or(
-							Restrictions.Gt(Projections.Property("Age"), 21),
+							Restrictions.Gt("Age", 21),
 							Restrictions.Eq("HasCar", true))));
 
 			IQueryOver<Person> actual =
@@ -150,8 +150,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.Add(Restrictions.Or(
-						Restrictions.Not(Restrictions.Eq(Projections.Property("Name"), "test name")),
-						Restrictions.Not(Restrictions.Like(Projections.Property("personAlias.Name"), "%test%"))));
+						Restrictions.Not(Restrictions.Eq("Name", "test name")),
+						Restrictions.Not(Restrictions.Like("personAlias.Name", "%test%"))));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -166,8 +166,8 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("Name"), "test name")))
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("personAlias.Name"), "test name")));
+					.Add(Restrictions.Not(Restrictions.Eq("Name", "test name")))
+					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "test name")));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -224,13 +224,13 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected = 
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test name"))
-					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("personAlias.Name"), "not test name")))
-					.Add(Restrictions.Gt(Projections.Property("personAlias.Age"), 10))
-					.Add(Restrictions.Ge(Projections.Property("personAlias.Age"), 11))
-					.Add(Restrictions.Lt(Projections.Property("personAlias.Age"), 50))
-					.Add(Restrictions.Le(Projections.Property("personAlias.Age"), 49))
-					.Add(Restrictions.Eq(Projections.Property("personAlias.class"), typeof(Person)))
+					.Add(Restrictions.Eq("personAlias.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("personAlias.Name", "not test name")))
+					.Add(Restrictions.Gt("personAlias.Age", 10))
+					.Add(Restrictions.Ge("personAlias.Age", 11))
+					.Add(Restrictions.Lt("personAlias.Age", 50))
+					.Add(Restrictions.Le("personAlias.Age", 49))
+					.Add(Restrictions.Eq("personAlias.class", typeof(Person)))
 					.Add(Restrictions.Eq("personAlias.class", typeof(Person).FullName));
 
 			Person personAlias = null;
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.CreateCriteria("Father")
-						.Add(Expression.Eq(Projections.Property("Name"), "test name"));
+						.Add(Expression.Eq("Name", "test name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -270,7 +270,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.CreateCriteria("personAlias.Father")
-						.Add(Expression.Eq(Projections.Property("Name"), "test name"));
+						.Add(Expression.Eq("Name", "test name"));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -287,7 +287,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.CreateCriteria("Children")
-						.Add(Expression.Eq(Projections.Property("Nickname"), "test name"));
+						.Add(Expression.Eq("Nickname", "test name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -303,7 +303,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.CreateCriteria("personAlias.Children", JoinType.InnerJoin)
-						.Add(Expression.Eq(Projections.Property("Nickname"), "test name"));
+						.Add(Expression.Eq("Nickname", "test name"));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -416,17 +416,17 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "many func t,bool"))
-					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "many func bool"))
+					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
 					.CreateCriteria("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
-					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "one func t,bool"))
-					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "one func bool"))
+					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
 					.CreateCriteria("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
-					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a many func t,bool"))
-					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "a many func bool"))
+					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
 					.CreateCriteria("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
-					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a one func t,bool"))
-					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "a one func bool"))
+					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
 					.CreateCriteria("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
 
 			Person alias1 = null;
@@ -464,17 +464,17 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>()
-					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "many func t,bool"))
-					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "many func bool"))
+					.CreateCriteria("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateCriteria("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
 					.CreateCriteria("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
-					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "one func t,bool"))
-					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "one func bool"))
+					.CreateCriteria("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateCriteria("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
 					.CreateCriteria("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
-					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a many func t,bool"))
-					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "a many func bool"))
+					.CreateCriteria("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateCriteria("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
 					.CreateCriteria("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
-					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a one func t,bool"))
-					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "a one func bool"))
+					.CreateCriteria("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateCriteria("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
 					.CreateCriteria("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
 
 			Person alias1 = null;
@@ -512,17 +512,17 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "many func t,bool"))
-					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "many func bool"))
+					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
 					.CreateAlias("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
-					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "one func t,bool"))
-					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "one func bool"))
+					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
 					.CreateAlias("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
-					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a many func t,bool"))
-					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "a many func bool"))
+					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
 					.CreateAlias("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
-					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a one func t,bool"))
-					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "a one func bool"))
+					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
 					.CreateAlias("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
 
 			Person alias1 = null;
@@ -560,17 +560,17 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>()
-					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "many func t,bool"))
-					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "many func bool"))
+					.CreateAlias("PersonList", "alias1", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many func t,bool"))
+					.CreateAlias("PersonList", "alias2", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "many func bool"))
 					.CreateAlias("PersonList", "alias3", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "many private"))
-					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "one func t,bool"))
-					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "one func bool"))
+					.CreateAlias("Father", "alias4", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one func t,bool"))
+					.CreateAlias("Father", "alias5", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "one func bool"))
 					.CreateAlias("Father", "alias6", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "one private"))
-					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a many func t,bool"))
-					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias1.Name"), "a many func bool"))
+					.CreateAlias("alias1.PersonList", "alias7", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many func t,bool"))
+					.CreateAlias("alias2.PersonList", "alias8", JoinType.LeftOuterJoin, Restrictions.Eq("alias1.Name", "a many func bool"))
 					.CreateAlias("alias3.PersonList", "alias9", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a many private"))
-					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("Name"), "a one func t,bool"))
-					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq(Projections.Property("alias4.Name"), "a one func bool"))
+					.CreateAlias("alias4.Father", "alias10", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one func t,bool"))
+					.CreateAlias("alias5.Father", "alias11", JoinType.LeftOuterJoin, Restrictions.Eq("alias4.Name", "a one func bool"))
 					.CreateAlias("alias6.Father", "alias12", JoinType.LeftOuterJoin, Restrictions.Eq("Name", "a one private"));
 
 			Person alias1 = null;
@@ -608,10 +608,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.AddOrder(Order.Asc(Projections.Property("Name")))
-					.AddOrder(Order.Desc(Projections.Property("Age")))
-					.AddOrder(Order.Desc(Projections.Property("personAlias.Name")))
-					.AddOrder(Order.Asc(Projections.Property("personAlias.Age")))
+					.AddOrder(Order.Asc("Name"))
+					.AddOrder(Order.Desc("Age"))
+					.AddOrder(Order.Desc("personAlias.Name"))
+					.AddOrder(Order.Asc("personAlias.Age"))
 					.AddOrder(Order.Asc("summary"))
 					.AddOrder(Order.Desc("Count"));
 
@@ -649,7 +649,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected = CreateTestCriteria(typeof(Person));
 			expected.Add(Restrictions.IsNotEmpty("Children"));
-			expected.AddOrder(Order.Asc(Projections.Property("Name")));
+			expected.AddOrder(Order.Asc("Name"));
 			expected.SetFetchMode("PersonList", FetchMode.Eager);
 			expected.SetLockMode(LockMode.UpgradeNoWait);
 
@@ -796,7 +796,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>("personAlias")
-					.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test name"));
+					.Add(Restrictions.Eq("personAlias.Name", "test name"));
 
 			Person personAlias = null;
 			QueryOver<Person> actual =

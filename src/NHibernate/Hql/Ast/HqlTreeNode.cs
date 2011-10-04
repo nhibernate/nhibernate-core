@@ -31,15 +31,7 @@ namespace NHibernate.Hql.Ast
 			{
 				if (child != null)
 				{
-					if (child is HqlDistinctHolder)
-					{
-						AddChildren(child.Children);
-					}
-					else
-					{
-						_children.Add(child);
-						_node.AddChild(child.AstNode);
-					}
+					AddChild(child);
 				}
 			}
 		}
@@ -99,7 +91,7 @@ namespace NHibernate.Hql.Ast
 
 		internal void AddChild(HqlTreeNode child)
 		{
-			if (child is HqlDistinctHolder)
+			if ((child is HqlExpressionSubTreeHolder) || (child is HqlDistinctHolder))
 			{
 				AddChildren(child.Children);
 			}
@@ -129,7 +121,6 @@ namespace NHibernate.Hql.Ast
 			// TODO - nice error handling if cast fails
 			return (HqlBooleanExpression)node;
 		}
-		
 	}
 
 	public abstract class HqlStatement : HqlTreeNode
@@ -178,7 +169,6 @@ namespace NHibernate.Hql.Ast
 		{
 		}
 	}
-
 
 	public class HqlIdent : HqlExpression
 	{
@@ -849,9 +839,21 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	[Obsolete("Use HqlExpressionSubTreeHolder instead")]
 	public class HqlDistinctHolder : HqlExpression
 	{
 		public HqlDistinctHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "distinct holder", factory, children)
+		{
+		}
+	}
+
+	public class HqlExpressionSubTreeHolder : HqlExpression
+	{
+		public HqlExpressionSubTreeHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "expression sub-tree holder", factory, children)
+		{
+		}
+
+		public HqlExpressionSubTreeHolder(IASTFactory factory, IEnumerable<HqlTreeNode> children) : base(int.MinValue, "expression sub-tree holder", factory, children)
 		{
 		}
 	}

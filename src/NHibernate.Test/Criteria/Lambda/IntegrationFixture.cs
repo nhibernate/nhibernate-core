@@ -195,6 +195,28 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void FilterNullComponent()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var p1 = new Person() { Detail = new PersonDetail() { MaidenName = "test", Anniversary = new DateTime(2007, 06, 05) } };
+				var p2 = new Person() { Detail = null };
+
+				s.Save(p1);
+				s.Save(p2);
+
+				var nullDetails =
+					s.QueryOver<Person>()
+						.Where(p => p.Detail == null)
+						.List();
+
+				Assert.That(nullDetails.Count, Is.EqualTo(1));
+				Assert.That(nullDetails[0].Id, Is.EqualTo(p2.Id));
+			}
+		}
+
+		[Test]
 		public void OnClause()
 		{
 			using (ISession s = OpenSession())

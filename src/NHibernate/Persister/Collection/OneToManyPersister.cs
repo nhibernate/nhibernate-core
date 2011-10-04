@@ -388,7 +388,7 @@ namespace NHibernate.Persister.Collection
 
 		public override object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
-			return new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index));
+			return new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index)) ?? NotFoundObject;
 		}
 		#region NH Specific
 		protected override SqlCommandInfo GenerateIdentityInsertRowString()

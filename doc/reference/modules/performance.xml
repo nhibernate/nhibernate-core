@@ -45,7 +45,7 @@
                 <para>
                     <emphasis>"Extra-lazy" collection fetching</emphasis> - individual
                     elements of the collection are accessed from the database as needed.
-                    Hibernate tries not to fetch the whole collection into memory unless
+                    NHibernate tries not to fetch the whole collection into memory unless
                     absolutely needed (suitable for very large collections)
                 </para>
             </listitem>
@@ -82,7 +82,7 @@
                 <para>
                     <emphasis>"Extra-lazy" collection fetching</emphasis> - individual
                     elements of the collection are accessed from the database as needed.
-                    Hibernate tries not to fetch the whole collection into memory unless
+                    NHibernate tries not to fetch the whole collection into memory unless
                     absolutely needed (suitable for very large collections)
                 </para>
             </listitem>
@@ -136,7 +136,7 @@
             <!--
             <para>
                 <emphasis>Note:</emphasis> if you set 
-                <literal>hibernate.default_batch_fetch_size</literal>, Hibernate will use the 
+                <literal>hibernate.default_batch_fetch_size</literal>, NHibernate will use the 
                 batch fetch optimization for lazy fetching (this optimization may also be enabled 
                 at a more granular level).
             </para>
@@ -459,7 +459,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
                         on the correctness of the exception handling of your application infrastructure. 
                         It is vitally important that the <literal>ISession</literal> is closed and the 
                         transaction ended before returning to the user, even when an exception occurs 
-                        during rendering of the view. See the Hibernate Wiki for examples of this
+                        during rendering of the view. See the NHibernate Wiki for examples of this
                         "Open Session in View" pattern.
                     </para>
                 </listitem>
@@ -523,7 +523,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
                 at runtime: You have 25 <literal>Cat</literal> instances loaded in an <literal>ISession</literal>, each
                 <literal>Cat</literal> has a reference to its <literal>Owner</literal>, a <literal>Person</literal>.
                 The <literal>Person</literal> class is mapped with a proxy, <literal>lazy="true"</literal>. If you now
-                iterate through all cats and call <literal>cat.Owner</literal> on each, Hibernate will by default
+                iterate through all cats and call <literal>cat.Owner</literal> on each, NHibernate will by default
                 execute 25 <literal>SELECT</literal> statements, to retrieve the proxied owners. You can tune this
                 behavior by specifying a <literal>batch-size</literal> in the mapping of <literal>Person</literal>:
             </para>
@@ -605,7 +605,7 @@ ICat fritz = (ICat) iter.Current;]]></programlisting>
 
             <para>
                 Lazy property loading requires buildtime bytecode instrumentation! If your persistent
-                classes are not enhanced, Hibernate will silently ignore lazy property settings and
+                classes are not enhanced, NHibernate will silently ignore lazy property settings and
                 fall back to immediate fetching.
             </para>
 

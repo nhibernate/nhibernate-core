@@ -62,6 +62,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						                       	{"Child1", new Child()},
 						                       	{"NullChild", null},
 						                       };
+
+                        var child1 = new AnotherChild { Name = "AnotherChild1" };
+                        var child2 = new AnotherChild { Name = "AnotherChild2" };
+
+					    s.Save(child1);
+					    s.Save(child2);
+
+                        entity.OneToManyNamedChildren = new Dictionary<string, AnotherChild> 
+                                               {
+                                                {"AnotherChild1" , child1}, 
+                                                {"AnotherChild2" , child2} 
+                                               };
+
 						s.Save(entity);
 						t.Commit();
 					}
@@ -143,8 +156,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						var entity = s.CreateQuery("from Base").UniqueResult<Base>();
 						// null collection members don't seem to work, at least for lazy="extra" collections
 						entity.NamedChildren.Count.Should().Be.EqualTo(2);
+                        entity.OneToManyNamedChildren.Count.Should().Be.EqualTo(2);
 						NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
 						Executing.This(() => { Child ignored = entity.NamedChildren["InvalidKey"]; }).Should().Throw<KeyNotFoundException>();
+                        Executing.This(() => { AnotherChild ignored = entity.OneToManyNamedChildren["InvalidKey"]; }).Should().Throw<KeyNotFoundException>();
+                        NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
 					}
 				}
 			}
@@ -167,6 +183,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						Child child;
 						entity.NamedChildren.TryGetValue("InvalidKey", out child).Should().Be.False();
 						child.Should().Be.Null();
+                        AnotherChild anotherChild;
+                        entity.OneToManyNamedChildren.TryGetValue("InvalidKey", out anotherChild).Should().Be.False();
+                        child.Should().Be.Null();
+                        NHibernateUtil.IsInitialized(entity.NamedChildren).Should().Be.False();
 					}
 				}
 			}

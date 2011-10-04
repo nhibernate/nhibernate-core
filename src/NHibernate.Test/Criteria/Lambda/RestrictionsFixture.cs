@@ -17,10 +17,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Lt(Projections.Property("Age"), 65))
-					.Add(Restrictions.Ge(Projections.Property("personAlias.Age"), 18))
-					.Add(Restrictions.Not(Restrictions.Ge(Projections.Property("Age"), 65)))
-					.Add(Restrictions.Not(Restrictions.Lt(Projections.Property("personAlias.Age"), 18)));
+					.Add(Restrictions.Lt("Age", 65))
+					.Add(Restrictions.Ge("personAlias.Age", 18))
+					.Add(Restrictions.Not(Restrictions.Ge("Age", 65)))
+					.Add(Restrictions.Not(Restrictions.Lt("personAlias.Age", 18)));
 
 			Person personAlias = null;
 			var actual =
@@ -38,22 +38,22 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Between(Projections.Property("Age"), 18, 65))
-					.Add(Restrictions.Between(Projections.Property("personAlias.Age"), 18, 65))
-					.Add(Restrictions.Not(Restrictions.Between(Projections.Property("personAlias.Age"), 10, 20)))
-					.Add(!Restrictions.In(Projections.Property("Name"), new string[] { "name4" }))
-					.Add(Restrictions.In(Projections.Property("Name"), new string[] { "name1", "name2", "name3" }))
-					.Add(Restrictions.In(Projections.Property("Name"), new ArrayList() { "name1", "name2", "name3" }))
-					.Add(Restrictions.InG<int>(Projections.Property("Age"), new int[] { 1, 2, 3 }))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "test"))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "tEsT", MatchMode.Anywhere))
+					.Add(Restrictions.Between("Age", 18, 65))
+					.Add(Restrictions.Between("personAlias.Age", 18, 65))
+					.Add(Restrictions.Not(Restrictions.Between("personAlias.Age", 10, 20)))
+					.Add(!Restrictions.In("Name", new string[] { "name4" }))
+					.Add(Restrictions.In("Name", new string[] { "name1", "name2", "name3" }))
+					.Add(Restrictions.In("Name", new ArrayList() { "name1", "name2", "name3" }))
+					.Add(Restrictions.InG<int>("Age", new int[] { 1, 2, 3 }))
+					.Add(Restrictions.InsensitiveLike("Name", "test"))
+					.Add(Restrictions.InsensitiveLike("Name", "tEsT", MatchMode.Anywhere))
 					.Add(Restrictions.IsEmpty("Children"))
 					.Add(Restrictions.Not(Restrictions.IsEmpty("Children")))
 					.Add(Restrictions.IsNotEmpty("Children"))
-					.Add(Restrictions.IsNotNull(Projections.Property("Name")))
-					.Add(Restrictions.IsNull(Projections.Property("Name")))
-					.Add(Restrictions.Like(Projections.Property("Name"), "%test%"))
-					.Add(Restrictions.Like(Projections.Property("Name"), "test", MatchMode.Anywhere))
+					.Add(Restrictions.IsNotNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.Like("Name", "%test%"))
+					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere, '?'))
 					.Add(Restrictions.NaturalId()
 							.Set("Name", "my name")
@@ -92,11 +92,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.Add(Restrictions.Conjunction()
-							.Add(Restrictions.Eq(Projections.Property("Name"), "test"))
-							.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test")))
+							.Add(Restrictions.Eq("Name", "test"))
+							.Add(Restrictions.Eq("personAlias.Name", "test")))
 					.Add(Restrictions.Disjunction()
-							.Add(Restrictions.Eq(Projections.Property("Name"), "test"))
-							.Add(Restrictions.Eq(Projections.Property("personAlias.Name"), "test")));
+							.Add(Restrictions.Eq("Name", "test"))
+							.Add(Restrictions.Eq("personAlias.Name", "test")));
 
 			Person personAlias = null;
 			var actual =
@@ -116,22 +116,22 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.Between(Projections.Property("Age"), 18, 65))
-					.Add(Restrictions.Between(Projections.Property("personAlias.Age"), 18, 65))
-					.Add(Restrictions.Not(Restrictions.Between(Projections.Property("Age"), 18, 65)))
-					.Add(Restrictions.In(Projections.Property("Name"), new string[] { "name1", "name2", "name3" }))
-					.Add(Restrictions.In(Projections.Property("personAlias.Name"), new ArrayList() { "name1", "name2", "name3" }))
-					.Add(Restrictions.InG<int>(Projections.Property("Age"), new int[] { 1, 2, 3 }))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "test"))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "tEsT", MatchMode.Anywhere))
+					.Add(Restrictions.Between("Age", 18, 65))
+					.Add(Restrictions.Between("personAlias.Age", 18, 65))
+					.Add(Restrictions.Not(Restrictions.Between("Age", 18, 65)))
+					.Add(Restrictions.In("Name", new string[] { "name1", "name2", "name3" }))
+					.Add(Restrictions.In("personAlias.Name", new ArrayList() { "name1", "name2", "name3" }))
+					.Add(Restrictions.InG<int>("Age", new int[] { 1, 2, 3 }))
+					.Add(Restrictions.InsensitiveLike("Name", "test"))
+					.Add(Restrictions.InsensitiveLike("Name", "tEsT", MatchMode.Anywhere))
 					.Add(Restrictions.IsEmpty("Children"))
 					.Add(Restrictions.IsNotEmpty("Children"))
-					.Add(Restrictions.IsNotNull(Projections.Property("Name")))
-					.Add(Restrictions.IsNull(Projections.Property("Name")))
-					.Add(Restrictions.Like(Projections.Property("Name"), "%test%"))
-					.Add(Restrictions.Like(Projections.Property("Name"), "test", MatchMode.Anywhere))
+					.Add(Restrictions.IsNotNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.Like("Name", "%test%"))
+					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere, '?'))
-					.Add(Restrictions.Not(Restrictions.Like(Projections.Property("Name"), "%test%")));
+					.Add(Restrictions.Not(Restrictions.Like("Name", "%test%")));
 
 			Person personAlias = null;
 			var actual =
@@ -161,10 +161,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>("personAlias")
-					.Add(Restrictions.Between(Projections.Property("Age"), 18, 65))
-					.Add(Restrictions.Between(Projections.Property("personAlias.Age"), 18, 65))
-					.Add(Restrictions.In(Projections.Property("Name"), new string[] { "name1", "name2", "name3" }))
-					.Add(Restrictions.In(Projections.Property("personAlias.Name"), new ArrayList() { "name1", "name2", "name3" }));
+					.Add(Restrictions.Between("Age", 18, 65))
+					.Add(Restrictions.Between("personAlias.Age", 18, 65))
+					.Add(Restrictions.In("Name", new string[] { "name1", "name2", "name3" }))
+					.Add(Restrictions.In("personAlias.Name", new ArrayList() { "name1", "name2", "name3" }));
 
 			Person personAlias = null;
 			QueryOver<Person> actual =
@@ -182,23 +182,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
-					.Add(Restrictions.IsNull(Projections.Property("Name")))
-					.Add(Restrictions.IsNull(Projections.Property("Name")))
-					.Add(Restrictions.IsNull(Projections.Property("Name")))
-					.Add(Restrictions.IsNull(Projections.Property("Father")))
-					.Add(Restrictions.IsNull(Projections.Property("Father")))
-					.Add(Restrictions.IsNull(Projections.Property("NullableGender")))
-					.Add(Restrictions.IsNull(Projections.Property("NullableAge")))
-					.Add(Restrictions.IsNull(Projections.Property("NullableIsParent")))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Name"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Father"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("Father"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableGender"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableAge"))))
-					.Add(Restrictions.Not(Restrictions.IsNull(Projections.Property("NullableIsParent"))))
-					.Add(Restrictions.IsNull(Projections.Property("personAlias.Name")));
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Name"))
+					.Add(Restrictions.IsNull("Father"))
+					.Add(Restrictions.IsNull("Father"))
+					.Add(Restrictions.IsNull("NullableGender"))
+					.Add(Restrictions.IsNull("NullableAge"))
+					.Add(Restrictions.IsNull("NullableIsParent"))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Name")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
+					.Add(Restrictions.Not(Restrictions.IsNull("Father")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableGender")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableAge")))
+					.Add(Restrictions.Not(Restrictions.IsNull("NullableIsParent")))
+					.Add(Restrictions.IsNull("personAlias.Name"));
 
 			Person personAlias = null;
 			CustomPerson nullPerson = null;
@@ -232,14 +232,14 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
-					.Add(Restrictions.Like(Projections.Property("Name"), "%test%"))
-					.Add(Restrictions.Like(Projections.Property("Name"), "test", MatchMode.End))
+					.Add(Restrictions.Like("Name", "%test%"))
+					.Add(Restrictions.Like("Name", "test", MatchMode.End))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Start, '?'))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "%test%"))
-					.Add(Restrictions.InsensitiveLike(Projections.Property("Name"), "test", MatchMode.Anywhere))
-					.Add(Restrictions.In(Projections.Property("Name"), new string[] { "name1", "name2" }))
-					.Add(Restrictions.In(Projections.Property("Name"), new ArrayList() { "name3", "name4" }))
-					.Add(Restrictions.Between(Projections.Property("Age"), 10, 20));
+					.Add(Restrictions.InsensitiveLike("Name", "%test%"))
+					.Add(Restrictions.InsensitiveLike("Name", "test", MatchMode.Anywhere))
+					.Add(Restrictions.In("Name", new string[] { "name1", "name2" }))
+					.Add(Restrictions.In("Name", new ArrayList() { "name3", "name4" }))
+					.Add(Restrictions.Between("Age", 10, 20));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()

@@ -20,7 +20,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionReference()
 		{
 			Expression<Func<Person, string>> e = (Person p) => p.Name;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("Name", property);
 		}
 
@@ -28,7 +28,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionReferenceCast()
 		{
 			Expression<Func<Person, string>> e = (Person p) => ((CustomPerson)p).MiddleName;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("MiddleName", property);
 		}
 
@@ -37,7 +37,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<string>> e = () => personAlias.Name;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.Name", property);
 		}
 
@@ -46,7 +46,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<string>> e = () => ((CustomPerson)personAlias).MiddleName;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.MiddleName", property);
 		}
 
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionComponent()
 		{
 			Expression<Func<Person, string>> e = (Person p) => p.Father.Name;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("Father.Name", property);
 		}
 
@@ -63,7 +63,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<string>> e = () => personAlias.Father.Name;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.Father.Name", property);
 		}
 
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionValue()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.Age;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("Age", property);
 		}
 
@@ -80,7 +80,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.Age;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.Age", property);
 		}
 
@@ -88,7 +88,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionSubCollectionIndex()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.PersonList[0].Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("PersonList.Children", property);
 		}
 
@@ -97,7 +97,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.PersonList[0].Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.PersonList.Children", property);
 		}
 
@@ -105,7 +105,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionSubCollectionFirst()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.PersonList.First().Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("PersonList.Children", property);
 		}
 
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.PersonList.First().Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.PersonList.Children", property);
 		}
 
@@ -122,7 +122,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionSubCollectionExtensionMethod()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.PersonList.First().Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("PersonList.Children", property);
 		}
 
@@ -131,7 +131,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.PersonList.First().Children;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.PersonList.Children", property);
 		}
 
@@ -139,7 +139,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionClass()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.GetType();
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("class", property);
 		}
 
@@ -148,7 +148,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.GetType();
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.class", property);
 		}
 
@@ -156,7 +156,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionNullableValue()
 		{
 			Expression<Func<Person, object>> e = (Person p) => p.NullableGender.Value;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("NullableGender", property);
 		}
 
@@ -165,7 +165,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person personAlias = null;
 			Expression<Func<object>> e = () => personAlias.NullableGender.Value;
-			string property = ExpressionProcessor.FindMemberProjection(e.Body).ToString();
+			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.NullableGender", property);
 		}
 
@@ -193,7 +193,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		private T Projection<T>(Expression<Func<T>> e)
 		{
-			var constantProjection = ExpressionProcessor.FindMemberProjection(e.Body);
+			var constantProjection = ExpressionProcessor.FindMemberProjection(e.Body).AsProjection();
 			return (T)typeof(ConstantProjection).GetField("value", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(constantProjection);
 		}
 
