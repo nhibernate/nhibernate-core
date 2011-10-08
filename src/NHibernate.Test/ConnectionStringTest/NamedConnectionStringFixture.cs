@@ -36,7 +36,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		public void CanGetNamedConnectionStringFromConfiguration()
 		{
 			Dictionary<string, string> settings = new Dictionary<string, string>();
-			settings.Add(Environment.ConnectionStringName, "TestConnectionString");
+			settings.Add(Environment.ConnectionStringName, "DummyConnectionString");
 			MockConnectionProvider cp = new MockConnectionProvider();
 			cp.Configure(settings);
 
