@@ -2096,6 +2096,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("unsaved-value")]
         public string unsavedvalue;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("generator")]
+        public string generator1;
     }
     
     /// <remarks/>

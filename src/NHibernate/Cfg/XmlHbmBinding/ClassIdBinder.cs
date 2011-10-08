@@ -1,15 +1,13 @@
 using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
+using NHibernate.Type;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class ClassIdBinder : ClassBinder
 	{
-		public ClassIdBinder(ClassBinder parent)
-			: base(parent)
-		{
-		}
+		public ClassIdBinder(ClassBinder parent) : base(parent) { }
 
 		public void BindId(HbmId idSchema, PersistentClass rootClass, Table table)
 		{
@@ -21,16 +19,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				rootClass.Identifier = id;
 
 				Func<HbmColumn> defaultColumn = () => new HbmColumn
-				                                      	{
-				                                      		name = idSchema.name ?? RootClass.DefaultIdentifierColumnName,
-																									length = idSchema.length
-				                                      	};
+				{
+					name = idSchema.name ?? RootClass.DefaultIdentifierColumnName,
+					length = idSchema.length
+				};
+
 				new ColumnsBinder(id, Mappings).Bind(idSchema.Columns, false, defaultColumn);
 
 				CreateIdentifierProperty(idSchema, rootClass, id);
-				VerifiyIdTypeIsValid(id, rootClass.EntityName);
-				new IdGeneratorBinder(Mappings).BindGenerator(id, idSchema.generator);
+				VerifiyIdTypeIsValid(id.Type, rootClass.EntityName);
+
+				new IdGeneratorBinder(Mappings).BindGenerator(id, GetIdGenerator(idSchema));
+
 				id.Table.SetIdentifierValue(id);
+
 				BindUnsavedValue(idSchema, id);
 			}
 		}
@@ -40,10 +42,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (idSchema.name != null)
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;
-				id.SetTypeUsingReflection(rootClass.MappedClass == null ? null : rootClass.MappedClass.AssemblyQualifiedName,
-				                          idSchema.name, access);
+				id.SetTypeUsingReflection(rootClass.MappedClass == null ? null : rootClass.MappedClass.AssemblyQualifiedName, idSchema.name, access);
 
-				var property = new Property(id) {Name = idSchema.name};
+				var property = new Property(id) { Name = idSchema.name };
 
 				if (property.Value.Type == null)
 					throw new MappingException("could not determine a property type for: " + property.Name);
@@ -62,14 +63,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private static void VerifiyIdTypeIsValid(IValue id, string className)
+		private HbmGenerator GetIdGenerator(HbmId idSchema)
 		{
-			if (id.Type == null)
+			return String.IsNullOrEmpty(idSchema.generator1) ? idSchema.generator : new HbmGenerator() { @class = idSchema.generator1 };
+		}
+
+		private static void VerifiyIdTypeIsValid(IType idType, string className)
+		{
+			if (idType == null)
 				throw new MappingException(string.Format("Must specify an identifier type: {0}.", className));
 
-			if (id.Type.ReturnedClass.IsArray)
-				throw new MappingException(
-					"Illegal use of an array as an identifier (arrays don't reimplement equals).");
+			if (idType.ReturnedClass.IsArray)
+				throw new MappingException("Illegal use of an array as an identifier (arrays don't reimplement equals).");
 		}
 
 		private static void BindUnsavedValue(HbmId idSchema, SimpleValue id)

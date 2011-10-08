@@ -184,7 +184,7 @@
 			<xs:attribute name="proxy" type="xs:string" />
 			<xs:attribute name="lazy" type="xs:boolean">
 			</xs:attribute>
-      <xs:attribute name="schema-action" type="xs:string" />
+			<xs:attribute name="schema-action" type="xs:string" />
 			<xs:attribute name="table" type="xs:string" />
 			<xs:attribute name="schema" type="xs:string" />
 			<xs:attribute name="catalog" type="xs:string" />
@@ -468,7 +468,7 @@
 			</xs:choice>
 			<xs:attribute name="name" use="required" type="xs:string" />
 			<xs:attribute name="condition" type="xs:string" />
-      <xs:attribute name="use-many-to-one" default="true" type="xs:boolean"/>
+			<xs:attribute name="use-many-to-one" default="true" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="filter-param">
@@ -544,6 +544,7 @@
 			<xs:attribute name="type" type="xs:string" />
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="unsaved-value" type="xs:string" />
+			<xs:attribute name="generator" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="idbag">
@@ -692,8 +693,8 @@
 			<xs:attribute name="name" type="xs:string" />
 			<xs:attribute name="proxy" type="xs:string" />
 			<xs:attribute name="table" type="xs:string" />
-      <xs:attribute name="schema-action" type="xs:string" />
-      <xs:attribute name="schema" type="xs:string" />
+			<xs:attribute name="schema-action" type="xs:string" />
+			<xs:attribute name="schema" type="xs:string" />
 			<xs:attribute name="catalog" type="xs:string" />
 			<xs:attribute name="subselect" type="xs:string" />
 			<xs:attribute name="dynamic-update" default="false" type="xs:boolean">
@@ -866,11 +867,11 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
-          <xs:element ref="column" />
-          <xs:element ref="formula" />
-        </xs:choice>
-      </xs:sequence>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="column" />
+					<xs:element ref="formula" />
+				</xs:choice>
+			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string" />
 			<xs:attribute name="access" type="xs:string" />
 			<xs:attribute name="class" type="xs:string" />
@@ -1061,8 +1062,8 @@
 	<xs:element name="parent">
 		<xs:complexType>
 			<xs:attribute name="name" use="required" type="xs:string" />
-      <xs:attribute name="access" type="xs:string" />
-    </xs:complexType>
+			<xs:attribute name="access" type="xs:string" />
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="primitive-array">
 		<xs:complexType>
