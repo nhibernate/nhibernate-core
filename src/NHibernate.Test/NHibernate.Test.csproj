@@ -650,6 +650,9 @@
     <Compile Include="NHSpecificTest\Futures\LinqFutureFixture.cs" />
     <Compile Include="NHSpecificTest\NH0000\Entity.cs" />
     <Compile Include="NHSpecificTest\NH0000\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH0000\FixtureByCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NHSpecificTest\NH1007\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1007\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1136\Address.cs" />
