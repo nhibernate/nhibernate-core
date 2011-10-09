@@ -30,24 +30,6 @@
 	-->
 	<property name="nunit2report.installed" value="false" overwrite="false" />
 
-	<!--
-		Cenqua provided a license of Clover.NET for the NHibernate project to use. 
-	-->
-	<property name="clover.enabled" value="false" overwrite="false" />
-	<property name="clover.src" value="src/CloverSrc" />
-	<property name="clover.db" value="${clover.src}/clover.cdb" />
-	
-	<!-- NET 3.5 is using 2.0 runtime, should still work in 2.0 -->
-	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-3.5'}" />
-	
-	<property name="clover.framework" value=".NET 2.0" if="${nant.settings.currentframework == 'net-2.0'}" />
-
-	<property name="clover.home" value="${environment::get-folder-path('ProgramFiles')}/Cenqua/Clover.NET 2.0 for ${clover.framework}" if="${property::exists('clover.framework')}"/>
-	<property name="clover.assembly" value="CloverNAnt-0.85.dll" />
-
-	<if test="${clover.enabled}">
-		<loadtasks assembly="${clover.home}/${clover.assembly}" />
-	</if>
 	<property name="nant-version.current" value="${assemblyname::get-version(assembly::get-name(nant::get-assembly()))}" />
 	<property name="nant-version.required" value="0.85.2478.0" /> <!-- Nant 0.85 release version -->
 	<property name="nant-version.beta1_086" value="0.86.2898.0" /> <!-- Nant 0.86 Beta 1 -->
