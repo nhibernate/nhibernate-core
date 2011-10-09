@@ -1166,7 +1166,7 @@ namespace NHibernate.Test.ReadOnly
 				enrolment1 = e;
 				enrolment2 = (Enrolment)list[1];
 			}
-			else if (e.Student.StudentNumber == xam.StudentNumber)
+			else if (e.Student.StudentNumber == gavin.StudentNumber)
 			{
 				enrolment2 = e;
 				enrolment1 = (Enrolment)list[1];
@@ -1207,7 +1207,7 @@ namespace NHibernate.Test.ReadOnly
 				enrolment1 = e;
 				enrolment2 = (Enrolment)list[1];
 			}
-			else if (e.Student.StudentNumber == xam.StudentNumber) {
+			else if (e.Student.StudentNumber == gavin.StudentNumber) {
 				enrolment2 = e;
 				enrolment1 = (Enrolment)list[1];
 			}
@@ -1246,7 +1246,7 @@ namespace NHibernate.Test.ReadOnly
 				enrolment1 = e;
 				enrolment2 = (Enrolment)list[1];
 			}
-			else if (e.Student.StudentNumber == xam.StudentNumber)
+			else if (e.Student.StudentNumber == gavin.StudentNumber)
 			{
 				enrolment2 = e;
 				enrolment1 = (Enrolment)list[1];
