@@ -33,6 +33,13 @@
 		<!-- default (SQL Server) does not require any additional settings/binaries -->
 	</target>
 
+	<target name="setup-teamcity-sqlServerOdbc">
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OdbcDriver" />
+		<property name="nhibernate.connection.connection_string"	value="Driver={SQL Native Client};Server=localhost;Database=nhibernateOdbc;Trusted_Connection=yes" />
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
+	</target>
+
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />

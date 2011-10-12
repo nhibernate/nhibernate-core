@@ -256,12 +256,14 @@ echo D. NHibernate Trunk - SQLite (32-bit)
 echo E. NHibernate Trunk - SQLite (64-bit)
 echo F. NHibernate Trunk - PostgreSQL
 echo G. NHibernate Trunk - Oracle (32-bit)
+echo H. NHibernate Trunk - SQL Server ODBC (32-bit)
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGX
-if errorlevel 7 goto main-menu
+%BUILDTOOL% prompt ABCDEFGHX
+if errorlevel 8 goto main-menu
+if errorlevel 7 goto teamcity-sqlServerOdbc
 if errorlevel 6 goto teamcity-oracle32
 if errorlevel 5 goto teamcity-postgresql
 if errorlevel 4 goto teamcity-sqlite64
@@ -309,6 +311,12 @@ goto main-menu
 :teamcity-oracle32
 move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle32
+move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+goto main-menu
+
+:teamcity-sqlServerOdbc
+move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerOdbc
 move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
 goto main-menu
 
