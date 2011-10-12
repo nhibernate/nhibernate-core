@@ -65,6 +65,7 @@ of NHibernate (in no particular order):
 * [JetBrains][] - [ReSharper][] licences for NHibernate developers
 * [LinFu][] - proxy implementation (Philip Laureano)
 * Iesi.Collections - source code taken from an [article][Article] written by Jason Smith
+* [Relinq] - Linq provider for NHibernate
 
 [NUnit]: http://www.nunit.org
 [Nant]: http://nant.sourceforge.net
@@ -79,3 +80,4 @@ of NHibernate (in no particular order):
 [ReSharper]: http://www.jetbrains.com/resharper
 [LinFu]: http://code.google.com/p/linfu
 [Article]: http://www.codeproject.com/KB/recipes/sets.aspx "Add Support for "Set" Collections to .NET"
+[Relinq]: http://relinq.codeplex.com/ "re-linq: Generic LINQ provider"
