@@ -76,8 +76,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (member != null && propertyInTheOtherSide.DeclaringType != member.GetPropertyOrFieldType())
 			{
 				throw new ArgumentOutOfRangeException("propertyInTheOtherSide",
-				                                      string.Format("Expected a member of {0} found the member {1} of {2}", member.GetPropertyOrFieldType(), propertyInTheOtherSide,
-				                                                    propertyInTheOtherSide.DeclaringType));
+													  string.Format("Expected a member of {0} found the member {1} of {2}", member.GetPropertyOrFieldType(), propertyInTheOtherSide,
+																	propertyInTheOtherSide.DeclaringType));
 			}
 
 			oneToOne.propertyref = propertyInTheOtherSide.Name;
@@ -104,6 +104,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 				oneToOne.formula = null;
 			}
 		}
+		public void ForeignKey(string fkName)
+		{
+			this.oneToOne.foreignkey = fkName;
+		} 
 
 		#endregion
 	}
