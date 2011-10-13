@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2903">
+
+	<class name="Entity2903">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+		<property name="Name" />
+   
+    <bag name="Children"  >
+      <key  column="entityId"></key>
+      <composite-element class="Child">
+        <property name="Code" type="AnsiString" length="10"/>
+      </composite-element>
+    </bag>
+    
+	</class>
+
+</hibernate-mapping>
