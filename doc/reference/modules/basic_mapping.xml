@@ -498,10 +498,13 @@
                 <title>generator</title>
 
                 <para>
-                    The required <literal>&lt;generator&gt;</literal> child element names a .NET class used
-                    to generate unique identifiers for instances of the persistent class. If any parameters
-                    are required to configure or initialize the generator instance, they are passed using the
-                    <literal>&lt;param&gt;</literal> element.
+                    The required <literal>generator</literal> names a .NET class used to generate unique identifiers
+					for instances of the persistent class.
+				</para>
+				<para>
+					The generator can be declared using the <literal>&lt;generator&gt;</literal> child element. If 
+					any parameters are required to configure or initialize the generator instance, they are passed 
+					using <literal>&lt;param&gt;</literal> elements.
                 </para>
 
                 <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0">
@@ -510,6 +513,13 @@
                 <param name="column">next_hi_value_column</param>
         </generator>
 </id>]]></programlisting>
+
+                <para>
+                    If no parameters are required, the generator can be declared using a <literal>generator</literal>
+					attribute directly on the <literal>&lt;id&gt;</literal> element, as follows:
+                 </para>
+
+                <programlisting><![CDATA[<id name="Id" type="Int64" column="uid" unsaved-value="0" generator="native" />]]></programlisting>
 
                 <para>
                     All generators implement the interface <literal>NHibernate.Id.IIdentifierGenerator</literal>.

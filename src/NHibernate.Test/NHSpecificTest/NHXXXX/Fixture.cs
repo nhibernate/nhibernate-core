@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NHibernate.Linq;
 using NUnit.Framework;
+using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.NHXXXX
 {
@@ -52,6 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NHXXXX
             {
                 using (session.BeginTransaction())
                 {
+                    
                     var result = session.Query<Entity>()
                                  .FirstOrDefault();
                     Assert.IsNotNull(result);

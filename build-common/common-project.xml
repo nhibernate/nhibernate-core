@@ -30,8 +30,7 @@
 				if it exists.
 
 			- common.compile-dll
-				compile a DLL, generating the documentation file (.xml) and using Clover
-				if enabled.
+				compile a DLL, generating the documentation file (.xml)
 
 			- common.generate-assemblyinfo
 				generate an AssemblyInfo.cs file from assembly.* NAnt properties.
@@ -49,17 +48,7 @@
 
 	<include buildfile="common.xml" />
 
-	<target name="common.clover-setup" if="${clover.enabled}">
-		<clover-setup 
-			initstring="${root.dir}/${clover.db}"
-			builddir="${root.dir}/${clover.src}/${project::get-name()}"
-			enabled="${clover.instrument}"
-			flushinterval="1000"
-		/>
-	</target>
-
 	<target name="common.compile-tests"
-		depends="common.clover-setup"
 		description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
 
 		<csc 
@@ -96,9 +85,7 @@
 
 	</target>
 
-	<target name="common.compile-tests-vb"
-		depends="common.clover-setup"
-		description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
+	<target name="common.compile-tests-vb" description="Compile NUnit tests and copy App.config file to the output directory, if it exists.">
 
 		<vbc 
 			target="library"
@@ -137,9 +124,7 @@
 
 	</target>
 
-	<target name="common.compile-dll"
-		depends="common.clover-setup"
-		description="Compile sources into a DLL, using Clover if enabled">
+	<target name="common.compile-dll" description="Compile sources into a DLL">
 
 		<property name="project.output" value="${bin.dir}/${project::get-name()}.dll" unless="${property::exists('project.output')}"/>
 		
@@ -180,9 +165,7 @@
 
 	</target>
 
-	<target name="common.compile-exe"
-		depends="common.clover-setup"
-		description="Compile sources into a console executable">
+	<target name="common.compile-exe" description="Compile sources into a console executable">
 
 		<csc
 			target="exe"
@@ -230,12 +213,6 @@
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
 		<property overwrite="false" name="assembly.sign" value="${sign}" />
-
-		<!--
-			Disable CLSCompliantAttribute for non-instrumented assemblies during Clover
-			build. The attribute causes build problems.
-		-->
-		<property name="assembly.is-cls-compliant" value="false" if="${clover.enabled and not clover.instrument}" />
 	</target>
 
 	<target name="common.generate-assemblyinfo"

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
-using NHibernate.Cfg;
 using NHibernate.Test;
 using Npgsql;
 using NUnit.Framework;
@@ -19,6 +19,7 @@ namespace NHibernate.TestDatabaseSetup
 		{
 			SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>();
 			SetupMethods.Add("NHibernate.Driver.SqlClientDriver", SetupSqlServer);
+			SetupMethods.Add("NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc);
 			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
 			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupSQLite);
 			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
@@ -59,6 +60,33 @@ namespace NHibernate.TestDatabaseSetup
                     }
 
                     cmd.CommandText = "create database nhibernate";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private static void SetupSqlServerOdbc(Cfg.Configuration cfg)
+        {
+            var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+
+            using (var conn = new OdbcConnection(connStr.Replace("Database=nhibernateOdbc", "Database=master")))
+            {
+                conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "drop database nhibernateOdbc";
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch(Exception e)
+                    {
+						Console.WriteLine(e);
+                    }
+
+                    cmd.CommandText = "create database nhibernateOdbc";
                     cmd.ExecuteNonQuery();
                 }
             }

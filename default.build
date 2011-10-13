@@ -37,8 +37,7 @@
 		<include name="NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.build" />
 	</fileset>
 
-	<target name="init" depends="common.init"
-		description="Initializes build properties" />
+	<target name="init" depends="common.init" description="Initializes build properties" />
 
 	<target name="prepare-build-directory" depends="init">
 		<mkdir dir="${bin.dir}" />
@@ -119,23 +118,6 @@
 		</nant>
 	</target>
 	
-	<target name="coverage-report" description="Builds the test coverage reports"
-		 if="${clover.enabled}">
-
-		<mkdir dir="${build.dir}/clover" />
-		<clover-setup 
-			initstring="${clover.db}"
-			flushinterval="1000"
-		/>
-
-		<clover-report>
-			<current title="NHibernate Clover Report" output="${build.dir}/clover" >
-				<format type="html" orderby="Alpha" />
-			</current>
-		</clover-report>
-
-	</target>
-
 	<target name="doc" depends="init binaries"
 		description="Builds the Help Documentation and the API documentation">
 		<nant buildfile="doc/documentation.build" target="api manual" />
@@ -173,8 +155,6 @@
 	</target>
 
 	<target name="binaries" depends="init">
-		<property name="clover.enabled" value="false" />
-
 		<call target="build" />
 	</target>
 
@@ -193,7 +173,6 @@
 	</target>
 
 	<target name="reports" depends="init">
-		<property name="clover.enabled" value="false" />
 		<call target="test-all-frameworks" />
 		<call target="test-report" />
 		<call target="coverage-report" />
@@ -218,9 +197,6 @@
 				<include name="lgpl.txt" />
 				<include name="releasenotes.txt" />
 				<include name="readme.html" />
-
-				<!-- exclude the Clover modified source files. -->
-				<exclude name="${clover.src}/**" />
 
 				<!-- exclude ReSharper stuff -->
 				<exclude name="**/_ReSharper*/**" />
@@ -331,12 +307,10 @@
 	<target name="cleanall" description="Deletes every build configuration">
 		<echo message="Deleting all builds from all configurations" />
 		<delete dir="build" failonerror="false" />
-		<delete dir="${clover.src}" failonerror="false" />
 	</target>
 
 	<target name="clean" depends="init" description="Deletes current build">
 		<delete dir="${build.dir}" failonerror="false" />
-		<delete dir="${clover.src}" failonerror="false" />
 	</target>
 
 	<target name="gen-schema-classes" descripton="Generates schema classes from nhibernate-mapping.xsd">

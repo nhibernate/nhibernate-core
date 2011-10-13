@@ -52,7 +52,7 @@
 		<property name="Extension" column="Extension" type="string" length="4"
 							access="field.camelcase-underscore"/>
 
-		<property name="Notes" column="Notes" type="string" length="4000"
+		<property name="Notes" column="Notes" type="string" length="2000"
 							access="field.camelcase-underscore"/>
 
 		<many-to-one name="Superior" class="Employee" column="ReportsTo"  

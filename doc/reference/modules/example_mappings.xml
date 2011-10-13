@@ -155,9 +155,8 @@ create sequence employer_id_seq]]></programlisting>
 
     <class name="Work" table="works" discriminator-value="W">
 
-        <id name="Id" column="id">
-            <generator class="native"/>
-        </id>
+        <id name="Id" column="id" generator="native" />
+
         <discriminator column="type" type="character"/>
 
         <property name="Title"/>
@@ -286,9 +285,7 @@ alter table author_work
     assembly="..." namespace="...">
 
     <class name="Customer" table="customers">
-        <id name="Id" column="id">
-            <generator class="native"/>
-        </id>
+        <id name="Id" column="id" generator="native" />
         <property name="Name" column="name"/>
         <set name="Orders" inverse="true" lazy="true">
             <key column="customer_id"/>
@@ -297,9 +294,7 @@ alter table author_work
     </class>
 
     <class name="Order" table="orders">
-        <id name="Id" column="id">
-            <generator class="native"/>
-        </id>
+        <id name="Id" column="id" generator="native" />
         <property name="Date" column="date"/>
         <many-to-one name="Customer" column="customer_id"/>
         <list name="LineItems" table="line_items" lazy="true">
