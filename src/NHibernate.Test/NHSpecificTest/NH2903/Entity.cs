@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHibernate.Test.NHSpecificTest.NHXXXX
+namespace NHibernate.Test.NHSpecificTest.NH2903
 {
     class Child
     {
         public string Code { get; set; }
     }
-    class Entity
+    class Entity2903
     {
-        public Entity()
+        public Entity2903()
         {
             Children = new List<Child>();
         }

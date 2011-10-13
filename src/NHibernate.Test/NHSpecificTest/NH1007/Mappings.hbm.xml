@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH1007" assembly="NHibernate.Test">
+
+	<class name="Employer1">
+		<id name="Id" generator="guid" />
+		<property name="Name" />
+	</class>
+
+	<!-- 
+		Mapping to demonstrate that the 'column' attribute takes precedence over a 'column' element - and, for consistency,
+		the same behaviour applies to the generator attribute/element
+	-->
+	<class name="Employer2">
+		<id name="Id" generator="guid">
+			<generator class="invalid_generator_class" />
+		</id>
+		
+		<property name="Name" column="Name">
+			<column name="InvalidColumnName" />
+		</property>
+	</class>
+
+</hibernate-mapping>

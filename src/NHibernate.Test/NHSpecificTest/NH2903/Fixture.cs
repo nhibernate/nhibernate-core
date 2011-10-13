@@ -6,7 +6,7 @@ using NHibernate.Linq;
 using NUnit.Framework;
 using NHibernate.Cfg;
 
-namespace NHibernate.Test.NHSpecificTest.NHXXXX
+namespace NHibernate.Test.NHSpecificTest.NH2903
 {
     [TestFixture]
     public class Fixture : BugTestCase
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NHXXXX
             {
                 using (ITransaction transaction = session.BeginTransaction())
                 {
-                    var e1 = new Entity();
+                    var e1 = new Entity2903();
                     e1.Name = "Bob";
                     e1.Children.Add(new Child { Code = "c1" });
                     e1.Children.Add(new Child { Code = "c2" });
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NHXXXX
                 using (session.BeginTransaction())
                 {
                     
-                    var result = session.Query<Entity>()
+                    var result = session.Query<Entity2903>()
                                  .FirstOrDefault();
                     Assert.IsNotNull(result);
                     int count = session.CreateFilter(result.Children, "select count(*)").List<int>()[0];
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NHXXXX
             {
                 using (session.BeginTransaction())
                 {
-                    var result = session.Query<Entity>()
+                    var result = session.Query<Entity2903>()
                                  .FirstOrDefault();
                     Assert.IsNotNull(result);
                     var children = session.CreateFilter(result.Children,string.Empty)
