@@ -714,7 +714,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.ReferencedEntityName = GetEntityName(mapKeyManyToManyMapping, mappings);
 
-			BindForeingKey(mapKeyManyToManyMapping.foreignkey, model);
+			BindForeignKey(mapKeyManyToManyMapping.foreignkey, model);
 		}
 
 		private void BindIndexManyToMany(HbmIndexManyToMany indexManyToManyMapping, ManyToOne model, string defaultColumnName, bool isNullable)
@@ -723,7 +723,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.ReferencedEntityName = GetEntityName(indexManyToManyMapping, mappings);
 
-			BindForeingKey(indexManyToManyMapping.foreignkey, model);
+			BindForeignKey(indexManyToManyMapping.foreignkey, model);
 		}
 
 		/// <remarks>
@@ -911,7 +911,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			key.SetNullable(keyMapping.IsNullable.HasValue ? keyMapping.IsNullable.Value : true);
 			key.SetUpdateable(keyMapping.IsUpdatable.HasValue ? keyMapping.IsUpdatable.Value : true);
-			BindForeingKey(keyMapping.foreignkey, key);
+			BindForeignKey(keyMapping.foreignkey, key);
 		}
 
 		private void BindManyToManySubelements(HbmManyToMany manyToManyMapping, Mapping.Collection collection)

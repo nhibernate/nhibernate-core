@@ -6,29 +6,29 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class OneToOneMapper : IOneToOneMapper
 	{
-		private readonly IAccessorPropertyMapper entityPropertyMapper;
-		private readonly MemberInfo member;
-		private readonly HbmOneToOne oneToOne;
+		private readonly IAccessorPropertyMapper _entityPropertyMapper;
+		private readonly MemberInfo _member;
+		private readonly HbmOneToOne _oneToOne;
 
 		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne)
 			: this(member, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => oneToOne.access = x), oneToOne) { }
 
 		public OneToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorMapper, HbmOneToOne oneToOne)
 		{
-			this.member = member;
-			this.oneToOne = oneToOne;
+			_member = member;
+			_oneToOne = oneToOne;
 			if (member == null)
 			{
-				this.oneToOne.access = "none";
+				_oneToOne.access = "none";
 			}
-			entityPropertyMapper = member == null ? new NoMemberPropertyMapper() : accessorMapper;
+			_entityPropertyMapper = member == null ? new NoMemberPropertyMapper() : accessorMapper;
 		}
 
 		#region Implementation of IOneToOneMapper
 
 		public void Cascade(Cascade cascadeStyle)
 		{
-			oneToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
+			_oneToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
 		}
 
 		#endregion
@@ -37,12 +37,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Access(Accessor accessor)
 		{
-			entityPropertyMapper.Access(accessor);
+			_entityPropertyMapper.Access(accessor);
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			entityPropertyMapper.Access(accessorType);
+			_entityPropertyMapper.Access(accessorType);
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
@@ -56,53 +56,58 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Lazy(LazyRelation lazyRelation)
 		{
-			oneToOne.lazy = lazyRelation.ToHbm();
-			oneToOne.lazySpecified = oneToOne.lazy != HbmLaziness.Proxy;
+			_oneToOne.lazy = lazyRelation.ToHbm();
+			_oneToOne.lazySpecified = _oneToOne.lazy != HbmLaziness.Proxy;
 		}
 
 		public void Constrained(bool value)
 		{
-			oneToOne.constrained = value;
+			_oneToOne.constrained = value;
 		}
 
 		public void PropertyReference(MemberInfo propertyInTheOtherSide)
 		{
 			if (propertyInTheOtherSide == null)
 			{
-				oneToOne.propertyref = null;
+				_oneToOne.propertyref = null;
 				return;
 			}
 
-			if (member != null && propertyInTheOtherSide.DeclaringType != member.GetPropertyOrFieldType())
+			if (_member != null && propertyInTheOtherSide.DeclaringType != _member.GetPropertyOrFieldType())
 			{
 				throw new ArgumentOutOfRangeException("propertyInTheOtherSide",
-				                                      string.Format("Expected a member of {0} found the member {1} of {2}", member.GetPropertyOrFieldType(), propertyInTheOtherSide,
+				                                      string.Format("Expected a member of {0} found the member {1} of {2}", _member.GetPropertyOrFieldType(), propertyInTheOtherSide,
 				                                                    propertyInTheOtherSide.DeclaringType));
 			}
 
-			oneToOne.propertyref = propertyInTheOtherSide.Name;
+			_oneToOne.propertyref = propertyInTheOtherSide.Name;
 		}
 
 		public void Formula(string formula)
 		{
 			if (formula == null)
 			{
-				oneToOne.formula = null;
-				oneToOne.formula1 = null;
+				_oneToOne.formula = null;
+				_oneToOne.formula1 = null;
 				return;
 			}
 
 			string[] formulaLines = formula.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				oneToOne.formula = new[] {new HbmFormula {Text = formulaLines}};
-				oneToOne.formula1 = null;
+				_oneToOne.formula = new[] {new HbmFormula {Text = formulaLines}};
+				_oneToOne.formula1 = null;
 			}
 			else
 			{
-				oneToOne.formula1 = formula;
-				oneToOne.formula = null;
+				_oneToOne.formula1 = formula;
+				_oneToOne.formula = null;
 			}
+		}
+
+		public void ForeignKey(string foreignKeyName)
+		{
+			_oneToOne.foreignkey = foreignKeyName;
 		}
 
 		#endregion

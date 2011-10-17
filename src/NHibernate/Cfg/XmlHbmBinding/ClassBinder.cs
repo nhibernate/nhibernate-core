@@ -326,11 +326,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					{ }, model.AddProperty);
 		}
 
-		protected void BindForeingKey(string foreingKey, SimpleValue value)
+		protected void BindForeignKey(string foreignKey, SimpleValue value)
 		{
-			if (!string.IsNullOrEmpty(foreingKey))
+			if (!string.IsNullOrEmpty(foreignKey))
 			{
-				value.ForeignKeyName = foreingKey;
+				value.ForeignKeyName = foreignKey;
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			InitOuterJoinFetchSetting(oneToOneMapping, model);
 			InitLaziness(oneToOneMapping.Lazy, model, true);
-			BindForeingKey(oneToOneMapping.foreignkey, model);
+			BindForeignKey(oneToOneMapping.foreignkey, model);
 
 			model.ReferencedPropertyName = oneToOneMapping.propertyref;
 

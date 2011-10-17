@@ -215,7 +215,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.ReferencedEntityName = GetEntityName(keyManyToOneMapping, mappings);
 			model.IsIgnoreNotFound = keyManyToOneMapping.NotFoundMode == HbmNotFoundMode.Ignore;
 
-			BindForeingKey(keyManyToOneMapping.foreignkey, model);
+			BindForeignKey(keyManyToOneMapping.foreignkey, model);
 		}
 
 		private void BindManyToOne(HbmManyToOne manyToOneMapping, ManyToOne model, string defaultColumnName, bool isNullable)
@@ -236,7 +236,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				AddManyToOneSecondPass(model);
 			}
 
-			BindForeingKey(manyToOneMapping.foreignkey, model);
+			BindForeignKey(manyToOneMapping.foreignkey, model);
 		}
 
 		private void InitOuterJoinFetchSetting(HbmManyToOne manyToOneMapping, ManyToOne model)

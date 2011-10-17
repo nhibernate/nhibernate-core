@@ -69,6 +69,26 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void CanSetForeignKeyName()
+		{
+			var hbm = new HbmOneToOne();
+			var mapper = new OneToOneMapper(null, hbm);
+			mapper.ForeignKey("Id");
+
+			hbm.foreignkey.Should().Be("Id");
+		}
+
+		[Test]
+		public void WhenForeignKeyIsNullForeignKeyMappingIsNull()
+		{
+			var hbm = new HbmOneToOne();
+			var mapper = new OneToOneMapper(null, hbm);
+			mapper.ForeignKey(null);
+
+			hbm.foreignkey.Should().Be.Null();
+		}
+
+		[Test]
 		public void WhenNoMemberPropertyRefAcceptAnything()
 		{
 			var hbm = new HbmOneToOne();
@@ -99,7 +119,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			Executing.This(() => mapper.PropertyReference(typeof(Array).GetProperty("Length"))).Should().Throw<ArgumentOutOfRangeException>();
 		}
-
 
 		[Test]
 		public void CanSetFormula()
