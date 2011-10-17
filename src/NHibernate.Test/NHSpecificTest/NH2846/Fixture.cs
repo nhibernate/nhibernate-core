@@ -20,7 +20,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
                     session.Save(category);
 
                     // Add a test post
-                    session.Save(new Post { Id = 1, Title = "Post 1", Category = category });
+                    var post = new Post { Id = 1, Title = "Post 1", Category = category };
+                    session.Save(post);
+                 
+                    var comment1 = new Comment { Id = 1, Title = "Comment 1", Post = post };
+                    var comment2 = new Comment { Id = 2, Title = "Comment 2", Post = post };
+                    session.Save(comment1);
+                    session.Save(comment2);
+
+                    session.Save(post);
 
                     // Flush the changes
                     session.Flush();
@@ -38,6 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
             {
                 using (var tran = session.BeginTransaction())
                 {
+                    session.Delete("from Comment");
                     session.Delete("from Post");
                     session.Delete("from Category");
                     tran.Commit();
@@ -53,11 +62,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 
                 var count = session.Query<Post>()
                     .Fetch(p => p.Category)
+                    .FetchMany(p => p.Comments)
                     .Count();
 
                 Assert.AreEqual(1, count);
 
             }
         }
+
+       
     }
 }
