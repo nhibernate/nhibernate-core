@@ -61,7 +61,7 @@ namespace NHibernate.Cache
 			hashCode = ComputeHashCode();
 		}
 
-		public bool HasResultTrasformer
+		public bool HasResultTransformer
 		{
 			get { return customTransformer != null; }
 		}

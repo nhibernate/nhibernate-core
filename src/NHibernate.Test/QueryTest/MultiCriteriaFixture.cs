@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
-using NHibernate.Engine;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
 
@@ -21,13 +18,13 @@ namespace NHibernate.Test.QueryTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
+			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
 		[TestFixtureSetUp]
 		public void CheckMultiQuerySupport()
 		{
-			base.TestFixtureSetUp();
+			TestFixtureSetUp();
 			IDriver driver = sessions.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 			{
@@ -77,7 +74,6 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-
 		[Test]
 		public void CanExecuteMultiplyQueriesInSingleRoundTrip()
 		{
@@ -118,7 +114,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
 			cacheHashtable.Clear();
 
 			CreateItems();
@@ -137,7 +133,7 @@ namespace NHibernate.Test.QueryTest
 			//set the query in the cache
 			DoMutiQueryAndAssert();
 
-			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
 			IList cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
 			IList cachedQuery = (IList)cachedListEntry[1];
 
@@ -152,7 +148,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = sessions.OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Gt("id", 50));
+					.Add(Restrictions.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -174,7 +170,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Gt("id", 50));
+					.Add(Restrictions.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -189,7 +185,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Gt("id", 50));
+					.Add(Restrictions.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(20))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -221,7 +217,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Gt("id", 50));
+					.Add(Restrictions.Gt("id", 50));
 
 				IList results = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria)
@@ -252,7 +248,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.In("id", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
+					.Add(Restrictions.In("id", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 				IList results = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria))
 					.Add(CriteriaTransformer.Clone(criteria)
@@ -285,7 +281,7 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 				
 				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 
 				ICriteria secondCriteria = session.CreateCriteria(typeof(Item));
 
@@ -311,7 +307,7 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 
 				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 					
 				DetachedCriteria secondCriteria = DetachedCriteria.For(typeof(Item));
 
@@ -335,7 +331,7 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 
 				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 
 				ICriteria secondCriteria = session.CreateCriteria(typeof(Item));
 
@@ -364,7 +360,7 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 
 				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 
 				DetachedCriteria secondCriteria = DetachedCriteria.For(typeof(Item));
 
@@ -395,13 +391,13 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 
 				ICriteria firstCriteria = session.CreateCriteria(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 
 				multiCriteria.Add("firstCriteria", firstCriteria);
 
 				try
 				{
-					IList firstResult = (IList)multiCriteria.GetResult("unknownKey");
+					multiCriteria.GetResult("unknownKey");
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -427,13 +423,13 @@ namespace NHibernate.Test.QueryTest
 				IMultiCriteria multiCriteria = session.CreateMultiCriteria();
 
 				DetachedCriteria firstCriteria = DetachedCriteria.For(typeof(Item))
-					.Add(Expression.Lt("id", 50));
+					.Add(Restrictions.Lt("id", 50));
 
 				multiCriteria.Add("firstCriteria", firstCriteria);
 
 				try
 				{
-					IList firstResult = (IList)multiCriteria.GetResult("unknownKey");
+					multiCriteria.GetResult("unknownKey");
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -454,7 +450,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				ICriteria criteria = s.CreateCriteria(typeof(Item))
-					.Add(Expression.Gt("id", 50));
+					.Add(Restrictions.Gt("id", 50));
 				IMultiCriteria multiCriteria = s.CreateMultiCriteria()
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
@@ -481,21 +477,6 @@ namespace NHibernate.Test.QueryTest
 				t.Commit();
 			}
 		}
-
-		private Hashtable GetHashTableUsedAsQueryCache()
-		{
-			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)sessions;
-			//need the inner hashtable in the cache
-			HashtableCache cache = (HashtableCache)
-								   typeof(StandardQueryCache)
-									.GetField("queryCache", BindingFlags.Instance | BindingFlags.NonPublic)
-									.GetValue(factory.GetQueryCache(null));
-
-			return (Hashtable)typeof(HashtableCache)
-								.GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic)
-								.GetValue(cache);
-		}
-
 
 		private void RemoveAllItems()
 		{

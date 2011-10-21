@@ -651,6 +651,8 @@
     <Compile Include="NHSpecificTest\NH0000\Entity.cs" />
     <Compile Include="NHSpecificTest\NH0000\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH0000\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2856\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1007\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1007\Fixture.cs" />
@@ -922,6 +924,7 @@
     <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="PropertyTest\NoSetterCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="QueryTest\MultipleMixedQueriesFixture.cs" />
+    <Compile Include="QueryTest\ResultTransformerStub.cs" />
     <Compile Include="ReadOnly\AbstractReadOnlyTest.cs" />
     <Compile Include="ReadOnly\Container.cs" />
     <Compile Include="ReadOnly\Course.cs" />

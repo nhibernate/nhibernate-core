@@ -1,13 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using NHibernate.Cache;
 using NHibernate.Driver;
-using NHibernate.Engine;
 using NHibernate.Test.SecondLevelCacheTests;
-using NHibernate.Transform;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -20,13 +16,13 @@ namespace NHibernate.Test.QueryTest
 
 		protected override IList Mappings
 		{
-			get { return new string[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
+			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
 		[TestFixtureSetUp]
 		public void CheckMultiQuerySupport()
 		{
-			base.TestFixtureSetUp();
+			TestFixtureSetUp();
 			IDriver driver = sessions.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
 			{
@@ -42,8 +38,8 @@ namespace NHibernate.Test.QueryTest
 				IMultiQuery multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids)").AddEntity(typeof (Item)))
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids2)").AddEntity(typeof (Item)))
-					.SetParameterList("ids", new int[] {50})
-					.SetParameterList("ids2", new int[] {50});
+					.SetParameterList("ids", new[] {50})
+					.SetParameterList("ids2", new[] {50});
 				multiQuery.List();
 			}
 		}
@@ -68,7 +64,7 @@ namespace NHibernate.Test.QueryTest
 			//set the query in the cache
 			DoMutiQueryAndAssert();
 
-			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
 			IList cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
 			IList cachedQuery = (IList)cachedListEntry[1];
 
@@ -171,7 +167,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			Hashtable cacheHashtable = GetHashTableUsedAsQueryCache();
+			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
 			cacheHashtable.Clear();
 
 			CreateItems();
@@ -215,20 +211,6 @@ namespace NHibernate.Test.QueryTest
 				}
 				t.Commit();
 			}
-		}
-
-		private Hashtable GetHashTableUsedAsQueryCache()
-		{
-			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)sessions;
-			//need the inner hashtable in the cache
-			HashtableCache cache = (HashtableCache)
-									 typeof(StandardQueryCache)
-										 .GetField("queryCache", BindingFlags.Instance | BindingFlags.NonPublic)
-										 .GetValue(factory.GetQueryCache(null));
-
-			return (Hashtable)typeof(HashtableCache)
-									 .GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic)
-									 .GetValue(cache);
 		}
 
 		[Test]
@@ -289,7 +271,7 @@ namespace NHibernate.Test.QueryTest
 				IList results = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:items)").AddEntity(typeof(Item)))
 					.Add("select count(*) from Item i where i.id in (:items)")
-					.SetParameterList("items", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
+					.SetParameterList("items", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
 					.List();
 
 				IList items = (IList)results[0];
@@ -405,7 +387,7 @@ namespace NHibernate.Test.QueryTest
 
 				try
 				{
-					IList firstResult = (IList)multiQuery.GetResult("unknownKey");
+					multiQuery.GetResult("unknownKey");
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -415,7 +397,6 @@ namespace NHibernate.Test.QueryTest
 				{
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
-
 			}
 		}
 
@@ -461,7 +442,6 @@ namespace NHibernate.Test.QueryTest
 			RemoveAllItems();
 		}
 
-
 		[Test]
 		public void CanGetResultsInAGenericList()
 		{
@@ -477,40 +457,6 @@ namespace NHibernate.Test.QueryTest
 
 				Assert.That(results[0], Is.InstanceOf<ArrayList>());
 				Assert.That(results[1], Is.InstanceOf<List<long>>());
-			}
-		}
-
-		public class ResultTransformerStub : IResultTransformer
-		{
-			private bool _wasTransformTupleCalled;
-			private bool _wasTransformListCalled;
-
-			public bool WasTransformTupleCalled
-			{
-				get { return _wasTransformTupleCalled; }
-			}
-
-			public bool WasTransformListCalled
-			{
-				get { return _wasTransformListCalled; }
-			}
-
-			public ResultTransformerStub()
-			{
-				_wasTransformTupleCalled = false;
-				_wasTransformListCalled = false;
-			}
-
-			public object TransformTuple(object[] tuple, string[] aliases)
-			{
-				_wasTransformTupleCalled = true;
-				return tuple;
-			}
-
-			public IList TransformList(IList collection)
-			{
-				_wasTransformListCalled = true;
-				return collection;
 			}
 		}
 	}
