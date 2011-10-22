@@ -43,13 +43,4 @@ namespace NHibernate.Context
             WcfOperationState.Map = value;
         }
     }
-
-    public class WcfInstanceStateExtension : IExtension<InstanceContext>
-    {
-        public IDictionary Map { get; set; }
-
-        // we don't really need implementations for these methods in this case
-        public void Attach(InstanceContext owner) { }
-        public void Detach(InstanceContext owner) { }
-    }
 }
