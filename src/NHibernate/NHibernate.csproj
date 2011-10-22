@@ -131,6 +131,8 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Context\WcfInstanceSessionContext.cs" />
+    <Compile Include="Context\WcfInstanceStateExtension.cs" />
     <Compile Include="Criterion\IEnhancedProjection.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
