@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 			mapper.Class<Person>(rc =>
 			{
 				rc.Table("Person");
-				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
 				rc.Property(x => x.Name);
 				rc.ManyToOne(x => x.Address, m => m.Column("AddressId"));
 			});
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 			mapper.Class<Address>(rc =>
 			{
 				rc.Table("Addresses");
-				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
 				rc.Property(x => x.Name);
 			});
 
@@ -68,10 +68,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var person = new Person { Name = "Joe Bloggs" };
+				var person = new Person { Id = 5, Name = "Joe Bloggs" };
 				session.Save(person);
 
-				var address = new Address { Name = "Home" };
+				var address = new Address { Id = 15, Name = "Home" };
 				session.Save(address);
 
 				person.Address = address;
