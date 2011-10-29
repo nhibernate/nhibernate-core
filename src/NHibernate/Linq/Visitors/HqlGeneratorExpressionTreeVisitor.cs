@@ -18,9 +18,7 @@ namespace NHibernate.Linq.Visitors
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(parameters);
-
-			return visitor.VisitExpression(expression);
+			return new HqlGeneratorExpressionTreeVisitor(parameters).VisitExpression(expression);
 		}
 
 		public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
@@ -211,16 +209,12 @@ namespace NHibernate.Linq.Visitors
 					}
 
 					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression
-					    && expression.Right.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Right).Value == null)
+					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
 					{
 						return _hqlTreeBuilder.IsNull(lhs);
 					}
 
-					if (expression.Left is ConstantExpression
-					    && expression.Left.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Left).Value == null)
+					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
 					{
 						return _hqlTreeBuilder.IsNull(rhs);
 					}
@@ -236,16 +230,12 @@ namespace NHibernate.Linq.Visitors
 					}
 
 					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression
-					    && expression.Right.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Right).Value == null)
+					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
 					{
 						return _hqlTreeBuilder.IsNotNull(lhs);
 					}
 
-					if (expression.Left is ConstantExpression
-					    && expression.Left.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Left).Value == null)
+					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
 					{
 						return _hqlTreeBuilder.IsNotNull(rhs);
 					}
@@ -270,10 +260,7 @@ namespace NHibernate.Linq.Visitors
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
 					}
-					else
-					{
-						return _hqlTreeBuilder.Add(lhs, rhs);
-					}
+					return _hqlTreeBuilder.Add(lhs, rhs);
 
 				case ExpressionType.Subtract:
 					return _hqlTreeBuilder.Subtract(lhs, rhs);
@@ -310,8 +297,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (!(lhs is HqlBooleanExpression) && !(rhs is HqlBooleanExpression))
 			{
-				throw new InvalidOperationException(
-					"Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
+				throw new InvalidOperationException("Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
 			}
 
 			HqlExpression leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
