@@ -330,12 +330,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if(queryWriter.SkipParameter != null)
 			{
 				queryWriter.SkipParameter.ExpectedType = NHibernateUtil.Int32;
+				queryWriter.SkipParameter.IsSkipParameter();
 				skipParameter = Parameter.Placeholder;
 				skipParameter.BackTrack = queryWriter.SkipParameter.GetIdsForBackTrack(sessionFactory).First();
 			}
 			if (queryWriter.TakeParameter != null)
 			{
 				queryWriter.TakeParameter.ExpectedType = NHibernateUtil.Int32;
+				queryWriter.TakeParameter.IsTakeParameterWithSkipParameter(queryWriter.SkipParameter);
 				takeParameter = Parameter.Placeholder;
 				takeParameter.BackTrack = queryWriter.TakeParameter.GetIdsForBackTrack(sessionFactory).First();
 			}
@@ -356,7 +358,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.SkipParameter = pnode.HqlParameterSpecification;
+				queryWriter.SkipParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -369,7 +371,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.TakeParameter = pnode.HqlParameterSpecification;
+				queryWriter.TakeParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -426,8 +428,8 @@ namespace NHibernate.Hql.Ast.ANTLR
         {
             private readonly SqlStringBuilder builder = new SqlStringBuilder();
 
-        	public IParameterSpecification TakeParameter { get; set; }
-        	public IParameterSpecification SkipParameter { get; set; }
+        	public IPageableParameterSpecification TakeParameter { get; set; }
+        	public IPageableParameterSpecification SkipParameter { get; set; }
 					public int? Skip { get; set; }
 					public int? Take { get; set; }
 

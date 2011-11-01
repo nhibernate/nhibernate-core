@@ -61,8 +61,13 @@ namespace NHibernate.Param
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				ExpectedType.NullSafeSet(command, typedValue.Value, position + singleSqlParametersOffset, session);
+				ExpectedType.NullSafeSet(command, GetPagingValue(typedValue.Value, session.Factory.Dialect, queryParameters), position + singleSqlParametersOffset, session);
 			}
+		}
+
+		public override int GetSkipValue(QueryParameters queryParameters)
+		{
+			return (int)queryParameters.NamedParameters[name].Value;
 		}
 
 		public override void SetEffectiveType(QueryParameters queryParameters)

@@ -64,8 +64,13 @@ namespace NHibernate.Param
 			// an HQL positional parameter can appear more than once because a custom HQL-Function can duplicate it
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				type.NullSafeSet(command, value, position + singleSqlParametersOffset, session);
+				type.NullSafeSet(command, GetPagingValue(value, session.Factory.Dialect, queryParameters), position + singleSqlParametersOffset, session);
 			}
+		}
+
+		public override int GetSkipValue(QueryParameters queryParameters)
+		{
+			return (int)queryParameters.PositionalParameterValues[hqlPosition];
 		}
 
 		public override void SetEffectiveType(QueryParameters queryParameters)
