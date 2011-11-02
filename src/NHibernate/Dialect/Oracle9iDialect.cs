@@ -26,6 +26,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
 			RegisterColumnType(DbType.Time, "TIMESTAMP(4)");
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+			// matches precision of TIMESTAMP(4)
+			get { return 1000L; }
+		}
+
 		public override string GetSelectClauseNullString(SqlType sqlType)
 		{
 			return GetBasicSelectClauseNullString(sqlType);
