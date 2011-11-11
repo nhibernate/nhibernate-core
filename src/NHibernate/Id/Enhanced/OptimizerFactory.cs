@@ -38,8 +38,8 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		[Obsolete("Use BuildOptimizer(string type, System.Type returnClass, int incrementSize, long explicitInitialValue) instead.")]
-		public static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
+		
+		private static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
 		{
 			if (string.IsNullOrEmpty(type))
 			{
