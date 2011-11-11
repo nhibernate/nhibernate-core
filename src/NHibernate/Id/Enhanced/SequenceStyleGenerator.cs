@@ -124,7 +124,8 @@ namespace NHibernate.Id.Enhanced
 				databaseStructure = new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
 			}
 
-			optimizer = OptimizerFactory.BuildOptimizer(optimizationStrategy, identifierType.ReturnedClass, incrementSize);
+			optimizer = OptimizerFactory.BuildOptimizer(optimizationStrategy, identifierType.ReturnedClass, incrementSize,
+				PropertiesHelper.GetInt32(InitialParam, parms, -1));  // Use -1 as default initial value here to signal that it's not set.
 			databaseStructure.Prepare(optimizer);
 		}
 
