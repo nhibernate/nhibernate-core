@@ -62,9 +62,9 @@ namespace NHibernate.Id.Enhanced
 				case Pool:
 					optimizerClassName = typeof(PooledOptimizer).FullName;
 					break;
-				//case PoolLo:    FIXME
-				//    optimizerClassName = typeof(PooledOptimizer).FullName;
-				//    break;
+				case PoolLo:
+				    optimizerClassName = typeof(PooledLoOptimizer).FullName;
+				    break;
 				default:
 					optimizerClassName = type;
 					break;
@@ -340,5 +340,52 @@ namespace NHibernate.Id.Enhanced
 		}
 
 		#endregion
+
+		#region Nested type: PooledLoOptimizer
+
+		public class PooledLoOptimizer : OptimizerSupport
+		{
+			private long lastSourceValue = -1; // last value read from db source
+			private long value; // the current generator value
+
+			public PooledLoOptimizer(System.Type returnClass, int incrementSize)
+				: base(returnClass, incrementSize)
+			{
+				if (incrementSize < 1)
+				{
+					throw new HibernateException("increment size cannot be less than 1");
+				}
+				if (log.IsDebugEnabled)
+				{
+					log.DebugFormat("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
+				}
+			}
+
+			public override object Generate(IAccessCallback callback)
+			{
+				if (lastSourceValue < 0 || value >= (lastSourceValue + IncrementSize))
+				{
+					lastSourceValue = callback.NextValue;
+					value = lastSourceValue;
+					// handle cases where initial-value is less than one (hsqldb for instance).
+					while (value < 1)
+						value++;
+				}
+				return Make(value++);
+			}
+
+			public override long LastSourceValue
+			{
+				get { return lastSourceValue; }
+			}
+
+			public override bool ApplyIncrementSizeToSourceValues
+			{
+				get { return true; }
+			}
+		}
+
+		#endregion
+
 	}
 }
