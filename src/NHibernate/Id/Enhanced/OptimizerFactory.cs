@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 
 using NHibernate.Util;
+using System.Runtime.CompilerServices;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -146,6 +147,7 @@ namespace NHibernate.Id.Enhanced
 				get { return false; }
 			}
 
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
 				if (lastSourceValue < 0)
@@ -306,7 +308,7 @@ namespace NHibernate.Id.Enhanced
 				this.initialValue = initialValue;
 			}
 
-
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
 				if (hiValue < 0)
@@ -361,6 +363,7 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
 				if (lastSourceValue < 0 || value >= (lastSourceValue + IncrementSize))
