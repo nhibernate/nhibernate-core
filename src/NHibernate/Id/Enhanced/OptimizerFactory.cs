@@ -3,6 +3,7 @@ using System.Reflection;
 
 using NHibernate.Util;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -64,8 +65,8 @@ namespace NHibernate.Id.Enhanced
 					optimizerClassName = typeof(PooledOptimizer).FullName;
 					break;
 				case PoolLo:
-				    optimizerClassName = typeof(PooledLoOptimizer).FullName;
-				    break;
+					optimizerClassName = typeof(PooledLoOptimizer).FullName;
+					break;
 				default:
 					optimizerClassName = type;
 					break;
@@ -193,14 +194,17 @@ namespace NHibernate.Id.Enhanced
 
 			public override object Generate(IAccessCallback callback)
 			{
-				// The following note is from Hibernate. I haven't researched it fully. See HHH-3001.
-				// Note: it is incredibly important that the method-local variable be
-				// used here to avoid concurrency issues.
+				// We must use a local variable here to avoid concurrency issues.
+				// With the local value we can avoid synchronizing the whole method.
 
-				long val = lastSourceValue;
+				long val = -1;
 				while (val <= 0)
 					val = callback.NextValue;
+
+				// This value is only stored for easy access in test. Should be no
+				// threading concerns there.
 				lastSourceValue = val;
+
 				return Make(val);
 			}
 		}
