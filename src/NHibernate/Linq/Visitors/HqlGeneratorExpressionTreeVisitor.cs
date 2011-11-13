@@ -12,7 +12,7 @@ namespace NHibernate.Linq.Visitors
 {
 	public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
 	{
-		private readonly HqlTreeBuilder _hqlTreeBuilder;
+		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
@@ -25,7 +25,6 @@ namespace NHibernate.Linq.Visitors
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 			_parameters = parameters;
-			_hqlTreeBuilder = new HqlTreeBuilder();
 		}
 
 		public HqlTreeNode Visit(Expression expression)
@@ -185,7 +184,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
-			return _hqlTreeBuilder.Ident(expression.ReferencedQuerySource.ItemName);
+			return _hqlTreeBuilder.Ident(_parameters.QuerySourceNamer.GetName(expression.ReferencedQuerySource));
 		}
 
 		private HqlTreeNode VisitVBStringComparisonExpression(VBStringComparisonExpression expression)

@@ -50,6 +50,9 @@ namespace NHibernate.Linq.Visitors
 			// by flattening out the sub-queries that they are located in
 			ResultOperatorRewriterResult result = ResultOperatorRewriter.Rewrite(queryModel);
 
+			// Identify and name query sources
+			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
+
 			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
 			visitor.Visit();
 
@@ -98,7 +101,6 @@ namespace NHibernate.Linq.Visitors
 		{
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
-
 			_hqlTree = new IntermediateHqlTree(root);
 		}
 
@@ -109,10 +111,10 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			_hqlTree.AddFromClause(
-				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters), 
-					_hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
+			var hqlExpressionTree = HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters);
+
+			_hqlTree.AddFromClause(_hqlTree.TreeBuilder.Range(hqlExpressionTree, _hqlTree.TreeBuilder.Alias(querySourceName)));
 
 			// apply any result operators that were rewritten
 			if (RewrittenOperatorResult != null)
@@ -129,6 +131,8 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
+			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
+
 			if (fromClause is NhJoinClause)
 			{
 				if (((NhJoinClause)fromClause).IsInner)
@@ -136,14 +140,14 @@ namespace NHibernate.Linq.Visitors
 					_hqlTree.AddFromClause(
 						_hqlTree.TreeBuilder.Join(
 							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+							_hqlTree.TreeBuilder.Alias(querySourceName)));
 				}
 				else
 				{
 					_hqlTree.AddFromClause(
 						_hqlTree.TreeBuilder.LeftJoin(
 							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+							_hqlTree.TreeBuilder.Alias(querySourceName)));
 				}
 			}
 			else if (fromClause.FromExpression is MemberExpression)
@@ -156,7 +160,7 @@ namespace NHibernate.Linq.Visitors
 					_hqlTree.AddFromClause(
 						_hqlTree.TreeBuilder.Join(
 							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+							_hqlTree.TreeBuilder.Alias(querySourceName)));
 				}
 				else
 				{
@@ -170,7 +174,7 @@ namespace NHibernate.Linq.Visitors
 				_hqlTree.AddFromClause(
 					_hqlTree.TreeBuilder.Range(
 						HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters),
-						_hqlTree.TreeBuilder.Alias(fromClause.ItemName)));
+						_hqlTree.TreeBuilder.Alias(querySourceName)));
 
 			}
 

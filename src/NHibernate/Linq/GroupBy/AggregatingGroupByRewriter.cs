@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
-using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -10,24 +9,24 @@ namespace NHibernate.Linq.GroupBy
 {
 	/// <summary>
 	/// An AggregatingGroupBy is a query such as:
-	/// 
+	/// <code>
 	///		from p in db.Products
 	///		group p by p.Category.CategoryId
 	///		into g
-	///		    select new
-	///		               {
-	///		                   g.Key,
-	///		                   MaxPrice = g.Max(p => p.UnitPrice)
-	///		               };
-	/// 
-	/// Where the grouping operation is being fully aggregated and hence does not create any form of heirarchy.
+	///		select new
+	///		{
+	///			g.Key,
+	///			MaxPrice = g.Max(p => p.UnitPrice)
+	///		};
+	/// </code>
+	/// <para>
+	/// Where the grouping operation is being fully aggregated and hence does not create any form of hierarchy.
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
+	/// </para>
 	/// </summary>
 	public class AggregatingGroupByRewriter
 	{
-		private AggregatingGroupByRewriter()
-		{
-		}
+		private AggregatingGroupByRewriter() { }
 
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -38,8 +37,7 @@ namespace NHibernate.Linq.GroupBy
 			    (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
 			    (IsAggregatingGroupBy(queryModel)))
 			{
-				var rewriter = new AggregatingGroupByRewriter();
-				rewriter.FlattenSubQuery(subQueryExpression, queryModel.MainFromClause, queryModel);
+				new AggregatingGroupByRewriter().FlattenSubQuery(subQueryExpression, queryModel);
 			}
 		}
 
@@ -48,8 +46,7 @@ namespace NHibernate.Linq.GroupBy
 			return new GroupByAggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector);
 		}
 
-		private void FlattenSubQuery(SubQueryExpression subQueryExpression, FromClauseBase fromClause,
-		                             QueryModel queryModel)
+		private void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// Move the result operator up 
 			if (queryModel.ResultOperators.Count != 0)
@@ -59,30 +56,23 @@ namespace NHibernate.Linq.GroupBy
 
 			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
 
-			// Replace the outer select clause...
-			queryModel.SelectClause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
-
-			queryModel.SelectClause.TransformExpressions(
-				s =>
-				new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap
-					(s));
-
-			MainFromClause innerMainFromClause = subQueryExpression.QueryModel.MainFromClause;
-			CopyFromClauseData(innerMainFromClause, fromClause);
+			queryModel.ResultOperators.Add(groupBy);
 
 			foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
 			{
 				queryModel.BodyClauses.Add(bodyClause);
 			}
 
-			queryModel.ResultOperators.Add(groupBy);
-		}
+			// Replace the outer select clause...
+			queryModel.SelectClause.TransformExpressions(s => 
+				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
 
-		protected void CopyFromClauseData(FromClauseBase source, FromClauseBase destination)
-		{
-			destination.FromExpression = source.FromExpression;
-			destination.ItemName = source.ItemName;
-			destination.ItemType = source.ItemType;
+			// Point all query source references to the outer from clause
+			queryModel.TransformExpressions(s =>
+				new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap(s));
+
+			// Replace the outer query source
+			queryModel.MainFromClause = subQueryExpression.QueryModel.MainFromClause;
 		}
 	}
 }

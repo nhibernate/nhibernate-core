@@ -275,12 +275,14 @@
     <Compile Include="LazyInitializationException.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
+    <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
     <Compile Include="Linq\Visitors\AbstractJoinDetector.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
+    <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />

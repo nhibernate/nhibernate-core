@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2913">
+	
+	<class name="CostItem" table="CostItem">
+		<id name="Id" generator="identity" />
+		<property name="Units" />
+	</class>
+	
+</hibernate-mapping>

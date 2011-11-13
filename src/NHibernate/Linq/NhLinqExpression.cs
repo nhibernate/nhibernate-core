@@ -13,38 +13,36 @@ namespace NHibernate.Linq
 {
 	public class NhLinqExpression : IQueryExpression
 	{
-        public string Key { get; private set; }
+		public string Key { get; private set; }
 
-        public System.Type Type { get; private set; }
+		public System.Type Type { get; private set; }
 
-        public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
+		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
-        public NhLinqExpressionReturnType ReturnType { get; private set; }
+		public NhLinqExpressionReturnType ReturnType { get; private set; }
 
-        public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; private set; }
+		public IDictionary<string, Tuple<object, IType>> ParameterValuesByName { get; private set; }
 
-        public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
+		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
 		private readonly Expression _expression;
-	    private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
-	    private IASTNode _astNode;
+		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
-	    public NhLinqExpression(Expression expression)
+		public NhLinqExpression(Expression expression)
 		{
 			_expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
-		    _expression = NameUnNamedParameters.Visit(_expression);
+			_expression = NameUnNamedParameters.Visit(_expression);
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression);
 
-		    ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-		                                                                        p =>
-		                                                                        new Tuple<object, IType>
-		                                                                            {First = p.Value, Second = p.Type});
+			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
+																				p =>
+																				new Tuple<object, IType> { First = p.Value, Second = p.Type });
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
-			
-            Type = _expression.Type;
+
+			Type = _expression.Type;
 
 			// Note - re-linq handles return types via the GetOutputDataInfo method, and allows for SingleOrDefault here for the ChoiceResultOperator...
 			ReturnType = NhLinqExpressionReturnType.Scalar;
@@ -56,27 +54,18 @@ namespace NHibernate.Linq
 			}
 		}
 
-	    public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
 		{
-            //if (_astNode == null)
-            {
-                var requiredHqlParameters = new List<NamedParameterDescriptor>();
+			var requiredHqlParameters = new List<NamedParameterDescriptor>();
+			var querySourceNamer = new QuerySourceNamer();
+			var queryModel = NhRelinqQueryParser.Parse(_expression);
+			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
 
-                // TODO - can we cache any of this? 
-                var queryModel = NhRelinqQueryParser.Parse(_expression);
+			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);
 
-                ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel,
-                                                                                       new VisitorParameters(
-                                                                                           sessionFactory,
-                                                                                           _constantToParameterMap,
-                                                                                           requiredHqlParameters),
-                                                                                       true);
-
-                ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-                _astNode = ExpressionToHqlTranslationResults.Statement.AstNode;
-            }
-
-	        return _astNode;
+			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
+			
+			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 	}
 }
