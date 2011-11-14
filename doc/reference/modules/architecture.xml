@@ -271,6 +271,14 @@
                     </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.WcfOperationSessionContext</literal> - current sessions are tracked
+                    by WCF <literal>OperationContext</literal>. You need to register the <literal>WcfStateExtension</literal>
+                    extension in WCF. You are responsible to bind and unbind an <literal>ISession
+                    </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
+                </para>
+            </listitem>
         </itemizedlist>
 
         <para>
@@ -278,7 +286,7 @@
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
             class to use (including the assembly name); for the out-of-the-box implementations, however,
-            there are corresponding short names: "managed_web", "call", "thread_static", and "web",
+            there are corresponding short names: "managed_web", "call", "thread_static", "web" and "wcf_operation",
             respectively.
         </para>
     </sect1>
