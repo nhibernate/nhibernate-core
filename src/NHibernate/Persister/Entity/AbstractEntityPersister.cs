@@ -2404,8 +2404,15 @@ namespace NHibernate.Persister.Entity
 			{
 				if (includeProperty[i] && IsPropertyOfTable(i, table))
 				{
-					PropertyTypes[i].NullSafeSet(statement, fields[i], index, includeColumns[i], session);
-					index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
+					try
+					{
+						PropertyTypes[i].NullSafeSet(statement, fields[i], index, includeColumns[i], session);
+						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
+					}
+					catch (Exception ex)
+					{
+						throw new PropertyValueException("Error dehydrating property value for", EntityName, entityMetamodel.PropertyNames[i], ex);
+					}
 				}
 			}
 
