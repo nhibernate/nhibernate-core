@@ -965,6 +965,7 @@
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
+    <Compile Include="TypesTest\StringTypeWithLengthFixture.cs" />
     <Compile Include="TypesTest\DateTimeClass.cs" />
     <Compile Include="TypesTest\LocalDateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\UriClass.cs" />
@@ -2763,6 +2764,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />

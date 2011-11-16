@@ -14,6 +14,12 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
+			if (SqlType.LengthDefined)
+			{
+				if (SqlType.Length < ((string)value).Length)
+					throw new HibernateException("The length of the string value exceeds the length configured in the mapping.");
+			}
+
 			((IDataParameter)cmd.Parameters[index]).Value = value;
 		}
 
