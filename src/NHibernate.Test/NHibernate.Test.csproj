@@ -653,6 +653,8 @@
     <Compile Include="NHSpecificTest\NH0000\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2856\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2858\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH2858\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1007\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1007\Fixture.cs" />
@@ -906,6 +908,8 @@
     <Compile Include="NHSpecificTest\NH2869\MyLinqExtensions.cs" />
     <Compile Include="NHSpecificTest\NH2869\MyLinqToHqlGeneratorsRegistry.cs" />
     <Compile Include="NHSpecificTest\NH2893\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2913\CostItem.cs" />
+    <Compile Include="NHSpecificTest\NH2913\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2757,6 +2761,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />

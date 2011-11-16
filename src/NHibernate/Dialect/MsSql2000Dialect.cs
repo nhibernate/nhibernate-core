@@ -156,6 +156,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+
+			// Casting to CHAR (without specified length) truncates to 30 characters. 
+			// A longer version would be safer, but 50 is enough to prevent errors when casting uniqueidentifer to a string representation (NH-2858)
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar(50))"));
 		}
 
 		protected virtual void RegisterGuidTypeMapping()

@@ -12,22 +12,19 @@ namespace NHibernate.Linq.Visitors
 {
 	public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
 	{
-		private readonly HqlTreeBuilder _hqlTreeBuilder;
+		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(parameters);
-
-			return visitor.VisitExpression(expression);
+			return new HqlGeneratorExpressionTreeVisitor(parameters).VisitExpression(expression);
 		}
 
 		public HqlGeneratorExpressionTreeVisitor(VisitorParameters parameters)
 		{
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 			_parameters = parameters;
-			_hqlTreeBuilder = new HqlTreeBuilder();
 		}
 
 		public HqlTreeNode Visit(Expression expression)
@@ -187,7 +184,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
-			return _hqlTreeBuilder.Ident(expression.ReferencedQuerySource.ItemName);
+			return _hqlTreeBuilder.Ident(_parameters.QuerySourceNamer.GetName(expression.ReferencedQuerySource));
 		}
 
 		private HqlTreeNode VisitVBStringComparisonExpression(VBStringComparisonExpression expression)
@@ -211,16 +208,12 @@ namespace NHibernate.Linq.Visitors
 					}
 
 					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression
-					    && expression.Right.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Right).Value == null)
+					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
 					{
 						return _hqlTreeBuilder.IsNull(lhs);
 					}
 
-					if (expression.Left is ConstantExpression
-					    && expression.Left.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Left).Value == null)
+					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
 					{
 						return _hqlTreeBuilder.IsNull(rhs);
 					}
@@ -236,16 +229,12 @@ namespace NHibernate.Linq.Visitors
 					}
 
 					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression
-					    && expression.Right.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Right).Value == null)
+					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
 					{
 						return _hqlTreeBuilder.IsNotNull(lhs);
 					}
 
-					if (expression.Left is ConstantExpression
-					    && expression.Left.Type.IsNullableOrReference()
-					    && ((ConstantExpression) expression.Left).Value == null)
+					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
 					{
 						return _hqlTreeBuilder.IsNotNull(rhs);
 					}
@@ -270,10 +259,7 @@ namespace NHibernate.Linq.Visitors
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
 					}
-					else
-					{
-						return _hqlTreeBuilder.Add(lhs, rhs);
-					}
+					return _hqlTreeBuilder.Add(lhs, rhs);
 
 				case ExpressionType.Subtract:
 					return _hqlTreeBuilder.Subtract(lhs, rhs);
@@ -310,8 +296,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (!(lhs is HqlBooleanExpression) && !(rhs is HqlBooleanExpression))
 			{
-				throw new InvalidOperationException(
-					"Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
+				throw new InvalidOperationException("Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
 			}
 
 			HqlExpression leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
