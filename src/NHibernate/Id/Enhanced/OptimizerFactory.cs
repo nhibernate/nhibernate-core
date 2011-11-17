@@ -264,7 +264,7 @@ namespace NHibernate.Id.Enhanced
 		/// </para>
 		/// <para>
 		/// Note that if you prefer that the database value be interpreted as the bottom end of our current
-		/// range, the use the PooledLoOptimizer strategy.
+		/// range, then use the PooledLoOptimizer strategy.
 		/// </para>
 		/// </summary>
 		public class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
