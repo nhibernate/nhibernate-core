@@ -437,6 +437,8 @@
     <Compile Include="Hql\Ast\WithClauseFixture.cs" />
     <Compile Include="Hql\Ast\Zoo.cs" />
     <Compile Include="Hql\BaseFunctionFixture.cs" />
+    <Compile Include="IdGen\Enhanced\OptimizerTests.cs" />
+    <Compile Include="IdGen\Enhanced\SourceMock.cs" />
     <Compile Include="IdTest\AssignedClass.cs" />
     <Compile Include="IdTest\AssignedFixture.cs" />
     <Compile Include="IdTest\TableGeneratorFixture.cs" />
