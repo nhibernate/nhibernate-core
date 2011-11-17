@@ -39,28 +39,25 @@ namespace NHibernate.Test.IdGen.Enhanced
 			}
 		}
 
-		public long NextValue
+		public long GetNextValue()
 		{
-			get
+			try
 			{
-				try
+				if (timesCalled == 0)
 				{
-					if (timesCalled == 0)
-					{
-						InitValue();
-						return val;
-					}
-					else
-					{
-						//return value.add( increment ).copy();
-						val += increment;
-						return val;
-					}
+					InitValue();
+					return val;
 				}
-				finally
+				else
 				{
-					timesCalled++;
+					//return value.add( increment ).copy();
+					val += increment;
+					return val;
 				}
+			}
+			finally
+			{
+				timesCalled++;
 			}
 		}
 
