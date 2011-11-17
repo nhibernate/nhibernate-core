@@ -183,9 +183,9 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual long NextValue
+			public virtual long GetNextValue()
 			{
-				get { return Convert.ToInt64(owner.DoWorkInNewTransaction(session)); }
+				return Convert.ToInt64(owner.DoWorkInNewTransaction(session));
 			}
 
 			#endregion

@@ -153,10 +153,10 @@ namespace NHibernate.Id.Enhanced
 			{
 				if (lastSourceValue < 0)
 				{
-					lastSourceValue = callback.NextValue;
+					lastSourceValue = callback.GetNextValue();
 					while (lastSourceValue <= 0)
 					{
-						lastSourceValue = callback.NextValue;
+						lastSourceValue = callback.GetNextValue();
 					}
 					// upperLimit defines the upper end of the bucket values
 					upperLimit = (lastSourceValue * IncrementSize) + 1;
@@ -165,7 +165,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				else if (upperLimit <= value_Renamed)
 				{
-					lastSourceValue = callback.NextValue;
+					lastSourceValue = callback.GetNextValue();
 					upperLimit = (lastSourceValue * IncrementSize) + 1;
 				}
 				return Make(value_Renamed++);
@@ -199,7 +199,7 @@ namespace NHibernate.Id.Enhanced
 
 				long val = -1;
 				while (val <= 0)
-					val = callback.NextValue;
+					val = callback.GetNextValue();
 
 				// This value is only stored for easy access in test. Should be no
 				// threading concerns there.
@@ -317,7 +317,7 @@ namespace NHibernate.Id.Enhanced
 			{
 				if (hiValue < 0)
 				{
-					value_Renamed = callback.NextValue;
+					value_Renamed = callback.GetNextValue();
 					if (value_Renamed < 1)
 					{
 						// unfortunately not really safe to normalize this
@@ -329,7 +329,7 @@ namespace NHibernate.Id.Enhanced
 					}
 
 					if ((initialValue == -1 && value_Renamed < IncrementSize) || value_Renamed == initialValue)
-						hiValue = callback.NextValue;
+						hiValue = callback.GetNextValue();
 					else
 					{
 						hiValue = value_Renamed;
@@ -338,7 +338,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				else if (value_Renamed >= hiValue)
 				{
-					hiValue = callback.NextValue;
+					hiValue = callback.GetNextValue();
 					value_Renamed = hiValue - IncrementSize;
 				}
 				return Make(value_Renamed++);
@@ -372,7 +372,7 @@ namespace NHibernate.Id.Enhanced
 			{
 				if (lastSourceValue < 0 || value >= (lastSourceValue + IncrementSize))
 				{
-					lastSourceValue = callback.NextValue;
+					lastSourceValue = callback.GetNextValue();
 					value = lastSourceValue;
 					// handle cases where initial-value is less than one (hsqldb for instance).
 					while (value < 1)

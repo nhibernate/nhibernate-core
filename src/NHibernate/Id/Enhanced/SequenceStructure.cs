@@ -85,50 +85,47 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual long NextValue
+			public virtual long GetNextValue()
 			{
-				get
+				owner.accessCounter++;
+				try
 				{
-					owner.accessCounter++;
+					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, owner.sql, new SqlType[] { SqlTypeFactory.Int64 });
+					IDataReader rs = null;
 					try
 					{
-						IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, owner.sql, new SqlType[] {SqlTypeFactory.Int64});
-						IDataReader rs = null;
+						rs = session.Batcher.ExecuteReader(st);
 						try
 						{
-							rs = session.Batcher.ExecuteReader(st);
-							try
+							rs.Read();
+							long result = rs.GetInt64(0);
+							if (log.IsDebugEnabled)
 							{
-								rs.Read();
-								long result = rs.GetInt64(0);
-								if (log.IsDebugEnabled)
-								{
-									log.Debug("Sequence identifier generated: " + result);
-								}
-								return result;
+								log.Debug("Sequence identifier generated: " + result);
 							}
-							finally
-							{
-								try
-								{
-									rs.Close();
-								}
-								catch
-								{
-									// intentionally empty
-								}
-							}
+							return result;
 						}
 						finally
 						{
-							session.Batcher.CloseCommand(st, rs);
+							try
+							{
+								rs.Close();
+							}
+							catch
+							{
+								// intentionally empty
+							}
 						}
 					}
-					catch (DbException sqle)
+					finally
 					{
-						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value",
-						                                 owner.sql);
+						session.Batcher.CloseCommand(st, rs);
 					}
+				}
+				catch (DbException sqle)
+				{
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value",
+													 owner.sql);
 				}
 			}
 
