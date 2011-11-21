@@ -263,7 +263,7 @@ namespace NHibernate.Dialect
 			string selectColumns = ExtractColumnOrAliasNames(sql);
 
 			var pagingSelect = new SqlStringBuilder(sql.Parts.Count + 10);
-			if (offset != null && limit != null)
+			if (offset != null)
 			{
 				pagingSelect.Add("select " + selectColumns + " from ( select row_.*, rownum rownum_ from ( ");
 			}
@@ -283,7 +283,7 @@ namespace NHibernate.Dialect
             else
 			{
 			    // offset is specified, but limit is not.
-                pagingSelect.Add(" ) where rownum >").Add(offset);
+                pagingSelect.Add(" ) row_ ) where rownum_ >").Add(offset);
             }
 
 			if (isForUpdate)

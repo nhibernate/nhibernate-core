@@ -1066,7 +1066,7 @@ namespace NHibernate.Loader
 
 		private static bool HasOffset(RowSelection selection)
 		{
-			return selection != null && selection.MaxRows != RowSelection.NoValue;
+			return selection != null && selection.FirstRow != RowSelection.NoValue;
 		}
 
 		internal static int GetFirstRow(RowSelection selection)
