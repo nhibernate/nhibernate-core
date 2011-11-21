@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.2.1.GA-debug/bin/net-3.5/NHibernate.Test.dll" errors="78" failures="160" not-run="348" inconclusive="0" ignored="348" skipped="0" invalid="0">
+<test-results name="../../build/NHibernate-3.2.1.GA-debug/bin/net-3.5/NHibernate.Test.dll" errors="70" failures="157" not-run="351" inconclusive="0" ignored="351" skipped="0" invalid="0">
   <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3625" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
   <test-suite type="Assembly" name="../../build/NHibernate-3.2.1.GA-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
@@ -399,28 +399,20 @@
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="Component" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="Component" executed="True" result="Success" success="True" asserts="0">
                 <results>
-                  <test-suite type="Namespace" name="Basic" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="Basic" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="ComponentTest" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="ComponentTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponent" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.Component.Basic.User#gavin]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponent" executed="True" result="Success" success="True" asserts="6" />
                           <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponentFormulaQuery" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponentQueries" executed="False" result="Ignored">
                             <reason>
                               <message><![CDATA[Ported from Hibernate - failing in NH]]></message>
                             </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponentStateChangeAndDirtiness" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.Component.Basic.User#steve]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestComponentStateChangeAndDirtiness" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestCustomColumnReadAndWrite" executed="False" result="Ignored">
                             <reason>
                               <message><![CDATA[Ported from Hibernate. Read properties not supported in NH yet.]]></message>
@@ -502,7 +494,7 @@
               </test-suite>
               <test-suite type="Namespace" name="Criteria" executed="True" result="Failure" success="False" asserts="0">
                 <results>
-                  <test-suite type="TestFixture" name="CriteriaQueryTest" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="CriteriaQueryTest" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.AliasJoinCriterion" executed="True" result="Success" success="True" asserts="15" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.AllowToSetLimitOnSubqueries" executed="True" result="Success" success="True" asserts="0" />
@@ -558,14 +550,7 @@
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SqlExpressionWithParameters" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SubcriteriaJoinTypes" executed="True" result="Success" success="True" asserts="12" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SubqueryPagination" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SubqueryPaginationOnlyWithFirst" executed="True" result="Error" success="False" asserts="1">
-                        <failure>
-                          <message><![CDATA[  Expected: 3
-  But was:  0
-
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SubqueryPaginationOnlyWithFirst" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.Subselect" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.SubselectWithComponent" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Criteria.CriteriaQueryTest.TestSubcriteriaBeingNull" executed="True" result="Success" success="True" asserts="1" />
@@ -2112,36 +2097,14 @@ Positional parameters:  #0>1
                           </test-case>
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="LimitClauseFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="LimitClauseFixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.None" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.Skip" executed="True" result="Failure" success="False" asserts="1">
-                            <failure>
-                              <message><![CDATA[  Expected is <System.Int32[3]>, actual is <System.Single[0]>
-  Values differ at index [0]
-  Missing:  < 10, 15, 20 >]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.Skip" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipTake" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipTakeWithParameter" executed="True" result="Failure" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[[6, 10] Should Have Same Sequence As [6, 10, 15].
-Values differ at position 2 (zero based).
-Expected: 15
-Found   : 0
-]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipTakeWithParameter" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipTakeWithParameterList" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipWithParameter" executed="True" result="Failure" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[[<Empty>] Should Have Same Sequence As [10, 15, 20].
-Values differ at position 0.
-Expected: 10
-Found   : 0
-]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.SkipWithParameter" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.Take" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.TakeSkip" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.Hql.Ast.LimitClauseFixture.TakeWithParameter" executed="True" result="Success" success="True" asserts="1" />
@@ -3174,22 +3137,12 @@ Found   : 0
                       <test-case name="NHibernate.Test.Legacy.ABCTest.Subselect" executed="True" result="Success" success="True" asserts="0" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="CriteriaTest" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="CriteriaTest" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Legacy.CriteriaTest.Criteria_can_get_query_entity_type" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaCompositeProperty" executed="True" result="Success" success="True" asserts="1" />
-                      <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaLeftOuterJoin" executed="True" result="Error" success="False" asserts="1">
-                        <failure>
-                          <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.DomainModel.Master#1]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaManyToOneEquals" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.DomainModel.Master#1]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaLeftOuterJoin" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaManyToOneEquals" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.CriteriaTest.CriteriaTypeMismatch" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.CriteriaTest.DetachedCriteria_can_get_query_entity_type" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.CriteriaTest.SimpleDateCriteria" executed="True" result="Success" success="True" asserts="4" />
@@ -3371,12 +3324,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Legacy.MasterDetailTest.PolymorphicCriteria" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Legacy.MasterDetailTest.QueuedBagAdds" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Legacy.MasterDetailTest.SelfManyToOne" executed="True" result="Success" success="True" asserts="1" />
-                      <test-case name="NHibernate.Test.Legacy.MasterDetailTest.Serialization" executed="True" result="Error" success="False" asserts="4">
-                        <failure>
-                          <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.DomainModel.Master#22]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Legacy.MasterDetailTest.Serialization" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Legacy.MasterDetailTest.ToStringWithNoIdentifier" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.MasterDetailTest.UpdateLazyCollections" executed="True" result="Success" success="True" asserts="3" />
                     </results>
@@ -4287,19 +4235,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.OperatorTests.Mod" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="PagingTests" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="PagingTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Linq.PagingTests.CountAfterTakeShouldReportTheCorrectNumber" executed="False" result="Ignored">
                         <reason>
                           <message><![CDATA[Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point]]></message>
                         </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.Linq.PagingTests.Customers11to20" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative and less than the size of the collection.
-Parameter name: index]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.PagingTests.Customers11to20" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.PagingTests.Customers1to5" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.PagingTests.CustomersChainedSkip" executed="False" result="Ignored">
                         <reason>
@@ -8678,11 +8621,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1908ThreadSafety" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH1908ThreadSafety" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1908ThreadSafety.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1908ThreadSafety.Fixture.UsingFiltersIsThreadSafe" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1908ThreadSafety.Fixture.UsingFiltersIsThreadSafe" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1908ThreadSafety.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -9326,12 +9276,12 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2192.Fixture.HqlIsThreadsafe_UsingPool" executed="True" result="Error" success="False" asserts="37">
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2192.Fixture.HqlIsThreadsafe_UsingPool" executed="True" result="Error" success="False" asserts="33">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select contentite0_.Id as Id4784_, contentite0_.Name as Name4784_ from ContentItem contentite0_ where contentite0_.Name=? ]
+[ select contentite0_.Id as Id4782_, contentite0_.Name as Name4782_ from ContentItem contentite0_ where contentite0_.Name=? ]
   Name:v1 - Value:Test
-[SQL: select contentite0_.Id as Id4784_, contentite0_.Name as Name4784_ from ContentItem contentite0_ where contentite0_.Name=?]
+[SQL: select contentite0_.Id as Id4782_, contentite0_.Name as Name4782_ from ContentItem contentite0_ where contentite0_.Name=?]
   ----> Oracle.DataAccess.Client.OracleException : Connection request timed out]]></message>
                             </failure>
                           </test-case>
@@ -10736,6 +10686,22 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2858" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2858.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2858.Fixture.GuidToStringShouldBeRetrievedCorrectlyInLinqProjection" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2858.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH2869" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
@@ -10767,6 +10733,22 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                         <reason>
                           <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2893.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
                         </reason>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH2913" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2913.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2913.Fixture.QueryShouldReturnResults" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2913.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
                       </test-suite>
                     </results>
                   </test-suite>
@@ -11697,11 +11679,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Operations.MergeFixture.NoExtraUpdatesOnMergeVersioned" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Operations.MergeFixture.NoExtraUpdatesOnMergeVersionedWithCollection" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Operations.MergeFixture.NoExtraUpdatesOnMergeWithCollection" executed="True" result="Success" success="True" asserts="4" />
-                      <test-case name="NHibernate.Test.Operations.MergeFixture.PersistThenMergeInSameTxnWithTimestamp" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.Operations.TimestampedEntity#test]]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Operations.MergeFixture.PersistThenMergeInSameTxnWithTimestamp" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Operations.MergeFixture.PersistThenMergeInSameTxnWithVersion" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Operations.MergeFixture.RecursiveMergeTransient" executed="True" result="Success" success="True" asserts="2" />
                     </results>
@@ -13081,15 +13059,10 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="StatelessSessionFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="StatelessSessionFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.CanGetImplementor" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.CreateUpdateReadDelete" executed="True" result="Error" success="False" asserts="4">
-                        <failure>
-                          <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.Stateless.Document#Blahs]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.CreateUpdateReadDelete" executed="True" result="Success" success="True" asserts="14" />
                       <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.DisposingClosedStatelessSessionShouldNotCauseSessionException" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSession" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Stateless.StatelessSessionFixture.HqlBulk" executed="True" result="Success" success="True" asserts="4" />
