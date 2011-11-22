@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2951">
+
+	<class name="Entity">
+		<id name="Id" generator="guid.comb" />
+
+    <joined-subclass name="Customer">
+      <key column="Id"/>
+      <property name="Name" />
+    </joined-subclass>
+	</class>
+
+  <class name="Invoice">
+    <id name="Id" generator="guid.comb" />
+    <property name="Amount"/>
+    <many-to-one name="Customer" />
+  </class>
+
+</hibernate-mapping>
