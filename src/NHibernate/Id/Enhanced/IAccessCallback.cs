@@ -6,7 +6,8 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public interface IAccessCallback
 	{
-		/// <summary> Retrieve the next value from the underlying source. </summary>
-		long NextValue { get;}
+		/// <summary> Retrieve the next value from the underlying source.
+		/// </summary>
+		long GetNextValue();
 	}
 }
