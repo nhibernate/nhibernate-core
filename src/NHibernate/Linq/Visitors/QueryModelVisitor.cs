@@ -152,21 +152,11 @@ namespace NHibernate.Linq.Visitors
 			}
 			else if (fromClause.FromExpression is MemberExpression)
 			{
-				var member = (MemberExpression)fromClause.FromExpression;
-
-				if (member.Expression is QuerySourceReferenceExpression)
-				{
-					// It's a join
-					_hqlTree.AddFromClause(
-						_hqlTree.TreeBuilder.Join(
-							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(querySourceName)));
-				}
-				else
-				{
-					// What's this?
-					throw new NotSupportedException();
-				}
+				// It's a join
+				_hqlTree.AddFromClause(
+					_hqlTree.TreeBuilder.Join(
+						HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
+						_hqlTree.TreeBuilder.Alias(querySourceName)));
 			}
 			else
 			{
