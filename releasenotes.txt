@@ -1,4 +1,16 @@
+Build 3.2.1.GA
+=============================
+
+** Known BREAKING CHANGES from NH3.2.0.GA to NH3.2.1.GA
+
+	##### Possible Breaking Changes #####
+		* [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
+
+Build 3.2.0.GA (rev6000)
+=============================
+
 ** Known BREAKING CHANGES from NH3.1.0.GA to NH3.2.0.GA
+
 	##### Design time #####
 		* removed obsolete "use_outer_join" property from nhibernate-configuration.xsd (simply remove it from your xml configuration)
 
@@ -14,8 +26,6 @@
 		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
 		* Dialect base: removed some no more needed properties
 
-Build 3.2.0.GA (rev6000)
-=============================
 ** Bug
     * [NH-2792] - Using a named parameter multiple times in a native SQL query results in invalid parameter binding (exception in some drivers)
     * [NH-2813] - Cache DefaultExpiration type is "byte"
@@ -24,7 +34,6 @@ Build 3.2.0.GA (rev6000)
     * [NH-2571] - Full PostgreSQL Support
     * [NH-2743] - Generic version of ISession.Merge()
     * [NH-2800] - Change internal primitive type constructor to protected
-
 
 ** Patch
     * [NH-2811] - Wrong logger type into AdoNetTransactionFactory & AdoNetWithDistributedTransactionFactory classes

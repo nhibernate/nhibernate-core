@@ -1,26 +1,23 @@
 using System;
 using System.Reflection;
-
-using NHibernate.Util;
 using System.Runtime.CompilerServices;
-using System.Threading;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
 {
 	public class OptimizerFactory
 	{
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
+
 		public const string None = "none";
 		public const string HiLo = "hilo";
-		public const string LegacyHilo = "legacy-hilo";
 		public const string Pool = "pooled";
 		public const string PoolLo = "pooled-lo";
 
 		private static readonly System.Type[] CtorSignature = new[] { typeof(System.Type), typeof(int) };
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(OptimizerFactory));
-
 
 		/// <summary>
-		/// Marker interface for optimizer which wish to know the user-specified initial value.
+		/// Marker interface for an optimizer that wishes to know the user-specified initial value.
 		/// <p/>
 		/// Used instead of constructor injection since that is already a public understanding and
 		/// because not all optimizers care.
@@ -37,8 +34,6 @@ namespace NHibernate.Id.Enhanced
 			void InjectInitialValue(long initialValue);
 		}
 
-
-		
 		private static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize)
 		{
 			if (string.IsNullOrEmpty(type))
@@ -58,9 +53,6 @@ namespace NHibernate.Id.Enhanced
 				case HiLo:
 					optimizerClassName = typeof(HiLoOptimizer).FullName;
 					break;
-				//case LegacyHilo:  FIXME
-				//    FIXME optimizerClassName = typeof(HiLoOptimizer).FullName;
-				//    break;
 				case Pool:
 					optimizerClassName = typeof(PooledOptimizer).FullName;
 					break;
@@ -80,13 +72,12 @@ namespace NHibernate.Id.Enhanced
 			}
 			catch (Exception)
 			{
-				log.Error("Unable to instantiate id generator optimizer.");  // FIXME: Review log message.
+				Log.Error("Unable to instantiate id generator optimizer.");  // FIXME: Review log message.
 			}
 
 			// the default...
 			return new NoopOptimizer(returnClass, incrementSize);
 		}
-
 
 		public static IOptimizer BuildOptimizer(string type, System.Type returnClass, int incrementSize, long explicitInitialValue)
 		{
@@ -99,14 +90,13 @@ namespace NHibernate.Id.Enhanced
 			return optimizer;
 		}
 
-
 		#region Nested type: HiLoOptimizer
 
 		public class HiLoOptimizer : OptimizerSupport
 		{
-			private long upperLimit;
-			private long lastSourceValue = -1;
-			private long value_Renamed;
+			private long _upperLimit;
+			private long _lastSourceValue = -1;
+			private long _value;
 
 			public HiLoOptimizer(System.Type returnClass, int incrementSize)
 				: base(returnClass, incrementSize)
@@ -115,10 +105,9 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("Creating hilo optimizer with [incrementSize=" + incrementSize + "; returnClass=" + returnClass.FullName
-							  + "]");
+					Log.Debug("Creating hilo optimizer with [incrementSize=" + incrementSize + "; returnClass=" + returnClass.FullName + "]");
 				}
 			}
 
@@ -127,12 +116,12 @@ namespace NHibernate.Id.Enhanced
 			/// </summary>
 			public override long LastSourceValue
 			{
-				get { return lastSourceValue; }
+				get { return _lastSourceValue; }
 			}
 
 			public long LastValue
 			{
-				get { return value_Renamed - 1; }
+				get { return _value - 1; }
 			}
 
 			/// <summary>
@@ -140,7 +129,7 @@ namespace NHibernate.Id.Enhanced
 			/// </summary>
 			public long HiValue
 			{
-				get { return upperLimit; }
+				get { return _upperLimit; }
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -151,24 +140,26 @@ namespace NHibernate.Id.Enhanced
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (lastSourceValue < 0)
+				if (_lastSourceValue < 0)
 				{
-					lastSourceValue = callback.GetNextValue();
-					while (lastSourceValue <= 0)
+					_lastSourceValue = callback.GetNextValue();
+					while (_lastSourceValue <= 0)
 					{
-						lastSourceValue = callback.GetNextValue();
+						_lastSourceValue = callback.GetNextValue();
 					}
+
 					// upperLimit defines the upper end of the bucket values
-					upperLimit = (lastSourceValue * IncrementSize) + 1;
+					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+
 					// initialize value to the low end of the bucket
-					value_Renamed = upperLimit - IncrementSize;
+					_value = _upperLimit - IncrementSize;
 				}
-				else if (upperLimit <= value_Renamed)
+				else if (_upperLimit <= _value)
 				{
-					lastSourceValue = callback.GetNextValue();
-					upperLimit = (lastSourceValue * IncrementSize) + 1;
+					_lastSourceValue = callback.GetNextValue();
+					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
 				}
-				return Make(value_Renamed++);
+				return Make(_value++);
 			}
 		}
 
@@ -178,13 +169,13 @@ namespace NHibernate.Id.Enhanced
 
 		public class NoopOptimizer : OptimizerSupport
 		{
-			private long lastSourceValue = -1;
+			private long _lastSourceValue = -1;
 
 			public NoopOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize) { }
 
 			public override long LastSourceValue
 			{
-				get { return lastSourceValue; }
+				get { return _lastSourceValue; }
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -203,7 +194,7 @@ namespace NHibernate.Id.Enhanced
 
 				// This value is only stored for easy access in test. Should be no
 				// threading concerns there.
-				lastSourceValue = val;
+				_lastSourceValue = val;
 
 				return Make(val);
 			}
@@ -242,6 +233,7 @@ namespace NHibernate.Id.Enhanced
 			public abstract long LastSourceValue { get; }
 
 			public abstract bool ApplyIncrementSizeToSourceValues { get; }
+
 			public abstract object Generate(IAccessCallback param);
 
 			#endregion
@@ -269,9 +261,9 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		public class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
-			private long hiValue = -1;
-			private long value_Renamed;
-			private long initialValue;
+			private long _hiValue = -1;
+			private long _value;
+			private long _initialValue;
 
 			public PooledOptimizer(System.Type returnClass, int incrementSize)
 				: base(returnClass, incrementSize)
@@ -280,25 +272,24 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("Creating pooled optimizer with [incrementSize=" + incrementSize + "; returnClass="
+					Log.Debug("Creating pooled optimizer with [incrementSize=" + incrementSize + "; returnClass="
 							  + returnClass.FullName + "]");
 				}
 			}
 
 			public override long LastSourceValue
 			{
-				get { return hiValue; }
+				get { return _hiValue; }
 			}
-
 
 			/// <summary>
 			/// Exposure intended for testing purposes.
 			/// </summary>
 			public long LastValue
 			{
-				get { return value_Renamed - 1; }
+				get { return _value - 1; }
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -306,42 +297,40 @@ namespace NHibernate.Id.Enhanced
 				get { return true; }
 			}
 
-
 			public void InjectInitialValue(long initialValue)
 			{
-				this.initialValue = initialValue;
+				_initialValue = initialValue;
 			}
 
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (hiValue < 0)
+				if (_hiValue < 0)
 				{
-					value_Renamed = callback.GetNextValue();
-					if (value_Renamed < 1)
+					_value = callback.GetNextValue();
+					if (_value < 1)
 					{
 						// unfortunately not really safe to normalize this
 						// to 1 as an initial value like we do the others
 						// because we would not be able to control this if
 						// we are using a sequence...
-						log.Info("pooled optimizer source reported [" + value_Renamed
-								 + "] as the initial value; use of 1 or greater highly recommended");
+						Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
 					}
 
-					if ((initialValue == -1 && value_Renamed < IncrementSize) || value_Renamed == initialValue)
-						hiValue = callback.GetNextValue();
+					if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
+						_hiValue = callback.GetNextValue();
 					else
 					{
-						hiValue = value_Renamed;
-						value_Renamed = hiValue - IncrementSize;
+						_hiValue = _value;
+						_value = _hiValue - IncrementSize;
 					}
 				}
-				else if (value_Renamed >= hiValue)
+				else if (_value >= _hiValue)
 				{
-					hiValue = callback.GetNextValue();
-					value_Renamed = hiValue - IncrementSize;
+					_hiValue = callback.GetNextValue();
+					_value = _hiValue - IncrementSize;
 				}
-				return Make(value_Renamed++);
+				return Make(_value++);
 			}
 		}
 
@@ -351,8 +340,8 @@ namespace NHibernate.Id.Enhanced
 
 		public class PooledLoOptimizer : OptimizerSupport
 		{
-			private long lastSourceValue = -1; // last value read from db source
-			private long value; // the current generator value
+			private long _lastSourceValue = -1; // last value read from db source
+			private long _value; // the current generator value
 
 			public PooledLoOptimizer(System.Type returnClass, int incrementSize)
 				: base(returnClass, incrementSize)
@@ -361,29 +350,29 @@ namespace NHibernate.Id.Enhanced
 				{
 					throw new HibernateException("increment size cannot be less than 1");
 				}
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.DebugFormat("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
+					Log.DebugFormat("Creating pooled optimizer (lo) with [incrementSize={0}; returnClass={1}]", incrementSize, returnClass.FullName);
 				}
 			}
 
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
-				if (lastSourceValue < 0 || value >= (lastSourceValue + IncrementSize))
+				if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
 				{
-					lastSourceValue = callback.GetNextValue();
-					value = lastSourceValue;
+					_lastSourceValue = callback.GetNextValue();
+					_value = _lastSourceValue;
 					// handle cases where initial-value is less than one (hsqldb for instance).
-					while (value < 1)
-						value++;
+					while (_value < 1)
+						_value++;
 				}
-				return Make(value++);
+				return Make(_value++);
 			}
 
 			public override long LastSourceValue
 			{
-				get { return lastSourceValue; }
+				get { return _lastSourceValue; }
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -393,6 +382,5 @@ namespace NHibernate.Id.Enhanced
 		}
 
 		#endregion
-
 	}
 }

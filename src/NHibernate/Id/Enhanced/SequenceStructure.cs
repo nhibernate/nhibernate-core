@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Data.Common;
 
@@ -14,32 +13,33 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public class SequenceStructure : IDatabaseStructure
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SequenceStructure));
-		private readonly int incrementSize;
-		private readonly int initialValue;
-		private readonly string sequenceName;
-		private readonly SqlString sql;
-		private int accessCounter;
-		private bool applyIncrementSizeToSourceValues;
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStructure));
+
+		private readonly int _incrementSize;
+		private readonly int _initialValue;
+		private readonly string _sequenceName;
+		private readonly SqlString _sql;
+		private int _accessCounter;
+		private bool _applyIncrementSizeToSourceValues;
 
 		public SequenceStructure(Dialect.Dialect dialect, string sequenceName, int initialValue, int incrementSize)
 		{
-			this.sequenceName = sequenceName;
-			this.initialValue = initialValue;
-			this.incrementSize = incrementSize;
-			sql = new SqlString(dialect.GetSequenceNextValString(sequenceName));
+			_sequenceName = sequenceName;
+			_initialValue = initialValue;
+			_incrementSize = incrementSize;
+			_sql = new SqlString(dialect.GetSequenceNextValString(sequenceName));
 		}
 
 		#region IDatabaseStructure Members
 
 		public string Name
 		{
-			get { return sequenceName; }
+			get { return _sequenceName; }
 		}
 
 		public int IncrementSize
 		{
-			get { return incrementSize; }
+			get { return _incrementSize; }
 		}
 
 		public IAccessCallback BuildCallback(ISessionImplementor session)
@@ -49,23 +49,23 @@ namespace NHibernate.Id.Enhanced
 
 		public void Prepare(IOptimizer optimizer)
 		{
-			applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
+			_applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
 		}
 
 		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
-			int sourceIncrementSize = applyIncrementSizeToSourceValues ? incrementSize : 1;
-			return dialect.GetCreateSequenceStrings(sequenceName, initialValue, sourceIncrementSize);
+			int sourceIncrementSize = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
+			return dialect.GetCreateSequenceStrings(_sequenceName, _initialValue, sourceIncrementSize);
 		}
 
 		public string[] SqlDropStrings(Dialect.Dialect dialect)
 		{
-			return dialect.GetDropSequenceStrings(sequenceName);
+			return dialect.GetDropSequenceStrings(_sequenceName);
 		}
 
 		public int TimesAccessed
 		{
-			get { return accessCounter; }
+			get { return _accessCounter; }
 		}
 
 		#endregion
@@ -74,34 +74,34 @@ namespace NHibernate.Id.Enhanced
 
 		private class SequenceAccessCallback : IAccessCallback
 		{
-			private readonly SequenceStructure owner;
-			private readonly ISessionImplementor session;
+			private readonly SequenceStructure _owner;
+			private readonly ISessionImplementor _session;
 
 			public SequenceAccessCallback(ISessionImplementor session, SequenceStructure owner)
 			{
-				this.session = session;
-				this.owner = owner;
+				_session = session;
+				_owner = owner;
 			}
 
 			#region IAccessCallback Members
 
 			public virtual long GetNextValue()
 			{
-				owner.accessCounter++;
+				_owner._accessCounter++;
 				try
 				{
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, owner.sql, new SqlType[] { SqlTypeFactory.Int64 });
+					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, new SqlType[] { SqlTypeFactory.Int64 });
 					IDataReader rs = null;
 					try
 					{
-						rs = session.Batcher.ExecuteReader(st);
+						rs = _session.Batcher.ExecuteReader(st);
 						try
 						{
 							rs.Read();
 							long result = rs.GetInt64(0);
-							if (log.IsDebugEnabled)
+							if (Log.IsDebugEnabled)
 							{
-								log.Debug("Sequence identifier generated: " + result);
+								Log.Debug("Sequence identifier generated: " + result);
 							}
 							return result;
 						}
@@ -119,13 +119,13 @@ namespace NHibernate.Id.Enhanced
 					}
 					finally
 					{
-						session.Batcher.CloseCommand(st, rs);
+						_session.Batcher.CloseCommand(st, rs);
 					}
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value",
-													 owner.sql);
+					throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value",
+													 _owner._sql);
 				}
 			}
 

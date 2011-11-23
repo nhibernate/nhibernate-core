@@ -1,41 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NHibernate.Id.Enhanced;
+﻿using NHibernate.Id.Enhanced;
 
 namespace NHibernate.Test.IdGen.Enhanced
 {
 	public class SourceMock : IAccessCallback
 	{
-		private long val;
-		private long initialValue;
-		private int increment;
-		private int timesCalled = 0;
+		private long _val;
+		private readonly long _initialValue;
+		private readonly int _increment;
+		private int _timesCalled;
 
-		public SourceMock(long initialValue)
-			: this(initialValue, 1)
-		{
-		}
+		public SourceMock(long initialValue) : this(initialValue, 1) { }
 
-		public SourceMock(long initialValue, int increment)
-			: this(initialValue, increment, 0)
-		{
-		}
+		public SourceMock(long initialValue, int increment) : this(initialValue, increment, 0) { }
 
 		public SourceMock(long initialValue, int increment, int timesCalled)
 		{
-			this.increment = increment;
-			this.timesCalled = timesCalled;
+			_increment = increment;
+			_timesCalled = timesCalled;
+
 			if (timesCalled != 0)
 			{
-				this.val = initialValue;
-				this.initialValue = 1;
+				_val = initialValue;
+				_initialValue = 1;
 			}
 			else
 			{
-				this.val = -1;
-				this.initialValue = initialValue;
+				_val = -1;
+				_initialValue = initialValue;
 			}
 		}
 
@@ -43,37 +34,40 @@ namespace NHibernate.Test.IdGen.Enhanced
 		{
 			try
 			{
-				if (timesCalled == 0)
+				if (_timesCalled == 0)
 				{
 					InitValue();
-					return val;
+					return _val;
 				}
 				else
 				{
 					//return value.add( increment ).copy();
-					val += increment;
-					return val;
+					_val += _increment;
+					return _val;
 				}
 			}
 			finally
 			{
-				timesCalled++;
+				_timesCalled++;
 			}
 		}
 
 		private void InitValue()
 		{
-			this.val = initialValue;
+			_val = _initialValue;
 		}
 
-		public int TimesCalled { get { return timesCalled; } }
+		public int TimesCalled
+		{
+			get { return _timesCalled; }
+		}
 
 		public long CurrentValue
 		{
 			get
 			{
 				//return value== null ? -1 : value.getActualLongValue();
-				return val;
+				return _val;
 			}
 		}
 	}
