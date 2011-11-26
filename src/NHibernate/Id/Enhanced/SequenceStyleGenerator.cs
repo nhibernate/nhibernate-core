@@ -89,29 +89,15 @@ namespace NHibernate.Id.Enhanced
 			IdentifierType = type;
 
 			bool forceTableUse = PropertiesHelper.GetBoolean(ForceTableParam, parms, false);
-			string sequenceName = PropertiesHelper.GetString(SequenceParam, parms, DefaultSequenceName);
 
-			if (sequenceName.IndexOf('.') < 0)
-			{
-				string schemaName;
-				string catalogName;
-				parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schemaName);
-				parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalogName);
-				sequenceName = Table.Qualify(catalogName, schemaName, sequenceName);
-			}
+			string sequenceName = DetermineSequenceName(parms, dialect);
 
-			int initialValue = PropertiesHelper.GetInt32(InitialParam, parms, DefaultInitialValue);
-			int incrementSize = PropertiesHelper.GetInt32(IncrementParam, parms, DefaultIncrementSize);
-			string valueColumnName = PropertiesHelper.GetString(ValueColumnParam, parms, DefaultValueColumnName);
+			int initialValue = DetermineInitialValue(parms);
+			int incrementSize = DetermineIncrementSize(parms);
+			string valueColumnName = DetermineValueColumnName(parms, dialect);
 
-			string defOptStrategy = incrementSize <= 1 ? OptimizerFactory.None : OptimizerFactory.Pool;
-			string optimizationStrategy = PropertiesHelper.GetString(OptimizerParam, parms, defOptStrategy);
-
-			if (OptimizerFactory.None.Equals(optimizationStrategy) && incrementSize > 1)
-			{
-				Log.Warn("config specified explicit optimizer of [" + OptimizerFactory.None + "], but [" + IncrementParam + "=" + incrementSize + "; honoring optimizer setting");
-				incrementSize = 1;
-			}
+			string optimizationStrategy = DetermineOptimizationStrategy(parms, incrementSize);
+			incrementSize = DetermineAdjustedIncrementSize(optimizationStrategy, incrementSize);
 
 			if (dialect.SupportsSequences && !forceTableUse)
 			{
@@ -134,6 +120,92 @@ namespace NHibernate.Id.Enhanced
 				PropertiesHelper.GetInt32(InitialParam, parms, -1)); // Use -1 as default initial value here to signal that it's not set.
 
 			DatabaseStructure.Prepare(Optimizer);
+		}
+
+
+		/// <summary>
+		/// Determine the name of the sequence (or table if this resolves to a physical table) to use.
+		/// Called during configuration.
+		/// </summary>
+		/// <param name="parms"></param>
+		/// <param name="dialect"></param>
+		/// <returns></returns>
+		protected string DetermineSequenceName(IDictionary<string, string> parms, Dialect.Dialect dialect)
+		{
+			string sequenceName = PropertiesHelper.GetString(SequenceParam, parms, DefaultSequenceName);
+			if (sequenceName.IndexOf('.') < 0)
+			{
+				string schemaName;
+				string catalogName;
+				parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schemaName);
+				parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalogName);
+				sequenceName = Table.Qualify(catalogName, schemaName, sequenceName);
+			}
+			else
+			{
+				// If already qualified there is not much we can do in a portable manner so we pass it
+				// through and assume the user has set up the name correctly.
+			}
+
+			return sequenceName;
+		}
+
+
+		/// <summary>
+		/// Determine the name of the column used to store the generator value in
+		/// the db. Called during configuration, if a physical table is being used.
+		/// </summary>
+		protected string DetermineValueColumnName(IDictionary<string, string> parms, Dialect.Dialect dialect)
+		{
+			return PropertiesHelper.GetString(ValueColumnParam, parms, DefaultValueColumnName);
+		}
+
+
+		/// <summary>
+		/// Determine the initial sequence value to use. This value is used when
+		/// initializing the database structure (i.e. sequence/table). Called
+		/// during configuration.
+		/// </summary>
+		protected int DetermineInitialValue(IDictionary<string, string> parms)
+		{
+			return PropertiesHelper.GetInt32(InitialParam, parms, DefaultInitialValue);
+		}
+
+
+		/// <summary>
+		/// Determine the increment size to be applied. The exact implications of
+		/// this value depends on the optimizer being used. Called during configuration.
+		/// </summary>
+		protected int DetermineIncrementSize(IDictionary<string, string> parms)
+		{
+			return PropertiesHelper.GetInt32(IncrementParam, parms, DefaultIncrementSize);
+		}
+
+
+		/// <summary>
+		/// Determine the optimizer to use. Called during configuration.
+		/// </summary>
+		protected string DetermineOptimizationStrategy(IDictionary<string, string> parms, int incrementSize)
+		{
+			string defOptStrategy = incrementSize <= 1 ? OptimizerFactory.None : OptimizerFactory.Pool;
+			return PropertiesHelper.GetString(OptimizerParam, parms, defOptStrategy);
+		}
+
+
+		/// <summary>
+		/// In certain cases we need to adjust the increment size based on the
+		/// selected optimizer. This is the hook to achieve that.
+		/// </summary>
+		/// <param name="optimizationStrategy">The determined optimizer strategy.</param>
+		/// <param name="incrementSize">The determined, unadjusted, increment size.</param>
+		protected int DetermineAdjustedIncrementSize(string optimizationStrategy, int incrementSize)
+		{
+			if (OptimizerFactory.None.Equals(optimizationStrategy) && incrementSize > 1)
+			{
+				Log.Warn("config specified explicit optimizer of [" + OptimizerFactory.None + "], but [" + IncrementParam + "=" + incrementSize + "; honoring optimizer setting");
+				incrementSize = 1;
+			}
+			return incrementSize;
 		}
 
 		#endregion
