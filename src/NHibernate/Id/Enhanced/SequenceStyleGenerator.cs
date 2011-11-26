@@ -7,6 +7,60 @@ using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
 {
+	/// <summary>
+	/// Generates identifier values based on an sequence-style database structure.
+	/// Variations range from actually using a sequence to using a table to mimic
+	/// a sequence. These variations are encapsulated by the <see cref="IDatabaseStructure"/>
+	/// interface internally.
+	/// </summary>
+	/// <remarks>
+	/// General configuration parameters:
+	/// <table>
+	///   <tr>
+	///     <td><b>NAME</b></td>
+	///     <td><b>DEFAULT</b></td>
+	///     <td><b>DESCRIPTION</b></td>
+	///   </tr>
+	///   <tr>
+	///     <td><see cref="SequenceParam"/></td>
+	///     <td><see cref="DefaultSequenceName"/></td>
+	///     <td>The name of the sequence/table to use to store/retrieve values</td>
+	///   </tr>
+	///   <tr>
+	///     <td><see cref="InitialParam"/></td>
+	///     <td><see cref="DefaultInitialValue"/></td>
+	///     <td>The initial value to be stored for the given segment; the effect in terms of storage varies based on <see cref="Optimizer"/> and <see cref="DatabaseStructure"/></td>
+	///   </tr>
+	///   <tr>
+	///     <td><see cref="IncrementParam"/></td>
+	///     <td><see cref="DefaultIncrementSize"/></td>
+	///     <td>The increment size for the underlying segment; the effect in terms of storage varies based on <see cref="Optimizer"/> and <see cref="DatabaseStructure"/></td>
+	///   </tr>
+	///   <tr>
+	///     <td><see cref="OptimizerParam"/></td>
+	///     <td><i>depends on defined increment size</i></td>
+	///     <td>Allows explicit definition of which optimization strategy to use</td>
+	///   </tr>
+	///     <td><see cref="ForceTableParam"/></td>
+	///     <td><b><i>false<i/></b></td>
+	///     <td>Allows explicit definition of which optimization strategy to use</td>
+	///   </tr>
+	/// </table>
+	/// <p/>
+	/// Configuration parameters used specifically when the underlying structure is a table:
+	/// <table>
+	///   <tr>
+	///     <td><b>NAME</b></td>
+	///     <td><b>DEFAULT</b></td>
+	///     <td><b>DESCRIPTION</b></td>
+	///   </tr>
+	///   <tr>
+	///     <td><see cref="ValueColumnParam"/></td>
+	///     <td><see cref="DefaultValueColumnName"/></td>
+	///     <td>The name of column which holds the sequence value for the given segment</td>
+	///   </tr>
+	/// </table>
+	/// </remarks>
 	public class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
@@ -23,30 +77,16 @@ namespace NHibernate.Id.Enhanced
 		public const string ValueColumnParam = "value_column";
 		public const string DefaultValueColumnName = "next_val";
 
-		private IDatabaseStructure _databaseStructure;
-		private IOptimizer _optimizer;
-		private IType _identifierType;
+		public IDatabaseStructure DatabaseStructure { get; private set; }
+		public IOptimizer Optimizer { get; private set; }
+		public IType IdentifierType { get; private set; }
 
-		public IDatabaseStructure DatabaseStructure
-		{
-			get { return _databaseStructure; }
-		}
-
-		public IOptimizer Optimizer
-		{
-			get { return _optimizer; }
-		}
-
-		public IType IdentifierType
-		{
-			get { return _identifierType; }
-		}
 
 		#region Implementation of IIdentifierGenerator
 
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			return _optimizer.Generate(_databaseStructure.BuildCallback(session));
+			return Optimizer.Generate(DatabaseStructure.BuildCallback(session));
 		}
 
 		#endregion
@@ -55,17 +95,17 @@ namespace NHibernate.Id.Enhanced
 
 		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
-			return _databaseStructure.SqlCreateStrings(dialect);
+			return DatabaseStructure.SqlCreateStrings(dialect);
 		}
 
 		public virtual string[] SqlDropString(Dialect.Dialect dialect)
 		{
-			return _databaseStructure.SqlDropStrings(dialect);
+			return DatabaseStructure.SqlDropStrings(dialect);
 		}
 
 		public virtual string GeneratorKey()
 		{
-			return _databaseStructure.Name;
+			return DatabaseStructure.Name;
 		}
 
 		#endregion
@@ -74,7 +114,7 @@ namespace NHibernate.Id.Enhanced
 
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
 		{
-			_identifierType = type;
+			IdentifierType = type;
 
 			bool forceTableUse = PropertiesHelper.GetBoolean(ForceTableParam, parms, false);
 			string sequenceName = PropertiesHelper.GetString(SequenceParam, parms, DefaultSequenceName);
@@ -108,20 +148,20 @@ namespace NHibernate.Id.Enhanced
 					// TODO : may even be better to fall back to a pooled table strategy here so that the db stored values remain consistent...
 					optimizationStrategy = OptimizerFactory.HiLo;
 				}
-				_databaseStructure = new SequenceStructure(dialect, sequenceName, initialValue, incrementSize);
+				DatabaseStructure = new SequenceStructure(dialect, sequenceName, initialValue, incrementSize);
 			}
 			else
 			{
-				_databaseStructure = new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
+				DatabaseStructure = new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
 			}
 
-			_optimizer = OptimizerFactory.BuildOptimizer(
+			Optimizer = OptimizerFactory.BuildOptimizer(
 				optimizationStrategy,
-				_identifierType.ReturnedClass,
+				IdentifierType.ReturnedClass,
 				incrementSize,
 				PropertiesHelper.GetInt32(InitialParam, parms, -1)); // Use -1 as default initial value here to signal that it's not set.
 
-			_databaseStructure.Prepare(_optimizer);
+			DatabaseStructure.Prepare(Optimizer);
 		}
 
 		#endregion
