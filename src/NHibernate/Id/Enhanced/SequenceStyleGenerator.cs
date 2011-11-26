@@ -94,7 +94,6 @@ namespace NHibernate.Id.Enhanced
 
 			int initialValue = DetermineInitialValue(parms);
 			int incrementSize = DetermineIncrementSize(parms);
-			string valueColumnName = DetermineValueColumnName(parms, dialect);
 
 			string optimizationStrategy = DetermineOptimizationStrategy(parms, incrementSize);
 			incrementSize = DetermineAdjustedIncrementSize(optimizationStrategy, incrementSize);
@@ -106,12 +105,9 @@ namespace NHibernate.Id.Enhanced
 					// TODO : may even be better to fall back to a pooled table strategy here so that the db stored values remain consistent...
 					optimizationStrategy = OptimizerFactory.HiLo;
 				}
-				DatabaseStructure = new SequenceStructure(dialect, sequenceName, initialValue, incrementSize);
 			}
-			else
-			{
-				DatabaseStructure = new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
-			}
+
+			DatabaseStructure = BuildDatabaseStructure(type, parms, dialect, forceTableUse, sequenceName, initialValue, incrementSize);
 
 			Optimizer = OptimizerFactory.BuildOptimizer(
 				optimizationStrategy,
@@ -208,6 +204,20 @@ namespace NHibernate.Id.Enhanced
 			return incrementSize;
 		}
 
+
+		protected IDatabaseStructure BuildDatabaseStructure(
+			IType type, IDictionary<string, string> parms, Dialect.Dialect dialect,
+			bool forceTableUse, string sequenceName, int initialValue, int incrementSize)
+		{
+			bool useSequence = dialect.SupportsSequences && !forceTableUse;
+			if (useSequence)
+				return new SequenceStructure(dialect, sequenceName, initialValue, incrementSize);
+			else
+			{
+				string valueColumnName = DetermineValueColumnName(parms, dialect);
+				return new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
+			}
+		}
 		#endregion
 
 
