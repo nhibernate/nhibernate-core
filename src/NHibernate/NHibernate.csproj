@@ -114,6 +114,8 @@
     <Compile Include="Cache\Timestamper.cs" />
     <Compile Include="Cache\UpdateTimestampsCache.cs" />
     <Compile Include="CallbackException.cs" />
+    <Compile Include="Cfg\Loquacious\DbIntegrationConfigurationProperties.cs" />
+    <Compile Include="Cfg\Loquacious\IDbIntegrationConfigurationProperties.cs" />
     <Compile Include="Cfg\Loquacious\INamedQueryDefinitionBuilder.cs" />
     <Compile Include="Cfg\MappingsQueue.cs" />
     <Compile Include="Cfg\Configuration.cs" />
