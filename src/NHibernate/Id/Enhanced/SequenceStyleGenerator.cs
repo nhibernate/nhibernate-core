@@ -82,34 +82,6 @@ namespace NHibernate.Id.Enhanced
 		public IType IdentifierType { get; private set; }
 
 
-		#region Implementation of IIdentifierGenerator
-
-		public virtual object Generate(ISessionImplementor session, object obj)
-		{
-			return Optimizer.Generate(DatabaseStructure.BuildCallback(session));
-		}
-
-		#endregion
-
-		#region Implementation of IPersistentIdentifierGenerator
-
-		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			return DatabaseStructure.SqlCreateStrings(dialect);
-		}
-
-		public virtual string[] SqlDropString(Dialect.Dialect dialect)
-		{
-			return DatabaseStructure.SqlDropStrings(dialect);
-		}
-
-		public virtual string GeneratorKey()
-		{
-			return DatabaseStructure.Name;
-		}
-
-		#endregion
-
 		#region Implementation of IConfigurable
 
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
@@ -162,6 +134,36 @@ namespace NHibernate.Id.Enhanced
 				PropertiesHelper.GetInt32(InitialParam, parms, -1)); // Use -1 as default initial value here to signal that it's not set.
 
 			DatabaseStructure.Prepare(Optimizer);
+		}
+
+		#endregion
+
+
+		#region Implementation of IIdentifierGenerator
+
+		public virtual object Generate(ISessionImplementor session, object obj)
+		{
+			return Optimizer.Generate(DatabaseStructure.BuildCallback(session));
+		}
+
+		#endregion
+
+
+		#region Implementation of IPersistentIdentifierGenerator
+
+		public virtual string GeneratorKey()
+		{
+			return DatabaseStructure.Name;
+		}
+
+		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
+		{
+			return DatabaseStructure.SqlCreateStrings(dialect);
+		}
+
+		public virtual string[] SqlDropString(Dialect.Dialect dialect)
+		{
+			return DatabaseStructure.SqlDropStrings(dialect);
 		}
 
 		#endregion
