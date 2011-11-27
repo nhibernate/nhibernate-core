@@ -118,6 +118,16 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Supported with SQL 2003 syntax since 7.4, released 2003-11-17. For older versions
+		/// we need to override GetCreateSequenceString(string, int, int) and provide alternative
+		/// syntax, but I don't think we need to bother for such ancient releases (considered EOL).
+		/// </summary>
+		public override bool SupportsPooledSequences
+		{
+			get { return true; }
+		}
+
 		public override bool SupportsLimit
 		{
 			get { return true; }
