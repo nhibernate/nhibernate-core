@@ -5,6 +5,7 @@ using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -20,10 +21,14 @@ namespace NHibernate.Id.Enhanced
 		private readonly int _initialValue;
 		private readonly string _tableName;
 		private readonly string _valueColumnName;
+
+		private readonly SqlString _selectQuery;
+		private readonly SqlString _updateQuery;
+		private readonly SqlTypes.SqlType[] _updateParameterTypes;
+
 		private int _accessCounter;
 		private bool _applyIncrementSizeToSourceValues;
-		private readonly SqlString _select;
-		private readonly SqlString _update;
+
 
 		public TableStructure(Dialect.Dialect dialect, string tableName, string valueColumnName, int initialValue, int incrementSize)
 		{
@@ -36,12 +41,18 @@ namespace NHibernate.Id.Enhanced
 			b.Add("select ").Add(valueColumnName).Add(" id_val").Add(" from ").Add(dialect.AppendLockHint(LockMode.Upgrade, tableName))
 				.Add(dialect.ForUpdateString);
 
-			_select = b.ToSqlString();
+			_selectQuery = b.ToSqlString();
 
 			b = new SqlStringBuilder();
 			b.Add("update ").Add(tableName).Add(" set ").Add(valueColumnName).Add(" = ").Add(Parameter.Placeholder).Add(" where ")
 				.Add(valueColumnName).Add(" = ").Add(Parameter.Placeholder);
-			_update = b.ToSqlString();
+			_updateQuery = b.ToSqlString();
+			_updateParameterTypes = new[]
+			{
+				SqlTypes.SqlTypeFactory.Int64,
+				SqlTypes.SqlTypeFactory.Int64,
+			};
+
 		}
 
 		#region Implementation of IDatabaseStructure
@@ -82,17 +93,7 @@ namespace NHibernate.Id.Enhanced
 
 		public virtual string[] SqlDropStrings(Dialect.Dialect dialect)
 		{
-			StringBuilder sqlDropString = new StringBuilder().Append("drop table ");
-			if (dialect.SupportsIfExistsBeforeTableName)
-			{
-				sqlDropString.Append("if exists ");
-			}
-			sqlDropString.Append(_tableName).Append(dialect.CascadeConstraintsString);
-			if (dialect.SupportsIfExistsAfterTableName)
-			{
-				sqlDropString.Append(" if exists");
-			}
-			return new[] { sqlDropString.ToString() };
+			return new[] {dialect.GetDropTableString(_tableName) };
 		}
 
 		#endregion
@@ -102,64 +103,61 @@ namespace NHibernate.Id.Enhanced
 		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
 		{
 			long result;
-			int rows;
+			int updatedRows;
+
 			do
 			{
-				string query = _select.ToString();
-				SqlLog.Debug(query);
-				IDbCommand qps = conn.CreateCommand();
-				IDataReader rs = null;
-				qps.CommandText = query;
-				qps.CommandType = CommandType.Text;
-				qps.Transaction = conn.BeginTransaction();
 				try
 				{
-					rs = qps.ExecuteReader();
-					if (!rs.Read())
+					object selectedValue;
+
+					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, new SqlType[0]);
+					using (selectCmd)
+					{
+						selectCmd.Connection = conn;
+						selectCmd.Transaction = transaction;
+						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
+
+						selectedValue = selectCmd.ExecuteScalar();
+					}
+
+					if (selectedValue ==null)
 					{
 						string err = "could not read a hi value - you need to populate the table: " + _tableName;
 						Log.Error(err);
 						throw new IdentifierGenerationException(err);
 					}
-					result = rs.GetInt64(0);
-					rs.Close();
+					result = Convert.ToInt64(selectedValue);
 				}
 				catch (Exception sqle)
 				{
 					Log.Error("could not read a hi value", sqle);
 					throw;
 				}
-				finally
-				{
-					if (rs != null) rs.Close();
-					qps.Dispose();
-				}
 
-				query = _update.ToString();
 
-				IDbCommand ups = conn.CreateCommand();
-				ups.CommandType = CommandType.Text;
-				ups.CommandText = query;
-				ups.Connection = conn;
-				ups.Transaction = conn.BeginTransaction();
 				try
 				{
-					int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
-					((IDataParameter)ups.Parameters[0]).Value = result + increment;
-					((IDataParameter)ups.Parameters[1]).Value = result;
-					rows = ups.ExecuteNonQuery();
+					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
+					using (updateCmd)
+					{
+						updateCmd.Connection = conn;
+						updateCmd.Transaction = transaction;
+						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
+
+						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
+						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
+						((IDataParameter)updateCmd.Parameters[1]).Value = result;
+						updatedRows = updateCmd.ExecuteNonQuery();
+					}
 				}
 				catch (Exception sqle)
 				{
 					Log.Error("could not update hi value in: " + _tableName, sqle);
 					throw;
 				}
-				finally
-				{
-					ups.Dispose();
-				}
 			}
-			while (rows == 0);
+			while (updatedRows == 0);
 
 			_accessCounter++;
 
