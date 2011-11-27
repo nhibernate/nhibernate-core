@@ -5,6 +5,7 @@ Build 3.2.1.GA
 
 	##### Possible Breaking Changes #####
 		* [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
+		* [NH-2953] - SequenceStyleGenerator now forces use of a table if a pooled optimizer is chosen and the dialect doesn't support pooled sequences.
 
 Build 3.2.0.GA (rev6000)
 =============================
