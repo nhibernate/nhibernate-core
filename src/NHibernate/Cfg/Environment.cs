@@ -90,6 +90,12 @@ namespace NHibernate.Cfg
 		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
 		public const string DefaultEntityMode = "default_entity_mode";
 
+		/// <summary>
+		/// When using an enhanced id generator and pooled optimizers (<see cref="NHibernate.Id.Enhanced.IOptimizer"/>),
+		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.
+		/// </summary>
+		public const string PreferPooledValuesLo = "id.optimizer.pooled.prefer_lo";
+		
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";

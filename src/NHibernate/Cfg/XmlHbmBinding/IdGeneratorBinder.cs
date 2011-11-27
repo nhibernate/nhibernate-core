@@ -44,6 +44,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (mappings.SchemaName != null)
 				results[Id.PersistentIdGeneratorParmsNames.Schema] = mappings.Dialect.QuoteForSchemaName(mappings.SchemaName);
 
+			if (mappings.PreferPooledValuesLo != null)
+				results[Environment.PreferPooledValuesLo] = mappings.PreferPooledValuesLo;
+
 			foreach (HbmParam paramSchema in generatorMapping.param ?? new HbmParam[0])
 				results[paramSchema.name] = paramSchema.GetText();
 

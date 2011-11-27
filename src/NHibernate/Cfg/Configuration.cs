@@ -562,12 +562,13 @@ namespace NHibernate.Cfg
 		{
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+			string preferPooledValuesLo = PropertiesHelper.GetString(Environment.PreferPooledValuesLo, properties, null);
 
 			ProcessPreMappingBuildProperties();
 			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
 								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
 								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
-								defaultNamespace, defaultCatalog, defaultSchema, dialect);
+								defaultNamespace, defaultCatalog, defaultSchema, preferPooledValuesLo, dialect);
 		}
 
 		private void ProcessPreMappingBuildProperties()
