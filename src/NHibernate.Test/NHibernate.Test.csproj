@@ -437,6 +437,7 @@
     <Compile Include="Hql\Ast\WithClauseFixture.cs" />
     <Compile Include="Hql\Ast\Zoo.cs" />
     <Compile Include="Hql\BaseFunctionFixture.cs" />
+    <Compile Include="IdGen\Enhanced\Forcedtable\Entity.cs" />
     <Compile Include="IdGen\Enhanced\OptimizerTests.cs" />
     <Compile Include="IdGen\Enhanced\Sequence\Entity.cs" />
     <Compile Include="IdGen\Enhanced\SourceMock.cs" />
@@ -2769,6 +2770,12 @@
   <ItemGroup>
     <Compile Include="IdGen\Enhanced\Sequence\HiLoSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Sequence\PooledSequenceTest.cs" />
+    <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
+    <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
+    <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
+    <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\Pooled.hbm.xml" />
+    <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\HiLo.hbm.xml" />
+    <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\Basic.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\Pooled.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\HiLo.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\Basic.hbm.xml" />
