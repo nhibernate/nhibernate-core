@@ -438,6 +438,7 @@
     <Compile Include="Hql\Ast\Zoo.cs" />
     <Compile Include="Hql\BaseFunctionFixture.cs" />
     <Compile Include="IdGen\Enhanced\OptimizerTests.cs" />
+    <Compile Include="IdGen\Enhanced\Sequence\Entity.cs" />
     <Compile Include="IdGen\Enhanced\SourceMock.cs" />
     <Compile Include="IdTest\AssignedClass.cs" />
     <Compile Include="IdTest\AssignedFixture.cs" />
@@ -2767,6 +2768,12 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IdGen\Enhanced\Sequence\HiLoSequenceTest.cs" />
+    <Compile Include="IdGen\Enhanced\Sequence\PooledSequenceTest.cs" />
+    <EmbeddedResource Include="IdGen\Enhanced\Sequence\Pooled.hbm.xml" />
+    <EmbeddedResource Include="IdGen\Enhanced\Sequence\HiLo.hbm.xml" />
+    <EmbeddedResource Include="IdGen\Enhanced\Sequence\Basic.hbm.xml" />
+    <Compile Include="IdGen\Enhanced\Sequence\BasicSequenceTest.cs" />
     <EmbeddedResource Include="NHSpecificTest\NH2951\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
       <SubType>Designer</SubType>
