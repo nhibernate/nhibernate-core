@@ -90,7 +90,7 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, new SqlType[] { SqlTypeFactory.Int64 });
+					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
 					IDataReader rs = null;
 					try
 					{
@@ -101,7 +101,7 @@ namespace NHibernate.Id.Enhanced
 							long result = rs.GetInt64(0);
 							if (Log.IsDebugEnabled)
 							{
-								Log.Debug("Sequence identifier generated: " + result);
+								Log.Debug("Sequence value obtained: " + result);
 							}
 							return result;
 						}
