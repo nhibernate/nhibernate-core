@@ -135,7 +135,7 @@ namespace NHibernate.Id.Enhanced
 				string catalogName;
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schemaName);
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalogName);
-				sequenceName = Table.Qualify(catalogName, schemaName, sequenceName);
+				sequenceName = dialect.Qualify(catalogName, schemaName, sequenceName);
 			}
 			else
 			{
