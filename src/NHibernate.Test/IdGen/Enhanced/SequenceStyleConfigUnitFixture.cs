@@ -44,7 +44,9 @@ namespace NHibernate.Test.IdGen.Enhanced
 			}
 		}
 
-		// Test explicitly specifying both optimizer and increment
+		/// <summary>
+		/// Test explicitly specifying both optimizer and increment.
+		/// </summary>
 		[Test]
 		public void ExplicitOptimizerWithExplicitIncrementSize()
 		{
@@ -73,14 +75,16 @@ namespace NHibernate.Test.IdGen.Enhanced
 			Assert.AreEqual(20, generator.Optimizer.IncrementSize);
 			Assert.AreEqual(20, generator.DatabaseStructure.IncrementSize);
 
-			// optimizer=pooled w/ increment > 1 => hilo
+			// optimizer=pooled w/ increment > 1 => pooled+table
 			props = new Dictionary<string, string>();
 			props[SequenceStyleGenerator.OptimizerParam] = OptimizerFactory.Pool;
 			props[SequenceStyleGenerator.IncrementParam] = "20";
 			generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.HiLoOptimizer)));
+			// because the dialect reports that it does not support pooled sequences, the expectation is that we will
+			// use a table for the backing structure...
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
 			Assert.AreEqual(20, generator.Optimizer.IncrementSize);
 			Assert.AreEqual(20, generator.DatabaseStructure.IncrementSize);
 		}
@@ -113,24 +117,26 @@ namespace NHibernate.Test.IdGen.Enhanced
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
-		//Test default optimizer selection for sequence backed generators
-		//based on the configured increment size; both in the case of the
-		//dialect supporting pooled sequences (pooled) and not (hilo)
+		/// <summary>
+		/// Test default optimizer selection for sequence backed generators
+		/// based on the configured increment size; both in the case of the
+		/// dialect supporting pooled sequences (pooled) and not (hilo)
+		/// </summary>
 		[Test]
 		public void DefaultOptimizerBasedOnIncrementBackedBySequence()
 		{
 			IDictionary<string, string> props = new Dictionary<string, string>();
 			props[SequenceStyleGenerator.IncrementParam] = "10";
 
-			// for dialects which do not support pooled sequences, we default to hilo
+			// for dialects which do not support pooled sequences, we default to pooled+table
 			Dialect.Dialect dialect = new SequenceDialect();
 			SequenceStyleGenerator generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.HiLoOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 
-			// for dialects which do support pooled sequences, we default to pooled
+			// for dialects which do support pooled sequences, we default to pooled+sequence
 			dialect = new PooledSequenceDialect();
 			generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);

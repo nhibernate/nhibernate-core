@@ -102,8 +102,8 @@ namespace NHibernate.Id.Enhanced
 			{
 				if (OptimizerFactory.Pool.Equals(optimizationStrategy) && !dialect.SupportsPooledSequences)
 				{
-					// TODO : may even be better to fall back to a pooled table strategy here so that the db stored values remain consistent...
-					optimizationStrategy = OptimizerFactory.HiLo;
+					forceTableUse = true;
+					Log.Info("Forcing table use for sequence-style generator due to pooled optimizer selection where db does not support pooled sequences.");
 				}
 			}
 
