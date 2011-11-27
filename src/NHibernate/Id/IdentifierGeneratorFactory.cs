@@ -6,6 +6,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
+using NHibernate.Id.Enhanced;
 
 namespace NHibernate.Id
 {
@@ -66,6 +67,10 @@ namespace NHibernate.Id
 	///		<item>
 	///			<term>sequence</term>
 	///			<description><see cref="SequenceGenerator"/></description>
+	///		</item>
+	///		<item>
+	///			<term>enhanced-sequence</term>
+	///			<description><see cref="SequenceStyleGenerator"/></description>
 	///		</item>
 	///		<item>
 	///			<term>uuid.hex</term>
@@ -171,6 +176,7 @@ namespace NHibernate.Id
 			idgenerators.Add("select", typeof (SelectGenerator));
 			idgenerators.Add("sequence-identity", typeof (SequenceIdentityGenerator));
 			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
+			idgenerators.Add("enhanced-sequence", typeof(SequenceStyleGenerator));
 		}
 
 		private IdentifierGeneratorFactory()
