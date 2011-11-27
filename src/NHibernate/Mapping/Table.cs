@@ -984,7 +984,7 @@ namespace NHibernate.Mapping
 				if (columnInfo == null)
 				{
 					throw new HibernateException(string.Format("Missing column: {0} in {1}", column.Name,
-					                                           Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+					                                           dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
 				}
 
 				else
@@ -995,7 +995,7 @@ namespace NHibernate.Mapping
 					if (!typesMatch)
 					{
 						throw new HibernateException(string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
-						                                           Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
+						                                           dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
 						                                           column.Name, columnInfo.TypeName.ToLower(),
 						                                           column.GetSqlType(dialect, mapping)));
 					}
@@ -1003,19 +1003,6 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public static string Qualify(string catalog, string schema, string table)
-		{
-			var qualifiedName = new StringBuilder(100);
-			if (catalog != null)
-			{
-				qualifiedName.Append(catalog).Append('.');
-			}
-			if (schema != null)
-			{
-				qualifiedName.Append(schema).Append('.');
-			}
-			return qualifiedName.Append(table).ToString();
-		}
 
 		#region Nested type: ForeignKeyKey
 		[Serializable]
