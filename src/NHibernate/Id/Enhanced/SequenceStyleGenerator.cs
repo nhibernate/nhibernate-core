@@ -183,8 +183,13 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		protected string DetermineOptimizationStrategy(IDictionary<string, string> parms, int incrementSize)
 		{
-			string defOptStrategy = incrementSize <= 1 ? OptimizerFactory.None : OptimizerFactory.Pool;
-			return PropertiesHelper.GetString(OptimizerParam, parms, defOptStrategy);
+			// If the increment size is greater than one, we prefer pooled optimization; but we
+			// need to see if the user prefers POOL or POOL_LO...
+			string defaultPooledOptimizerStrategy = PropertiesHelper.GetBoolean(Cfg.Environment.PreferPooledValuesLo, parms, false)
+				? OptimizerFactory.PoolLo
+				: OptimizerFactory.Pool;
+			string defaultOptimizerStrategy = incrementSize <= 1 ? OptimizerFactory.None : defaultPooledOptimizerStrategy;
+			return PropertiesHelper.GetString(OptimizerParam, parms, defaultOptimizerStrategy);
 		}
 
 

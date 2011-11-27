@@ -89,6 +89,26 @@ namespace NHibernate.Test.IdGen.Enhanced
 			Assert.AreEqual(20, generator.DatabaseStructure.IncrementSize);
 		}
 
+
+		[Test]
+		public void PreferPooledLoSettingHonored()
+		{
+			Dialect.Dialect dialect = new PooledSequenceDialect();
+			IDictionary<string, string> props = new Dictionary<string, string>();
+			props[SequenceStyleGenerator.IncrementParam] = "20";
+			SequenceStyleGenerator generator = new SequenceStyleGenerator();
+			generator.Configure(NHibernateUtil.Int64, props, dialect);
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
+
+			props[NHibernate.Cfg.Environment.PreferPooledValuesLo] = "true";
+			generator = new SequenceStyleGenerator();
+			generator.Configure(NHibernateUtil.Int64, props, dialect);
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledLoOptimizer)));
+		}
+
+
 		// Test all params defaulted with a dialect supporting sequences
 		[Test]
 		public void DefaultedSequenceBackedConfiguration()

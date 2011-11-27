@@ -112,6 +112,7 @@ namespace NHibernate.Cfg
 			string defaultNamespace,
 			string defaultCatalog,
 			string defaultSchema,
+			string preferPooledValuesLo,
 			Dialect.Dialect dialect)
 		{
 			this.classes = classes;
@@ -134,6 +135,7 @@ namespace NHibernate.Cfg
 			this.defaultNamespace = defaultNamespace;
 			DefaultCatalog = defaultCatalog;
 			DefaultSchema = defaultSchema;
+			PreferPooledValuesLo = preferPooledValuesLo;
 			this.dialect = dialect;
 			this.filtersSecondPasses = filtersSecondPasses;
 		}
@@ -215,6 +217,7 @@ namespace NHibernate.Cfg
 
 		public string DefaultCatalog { get; set; }
 		public string DefaultSchema { get; set; }
+		public string PreferPooledValuesLo { get; set; }
 
 		public Mapping.Collection GetCollection(string role)
 		{
