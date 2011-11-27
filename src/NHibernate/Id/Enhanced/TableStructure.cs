@@ -38,7 +38,7 @@ namespace NHibernate.Id.Enhanced
 			_incrementSize = incrementSize;
 
 			var b = new SqlStringBuilder();
-			b.Add("select ").Add(valueColumnName).Add(" id_val").Add(" from ").Add(dialect.AppendLockHint(LockMode.Upgrade, tableName))
+			b.Add("select ").Add(valueColumnName).Add(" as id_val").Add(" from ").Add(dialect.AppendLockHint(LockMode.Upgrade, tableName))
 				.Add(dialect.ForUpdateString);
 
 			_selectQuery = b.ToSqlString();
@@ -111,7 +111,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					object selectedValue;
 
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, new SqlType[0]);
+					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
