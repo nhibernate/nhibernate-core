@@ -20,9 +20,16 @@ namespace NHibernate.Dialect
 			base.RegisterCharacterTypeMappings();
 			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NVARCHAR(MAX)");
 			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "VARCHAR(MAX)");
+		}
+
+		protected override void RegisterLargeObjectTypeMappings()
+		{
+			base.RegisterLargeObjectTypeMappings();
+			RegisterColumnType(DbType.Binary, "VARBINARY(MAX)");
+			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
 			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "VARBINARY(MAX)");
 		}
-		
+
 		protected override void RegisterKeywords()
 		{
 			base.RegisterKeywords();
@@ -31,61 +38,61 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			SqlStringBuilder result = new SqlStringBuilder();
-						
+			var result = new SqlStringBuilder();
+
 			if (offset == null)
 			{
-                int insertPoint = GetAfterSelectInsertPoint(queryString);
-				
+				int insertPoint = GetAfterSelectInsertPoint(queryString);
+
 				return result
-                    .Add(queryString.Substring(0, insertPoint))
+					.Add(queryString.Substring(0, insertPoint))
 					.Add(" TOP (")
 					.Add(limit)
-                    .Add(") ")
-                    .Add(queryString.Substring(insertPoint))
+					.Add(") ")
+					.Add(queryString.Substring(insertPoint))
 					.ToSqlString();
 			}
 
-            int fromIndex = GetFromIndex(queryString);
-            SqlString select = queryString.Substring(0, fromIndex);
+			int fromIndex = GetFromIndex(queryString);
+			SqlString select = queryString.Substring(0, fromIndex);
 
 			List<SqlString> columnsOrAliases;
 			Dictionary<SqlString, SqlString> aliasToColumn;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
 
-            int orderIndex = queryString.LastIndexOfCaseInsensitive(" order by ");
+			int orderIndex = queryString.LastIndexOfCaseInsensitive(" order by ");
 			SqlString fromAndWhere;
 			SqlString[] sortExpressions;
 
 			//don't use the order index if it is contained within a larger statement(assuming
 			//a statement with non matching parenthesis is part of a larger block)
-            if (orderIndex > 0 && HasMatchingParens(queryString.Substring(orderIndex).ToString()))
+			if (orderIndex > 0 && HasMatchingParens(queryString.Substring(orderIndex).ToString()))
 			{
-                fromAndWhere = queryString.Substring(fromIndex, orderIndex - fromIndex).Trim();
-                SqlString orderBy = queryString.Substring(orderIndex).Trim();
+				fromAndWhere = queryString.Substring(fromIndex, orderIndex - fromIndex).Trim();
+				SqlString orderBy = queryString.Substring(orderIndex).Trim();
 				sortExpressions = orderBy.Substring(9).Split(",");
 			}
 			else
 			{
-                fromAndWhere = queryString.Substring(fromIndex).Trim();
+				fromAndWhere = queryString.Substring(fromIndex).Trim();
 				// Use dummy sort to avoid errors
-				sortExpressions = new[] {new SqlString("CURRENT_TIMESTAMP"),};
+				sortExpressions = new[] { new SqlString("CURRENT_TIMESTAMP") };
 			}
-				
+
 			result.Add("SELECT ");
 
-            if (limit != null)
-                result.Add("TOP (").Add(limit).Add(") ");
-            else
-                // ORDER BY can only be used in subqueries if TOP is also specified.
-                result.Add("TOP (" + int.MaxValue + ") ");
+			if (limit != null)
+				result.Add("TOP (").Add(limit).Add(") ");
+			else
+				// ORDER BY can only be used in subqueries if TOP is also specified.
+				result.Add("TOP (" + int.MaxValue + ") ");
 
-            result
+			result
 				.Add(StringHelper.Join(", ", columnsOrAliases))
 				.Add(" FROM (")
 				.Add(select)
 				.Add(", ROW_NUMBER() OVER(ORDER BY ");
-			
+
 			AppendSortExpressions(aliasToColumn, sortExpressions, result);
 
 			result
@@ -94,7 +101,7 @@ namespace NHibernate.Dialect
 				.Add(") as query WHERE query.__hibernate_sort_row > ")
 				.Add(offset)
 				.Add(" ORDER BY query.__hibernate_sort_row");
-			
+
 			return result.ToSqlString();
 		}
 
@@ -143,14 +150,14 @@ namespace NHibernate.Dialect
 			}
 			return fromIndex;
 		}
-		
+
 		private int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			if (sql.StartsWithCaseInsensitive("select distinct"))
 			{
 				return 15;
 			}
-			else if (sql.StartsWithCaseInsensitive("select"))
+			if (sql.StartsWithCaseInsensitive("select"))
 			{
 				return 6;
 			}
@@ -204,12 +211,12 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
-		
+
 		public override bool SupportsVariableLimit
 		{
 			get { return true; }
 		}
-		
+
 		protected override string GetSelectExistingObject(string name, Table table)
 		{
 			string schema = table.GetQuotedSchemaName(this);
@@ -234,6 +241,5 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-
 	}
 }
