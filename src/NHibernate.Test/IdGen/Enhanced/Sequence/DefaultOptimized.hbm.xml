@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+    Demonstrates use of the enhanced sequence-based identifier
+    generator, with most parameters sets to their default values.
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+             assembly="NHibernate.Test"
+             namespace="NHibernate.Test.IdGen.Enhanced.Sequence"
+             default-access="field">
+
+    <class name="Entity" table="ID_SEQ_POOL_ENTITY">
+        <id name="_id" column="ID" type="long">
+          <generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
+                <param name="increment_size">10</param>
+            </generator>
+        </id>
+      <property name="Name" type="string" access="property"/>
+	</class>
+
+</hibernate-mapping>
