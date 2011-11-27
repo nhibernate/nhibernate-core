@@ -100,6 +100,9 @@ namespace NHibernate.Id.Enhanced
 
 			if (dialect.SupportsSequences && !forceTableUse)
 			{
+				// TODO: (Added during porting) The following corresponds to what Hibernate does, but
+				// TODO: if seems to me that we need to force table use also for the PooledLo optimizer.
+				// TODO: Reported as HHH-6855.
 				if (OptimizerFactory.Pool.Equals(optimizationStrategy) && !dialect.SupportsPooledSequences)
 				{
 					forceTableUse = true;
