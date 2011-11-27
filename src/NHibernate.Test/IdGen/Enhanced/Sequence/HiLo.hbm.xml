@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+    Demonstrates use of the enhanced sequence-based identifier
+    generator, using a hilo algorithm as the optimization (to
+    avoid hitting the database to generate each value).
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+             assembly="NHibernate.Test"
+             namespace="NHibernate.Test.IdGen.Enhanced.Sequence"
+             default-access="field">
+    
+    <class name="Entity" table="ID_SEQ_HILO_ENTITY">
+        <id name="_id" column="ID" type="long">
+            <generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
+                <param name="sequence_name">ID_SEQ_HILO_SEQ</param>
+                <param name="initial_value">1</param>
+                <param name="increment_size">10</param>
+                <param name="optimizer">hilo</param>
+            </generator>
+        </id>
+      <property name="Name" type="string" access="property"/>
+	</class>
+
+</hibernate-mapping>
