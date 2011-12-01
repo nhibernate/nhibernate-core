@@ -643,8 +643,8 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH296x\Entity.cs" />
-    <Compile Include="NHSpecificTest\NH296x\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />
@@ -2768,7 +2768,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NHSpecificTest\NH296x\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2960\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2951\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
       <SubType>Designer</SubType>

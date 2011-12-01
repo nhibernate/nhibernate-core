@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.NH296x
+namespace NHibernate.Test.NHSpecificTest.NH2960
 {
 	class Entity
 	{
