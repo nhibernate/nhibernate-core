@@ -643,8 +643,6 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH2960\Entity.cs" />
-    <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />
@@ -918,6 +916,8 @@
     <Compile Include="NHSpecificTest\NH2893\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2913\CostItem.cs" />
     <Compile Include="NHSpecificTest\NH2913\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
