@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
-using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -91,6 +90,9 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void QueryPlansAreReused()
 		{
+			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+				Assert.Ignore("Test designed for SqlClientDriver only");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
