@@ -87,5 +87,39 @@ namespace NHibernate.Test.DriverTest
 				t.Commit();
 			}
 		}
+
+		[Test]
+		public void QueryPlansAreReused()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				// clear the existing plan cache
+				s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdate();
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var countPlansCommand = s.CreateSQLQuery("SELECT COUNT(*) FROM sys.dm_exec_cached_plans");
+
+				var beforeCount = countPlansCommand.UniqueResult<int>();
+
+				var insertCount = 10;
+				for (var i=0; i<insertCount; i++)
+				{
+					s.Save(new MultiTypeEntity() { StringProp = new string('x', i + 1) });
+					s.Flush();
+				}
+
+				var afterCount = countPlansCommand.UniqueResult<int>();
+
+				Assert.That(afterCount - beforeCount, Is.LessThan(insertCount - 1),
+					string.Format("Excessive query plans created: before={0} after={1}", beforeCount, afterCount));
+
+				t.Rollback();
+			}
+		}
 	}
 }
