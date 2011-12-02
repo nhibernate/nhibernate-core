@@ -14,7 +14,12 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = value;
+			IDbDataParameter parameter = (IDbDataParameter)cmd.Parameters[index];
+
+			if (parameter.Size > 0 && ((string)value).Length > parameter.Size)
+				throw new HibernateException("The length of the string value exceeds the length configured in the mapping.");
+
+			parameter.Value = value;
 		}
 
 		public override object Get(IDataReader rs, int index)

@@ -24,6 +24,15 @@ namespace NHibernate
 			this.propertyName = propertyName;
 		}
 
+
+		public PropertyValueException(string message, string entityName, string propertyName, Exception innerException)
+			: base(message, innerException)
+		{
+			this.entityName = entityName;
+			this.propertyName = propertyName;
+		}
+
+
 		public string EntityName
 		{
 			get { return entityName; }
@@ -39,7 +48,7 @@ namespace NHibernate
 			get
 			{
 				return base.Message + " " +
-				       StringHelper.Qualify(entityName, propertyName);
+					   StringHelper.Qualify(entityName, propertyName);
 			}
 		}
 
@@ -75,7 +84,7 @@ namespace NHibernate
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
 		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags=SecurityPermissionFlag.SerializationFormatter)]
+			Flags = SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
