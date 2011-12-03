@@ -1,26 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
+﻿namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
 	public class Entity
 	{
+
 #pragma warning disable 0414  // unassigned variable
 		private long _id;
 #pragma warning restore 0414
 
-		public virtual long Id { get { return _id; } }
-
-		public virtual string Name { get; set; }
-
-
-		public Entity()
+		public virtual long Id
 		{
+			get { return _id; }
 		}
 
+		public virtual string Name
+		{
+			get; set;
+		}
 
+		public Entity() { }
+		
 		public Entity(string name)
 		{
 			Name = name;

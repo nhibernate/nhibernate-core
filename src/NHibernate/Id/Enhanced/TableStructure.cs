@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -15,7 +14,6 @@ namespace NHibernate.Id.Enhanced
 	public class TableStructure : TransactionHelper, IDatabaseStructure
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
-		private static readonly IInternalLogger SqlLog = LoggerProvider.LoggerFor("NHibernate.SQL");
 
 		private readonly int _incrementSize;
 		private readonly int _initialValue;
@@ -24,11 +22,10 @@ namespace NHibernate.Id.Enhanced
 
 		private readonly SqlString _selectQuery;
 		private readonly SqlString _updateQuery;
-		private readonly SqlTypes.SqlType[] _updateParameterTypes;
+		private readonly SqlType[] _updateParameterTypes;
 
 		private int _accessCounter;
 		private bool _applyIncrementSizeToSourceValues;
-
 
 		public TableStructure(Dialect.Dialect dialect, string tableName, string valueColumnName, int initialValue, int incrementSize)
 		{
@@ -49,8 +46,8 @@ namespace NHibernate.Id.Enhanced
 			_updateQuery = b.ToSqlString();
 			_updateParameterTypes = new[]
 			{
-				SqlTypes.SqlTypeFactory.Int64,
-				SqlTypes.SqlTypeFactory.Int64,
+				SqlTypeFactory.Int64,
+				SqlTypeFactory.Int64,
 			};
 
 		}
@@ -134,7 +131,6 @@ namespace NHibernate.Id.Enhanced
 					Log.Error("could not read a hi value", sqle);
 					throw;
 				}
-
 
 				try
 				{

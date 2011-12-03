@@ -6,19 +6,18 @@
     everytime when generating a value).
 -->
 
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-				   assembly="NHibernate.Test"
-				   namespace="NHibernate.Test.IdGen.Enhanced.Sequence"
-				   default-access="field">
-    <class name="Entity" table="ID_SEQ_BSC_ENTITY">
-        <id name="_id" column="ID" type="long">
-            <generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
-                <param name="sequence_name">ID_SEQ_BSC_SEQ</param>
-                <param name="initial_value">1</param>
-                <param name="increment_size">1</param>
-                <param name="optimizer">none</param>
-            </generator>
-        </id>
-        <property name="Name" type="string" access="property"/>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.IdGen.Enhanced.Sequence" default-access="field">
+	
+	<class name="Entity" table="ID_SEQ_BSC_ENTITY">
+		<id name="_id" column="ID" type="long">
+			<generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
+				<param name="sequence_name">ID_SEQ_BSC_SEQ</param>
+				<param name="initial_value">1</param>
+				<param name="increment_size">1</param>
+				<param name="optimizer">none</param>
+			</generator>
+		</id>
+		<property name="Name" type="string" access="property"/>
 	</class>
+	
 </hibernate-mapping>

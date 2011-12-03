@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Id.Enhanced;
-
 
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
@@ -10,8 +8,8 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 	[TestFixture(false, typeof(OptimizerFactory.PooledOptimizer))]
 	public class DefaultOptimizedSequenceTest : TestCase
 	{
-		private bool _preferLo;
-		private System.Type _expectedOptimizerType;
+		private readonly bool _preferLo;
+		private readonly System.Type _expectedOptimizerType;
 
 		public DefaultOptimizedSequenceTest(bool preferLo, System.Type expectedOptimizerType)
 		{
@@ -19,17 +17,15 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 			_expectedOptimizerType = expectedOptimizerType;
 		}
 
-
 		protected override IList Mappings
 		{
-			get { return new string[] { "IdGen.Enhanced.Sequence.DefaultOptimized.hbm.xml" }; }
+			get { return new[] { "IdGen.Enhanced.Sequence.DefaultOptimized.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 
 		protected override void AddMappings(Cfg.Configuration configuration)
 		{
@@ -40,7 +36,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 			base.AddMappings(configuration);
 		}
 
-
 		[Test]
 		public void CorrectOptimizerChosenAsDefault()
 		{
@@ -50,8 +45,8 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 
 			var persister = sessions.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
-			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;
 
+			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;
 			Assert.That(generator.Optimizer, Is.TypeOf(_expectedOptimizerType));
 		}
 	}

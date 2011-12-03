@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
 using NHibernate.Engine;
-using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -41,6 +40,7 @@ namespace NHibernate.Id.Enhanced
 	///     <td><i>depends on defined increment size</i></td>
 	///     <td>Allows explicit definition of which optimization strategy to use</td>
 	///   </tr>
+	///   <tr>
 	///     <td><see cref="ForceTableParam"/></td>
 	///     <td><b><i>false<i/></b></td>
 	///     <td>Allows explicit definition of which optimization strategy to use</td>
@@ -81,7 +81,6 @@ namespace NHibernate.Id.Enhanced
 		public IOptimizer Optimizer { get; private set; }
 		public IType IdentifierType { get; private set; }
 
-
 		#region Implementation of IConfigurable
 
 		public virtual void Configure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect)
@@ -121,7 +120,6 @@ namespace NHibernate.Id.Enhanced
 			DatabaseStructure.Prepare(Optimizer);
 		}
 
-
 		/// <summary>
 		/// Determine the name of the sequence (or table if this resolves to a physical table) to use.
 		/// Called during configuration.
@@ -149,7 +147,6 @@ namespace NHibernate.Id.Enhanced
 			return sequenceName;
 		}
 
-
 		/// <summary>
 		/// Determine the name of the column used to store the generator value in
 		/// the db. Called during configuration, if a physical table is being used.
@@ -158,7 +155,6 @@ namespace NHibernate.Id.Enhanced
 		{
 			return PropertiesHelper.GetString(ValueColumnParam, parms, DefaultValueColumnName);
 		}
-
 
 		/// <summary>
 		/// Determine the initial sequence value to use. This value is used when
@@ -170,7 +166,6 @@ namespace NHibernate.Id.Enhanced
 			return PropertiesHelper.GetInt32(InitialParam, parms, DefaultInitialValue);
 		}
 
-
 		/// <summary>
 		/// Determine the increment size to be applied. The exact implications of
 		/// this value depends on the optimizer being used. Called during configuration.
@@ -179,7 +174,6 @@ namespace NHibernate.Id.Enhanced
 		{
 			return PropertiesHelper.GetInt32(IncrementParam, parms, DefaultIncrementSize);
 		}
-
 
 		/// <summary>
 		/// Determine the optimizer to use. Called during configuration.
@@ -194,7 +188,6 @@ namespace NHibernate.Id.Enhanced
 			string defaultOptimizerStrategy = incrementSize <= 1 ? OptimizerFactory.None : defaultPooledOptimizerStrategy;
 			return PropertiesHelper.GetString(OptimizerParam, parms, defaultOptimizerStrategy);
 		}
-
 
 		/// <summary>
 		/// In certain cases we need to adjust the increment size based on the
@@ -212,10 +205,7 @@ namespace NHibernate.Id.Enhanced
 			return incrementSize;
 		}
 
-
-		protected IDatabaseStructure BuildDatabaseStructure(
-			IType type, IDictionary<string, string> parms, Dialect.Dialect dialect,
-			bool forceTableUse, string sequenceName, int initialValue, int incrementSize)
+		protected IDatabaseStructure BuildDatabaseStructure(IType type, IDictionary<string, string> parms, Dialect.Dialect dialect, bool forceTableUse, string sequenceName, int initialValue, int incrementSize)
 		{
 			bool useSequence = dialect.SupportsSequences && !forceTableUse;
 			if (useSequence)
@@ -226,8 +216,8 @@ namespace NHibernate.Id.Enhanced
 				return new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
 			}
 		}
-		#endregion
 
+		#endregion
 
 		#region Implementation of IIdentifierGenerator
 
@@ -237,7 +227,6 @@ namespace NHibernate.Id.Enhanced
 		}
 
 		#endregion
-
 
 		#region Implementation of IPersistentIdentifierGenerator
 

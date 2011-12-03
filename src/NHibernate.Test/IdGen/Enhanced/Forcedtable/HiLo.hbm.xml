@@ -6,22 +6,19 @@
     avoid hitting the database to generate each value).
 -->
 
-<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-             assembly="NHibernate.Test"
-             namespace="NHibernate.Test.IdGen.Enhanced.Forcedtable"
-             default-access="field">
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.IdGen.Enhanced.Forcedtable" default-access="field">
 
-  <class name="Entity" table="ID_SEQ_TBL_HILO_ENTITY">
-        <id name="_id" column="ID" type="long">
-            <generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
-                <param name="table_name">ID_SEQ_TBL_HILO_SEQ</param>
-                <param name="initial_value">1</param>
-                <param name="increment_size">10</param>
-                <param name="optimizer">hilo</param>
-                <param name="force_table_use">true</param>
-            </generator>
-        </id>
-      <property name="Name" type="string" access="property"/>
+	<class name="Entity" table="ID_SEQ_TBL_HILO_ENTITY">
+		<id name="_id" column="ID" type="long">
+			<generator class="NHibernate.Id.Enhanced.SequenceStyleGenerator, NHibernate">
+				<param name="table_name">ID_SEQ_TBL_HILO_SEQ</param>
+				<param name="initial_value">1</param>
+				<param name="increment_size">10</param>
+				<param name="optimizer">hilo</param>
+				<param name="force_table_use">true</param>
+			</generator>
+		</id>
+		<property name="Name" type="string" access="property"/>
 	</class>
 
 </hibernate-mapping>
