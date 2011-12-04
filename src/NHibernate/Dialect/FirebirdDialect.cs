@@ -259,5 +259,22 @@ namespace NHibernate.Dialect
 		{
 			get { return "select RDB$GENERATOR_NAME from RDB$GENERATORS where (RDB$SYSTEM_FLAG is NULL) or (RDB$SYSTEM_FLAG <> 1)"; }
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+			// Lousy documentation. Various mailing lists and articles seem to 
+			// indicate resolution of 0.1 ms, i.e. 1000 ticks.
+			get { return 1000L; }
+		}
+
+		public override bool SupportsCurrentTimestampSelection
+		{
+			get { return true; }
+		}
+
+		public override string CurrentTimestampSelectString
+		{
+			get { return "SELECT CURRENT_TIMESTAMP"; }
+		}
 	}
 }
