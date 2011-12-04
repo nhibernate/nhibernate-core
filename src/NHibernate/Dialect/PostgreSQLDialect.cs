@@ -218,5 +218,20 @@ namespace NHibernate.Dialect
 		{
 			return new PostgreSQLDataBaseMetadata(connection);
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+		    get { return 10L; }   // Microseconds.
+		}
+
+		public override bool SupportsCurrentTimestampSelection
+		{
+			get { return true; }
+		}
+
+		public override string CurrentTimestampSelectString
+		{
+			get { return "SELECT CURRENT_TIMESTAMP"; }
+		}
 	}
 }
