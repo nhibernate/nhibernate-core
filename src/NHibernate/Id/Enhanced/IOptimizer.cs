@@ -15,40 +15,43 @@ namespace NHibernate.Id.Enhanced
 	/// </remarks>
 	public interface IOptimizer
 	{
-		/// <summary> 
+		/// <summary>
 		/// A common means to access the last value obtained from the underlying
 		/// source.  This is intended for testing purposes, since accessing the
 		/// unerlying database source directly is much more difficult.
 		///  </summary>
-		/// <value> 
-		/// The last value we obtained from the underlying source;
-		/// -1 indicates we have not yet consulted with the source.
+		/// <value>
+		/// The last value we obtained from the underlying source; -1 indicates we have not yet consulted with the source.
 		/// </value>
-		long LastSourceValue{get;}
-		/// <summary> 
+		long LastSourceValue { get; }
+
+		/// <summary>
 		/// Defined increment size. 
 		/// </summary>
-		/// <value> The increment size.
-		/// </value>
-		int IncrementSize{get;}
+		/// <value> The increment size.</value>
+		int IncrementSize { get; }
 
-		/// <summary> 
+		/// <summary>
 		/// Generate an identifier value accounting for this specific optimization. 
 		/// </summary>
 		/// <param name="callback">Callback to access the underlying value source. </param>
-		/// <returns> The generated identifier value. </returns>
+		/// <returns>The generated identifier value.</returns>
 		object Generate(IAccessCallback callback);
 
 		/// <summary> 
 		/// Are increments to be applied to the values stored in the underlying
-		/// value source? 
+		/// value source?
 		/// </summary>
-		/// <returns> 
+		/// <returns>
 		/// True if the values in the source are to be incremented
 		/// according to the defined increment size; false otherwise, in which
 		/// case the increment is totally an in memory construct.
 		/// </returns>
-		bool ApplyIncrementSizeToSourceValues { get;}
+		bool ApplyIncrementSizeToSourceValues { get; }
 
+		/// <summary>
+		/// Is a pooled generator required?
+		/// </summary>
+		bool RequiresPooledSequenceGenerator { get; }
 	}
 }

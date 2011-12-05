@@ -68,6 +68,10 @@ namespace NHibernate.Id.Enhanced
 			{
 				System.Type optimizerClass = ReflectHelper.ClassForName(optimizerClassName);
 				ConstructorInfo ctor = optimizerClass.GetConstructor(CtorSignature);
+
+				if (ctor == null)
+					throw new HibernateException("Optimizer does not have expected contructor");
+
 				return (IOptimizer)ctor.Invoke(new object[] { returnClass, incrementSize });
 			}
 			catch (Exception)
@@ -98,8 +102,7 @@ namespace NHibernate.Id.Enhanced
 			private long _lastSourceValue = -1;
 			private long _value;
 
-			public HiLoOptimizer(System.Type returnClass, int incrementSize)
-				: base(returnClass, incrementSize)
+			public HiLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
 				if (incrementSize < 1)
 				{
@@ -133,6 +136,11 @@ namespace NHibernate.Id.Enhanced
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
+			{
+				get { return false; }
+			}
+
+			public override bool RequiresPooledSequenceGenerator
 			{
 				get { return false; }
 			}
@@ -179,6 +187,11 @@ namespace NHibernate.Id.Enhanced
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
+			{
+				get { return false; }
+			}
+
+			public override bool RequiresPooledSequenceGenerator
 			{
 				get { return false; }
 			}
@@ -234,6 +247,8 @@ namespace NHibernate.Id.Enhanced
 
 			public abstract bool ApplyIncrementSizeToSourceValues { get; }
 
+			public abstract bool RequiresPooledSequenceGenerator { get; }
+
 			public abstract object Generate(IAccessCallback param);
 
 			#endregion
@@ -265,8 +280,7 @@ namespace NHibernate.Id.Enhanced
 			private long _value;
 			private long _initialValue;
 
-			public PooledOptimizer(System.Type returnClass, int incrementSize)
-				: base(returnClass, incrementSize)
+			public PooledOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
 				if (incrementSize < 1)
 				{
@@ -274,8 +288,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				if (Log.IsDebugEnabled)
 				{
-					Log.Debug("Creating pooled optimizer with [incrementSize=" + incrementSize + "; returnClass="
-							  + returnClass.FullName + "]");
+					Log.Debug("Creating pooled optimizer with [incrementSize=" + incrementSize + "; returnClass=" + returnClass.FullName + "]");
 				}
 			}
 
@@ -295,6 +308,11 @@ namespace NHibernate.Id.Enhanced
 			public override bool ApplyIncrementSizeToSourceValues
 			{
 				get { return true; }
+			}
+
+			public override bool RequiresPooledSequenceGenerator
+			{
+				get { return (IncrementSize > 1); }
 			}
 
 			public void InjectInitialValue(long initialValue)
@@ -343,8 +361,7 @@ namespace NHibernate.Id.Enhanced
 			private long _lastSourceValue = -1; // last value read from db source
 			private long _value; // the current generator value
 
-			public PooledLoOptimizer(System.Type returnClass, int incrementSize)
-				: base(returnClass, incrementSize)
+			public PooledLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
 				if (incrementSize < 1)
 				{
@@ -378,6 +395,11 @@ namespace NHibernate.Id.Enhanced
 			public override bool ApplyIncrementSizeToSourceValues
 			{
 				get { return true; }
+			}
+
+			public override bool RequiresPooledSequenceGenerator
+			{
+				get { return (IncrementSize > 1); }
 			}
 		}
 

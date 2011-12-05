@@ -97,26 +97,21 @@ namespace NHibernate.Id.Enhanced
 			string optimizationStrategy = DetermineOptimizationStrategy(parms, incrementSize);
 			incrementSize = DetermineAdjustedIncrementSize(optimizationStrategy, incrementSize);
 
-			if (dialect.SupportsSequences && !forceTableUse)
-			{
-				// TODO: (Added during porting) The following corresponds to what Hibernate does, but
-				// TODO: if seems to me that we need to force table use also for the PooledLo optimizer.
-				// TODO: Reported as HHH-6855.
-				if (OptimizerFactory.Pool.Equals(optimizationStrategy) && !dialect.SupportsPooledSequences)
-				{
-					forceTableUse = true;
-					Log.Info("Forcing table use for sequence-style generator due to pooled optimizer selection where db does not support pooled sequences.");
-				}
-			}
-
-			DatabaseStructure = BuildDatabaseStructure(type, parms, dialect, forceTableUse, sequenceName, initialValue, incrementSize);
-
 			Optimizer = OptimizerFactory.BuildOptimizer(
 				optimizationStrategy,
 				IdentifierType.ReturnedClass,
 				incrementSize,
 				PropertiesHelper.GetInt32(InitialParam, parms, -1)); // Use -1 as default initial value here to signal that it's not set.
 
+			if (Optimizer.RequiresPooledSequenceGenerator && !dialect.SupportsPooledSequences)
+			{
+				// force the use of a table (overriding whatever the user configured) since the dialect doesn't support it, and the 
+				// optimizer requires it
+				forceTableUse = true;
+				Log.Info("Forcing table use for sequence-style generator due to optimizer selection where db does not support pooled sequences.");
+			}
+
+			DatabaseStructure = BuildDatabaseStructure(type, parms, dialect, forceTableUse, sequenceName, initialValue, incrementSize);
 			DatabaseStructure.Prepare(Optimizer);
 		}
 

@@ -21,6 +21,7 @@ namespace NHibernate.Id.Enhanced
 		private readonly SqlString _sql;
 		private int _accessCounter;
 		private bool _applyIncrementSizeToSourceValues;
+		private bool _requiresPooledSequenceGenerator;
 
 		public SequenceStructure(Dialect.Dialect dialect, string sequenceName, int initialValue, int incrementSize)
 		{
@@ -50,11 +51,16 @@ namespace NHibernate.Id.Enhanced
 		public void Prepare(IOptimizer optimizer)
 		{
 			_applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
+			_requiresPooledSequenceGenerator = optimizer.RequiresPooledSequenceGenerator;
 		}
 
 		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
+			if (!_requiresPooledSequenceGenerator)
+				return new[] { dialect.GetCreateSequenceString(_sequenceName) };
+
 			int sourceIncrementSize = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
+			
 			return dialect.GetCreateSequenceStrings(_sequenceName, _initialValue, sourceIncrementSize);
 		}
 
@@ -124,8 +130,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value",
-													 _owner._sql);
+					throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value", _owner._sql);
 				}
 			}
 
