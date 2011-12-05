@@ -1,5 +1,4 @@
 using System.Data;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
@@ -9,6 +8,7 @@ using NHibernate.Type;
 using System.Data.Common;
 using System;
 using Environment = NHibernate.Cfg.Environment;
+
 namespace NHibernate.Dialect
 {
 	/// <summary>
@@ -65,7 +65,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
-			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1)); ;
+			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
 			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
@@ -123,9 +123,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
-            RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, cast(?3 as int))")); // The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  We have a unit test to cover this potential firebird bug.
-            RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
-            //BLOB Functions
+			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, cast(?3 as int))")); // The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  We have a unit test to cover this potential firebird bug.
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			//BLOB Functions
 			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
 			//Trigonometric Functions
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
@@ -179,32 +179,32 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-            // FIXME - This should use the ROWS syntax in Firebird to avoid problems with subqueries metioned here:
-            // http://www.firebirdsql.org/refdocs/langrefupd20-select.html#langrefupd20-first-skip
+			// FIXME - This should use the ROWS syntax in Firebird to avoid problems with subqueries metioned here:
+			// http://www.firebirdsql.org/refdocs/langrefupd20-select.html#langrefupd20-first-skip
 
-            /*
+			/*
 			 * "SELECT FIRST x [SKIP y] rest-of-sql-statement"
 			 */
 
 			int insertIndex = GetAfterSelectInsertPoint(queryString);
 
-            SqlStringBuilder limitFragment = new SqlStringBuilder();
+			var limitFragment = new SqlStringBuilder();
 
-            if (limit != null)
-            {
-                limitFragment.Add(" first ");
-                limitFragment.Add(limit);
-            }
-
-            if (offset != null)
-            {
-                limitFragment.Add(" skip ");
-                limitFragment.Add(offset);
+			if (limit != null)
+			{
+				limitFragment.Add(" first ");
+				limitFragment.Add(limit);
 			}
 
-            return queryString.Insert(insertIndex, limitFragment.ToSqlString());
+			if (offset != null)
+			{
+				limitFragment.Add(" skip ");
+				limitFragment.Add(offset);
+			}
+
+			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
 		private static int GetAfterSelectInsertPoint(SqlString text)
@@ -258,6 +258,23 @@ namespace NHibernate.Dialect
 		public override string QuerySequencesString
 		{
 			get { return "select RDB$GENERATOR_NAME from RDB$GENERATORS where (RDB$SYSTEM_FLAG is NULL) or (RDB$SYSTEM_FLAG <> 1)"; }
+		}
+
+		public override long TimestampResolutionInTicks
+		{
+			// Lousy documentation. Various mailing lists and articles seem to 
+			// indicate resolution of 0.1 ms, i.e. 1000 ticks.
+			get { return 1000L; }
+		}
+
+		public override bool SupportsCurrentTimestampSelection
+		{
+			get { return true; }
+		}
+
+		public override string CurrentTimestampSelectString
+		{
+			get { return "select CURRENT_TIMESTAMP from RDB$DATABASE"; }
 		}
 	}
 }
