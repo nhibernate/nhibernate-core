@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -104,7 +105,7 @@ namespace NHibernate.Id.Enhanced
 						try
 						{
 							rs.Read();
-							long result = rs.GetInt64(0);
+							long result = Convert.ToInt64(rs.GetValue(0));
 							if (Log.IsDebugEnabled)
 							{
 								Log.Debug("Sequence value obtained: " + result);
