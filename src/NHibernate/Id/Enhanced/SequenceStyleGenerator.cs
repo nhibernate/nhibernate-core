@@ -212,15 +212,15 @@ namespace NHibernate.Id.Enhanced
 			}
 		}
 
-        /// <summary>
-        /// Do we require a sequence with the ability to set initialValue and incrementSize
-        /// larger than 1?
-        /// </summary>
-        protected bool RequiresPooledSequence(int initialValue, int incrementSize, IOptimizer optimizer)
-        {
-            int sourceIncrementSize = optimizer.ApplyIncrementSizeToSourceValues ? incrementSize : 1;
-            return (initialValue > 1 || sourceIncrementSize > 1);
-        }
+		/// <summary>
+		/// Do we require a sequence with the ability to set initialValue and incrementSize
+		/// larger than 1?
+		/// </summary>
+		protected bool RequiresPooledSequence(int initialValue, int incrementSize, IOptimizer optimizer)
+		{
+			int sourceIncrementSize = optimizer.ApplyIncrementSizeToSourceValues ? incrementSize : 1;
+			return (initialValue > 1 || sourceIncrementSize > 1);
+		}
 
 
 		#endregion
