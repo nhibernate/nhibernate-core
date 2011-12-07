@@ -103,10 +103,10 @@ namespace NHibernate.Id.Enhanced
 				incrementSize,
 				PropertiesHelper.GetInt32(InitialParam, parms, -1)); // Use -1 as default initial value here to signal that it's not set.
 
-			if (Optimizer.RequiresPooledSequenceGenerator && !dialect.SupportsPooledSequences)
+			if (!forceTableUse && RequiresPooledSequence(initialValue, incrementSize, Optimizer) && !dialect.SupportsPooledSequences)
 			{
-				// force the use of a table (overriding whatever the user configured) since the dialect doesn't support it, and the 
-				// optimizer requires it
+				// force the use of a table (overriding whatever the user configured) since the dialect
+				// doesn't support the sequence features we need.
 				forceTableUse = true;
 				Log.Info("Forcing table use for sequence-style generator due to optimizer selection where db does not support pooled sequences.");
 			}
@@ -211,6 +211,17 @@ namespace NHibernate.Id.Enhanced
 				return new TableStructure(dialect, sequenceName, valueColumnName, initialValue, incrementSize);
 			}
 		}
+
+        /// <summary>
+        /// Do we require a sequence with the ability to set initialValue and incrementSize
+        /// larger than 1?
+        /// </summary>
+        protected bool RequiresPooledSequence(int initialValue, int incrementSize, IOptimizer optimizer)
+        {
+            int sourceIncrementSize = optimizer.ApplyIncrementSizeToSourceValues ? incrementSize : 1;
+            return (initialValue > 1 || sourceIncrementSize > 1);
+        }
+
 
 		#endregion
 

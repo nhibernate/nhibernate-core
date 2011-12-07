@@ -48,10 +48,5 @@ namespace NHibernate.Id.Enhanced
 		/// case the increment is totally an in memory construct.
 		/// </returns>
 		bool ApplyIncrementSizeToSourceValues { get; }
-
-		/// <summary>
-		/// Is a pooled generator required?
-		/// </summary>
-		bool RequiresPooledSequenceGenerator { get; }
 	}
 }

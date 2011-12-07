@@ -22,7 +22,6 @@ namespace NHibernate.Id.Enhanced
 		private readonly SqlString _sql;
 		private int _accessCounter;
 		private bool _applyIncrementSizeToSourceValues;
-		private bool _requiresPooledSequenceGenerator;
 
 		public SequenceStructure(Dialect.Dialect dialect, string sequenceName, int initialValue, int incrementSize)
 		{
@@ -52,17 +51,19 @@ namespace NHibernate.Id.Enhanced
 		public void Prepare(IOptimizer optimizer)
 		{
 			_applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
-			_requiresPooledSequenceGenerator = optimizer.RequiresPooledSequenceGenerator;
 		}
 
 		public string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
-			if (!_requiresPooledSequenceGenerator)
-				return new[] { dialect.GetCreateSequenceString(_sequenceName) };
-
 			int sourceIncrementSize = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
-			
-			return dialect.GetCreateSequenceStrings(_sequenceName, _initialValue, sourceIncrementSize);
+
+			// If pooled sequences aren't supported, but needed here, the dialect will throw, which is
+			// ok, since the SequenceStyleGenerator is responsible for not using us in that case.
+
+			if (_initialValue > 1 || sourceIncrementSize > 1)
+				return dialect.GetCreateSequenceStrings(_sequenceName, _initialValue, sourceIncrementSize);
+			else
+				return new[] { dialect.GetCreateSequenceString(_sequenceName) };
 		}
 
 		public string[] SqlDropStrings(Dialect.Dialect dialect)
