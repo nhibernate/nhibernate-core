@@ -140,11 +140,6 @@ namespace NHibernate.Id.Enhanced
 				get { return false; }
 			}
 
-			public override bool RequiresPooledSequenceGenerator
-			{
-				get { return false; }
-			}
-
 			[MethodImpl(MethodImplOptions.Synchronized)]
 			public override object Generate(IAccessCallback callback)
 			{
@@ -187,11 +182,6 @@ namespace NHibernate.Id.Enhanced
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
-			{
-				get { return false; }
-			}
-
-			public override bool RequiresPooledSequenceGenerator
 			{
 				get { return false; }
 			}
@@ -246,8 +236,6 @@ namespace NHibernate.Id.Enhanced
 			public abstract long LastSourceValue { get; }
 
 			public abstract bool ApplyIncrementSizeToSourceValues { get; }
-
-			public abstract bool RequiresPooledSequenceGenerator { get; }
 
 			public abstract object Generate(IAccessCallback param);
 
@@ -308,11 +296,6 @@ namespace NHibernate.Id.Enhanced
 			public override bool ApplyIncrementSizeToSourceValues
 			{
 				get { return true; }
-			}
-
-			public override bool RequiresPooledSequenceGenerator
-			{
-				get { return (IncrementSize > 1); }
 			}
 
 			public void InjectInitialValue(long initialValue)
@@ -395,11 +378,6 @@ namespace NHibernate.Id.Enhanced
 			public override bool ApplyIncrementSizeToSourceValues
 			{
 				get { return true; }
-			}
-
-			public override bool RequiresPooledSequenceGenerator
-			{
-				get { return (IncrementSize > 1); }
 			}
 		}
 
