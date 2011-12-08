@@ -1,12 +1,12 @@
+using System;
+using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.SqlCommand;
-using System.Collections;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
-using System.Data.Common;
-using System;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
@@ -143,7 +143,6 @@ namespace NHibernate.Dialect
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdClientDriver";
 		}
 
-		/// <summary></summary>
 		public override string AddColumnString
 		{
 			get { return "add"; }
@@ -213,17 +212,13 @@ namespace NHibernate.Dialect
 			{
 				return 6;
 			}
-
 			return -1;
 		}
 
 		[Serializable]
 		private class CastedFunction : NoArgSQLFunction
 		{
-			public CastedFunction(string name, IType returnType)
-				: base(name, returnType, false)
-			{
-			}
+			public CastedFunction(string name, IType returnType) : base(name, returnType, false) { }
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
@@ -240,9 +235,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp()
-				: base("current_timestamp", NHibernateUtil.DateTime, true)
-			{ }
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true) { }
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
@@ -275,6 +268,11 @@ namespace NHibernate.Dialect
 		public override string CurrentTimestampSelectString
 		{
 			get { return "select CURRENT_TIMESTAMP from RDB$DATABASE"; }
+		}
+
+		public override string SelectGUIDString
+		{
+			get { return "select GEN_UUID() from RDB$DATABASE"; }
 		}
 	}
 }
