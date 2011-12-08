@@ -8,7 +8,6 @@ using Iesi.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
-using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Mapping;
@@ -31,45 +30,36 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public abstract class Dialect
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Dialect));
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
 
-		private readonly TypeNames typeNames = new TypeNames();
-		private readonly TypeNames hibernateTypeNames = new TypeNames();
+		protected const string DefaultBatchSize = "15";
+		protected const string NoBatch = "0";
 
-		private readonly IDictionary<string, string> properties = new Dictionary<string, string>();
-		private readonly IDictionary<string, ISQLFunction> sqlFunctions;
-		private readonly HashedSet<string> sqlKeywords = new HashedSet<string>();
+		/// <summary> Characters used for quoting sql identifiers </summary>
+		public const string PossibleQuoteChars = "`'\"[";
 
-		private static readonly IDictionary<string, ISQLFunction> standardAggregateFunctions =
-			CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
+		/// <summary> Characters used for closing quoted sql identifiers </summary>
+		public const string PossibleClosedQuoteChars = "`'\"]";
+		
+		private readonly TypeNames _typeNames = new TypeNames();
+		private readonly TypeNames _hibernateTypeNames = new TypeNames();
+		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
+		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
+		private readonly HashedSet<string> _sqlKeywords = new HashedSet<string>();
+
+		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
 		private static readonly IViolatedConstraintNameExtracter Extracter;
 
+		#region Constructors and factory methods
 
-		/// <summary></summary>
-		protected const string DefaultBatchSize = "15";
-
-		/// <summary></summary>
-		protected const string NoBatch = "0";
-
-		/// <summary>
-		/// Characters used for quoting sql identifiers
-		/// </summary>
-		public const string PossibleQuoteChars = "`'\"[";
-
-		/// <summary></summary>
-		public const string PossibleClosedQuoteChars = "`'\"]";
-
-		#region constructors and factory methods
-
-		/// <summary></summary>
 		static Dialect()
 		{
-			standardAggregateFunctions["count"] = new CountQueryFunctionInfo();
-			standardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
-			standardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
-			standardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);
-			standardAggregateFunctions["sum"] = new SumQueryFunctionInfo();
+			StandardAggregateFunctions["count"] = new CountQueryFunctionInfo();
+			StandardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
+			StandardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
+			StandardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);
+			StandardAggregateFunctions["sum"] = new SumQueryFunctionInfo();
 
 			Extracter = new NoOpViolatedConstraintNameExtracter();
 		}
@@ -89,8 +79,10 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		protected Dialect()
 		{
-			log.Info("Using dialect: " + this);
-			sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(standardAggregateFunctions);
+			Log.Info("Using dialect: " + this);
+
+			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
+			
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
@@ -159,7 +151,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Get de <see cref="Dialect"/> from a property bag (prop name <see cref="Cfg.Environment.Dialect"/>)
+		/// Get <see cref="Dialect"/> from a property bag (prop name <see cref="Cfg.Environment.Dialect"/>)
 		/// </summary>
 		/// <param name="props">The property bag.</param>
 		/// <returns>An instance of <see cref="Dialect"/>.</returns>
@@ -194,218 +186,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		/// <summary>
-		/// Retrieve a set of default Hibernate properties for this database.
-		/// </summary>
-		public IDictionary<string, string> DefaultProperties
-		{
-			get { return properties; }
-		}
-
-		/// <summary>
-		/// Aggregate SQL functions as defined in general. This is
-		/// a case-insensitive hashtable!
-		/// </summary>
-		/// <remarks>
-		/// The results of this method should be integrated with the 
-		/// specialization's data.
-		/// </remarks>
-		public virtual IDictionary<string, ISQLFunction> Functions
-		{
-			get { return sqlFunctions; }
-		}
-
-		public HashedSet<string> Keywords
-		{
-			get { return sqlKeywords; }
-		}
-
-		/// <summary> 
-		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
-		/// which acts as this dialects native generation strategy.
-		/// </summary>
-		/// <returns> The native generator class. </returns>
-		/// <remarks>
-		/// Comes into play whenever the user specifies the native generator.
-		/// </remarks>
-		public virtual System.Type NativeIdentifierGeneratorClass
-		{
-			get
-			{
-				if (SupportsIdentityColumns)
-				{
-					return typeof(IdentityGenerator);
-				}
-				else if (SupportsSequences)
-				{
-					return typeof(SequenceGenerator);
-				}
-				else
-				{
-					return typeof(TableHiLoGenerator);
-				}
-			}
-		}
-
-		/// <summary>
-		/// The keyword used to insert a generated value into an identity column (or null).
-		/// Need if the dialect does not support inserts that specify no column values.
-		/// </summary>
-		public virtual string IdentityInsertString
-		{
-			get { return null; }
-		}
-
-		/// <summary> Get the select command used retrieve the names of all sequences.</summary>
-		/// <returns> The select command; or null if sequences are not supported. </returns>
-		public virtual string QuerySequencesString
-		{
-			get { return null; }
-		}
-
-		/// <summary> 
-		/// Get the command used to select a GUID from the underlying database.
-		/// (Optional operation.)
-		///  </summary>
-		/// <returns> The appropriate command. </returns>
-		public virtual string SelectGUIDString
-		{
-			get { throw new NotSupportedException("dialect does not support server side GUIDs generation."); }
-		}
-
-		/// <summary> Command used to create a table. </summary>
-		public virtual string CreateTableString
-		{
-			get { return "create table"; }
-		}
-
-		/// <summary> 
-		/// Slight variation on <see cref="CreateTableString"/>.
-		/// The command used to create a multiset table. 
-		/// </summary>
-		/// <remarks>
-		/// Here, we have the command used to create a table when there is no primary key and
-		/// duplicate rows are expected.
-		/// <p/>
-		/// Most databases do not care about the distinction; originally added for
-		/// Teradata support which does care.
-		/// </remarks>
-		public virtual string CreateMultisetTableString
-		{
-			get { return CreateTableString; }
-		}
-
-		/// <summary> Command used to create a temporary table. </summary>
-		public virtual string CreateTemporaryTableString
-		{
-			get { return "create table"; }
-		}
-
-		/// <summary> 
-		/// Get any fragments needing to be postfixed to the command for
-		/// temporary table creation. 
-		/// </summary>
-		public virtual string CreateTemporaryTablePostfix
-		{
-			get { return string.Empty; }
-		}
-
-		/// <summary> 
-		/// Should the value returned by <see cref="CurrentTimestampSelectString"/>
-		/// be treated as callable.  Typically this indicates that JDBC escape
-		/// sytnax is being used...
-		/// </summary>
-		public virtual bool IsCurrentTimestampSelectStringCallable
-		{
-			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
-		}
-
-		/// <summary> 
-		/// Retrieve the command used to retrieve the current timestammp from the database. 
-		/// </summary>
-		public virtual string CurrentTimestampSelectString
-		{
-			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
-		}
-
-		/// <summary> 
-		/// The name of the database-specific SQL function for retrieving the
-		/// current timestamp. 
-		/// </summary>
-		public virtual string CurrentTimestampSQLFunctionName
-		{
-			get { return "current_timestamp"; }
-		}
-
-		public virtual IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
-		{
-			get { return Extracter; }
-		}
-
-		/// <summary>
-		/// The keyword used to insert a row without specifying any column values
-		/// </summary>
-		public virtual string NoColumnsInsertString
-		{
-			get { return "values ( )"; }
-		}
-
-		/// <summary>
-		/// The name of the SQL function that transforms a string to lowercase
-		/// </summary>
-		public virtual string LowercaseFunction
-		{
-			get { return "lower"; }
-		}
-
-		public virtual int MaxAliasLength
-		{
-			get { return 10; }
-		}
-
-		/// <summary>
-		/// The syntax used to add a column to a table. Note this is deprecated
-		/// </summary>
-		public virtual string AddColumnString
-		{
-			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
-		}
-
-		public virtual string DropForeignKeyString
-		{
-			get { return " drop constraint "; }
-		}
-
-		public virtual string TableTypeString
-		{
-			get { return String.Empty; } // for differentiation of mysql storage engines
-		}
-
-		/// <summary>
-		/// The keyword used to specify a nullable column
-		/// </summary>
-		public virtual string NullColumnString
-		{
-			get { return String.Empty; }
-		}
-
-		/// <summary>
-		/// Completely optional cascading drop clause
-		/// </summary>
-		public virtual string CascadeConstraintsString
-		{
-			get { return String.Empty; }
-		}
-
-		/// <summary>
-		/// The keyword used to create a primary key constraint
-		/// </summary>
-		public virtual string PrimaryKeyString
-		{
-			get { return "primary key"; }
-		}
-
-		#region database type mapping support
+		#region Database type mapping support
 
 		/// <summary>
 		/// Get the name of the database type associated with the given 
@@ -417,11 +198,11 @@ namespace NHibernate.Dialect
 		{
 			if (sqlType.LengthDefined || sqlType.PrecisionDefined)
 			{
-				string resultWithLength = typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+				string resultWithLength = _typeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
 				if (resultWithLength != null) return resultWithLength;
 			}
 
-			string result = typeNames.Get(sqlType.DbType);
+			string result = _typeNames.Get(sqlType.DbType);
 			if (result == null)
 			{
 				throw new HibernateException(string.Format("No default type mapping for SqlType {0}", sqlType));
@@ -441,7 +222,7 @@ namespace NHibernate.Dialect
 		/// <returns>The database type name used by ddl.</returns>
 		public virtual string GetTypeName(SqlType sqlType, int length, int precision, int scale)
 		{
-			string result = typeNames.Get(sqlType.DbType, length, precision, scale);
+			string result = _typeNames.Get(sqlType.DbType, length, precision, scale);
 			if (result == null)
 			{
 				throw new HibernateException(string.Format("No type mapping for SqlType {0} of length {1}", sqlType, length));
@@ -456,7 +237,7 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public virtual string GetLongestTypeName(DbType dbType)
 		{
-			return typeNames.GetLongest(dbType);
+			return _typeNames.GetLongest(dbType);
 		}
 
 		/// <summary> 
@@ -480,7 +261,7 @@ namespace NHibernate.Dialect
 		/// <param name="name">The database type name</param>
 		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
-			typeNames.Put(code, capacity, name);
+			_typeNames.Put(code, capacity, name);
 		}
 
 		/// <summary>
@@ -491,92 +272,7 @@ namespace NHibernate.Dialect
 		/// <param name="name">The database type name</param>
 		protected void RegisterColumnType(DbType code, string name)
 		{
-			typeNames.Put(code, name);
-		}
-
-		#endregion
-
-		#region hibernate type mapping support
-
-		/// <summary> 
-		/// Get the name of the Hibernate <see cref="IType"/> associated with th given
-		/// <see cref="DbType"/> typecode. 
-		/// </summary>
-		/// <param name="code">The <see cref="DbType"/> typecode </param>
-		/// <returns> The Hibernate <see cref="IType"/> name. </returns>
-		public string GetHibernateTypeName(DbType code)
-		{
-			string result = hibernateTypeNames.Get(code);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No Hibernate type mapping for java.sql.Types code: {0}", code));
-			}
-			return result;
-		}
-
-		/// <summary> 
-		/// Get the name of the Hibernate <see cref="IType"/> associated
-		/// with the given <see cref="DbType"/> typecode with the given storage
-		/// specification parameters. 
-		/// </summary>
-		/// <param name="code">The <see cref="DbType"/> typecode </param>
-		/// <param name="length">The datatype length </param>
-		/// <param name="precision">The datatype precision </param>
-		/// <param name="scale">The datatype scale </param>
-		/// <returns> The Hibernate <see cref="IType"/> name. </returns>
-		public string GetHibernateTypeName(DbType code, int length, int precision, int scale)
-		{
-			string result = hibernateTypeNames.Get(code, length, precision, scale);
-			if (result == null)
-			{
-				throw new HibernateException(string.Format("No Hibernate type mapping for java.sql.Types code: {0}, length: {1}", code, length));
-			}
-			return result;
-		}
-
-		/// <summary> 
-		/// Registers a Hibernate <see cref="IType"/> name for the given
-		/// <see cref="DbType"/> type code and maximum column length. 
-		/// </summary>
-		/// <param name="code">The <see cref="DbType"/> typecode </param>
-		/// <param name="capacity">The maximum length of database type </param>
-		/// <param name="name">The Hibernate <see cref="IType"/> name </param>
-		protected internal void RegisterHibernateType(DbType code, int capacity, string name)
-		{
-			hibernateTypeNames.Put(code, capacity, name);
-		}
-
-		/// <summary> 
-		/// Registers a Hibernate <see cref="IType"/> name for the given
-		/// <see cref="DbType"/> type code. 
-		/// </summary>
-		/// <param name="code">The <see cref="DbType"/> typecode </param>
-		/// <param name="name">The Hibernate <see cref="DbType"/> name </param>
-		protected internal void RegisterHibernateType(DbType code, string name)
-		{
-			hibernateTypeNames.Put(code, name);
-		}
-
-		#endregion
-
-		#region Function support
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="function"></param>
-		protected void RegisterFunction(string name, ISQLFunction function)
-		{
-			sqlFunctions[name] = function;
-		}
-
-		#endregion
-
-		#region keyword support
-		protected void RegisterKeyword(string word)
-		{
-			Keywords.Add(word);
+			_typeNames.Put(code, name);
 		}
 
 		#endregion
@@ -613,13 +309,13 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        /// <summary>
-        /// Does this dialect support adding foreign key constraints via alter table?  If not, it's assumed they can only be added through create table.
-        /// </summary>
-	    public virtual bool SupportsForeignKeyConstraintInAlterTable
-	    {
-            get { return true; }
-	    }
+		/// <summary>
+		/// Does this dialect support adding foreign key constraints via alter table?  If not, it's assumed they can only be added through create table.
+		/// </summary>
+		public virtual bool SupportsForeignKeyConstraintInAlterTable
+		{
+			get { return true; }
+		}
 
 		/// <summary> 
 		/// The syntax used to add a foreign key constraint to a table.  If SupportsForeignKeyConstraintInAlterTable is false, the returned string will be added to the create table statement instead.  In this case, extra strings, like "add", that apply when using alter table should be omitted.
@@ -632,13 +328,12 @@ namespace NHibernate.Dialect
 		/// if false, constraint should be explicit about which column names the constraint refers to 
 		/// </param>
 		/// <returns> the "add FK" fragment </returns>
-		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
-			string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
+		public virtual string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey, string referencedTable, string[] primaryKey, bool referencesPrimaryKey)
 		{
 			var res = new StringBuilder(200);
 
-            if (SupportsForeignKeyConstraintInAlterTable)
-                res.Append(" add");
+			if (SupportsForeignKeyConstraintInAlterTable)
+				res.Append(" add");
 
 			res.Append(" constraint ")
 				.Append(constraintName)
@@ -734,6 +429,7 @@ namespace NHibernate.Dialect
 		#endregion
 
 		#region Lock acquisition support
+
 		/// <summary> 
 		/// Get a strategy instance which knows how to acquire a database-level lock
 		/// of the specified mode for this dialect. 
@@ -757,18 +453,15 @@ namespace NHibernate.Dialect
 			{
 				return ForUpdateString;
 			}
-			else if (lockMode == LockMode.UpgradeNoWait)
+			if (lockMode == LockMode.UpgradeNoWait)
 			{
 				return ForUpdateNowaitString;
 			}
-			else if (lockMode == LockMode.Force)
+			if (lockMode == LockMode.Force)
 			{
 				return ForUpdateNowaitString;
 			}
-			else
-			{
-				return string.Empty;
-			}
+			return string.Empty;
 		}
 
 		/// <summary>
@@ -864,7 +557,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region table support
+		#region Table support
 
 		/// <summary>
 		/// Return SQL needed to drop the named table. May (and should) use
@@ -874,7 +567,7 @@ namespace NHibernate.Dialect
 		/// <returns></returns>
 		public virtual string GetDropTableString(string tableName)
 		{
-			StringBuilder buf = new StringBuilder("drop table ");
+			var buf = new StringBuilder("drop table ");
 			if (SupportsIfExistsBeforeTableName)
 			{
 				buf.Append("if exists ");
@@ -940,7 +633,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region callable statement support
+		#region Callable statement support
 
 		/// <summary> 
 		/// Registers an OUT parameter which will be returing a
@@ -966,9 +659,10 @@ namespace NHibernate.Dialect
 		{
 			throw new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures");
 		}
+
 		#endregion
 
-		#region current timestamp support
+		#region Current timestamp support
 
 		/// <summary> Does this dialect support a way to retrieve the database's current timestamp value? </summary>
 		public virtual bool SupportsCurrentTimestampSelection
@@ -1094,7 +788,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region native identifier generatiion
+		#region Native identifier generatiion
 
 		#region IDENTITY support
 
@@ -1180,14 +874,24 @@ namespace NHibernate.Dialect
 			get { throw new MappingException("Dialect does not support identity key generation"); }
 		}
 
-        /// <summary>
-        /// Set this to false if no table-level primary key constraint should be generated when an identity column has been specified for the table.
-        /// This is used as a work-around for SQLite so it doesn't tell us we have "more than one primary key".
-        /// </summary>
-	    public virtual bool GenerateTablePrimaryKeyConstraintForIdentityColumn
-	    {
-            get { return true; }
-	    }
+		/// <summary>
+		/// Set this to false if no table-level primary key constraint should be generated when an identity column has been specified for the table.
+		/// This is used as a work-around for SQLite so it doesn't tell us we have "more than one primary key".
+		/// </summary>
+		public virtual bool GenerateTablePrimaryKeyConstraintForIdentityColumn
+		{
+			get { return true; }
+		}
+
+		public virtual SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
+		{
+			return insertString;
+		}
+
+		public virtual InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
+		{
+			get { return InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter; }
+		}
 
 		#endregion
 
@@ -1327,9 +1031,33 @@ namespace NHibernate.Dialect
 
 		#endregion
 
+		/// <summary> 
+		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
+		/// which acts as this dialects identity-style generation strategy.
+		/// </summary>
+		/// <returns> The native generator class. </returns>
+		/// <remarks>
+		/// Comes into play whenever the user specifies the "identity" generator.
+		/// </remarks>
+		public virtual System.Type IdentityStyleIdentifierGeneratorClass
+		{
+			get
+			{
+				if (SupportsIdentityColumns)
+				{
+					return typeof(IdentityGenerator);
+				}
+				if (SupportsSequences)
+				{
+					return typeof(SequenceIdentityGenerator);
+				}
+				return typeof(TriggerIdentityGenerator);
+			}
+		}
+
 		#endregion
 
-		#region miscellaneous support
+		#region Miscellaneous support
 
 		/// <summary> 
 		/// Create a <see cref="JoinFragment"/> strategy responsible
@@ -1360,20 +1088,19 @@ namespace NHibernate.Dialect
 			return value ? "1" : "0";
 		}
 
-		protected static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases,
-				out Dictionary<SqlString, SqlString> aliasToColumn)
+		protected static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn)
 		{
 			columnsOrAliases = new List<SqlString>();
 			aliasToColumn = new Dictionary<SqlString, SqlString>();
 
-			IList<SqlString> tokens = new QuotedAndParenthesisStringTokenizer(select).GetTokens();
+			var tokens = new QuotedAndParenthesisStringTokenizer(select).GetTokens();
 			int index = 0;
 			while (index < tokens.Count)
 			{
-				SqlString token = tokens[index];
-				
+				var token = tokens[index];
+
 				int nextTokenIndex = index += 1;
-				
+
 				if (token.StartsWithCaseInsensitive("select"))
 					continue;
 
@@ -1401,7 +1128,7 @@ namespace NHibernate.Dialect
 				SqlString alias = token;
 
 				bool isFunctionCallOrQuotedString = token.IndexOfCaseInsensitive("'") >= 0 || token.IndexOfCaseInsensitive("(") >= 0;
-				
+
 				// this is heuristic guess, if the expression contains ' or (, it is probably
 				// not appropriate to just slice parts off of it
 				if (isFunctionCallOrQuotedString == false)
@@ -1420,7 +1147,7 @@ namespace NHibernate.Dialect
 					SqlString nextToken = tokens[nextTokenIndex];
 					if (nextToken.IndexOfCaseInsensitive("as") >= 0)
 					{
-						SqlString tokenAfterNext = tokens[nextTokenIndex + 1];	
+						SqlString tokenAfterNext = tokens[nextTokenIndex + 1];
 						alias = tokenAfterNext;
 						index += 2; //skip the "as" and the alias
 					}
@@ -1439,11 +1166,11 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>
 		{
-			private readonly SqlString original;
+			private readonly SqlString _original;
 
 			public QuotedAndParenthesisStringTokenizer(SqlString original)
 			{
-				this.original = original;
+				_original = original;
 			}
 
 			IEnumerator<SqlString> IEnumerable<SqlString>.GetEnumerator()
@@ -1454,7 +1181,7 @@ namespace NHibernate.Dialect
 				char quoteType = '\'';
 				int tokenStart = 0;
 				int tokenLength = 0;
-				string originalString = original.ToString();
+				string originalString = _original.ToString();
 
 				for (int i = 0; i < originalString.Length; i++)
 				{
@@ -1509,7 +1236,7 @@ namespace NHibernate.Dialect
 							}
 							else if (ch == quoteType)
 							{
-								yield return original.Substring(tokenStart, tokenLength + 1);
+								yield return _original.Substring(tokenStart, tokenLength + 1);
 								tokenStart += tokenLength + 1;
 								tokenLength = 0;
 								state = TokenizerState.WhiteSpace;
@@ -1526,7 +1253,7 @@ namespace NHibernate.Dialect
 								parenthesisCount -= 1;
 								if (parenthesisCount == 0)
 								{
-									yield return original.Substring(tokenStart, tokenLength);
+									yield return _original.Substring(tokenStart, tokenLength);
 									tokenStart += tokenLength;
 									tokenLength = 0;
 									state = TokenizerState.WhiteSpace;
@@ -1545,14 +1272,14 @@ namespace NHibernate.Dialect
 						case TokenizerState.Token:
 							if (char.IsWhiteSpace(ch))
 							{
-								yield return original.Substring(tokenStart, tokenLength);
+								yield return _original.Substring(tokenStart, tokenLength);
 								tokenStart += tokenLength + 1;
 								tokenLength = 0;
 								state = TokenizerState.WhiteSpace;
 							}
 							else if (ch == ',') // stop current token, and send the , as well
 							{
-								yield return original.Substring(tokenStart, tokenLength);
+								yield return _original.Substring(tokenStart, tokenLength);
 								yield return new SqlString(",");
 								tokenStart += tokenLength + 1;
 								tokenLength = 0;
@@ -1582,12 +1309,12 @@ namespace NHibernate.Dialect
 							}
 							break;
 						default:
-							throw new InvalidExpressionException("Could not understand the string " + original);
+							throw new InvalidExpressionException("Could not understand the string " + _original);
 					}
 				}
 				if (tokenLength > 0)
 				{
-					yield return original.Substring(tokenStart, tokenLength);
+					yield return _original.Substring(tokenStart, tokenLength);
 				}
 			}
 
@@ -1612,7 +1339,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region limit/offset support
+		#region Limit/offset support
 
 		/// <summary>
 		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
@@ -1659,105 +1386,105 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        /// <summary>
-        /// For limit clauses, indicates whether to use 0 or 1 as the offset that returns the first row.  Should be true if the first row is at offset 1.
-        /// </summary>
-        public virtual bool OffsetStartsAtOne
-        {
-            get { return false; }
-        }
+		/// <summary>
+		/// For limit clauses, indicates whether to use 0 or 1 as the offset that returns the first row.  Should be true if the first row is at offset 1.
+		/// </summary>
+		public virtual bool OffsetStartsAtOne
+		{
+			get { return false; }
+		}
 
-        /// <summary>
-        /// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
-        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
-        /// </summary>
-        /// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
-        /// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
-        /// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
-        /// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
-        public virtual SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
-        {
-            throw new NotSupportedException("Dialect does not have support for limit strings.");
-        }
+		/// <summary>
+		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
+		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+		/// </summary>
+		/// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
+		/// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
+		/// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
+		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
+		public virtual SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			throw new NotSupportedException("Dialect does not have support for limit strings.");
+		}
 
-        /// <summary>
-        /// Generates a string to limit the result set to a number of maximum results with a specified offset into the results.
-        /// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
-        /// Performs error checking based on the various dialect limit support options.  If both parameters and fixed valeus are
-        /// specified, this will use the parameter option if possible.  Otherwise, it will fall back to a fixed string.
-        /// </summary>
-        /// <param name="queryString"></param>
-        /// <param name="offset"></param>
-        /// <param name="limit"></param>
-        /// <param name="offsetParameter"></param>
-        /// <param name="limitParameter"></param>
-        /// <returns></returns>
-        public SqlString GetLimitString(SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter)
-        {
-            if (offset == null && limit == null && offsetParameter == null && limitParameter == null)
-                return queryString;
+		/// <summary>
+		/// Generates a string to limit the result set to a number of maximum results with a specified offset into the results.
+		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
+		/// Performs error checking based on the various dialect limit support options.  If both parameters and fixed valeus are
+		/// specified, this will use the parameter option if possible.  Otherwise, it will fall back to a fixed string.
+		/// </summary>
+		/// <param name="queryString"></param>
+		/// <param name="offset"></param>
+		/// <param name="limit"></param>
+		/// <param name="offsetParameter"></param>
+		/// <param name="limitParameter"></param>
+		/// <returns></returns>
+		public SqlString GetLimitString(SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter)
+		{
+			if (offset == null && limit == null && offsetParameter == null && limitParameter == null)
+				return queryString;
 
-            if (!SupportsLimit)
-                throw new NotSupportedException("Dialect does not support limits.");
+			if (!SupportsLimit)
+				throw new NotSupportedException("Dialect does not support limits.");
 
-            if (!SupportsVariableLimit && offsetParameter != null && offset == null)
-                throw new NotSupportedException("Dialect does not support variable limits.");
+			if (!SupportsVariableLimit && offsetParameter != null && offset == null)
+				throw new NotSupportedException("Dialect does not support variable limits.");
 
-            if (!SupportsVariableLimit && limitParameter != null && limit == null)
-                throw new NotSupportedException("Dialect does not support variable limits.");
+			if (!SupportsVariableLimit && limitParameter != null && limit == null)
+				throw new NotSupportedException("Dialect does not support variable limits.");
 
-            if (!SupportsLimitOffset && (offset != null || offsetParameter != null))
-                throw new NotSupportedException("Dialect does not support limits with offsets.");
+			if (!SupportsLimitOffset && (offset != null || offsetParameter != null))
+				throw new NotSupportedException("Dialect does not support limits with offsets.");
 
-            SqlString o =
-                SupportsVariableLimit && offsetParameter != null ? new SqlString(offsetParameter) :
-                offset.HasValue ? new SqlString(offset.ToString()) :
-                null;
+			SqlString o =
+				SupportsVariableLimit && offsetParameter != null ? new SqlString(offsetParameter) :
+				offset.HasValue ? new SqlString(offset.ToString()) :
+				null;
 
-            SqlString l =
-                SupportsVariableLimit && limitParameter != null ? new SqlString(limitParameter) :
-                limit.HasValue ? new SqlString(limit.ToString()) :
-                null;
+			SqlString l =
+				SupportsVariableLimit && limitParameter != null ? new SqlString(limitParameter) :
+				limit.HasValue ? new SqlString(limit.ToString()) :
+				null;
 
-            return GetLimitString(queryString, o, l);
-        }
+			return GetLimitString(queryString, o, l);
+		}
 
-        /// <summary>
-        /// Some databases require that a limit statement contain the maximum row number
-        /// instead of the number of rows to retrieve.  This method adjusts source
-        /// limit and offset values to account for this.
-        /// </summary>
-        /// <param name="offset"></param>
-        /// <param name="limit"></param>
-        /// <returns></returns>
-        public int GetLimitValue(int offset, int limit)
-        {
-            if (limit == int.MaxValue)
-                return int.MaxValue;
+		/// <summary>
+		/// Some databases require that a limit statement contain the maximum row number
+		/// instead of the number of rows to retrieve.  This method adjusts source
+		/// limit and offset values to account for this.
+		/// </summary>
+		/// <param name="offset"></param>
+		/// <param name="limit"></param>
+		/// <returns></returns>
+		public int GetLimitValue(int offset, int limit)
+		{
+			if (limit == int.MaxValue)
+				return int.MaxValue;
 
-            if (UseMaxForLimit)
-                return GetOffsetValue(offset) + limit;
+			if (UseMaxForLimit)
+				return GetOffsetValue(offset) + limit;
 
-            return limit;
-        }
+			return limit;
+		}
 
-        /// <summary>
-        /// Some databases use limit row offsets that start at one instead of zero.
-        /// This method adjusts a desired offset using the OffsetStartsAtOne flag.
-        /// </summary>
-        /// <param name="offset"></param>
-        /// <returns></returns>
-        public int GetOffsetValue(int offset)
-        {
-            if (OffsetStartsAtOne)
-                return offset + 1;
+		/// <summary>
+		/// Some databases use limit row offsets that start at one instead of zero.
+		/// This method adjusts a desired offset using the OffsetStartsAtOne flag.
+		/// </summary>
+		/// <param name="offset"></param>
+		/// <returns></returns>
+		public int GetOffsetValue(int offset)
+		{
+			if (OffsetStartsAtOne)
+				return offset + 1;
 
-            return offset;
-        }
+			return offset;
+		}
 
 		#endregion
 
-		#region identifier quoting support
+		#region Identifier quoting support
 
 		/// <summary>
 		/// The opening quote for a quoted identifier.
@@ -1808,7 +1535,6 @@ namespace NHibernate.Dialect
 			return qualifiedName.Append(table).ToString();
 		}
 
-
 		/// <summary>
 		/// Quotes a name.
 		/// </summary>
@@ -1852,9 +1578,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual string QuoteForAliasName(string aliasName)
 		{
-			return IsQuoted(aliasName) ?
-										aliasName :
-													Quote(aliasName);
+			return IsQuoted(aliasName) ? aliasName : Quote(aliasName);
 		}
 
 		/// <summary>
@@ -1873,9 +1597,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual string QuoteForColumnName(string columnName)
 		{
-			return IsQuoted(columnName) ?
-											columnName :
-														Quote(columnName);
+			return IsQuoted(columnName) ? columnName : Quote(columnName);
 		}
 
 		/// <summary>
@@ -1893,9 +1615,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual string QuoteForTableName(string tableName)
 		{
-			return IsQuoted(tableName) ?
-										tableName :
-													Quote(tableName);
+			return IsQuoted(tableName) ? tableName : Quote(tableName);
 		}
 
 		/// <summary>
@@ -1913,9 +1633,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual string QuoteForSchemaName(string schemaName)
 		{
-			return IsQuoted(schemaName) ?
-											schemaName :
-														Quote(schemaName);
+			return IsQuoted(schemaName) ? schemaName : Quote(schemaName);
 		}
 
 		/// <summary>
@@ -1980,7 +1698,7 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public virtual string[] UnQuote(string[] quoted)
 		{
-			string[] unquoted = new string[quoted.Length];
+			var unquoted = new string[quoted.Length];
 
 			for (int i = 0; i < quoted.Length; i++)
 			{
@@ -1992,7 +1710,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region union subclass support
+		#region Union subclass support
 
 		/// <summary> 
 		/// Given a <see cref="DbType"/> type code, determine an appropriate
@@ -2256,7 +1974,262 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region SQLException support
+		/// <summary>
+		/// Retrieve a set of default Hibernate properties for this database.
+		/// </summary>
+		public IDictionary<string, string> DefaultProperties
+		{
+			get { return _properties; }
+		}
+
+		/// <summary>
+		/// Aggregate SQL functions as defined in general. This is
+		/// a case-insensitive hashtable!
+		/// </summary>
+		/// <remarks>
+		/// The results of this method should be integrated with the 
+		/// specialization's data.
+		/// </remarks>
+		public virtual IDictionary<string, ISQLFunction> Functions
+		{
+			get { return _sqlFunctions; }
+		}
+
+		public HashedSet<string> Keywords
+		{
+			get { return _sqlKeywords; }
+		}
+
+		/// <summary> 
+		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
+		/// which acts as this dialects native generation strategy.
+		/// </summary>
+		/// <returns> The native generator class. </returns>
+		/// <remarks>
+		/// Comes into play whenever the user specifies the native generator.
+		/// </remarks>
+		public virtual System.Type NativeIdentifierGeneratorClass
+		{
+			get
+			{
+				if (SupportsIdentityColumns)
+				{
+					return typeof(IdentityGenerator);
+				}
+				if (SupportsSequences)
+				{
+					return typeof(SequenceGenerator);
+				}
+				return typeof(TableHiLoGenerator);
+			}
+		}
+
+		/// <summary>
+		/// The keyword used to insert a generated value into an identity column (or null).
+		/// Need if the dialect does not support inserts that specify no column values.
+		/// </summary>
+		public virtual string IdentityInsertString
+		{
+			get { return null; }
+		}
+
+		/// <summary> Get the select command used retrieve the names of all sequences.</summary>
+		/// <returns> The select command; or null if sequences are not supported. </returns>
+		public virtual string QuerySequencesString
+		{
+			get { return null; }
+		}
+
+		/// <summary> 
+		/// Get the command used to select a GUID from the underlying database.
+		/// (Optional operation.)
+		///  </summary>
+		/// <returns> The appropriate command. </returns>
+		public virtual string SelectGUIDString
+		{
+			get { throw new NotSupportedException("dialect does not support server side GUIDs generation."); }
+		}
+
+		/// <summary> Command used to create a table. </summary>
+		public virtual string CreateTableString
+		{
+			get { return "create table"; }
+		}
+
+		/// <summary> 
+		/// Slight variation on <see cref="CreateTableString"/>.
+		/// The command used to create a multiset table. 
+		/// </summary>
+		/// <remarks>
+		/// Here, we have the command used to create a table when there is no primary key and
+		/// duplicate rows are expected.
+		/// <p/>
+		/// Most databases do not care about the distinction; originally added for
+		/// Teradata support which does care.
+		/// </remarks>
+		public virtual string CreateMultisetTableString
+		{
+			get { return CreateTableString; }
+		}
+
+		/// <summary> Command used to create a temporary table. </summary>
+		public virtual string CreateTemporaryTableString
+		{
+			get { return "create table"; }
+		}
+
+		/// <summary> 
+		/// Get any fragments needing to be postfixed to the command for
+		/// temporary table creation. 
+		/// </summary>
+		public virtual string CreateTemporaryTablePostfix
+		{
+			get { return string.Empty; }
+		}
+
+		/// <summary> 
+		/// Should the value returned by <see cref="CurrentTimestampSelectString"/>
+		/// be treated as callable.  Typically this indicates that JDBC escape
+		/// sytnax is being used...
+		/// </summary>
+		public virtual bool IsCurrentTimestampSelectStringCallable
+		{
+			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
+		}
+
+		/// <summary> 
+		/// Retrieve the command used to retrieve the current timestammp from the database. 
+		/// </summary>
+		public virtual string CurrentTimestampSelectString
+		{
+			get { throw new NotSupportedException("Database not known to define a current timestamp function"); }
+		}
+
+		/// <summary> 
+		/// The name of the database-specific SQL function for retrieving the
+		/// current timestamp. 
+		/// </summary>
+		public virtual string CurrentTimestampSQLFunctionName
+		{
+			get { return "current_timestamp"; }
+		}
+
+		public virtual IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
+		{
+			get { return Extracter; }
+		}
+
+		/// <summary>
+		/// The keyword used to insert a row without specifying any column values
+		/// </summary>
+		public virtual string NoColumnsInsertString
+		{
+			get { return "values ( )"; }
+		}
+
+		/// <summary>
+		/// The name of the SQL function that transforms a string to lowercase
+		/// </summary>
+		public virtual string LowercaseFunction
+		{
+			get { return "lower"; }
+		}
+
+		public virtual int MaxAliasLength
+		{
+			get { return 10; }
+		}
+
+		/// <summary>
+		/// The syntax used to add a column to a table. Note this is deprecated
+		/// </summary>
+		public virtual string AddColumnString
+		{
+			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
+		}
+
+		public virtual string DropForeignKeyString
+		{
+			get { return " drop constraint "; }
+		}
+
+		public virtual string TableTypeString
+		{
+			get { return String.Empty; } // for differentiation of mysql storage engines
+		}
+
+		/// <summary>
+		/// The keyword used to specify a nullable column
+		/// </summary>
+		public virtual string NullColumnString
+		{
+			get { return String.Empty; }
+		}
+
+		/// <summary>
+		/// Completely optional cascading drop clause
+		/// </summary>
+		public virtual string CascadeConstraintsString
+		{
+			get { return String.Empty; }
+		}
+
+		/// <summary>
+		/// The keyword used to create a primary key constraint
+		/// </summary>
+		public virtual string PrimaryKeyString
+		{
+			get { return "primary key"; }
+		}
+
+		/// <summary>
+		/// Supports splitting batches using GO T-SQL command
+		/// </summary>
+		/// <remarks>
+		/// Batches http://msdn.microsoft.com/en-us/library/ms175502.aspx
+		/// </remarks>
+		public virtual bool SupportsSqlBatches
+		{
+			get { return false; }
+		}
+
+		public virtual bool IsKnownToken(string currentToken, string nextToken)
+		{
+			return false;
+		}
+
+		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
+		public virtual string DisableForeignKeyConstraintsString
+		{
+			get { return null; }
+		}
+
+		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
+		public virtual string EnableForeignKeyConstraintsString
+		{
+			get { return null; }
+		}
+
+		protected void RegisterKeyword(string word)
+		{
+			Keywords.Add(word);
+		}
+
+		protected void RegisterFunction(string name, ISQLFunction function)
+		{
+			_sqlFunctions[name] = function;
+		}
+
+		/// <summary> 
+		/// Registers a NHibernate <see cref="IType"/> name for the given <see cref="DbType"/> type code. 
+		/// </summary>
+		/// <param name="code">The <see cref="DbType"/> typecode </param>
+		/// <param name="name">The NHibernate <see cref="DbType"/> name </param>
+		private void RegisterHibernateType(DbType code, string name)
+		{
+			_hibernateTypeNames.Put(code, name);
+		}
+
 		/// <summary> 
 		/// Build an instance of the <see cref="ISQLExceptionConverter"/> preferred by this dialect for
 		/// converting <see cref="System.Data.Common.DbException"/> into NHibernate's ADOException hierarchy.  
@@ -2276,212 +2249,5 @@ namespace NHibernate.Dialect
 			// may override to return whatever is most appropriate for that vendor.
 			return new SQLStateConverter(ViolatedConstraintNameExtracter);
 		}
-
-		#endregion
-
-		#region Agregate function redefinition
-		[Serializable]
-		protected class CountQueryFunctionInfo : ClassicAggregateFunction
-		{
-			public CountQueryFunctionInfo()
-				: base("count", true)
-			{
-			}
-
-			public override IType ReturnType(IType columnType, IMapping mapping)
-			{
-				return NHibernateUtil.Int64;
-			}
-		}
-		[Serializable]
-		protected class AvgQueryFunctionInfo : ClassicAggregateFunction
-		{
-			public AvgQueryFunctionInfo()
-				: base("avg", false)
-			{
-			}
-
-			public override IType ReturnType(IType columnType, IMapping mapping)
-			{
-				if (columnType == null)
-				{
-					throw new ArgumentNullException("columnType");
-				}
-				SqlType[] sqlTypes;
-				try
-				{
-					sqlTypes = columnType.SqlTypes(mapping);
-				}
-				catch (MappingException me)
-				{
-					throw new QueryException(me);
-				}
-
-				if (sqlTypes.Length != 1)
-				{
-					throw new QueryException("multi-column type can not be in avg()");
-				}
-				return NHibernateUtil.Double;
-			}
-		}
-
-		[Serializable]
-		protected class SumQueryFunctionInfo : ClassicAggregateFunction
-		{
-			public SumQueryFunctionInfo()
-				: base("sum", false)
-			{
-			}
-
-			//H3.2 behavior
-			public override IType ReturnType(IType columnType, IMapping mapping)
-			{
-				if (columnType == null)
-				{
-					throw new ArgumentNullException("columnType");
-				}
-				SqlType[] sqlTypes;
-				try
-				{
-					sqlTypes = columnType.SqlTypes(mapping);
-				}
-				catch (MappingException me)
-				{
-					throw new QueryException(me);
-				}
-
-				if (sqlTypes.Length != 1)
-				{
-					throw new QueryException("multi-column type can not be in sum()");
-				}
-
-				SqlType sqlType = sqlTypes[0];
-
-				// TODO: (H3.2 for nullable types) First allow the actual type to control the return value. (the actual underlying sqltype could actually be different)
-
-				// finally use the sqltype if == on Hibernate types did not find a match.
-				switch (sqlType.DbType)
-				{
-					case DbType.Single:
-					case DbType.Double:
-						return NHibernateUtil.Double;
-
-					case DbType.SByte:
-					case DbType.Int16:
-					case DbType.Int32:
-					case DbType.Int64:
-						return NHibernateUtil.Int64;
-
-					case DbType.Byte:
-					case DbType.UInt16:
-					case DbType.UInt32:
-					case DbType.UInt64:
-						return NHibernateUtil.UInt64;
-
-					default:
-						return columnType;
-				}
-			}
-		}
-
-		#endregion
-
-		public class NoOpViolatedConstraintNameExtracter : IViolatedConstraintNameExtracter
-		{
-			public virtual string ExtractConstraintName(DbException sqle)
-			{
-				return null;
-			}
-		}
-
-		#region NH specific
-
-		public virtual SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
-		{
-			return insertString;
-		}
-
-        public virtual InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
-	    {
-            get { return InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter; }
-	    }
-
-		/// <summary> 
-		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
-		/// which acts as this dialects identity-style generation strategy.
-		/// </summary>
-		/// <returns> The native generator class. </returns>
-		/// <remarks>
-		/// Comes into play whenever the user specifies the "identity" generator.
-		/// </remarks>
-		public virtual System.Type IdentityStyleIdentifierGeneratorClass
-		{
-			get
-			{
-				if (SupportsIdentityColumns)
-				{
-					return typeof(IdentityGenerator);
-				}
-				else if (SupportsSequences)
-				{
-					return typeof(SequenceIdentityGenerator);
-				}
-				else
-				{
-					return typeof(TriggerIdentityGenerator);
-				}
-			}
-		}
-		#endregion
-
-		/// <summary>
-		/// Supports splitting batches using GO T-SQL command
-		/// </summary>
-		/// <remarks>
-		/// Batches http://msdn.microsoft.com/en-us/library/ms175502.aspx
-		/// </remarks>
-		public virtual bool SupportsSqlBatches
-		{
-			get { return false; }
-		}
-
-		public virtual bool IsKnownToken(string currentToken, string nextToken)
-		{
-			return false;
-		}
-
-        /// <summary>
-        /// Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable.
-        /// </summary>
-	    public virtual string DisableForeignKeyConstraintsString
-	    {
-            get { return null; }
-	    }
-
-        /// <summary>
-        /// Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable.
-        /// </summary>
-        public virtual string EnableForeignKeyConstraintsString
-        {
-            get { return null; }
-        }
-    }
-
-    public enum InsertGeneratedIdentifierRetrievalMethod
-    {
-        /// <summary>
-        /// Use a parameter with ParameterDirection.Output
-        /// </summary>
-        OutputParameter,
-
-        /// <summary>
-        /// Use a parameter with ParameterDirection.ReturnValue
-        /// </summary>
-        ReturnValueParameter,
-
-        // <summary>
-        // Get the result from the statment as if it were a query, using ExecuteScalar() or ExecuteDataReader().
-        // </summary>
-        // QueryResult
-    }
+	}
 }

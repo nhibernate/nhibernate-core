@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			var typeNames = (TypeNames)typeof(Dialect.Dialect).GetField("typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
+			var typeNames = (TypeNames)typeof(Dialect.Dialect).GetField("_typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
 			try
 			{
 				var value = AppliesTo();

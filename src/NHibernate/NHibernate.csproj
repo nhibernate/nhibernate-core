@@ -137,7 +137,11 @@
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
+    <Compile Include="Dialect\Function\AvgQueryFunctionInfo.cs" />
+    <Compile Include="Dialect\Function\CountQueryFunctionInfo.cs" />
+    <Compile Include="Dialect\Function\SumQueryFunctionInfo.cs" />
     <Compile Include="Dialect\GenericDialect.cs" />
+    <Compile Include="Dialect\InsertGeneratedIdentifierRetrievalMethod.cs" />
     <Compile Include="Dialect\MsSql2000Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MsSqlAzure2008Dialect.cs" />
@@ -208,6 +212,7 @@
     <Compile Include="Criterion\PropertyExpression.cs" />
     <Compile Include="Criterion\SimpleExpression.cs" />
     <Compile Include="Criterion\SQLCriterion.cs" />
+    <Compile Include="Exceptions\NoOpViolatedConstraintNameExtracter.cs" />
     <Compile Include="FetchMode.cs" />
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
