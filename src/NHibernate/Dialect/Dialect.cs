@@ -582,7 +582,7 @@ namespace NHibernate.Dialect
 			return buf.ToString();
 		}
 
-		#region temporary table support
+		#region Temporary table support
 
 		/// <summary> Does this dialect support temporary tables? </summary>
 		public virtual bool SupportsTemporaryTables
@@ -692,15 +692,7 @@ namespace NHibernate.Dialect
 
 		#endregion
 
-		#region NH specific
-
-		/// <summary>
-		/// Does this dialect support subselects?
-		/// </summary>
-		public virtual bool SupportsSubSelects
-		{
-			get { return true; }
-		}
+		#region Constraint support
 
 		/// <summary>
 		/// The syntax used to drop a foreign key constraint from a table.
@@ -736,8 +728,6 @@ namespace NHibernate.Dialect
 		{
 			return "";
 		}
-
-
 
 		/// <summary>
 		/// The syntax that is used to check if a constraint exists before dropping it
@@ -786,9 +776,29 @@ namespace NHibernate.Dialect
 			return " drop constraint " + constraintName;
 		}
 
+		/// <summary>
+		/// Completely optional cascading drop clause
+		/// </summary>
+		public virtual string CascadeConstraintsString
+		{
+			get { return String.Empty; }
+		}
+
+		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
+		public virtual string DisableForeignKeyConstraintsString
+		{
+			get { return null; }
+		}
+
+		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
+		public virtual string EnableForeignKeyConstraintsString
+		{
+			get { return null; }
+		}
+
 		#endregion
 
-		#region Native identifier generatiion
+		#region Native identifier generation
 
 		#region IDENTITY support
 
@@ -891,6 +901,15 @@ namespace NHibernate.Dialect
 		public virtual InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
 		{
 			get { return InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter; }
+		}
+
+		/// <summary>
+		/// The keyword used to insert a generated value into an identity column (or null).
+		/// Need if the dialect does not support inserts that specify no column values.
+		/// </summary>
+		public virtual string IdentityInsertString
+		{
+			get { return null; }
 		}
 
 		#endregion
@@ -1034,6 +1053,13 @@ namespace NHibernate.Dialect
 			throw new MappingException("Dialect does not support pooled sequences");
 		}
 
+		/// <summary> Get the select command used retrieve the names of all sequences.</summary>
+		/// <returns> The select command; or null if sequences are not supported. </returns>
+		public virtual string QuerySequencesString
+		{
+			get { return null; }
+		}
+
 		#endregion
 
 		/// <summary> 
@@ -1057,6 +1083,30 @@ namespace NHibernate.Dialect
 					return typeof(SequenceIdentityGenerator);
 				}
 				return typeof(TriggerIdentityGenerator);
+			}
+		}
+
+		/// <summary> 
+		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
+		/// which acts as this dialects native generation strategy.
+		/// </summary>
+		/// <returns> The native generator class. </returns>
+		/// <remarks>
+		/// Comes into play whenever the user specifies the native generator.
+		/// </remarks>
+		public virtual System.Type NativeIdentifierGeneratorClass
+		{
+			get
+			{
+				if (SupportsIdentityColumns)
+				{
+					return typeof(IdentityGenerator);
+				}
+				if (SupportsSequences)
+				{
+					return typeof(SequenceGenerator);
+				}
+				return typeof(TableHiLoGenerator);
 			}
 		}
 
@@ -1980,6 +2030,14 @@ namespace NHibernate.Dialect
 		#endregion
 
 		/// <summary>
+		/// Does this dialect support subselects?
+		/// </summary>
+		public virtual bool SupportsSubSelects
+		{
+			get { return true; }
+		}
+
+		/// <summary>
 		/// Retrieve a set of default Hibernate properties for this database.
 		/// </summary>
 		public IDictionary<string, string> DefaultProperties
@@ -2003,46 +2061,6 @@ namespace NHibernate.Dialect
 		public HashedSet<string> Keywords
 		{
 			get { return _sqlKeywords; }
-		}
-
-		/// <summary> 
-		/// The class (which implements <see cref="NHibernate.Id.IIdentifierGenerator"/>)
-		/// which acts as this dialects native generation strategy.
-		/// </summary>
-		/// <returns> The native generator class. </returns>
-		/// <remarks>
-		/// Comes into play whenever the user specifies the native generator.
-		/// </remarks>
-		public virtual System.Type NativeIdentifierGeneratorClass
-		{
-			get
-			{
-				if (SupportsIdentityColumns)
-				{
-					return typeof(IdentityGenerator);
-				}
-				if (SupportsSequences)
-				{
-					return typeof(SequenceGenerator);
-				}
-				return typeof(TableHiLoGenerator);
-			}
-		}
-
-		/// <summary>
-		/// The keyword used to insert a generated value into an identity column (or null).
-		/// Need if the dialect does not support inserts that specify no column values.
-		/// </summary>
-		public virtual string IdentityInsertString
-		{
-			get { return null; }
-		}
-
-		/// <summary> Get the select command used retrieve the names of all sequences.</summary>
-		/// <returns> The select command; or null if sequences are not supported. </returns>
-		public virtual string QuerySequencesString
-		{
-			get { return null; }
 		}
 
 		/// <summary> 
@@ -2172,14 +2190,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Completely optional cascading drop clause
-		/// </summary>
-		public virtual string CascadeConstraintsString
-		{
-			get { return String.Empty; }
-		}
-
-		/// <summary>
 		/// The keyword used to create a primary key constraint
 		/// </summary>
 		public virtual string PrimaryKeyString
@@ -2201,18 +2211,6 @@ namespace NHibernate.Dialect
 		public virtual bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return false;
-		}
-
-		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
-		public virtual string DisableForeignKeyConstraintsString
-		{
-			get { return null; }
-		}
-
-		/// <summary> Only needed if the Dialect does not have SupportsForeignKeyConstraintInAlterTable. </summary>
-		public virtual string EnableForeignKeyConstraintsString
-		{
-			get { return null; }
 		}
 
 		protected void RegisterKeyword(string word)
