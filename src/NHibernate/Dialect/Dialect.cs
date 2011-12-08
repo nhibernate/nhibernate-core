@@ -906,10 +906,15 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
-		/// Does this dialect support "pooled" sequences.  Not aware of a better
-		/// name for this.  Essentially can we specify the initial and increment values? 
+		/// Does this dialect support "pooled" sequences?
 		/// </summary>
 		/// <returns> True if such "pooled" sequences are supported; false otherwise. </returns>
+		/// <remarks>
+		/// A pooled sequence is one that has a configurable initial size and increment 
+		/// size. It enables NHibernate to be allocated a pool/block/range of IDs,
+		/// which can reduce the frequency of round trips to the database during ID
+		/// generation.
+		/// </remarks>
 		/// <seealso cref="GetCreateSequenceStrings(string, int, int)"> </seealso>
 		/// <seealso cref="GetCreateSequenceString(string, int, int)"> </seealso>
 		public virtual bool SupportsPooledSequences
