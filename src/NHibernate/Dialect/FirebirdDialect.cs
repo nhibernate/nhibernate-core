@@ -253,6 +253,11 @@ namespace NHibernate.Dialect
 			get { return "select RDB$GENERATOR_NAME from RDB$GENERATORS where (RDB$SYSTEM_FLAG is NULL) or (RDB$SYSTEM_FLAG <> 1)"; }
 		}
 
+		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
+		{
+			return insertString.Append(" returning " + identifierColumnName);
+		}
+
 		public override long TimestampResolutionInTicks
 		{
 			// Lousy documentation. Various mailing lists and articles seem to 
