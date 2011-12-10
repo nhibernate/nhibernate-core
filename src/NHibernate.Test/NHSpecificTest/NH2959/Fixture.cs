@@ -5,6 +5,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
