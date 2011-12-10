@@ -8,9 +8,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 		public virtual string Name { get; set; }
 	}
 
-    class DerivedEntity: BaseEntity
-    {}
+	class DerivedEntity : BaseEntity
+	{ }
 
-    class AnotherDerivedEntity: BaseEntity
-    {}
+	class AnotherDerivedEntity : BaseEntity
+	{ }
 }

@@ -15,18 +15,17 @@ using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-    using NHibernate.Util;
-
-    public class MultiQueryImpl : IMultiQuery
+	public class MultiQueryImpl : IMultiQuery
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
 
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
-        private readonly List<int> translatorQueryMap = new List<int>();
+		private readonly List<int> translatorQueryMap = new List<int>();
 		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private IList queryResults;
@@ -305,7 +304,6 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-
 		#endregion
 
 		public IMultiQuery AddNamedQuery<T>(string key, string namedQuery)
@@ -449,21 +447,21 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-            var resultCollections = new ArrayList(resultCollectionGenericType.Count);
-            for (int i = 0; i < queries.Count; i++)
-            {
-                if (resultCollectionGenericType[i] == typeof(object))
-                {
-                    resultCollections.Add(new ArrayList());
-                }
-                else
-                {
-                    resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
-                }
-            }
+			var resultCollections = new ArrayList(resultCollectionGenericType.Count);
+			for (int i = 0; i < queries.Count; i++)
+			{
+				if (resultCollectionGenericType[i] == typeof(object))
+				{
+					resultCollections.Add(new ArrayList());
+				}
+				else
+				{
+					resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
+				}
+			}
 
-            var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
-            for (int i = 0; i < results.Count; i++)
+			var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
+			for (int i = 0; i < results.Count; i++)
 			{
 				// First use the transformer of each query transforming each row and then the list
 				// DONE: The behavior when the query has a 'new' instead a transformer is delegated to the Loader
@@ -471,11 +469,11 @@ namespace NHibernate.Impl
 				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
 				resultList = GetTransformedResults(resultList, multiqueryHolderInstatiator);
 
-                var queryIndex = translatorQueryMap[i];
-			    ArrayHelper.AddAll((IList)resultCollections[queryIndex], resultList);
+				var queryIndex = translatorQueryMap[i];
+				ArrayHelper.AddAll((IList)resultCollections[queryIndex], resultList);
 			}
-			
-            return resultCollections;
+
+			return resultCollections;
 		}
 
 		private IList GetTransformedResults(IList source, HolderInstantiator holderInstantiator)
@@ -555,8 +553,8 @@ namespace NHibernate.Impl
 							log.Debug("processing result set");
 						}
 
-                        IList tempResults = new ArrayList();
-                        int count;
+						IList tempResults = new ArrayList();
+						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
 							if (log.IsDebugEnabled)
@@ -566,7 +564,7 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-                                reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -632,7 +630,7 @@ namespace NHibernate.Impl
 
 		private void AggregateQueriesInformation()
 		{
-		    int queryIndex = 0;
+			int queryIndex = 0;
 			foreach (AbstractQueryImpl query in queries)
 			{
 				QueryParameters queryParameters = query.GetQueryParameters();
@@ -641,12 +639,12 @@ namespace NHibernate.Impl
 				foreach (var translator in GetTranslators(query, queryParameters))
 				{
 					translators.Add(translator);
-                    translatorQueryMap.Add(queryIndex);
+					translatorQueryMap.Add(queryIndex);
 					parameters.Add(queryParameters);
 					ISqlCommand singleCommand = translator.Loader.CreateSqlCommand(queryParameters, session);
 					resultSetsCommand.Append(singleCommand);
 				}
-			    queryIndex++;
+				queryIndex++;
 			}
 		}
 
@@ -844,7 +842,7 @@ namespace NHibernate.Impl
 
 			public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
 			{
-				var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
+				var sqlQueryImpl = (SqlQueryImpl)sqlQuery;
 				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
 				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
 				loader = new CustomLoader(sqlCustomQuery, sessionFactory);

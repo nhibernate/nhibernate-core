@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
@@ -29,8 +28,8 @@ namespace NHibernate.Impl
 		private readonly List<CriteriaQueryTranslator> translators = new List<CriteriaQueryTranslator>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private readonly List<CriteriaLoader> loaders = new List<CriteriaLoader>();
-        private readonly List<int> loaderCriteriaMap = new List<int>();
-        private readonly Dialect.Dialect dialect;
+		private readonly List<int> loaderCriteriaMap = new List<int>();
+		private readonly Dialect.Dialect dialect;
 		private IList criteriaResults;
 		private readonly Dictionary<string, int> criteriaResultPositions = new Dictionary<string, int>();
 		private bool isCacheable = false;
@@ -141,36 +140,36 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-		    var resultCollections = new ArrayList(resultCollectionGenericType.Count);
-            for (int i = 0; i < criteriaQueries.Count; i++)
-            {
-                if (resultCollectionGenericType[i] == typeof(object))
-                {
-                    resultCollections.Add(new ArrayList());
-                }
-                else
-                {
-                    resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
-                }
-            }
+			var resultCollections = new ArrayList(resultCollectionGenericType.Count);
+			for (int i = 0; i < criteriaQueries.Count; i++)
+			{
+				if (resultCollectionGenericType[i] == typeof(object))
+				{
+					resultCollections.Add(new ArrayList());
+				}
+				else
+				{
+					resultCollections.Add(Activator.CreateInstance(typeof(List<>).MakeGenericType(resultCollectionGenericType[i])));
+				}
+			}
 
-            for (int i = 0; i < loaders.Count; i++)
-            {
-                CriteriaLoader loader = loaders[i];
-                var resultList = loader.GetResultList((IList)results[i], parameters[i].ResultTransformer);
-                var criteriaIndex = loaderCriteriaMap[i];
-                ArrayHelper.AddAll((IList)resultCollections[criteriaIndex], resultList);
-            }
-			
-            if (resultTransformer != null)
+			for (int i = 0; i < loaders.Count; i++)
+			{
+				CriteriaLoader loader = loaders[i];
+				var resultList = loader.GetResultList((IList)results[i], parameters[i].ResultTransformer);
+				var criteriaIndex = loaderCriteriaMap[i];
+				ArrayHelper.AddAll((IList)resultCollections[criteriaIndex], resultList);
+			}
+
+			if (resultTransformer != null)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
 					resultCollections[i] = resultTransformer.TransformList((IList)resultCollections[i]);
 				}
 			}
-			
-            return resultCollections;
+
+			return resultCollections;
 		}
 
 		private IList DoList()
@@ -293,9 +292,9 @@ namespace NHibernate.Impl
 						implementors[i],
 						session.EnabledFilters
 						);
-                    loaders.Add(loader);
-                    loaderCriteriaMap.Add(criteriaIndex);
-                    spaces.AddAll(loader.QuerySpaces);
+					loaders.Add(loader);
+					loaderCriteriaMap.Add(criteriaIndex);
+					spaces.AddAll(loader.QuerySpaces);
 				}
 				criteriaIndex += 1;
 			}

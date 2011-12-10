@@ -10,4 +10,5 @@
 		<id name="Id" generator="guid.comb" />
 		<property name="Name" />
 	</class>
+
 </hibernate-mapping>
