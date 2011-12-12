@@ -646,6 +646,8 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2974\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2974\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />

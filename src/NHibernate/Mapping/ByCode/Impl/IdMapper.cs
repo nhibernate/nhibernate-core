@@ -63,7 +63,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
-		public void Column(string name)
+	    public void UnsavedValue(object value)
+	    {
+            hbmId.unsavedvalue = value != null ? value.ToString() : "null";
+	    }
+
+	    public void Column(string name)
 		{
 			hbmId.column1 = name;
 		}
