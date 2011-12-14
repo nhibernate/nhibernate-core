@@ -647,6 +647,9 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Employer.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />
@@ -2787,6 +2790,9 @@
     <EmbeddedResource Include="IdGen\Enhanced\Table\HiLo.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Table\HiLoTableTest.cs" />
     <EmbeddedResource Include="IdGen\Enhanced\Table\Basic.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2976\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\DefaultOptimized.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\Pooled.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\HiLo.hbm.xml" />
