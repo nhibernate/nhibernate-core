@@ -366,7 +366,7 @@ namespace NHibernate.SqlCommand
 			return;
 		}
 
-		private static int LengthOfPart(object part)
+		internal static int LengthOfPart(object part)
 		{
 			string partString = part as string;
 			return partString == null ? 1 : partString.Length;

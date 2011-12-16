@@ -38,18 +38,23 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			var result = new SqlStringBuilder();
+            // Ensure minimal number of string parts to optimise string search performance
+		    queryString = queryString.Compact();
 
-			if (offset == null)
+            // Early exit if we cannot find a SELECT clause.
+            int selectIndex;
+            if (!TryGetAfterSelectInsertPoint(queryString, out selectIndex)) return null;
+            
+            var result = new SqlStringBuilder();
+
+            if (offset == null)
 			{
-				int insertPoint = GetAfterSelectInsertPoint(queryString);
-
 				return result
-					.Add(queryString.Substring(0, insertPoint))
+					.Add(queryString.Substring(0, selectIndex))
 					.Add(" TOP (")
 					.Add(limit)
-					.Add(") ")
-					.Add(queryString.Substring(insertPoint))
+					.Add(")")
+					.Add(queryString.Substring(selectIndex))
 					.ToSqlString();
 			}
 
@@ -149,19 +154,6 @@ namespace NHibernate.Dialect
 				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
 			}
 			return fromIndex;
-		}
-
-		private int GetAfterSelectInsertPoint(SqlString sql)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			if (sql.StartsWithCaseInsensitive("select"))
-			{
-				return 6;
-			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
 		/// <summary>

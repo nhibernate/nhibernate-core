@@ -219,7 +219,52 @@ namespace NHibernate.Test.DialectTest
 		public void GetLimitStringWithSqlComments()
 		{
 			var d = new MsSql2005Dialect();
-			Assert.Throws<NotSupportedException>(() => d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2")));
+		    var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
+			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(" /* criteria query */ SELECT TOP (2) p from lcdtm"));
 		}
-	}
+
+        [Test]
+        public void GetLimitStringWithSqlCommonTableExpression()
+        {
+            const string SQL = @"
+                WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+                (   -- Anchor member definition
+                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, 0 AS Level
+                    FROM    MyEmployees e
+                    WHERE   e.ManagerID IS NULL
+                    
+                    UNION ALL
+                    
+                    -- Recursive member definition
+                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+                    FROM    MyEmployees AS e
+                    INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
+                )
+                -- Statement that executes the CTE
+                SELECT  ManagerID, EmployeeID, Title, Level
+                FROM    DirectReports";
+
+            const string EXPECTED_SQL = @"
+                WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+                (   -- Anchor member definition
+                    SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+                    FROM    MyEmployees
+                    WHERE   ManagerID IS NULL
+                    
+                    UNION ALL
+                    
+                    -- Recursive member definition
+                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+                    FROM    MyEmployees e
+                    INNER JOIN DirectReports d ON e.ManagerID = d.EmployeeID
+                )
+                -- Statement that executes the CTE
+                SELECT TOP (2)  ManagerID, EmployeeID, Title, Level
+                FROM    DirectReports";
+
+            var d = new MsSql2005Dialect();
+            var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
+            Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
+        }
+    }
 }
