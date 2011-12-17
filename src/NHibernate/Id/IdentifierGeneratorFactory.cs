@@ -177,6 +177,7 @@ namespace NHibernate.Id
 			idgenerators.Add("sequence-identity", typeof (SequenceIdentityGenerator));
 			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
 			idgenerators.Add("enhanced-sequence", typeof(SequenceStyleGenerator));
+			idgenerators.Add("enhanced-table", typeof(Enhanced.TableGenerator));
 		}
 
 		private IdentifierGeneratorFactory()

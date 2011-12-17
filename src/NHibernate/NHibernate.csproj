@@ -235,6 +235,7 @@
     <Compile Include="IDatabinder.cs" />
     <Compile Include="Id\Assigned.cs" />
     <Compile Include="Id\CounterGenerator.cs" />
+    <Compile Include="Id\Enhanced\TableGenerator.cs" />
     <Compile Include="Id\ForeignGenerator.cs" />
     <Compile Include="Id\GuidCombGenerator.cs" />
     <Compile Include="Id\GuidGenerator.cs" />
