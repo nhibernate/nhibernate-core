@@ -379,6 +379,14 @@ namespace NHibernate.Id.Enhanced
 			{
 				get { return true; }
 			}
+
+			/// <summary>
+			/// Exposure intended for testing purposes.
+			/// </summary>
+			public long LastValue
+			{
+				get { return _value - 1; }
+			}
 		}
 
 		#endregion

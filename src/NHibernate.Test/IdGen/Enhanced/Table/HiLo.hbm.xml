@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.IdGen.Enhanced.Table" default-access="field">
+
+  <class name="Entity" table="ID_TBL_HILO_ENTITY">
+    <id name="_id" column="ID" type="long">
+      <generator class="NHibernate.Id.Enhanced.TableGenerator, NHibernate">
+        <param name="table_name">ID_TBL_HILO_TBL</param>
+        <param name="segment_value">test</param>
+        <param name="initial_value">1</param>
+        <param name="increment_size">10</param>
+        <param name="optimizer">hilo</param>
+      </generator>
+    </id>
+    <property name="Name" type="string" access="property"/>
+  </class>
+
+</hibernate-mapping>
