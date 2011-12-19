@@ -159,10 +159,10 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		public override string ToString()
-		{
-			return (_projection ?? (object)propertyName) + Op + value;
-		}
+        public override string ToString()
+        {
+            return (_projection ?? (object)propertyName) + Op + ObjectUtils.IdentityToString(value);
+        }
 
 		/// <summary>
 		/// Get the Sql operator to use for the specific 
