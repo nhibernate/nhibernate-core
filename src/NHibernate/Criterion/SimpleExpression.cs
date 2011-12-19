@@ -161,7 +161,14 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (_projection ?? (object)propertyName) + Op + value;
+            string objectIdentification = null;
+
+            if(value!=null)
+            {
+                objectIdentification = StringHelper.Unqualify(value.GetType().FullName) + "#" + value.GetHashCode();
+            }
+
+            return (_projection ?? (object)propertyName) + Op + objectIdentification;
 		}
 
 		/// <summary>
