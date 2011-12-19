@@ -161,24 +161,7 @@ namespace NHibernate.Criterion
 
         public override string ToString()
         {
-            string objectIdentification = null;
-
-            if (value != null)
-            {
-                var proxy = value as NHibernate.Proxy.INHibernateProxy;
-
-                if (null != proxy)
-                {
-                    var init = proxy.HibernateLazyInitializer;
-                    objectIdentification = init.EntityName + "#" + init.Identifier;
-                }
-                else
-                {
-                    objectIdentification = StringHelper.Unqualify(value.GetType().FullName) + "#" + value.GetHashCode() + "(hashcode)";
-                }
-            }
-
-            return (_projection ?? (object)propertyName) + Op + objectIdentification;
+            return (_projection ?? (object)propertyName) + Op + ObjectUtils.IdentityToString(value);
         }
 
 		/// <summary>
