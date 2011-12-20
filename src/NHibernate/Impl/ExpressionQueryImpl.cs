@@ -8,6 +8,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Impl
@@ -79,6 +80,56 @@ namespace NHibernate.Impl
 			}
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
+		}
+	}
+
+	partial class ExpressionFilterImpl : ExpressionQueryImpl
+	{
+		private readonly object collection;
+
+		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata) 
+			: base(queryExpression, session, parameterMetadata)
+		{
+			this.collection = collection;
+		}
+
+		public override IList List()
+		{
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.ListFilter(collection, ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		public override IType[] TypeArray()
+		{
+			IList<IType> typeList = Types;
+			int size = typeList.Count;
+			var result = new IType[size + 1];
+			for (int i = 0; i < size; i++)
+			{
+				result[i + 1] = typeList[i];
+			}
+			return result;
+		}
+
+		public override object[] ValueArray()
+		{
+			IList valueList = Values;
+			int size = valueList.Count;
+			var result = new object[size + 1];
+			for (int i = 0; i < size; i++)
+			{
+				result[i + 1] = valueList[i];
+			}
+			return result;
 		}
 	}
 

@@ -92,6 +92,18 @@ namespace NHibernate.Impl
 		}
 
 		public abstract Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		public async Task<IList> ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+									.GetConstructor(System.Type.EmptyTypes)
+									.Invoke(null);
+
+			await (ListFilterAsync(collection, queryExpression, parameters, results, cancellationToken)).ConfigureAwait(false);
+			return results;
+		}
+		protected abstract Task ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, IList results, CancellationToken cancellationToken);
+
 		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
@@ -169,6 +181,8 @@ namespace NHibernate.Impl
 				}
 			}
 		}
+
+		public abstract Task<IQuery> CreateFilterAsync(object collection, IQueryExpression queryExpression, CancellationToken cancellationToken);
 
 		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 

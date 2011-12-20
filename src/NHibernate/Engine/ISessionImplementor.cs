@@ -124,6 +124,11 @@ namespace NHibernate.Engine
 		IList ListFilter(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters);
+
+		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
 		IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
@@ -316,6 +321,8 @@ namespace NHibernate.Engine
 		void JoinTransaction();
 
 		void CloseSessionFromSystemTransaction();
+
+		IQuery CreateFilter(object collection, IQueryExpression queryExpression);
 
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 

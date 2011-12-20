@@ -10,6 +10,12 @@ namespace NHibernate.Engine.Query
 	{
 		public IQueryExpression QueryExpression { get; private set; }
 
+		public QueryExpressionPlan(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+			: this(queryExpression.Key, CreateTranslators(queryExpression, collectionRole, shallow, enabledFilters, factory))
+		{
+			QueryExpression = queryExpression;
+		}
+
 		public QueryExpressionPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 			: this(queryExpression.Key, CreateTranslators(queryExpression, null, shallow, enabledFilters, factory))
 		{

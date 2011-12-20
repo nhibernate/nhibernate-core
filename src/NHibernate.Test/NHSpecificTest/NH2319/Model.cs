@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace NHibernate.Test.NHSpecificTest.NH2319
+{
+	class Parent
+	{
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual ICollection<Child> Children { get; set; } = new List<Child>();
+	}
+
+	class Child
+	{
+		public virtual Parent Parent { get; set; }
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual ICollection<GrandChild> GrandChildren { get; set; } = new List<GrandChild>();
+	}
+	class GrandChild
+	{
+		public virtual Child Child { get; set; }
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+	}
+}

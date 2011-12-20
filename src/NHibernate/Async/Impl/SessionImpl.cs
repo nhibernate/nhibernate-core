@@ -236,6 +236,43 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
+
+				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
+
+				bool success = false;
+				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
+				{
+					try
+					{
+						await (plan.PerformListAsync(queryParameters, this, results, cancellationToken)).ConfigureAwait(false);
+						success = true;
+					}
+					catch (HibernateException)
+					{
+						// Do not call Convert on HibernateExceptions
+						throw;
+					}
+					catch (Exception e)
+					{
+						throw Convert(e, "Could not execute query");
+					}
+					finally
+					{
+						await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					}
+				}
+			}
+		}
+
+		protected override async Task ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = await (GetFilterQueryPlanAsync(collection, queryExpression, queryParameters, false, cancellationToken)).ConfigureAwait(false);
+
 				await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false);
 
 				bool success = false;
@@ -377,13 +414,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="collection"></param>
-		/// <param name="queryString"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns></returns>
 		public async Task<IQuery> CreateFilterAsync(object collection, string queryString, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -391,15 +421,82 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 
-				CollectionFilterImpl filter =
-					new CollectionFilterImpl(queryString, collection, this,
-											 (await (GetFilterQueryPlanAsync(collection, queryString, null, false, cancellationToken)).ConfigureAwait(false)).ParameterMetadata);
+				var plan = await (GetFilterQueryPlanAsync(collection, queryString, null, false, cancellationToken)).ConfigureAwait(false);
+				var filter = new CollectionFilterImpl(queryString, collection, this, plan.ParameterMetadata);
 				//filter.SetComment(queryString);
 				return filter;
 			}
 		}
 
-		private async Task<FilterQueryPlan> GetFilterQueryPlanAsync(object collection, string filter, QueryParameters parameters, bool shallow, CancellationToken cancellationToken)
+		public override async Task<IQuery> CreateFilterAsync(object collection, IQueryExpression queryExpression, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+
+				var plan = await (GetFilterQueryPlanAsync(collection, queryExpression, null, false, cancellationToken)).ConfigureAwait(false);
+				var filter = new ExpressionFilterImpl(plan.QueryExpression, collection, this, plan.ParameterMetadata);
+				return filter;
+			}
+		}
+
+		private async Task<IQueryExpressionPlan> GetFilterQueryPlanAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, bool shallow, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CollectionEntry entry = persistenceContext.GetCollectionEntryOrNull(collection);
+				ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
+
+				IQueryExpressionPlan plan;
+				if (roleBeforeFlush == null)
+				{
+					// if it was previously unreferenced, we need to flush in order to
+					// get its state into the database in order to execute query
+					await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+					entry = persistenceContext.GetCollectionEntryOrNull(collection);
+					ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
+					if (roleAfterFlush == null)
+					{
+						throw new QueryException("The collection was unreferenced");
+					}
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(queryExpression, roleAfterFlush.Role, shallow, EnabledFilters);
+				}
+				else
+				{
+					// otherwise, we only need to flush if there are in-memory changes
+					// to the queried tables
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(queryExpression, roleBeforeFlush.Role, shallow, EnabledFilters);
+
+					if (await (AutoFlushIfRequiredAsync(plan.QuerySpaces, cancellationToken)).ConfigureAwait(false))
+					{
+						// might need to run a different filter entirely after the flush
+						// because the collection role may have changed
+						entry = persistenceContext.GetCollectionEntryOrNull(collection);
+						ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
+						if (roleBeforeFlush != roleAfterFlush)
+						{
+							if (roleAfterFlush == null)
+							{
+								throw new QueryException("The collection was dereferenced");
+							}
+							plan = Factory.QueryPlanCache.GetFilterQueryPlan(queryExpression, roleAfterFlush.Role, shallow, EnabledFilters);
+						}
+					}
+				}
+
+				if (parameters != null)
+				{
+					parameters.PositionalParameterValues[0] = entry.LoadedKey;
+					parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
+				}
+
+				return plan;
+			}
+		}
+
+		private async Task<IQueryExpressionPlan> GetFilterQueryPlanAsync(object collection, string filter, QueryParameters parameters, bool shallow, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -412,7 +509,7 @@ namespace NHibernate.Impl
 				CollectionEntry entry = persistenceContext.GetCollectionEntryOrNull(collection);
 				ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
 
-				FilterQueryPlan plan;
+				IQueryExpressionPlan plan;
 				if (roleBeforeFlush == null)
 				{
 					// if it was previously unreferenced, we need to flush in order to
@@ -1021,7 +1118,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, false, cancellationToken)).ConfigureAwait(false);
+				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, false, cancellationToken)).ConfigureAwait(false);
 
 				bool success = false;
 				using (SuspendAutoFlush()) //stops flush being called multiple times if this method is recursively called
@@ -1076,7 +1173,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
+				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
 				return await (plan.PerformIterateAsync(queryParameters, this, cancellationToken)).ConfigureAwait(false);
 			}
 		}
@@ -1087,7 +1184,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
+				var plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true, cancellationToken)).ConfigureAwait(false);
 				return await (plan.PerformIterateAsync<T>(queryParameters, this, cancellationToken)).ConfigureAwait(false);
 			}
 		}

@@ -46,6 +46,12 @@ namespace NHibernate.Linq
 			EntityName = entityName;
 		}
 
+		public NhQueryable(ISessionImplementor session, object collection)
+			: base(new DefaultQueryProvider(session, collection))
+		{
+			EntityName = typeof(T).FullName;
+		}
+
 		public string EntityName { get; private set; }
 
 		public override string ToString()
