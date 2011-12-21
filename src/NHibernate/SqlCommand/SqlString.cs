@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using NHibernate.Util;
+using System.Collections;
 
 namespace NHibernate.SqlCommand
 {
@@ -19,527 +17,761 @@ namespace NHibernate.SqlCommand
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class SqlString
+	public class SqlString: ICollection, IEnumerable<object>
 	{
-		private bool isCompacted = false;
-		private readonly object[] sqlParts;
+		public static readonly SqlString Empty = new SqlString(Enumerable.Empty<object>());
 
-		public static readonly SqlString Empty = new SqlString(new object[0]);
-		
-		public SqlString(string sqlPart)
-		{
-			if (StringHelper.IsNotEmpty(sqlPart))
-			{
-				sqlParts = new object[] {sqlPart};
-			}
-			else
-			{
-				sqlParts = new object[0];
-			}
-		}
+        #region Instance fields
 
-		public SqlString(params object[] sqlParts)
-		{
-#if DEBUG
-			foreach (object obj in sqlParts)
-			{
-				Debug.Assert(obj is string || obj is SqlString || obj is Parameter);
-			}
-#endif
-			this.sqlParts = sqlParts;
-		}
+        private readonly List<SqlPart> _parts;
+        private readonly SortedList<int, Parameter> _parameters;
+        private readonly int _firstPartIndex;
+        private readonly int _lastPartIndex;
+        private readonly int _sqlStartIndex;
+        private readonly int _length;
 
-		/// <summary>
-		/// Appends the SqlString parameter to the end of the current SqlString to create a 
-		/// new SqlString object.
-		/// </summary>
-		/// <param name="rhs">The SqlString to append.</param>
-		/// <returns>A new SqlString object.</returns>
-		/// <remarks>
-		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
-		/// are called it is better to use the SqlStringBuilder.
-		/// </remarks>
-		public SqlString Append(SqlString rhs)
-		{
-			return new SqlString(ArrayHelper.Join(sqlParts, rhs.sqlParts));
-		}
+        #endregion
 
-		/// <summary>
-		/// Appends the string parameter to the end of the current SqlString to create a 
-		/// new SqlString object.
-		/// </summary>
-		/// <param name="rhs">The string to append.</param>
-		/// <returns>A new SqlString object.</returns>
-		/// <remarks>
-		/// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
-		/// are called it is better to use the SqlStringBuilder.
-		/// </remarks>
-		public SqlString Append(string rhs)
-		{
-			if (StringHelper.IsNotEmpty(rhs))
-			{
-				object[] temp = new object[sqlParts.Length + 1];
-				Array.Copy(sqlParts, temp, sqlParts.Length);
-				temp[sqlParts.Length] = rhs;
-				return new SqlString(temp);
-			}
-			else
-			{
-				return this;
-			}
-		}
+        #region Constructor(s)
 
-		/// <summary>
-		/// Compacts the SqlString into the fewest parts possible.
-		/// </summary>
-		/// <returns>A new SqlString.</returns>
-		/// <remarks>
-		/// Combines all SqlParts that are strings and next to each other into
-		/// one SqlPart.
-		/// </remarks>
-		public SqlString Compact()
-		{
-			if (isCompacted)
-			{
-				return this;
-			}
+        /// <summary>
+        /// Creates copy of other <see cref="SqlString"/>.
+        /// </summary>
+        /// <param name="other"></param>
+        private SqlString(SqlString other)
+        {
+            _parts = other._parts;
+            _sqlStartIndex = other._sqlStartIndex;
+            _length = other._length;
+            _firstPartIndex = other._firstPartIndex;
+            _lastPartIndex = other._lastPartIndex;
 
-			var builder = new StringBuilder(200);
-			var sqlBuilder = new SqlStringBuilder();
+            var parameterCount = other._parameters.Count;
+            if (parameterCount > 0)
+            {
+                _parameters = new SortedList<int, Parameter>(other._parameters.Count);
+                foreach (var parameterByIndex in other._parameters)
+                {
+                    var otherParameter = parameterByIndex.Value;
+                    var parameter = otherParameter.Clone();
 
-			Compact(sqlBuilder, sqlParts, builder);
+                    if (otherParameter.ParameterPosition < 0)
+                    {
+                        // placeholder for sub-query parameter
+                        parameter.ParameterPosition = otherParameter.ParameterPosition;
+                    }
 
-			SqlString result = sqlBuilder.ToSqlString();
-			result.isCompacted = true;
-			return result;
-		}
+                    _parameters.Add(parameterByIndex.Key, parameter);
+                }
+            }
+            else
+            {
+                _parameters = Empty._parameters;
+            }
+        }
 
-		private void Compact(SqlStringBuilder destination, IEnumerable<object> parts, StringBuilder pendingString)
-		{
-			foreach (object part in parts)
-			{
-				var stringPart = part as string;
-				if (stringPart != null)
-				{
-					pendingString.Append(stringPart);
-					continue;
-				}
+        /// <summary>
+        /// Creates substring of other <see cref="SqlString"/>.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="sqlStartIndex"></param>
+        /// <param name="length"></param>
+        private SqlString(SqlString other, int sqlStartIndex, int length)
+        {
+            _parts = other._parts;
+            _sqlStartIndex = sqlStartIndex;
+            _length = length;
+            _firstPartIndex = other.GetPartIndexForSqlIndex(sqlStartIndex);
+            _lastPartIndex = other.GetPartIndexForSqlIndex(_sqlStartIndex + _length - 1);
 
-				var sqlStringPart = part as SqlString;
-				if (sqlStringPart != null)
-				{
-					Compact(destination, sqlStringPart.sqlParts, pendingString);
-					continue;
-				}
+            var parameterCount = other._parameters.Count;
+            if (parameterCount > 0)
+            {
+                _parameters = new SortedList<int, Parameter>(other._parameters.Count);
+                using (var otherParameterEnum = other._parameters.GetEnumerator())
+                {
+                    while (otherParameterEnum.MoveNext())
+                    {
+                        if (otherParameterEnum.Current.Key >= _sqlStartIndex) break;
+                    }
 
-				AppendPendigStringAndResetUsedString(destination, pendingString);
-				destination.Add((Parameter) part);
-			}
+                    var sqlEndIndex = _sqlStartIndex + _length;
+                    do
+                    {
+                        if (otherParameterEnum.Current.Key > sqlEndIndex) break;
+                        _parameters.Add(otherParameterEnum.Current.Key, otherParameterEnum.Current.Value);
+                    } while (otherParameterEnum.MoveNext());
+                }
+            }
+            else
+            {
+                _parameters = Empty._parameters;
+            }
+        }
 
-			// make sure the contents of the builder have been added to the sqlBuilder
-			AppendPendigStringAndResetUsedString(destination, pendingString);
-		}
+        public SqlString(string sql)
+        {
+            if (sql == null) throw new ArgumentNullException("sql");
 
-		private void AppendPendigStringAndResetUsedString(SqlStringBuilder destination, StringBuilder pendingString)
-		{
-			// don't add an empty string into the new compacted SqlString
-			if (pendingString.Length > 0)
-			{
-				destination.Add(pendingString.ToString());
-			}
-			pendingString.Length = 0; // <= reset the string builder
-		}
+            _parts = new List<SqlPart>(1) { new SqlPart(0, sql) };
+            _parameters = Empty._parameters;
+            _length = sql.Length;
+        }
 
-		/// <summary>
-		/// Gets the number of SqlParts contained in this SqlString.
-		/// </summary>
-		/// <value>The number of SqlParts contained in this SqlString.</value>
-		public int Count
-		{
-			get { return sqlParts.Length; }
-		}
+        public SqlString(Parameter parameter)
+        {
+            if (parameter == null) throw new ArgumentNullException("parameter");
 
-		public int Length
-		{
-			get
-			{
-				int result = 0;
-				foreach (object part in sqlParts)
-				{
-					result += LengthOfPart(part);
-				}
-				return result;
-			}
-		}
+            _parts = new List<SqlPart>(1) { new SqlPart(0) };
+            _parameters = new SortedList<int, Parameter>(1) { { 0, parameter} };
+            _length = _parts[0].Length;
+        }
 
-		/// <summary>
-		/// Determines whether the end of this instance matches the specified String.
-		/// </summary>
-		/// <param name="value">A string to seek at the end.</param>
-		/// <returns><see langword="true" /> if the end of this instance matches value; otherwise, <see langword="false" /></returns>
-		public bool EndsWith(string value)
-		{
-			SqlString tempSql = Compact();
-			if (tempSql.Count == 0)
-			{
-				return false;
-			}
+        public SqlString(params object[] parts)
+            : this((IEnumerable<object>)parts)
+        {}
 
-			string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
+        private SqlString(IEnumerable<object> parts)
+        {
+            _parts = new List<SqlPart>();
+            _parameters = new SortedList<int, Parameter>();
 
-			return lastPart != null && lastPart.EndsWith(value);
-		}
+            var sqlIndex = 0;
+            var content = new StringBuilder();
+            foreach (var part in parts)
+            {
+                Add(part, content, ref sqlIndex);
+            }
+            FlushContent(content, ref sqlIndex);
 
-		/// <summary>
-		/// Replaces all occurrences of a specified <see cref="String"/> in this instance, 
-		/// with another specified <see cref="String"/> .
-		/// </summary>
-		/// <param name="oldValue">A String to be replaced.</param>
-		/// <param name="newValue">A String to replace all occurrences of oldValue. </param>
-		/// <returns>
-		/// A new SqlString with oldValue replaced by the newValue.  The new SqlString is 
-		/// in the compacted form.
-		/// </returns>
-		public SqlString Replace(string oldValue, string newValue)
-		{
-			SqlString compacted = Compact();
-			if (compacted == this)
-			{
-				// Ensure we have a new SqlString to work with
-				compacted = Clone();
-			}
+            _firstPartIndex = _parts.Count > 0 ? 0 : -1;
+            _lastPartIndex = _parts.Count - 1;
+            _length = sqlIndex;
+        }
 
-			for (int i = 0; i < compacted.sqlParts.Length; i++)
-			{
-				string sqlPart = compacted.sqlParts[i] as string;
-				if (sqlPart != null)
-				{
-					compacted.sqlParts[i] = sqlPart.Replace(oldValue, newValue);
-				}
-			}
+        private void Add(object part, StringBuilder content, ref int sqlIndex)
+        {
+            var stringPart = part as string;
+            if (stringPart != null)
+            {
+                content.Append(stringPart);
+                return;
+            }
 
-			return compacted;
-		}
+            var parameter = part as Parameter;
+            if (parameter != null)
+            {
+                FlushContent(content, ref sqlIndex);
 
-		/// <summary>
-		/// Determines whether the beginning of this SqlString matches the specified System.String,
-		/// using case-insensitive comparison.
-		/// </summary>
-		/// <param name="value">The System.String to seek</param>
-		/// <returns>true if the SqlString starts with the value.</returns>
-		public bool StartsWithCaseInsensitive(string value)
-		{
-			SqlString tempSql = Compact();
-			if (tempSql.Count == 0)
-			{
-				return value.Length == 0;
-			}
+                _parts.Add(new SqlPart(sqlIndex));
+                _parameters.Add(sqlIndex, parameter);
+                sqlIndex += 1;
+                return;
+            }
 
-			string firstPart = tempSql.sqlParts[0] as string;
-			if (firstPart == null)
-			{
-				return false;
-			}
+            var sql = part as SqlString;
+            if (sql != null)
+            {
+                foreach (var otherPart in sql)
+                {
+                    Add(otherPart, content, ref sqlIndex);
+                }
+                return;
+            }
 
-			return StringHelper.StartsWithCaseInsensitive(firstPart, value);
-		}
+            throw new ArgumentException("Only string, Parameter or SqlString values are supported as SqlString parts.");
+        }
 
-		private SqlStringBuilder BuildSubstring(int startIndex)
-		{
-			SqlStringBuilder builder = new SqlStringBuilder(this);
+        private void FlushContent(StringBuilder content, ref int sqlIndex)
+        {
+            if (content.Length > 0)
+            {
+                _parts.Add(new SqlPart(sqlIndex, content.ToString()));
+                sqlIndex += content.Length;
+                content.Length = 0;
+            }
+        }
 
-			int offset = 0;
+        #endregion
 
-			while (builder.Count > 0)
-			{
-				int nextOffset = offset + LengthOfPart(builder[0]);
+        #region Factory methods
 
-				if (nextOffset > startIndex)
-				{
-					break;
-				}
+        /// <summary>
+        /// Parse SQL in <paramref name="sql" /> and create a SqlString representing it.
+        /// </summary>
+        /// <remarks>
+        /// Parameter marks in single quotes will be correctly skipped, but otherwise the
+        /// lexer is very simple and will not parse double quotes or escape sequences
+        /// correctly, for example.
+        /// </remarks>
+        public static SqlString Parse(string sql)
+        {
+            var result = new SqlStringBuilder();
+            var content = new StringBuilder();
 
-				builder.RemoveAt(0);
-				offset = nextOffset;
-			}
+            bool inQuote = false;
+            foreach (char ch in sql)
+            {
+                switch (ch)
+                {
+                    case '?':
+                        if (inQuote)
+                        {
+                            content.Append(ch);
+                        }
+                        else
+                        {
+                            if (content.Length > 0)
+                            {
+                                result.Add(content.ToString());
+                                content.Length = 0;
+                            }
+                            result.AddParameter();
+                        }
+                        break;
 
-			if (builder.Count > 0 && offset < startIndex)
-			{
-				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
-			}
+                    case '\'':
+                        inQuote = !inQuote;
+                        content.Append(ch);
+                        break;
 
-			return builder;
-		}
+                    default:
+                        content.Append(ch);
+                        break;
+                }
+            }
 
-		/// <summary>
-		/// Retrieves a substring from this instance. The substring starts at a specified character position. 
-		/// </summary>
-		/// <param name="startIndex">The starting character position of a substring in this instance.</param>
-		/// <returns>
-		/// A new SqlString to the substring that begins at startIndex in this instance. 
-		/// </returns>
-		/// <remarks>
-		/// If the startIndex is greater than the length of the SqlString then <see cref="SqlString.Empty" /> is returned.
-		/// </remarks>
-		public SqlString Substring(int startIndex)
-		{
-			if (startIndex < 0)
-			{
-				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
-			}
+            if (content.Length > 0)
+            {
+                result.Add(content.ToString());
+            }
 
-			SqlStringBuilder builder = BuildSubstring(startIndex);
+            return result.ToSqlString();
+        }
 
-			if (builder.Count == 0)
-			{
-				return Empty;
-			}
+        #endregion
 
-			SqlString result = builder.ToSqlString();
-			if (isCompacted)
-			{
-				result.SetCompacted();
-			}
-			return result;
-		}
+        #region Properties
 
-		public SqlString Substring(int startIndex, int length)
-		{
-			if (startIndex < 0)
-			{
-				throw new ArgumentException("startIndex should be greater than or equal to 0", "startIndex");
-			}
+        /// <summary>
+        /// Gets the number of SqlParts contained in this SqlString.
+        /// </summary>
+        /// <value>The number of SqlParts contained in this SqlString.</value>
+        public int Count
+        {
+            get { return _length > 0 ? _lastPartIndex - _firstPartIndex + 1 : 0; }
+        }
 
-			if (length < 0)
-			{
-				throw new ArgumentException("length should be greater than or equal to 0", "length");
-			}
+        public int Length
+        {
+            get { return _length; }
+        }
 
-			SqlStringBuilder builder = BuildSubstring(startIndex);
+	    public ICollection Parts
+	    {
+            get { return this; }
+	    }
 
-			if (builder.Count == 0)
-			{
-				return builder.ToSqlString();
-			}
+        #endregion
 
-			int offset = 0;
-			int nextOffset = -1;
-			int count = int.MaxValue;
+        #region Operators
 
-			for (int i = 0; i < builder.Count; i++)
-			{
-				nextOffset = offset + LengthOfPart(builder[i]);
-				if (nextOffset < length)
-				{
-					offset = nextOffset;
-					continue;
-				}
-				else if (nextOffset >= length)
-				{
-					count = i + 1;
-					break;
-				}
-			}
+        public static SqlString operator +(SqlString lhs, SqlString rhs)
+        {
+            return lhs.Append(rhs);
+        }
 
-			while (builder.Count > count)
-			{
-				builder.RemoveAt(builder.Count - 1);
-			}
+        #endregion
 
-			if (length < nextOffset)
-			{
-				string lastPart = (string) builder[builder.Count - 1];
-				builder[builder.Count - 1] = lastPart.Substring(0, length - offset);
-			}
+        #region Public methods
 
-			SqlString result = builder.ToSqlString();
-			if (isCompacted)
-			{
-				result.SetCompacted();
-			}
-			return result;
-		}
+        /// <summary>
+        /// Appends the SqlString parameter to the end of the current SqlString to create a 
+        /// new SqlString object.
+        /// </summary>
+        /// <param name="sql">The SqlString to append.</param>
+        /// <returns>A new SqlString object.</returns>
+        /// <remarks>
+        /// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
+        /// are called it is better to use the SqlStringBuilder.
+        /// </remarks>
+        public SqlString Append(SqlString sql)
+        {
+            if (sql == null || sql._length == 0) return this;
+            if (_length == 0) return sql;
+            return new SqlString(new object[] { this, sql });
+        }
 
-		private void SetCompacted()
-		{
-			isCompacted = true;
-			return;
-		}
+        /// <summary>
+        /// Appends the string parameter to the end of the current SqlString to create a 
+        /// new SqlString object.
+        /// </summary>
+        /// <param name="text">The string to append.</param>
+        /// <returns>A new SqlString object.</returns>
+        /// <remarks>
+        /// A SqlString object is immutable so this returns a new SqlString.  If multiple Appends 
+        /// are called it is better to use the SqlStringBuilder.
+        /// </remarks>
+        public SqlString Append(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return this;
+            if (_length == 0) return new SqlString(text);
+            return new SqlString(new object[] { this, text });
+        }
 
-		internal static int LengthOfPart(object part)
-		{
-			string partString = part as string;
-			return partString == null ? 1 : partString.Length;
-		}
+        /// <summary>
+        /// Compacts the SqlString into the fewest parts possible.
+        /// </summary>
+        /// <returns>A new SqlString.</returns>
+        /// <remarks>
+        /// Combines all SqlParts that are strings and next to each other into
+        /// one SqlPart.
+        /// </remarks>
+        public SqlString Compact()
+        {
+            return this;
+        }
+        
+        /// <summary>
+        /// Make a copy of the SqlString, with new parameter references (Placeholders)
+        /// </summary>
+        public SqlString Copy()
+        {
+            return new SqlString(this);
+        }
 
-		/// <summary>
-		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
-		/// </summary>
-		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
-		/// case.</param>
-		/// <remarks>
-		/// The text must be located entirely in a string part of the <see cref="SqlString" />.
-		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
-		/// <c>"a ", Parameter, " b"</c> will result in no matches.
-		/// </remarks>
-		/// <returns>The index of the first occurrence of <paramref name="text" />, or -1
-		/// if not found.</returns>
-		public int IndexOfCaseInsensitive(string text)
-		{
-			SqlString compacted = Compact();
-			int offset = 0;
-			foreach (object part in compacted.sqlParts)
-			{
-				string partString = part as string;
-				if (partString != null)
-				{
-					int indexOf = StringHelper.IndexOfCaseInsensitive(partString, text);
+        /// <summary>
+        /// Determines whether the end of this instance matches the specified String.
+        /// </summary>
+        /// <param name="value">A string to seek at the end.</param>
+        /// <returns><see langword="true" /> if the end of this instance matches value; otherwise, <see langword="false" /></returns>
+        public bool EndsWith(string value)
+        {
+            return value != null
+                && value.Length <= _length
+                && IndexOf(value, _length - value.Length, value.Length, StringComparison.InvariantCulture) >= 0;
+        }
 
-					if (indexOf >= 0)
-					{
-						// Found
-						return offset + indexOf;
-					}
-				}
+        public bool EndsWithCaseInsensitive(string value)
+        {
+            return value != null
+                && value.Length <= _length
+                && IndexOf(value, _length - value.Length, value.Length, StringComparison.CurrentCultureIgnoreCase) >= 0;
+        }
 
-				offset += LengthOfPart(part);
-			}
+        public IEnumerable<Parameter> GetParameters()
+        {
+            return _parameters.Values;
+        }
 
-			// Not found
-			return -1;
-		}
+        public int GetParameterCount()
+        {
+            return _parameters.Count;
+        }
 
-		public int LastIndexOfCaseInsensitive(string text)
-		{
-			SqlString compacted = Compact();
-			int offset = 0;
-			int foundOffset = -1;
-			foreach (object part in compacted.sqlParts)
-			{
-				string partString = part as string;
-				if (partString != null)
-				{
-					int indexOf = StringHelper.LastIndexOfCaseInsensitive(partString, text);
+        /// <summary>
+        /// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
+        /// </summary>
+        /// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
+        /// case.</param>
+        /// <remarks>
+        /// The text must be located entirely in a string part of the <see cref="SqlString" />.
+        /// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
+        /// <c>"a ", Parameter, " b"</c> will result in no matches.
+        /// </remarks>
+        /// <returns>The index of the first occurrence of <paramref name="text" />, or -1
+        /// if not found.</returns>
+        public int IndexOfCaseInsensitive(string text)
+        {
+            return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-					if (indexOf >= 0)
-					{
-						// Found
-						foundOffset = offset + indexOf;
-					}
-				}
+        private int IndexOf(string value, int startIndex, int length, StringComparison stringComparison)
+        {
+            if (value == null) throw new ArgumentNullException("value");
 
-				offset += LengthOfPart(part);
-			}
+            var sqlSearchStartIndex = _sqlStartIndex + startIndex;
+            var maxSearchLength = Math.Min(length, _sqlStartIndex + _length - sqlSearchStartIndex);
+            if (maxSearchLength >= value.Length)
+            {
+                var partIndex = GetPartIndexForSqlIndex(sqlSearchStartIndex);
+                if (partIndex >= 0)
+                {
+                    while (maxSearchLength > 0 && partIndex <= _lastPartIndex)
+                    {
+                        var part = _parts[partIndex];
+                        var partStartOffset = sqlSearchStartIndex - part.SqlIndex;
+                        var partLength = Math.Min(maxSearchLength, part.Length - partStartOffset);
+                        var partOffset = part.Content.IndexOf(value, partStartOffset, partLength, stringComparison);
+                        if (partOffset >= 0) return part.SqlIndex + partOffset - _sqlStartIndex;
 
-			return foundOffset;
-		}
+                        sqlSearchStartIndex += partLength;
+                        maxSearchLength -= partLength;
+                        partIndex++;
+                    }
+                }
+            }
 
-		/// <summary>
-		/// Removes all occurrences of white space characters from the beginning and end of this instance.
-		/// </summary>
-		/// <returns>
-		/// A new SqlString equivalent to this instance after white space characters 
-		/// are removed from the beginning and end.
-		/// </returns>
-		public SqlString Trim()
-		{
-			SqlStringBuilder builder = new SqlStringBuilder(Compact());
+            return -1;
+        }
 
-			// there is nothing in the builder to Trim 
-			if (builder.Count == 0)
-			{
-				return builder.ToSqlString();
-			}
+        public SqlString Insert(int index, string text)
+        {
+            if (string.IsNullOrEmpty(text)) return this;
+            return new SqlString(new object[] { Substring(0, index), text, Substring(index, _length - index) });
+        }
 
-			string begin = builder[0] as string;
-			int endIndex = builder.Count - 1;
-			string end = builder[endIndex] as string;
+        public SqlString Insert(int index, SqlString sql)
+        {
+            if (sql == null || sql._length == 0) return this;
+            return new SqlString(new object[] { Substring(0, index), sql, Substring(index, _length - index) });
+        }
+        
+        public int LastIndexOfCaseInsensitive(string text)
+        {
+            return LastIndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-			if (endIndex == 0 && begin != null)
-			{
-				builder[0] = begin.Trim();
-			}
-			else
-			{
-				if (begin != null)
-				{
-					builder[0] = begin.TrimStart();
-				}
+        private int LastIndexOf(string value, int startIndex, int length, StringComparison stringComparison)
+        {
+            if (value == null) throw new ArgumentNullException("value");
 
-				if (end != null)
-				{
-					builder[builder.Count - 1] = end.TrimEnd();
-				}
-			}
+            var sqlSearchEndIndex = _sqlStartIndex + Math.Min(_length, startIndex + length);
+            var maxSearchLength = sqlSearchEndIndex - _sqlStartIndex - startIndex;
+            if (maxSearchLength > value.Length)
+            {
+                var partIndex = GetPartIndexForSqlIndex(sqlSearchEndIndex - 1);
+                if (partIndex >= 0)
+                {
+                    while (maxSearchLength > 0 && partIndex >= _firstPartIndex)
+                    {
+                        var part = _parts[partIndex];
+                        var partEndOffset = sqlSearchEndIndex - part.SqlIndex;
+                        var partLength = Math.Min(maxSearchLength, partEndOffset);
+                        var partOffset = part.Content.LastIndexOf(value, partEndOffset - 1, partLength, stringComparison);
+                        if (partOffset >= 0) return part.SqlIndex + partOffset - _sqlStartIndex;
 
-			return builder.ToSqlString();
-		}
+                        sqlSearchEndIndex -= partLength;
+                        maxSearchLength -= partLength;
+                        partIndex--;
+                    }
+                }
+            }
 
-		public static SqlString operator +(SqlString lhs, SqlString rhs)
-		{
-			return lhs.Append(rhs);
-		}
+            return -1;
+        }
 
-		#region System.Object Members
+        /// <summary>
+        /// Replaces all occurrences of a specified <see cref="String"/> in this instance, 
+        /// with another specified <see cref="String"/> .
+        /// </summary>
+        /// <param name="oldValue">A String to be replaced.</param>
+        /// <param name="newValue">A String to replace all occurrences of oldValue. </param>
+        /// <returns>
+        /// A new SqlString with oldValue replaced by the newValue.  The new SqlString is 
+        /// in the compacted form.
+        /// </returns>
+        public SqlString Replace(string oldValue, string newValue)
+        {
+            return new SqlString(ReplaceParts(oldValue, newValue));
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+        private IEnumerable<object> ReplaceParts(string oldValue, string newValue)
+        {
+            foreach (var part in this)
+            {
+                var content = part as string;
+                yield return content != null
+                    ? content.Replace(oldValue, newValue)
+                    : part;
+            }
+        }
+
+        public SqlString[] Split(string splitter)
+        {
+            return SplitParts(splitter).ToArray();
+        }
+
+        private IEnumerable<SqlString> SplitParts(string splitter)
+        {
+            var startIndex = 0;
+            while (startIndex < _length)
+            {
+                var splitterIndex = this.IndexOf(splitter, startIndex, _length - startIndex, StringComparison.InvariantCultureIgnoreCase);
+                if (splitterIndex < 0) break;
+
+                yield return new SqlString(this, startIndex, splitterIndex - startIndex);
+                startIndex = splitterIndex + splitter.Length;
+            }
+
+            if (startIndex < _length)
+            {
+                yield return new SqlString(this, startIndex, _length - startIndex);
+            }
+        }
+        
+        /// <summary>
+        /// Determines whether the beginning of this SqlString matches the specified System.String,
+        /// using case-insensitive comparison.
+        /// </summary>
+        /// <param name="value">The System.String to seek</param>
+        /// <returns>true if the SqlString starts with the value.</returns>
+        public bool StartsWithCaseInsensitive(string value)
+        {
+            return value != null
+                && value.Length <= _length
+                && IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
+        
+        /// <summary>
+        /// Retrieves a substring from this instance. The substring starts at a specified character position. 
+        /// </summary>
+        /// <param name="startIndex">The starting character position of a substring in this instance.</param>
+        /// <returns>
+        /// A new SqlString to the substring that begins at startIndex in this instance. 
+        /// </returns>
+        /// <remarks>
+        /// If the startIndex is greater than the length of the SqlString then <see cref="SqlString.Empty" /> is returned.
+        /// </remarks>
+        public SqlString Substring(int startIndex)
+        {
+            var length = _length - startIndex;
+            return length > 0
+                ? new SqlString(this, _sqlStartIndex + startIndex, length)
+                : Empty;
+        }
+
+        public SqlString Substring(int startIndex, int length)
+        {
+            length = Math.Min(_length - startIndex, length);
+            return length > 0
+                ? new SqlString(this, _sqlStartIndex + startIndex, length)
+                : Empty;
+        }
+
+        /// <summary>
+        /// Returns substring of this SqlString starting with the specified
+        /// <paramref name="text" />. If the text is not found, returns an
+        /// empty, not-null SqlString.
+        /// </summary>
+        /// <remarks>
+        /// The method performs case-insensitive comparison, so the <paramref name="text" />
+        /// passed should be in lower case.
+        /// </remarks>
+        public SqlString SubstringStartingWithLast(string text)
+        {
+            int lastIndex = LastIndexOfCaseInsensitive(text);
+            return lastIndex >= 0 ? Substring(lastIndex) : Empty;
+        }
+
+        /// <summary>
+        /// Removes all occurrences of white space characters from the beginning and end of this instance.
+        /// </summary>
+        /// <returns>
+        /// A new SqlString equivalent to this instance after white space characters 
+        /// are removed from the beginning and end.
+        /// </returns>
+        public SqlString Trim()
+        {
+            if (_firstPartIndex < 0) return this;
+
+            var firstPart = _parts[_firstPartIndex];
+            var firstPartOffset = _sqlStartIndex - firstPart.SqlIndex;
+            var firstPartLength = Math.Min(firstPart.Length - firstPartOffset, _length);
+            while (firstPartLength > 0 && char.IsWhiteSpace(firstPart.Content[firstPartOffset]))
+            {
+                firstPartOffset++;
+                firstPartLength--;
+            }
+
+            var lastPart = _parts[_lastPartIndex];
+            var lastPartOffset = _sqlStartIndex + _length - 1 - lastPart.SqlIndex;
+            var lastPartLength = Math.Min(lastPartOffset + 1, _length);
+            while (lastPartLength > 0 && char.IsWhiteSpace(lastPart.Content[lastPartOffset]))
+            {
+                lastPartOffset--;
+                lastPartLength--;
+            }
+
+            var sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
+            var length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
+            return length > 0
+                ? new SqlString(this, sqlStartIndex, length)
+                : Empty;
+        }
+
+        public void Visit(ISqlStringVisitor visitor)
+        {
+            foreach (object part in this)
+            {
+                var partString = part as string;
+                if (partString != null)
+                {
+                    visitor.String(partString);
+                    continue;
+                }
+
+                var partSqlString = part as SqlString;
+                if (partSqlString != null)
+                {
+                    visitor.String(partSqlString);
+                    continue;
+                }
+
+                var partParameter = part as Parameter;
+                if (partParameter != null)
+                {
+                    visitor.Parameter(partParameter);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private int GetPartIndexForSqlIndex(int sqlIndex)
+        {
+            var min = _firstPartIndex;
+            var max = _lastPartIndex;
+            do
+            {
+                var i = (min + max + 1) / 2;
+                if (sqlIndex < _parts[i].SqlIndex)
+                {
+                    max = i - 1;
+                }
+                else
+                {
+                    min = i;
+                }
+            } while (min < max);
+
+            var part = _parts[min];
+            return sqlIndex >= part.SqlIndex && sqlIndex < part.SqlIndex + part.Length ? min : -1;
+        }
+
+        internal static int LengthOfPart(object part)
+        {
+            var partString = part as string;
+            return partString == null ? 1 : partString.Length;
+        }
+
+        #endregion
+
+        #region ICollection Members
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            foreach (var part in this)
+            {
+                array.SetValue(part, index++);
+            }
+        }
+
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { return null; }
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable<object> Members
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            if (_firstPartIndex < 0) yield break;
+
+            // Yield (substring of) first part
+            var partIndex = _firstPartIndex;
+            var part = _parts[partIndex++];
+            if (part.IsParameter)
+            {
+                yield return _parameters[part.SqlIndex];
+            }
+            else
+            {
+                var firstPartOffset = _sqlStartIndex - part.SqlIndex;
+                var firstPartLength = Math.Min(part.Length - firstPartOffset, _length);
+                yield return part.Content.Substring(firstPartOffset, firstPartLength);
+            }
+
+            if (_firstPartIndex == _lastPartIndex) yield break;
+
+            // Yield middle parts
+            while (partIndex < _lastPartIndex)
+            {
+                part = _parts[partIndex++];
+                yield return part.IsParameter
+                    ? (object)this._parameters[part.SqlIndex]
+                    : part.Content;
+            }
+
+            // Yield (substring of) last part
+            part = _parts[partIndex];
+            if (part.IsParameter)
+            {
+                yield return _parameters[part.SqlIndex];
+            }
+            else
+            {
+                var lastPartLength = _sqlStartIndex + _length - part.SqlIndex;
+                yield return part.Content.Substring(0, lastPartLength);
+            }
+        }
+
+        #endregion
+
+        #region System.Object Members
+
 		public override bool Equals(object obj)
 		{
-			SqlString rhs;
+            var other = obj as SqlString;
+            if (other == null) return false;
+            if (other == this) return true;
 
-			// Step1: Perform an equals test
-			if (obj == this)
-			{
-				return true;
-			}
+            if (_length != other._length) return false;
+            if (_lastPartIndex - _firstPartIndex != other._lastPartIndex - other._firstPartIndex) return false;
+            if (_parameters.Count != other._parameters.Count) return false;
+            
+            using (var partEnum = this.GetEnumerator())
+            using (var otherPartEnum = other.GetEnumerator())
+            {
+                while (partEnum.MoveNext())
+                {
+                    if (!otherPartEnum.MoveNext()) return false;
+                    if (!Equals(partEnum.Current, otherPartEnum.Current)) return false;
+                }
+                if (otherPartEnum.MoveNext()) return false;
+            }
 
-			// Step	2: Instance of check
-			rhs = obj as SqlString;
-			if (rhs == null)
-			{
-				return false;
-			}
-
-			//Step 3: Check each important field
-
-			// if they don't contain the same number of parts then we
-			// can exit early because they are different
-			if (sqlParts.Length != rhs.sqlParts.Length)
-			{
-				return false;
-			}
-
-			// they have the same number of parts - so compare each
-			// part for equallity.
-			for (int i = 0; i < sqlParts.Length; i++)
-			{
-				if (!sqlParts[i].Equals(rhs.sqlParts[i]))
-				{
-					return false;
-				}
-			}
-
-			// nothing has been found that is different - so they are equal.
 			return true;
 		}
 
-		/// <summary></summary>
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
-
 			unchecked
 			{
-				for (int i = 0; i < sqlParts.Length; i++)
+				for (int i = 0; i < _parts.Count; i++)
 				{
-					hashCode += sqlParts[i].GetHashCode();
+					hashCode += _parts[i].GetHashCode();
 				}
 			}
-
 			return hashCode;
 		}
 
@@ -555,286 +787,67 @@ namespace NHibernate.SqlCommand
 		/// <returns>A provider-neutral version of the CommandText</returns>
 		public override string ToString()
 		{
-			StringBuilder builder = new StringBuilder(sqlParts.Length * 15);
-
-			for (int i = 0; i < sqlParts.Length; i++)
+		    var sb = new StringBuilder(_length);
+			foreach (var part in this)
 			{
-				builder.Append(sqlParts[i].ToString());
+				sb.Append(part.ToString());
 			}
-
-			return builder.ToString();
+			return sb.ToString();
 		}
 
 		#endregion
 
-		private SqlString Clone()
-		{
-			object[] clonedParts = new object[sqlParts.Length];
-			Array.Copy(sqlParts, clonedParts, sqlParts.Length);
-			return new SqlString(clonedParts);
-		}
-
-		/// <summary>
-		/// Make a copy of the SqlString, with new parameter references (Placeholders)
-		/// </summary>
-		public SqlString Copy()
-		{
-			SqlString clone = Clone();
-
-			for (int i=0; i<clone.sqlParts.Length; i++)
-			{
-				var parameter = clone.sqlParts[i] as Parameter;
-				if (parameter != null)
-				{
-					var originalParameter = parameter;
-					var copyParameter = originalParameter.Clone();
-
-					if (originalParameter.ParameterPosition < 0)
-					{
-						// placeholder for sub-query parameter
-						copyParameter.ParameterPosition = originalParameter.ParameterPosition;
-					}
-
-					clone.sqlParts[i] = copyParameter;
-				}
-			}
-
-			return clone;
-		}
-
-		/// <summary>
-		/// Returns substring of this SqlString starting with the specified
-		/// <paramref name="text" />. If the text is not found, returns an
-		/// empty, not-null SqlString.
-		/// </summary>
-		/// <remarks>
-		/// The method performs case-insensitive comparison, so the <paramref name="text" />
-		/// passed should be in lower case.
-		/// </remarks>
-		public SqlString SubstringStartingWithLast(string text)
-		{
-			int lastIndex = LastIndexOfCaseInsensitive(text);
-			return lastIndex >= 0 ? Substring(lastIndex) : Empty;
-		}
-
-        public SqlString Insert(int index, string text)
-        {
-            return Insert(index, new SqlString(text));
-        }
-
-        public SqlString Insert(int index, SqlString sqlString)
-        {
-			if (index < 0)
-			{
-				throw new ArgumentException("index should be greater than or equal to 0", "index");
-			}
-
-			SqlStringBuilder result = new SqlStringBuilder();
-
-			int offset = 0;
-			bool inserted = false;
-			foreach (object part in sqlParts)
-			{
-				if (inserted)
-				{
-					result.AddObject(part);
-					continue;
-				}
-
-				int nextOffset = offset + LengthOfPart(part);
-				if (nextOffset < index)
-				{
-					result.AddObject(part);
-					offset = nextOffset;
-				}
-				else if (nextOffset == index)
-				{
-					result.AddObject(part);
-                    result.Add(sqlString);
-					inserted = true;
-				}
-				else if (offset == index)
-				{
-                    result.Add(sqlString);
-					result.AddObject(part);
-					inserted = true;
-				}
-				else if (index > offset && index < nextOffset)
-				{
-					string partString = (string) part;
-				    result.Add(partString.Substring(0, index - offset));
-					result.Add(sqlString);
-                    result.Add(partString.Substring(index - offset, partString.Length - (index - offset)));
-                    inserted = true;
-				}
-				else
-				{
-					throw new ArgumentException("index too large", "index");
-				}
-			}
-
-			return result.ToSqlString();
-		}
-
-		public int GetParameterCount()
-		{
-			return GetParameters().Count();
-		}
-
-		public void Visit(ISqlStringVisitor visitor)
-		{
-			foreach (object part in sqlParts)
-			{
-				var partString = part as string;
-				if (partString != null)
-				{
-					visitor.String(partString);
-					continue;
-				}
-
-				var partSqlString = part as SqlString;
-				if (partSqlString != null)
-				{
-					visitor.String(partSqlString);
-					continue;
-				}
-
-				var partParameter = part as Parameter;
-				if(partParameter != null)
-				{
-					visitor.Parameter(partParameter);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Parse SQL in <paramref name="sql" /> and create a SqlString representing it.
-		/// </summary>
-		/// <remarks>
-		/// Parameter marks in single quotes will be correctly skipped, but otherwise the
-		/// lexer is very simple and will not parse double quotes or escape sequences
-		/// correctly, for example.
-		/// </remarks>
-		public static SqlString Parse(string sql)
-		{
-			SqlStringBuilder result = new SqlStringBuilder();
-
-			bool inQuote = false;
-
-			StringBuilder stringPart = new StringBuilder();
-
-			foreach (char ch in sql)
-			{
-				switch (ch)
-				{
-					case '?':
-						if (inQuote)
-						{
-							stringPart.Append(ch);
-						}
-						else
-						{
-							if (stringPart.Length > 0)
-							{
-								result.Add(stringPart.ToString());
-								stringPart.Length = 0;
-							}
-							result.AddParameter();
-						}
-						break;
-
-					case '\'':
-						inQuote = !inQuote;
-						stringPart.Append(ch);
-						break;
-
-					default:
-						stringPart.Append(ch);
-						break;
-				}
-			}
-
-			if (stringPart.Length > 0)
-			{
-				result.Add(stringPart.ToString());
-			}
-
-			return result.ToSqlString();
-		}
-
-		// Exposing the internal parts now because I'm too lazy to write SqlStringTokenizer.
-		// Use is strongly discouraged.
-		public ICollection Parts
-		{
-			get { return sqlParts; }
-		}
-
-		public IEnumerable<Parameter> GetParameters()
-		{
-			return GetSqlParameters(this);
-		}
-
-		private IEnumerable<Parameter> GetSqlParameters(SqlString sqlString)
-		{
-			var parts = sqlString.Parts;
-			foreach (object part in parts)
-			{
-				var parameterPart = part as Parameter;
-				if (parameterPart != null)
-				{
-					yield return parameterPart;
-					continue;
-				}
-
-				var sqlStringPart = part as SqlString;
-				if (sqlStringPart != null)
-				{
-					foreach (var sqlParameter in GetSqlParameters(sqlStringPart))
-					{
-						yield return sqlParameter;
-					}
-				}
-			}
-		}
-
 		public SqlString GetSubselectString()
 		{
-			return new SubselectClauseExtractor(Compact().sqlParts).GetSqlString();
+			return new SubselectClauseExtractor(this).GetSqlString();
 		}
 
-	    public bool EndsWithCaseInsensitive(string value)
-	    {
-            SqlString tempSql = Compact();
-            if (tempSql.Count == 0)
+        [Serializable]
+        private struct SqlPart: IEquatable<SqlPart>
+        {
+            public readonly int SqlIndex;
+            public readonly string Content;
+            public readonly bool IsParameter;
+
+            public SqlPart(int sqlIndex, string content)
             {
-                return false;
+                this.SqlIndex = sqlIndex;
+                this.Content = content;
+                this.IsParameter = false;
             }
 
-            string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
-
-            return lastPart != null && lastPart.EndsWith(value,StringComparison.InvariantCultureIgnoreCase);
-		
-	    }
-
-	    public SqlString[] Split(string splitter)
-	    {
-	        int iterations = 0;
-	        SqlString temp = Compact();
-            List<SqlString> results = new List<SqlString>();
-            int index;
-	        do
+            public SqlPart(int sqlIndex)
             {
-	            index = temp.IndexOfCaseInsensitive(splitter);
-                int locationOfComma = index == -1 ?
-                    temp.Length :
-                    index;
-                if (iterations++ > 100)
-                    Debugger.Break();
+                this.SqlIndex = sqlIndex;
+                this.Content = "?";
+                this.IsParameter = true;
+            }
 
-                results.Add(temp.Substring(0, locationOfComma));
-                temp = temp.Substring(locationOfComma+1);
-	        } while (index != -1);
-	        return results.ToArray();
-	    }
-	}
+            public int Length
+            {
+                get { return this.Content.Length; }
+            }
+
+            public bool Equals(SqlPart other)
+            {
+                return this.IsParameter == other.IsParameter
+                    && this.Content == other.Content;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return (obj is SqlPart && this.Equals((SqlPart)obj));
+            }
+
+            public override int GetHashCode()
+            {
+                return this.Content.GetHashCode();
+            }
+
+            public override string ToString()
+            {
+                return this.Content;
+            }
+        }
+    }
 }
