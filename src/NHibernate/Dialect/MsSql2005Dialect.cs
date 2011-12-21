@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Dialect
 {
-	public class MsSql2005Dialect : MsSql2000Dialect
+    public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
 		{
@@ -38,150 +36,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-            // Ensure minimal number of string parts to optimise string search performance
-		    queryString = queryString.Compact();
-
-            // Early exit if we cannot find a SELECT clause.
-            int selectIndex;
-            if (!TryGetAfterSelectInsertPoint(queryString, out selectIndex)) return null;
-            
-            var result = new SqlStringBuilder();
-
-            if (offset == null)
-			{
-				return result
-					.Add(queryString.Substring(0, selectIndex))
-					.Add(" TOP (")
-					.Add(limit)
-					.Add(")")
-					.Add(queryString.Substring(selectIndex))
-					.ToSqlString();
-			}
-
-			int fromIndex = GetFromIndex(queryString);
-			SqlString select = queryString.Substring(0, fromIndex);
-
-			List<SqlString> columnsOrAliases;
-			Dictionary<SqlString, SqlString> aliasToColumn;
-			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn);
-
-			int orderIndex = queryString.LastIndexOfCaseInsensitive(" order by ");
-			SqlString fromAndWhere;
-			SqlString[] sortExpressions;
-
-			//don't use the order index if it is contained within a larger statement(assuming
-			//a statement with non matching parenthesis is part of a larger block)
-			if (orderIndex > 0 && HasMatchingParens(queryString.Substring(orderIndex).ToString()))
-			{
-				fromAndWhere = queryString.Substring(fromIndex, orderIndex - fromIndex).Trim();
-				SqlString orderBy = queryString.Substring(orderIndex).Trim();
-				sortExpressions = orderBy.Substring(9).Split(",");
-			}
-			else
-			{
-				fromAndWhere = queryString.Substring(fromIndex).Trim();
-				// Use dummy sort to avoid errors
-				sortExpressions = new[] { new SqlString("CURRENT_TIMESTAMP") };
-			}
-
-			result.Add("SELECT ");
-
-			if (limit != null)
-				result.Add("TOP (").Add(limit).Add(") ");
-			else
-				// ORDER BY can only be used in subqueries if TOP is also specified.
-				result.Add("TOP (" + int.MaxValue + ") ");
-
-			result
-				.Add(StringHelper.Join(", ", columnsOrAliases))
-				.Add(" FROM (")
-				.Add(select)
-				.Add(", ROW_NUMBER() OVER(ORDER BY ");
-
-			AppendSortExpressions(aliasToColumn, sortExpressions, result);
-
-			result
-				.Add(") as __hibernate_sort_row ")
-				.Add(fromAndWhere)
-				.Add(") as query WHERE query.__hibernate_sort_row > ")
-				.Add(offset)
-				.Add(" ORDER BY query.__hibernate_sort_row");
-
-			return result.ToSqlString();
-		}
-
-		private static SqlString RemoveSortOrderDirection(SqlString sortExpression)
-		{
-			SqlString trimmedExpression = sortExpression.Trim();
-			if (trimmedExpression.EndsWithCaseInsensitive("asc"))
-				return trimmedExpression.Substring(0, trimmedExpression.Length - 3).Trim();
-			if (trimmedExpression.EndsWithCaseInsensitive("desc"))
-				return trimmedExpression.Substring(0, trimmedExpression.Length - 4).Trim();
-			return trimmedExpression.Trim();
-		}
-
-		private static void AppendSortExpressions(Dictionary<SqlString, SqlString> aliasToColumn, SqlString[] sortExpressions, SqlStringBuilder result)
-		{
-			for (int i = 0; i < sortExpressions.Length; i++)
-			{
-				if (i > 0)
-				{
-					result.Add(", ");
-				}
-
-				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if (aliasToColumn.ContainsKey(sortExpression))
-				{
-					result.Add(aliasToColumn[sortExpression]);
-				}
-				else
-				{
-					result.Add(sortExpression);
-				}
-				if (sortExpressions[i].Trim().EndsWithCaseInsensitive("desc"))
-				{
-					result.Add(" DESC");
-				}
-			}
-		}
-
-		private static int GetFromIndex(SqlString querySqlString)
-		{
-			string subselect = querySqlString.GetSubselectString().ToString();
-			int fromIndex = querySqlString.IndexOfCaseInsensitive(subselect);
-			if (fromIndex == -1)
-			{
-				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
-			}
-			return fromIndex;
-		}
-
-		/// <summary>
-		/// Indicates whether the string fragment contains matching parenthesis
-		/// </summary>
-		/// <param name="statement"> the statement to evaluate</param>
-		/// <returns>true if the statment contains no parenthesis or an equal number of
-		///  opening and closing parenthesis;otherwise false </returns>
-		private static bool HasMatchingParens(IEnumerable<char> statement)
-		{
-			//unmatched paren count
-			int unmatchedParen = 0;
-
-			//increment the counts based in the opening and closing parens in the statement
-			foreach (char item in statement)
-			{
-				switch (item)
-				{
-					case '(':
-						unmatchedParen++;
-						break;
-					case ')':
-						unmatchedParen--;
-						break;
-				}
-			}
-
-			return unmatchedParen == 0;
+		    return new MsSql2005SelectQuery(queryString).GetLimitString(offset, limit);
 		}
 
 		/// <summary>
@@ -233,5 +88,107 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-	}
+
+        public class MsSql2005SelectQuery : SelectQuery
+        {
+            public MsSql2005SelectQuery(SqlString sql)
+                : base(sql)
+            { }
+
+            public override SqlString GetLimitString(SqlString offset, SqlString limit)
+            {
+                if (limit == null && offset == null) return this.Sql;
+                if (limit != null && offset == null) return GetLimitOnlyString(limit);
+
+                var result = new SqlStringBuilder();
+                BuildSelectClauseForPagingQuery(limit, result);
+                BuildFromClauseForPagingQuery(result);
+                BuildWhereAndOrderClausesForPagingQuery(offset, result);
+                return result.ToSqlString();
+            }
+
+            private SqlString GetLimitOnlyString(SqlString limit)
+            {
+                var columnDefinitionsBeginIndex = this.ColumnsBeginIndex;
+                if (columnDefinitionsBeginIndex < 0) return null;
+
+                var result = new SqlStringBuilder();
+
+                return result
+                    .Add(this.Sql.Substring(0, columnDefinitionsBeginIndex))
+                    .Add(" TOP (")
+                    .Add(limit)
+                    .Add(")")
+                    .Add(this.Sql.Substring(columnDefinitionsBeginIndex))
+                    .ToSqlString();
+            }
+
+            private void BuildSelectClauseForPagingQuery(SqlString limit, SqlStringBuilder result)
+            {
+                result.Add(this.Sql.Substring(0, this.SelectIndex));
+                result.Add("SELECT");
+
+                if (limit != null)
+                {
+                    result.Add(" TOP (").Add(limit).Add(") ");
+                }
+                else
+                {
+                    // ORDER BY can only be used in subqueries if TOP is also specified.
+                    result.Add(" TOP (" + int.MaxValue + ") ");
+                }
+
+                var sb = new StringBuilder();
+                foreach (var column in this.ColumnDefinitions)
+                {
+                    if (sb.Length > 0) sb.Append(", ");
+                    sb.Append(column.Alias);
+                }
+
+                result.Add(sb.ToString());
+            }
+
+            private void BuildFromClauseForPagingQuery(SqlStringBuilder result)
+            {
+                var selectClause = this.Sql.Substring(this.SelectIndex, this.FromIndex - this.SelectIndex);
+                var subselectClause = this.OrderByIndex >= 0
+                    ? this.Sql.Substring(this.FromIndex, this.OrderByIndex - this.FromIndex)
+                    : this.Sql.Substring(this.FromIndex);
+
+                result.Add(" FROM (")
+                    .Add(selectClause.Trim())
+                    .Add(", ROW_NUMBER() OVER(ORDER BY ");
+
+                int orderIndex = 0;
+                foreach (var order in this.OrderDefinitions)
+                {
+                    if (orderIndex++ > 0) result.Add(", ");
+                    if (order.Column.Name != null)
+                    {
+                        result.Add(order.Column.Name);
+                    }
+                    else
+                    {
+                        result.Add(this.Sql.Substring(order.Column.SqlIndex, order.Column.SqlLength).Trim());
+                    }
+                    if (order.IsDescending) result.Add(" DESC");
+                }
+                if (orderIndex == 0)
+                {
+                    result.Add("CURRENT_TIMESTAMP");
+                }
+                
+                result.Add(") as __hibernate_sort_row ")
+                    .Add(subselectClause.Trim())
+                    .Add(") as query");
+            }
+
+            private static void BuildWhereAndOrderClausesForPagingQuery(SqlString offset, SqlStringBuilder result)
+            {
+                result.Add(" WHERE query.__hibernate_sort_row > ")
+                    .Add(offset)
+                    .Add(" ORDER BY query.__hibernate_sort_row");
+            }
+        }
+    }
 }

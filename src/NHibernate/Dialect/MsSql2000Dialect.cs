@@ -15,7 +15,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
-	/// <summary>
+    /// <summary>
 	/// An SQL dialect compatible with Microsoft SQL Server 2000.
 	/// </summary>
 	/// <remarks>
@@ -334,22 +334,11 @@ namespace NHibernate.Dialect
 		}
 
         public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
-		{
-			/*
-			 * "SELECT TOP limit rest-of-sql-statement"
-			 */
+        {
+            return new MsSql2000SelectQuery(querySqlString).GetLimitString(offset, limit);
+        }
 
-            int selectIndex;
-            if (!TryGetAfterSelectInsertPoint(querySqlString, out selectIndex)) return null;
-
-            SqlStringBuilder topFragment = new SqlStringBuilder();
-		    topFragment.Add(" top ");
-		    topFragment.Add(limit);
-
-			return querySqlString.Insert(selectIndex, topFragment.ToSqlString());
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Does the <c>LIMIT</c> clause take a "maximum" row number
 		/// instead of a total number of returned rows?
 		/// </summary>
@@ -395,149 +384,6 @@ namespace NHibernate.Dialect
 
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 		}
-
-        /// <summary>
-        /// Attempts to determines the index of first SELECT clause in query. 
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected static bool TryGetAfterSelectInsertPoint(SqlString sql, out int result)
-		{
-		    char prevChar = '\0';
-            char commentType = '\0';
-		    bool inComment = false;
-            char quotationType = '\0';
-            bool inQuotation = false;
-            int nestLevel = 0;
-
-            int partStartIndex = 0;
-            foreach (var part in sql.Compact().Parts)
-            {
-                int offset = 0;
-                int fragmentOffset = 0;
-                int selectOffset;
-
-                var stringPart = part as string;
-                if (stringPart != null)
-                {
-                    foreach (var ch in stringPart)
-                    {
-                        if (inQuotation)
-                        {
-                            inQuotation = !TryCompleteQuotation(ch, quotationType);
-                        }
-                        else if (inComment)
-                        {
-                            inComment = !TryCompleteComment(ch, commentType, prevChar);
-                        }
-                        else
-                        {
-                            switch (ch)
-                            {
-                                case '(':
-                                    if (nestLevel == 0 && TryGetAfterSelectOffset(stringPart, fragmentOffset, offset - fragmentOffset, out selectOffset))
-                                    {
-                                        result = partStartIndex + selectOffset;
-                                        return true;
-                                    }
-                                    nestLevel++;
-                                    break;
-                                case ')':
-                                    nestLevel--;
-                                    fragmentOffset = offset + 1;
-                                    break;
-                                case '\'':
-                                case '\"':
-                                    inQuotation = true;
-                                    quotationType = ch;
-                                    break;
-                                case '*':
-                                    if (prevChar == '/')
-                                    {
-                                        inComment = true;
-                                        commentType = '*';
-                                    }
-                                    break;
-                                case '-':
-                                    if (prevChar == '-')
-                                    {
-                                        inComment = true;
-                                        commentType = '-';
-                                    }
-                                    break;
-                            }
-                        }
-                        
-                        prevChar = ch;
-                        offset++;
-                    }
-
-                    if (nestLevel == 0 && TryGetAfterSelectOffset(stringPart, fragmentOffset, stringPart.Length - fragmentOffset, out selectOffset))
-                    {
-                        result = partStartIndex + selectOffset;
-                        return true;
-                    }
-
-                    partStartIndex += SqlString.LengthOfPart(part);
-                }
-            }
-
-		    result = -1;
-		    return false;
-		}
-
-        private static bool TryCompleteQuotation(char ch, char quotationType)
-        {
-            switch (ch)
-            {
-                case '\'':
-                case '"':
-                    return quotationType == ch;
-            }
-
-            return false;
-        }
-        
-        private static bool TryCompleteComment(char ch, char commentType, char prevChar)
-	    {
-	        switch (ch)
-	        {
-	            case '/':
-	                if (commentType == '*' && prevChar == '*') return true;
-	                break;
-	            case '\n':
-	            case '\r':
-	                if (commentType == '-') return true;
-	                break;
-	        }
-	        
-            return false;
-	    }
-
-        private static bool TryGetAfterSelectOffset(string part, int offset, int length, out int result)
-        {
-            if (length <= 0 || offset >= part.Length)
-            {
-                result = -1;
-                return false;
-            }
-
-            result = part.IndexOf("select distinct", offset, length, StringComparison.InvariantCultureIgnoreCase);
-            if (result >= 0)
-            {
-                result += 15;
-            }
-            else
-            {
-                result = part.IndexOf("select", offset, length, StringComparison.InvariantCultureIgnoreCase);
-                if (result >= 0) result += 6;
-            }
-
-            return result >= 0 
-                && result < part.Length 
-                && char.IsWhiteSpace(part[result]);
-        }
 
 		private bool NeedsLockHint(LockMode lockMode)
 		{
@@ -685,5 +531,31 @@ namespace NHibernate.Dialect
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
 		}
-	}
+
+        private class MsSql2000SelectQuery : SelectQuery
+        {
+            public MsSql2000SelectQuery(SqlString sql)
+                : base(sql)
+            { }
+
+            public override SqlString GetLimitString(SqlString offset, SqlString limit)
+            {
+                if (limit == null && offset == null) return this.Sql;
+                if (limit != null && offset == null) return GetLimitOnlyString(limit);
+                return null;
+            }
+
+            private SqlString GetLimitOnlyString(SqlString limit)
+            {
+                var columnDefinitionsBeginIndex = this.ColumnsBeginIndex;
+                if (columnDefinitionsBeginIndex < 0) return null;
+
+                var topFragment = new SqlStringBuilder();
+                topFragment.Add(" top ");
+                topFragment.Add(limit);
+
+                return this.Sql.Insert(columnDefinitionsBeginIndex, topFragment.ToSqlString());
+            }
+        }
+    }
 }

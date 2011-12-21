@@ -75,7 +75,7 @@ namespace NHibernate.Test.DialectTest
 			var d = new MsSql2005Dialect();
 
 			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), null, new SqlString("10"));
-			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10)  c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
+			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10) c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
 		}
 
 		[Test]
@@ -229,9 +229,9 @@ namespace NHibernate.Test.DialectTest
             const string SQL = @"
                 WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
                 (   -- Anchor member definition
-                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, 0 AS Level
-                    FROM    MyEmployees e
-                    WHERE   e.ManagerID IS NULL
+                    SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+                    FROM    MyEmployees
+                    WHERE   ManagerID IS NULL
                     
                     UNION ALL
                     
@@ -255,8 +255,8 @@ namespace NHibernate.Test.DialectTest
                     
                     -- Recursive member definition
                     SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
-                    FROM    MyEmployees e
-                    INNER JOIN DirectReports d ON e.ManagerID = d.EmployeeID
+                    FROM    MyEmployees AS e
+                    INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
                 )
                 -- Statement that executes the CTE
                 SELECT TOP (2)  ManagerID, EmployeeID, Title, Level
