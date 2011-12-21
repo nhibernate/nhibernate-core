@@ -91,7 +91,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public AbstractCriterion IsInG<T>(ICollection<T> values)
+		public AbstractCriterion IsInG<T>(IEnumerable<T> values)
 		{
 			return Process(projection.Create<AbstractCriterion>(s => Restrictions.InG(s, values), p => Restrictions.InG(p, values)));
 		}
