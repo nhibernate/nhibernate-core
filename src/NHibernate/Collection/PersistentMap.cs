@@ -261,7 +261,7 @@ namespace NHibernate.Collection
 			else
 			{
 				Initialize(true);
-				if (!(map.Count == 0))
+				if (map.Count != 0)
 				{
 					Dirty();
 					map.Clear();
@@ -277,18 +277,9 @@ namespace NHibernate.Collection
 
 		public void Remove(object key)
 		{
-			if (PutQueueEnabled)
+			object old = PutQueueEnabled ? ReadElementByIndex(key) : Unknown;
+			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
-				object old = ReadElementByIndex(key);
-				if (old != NotFound)
-				{
-					QueueOperation(new RemoveDelayedOperation(this, key, old));
-				}
-				return;
-			}
-			else
-			{
-				// TODO : safe to interpret "map.remove(key) == null" as non-dirty?
 				Initialize(true);
 				// NH: Different implementation: we use the count to know if the value was removed (better performance)
 				int contained = map.Count;
@@ -297,6 +288,10 @@ namespace NHibernate.Collection
 				{
 					Dirty();
 				}
+			}
+			else
+			{
+				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
 			}
 		}
 
