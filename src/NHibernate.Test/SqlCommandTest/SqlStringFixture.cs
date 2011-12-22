@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 using SharpTestsEx;
 
 namespace NHibernate.Test.SqlCommandTest
 {
-	/// <summary>
+    using System;
+
+    /// <summary>
 	/// Summary description for SqlStringFixture.
 	/// </summary>
 	[TestFixture]
@@ -384,5 +384,45 @@ namespace NHibernate.Test.SqlCommandTest
 			// more simple version of the test
 			Parameter.Placeholder.Should().Not.Be.SameInstanceAs(Parameter.Placeholder);
 		}
+
+        [Test]
+        public void ToStringCanReturnSubstring()
+        {
+            VerifyToStringCanReturnsSubstring("");
+            VerifyToStringCanReturnsSubstring("a");
+            VerifyToStringCanReturnsSubstring("ab");
+            VerifyToStringCanReturnsSubstring("abc");
+            VerifyToStringCanReturnsSubstring("?");
+            VerifyToStringCanReturnsSubstring("??");
+            VerifyToStringCanReturnsSubstring("???");
+            VerifyToStringCanReturnsSubstring("? ?");
+            VerifyToStringCanReturnsSubstring("? and ??? and ??");
+            VerifyToStringCanReturnsSubstring("where x = ? and y = ???;");
+        }
+
+        private static void VerifyToStringCanReturnsSubstring(string sql)
+        {
+            SqlString sqlString = SqlString.Parse(sql);
+            for (int startIndex = 0; startIndex < sql.Length; startIndex++)
+            {
+                for (int length = 0; length < sql.Length - startIndex; length++)
+                {
+                    VerifyToStringCanReturnsSubstring(sqlString, startIndex, length, sql.Substring(startIndex, length));
+                }
+                VerifyToStringCanReturnsSubstring(sqlString, startIndex, sql.Length + 1, sql.Substring(startIndex));
+            }
+
+            VerifyToStringCanReturnsSubstring(sqlString, sql.Length, 1, string.Empty);
+            VerifyToStringCanReturnsSubstring(sqlString, -1, 1, string.Empty);
+        }
+
+        private static void VerifyToStringCanReturnsSubstring(SqlString sql, int startIndex, int length, string expectedSql)
+        {
+            const string MESSAGE = "\"{0}\".ToString({1}, {2})";
+
+            string result = null;
+            Assert.DoesNotThrow(() => result = sql.ToString(startIndex, length), MESSAGE, sql, startIndex, length);
+            Assert.That(result, Is.EqualTo(expectedSql), MESSAGE, sql, startIndex, length);
+        }
 	}
 }

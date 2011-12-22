@@ -84,8 +84,7 @@ namespace NHibernate.SqlCommand
             _firstPartIndex = other.GetPartIndexForSqlIndex(sqlStartIndex);
             _lastPartIndex = other.GetPartIndexForSqlIndex(_sqlStartIndex + _length - 1);
 
-            var parameterCount = other._parameters.Count;
-            if (parameterCount > 0)
+            if (_firstPartIndex != _lastPartIndex || _parts[_firstPartIndex].IsParameter)
             {
                 _parameters = new SortedList<int, Parameter>(other._parameters.Count);
                 using (var otherParameterEnum = other._parameters.GetEnumerator())
@@ -386,7 +385,7 @@ namespace NHibernate.SqlCommand
             return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private int IndexOf(string value, int startIndex, int length, StringComparison stringComparison)
+        public int IndexOf(string value, int startIndex, int length, StringComparison stringComparison)
         {
             if (value == null) throw new ArgumentNullException("value");
 
@@ -632,9 +631,11 @@ namespace NHibernate.SqlCommand
 
         private int GetPartIndexForSqlIndex(int sqlIndex)
         {
+            if (sqlIndex < _sqlStartIndex || sqlIndex >= _sqlStartIndex + _length) return -1;
+
             var min = _firstPartIndex;
             var max = _lastPartIndex;
-            do
+            while (min < max)
             {
                 var i = (min + max + 1) / 2;
                 if (sqlIndex < _parts[i].SqlIndex)
@@ -645,7 +646,7 @@ namespace NHibernate.SqlCommand
                 {
                     min = i;
                 }
-            } while (min < max);
+            }
 
             var part = _parts[min];
             return sqlIndex >= part.SqlIndex && sqlIndex < part.SqlIndex + part.Length ? min : -1;
@@ -787,13 +788,51 @@ namespace NHibernate.SqlCommand
 		/// <returns>A provider-neutral version of the CommandText</returns>
 		public override string ToString()
 		{
-		    var sb = new StringBuilder(_length);
-			foreach (var part in this)
-			{
-				sb.Append(part.ToString());
-			}
-			return sb.ToString();
+			return ToString(0, _length);
 		}
+
+        public string ToString(int startIndex, int length)
+        {
+            var sqlStartIndex = _sqlStartIndex + startIndex;
+            var nextPartIndex = GetPartIndexForSqlIndex(sqlStartIndex);
+            if (nextPartIndex < 0) return string.Empty;
+
+            var maxSearchLength = Math.Min(_sqlStartIndex + _length - sqlStartIndex, length);
+
+            var part = _parts[nextPartIndex++];
+            var firstPartOffset = sqlStartIndex - part.SqlIndex;
+            var firstPartLength = Math.Min(part.Length - firstPartOffset, maxSearchLength);
+
+            // Shortcut when result can be taken from single part 
+            if (firstPartLength == maxSearchLength)
+            {
+                return part.Length == firstPartLength
+                    ? part.Content
+                    : part.Content.Substring(firstPartOffset, firstPartLength);
+            }
+
+            // Add (substring of) first part
+            var result = new StringBuilder(length);
+            result.Append(part.Content, firstPartOffset, firstPartLength);
+            maxSearchLength -= firstPartLength;
+
+            // Add middle parts
+            part = _parts[nextPartIndex++];
+            while (nextPartIndex <= _lastPartIndex && part.Length <= maxSearchLength)
+            {
+                result.Append(part.Content);
+                maxSearchLength -= part.Length;
+                part = _parts[nextPartIndex++];
+            }
+
+            // Add (substring of) last part
+            if (maxSearchLength > 0)
+            {
+                result.Append(part.Content, 0, maxSearchLength);
+            }
+
+            return result.ToString();
+        }
 
 		#endregion
 

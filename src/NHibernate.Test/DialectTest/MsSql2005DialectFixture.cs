@@ -264,6 +264,7 @@ namespace NHibernate.Test.DialectTest
 
             var d = new MsSql2005Dialect();
             var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
+            Assert.That(limitSqlQuery, Is.Not.Null);
             Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
         }
     }
