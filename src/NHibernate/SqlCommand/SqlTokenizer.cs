@@ -11,37 +11,12 @@ namespace NHibernate.SqlCommand
     /// </summary>
     public class SqlTokenizer : IEnumerable<SqlToken>
     {
-        private readonly IEnumerable<SqlPart> _parts;
+        private readonly SqlString _sql;
 
         public SqlTokenizer(SqlString sql)
-            : this(sql, 0)
-        {}
-
-        public SqlTokenizer(SqlString sql, int startIndex)
         {
             if (sql == null) throw new ArgumentNullException("sql");
-            _parts = GetParts(sql, startIndex);
-        }
-
-        private static IEnumerable<SqlPart> GetParts(SqlString sql, int startIndex)
-        {
-            var index = 0;
-            var parts = sql.Compact().Parts;
-            
-            foreach (var part in parts)
-            {
-                var partLength = SqlString.LengthOfPart(part);
-
-                if (startIndex <= index)
-                {
-                    yield return new SqlPart(part, index);
-                }
-                else if (startIndex < index + partLength)
-                {
-                    yield return new SqlPart(part, index).Subpart(startIndex - index);
-                }
-                index += partLength;
-            }
+            _sql = sql;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -51,88 +26,95 @@ namespace NHibernate.SqlCommand
 
         public IEnumerator<SqlToken> GetEnumerator()
         {
-            foreach (var part in _parts)
+            int sqlIndex = 0;
+            foreach (var part in _sql)
             {
-                var parameter = part.Content as Parameter;
+                var parameter = part as Parameter;
                 if (parameter != null)
                 {
-                    yield return SqlToken.Parameter(part);
+                    yield return new SqlToken(SqlTokenType.Parameter, _sql, sqlIndex++, 1);
                     continue;
                 }
 
-                var text = part.Content as string;
+                var text = part as string;
                 if (text != null)
                 {
                     int offset = 0;
                     int maxOffset = text.Length;
-                    int tokenStartIndex = 0;
+                    int tokenOffset = 0;
 
                     while (offset < maxOffset)
                     {
                         var ch = text[offset];
 
                         SqlToken nextToken = null;
-                        int nextTokenStartIndex = -1;
+                        int nextTokenOffset = -1;
 
                         switch (ch)
                         {
                             case '(':
-                                nextTokenStartIndex = offset;
-                                nextToken = SqlToken.BlockBegin(part, offset);
+                                nextTokenOffset = offset;
+                                nextToken = new SqlToken(SqlTokenType.BlockBegin, _sql, sqlIndex + offset, 1);
                                 break;
                             case ')':
-                                nextTokenStartIndex = offset;
-                                nextToken = SqlToken.BlockEnd(part, offset);
+                                nextTokenOffset = offset;
+                                nextToken = new SqlToken(SqlTokenType.BlockEnd, _sql, sqlIndex + offset, 1);
                                 break;
                             case '\'':      // String literals
                             case '\"':      // ANSI quoted identifiers
                             case '[':       // Sql Server quoted indentifiers
-                                nextTokenStartIndex = offset;
-                                nextToken = SqlToken.QuotedText(part, nextTokenStartIndex, ReadQuotedText(text, maxOffset, ref offset));
+                                nextTokenOffset = offset;
+                                nextToken = new SqlToken(SqlTokenType.QuotedText, _sql, 
+                                    sqlIndex + nextTokenOffset, ReadQuotedText(text, maxOffset, ref offset));
                                 break;
                             case ',':
-                                nextTokenStartIndex = offset;
-                                nextToken = SqlToken.ListSeparator(part, offset);
+                                nextTokenOffset = offset;
+                                nextToken = new SqlToken(SqlTokenType.ListSeparator, _sql, sqlIndex + offset, 1);
                                 break;
                             case '*':
                                 if (offset > 0 && text[offset - 1] == '/')
                                 {
-                                    nextTokenStartIndex = offset - 1;
-                                    nextToken = SqlToken.Comment(part, nextTokenStartIndex, ReadMultilineComment(text, maxOffset, ref offset));
+                                    nextTokenOffset = offset - 1;
+                                    nextToken = new SqlToken(SqlTokenType.Comment, _sql, 
+                                        sqlIndex + nextTokenOffset, ReadMultilineComment(text, maxOffset, ref offset));
                                 }
                                 break;
                             case '-':
                                 if (offset > 0 && text[offset - 1] == '-')
                                 {
-                                    nextTokenStartIndex = offset - 1;
-                                    nextToken = SqlToken.Comment(part, nextTokenStartIndex, ReadLineComment(text, maxOffset, ref offset));
+                                    nextTokenOffset = offset - 1;
+                                    nextToken = new SqlToken(SqlTokenType.Comment, _sql, 
+                                        sqlIndex + nextTokenOffset, ReadLineComment(text, maxOffset, ref offset));
                                 }
                                 break;
                             default:
                                 if (char.IsWhiteSpace(ch))
                                 {
-                                    nextTokenStartIndex = offset;
-                                    nextToken = SqlToken.Whitespace(part, nextTokenStartIndex, ReadWhitespace(text, maxOffset, ref offset));
+                                    nextTokenOffset = offset;
+                                    nextToken = new SqlToken(SqlTokenType.Whitespace, _sql, 
+                                        sqlIndex + nextTokenOffset, ReadWhitespace(text, maxOffset, ref offset));
                                 }
                                 break;
                         }
 
-                        if (nextTokenStartIndex > tokenStartIndex)
+                        if (nextTokenOffset > tokenOffset)
                         {
-                            var token = SqlToken.Text(part, tokenStartIndex, nextTokenStartIndex - tokenStartIndex);
-                            yield return token;
-                            tokenStartIndex = nextTokenStartIndex;
+                            yield return new SqlToken(SqlTokenType.Text, _sql, 
+                                sqlIndex + tokenOffset, nextTokenOffset - tokenOffset);
+                            tokenOffset = nextTokenOffset;
                         }
                         if (nextToken != null)
                         {
                             yield return nextToken;
-                            tokenStartIndex += nextToken.SqlLength;
+                            tokenOffset += nextToken.Length;
                         }
 
                         offset++;
                     }
 
-                    if (offset > tokenStartIndex) yield return SqlToken.Text(part, tokenStartIndex, offset - tokenStartIndex);
+                    if (offset > tokenOffset) yield return new SqlToken(SqlTokenType.Text, _sql, 
+                        sqlIndex + tokenOffset, maxOffset - tokenOffset);
+                    sqlIndex += maxOffset;
                 }
             }
         }

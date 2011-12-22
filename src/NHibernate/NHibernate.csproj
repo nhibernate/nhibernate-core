@@ -585,7 +585,6 @@
     <Compile Include="SqlCommand\SqlDeleteBuilder.cs" />
     <Compile Include="SqlCommand\SqlInsertBuilder.cs" />
     <Compile Include="SqlCommand\SqlCommandImpl.cs" />
-    <Compile Include="SqlCommand\SqlPart.cs" />
     <Compile Include="SqlCommand\SqlSelectBuilder.cs" />
     <Compile Include="SqlCommand\SqlSimpleSelectBuilder.cs" />
     <Compile Include="SqlCommand\SqlString.cs" />

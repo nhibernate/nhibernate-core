@@ -1,66 +1,25 @@
-﻿namespace NHibernate.SqlCommand
-{
-    using System;
+﻿using System;
 
+namespace NHibernate.SqlCommand
+{
     /// <summary>
     /// A SQL query token as returned by <see cref="SqlTokenizer"/>
     /// </summary>
     public class SqlToken
     {
         private readonly SqlTokenType _tokenType;
-        private readonly SqlPart _part;
-        private readonly int _offset;
+        private readonly SqlString _sql;
+        private readonly int _sqlIndex;
+        private readonly int _length;
+        private string _value;
 
-        protected SqlToken(SqlTokenType tokenType, SqlPart part, int offset)
+        public SqlToken(SqlTokenType tokenType, SqlString sql, int sqlIndex, int length)
         {
             _tokenType = tokenType;
-            _part = part;
-            _offset = offset;
+            _sql = sql;
+            _sqlIndex = sqlIndex;
+            _length = length;
         }
-
-        #region Static factory methods
-
-        public static SqlToken Whitespace(SqlPart part, int offset, int length)
-        {
-            return new SqlContentToken(SqlTokenType.Whitespace, part, offset, length);
-        }
-
-        public static SqlToken Comment(SqlPart part, int offset, int length)
-        {
-            return new SqlContentToken(SqlTokenType.Comment, part, offset, length);
-        }
-
-        public static SqlToken QuotedText(SqlPart part, int offset, int length)
-        {
-            return new SqlContentToken(SqlTokenType.QuotedText, part, offset, length);
-        }
-
-        public static SqlToken Parameter(SqlPart part)
-        {
-            return new SqlToken(SqlTokenType.Parameter, part, 0);
-        }
-
-        public static SqlToken Text(SqlPart part, int offset, int length)
-        {
-            return new SqlContentToken(SqlTokenType.Text, part, offset, length);
-        }
-
-        public static SqlToken BlockBegin(SqlPart part, int offset)
-        {
-            return new SqlToken(SqlTokenType.BlockBegin, part, offset);
-        }
-
-        public static SqlToken BlockEnd(SqlPart part, int offset)
-        {
-            return new SqlToken(SqlTokenType.BlockEnd, part, offset);
-        }
-
-        public static SqlToken ListSeparator(SqlPart part, int offset)
-        {
-            return new SqlToken(SqlTokenType.ListSeparator, part, offset);
-        }
-
-        #endregion
 
         #region Properties
 
@@ -74,104 +33,35 @@
         /// </summary>
         public int SqlIndex
         {
-            get { return this.Part.SqlIndex + _offset; }
+            get { return _sqlIndex; }
         }
 
         /// <summary>
         /// Number of characters in this token.
         /// </summary>
-        public virtual int SqlLength
+        public int Length
         {
-            get { return 1; }
+            get { return _length; }
         }
 
-        /// <summary>
-        /// The <see cref="SqlPart"/> that contains this token.
-        /// </summary>
-        protected SqlPart Part
+        public string Value
         {
-            get { return _part; }
-        }
-
-        /// <summary>
-        /// The position within <see cref="Part"/> at which this token occurs.
-        /// </summary>
-        protected int Offset
-        {
-            get { return _offset; }
+            get { return _value ?? (_value = _sql.ToString(_sqlIndex, _length)); }
         }
 
         #endregion
 
         #region Instance methods
 
-        public int IndexOf(string value, StringComparison stringComparison)
-        {
-            var offset = _part.OffsetOf(value, _offset, this.SqlLength, stringComparison);
-            return offset >= 0
-                ? _part.SqlIndex + offset
-                : -1;
-        }
-
-        public virtual bool Equals(char value)
-        {
-            return _part[_offset] == value;
-        }
-
         public virtual bool Equals(string value, StringComparison stringComparison)
         {
-            return value != null 
-                && value.Length == 1 
-                && value.Equals(_part.Substring(_offset, 1), stringComparison);
+            return value != null
+                && value.Equals(this.Value, stringComparison);
         }
 
-        public virtual bool StartsWith(string value, StringComparison stringComparison)
+        public override string ToString()
         {
-            return Equals(value, stringComparison);
-        }
-
-        #endregion
-
-        #region Inner classes
-
-        private class SqlContentToken : SqlToken
-        {
-            private readonly int _length;
-
-            public SqlContentToken(SqlTokenType tokenType, SqlPart part, int offset, int length)
-                : base(tokenType, part, offset)
-            {
-                _length = length;
-            }
-
-            public override int SqlLength
-            {
-                get { return _length; }
-            }
-
-            public override string ToString()
-            {
-                return this.Part.Substring(_offset, _length);
-            }
-
-            public override bool Equals(char value)
-            {
-                return _length == 1 && _part[_offset] == value;
-            }
-
-            public override bool Equals(string value, StringComparison stringComparison)
-            {
-                return value != null 
-                    && value.Length == _length 
-                    && _part.OffsetOf(value, _offset, _length, stringComparison) == _offset;
-            }
-
-            public override bool StartsWith(string value, StringComparison stringComparison)
-            {
-                return value != null
-                    && value.Length <= _length
-                    && _part.OffsetOf(value, _offset, value.Length, stringComparison) == _offset;
-            }
+            return this.Value;
         }
 
         #endregion
