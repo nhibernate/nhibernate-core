@@ -895,6 +895,8 @@
     <Compile Include="NHSpecificTest\NH2705\SubItemBase.cs" />
     <Compile Include="NHSpecificTest\NH2705\SubItemDetails.cs" />
     <Compile Include="NHSpecificTest\NH2705\Test.cs" />
+    <Compile Include="NHSpecificTest\NH2722\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2722\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2721\A.cs" />
     <Compile Include="NHSpecificTest\NH2721\B.cs" />
     <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
@@ -2773,6 +2775,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2722\Mappings.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Sequence\HiLoSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Sequence\PooledSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />

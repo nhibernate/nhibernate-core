@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2722">
+	<class name="Entity" table="NHDomainEntity">
+		<id name="Id" column="Id">
+			<generator class="guid.comb"/>
+		</id>
+		<property name="Property" column="Property" type="int" not-null="false">
+		</property>
+	</class>
+</hibernate-mapping>
