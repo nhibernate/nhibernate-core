@@ -15,7 +15,9 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
-    /// <summary>
+	using System.Linq;
+
+	/// <summary>
 	/// An SQL dialect compatible with Microsoft SQL Server 2000.
 	/// </summary>
 	/// <remarks>
@@ -335,8 +337,49 @@ namespace NHibernate.Dialect
 
         public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
         {
-            return new MsSql2000SelectQuery(querySqlString).GetLimitString(offset, limit);
+        	int insertPoint;
+        	return TryFindLimitInsertPoint(querySqlString, out insertPoint)
+        		? querySqlString.Insert(insertPoint, new SqlString(" top ", limit))
+        		: null;
         }
+
+		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
+		{
+			var nestLevel = 0;
+			using (var tokenEnum = sql.Tokenize(SqlTokenType.AllExceptWhitespaceOrComment).GetEnumerator())
+			{
+				while (tokenEnum.MoveNext())
+				{
+					var token = tokenEnum.Current;
+					switch (token.TokenType)
+					{
+						case SqlTokenType.BlockBegin:
+							nestLevel++;
+							break;
+						case SqlTokenType.BlockEnd:
+							nestLevel--;
+							break;
+						case SqlTokenType.UnquotedText:
+							if (nestLevel == 0 && token.Equals("select", StringComparison.InvariantCultureIgnoreCase))
+							{
+								result = token.SqlIndex + token.Length;
+								if (!tokenEnum.MoveNext()) return true;
+								if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
+								{
+									result = tokenEnum.Current.SqlIndex + tokenEnum.Current.Length;
+									if (!tokenEnum.MoveNext()) return true;
+								}
+								// Ignore parameter assignments, which have syntax SELECT @p = ...
+								return !tokenEnum.Current.UnquotedValue.StartsWith("@");
+							}
+							break;
+					}
+				}
+			}
+
+			result = -1;
+			return false;
+		}
 
         /// <summary>
 		/// Does the <c>LIMIT</c> clause take a "maximum" row number
@@ -531,31 +574,5 @@ namespace NHibernate.Dialect
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
 		}
-
-        private class MsSql2000SelectQuery : SelectQuery
-        {
-            public MsSql2000SelectQuery(SqlString sql)
-                : base(sql)
-            { }
-
-            public override SqlString GetLimitString(SqlString offset, SqlString limit)
-            {
-                if (limit == null && offset == null) return this.Sql;
-                if (limit != null && offset == null) return GetLimitOnlyString(limit);
-                return null;
-            }
-
-            private SqlString GetLimitOnlyString(SqlString limit)
-            {
-                var columnDefinitionsBeginIndex = this.ColumnsBeginIndex;
-                if (columnDefinitionsBeginIndex < 0) return null;
-
-                var topFragment = new SqlStringBuilder();
-                topFragment.Add(" top ");
-                topFragment.Add(limit);
-
-                return this.Sql.Insert(columnDefinitionsBeginIndex, topFragment.ToSqlString());
-            }
-        }
     }
 }

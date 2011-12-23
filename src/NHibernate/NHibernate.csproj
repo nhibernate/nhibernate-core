@@ -580,7 +580,6 @@
     <Compile Include="SqlCommand\QueryJoinFragment.cs" />
     <Compile Include="SqlCommand\QuerySelect.cs" />
     <Compile Include="SqlCommand\SelectFragment.cs" />
-    <Compile Include="SqlCommand\SelectQuery.cs" />
     <Compile Include="SqlCommand\SqlBaseBuilder.cs" />
     <Compile Include="SqlCommand\SqlDeleteBuilder.cs" />
     <Compile Include="SqlCommand\SqlInsertBuilder.cs" />
@@ -590,7 +589,6 @@
     <Compile Include="SqlCommand\SqlString.cs" />
     <Compile Include="SqlCommand\SqlStringBuilder.cs" />
     <Compile Include="SqlCommand\SqlToken.cs" />
-    <Compile Include="SqlCommand\SqlTokenizer.cs" />
     <Compile Include="SqlCommand\SqlTokenType.cs" />
     <Compile Include="SqlCommand\SqlUpdateBuilder.cs" />
     <Compile Include="SqlCommand\Template.cs" />

@@ -1,48 +1,76 @@
 ﻿namespace NHibernate.SqlCommand
 {
+    using System;
+
     /// <summary>
     /// <see cref="SqlToken"/> token types.
     /// </summary>
+    [Flags]
     public enum SqlTokenType
     {
         /// <summary>
         /// Whitespace
         /// </summary>
-        Whitespace,
+        Whitespace = 0x1,
 
         /// <summary>
         /// Single line comment (preceeded by --) or multi-line comment (terminated by /* and */)
         /// </summary>
-        Comment,
+        Comment = 0x2,
 
-        /// <summary>
-        /// Quoted text, either single quoted, double quoted or bracketed.
+		/// <summary>
+		/// Keyword, operator, unquoted identifier or unquoted literal
+		/// </summary>
+		UnquotedText = 0x4,
+
+		/// <summary>
+		/// Quoted identifier, surrounded by double quotes or straight brackets.
+		/// </summary>
+		QuotedIdentifier = 0x8,
+		
+		/// <summary>
+        /// Quoted text, surrounded by single quotes.
         /// </summary>
-        QuotedText,
+        QuotedText = 0x10,
 
         /// <summary>
         /// List separator, the ',' character.
         /// </summary>
-        ListSeparator,
+        ListSeparator = 0x20,
 
         /// <summary>
         /// Begin of an expression block, consisting of a '(' character.
         /// </summary>
-        BlockBegin,
+        BlockBegin = 0x40,
 
         /// <summary>
         /// End of an expression block, consisting of a ')' character.
         /// </summary>
-        BlockEnd,
+        BlockEnd = 0x80,
 
         /// <summary>
         /// A query parameter.
         /// </summary>
-        Parameter,
+        Parameter = 0x100,
 
-        /// <summary>
-        /// Non-quoted text fragment
-        /// </summary>
-        Text
+		/// <summary>
+		/// Tokens for begin or end of expression blocks.
+		/// </summary>
+		AllBlockBeginOrEnd = BlockBegin | BlockEnd,
+
+		/// <summary>
+		/// Includes all token types except whitespace or comments
+		/// </summary>
+		AllExceptWhitespaceOrComment = AllExceptWhitespace & ~Comment, 
+
+		/// <summary>
+		/// Includes all token types except whitespace
+		/// </summary>
+		AllExceptWhitespace = All & ~Whitespace,
+		
+		/// <summary>
+		/// Includes all token types
+		/// </summary>
+		All = Whitespace | Comment | QuotedText | ListSeparator | BlockBegin | BlockEnd | Parameter | UnquotedText | QuotedIdentifier,
     }
 }

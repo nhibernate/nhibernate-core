@@ -220,6 +220,7 @@ namespace NHibernate.Test.DialectTest
 		{
 			var d = new MsSql2005Dialect();
 		    var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
+			Assert.That(limitSqlQuery, Is.Not.Null);
 			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(" /* criteria query */ SELECT TOP (2) p from lcdtm"));
 		}
 
@@ -266,6 +267,21 @@ namespace NHibernate.Test.DialectTest
             var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
             Assert.That(limitSqlQuery, Is.Not.Null);
             Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
+        }
+
+        [Test]
+        public void DontReturnLimitStringForStoredProcedureCall()
+        {
+            var d = new MsSql2005Dialect();
+            var limitSql = d.GetLimitString(new SqlString(@"
+                EXEC sp_stored_procedures"), null, new SqlString("2"));
+            Assert.That(limitSql, Is.Null);
+
+            limitSql = d.GetLimitString(new SqlString(@"
+                DECLARE @id int
+                SELECT  @id = id FROM persons WHERE name LIKE ?
+                EXEC    get_person_summary @id"), null, new SqlString("2"));
+            Assert.That(limitSql, Is.Null);
         }
     }
 }

@@ -6,7 +6,10 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-    public class MsSql2005Dialect : MsSql2000Dialect
+	using System;
+	using System.Collections.Generic;
+
+	public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
 		{
@@ -36,7 +39,87 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-		    return new MsSql2005SelectQuery(queryString).GetLimitString(offset, limit);
+			if (offset == null)
+			{
+				int insertPoint;
+				return TryFindLimitInsertPoint(queryString, out insertPoint)
+					? queryString.Insert(insertPoint, new SqlString(" TOP (", limit, ")"))
+					: null;
+			}
+
+			var queryParser = new SqlSelectParser(queryString);
+			var result = new SqlStringBuilder();
+			BuildSelectClauseForPagingQuery(queryParser, limit, result);
+			BuildFromClauseForPagingQuery(queryParser, result);
+			BuildWhereAndOrderClausesForPagingQuery(offset, result);
+			return result.ToSqlString();
+		}
+
+		private static void BuildSelectClauseForPagingQuery(SqlSelectParser sqlQuery, SqlString limit, SqlStringBuilder result)
+		{
+			result.Add(sqlQuery.Sql.Substring(0, sqlQuery.SelectIndex));
+			result.Add("SELECT");
+
+			if (limit != null)
+			{
+				result.Add(" TOP (").Add(limit).Add(") ");
+			}
+			else
+			{
+				// ORDER BY can only be used in subqueries if TOP is also specified.
+				result.Add(" TOP (" + int.MaxValue + ") ");
+			}
+
+			var sb = new StringBuilder();
+			foreach (var column in sqlQuery.ColumnDefinitions)
+			{
+				if (sb.Length > 0) sb.Append(", ");
+				sb.Append(column.Alias);
+			}
+
+			result.Add(sb.ToString());
+		}
+
+		private static void BuildFromClauseForPagingQuery(SqlSelectParser sqlQuery, SqlStringBuilder result)
+		{
+			var selectClause = sqlQuery.Sql.Substring(sqlQuery.SelectIndex, sqlQuery.FromIndex - sqlQuery.SelectIndex);
+			var subselectClause = sqlQuery.OrderByIndex >= 0
+				? sqlQuery.Sql.Substring(sqlQuery.FromIndex, sqlQuery.OrderByIndex - sqlQuery.FromIndex)
+				: sqlQuery.Sql.Substring(sqlQuery.FromIndex);
+
+			result.Add(" FROM (")
+				.Add(selectClause.Trim())
+				.Add(", ROW_NUMBER() OVER(ORDER BY ");
+
+			int orderIndex = 0;
+			foreach (var order in sqlQuery.OrderDefinitions)
+			{
+				if (orderIndex++ > 0) result.Add(", ");
+				if (order.Column.Name != null)
+				{
+					result.Add(order.Column.Name);
+				}
+				else
+				{
+					result.Add(sqlQuery.Sql.Substring(order.Column.SqlIndex, order.Column.SqlLength).Trim());
+				}
+				if (order.IsDescending) result.Add(" DESC");
+			}
+			if (orderIndex == 0)
+			{
+				result.Add("CURRENT_TIMESTAMP");
+			}
+
+			result.Add(") as __hibernate_sort_row ")
+				.Add(subselectClause.Trim())
+				.Add(") as query");
+		}
+
+		private static void BuildWhereAndOrderClausesForPagingQuery(SqlString offset, SqlStringBuilder result)
+		{
+			result.Add(" WHERE query.__hibernate_sort_row > ")
+				.Add(offset)
+				.Add(" ORDER BY query.__hibernate_sort_row");
 		}
 
 		/// <summary>
@@ -89,106 +172,348 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        public class MsSql2005SelectQuery : SelectQuery
-        {
-            public MsSql2005SelectQuery(SqlString sql)
-                : base(sql)
-            { }
+		/// <summary>
+		/// Represents SELECT query parser, primarily intended to support generation of SQL Server limit SQL queries.
+		/// </summary>
+		private class SqlSelectParser
+		{
+			private readonly List<ColumnDefinition> _columns = new List<ColumnDefinition>();
+			private readonly List<OrderDefinition> _orders = new List<OrderDefinition>();
 
-            public override SqlString GetLimitString(SqlString offset, SqlString limit)
-            {
-                if (limit == null && offset == null) return this.Sql;
-                if (limit != null && offset == null) return GetLimitOnlyString(limit);
+			public SqlSelectParser(SqlString sql)
+			{
+				if (sql == null) throw new ArgumentNullException("sql");
+				this.Sql = sql;
+				this.SelectIndex = this.FromIndex = this.OrderByIndex = -1;
 
-                var result = new SqlStringBuilder();
-                BuildSelectClauseForPagingQuery(limit, result);
-                BuildFromClauseForPagingQuery(result);
-                BuildWhereAndOrderClausesForPagingQuery(offset, result);
-                return result.ToSqlString();
-            }
+				var tokenEnum = sql.Tokenize(SqlTokenType.AllExceptWhitespaceOrComment).GetEnumerator();
+				tokenEnum.MoveNext();
+				
+				// Custom SQL may contain multiple SELECT statements, for example to assign parameters. 
+				// Therefore we loop over SELECT statements until a SELECT is found that returns data.
+				while (TryParseUntil(tokenEnum, "select"))
+				{
+					this.SelectIndex = tokenEnum.Current.SqlIndex;
+					if (tokenEnum.MoveNext() && TryParseUntilBeginOfColumnDefinitions(tokenEnum))
+					{
+						_columns.AddRange(ParseColumnDefinitions(tokenEnum));
+						if (TryParseUntil(tokenEnum, "from"))
+						{
+							this.FromIndex = tokenEnum.Current.SqlIndex;
+							if (tokenEnum.MoveNext() && TryParseUntil(tokenEnum, "order"))
+							{
+								this.OrderByIndex = tokenEnum.Current.SqlIndex;
+								if (tokenEnum.MoveNext() && TryParseUntilBeginOfOrderDefinitions(tokenEnum))
+								{
+									_orders.AddRange(ParseOrderDefinitions(tokenEnum));
+								}
+							}
+						}
+						return;
+					}
+					
+					this.SelectIndex = -1;
+				}
+			}
 
-            private SqlString GetLimitOnlyString(SqlString limit)
-            {
-                var columnDefinitionsBeginIndex = this.ColumnsBeginIndex;
-                if (columnDefinitionsBeginIndex < 0) return null;
+			public SqlString Sql { get; private set; }
+			public int SelectIndex { get; private set; }
+			public int FromIndex { get; private set; }
+			public int OrderByIndex { get; private set; }
 
-                var result = new SqlStringBuilder();
+			public IEnumerable<ColumnDefinition> ColumnDefinitions
+			{
+				get { return _columns; }
+			}
 
-                return result
-                    .Add(this.Sql.Substring(0, columnDefinitionsBeginIndex))
-                    .Add(" TOP (")
-                    .Add(limit)
-                    .Add(")")
-                    .Add(this.Sql.Substring(columnDefinitionsBeginIndex))
-                    .ToSqlString();
-            }
+			public IEnumerable<OrderDefinition> OrderDefinitions
+			{
+				get { return _orders; }
+			}
 
-            private void BuildSelectClauseForPagingQuery(SqlString limit, SqlStringBuilder result)
-            {
-                result.Add(this.Sql.Substring(0, this.SelectIndex));
-                result.Add("SELECT");
+			private static bool TryParseUntilBeginOfColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
+			{
+				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
+				{
+					if (!tokenEnum.MoveNext()) return false;
+				}
 
-                if (limit != null)
-                {
-                    result.Add(" TOP (").Add(limit).Add(") ");
-                }
-                else
-                {
-                    // ORDER BY can only be used in subqueries if TOP is also specified.
-                    result.Add(" TOP (" + int.MaxValue + ") ");
-                }
+				// Ignore parameter assignment statements with syntax SELECT @p = ...
+				return !tokenEnum.Current.UnquotedValue.StartsWith("@");
+			}
 
-                var sb = new StringBuilder();
-                foreach (var column in this.ColumnDefinitions)
-                {
-                    if (sb.Length > 0) sb.Append(", ");
-                    sb.Append(column.Alias);
-                }
+			private static bool TryParseUntilBeginOfOrderDefinitions(IEnumerator<SqlToken> tokenEnum)
+			{
+				return tokenEnum.Current.Equals("by", StringComparison.InvariantCultureIgnoreCase)
+					? tokenEnum.MoveNext()
+					: false;
+			}
 
-                result.Add(sb.ToString());
-            }
+			private IEnumerable<ColumnDefinition> ParseColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
+			{
+				int blockLevel = 0;
+				SqlToken columnBeginToken = null;
+				SqlToken columnEndToken = null;
+				SqlToken columnAliasToken = null;
 
-            private void BuildFromClauseForPagingQuery(SqlStringBuilder result)
-            {
-                var selectClause = this.Sql.Substring(this.SelectIndex, this.FromIndex - this.SelectIndex);
-                var subselectClause = this.OrderByIndex >= 0
-                    ? this.Sql.Substring(this.FromIndex, this.OrderByIndex - this.FromIndex)
-                    : this.Sql.Substring(this.FromIndex);
+				do
+				{
+					var token = tokenEnum.Current;
+					if (token == null) break;
 
-                result.Add(" FROM (")
-                    .Add(selectClause.Trim())
-                    .Add(", ROW_NUMBER() OVER(ORDER BY ");
+					columnBeginToken = columnBeginToken ?? token;
 
-                int orderIndex = 0;
-                foreach (var order in this.OrderDefinitions)
-                {
-                    if (orderIndex++ > 0) result.Add(", ");
-                    if (order.Column.Name != null)
-                    {
-                        result.Add(order.Column.Name);
-                    }
-                    else
-                    {
-                        result.Add(this.Sql.Substring(order.Column.SqlIndex, order.Column.SqlLength).Trim());
-                    }
-                    if (order.IsDescending) result.Add(" DESC");
-                }
-                if (orderIndex == 0)
-                {
-                    result.Add("CURRENT_TIMESTAMP");
-                }
-                
-                result.Add(") as __hibernate_sort_row ")
-                    .Add(subselectClause.Trim())
-                    .Add(") as query");
-            }
+					switch (token.TokenType)
+					{
+						case SqlTokenType.BlockBegin:
+							blockLevel++;
+							break;
 
-            private static void BuildWhereAndOrderClausesForPagingQuery(SqlString offset, SqlStringBuilder result)
-            {
-                result.Add(" WHERE query.__hibernate_sort_row > ")
-                    .Add(offset)
-                    .Add(" ORDER BY query.__hibernate_sort_row");
-            }
-        }
-    }
+						case SqlTokenType.BlockEnd:
+							blockLevel--;
+							break;
+
+						case SqlTokenType.UnquotedText:
+							if (blockLevel != 0) break;
+
+							if (token.Equals("from", StringComparison.InvariantCultureIgnoreCase))
+							{
+								if (columnAliasToken != null)
+								{
+									yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+								}
+								yield break;
+							}
+
+							if (token.Equals("as", StringComparison.InvariantCultureIgnoreCase))
+							{
+								columnEndToken = token;
+							}
+
+							columnAliasToken = token;
+							break;
+
+						case SqlTokenType.QuotedText:
+							if (blockLevel != 0) break;
+
+							columnAliasToken = token;
+							break;
+
+						case SqlTokenType.ListSeparator:
+							if (blockLevel != 0) break;
+
+							if (columnAliasToken != null)
+							{
+								yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+							}
+							columnBeginToken = columnEndToken = columnAliasToken = null;
+							break;
+					}
+				} while (tokenEnum.MoveNext());
+
+				if (columnAliasToken != null)
+				{
+					yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+				}
+			}
+
+			private ColumnDefinition ParseColumnDefinition(SqlToken beginToken, SqlToken endToken, SqlToken aliasToken)
+			{
+				var name = beginToken == endToken
+					? beginToken.ToString()
+					: null;
+
+				var alias = aliasToken.ToString();
+				var dotIndex = alias.LastIndexOf('.');
+				alias = dotIndex >= 0
+					? alias.Substring(dotIndex + 1)
+					: alias;
+
+				var sqlIndex = beginToken.SqlIndex;
+				var sqlLength = (endToken != null ? endToken.SqlIndex : this.Sql.Length) - beginToken.SqlIndex;
+
+				return new ColumnDefinition(sqlIndex, sqlLength, name, alias);
+			}
+
+			private ColumnDefinition ParseColumnDefinition(SqlToken beginToken, SqlToken endToken, string alias)
+			{
+				var sqlIndex = beginToken.SqlIndex;
+				var sqlLength = (endToken != null ? endToken.SqlIndex : this.Sql.Length) - beginToken.SqlIndex;
+
+				return new ColumnDefinition(sqlIndex, sqlLength, null, alias);
+			}
+
+			private IEnumerable<OrderDefinition> ParseOrderDefinitions(IEnumerator<SqlToken> tokenEnum)
+			{
+				int blockLevel = 0;
+				int orderExprTokenCount = 0;
+				SqlToken orderBeginToken = null;
+				SqlToken columnNameToken = null;
+				SqlToken directionToken = null;
+
+				do
+				{
+					var token = tokenEnum.Current;
+					if (token == null) break;
+					if (token.TokenType == SqlTokenType.Whitespace) continue;
+
+					orderBeginToken = orderBeginToken ?? token;
+
+					switch (token.TokenType)
+					{
+						case SqlTokenType.BlockBegin:
+							blockLevel++;
+							break;
+
+						case SqlTokenType.BlockEnd:
+							blockLevel--;
+							if (blockLevel == 0) orderExprTokenCount++;
+							break;
+
+						case SqlTokenType.UnquotedText:
+							if (blockLevel != 0) break;
+
+							if (orderExprTokenCount++ == 0)
+							{
+								columnNameToken = token;
+								break;
+							}
+
+							if (token.Equals("asc", StringComparison.InvariantCultureIgnoreCase)
+								|| token.Equals("desc", StringComparison.InvariantCultureIgnoreCase))
+							{
+								if (directionToken == null) orderExprTokenCount--;
+								directionToken = token;
+							}
+							break;
+
+						case SqlTokenType.QuotedText:
+							if (blockLevel != 0) break;
+
+							if (orderExprTokenCount++ == 0) columnNameToken = token;
+							break;
+
+						case SqlTokenType.ListSeparator:
+							if (blockLevel != 0) break;
+
+							yield return ParseOrderDefinition(orderBeginToken, token,
+								orderExprTokenCount == 1 ? columnNameToken : null, directionToken);
+							orderBeginToken = columnNameToken = directionToken = null;
+							orderExprTokenCount = 0;
+							break;
+					}
+				} while (tokenEnum.MoveNext());
+
+				if (orderBeginToken != null)
+				{
+					yield return ParseOrderDefinition(orderBeginToken, null,
+						orderExprTokenCount == 1 ? columnNameToken : null, directionToken);
+				}
+			}
+
+			private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken columnNameToken, SqlToken directionToken)
+			{
+				ColumnDefinition column;
+				bool? isDescending = directionToken != null
+					? directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase)
+					: default(bool?);
+
+				if (columnNameToken != null)
+				{
+					string columnNameOrIndex = columnNameToken.ToString();
+					if (!TryGetColumnDefinition(columnNameOrIndex, out column))
+					{
+						// Column appears in order by clause, but not in select clause
+						column = ParseColumnDefinition(columnNameToken, isDescending.HasValue ? directionToken : endToken, columnNameToken);
+					}
+				}
+				else
+				{
+					// Calculated sort order
+					column = ParseColumnDefinition(beginToken, isDescending.HasValue ? directionToken : endToken, "__order" + _columns.Count);
+				}
+
+				return new OrderDefinition(column, isDescending ?? false);
+			}
+
+			private bool TryGetColumnDefinition(string columnNameOrIndex, out ColumnDefinition result)
+			{
+				if (!string.IsNullOrEmpty(columnNameOrIndex))
+				{
+					int columnIndex;
+					if (int.TryParse(columnNameOrIndex, out columnIndex) && columnIndex <= _columns.Count)
+					{
+						result = _columns[columnIndex - 1];
+						return true;
+					}
+
+					foreach (var column in _columns)
+					{
+						if (columnNameOrIndex.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase)
+							|| columnNameOrIndex.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase))
+						{
+							result = column;
+							return true;
+						}
+					}
+				}
+
+				result = null;
+				return false;
+			}
+
+			private static bool TryParseUntil(IEnumerator<SqlToken> tokenEnum, string term)
+			{
+				int nestLevel = 0;
+				do
+				{
+					var token = tokenEnum.Current;
+					if (token == null) return false;
+
+					switch (token.TokenType)
+					{
+						case SqlTokenType.BlockBegin:
+							nestLevel++;
+							break;
+						case SqlTokenType.BlockEnd:
+							nestLevel--;
+							break;
+						case SqlTokenType.UnquotedText:
+							if (nestLevel == 0 && token.Equals(term, StringComparison.InvariantCultureIgnoreCase)) return true;
+							break;
+					}
+				} while (tokenEnum.MoveNext());
+
+				return false;
+			}
+
+			public class ColumnDefinition
+			{
+				public string Name { get; private set; }
+				public string Alias { get; private set; }
+				public int SqlIndex { get; private set; }
+				public int SqlLength { get; private set; }
+
+				internal ColumnDefinition(int sqlIndex, int sqlLength, string name, string alias)
+				{
+					this.SqlIndex = sqlIndex;
+					this.SqlLength = sqlLength;
+					this.Name = name;
+					this.Alias = alias;
+				}
+			}
+
+			public class OrderDefinition
+			{
+				public ColumnDefinition Column { get; private set; }
+				public bool IsDescending { get; private set; }
+
+				internal OrderDefinition(ColumnDefinition column, bool isDescending)
+				{
+					this.Column = column;
+					this.IsDescending = isDescending;
+				}
+			}
+		}
+	}
 }
