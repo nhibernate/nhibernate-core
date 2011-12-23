@@ -260,7 +260,7 @@ namespace NHibernate.Test.DialectTest
                     INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
                 )
                 -- Statement that executes the CTE
-                SELECT TOP (2)  ManagerID, EmployeeID, Title, Level
+                SELECT  TOP (2) ManagerID, EmployeeID, Title, Level
                 FROM    DirectReports";
 
             var d = new MsSql2005Dialect();
@@ -269,19 +269,35 @@ namespace NHibernate.Test.DialectTest
             Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
         }
 
-        [Test]
-        public void DontReturnLimitStringForStoredProcedureCall()
-        {
-            var d = new MsSql2005Dialect();
-            var limitSql = d.GetLimitString(new SqlString(@"
-                EXEC sp_stored_procedures"), null, new SqlString("2"));
-            Assert.That(limitSql, Is.Null);
-
-            limitSql = d.GetLimitString(new SqlString(@"
+		[Test]
+		public void DontReturnLimitStringForStoredProcedureCall()
+		{
+			VerifyLimitStringForStoredProcedureCalls("EXEC sp_stored_procedures");
+			VerifyLimitStringForStoredProcedureCalls(@"
                 DECLARE @id int
                 SELECT  @id = id FROM persons WHERE name LIKE ?
-                EXEC    get_person_summary @id"), null, new SqlString("2"));
-            Assert.That(limitSql, Is.Null);
-        }
-    }
+                EXEC    get_person_summary @id");
+			VerifyLimitStringForStoredProcedureCalls(@"
+                DECLARE @id int
+                SELECT DISTINCT TOP 1 @id = id FROM persons WHERE name LIKE ?
+                EXEC    get_person_summary @id");
+			VerifyLimitStringForStoredProcedureCalls(@"
+                DECLARE @id int
+                SELECT DISTINCT TOP (?) PERCENT WITH TIES @id = id FROM persons WHERE name LIKE ?
+                EXEC    get_person_summary @id");
+		}
+
+		private static void VerifyLimitStringForStoredProcedureCalls(string sql)
+		{
+			var d = new MsSql2005Dialect();
+			var limitSql = d.GetLimitString(new SqlString(sql), null, new SqlString("2"));
+			Assert.That(limitSql, Is.Null, "Limit only: {0}", sql);
+			
+			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), null);
+			Assert.That(limitSql, Is.Null, "Offset only: {0}", sql);
+			
+			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), new SqlString("2"));
+			Assert.That(limitSql, Is.Null, "Limit and Offset: {0}", sql);
+		}
+	}
 }

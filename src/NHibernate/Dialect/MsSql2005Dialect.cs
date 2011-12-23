@@ -43,11 +43,13 @@ namespace NHibernate.Dialect
 			{
 				int insertPoint;
 				return TryFindLimitInsertPoint(queryString, out insertPoint)
-					? queryString.Insert(insertPoint, new SqlString(" TOP (", limit, ")"))
+					? queryString.Insert(insertPoint, new SqlString("TOP (", limit, ") "))
 					: null;
 			}
 
 			var queryParser = new SqlSelectParser(queryString);
+			if (queryParser.SelectIndex <= 0) return null;
+
 			var result = new SqlStringBuilder();
 			BuildSelectClauseForPagingQuery(queryParser, limit, result);
 			BuildFromClauseForPagingQuery(queryParser, result);
@@ -58,16 +60,16 @@ namespace NHibernate.Dialect
 		private static void BuildSelectClauseForPagingQuery(SqlSelectParser sqlQuery, SqlString limit, SqlStringBuilder result)
 		{
 			result.Add(sqlQuery.Sql.Substring(0, sqlQuery.SelectIndex));
-			result.Add("SELECT");
+			result.Add("SELECT ");
 
 			if (limit != null)
 			{
-				result.Add(" TOP (").Add(limit).Add(") ");
+				result.Add("TOP (").Add(limit).Add(") ");
 			}
 			else
 			{
 				// ORDER BY can only be used in subqueries if TOP is also specified.
-				result.Add(" TOP (" + int.MaxValue + ") ");
+				result.Add("TOP (" + int.MaxValue + ") ");
 			}
 
 			var sb = new StringBuilder();
@@ -229,17 +231,6 @@ namespace NHibernate.Dialect
 			public IEnumerable<OrderDefinition> OrderDefinitions
 			{
 				get { return _orders; }
-			}
-
-			private static bool TryParseUntilBeginOfColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
-			{
-				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
-				{
-					if (!tokenEnum.MoveNext()) return false;
-				}
-
-				// Ignore parameter assignment statements with syntax SELECT @p = ...
-				return !tokenEnum.Current.UnquotedValue.StartsWith("@");
 			}
 
 			private static bool TryParseUntilBeginOfOrderDefinitions(IEnumerator<SqlToken> tokenEnum)
@@ -459,31 +450,6 @@ namespace NHibernate.Dialect
 				}
 
 				result = null;
-				return false;
-			}
-
-			private static bool TryParseUntil(IEnumerator<SqlToken> tokenEnum, string term)
-			{
-				int nestLevel = 0;
-				do
-				{
-					var token = tokenEnum.Current;
-					if (token == null) return false;
-
-					switch (token.TokenType)
-					{
-						case SqlTokenType.BlockBegin:
-							nestLevel++;
-							break;
-						case SqlTokenType.BlockEnd:
-							nestLevel--;
-							break;
-						case SqlTokenType.UnquotedText:
-							if (nestLevel == 0 && token.Equals(term, StringComparison.InvariantCultureIgnoreCase)) return true;
-							break;
-					}
-				} while (tokenEnum.MoveNext());
-
 				return false;
 			}
 

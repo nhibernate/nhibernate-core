@@ -339,40 +339,22 @@ namespace NHibernate.Dialect
         {
         	int insertPoint;
         	return TryFindLimitInsertPoint(querySqlString, out insertPoint)
-        		? querySqlString.Insert(insertPoint, new SqlString(" top ", limit))
+        		? querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "))
         		: null;
         }
 
 		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
 		{
-			var nestLevel = 0;
-			using (var tokenEnum = sql.Tokenize(SqlTokenType.AllExceptWhitespaceOrComment).GetEnumerator())
+			var tokenEnum = sql.Tokenize(SqlTokenType.AllExceptWhitespaceOrComment).GetEnumerator();
+			if (tokenEnum.MoveNext())
 			{
-				while (tokenEnum.MoveNext())
+				while (TryParseUntil(tokenEnum, "select"))
 				{
-					var token = tokenEnum.Current;
-					switch (token.TokenType)
+					if (!tokenEnum.MoveNext()) break;
+					if (TryParseUntilBeginOfColumnDefinitions(tokenEnum) && !tokenEnum.Current.Value.StartsWith("@"))
 					{
-						case SqlTokenType.BlockBegin:
-							nestLevel++;
-							break;
-						case SqlTokenType.BlockEnd:
-							nestLevel--;
-							break;
-						case SqlTokenType.UnquotedText:
-							if (nestLevel == 0 && token.Equals("select", StringComparison.InvariantCultureIgnoreCase))
-							{
-								result = token.SqlIndex + token.Length;
-								if (!tokenEnum.MoveNext()) return true;
-								if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
-								{
-									result = tokenEnum.Current.SqlIndex + tokenEnum.Current.Length;
-									if (!tokenEnum.MoveNext()) return true;
-								}
-								// Ignore parameter assignments, which have syntax SELECT @p = ...
-								return !tokenEnum.Current.UnquotedValue.StartsWith("@");
-							}
-							break;
+						result = tokenEnum.Current.SqlIndex;
+						return true;
 					}
 				}
 			}
@@ -381,7 +363,71 @@ namespace NHibernate.Dialect
 			return false;
 		}
 
-        /// <summary>
+		protected static bool TryParseUntil(IEnumerator<SqlToken> tokenEnum, string keyword)
+		{
+			var nestLevel = 0;
+			do
+			{
+				var token = tokenEnum.Current;
+				switch (token.TokenType)
+				{
+					case SqlTokenType.BlockBegin:
+						nestLevel++;
+						break;
+					case SqlTokenType.BlockEnd:
+						nestLevel--;
+						break;
+					case SqlTokenType.UnquotedText:
+						if (nestLevel == 0 && token.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)) return true;
+						break;
+				}
+			} while (tokenEnum.MoveNext());
+
+			return false;
+		}
+
+		protected static bool TryParseUntilBeginOfColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
+		{
+			// [ DISTINCT | ALL ]
+			if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase)
+				|| tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+			{
+				if (!tokenEnum.MoveNext()) return false;
+			}
+
+			// [ TOP { integer | ( expression ) } [PERCENT] [ WITH TIES ] ] 
+			if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
+			{
+				if (tokenEnum.MoveNext()) return false;
+				if (tokenEnum.Current.TokenType == SqlTokenType.BlockBegin)
+				{
+					do
+					{
+						if (!tokenEnum.MoveNext()) return false;
+					} while (tokenEnum.Current.TokenType != SqlTokenType.BlockEnd);
+				}
+				if (tokenEnum.MoveNext()) return false;
+
+
+				if (tokenEnum.Current.Equals("percent", StringComparison.InvariantCultureIgnoreCase))
+				{
+					if (!tokenEnum.MoveNext()) return false;
+				}
+				if (tokenEnum.Current.Equals("with", StringComparison.InvariantCultureIgnoreCase))
+				{
+					if (!tokenEnum.MoveNext()) return false;
+					if (tokenEnum.Current.Equals("ties", StringComparison.InvariantCultureIgnoreCase))
+					{
+						if (!tokenEnum.MoveNext()) return false;
+					}
+				}
+			}
+
+			return !tokenEnum.Current.Value.StartsWith("@");
+		}
+
+
+		/// <summary>
 		/// Does the <c>LIMIT</c> clause take a "maximum" row number
 		/// instead of a total number of returned rows?
 		/// </summary>
