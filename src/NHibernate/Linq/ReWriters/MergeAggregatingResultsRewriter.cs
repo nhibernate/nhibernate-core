@@ -53,12 +53,12 @@ namespace NHibernate.Linq.ReWriters
 			}
 			else if (resultOperator is CountResultOperator)
 			{
-                queryModel.SelectClause.Selector = new NhShortCountExpression(new NhStarExpression(queryModel.SelectClause.Selector));
+				queryModel.SelectClause.Selector = new NhShortCountExpression(TransformCountExpression(queryModel.SelectClause.Selector));
 				queryModel.ResultOperators.Remove(resultOperator);
 			}
             else if (resultOperator is LongCountResultOperator)
             {
-                queryModel.SelectClause.Selector = new NhLongCountExpression(new NhStarExpression(queryModel.SelectClause.Selector));
+				queryModel.SelectClause.Selector = new NhLongCountExpression(TransformCountExpression(queryModel.SelectClause.Selector));
                 queryModel.ResultOperators.Remove(resultOperator);
             }
 
@@ -74,8 +74,18 @@ namespace NHibernate.Linq.ReWriters
         {
             whereClause.TransformExpressions(e => MergeAggregatingResultsInExpressionRewriter.Rewrite(e, new NameGenerator(queryModel)));
         }
+
+		private static Expression TransformCountExpression(Expression expression)
+		{
+			if (expression.NodeType == ExpressionType.MemberInit || expression.NodeType == ExpressionType.New)
+			{
+				return new NhStarExpression(expression);
+			}
+
+			return expression;
+		}
 	}
-    
+
 	internal class MergeAggregatingResultsInExpressionRewriter : NhExpressionTreeVisitor
 	{
 	    private readonly NameGenerator _nameGenerator;

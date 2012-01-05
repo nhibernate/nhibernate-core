@@ -898,6 +898,7 @@
     <Compile Include="NHSpecificTest\NH2705\SubItemBase.cs" />
     <Compile Include="NHSpecificTest\NH2705\SubItemDetails.cs" />
     <Compile Include="NHSpecificTest\NH2705\Test.cs" />
+    <Compile Include="Linq\ByMethod\CountTests.cs" />
     <Compile Include="NHSpecificTest\NH2721\A.cs" />
     <Compile Include="NHSpecificTest\NH2721\B.cs" />
     <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
