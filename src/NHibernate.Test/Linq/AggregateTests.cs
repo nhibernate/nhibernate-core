@@ -6,12 +6,12 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-    public class AggregateTests : LinqTestCase
+	public class AggregateTests : LinqTestCase
 	{
 		[Test]
 		public void AggregateWithStartsWith()
 		{
-            var query = (from c in db.Customers where c.CustomerId.StartsWith("A") select c.CustomerId)
+			var query = (from c in db.Customers where c.CustomerId.StartsWith("A") select c.CustomerId)
 				.Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
 
 			Console.WriteLine(query);
@@ -22,7 +22,7 @@ namespace NHibernate.Test.Linq
 		public void AggregateWithEndsWith()
 		{
 			var query = (from c in db.Customers where c.CustomerId.EndsWith("TH") select c.CustomerId)
-                .Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
+				.Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
 
 			Console.WriteLine(query);
 			Assert.AreEqual("WARTH,", query.ToString());
@@ -32,7 +32,7 @@ namespace NHibernate.Test.Linq
 		public void AggregateWithContains()
 		{
 			var query = (from c in db.Customers where c.CustomerId.Contains("CH") select c.CustomerId)
-                .Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
+				.Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
 
 			Console.WriteLine(query);
 			Assert.AreEqual("CHOPS,RANCH,", query.ToString());
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Linq
 			var query = (from c in db.Customers
 						 where c.CustomerId.Equals("ALFKI") || c.CustomerId.Equals("ANATR") || c.CustomerId.Equals("ANTON")
 						 select c.CustomerId)
-                .Aggregate((prev, next) => (prev + "," + next));
+				.Aggregate((prev, next) => (prev + "," + next));
 
 			Console.WriteLine(query);
 			Assert.AreEqual("ALFKI,ANATR,ANTON", query);
@@ -56,13 +56,13 @@ namespace NHibernate.Test.Linq
 			var query = (from c in db.Customers
 						 where c.CustomerId.StartsWith("A") && !c.CustomerId.StartsWith("AN")
 						 select c.CustomerId)
-                .Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
+				.Aggregate(new StringBuilder(), (sb, id) => sb.Append(id).Append(","));
 
 			Console.WriteLine(query);
 			Assert.AreEqual("ALFKI,AROUT,", query.ToString());
 		}
 
-        [Test]
+		[Test]
 		public void AggregateWithMonthFunction()
 		{
 			var date = new DateTime(2007, 1, 1);
@@ -76,7 +76,7 @@ namespace NHibernate.Test.Linq
 			Console.WriteLine(query);
 		}
 
-        [Test]
+		[Test]
 		public void AggregateWithBeforeYearFunction()
 		{
 			var date = new DateTime(1960, 1, 1);
@@ -119,10 +119,10 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        [Ignore("TODO: Custom functions")]
+		[Ignore("TODO: Custom functions")]
 		public void AggregateWithCustomFunction()
 		{
-            /*
+			/*
 			var date = new DateTime(1960, 1, 1);
 
 			var query = (from e in db.Employees
@@ -131,7 +131,7 @@ namespace NHibernate.Test.Linq
 				.Aggregate(new StringBuilder(), (sb, name) => sb.AppendLine(BitConverter.ToString(name)));
 
 			Console.WriteLine(query);
-            */
+			*/
 		}
 	}
 }

@@ -28,16 +28,18 @@ namespace NHibernate.Linq.Expressions
 		}
 	}
 
-    public class NhStarExpression : Expression
-    {
-        public NhStarExpression(Expression expression) : base((ExpressionType) NhExpressionType.Star, expression.Type)
-        {
-            Expression = expression;
-        }
+	public class NhStarExpression : Expression
+	{
+		public NhStarExpression(Expression expression)
+			: base((ExpressionType)NhExpressionType.Star, expression.Type)
+		{
+			Expression = expression;
+		}
 
-        public Expression Expression
-        {
-            get; private set;
-        }
-    }
+		public Expression Expression
+		{
+			get;
+			private set;
+		}
+	}
 }
