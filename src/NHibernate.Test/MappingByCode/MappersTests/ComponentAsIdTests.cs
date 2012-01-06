@@ -89,15 +89,5 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			called.Should().Be.True();
 		}
-
-		[Test]
-		public void WhenCreatedThenSetTheComponentName()
-		{
-			var mapdoc = new HbmMapping();
-			var component = new HbmCompositeId();
-			new ComponentAsIdMapper(typeof(PersonId), For<Person>.Property(x => x.Id), component, mapdoc);
-
-			component.name.Should().Be(For<Person>.Property(x => x.Id).Name);
-		}
 	}
 }
