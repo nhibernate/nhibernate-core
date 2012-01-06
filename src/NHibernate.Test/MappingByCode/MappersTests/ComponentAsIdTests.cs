@@ -6,6 +6,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
+	[TestFixture]
 	public class ComponentAsIdTests
 	{
 		private class PersonId
@@ -88,6 +89,5 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			called.Should().Be.True();
 		}
-
 	}
 }
