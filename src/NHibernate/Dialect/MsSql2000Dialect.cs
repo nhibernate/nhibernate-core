@@ -333,15 +333,15 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
 			/*
 			 * "SELECT TOP limit rest-of-sql-statement"
 			 */
 
-            SqlStringBuilder topFragment = new SqlStringBuilder();
-		    topFragment.Add(" top ");
-		    topFragment.Add(limit);
+			SqlStringBuilder topFragment = new SqlStringBuilder();
+			topFragment.Add(" top ");
+			topFragment.Add(limit);
 
 			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), topFragment.ToSqlString());
 		}

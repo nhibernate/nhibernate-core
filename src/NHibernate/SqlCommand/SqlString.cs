@@ -25,12 +25,12 @@ namespace NHibernate.SqlCommand
 		private readonly object[] sqlParts;
 
 		public static readonly SqlString Empty = new SqlString(new object[0]);
-		
+
 		public SqlString(string sqlPart)
 		{
 			if (StringHelper.IsNotEmpty(sqlPart))
 			{
-				sqlParts = new object[] {sqlPart};
+				sqlParts = new object[] { sqlPart };
 			}
 			else
 			{
@@ -133,7 +133,7 @@ namespace NHibernate.SqlCommand
 				}
 
 				AppendPendigStringAndResetUsedString(destination, pendingString);
-				destination.Add((Parameter) part);
+				destination.Add((Parameter)part);
 			}
 
 			// make sure the contents of the builder have been added to the sqlBuilder
@@ -265,7 +265,7 @@ namespace NHibernate.SqlCommand
 
 			if (builder.Count > 0 && offset < startIndex)
 			{
-				builder[0] = ((string) builder[0]).Substring(startIndex - offset);
+				builder[0] = ((string)builder[0]).Substring(startIndex - offset);
 			}
 
 			return builder;
@@ -348,7 +348,7 @@ namespace NHibernate.SqlCommand
 
 			if (length < nextOffset)
 			{
-				string lastPart = (string) builder[builder.Count - 1];
+				string lastPart = (string)builder[builder.Count - 1];
 				builder[builder.Count - 1] = lastPart.Substring(0, length - offset);
 			}
 
@@ -581,7 +581,7 @@ namespace NHibernate.SqlCommand
 		{
 			SqlString clone = Clone();
 
-			for (int i=0; i<clone.sqlParts.Length; i++)
+			for (int i = 0; i < clone.sqlParts.Length; i++)
 			{
 				var parameter = clone.sqlParts[i] as Parameter;
 				if (parameter != null)
@@ -617,13 +617,13 @@ namespace NHibernate.SqlCommand
 			return lastIndex >= 0 ? Substring(lastIndex) : Empty;
 		}
 
-        public SqlString Insert(int index, string text)
-        {
-            return Insert(index, new SqlString(text));
-        }
+		public SqlString Insert(int index, string text)
+		{
+			return Insert(index, new SqlString(text));
+		}
 
-        public SqlString Insert(int index, SqlString sqlString)
-        {
+		public SqlString Insert(int index, SqlString sqlString)
+		{
 			if (index < 0)
 			{
 				throw new ArgumentException("index should be greater than or equal to 0", "index");
@@ -650,22 +650,22 @@ namespace NHibernate.SqlCommand
 				else if (nextOffset == index)
 				{
 					result.AddObject(part);
-                    result.Add(sqlString);
+					result.Add(sqlString);
 					inserted = true;
 				}
 				else if (offset == index)
 				{
-                    result.Add(sqlString);
+					result.Add(sqlString);
 					result.AddObject(part);
 					inserted = true;
 				}
 				else if (index > offset && index < nextOffset)
 				{
-					string partString = (string) part;
-				    result.Add(partString.Substring(0, index - offset));
+					string partString = (string)part;
+					result.Add(partString.Substring(0, index - offset));
 					result.Add(sqlString);
-                    result.Add(partString.Substring(index - offset, partString.Length - (index - offset)));
-                    inserted = true;
+					result.Add(partString.Substring(index - offset, partString.Length - (index - offset)));
+					inserted = true;
 				}
 				else
 				{
@@ -700,7 +700,7 @@ namespace NHibernate.SqlCommand
 				}
 
 				var partParameter = part as Parameter;
-				if(partParameter != null)
+				if (partParameter != null)
 				{
 					visitor.Parameter(partParameter);
 				}
@@ -802,39 +802,39 @@ namespace NHibernate.SqlCommand
 			return new SubselectClauseExtractor(Compact().sqlParts).GetSqlString();
 		}
 
-	    public bool EndsWithCaseInsensitive(string value)
-	    {
-            SqlString tempSql = Compact();
-            if (tempSql.Count == 0)
-            {
-                return false;
-            }
+		public bool EndsWithCaseInsensitive(string value)
+		{
+			SqlString tempSql = Compact();
+			if (tempSql.Count == 0)
+			{
+				return false;
+			}
 
-            string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
+			string lastPart = tempSql.sqlParts[tempSql.Count - 1] as string;
 
-            return lastPart != null && lastPart.EndsWith(value,StringComparison.InvariantCultureIgnoreCase);
-		
-	    }
+			return lastPart != null && lastPart.EndsWith(value, StringComparison.InvariantCultureIgnoreCase);
 
-	    public SqlString[] Split(string splitter)
-	    {
-	        int iterations = 0;
-	        SqlString temp = Compact();
-            List<SqlString> results = new List<SqlString>();
-            int index;
-	        do
-            {
-	            index = temp.IndexOfCaseInsensitive(splitter);
-                int locationOfComma = index == -1 ?
-                    temp.Length :
-                    index;
-                if (iterations++ > 100)
-                    Debugger.Break();
+		}
 
-                results.Add(temp.Substring(0, locationOfComma));
-                temp = temp.Substring(locationOfComma+1);
-	        } while (index != -1);
-	        return results.ToArray();
-	    }
+		public SqlString[] Split(string splitter)
+		{
+			int iterations = 0;
+			SqlString temp = Compact();
+			List<SqlString> results = new List<SqlString>();
+			int index;
+			do
+			{
+				index = temp.IndexOfCaseInsensitive(splitter);
+				int locationOfComma = index == -1 ?
+					temp.Length :
+					index;
+				if (iterations++ > 100)
+					Debugger.Break();
+
+				results.Add(temp.Substring(0, locationOfComma));
+				temp = temp.Substring(locationOfComma + 1);
+			} while (index != -1);
+			return results.ToArray();
+		}
 	}
 }
