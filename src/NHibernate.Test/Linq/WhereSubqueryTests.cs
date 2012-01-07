@@ -1,4 +1,7 @@
+using System;
 using System.Linq;
+using System.Linq.Expressions;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -225,6 +228,30 @@ namespace NHibernate.Test.Linq
 		{
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.Any(e => e.Comments.Contains("testing"))
+						 select timesheet).ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
+		public void TimeSheetsWithStringContainsSubQueryWithAsQueryable()
+		{
+			//NH-2998
+			var query = (from timesheet in db.Timesheets
+						 where timesheet.Entries.AsQueryable().Any(e => e.Comments.Contains("testing"))
+						 select timesheet).ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
+		public void TimeSheetsWithStringContainsSubQueryWithAsQueryableAndExternalPredicate()
+		{
+			//NH-2998
+			Expression<Func<TimesheetEntry, bool>> predicate = e => e.Comments.Contains("testing");
+
+			var query = (from timesheet in db.Timesheets
+						 where timesheet.Entries.AsQueryable().Any(predicate)
 						 select timesheet).ToList();
 
 			Assert.AreEqual(2, query.Count);
