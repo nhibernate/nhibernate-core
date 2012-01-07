@@ -63,6 +63,14 @@ namespace NHibernate.Linq
 						typeof(LinqExtensionMethods).GetMethod("CacheRegion"),
 					}, typeof(CacheableExpressionNode));
 
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => Queryable.AsQueryable(null)),
+						ReflectionHelper.GetMethodDefinition(() => Queryable.AsQueryable<object>(null)),
+					}, typeof(AsQueryableExpressionNode)
+				);
+
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
@@ -80,6 +88,23 @@ namespace NHibernate.Linq
 		public System.Type GetNodeType(MethodInfo method)
 		{
 			return defaultNodeTypeProvider.GetNodeType(method);
+		}
+	}
+
+	public class AsQueryableExpressionNode : MethodCallExpressionNodeBase
+	{
+		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo)
+		{
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override QueryModel ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
+		{
+			return queryModel;
 		}
 	}
 
