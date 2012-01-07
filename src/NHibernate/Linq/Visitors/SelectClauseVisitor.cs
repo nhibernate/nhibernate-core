@@ -2,22 +2,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Linq.Expressions;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
 	public class SelectClauseVisitor : ExpressionTreeVisitor
 	{
+		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private HashSet<Expression> _hqlNodes;
 		private readonly ParameterExpression _inputParameter;
 		private readonly VisitorParameters _parameters;
 		private int _iColumn;
 		private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
+		private readonly HqlGeneratorExpressionTreeVisitor _hqlVisitor;
 
 		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
 		{
 			_inputParameter = Expression.Parameter(inputType, "input");
 			_parameters = parameters;
+			_hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
 		}
 
 		public LambdaExpression ProjectionExpression { get; private set; }
@@ -29,19 +33,32 @@ namespace NHibernate.Linq.Visitors
 
 		public void Visit(Expression expression)
 		{
-			// First, find the sub trees that can be expressed purely in HQL
+			var distinct = expression as NhDistinctExpression;
+			if (distinct != null)
+			{
+				expression = distinct.Expression;
+			}
+
+			// Find the sub trees that can be expressed purely in HQL
 			_hqlNodes = new SelectClauseHqlNominator(_parameters).Nominate(expression);
 
 			// Now visit the tree
-			Expression projection = VisitExpression(expression);
+			var projection = VisitExpression(expression);
 
 			if ((projection != expression) && !_hqlNodes.Contains(expression))
 			{
 				ProjectionExpression = Expression.Lambda(projection, _inputParameter);
 			}
 
-			// Finally, handle any boolean results in the output nodes
+			// Handle any boolean results in the output nodes
 			_hqlTreeNodes = BooleanToCaseConvertor.Convert(_hqlTreeNodes).ToList();
+
+			if (distinct != null)
+			{
+				var treeNodes = new List<HqlTreeNode>(_hqlTreeNodes.Count + 1) {_hqlTreeBuilder.Distinct()};
+				treeNodes.AddRange(_hqlTreeNodes);
+				_hqlTreeNodes = new List<HqlExpression>(1) {_hqlTreeBuilder.ExpressionSubTreeHolder(treeNodes)};
+			}
 		}
 
 		public override Expression VisitExpression(Expression expression)
@@ -53,13 +70,10 @@ namespace NHibernate.Linq.Visitors
 
 			if (_hqlNodes.Contains(expression))
 			{
-				// Pure HQL evaluation - TODO - cache the Visitor?
-				var hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
+				// Pure HQL evaluation
+				_hqlTreeNodes.Add(_hqlVisitor.Visit(expression).AsExpression());
 
-				_hqlTreeNodes.Add(hqlVisitor.Visit(expression).AsExpression());
-
-				return Expression.Convert(
-					Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)), expression.Type);
+				return Expression.Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)), expression.Type);
 			}
 
 			// Can't handle this node with HQL.  Just recurse down, and emit the expression
