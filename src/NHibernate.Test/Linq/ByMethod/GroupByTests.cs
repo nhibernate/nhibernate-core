@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -11,6 +12,11 @@ namespace NHibernate.Test.Linq.ByMethod
 	[TestFixture]
 	public class GroupByTests : LinqTestCase
 	{
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
+		}
+
 		[Test]
 		public void SingleKeyGroupAndCount()
 		{
@@ -31,7 +37,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void SingleKeyGrouping()
 		{
 			var orders = db.Orders.GroupBy(o => o.Customer).ToList();
-			Assert.That(orders.Count(), Is.EqualTo(89));
+			Assert.That(orders.Count, Is.EqualTo(89));
 			Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 			CheckGrouping(orders, o => o.Customer);
 		}
@@ -40,7 +46,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void MultipleKeyGrouping()
 		{
 			var orders = db.Orders.GroupBy(o => new { o.Customer, o.Employee }).ToList();
-			Assert.That(orders.Count(), Is.EqualTo(464));
+			Assert.That(orders.Count, Is.EqualTo(464));
 			Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 
 			CheckGrouping(
@@ -64,9 +70,77 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		private void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
+		[Test]
+		public void SingleKeyGroupAndOrderByKey()
 		{
-			HashSet<object> used = new HashSet<object>();
+			//NH-2452
+			var result = db.Products
+				.GroupBy(i => i.Name)
+				.OrderBy(g => g.Key)
+				.Select(g => new
+								 {
+									 Name = g.Max(i => i.Name),
+									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+								 })
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		[Test]
+		public void SingleKeyGroupAndOrderByKeyAggregateProjection()
+		{
+			//NH-2452
+			var result = db.Products
+				.GroupBy(i => i.Name)
+				.Select(g => new
+								 {
+									 Name = g.Max(i => i.Name), 
+									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+								 })
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
+		
+		[Test]
+		public void SingleKeyGroupAndOrderByNonKeyAggregateProjection()
+		{
+			//NH-2452
+			var result = db.Products
+				.GroupBy(i => i.Name)
+				.Select(g => new
+								 {
+									 Name = g.Max(i => i.Name),
+									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+								 })
+				.OrderBy(x => x.TotalUnitsInStock)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		[Test]
+		public void SingleKeyGroupAndOrderByKeyProjection()
+		{
+			//NH-2452
+			var result = db.Products
+				.GroupBy(i => i.Name)
+				.Select(g => new
+								 {
+									 Name = g.Key,
+									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+								 })
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
+		{
+			var used = new HashSet<object>();
 			foreach (IGrouping<TKey, TElement> group in groupedItems)
 			{
 				Assert.IsFalse(used.Contains(group.Key));
@@ -79,9 +153,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		private void CheckGrouping<TKey1, TKey2, TElement>(IEnumerable<TupGrouping<TKey1, TKey2, TElement>> groupedItems, Func<TElement, TKey1> groupBy1, Func<TElement, TKey2> groupBy2)
+		private static void CheckGrouping<TKey1, TKey2, TElement>(IEnumerable<TupGrouping<TKey1, TKey2, TElement>> groupedItems, Func<TElement, TKey1> groupBy1, Func<TElement, TKey2> groupBy2)
 		{
-			HashSet<object> used = new HashSet<object>();
+			var used = new HashSet<object>();
 			foreach (IGrouping<Tup<TKey1, TKey2>, TElement> group in groupedItems)
 			{
 				Assert.IsFalse(used.Contains(group.Key));
@@ -137,7 +211,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				if (obj.GetType() != GetType())
 					return false;
 
-				Tup<T1, T2> other = (Tup<T1, T2>)obj;
+				var other = (Tup<T1, T2>) obj;
 
 				return Equals(Item1, other.Item1) && Equals(Item2, other.Item2);
 			}
