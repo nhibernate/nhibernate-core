@@ -9,6 +9,12 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class WhereSubqueryTests : LinqTestCase
 	{
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
+			base.Configure(configuration);
+		}
+
 		[Test]
 		public void TimesheetsWithNoEntries()
 		{
@@ -232,7 +238,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(2, query.Count);
 		}
-
+		
 		[Test]
 		public void TimeSheetsWithStringContainsSubQueryWithAsQueryable()
 		{
@@ -255,6 +261,43 @@ namespace NHibernate.Test.Linq
 						 select timesheet).ToList();
 
 			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
+		public void HqlOrderLinesWithInnerJoinAndSubQuery()
+		{
+			//NH-3002
+			var lines = session.CreateQuery(@"select c from OrderLine c
+join c.Order o
+where o.Customer.CustomerId = 'VINET'
+	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
+").List<OrderLine>();
+
+			Assert.AreEqual(10, lines.Count);
+		}
+
+		[Test]
+		public void HqlOrderLinesWithImpliedJoinAndSubQuery()
+		{
+			//NH-3002
+			var lines = session.CreateQuery(@"from OrderLine c
+where c.Order.Customer.CustomerId = 'VINET'
+	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
+").List<OrderLine>();
+
+			Assert.AreEqual(10, lines.Count);
+		}
+
+		[Test]
+		public void OrderLinesWithImpliedJoinAndSubQuery()
+		{
+			//NH-2999 and NH-2988
+			var lines = (from l in db.OrderLines
+						 where l.Order.Customer.CustomerId == "VINET"
+						 where !l.Order.Employee.Subordinates.Any(x => x.EmployeeId == 100)
+						 select l).ToList();
+
+			Assert.AreEqual(10, lines.Count);
 		}
 	}
 }
