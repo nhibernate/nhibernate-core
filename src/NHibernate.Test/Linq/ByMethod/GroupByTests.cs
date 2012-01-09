@@ -85,6 +85,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+			AssertOrderedBy.Ascending(result, x => x.Name);
 		}
 
 		[Test]
@@ -102,6 +103,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+			AssertOrderedBy.Ascending(result, x => x.Name);
 		}
 		
 		[Test]
@@ -109,7 +111,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2452
 			var result = db.Products
-				.GroupBy(i => i.Name)
+				.GroupBy(p => p.Name)
 				.Select(g => new
 								 {
 									 Name = g.Max(i => i.Name),
@@ -119,6 +121,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+			AssertOrderedBy.Ascending(result, x => x.TotalUnitsInStock);
 		}
 
 		[Test]
@@ -136,6 +139,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+			AssertOrderedBy.Ascending(result, x => x.Name);
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
