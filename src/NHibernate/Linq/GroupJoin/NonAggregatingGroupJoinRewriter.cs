@@ -24,17 +24,14 @@ namespace NHibernate.Linq.Visitors
 		public static void ReWrite(QueryModel model)
 		{
 			// firstly, get the group join clauses
-			var groupJoinClauses = model.BodyClauses.Where(bc => bc is GroupJoinClause).Cast<GroupJoinClause>();
-
-			if (groupJoinClauses.Count() == 0)
+			var clauses = model.BodyClauses.OfType<GroupJoinClause>().ToArray();
+			if (!clauses.Any())
 			{
 				// No group join here..
 				return;
 			}
 
-			var rewriter = new NonAggregatingGroupJoinRewriter(model, groupJoinClauses);
-
-			rewriter.ReWrite();
+			new NonAggregatingGroupJoinRewriter(model, clauses).ReWrite();
 		}
 
 		private void ReWrite()

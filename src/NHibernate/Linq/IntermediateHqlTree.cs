@@ -80,12 +80,12 @@ namespace NHibernate.Linq
 
 		public void AddFromClause(HqlTreeNode from)
 		{
-			_root.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
+			_root.NodesPreOrder.OfType<HqlFrom>().First().AddChild(from);
 		}
 
 		public void AddSelectClause(HqlTreeNode select)
 		{
-			_root.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
+			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
 		}
 
 		public void AddGroupByClause(HqlGroupBy groupBy)
@@ -95,7 +95,7 @@ namespace NHibernate.Linq
 
 		public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
 		{
-			var orderByRoot = _root.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
+			var orderByRoot = _root.NodesPreOrder.OfType<HqlOrderBy>().FirstOrDefault();
 
 			if (orderByRoot == null)
 			{
@@ -124,8 +124,8 @@ namespace NHibernate.Linq
 				return;
 			}
 
-			HqlQuery hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
-			HqlTreeNode takeRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlTake);
+			var hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
+			var takeRoot = hqlQuery.Children.OfType<HqlTake>().FirstOrDefault();
 
 			// were present we ignore the new value
 			if (takeRoot == null)
@@ -143,8 +143,8 @@ namespace NHibernate.Linq
 				return;
 			}
 			// We should check the value instead delegate the behavior to the result SQL-> MSDN: If count is less than or equal to zero, all elements of source are yielded.
-			HqlQuery hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
-			HqlTreeNode skipRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlSkip);
+			var hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
+			var skipRoot = hqlQuery.Children.OfType<HqlSkip>().FirstOrDefault();
 			if (skipRoot == null)
 			{
 				skipRoot = TreeBuilder.Skip(toSkip);
@@ -154,8 +154,7 @@ namespace NHibernate.Linq
 
 		public void AddWhereClause(HqlBooleanExpression where)
 		{
-			var currentWhere = _root.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
-
+			var currentWhere = _root.NodesPreOrder.OfType<HqlWhere>().FirstOrDefault();
 			if (currentWhere == null)
 			{
 				currentWhere = TreeBuilder.Where(where);
