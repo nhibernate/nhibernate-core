@@ -101,7 +101,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (_path == null)
 				{
-					FromReferenceNode lhs = GetLhs();
+					var lhs = GetLhs();
 					if (lhs == null)
 					{
 						_path = Text;
@@ -498,9 +498,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			bool found = elem != null;
 			// even though we might find a pre-existing element by join path, for FromElements originating in a from-clause
-			// we should only ever use the found element if the aliases match (null != null here).  Implied joins are
-			// always (?) ok to reuse.
-			bool useFoundFromElement = found && ( elem.IsImplied || ( AreSame(classAlias, elem.ClassAlias ) ) );
+			// we should only ever use the found element if the aliases match (null != null here).  
+			// Implied joins are ok to reuse only if in same from clause (are there any other cases when we should reject implied joins?).
+			bool useFoundFromElement = found &&
+									   (elem.IsImplied && elem.FromClause == currentFromClause || // NH differen behavior (NH-3002)
+										AreSame(classAlias, elem.ClassAlias));
 
 			if ( ! useFoundFromElement )
 			{
