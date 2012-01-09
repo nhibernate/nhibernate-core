@@ -77,8 +77,11 @@ namespace NHibernate.Linq.ReWriters
 
 		private static Expression TransformCountExpression(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.MemberInit || expression.NodeType == ExpressionType.New)
+			if (expression.NodeType == ExpressionType.MemberInit || 
+				expression.NodeType == ExpressionType.New ||
+				expression.NodeType == QuerySourceReferenceExpression.ExpressionType)
 			{
+				//Probably it should be done by CountResultOperatorProcessor
 				return new NhStarExpression(expression);
 			}
 
