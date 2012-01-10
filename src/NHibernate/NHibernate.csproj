@@ -289,7 +289,7 @@
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
-    <Compile Include="Linq\Visitors\AbstractJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\JoinBuilder.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
