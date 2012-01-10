@@ -7,32 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 	[TestFixture]
 	public class Fixture 
 	{
-
-		protected string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
-		public virtual string BugNumber
-		{
-			get
-			{
-				string ns = GetType().Namespace;
-				return ns.Substring(ns.LastIndexOf('.') + 1);
-			}
-		}
-
-		protected IList Mappings
-		{
-			get
-			{
-				return new string[]
-					{
-						"NHSpecificTest." + BugNumber + ".Mappings.hbm.xml"
-					};
-			}
-		}
-
 		[Test]
 		public void RemoveUnusedCommandParametersBug_1()
 		{

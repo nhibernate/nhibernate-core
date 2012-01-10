@@ -2784,7 +2784,6 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
-    <Content Include="NHSpecificTest\NH3004\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2959\Mappings.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Table\Entity.cs" />
     <Compile Include="IdGen\Enhanced\Table\BasicTableTest.cs" />
