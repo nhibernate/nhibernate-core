@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {
 	[TestFixture]
-	public class Fixture 
+	public class Fixture
 	{
 		[Test]
 		public void RemoveUnusedCommandParametersBug_1()
@@ -33,19 +33,23 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 		{
 			var command = driver.CreateCommand();
 
-			var param = command.CreateParameter();
-			param.ParameterName = driver.FormatNameForParameter("p0");
-			command.Parameters.Add(param);
+			var usedParam = command.CreateParameter();
+			usedParam.ParameterName = driver.FormatNameForParameter("p0");
+			command.Parameters.Add(usedParam);
+
+			var unusedParam = command.CreateParameter();
+			unusedParam.ParameterName = driver.FormatNameForParameter("unused");
+			command.Parameters.Add(unusedParam);
+
+			Assert.AreEqual(command.Parameters.Count, 2);
 
 			SqlString sqlString = new SqlStringBuilder()
-											.AddParameter()
-											.ToSqlString();
-
+				.AddParameter()
+				.ToSqlString();
 
 			driver.RemoveUnusedCommandParameters(command, sqlString);
 
-			NUnit.Framework.Assert.AreEqual(command.Parameters.Count, 1);
+			Assert.AreEqual(command.Parameters.Count, 1);
 		}
-
 	}
 }
