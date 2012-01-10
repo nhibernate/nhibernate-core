@@ -356,5 +356,27 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.AreEqual(10, lines.Count);
 		}
+
+		[Test]
+		public void OrderLinesWith2ImpliedJoinShouldProduce2JoinsInSql()
+		{
+			//NH-3003
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.Customer.CustomerId == "VINET"
+							 select l).ToList();
+
+				Assert.AreEqual(10, lines.Count);
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(2));
+			}
+		}
+
+		private static int CountJoins(LogSpy sqlLog)
+		{
+			var log = sqlLog.GetWholeLog();
+			return log.Split(new[] {"join"}, StringSplitOptions.None).Length - 1;
+		}
 	}
 }
