@@ -67,6 +67,7 @@ namespace NHibernate.Linq.Visitors
 
 		// The following is used for member expressions traversal.
 		private int _memberExpressionDepth;
+		private bool _isIdentifier;
 
 		internal WhereJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
 		{
@@ -287,6 +288,8 @@ namespace NHibernate.Linq.Visitors
 			// I'm not sure what processing re-linq does to strange member expressions.
 			// TODO: I suspect this code doesn't add the right joins for the last case.
 
+			_isIdentifier |= _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
+
 			_memberExpressionDepth++;
 			var result = base.VisitMemberExpression(expression);
 			_memberExpressionDepth--;
@@ -296,9 +299,8 @@ namespace NHibernate.Linq.Visitors
 			{
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.
-				// TODO: Add an exception for the Id property.
 				var key = ExpressionKeyVisitor.Visit(expression, null);
-				if (_memberExpressionDepth > 0)
+				if (_memberExpressionDepth > 0 && !_isIdentifier)
 				{
 					result = _joiner.AddJoin(result, key);
 				}
@@ -306,7 +308,9 @@ namespace NHibernate.Linq.Visitors
 				values.MemberExpressionValuesIfEmptyOuterJoined[key] = PossibleValueSet.CreateNull(expression.Type);
 			}
 			SetResultValues(values);
-
+			
+			_isIdentifier = false;
+			
 			return result;
 		}
 

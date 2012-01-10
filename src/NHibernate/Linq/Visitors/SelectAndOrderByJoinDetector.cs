@@ -8,6 +8,7 @@ namespace NHibernate.Linq.Visitors
 	{
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
+		private bool _isIdentifier;
 
 		internal SelectAndOrderByJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
 		{
@@ -17,14 +18,18 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
+			_isIdentifier |= _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
+
 			var result = base.VisitMemberExpression(expression);
 
-			if (expression.Type.IsNonPrimitive() && _isEntityDecider.IsEntity(expression.Type))
+			if (expression.Type.IsNonPrimitive() && _isEntityDecider.IsEntity(expression.Type) && !_isIdentifier)
 			{
 				var key = ExpressionKeyVisitor.Visit(expression, null);
 				return _joiner.AddJoin(result, key);
 			}
 
+			_isIdentifier = false;
+			
 			return result;
 		}
 
@@ -36,6 +41,6 @@ namespace NHibernate.Linq.Visitors
 		public void Transform(Ordering ordering)
 		{
 			ordering.TransformExpressions(VisitExpression);
-}
+		}
 	}
 }

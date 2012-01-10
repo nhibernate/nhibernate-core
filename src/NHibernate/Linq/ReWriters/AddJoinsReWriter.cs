@@ -7,6 +7,7 @@ namespace NHibernate.Linq.ReWriters
 	internal interface IIsEntityDecider
 	{
 		bool IsEntity(System.Type type);
+		bool IsIdentifier(System.Type type, string propertyName);
 	}
 
 	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
@@ -46,6 +47,12 @@ namespace NHibernate.Linq.ReWriters
 		public bool IsEntity(System.Type type)
 		{
 			return _sessionFactory.GetClassMetadata(type) != null;
+		}
+
+		public bool IsIdentifier(System.Type type, string propertyName)
+		{
+			var metadata = _sessionFactory.GetClassMetadata(type);
+			return metadata != null && propertyName.Equals(metadata.IdentifierPropertyName);
 		}
 	}
 }
