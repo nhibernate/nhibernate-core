@@ -373,6 +373,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 			}
 		}
 
+		[Test]
+		public void OrderLinesWith2ImpliedJoinShouldProduce2JoinsInSql2()
+		{
+            //NH-2451
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.RequiredDate < DateTime.Now
+							 select l.Order.OrderId).ToList();
+
+                Assert.AreEqual(2155, lines.Count);
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(1));
+			}
+		}
+
 		private static int CountJoins(LogSpy sqlLog)
 		{
 			var log = sqlLog.GetWholeLog();
