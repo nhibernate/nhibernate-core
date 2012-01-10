@@ -100,11 +100,16 @@ namespace NHibernate.Util
 			{
 				return null;
 			}
-			return new StringBuilder()
-				.Append(obj.GetType().FullName)
-				.Append('@')
-				.Append(obj.GetHashCode())
-				.ToString();
+
+            var proxy = obj as NHibernate.Proxy.INHibernateProxy;
+
+            if (null != proxy)
+            {
+                var init = proxy.HibernateLazyInitializer;
+                return init.EntityName + "#" + init.Identifier;
+            }
+
+            return StringHelper.Unqualify(obj.GetType().FullName) + "@" + obj.GetHashCode() + "(hash)";
 		}
 
 		private class NullClass
