@@ -224,8 +224,8 @@ namespace NHibernate.Driver
 
 			cmd.Parameters
 				.Cast<IDbDataParameter>()
-				.Select(p => UseNamedPrefixInParameter ? p.ParameterName : FormatNameForSql(p.ParameterName) )
-				.Except(formatter.AssignedParameterNames)
+				.Select(p => p.ParameterName)
+				.Where(p => !formatter.AssignedParameterNames.Contains(UseNamedPrefixInParameter ? p : FormatNameForSql(p)))				
 				.ToList()
 				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
