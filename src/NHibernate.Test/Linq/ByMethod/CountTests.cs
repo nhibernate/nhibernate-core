@@ -82,5 +82,21 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.That(result, Is.EqualTo(830));
 		}
+
+		[Test]
+		public void CountOnJoinedGroupBy()
+		{
+			//NH-3001
+			var query = from o in db.Orders
+						join ol in db.OrderLines
+						on o equals ol.Order
+						group ol by ol.Product.ProductId
+							into temp
+							select new { temp.Key, count = temp.Count() };
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
 	}
 }

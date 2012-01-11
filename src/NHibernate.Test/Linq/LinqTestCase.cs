@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
-using NUnit.Framework;
 using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
