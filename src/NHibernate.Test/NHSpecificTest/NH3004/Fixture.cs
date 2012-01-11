@@ -5,73 +5,51 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {
 	[TestFixture]
-	public class Fixture 
+	public class Fixture
 	{
+		[Test]
+		public void RemoveUnusedCommandParametersBug_1()
+		{
+			/* UseNamedPrefixInSql       is true 
+			 * UseNamedPrefixInParameter is false
+			 * */
+			var driver = new TestSqlClientDriver(true, false);
 
-        protected string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+			RunTest(driver);
+		}
 
-        public virtual string BugNumber
-        {
-            get
-            {
-                string ns = GetType().Namespace;
-                return ns.Substring(ns.LastIndexOf('.') + 1);
-            }
-        }
+		[Test]
+		public void RemoveUnusedCommandParametersBug_2()
+		{
+			/* UseNamedPrefixInSql       is true 
+			 * UseNamedPrefixInParameter is true
+			 * */
+			var driver = new TestSqlClientDriver(true, true);
 
-        protected IList Mappings
-        {
-            get
-            {
-                return new string[]
-					{
-						"NHSpecificTest." + BugNumber + ".Mappings.hbm.xml"
-					};
-            }
-        }
+			RunTest(driver);
+		}
 
-        [Test]
-        public void RemoveUnusedCommandParametersBug_1()
-        {
-            /* UseNamedPrefixInSql       is true 
-             * UseNamedPrefixInParameter is false
-             * */
-            var driver = new TestSqlClientDriver(true, false);
+		private static void RunTest(TestSqlClientDriver driver)
+		{
+			var command = driver.CreateCommand();
 
-            RunTest(driver);
-        }
+			var usedParam = command.CreateParameter();
+			usedParam.ParameterName = driver.FormatNameForParameter("p0");
+			command.Parameters.Add(usedParam);
 
-        [Test]
-        public void RemoveUnusedCommandParametersBug_2()
-        {
-            /* UseNamedPrefixInSql       is true 
-             * UseNamedPrefixInParameter is true
-             * */
-            var driver = new TestSqlClientDriver(true, true);
+			var unusedParam = command.CreateParameter();
+			unusedParam.ParameterName = driver.FormatNameForParameter("unused");
+			command.Parameters.Add(unusedParam);
 
-            RunTest(driver);
-        }
+			Assert.AreEqual(command.Parameters.Count, 2);
 
-        private static void RunTest(TestSqlClientDriver driver)
-        {
-            var command = driver.CreateCommand();
+			SqlString sqlString = new SqlStringBuilder()
+				.AddParameter()
+				.ToSqlString();
 
-            var param = command.CreateParameter();
-            param.ParameterName = driver.FormatNameForParameter("p0");
-            command.Parameters.Add(param);
+			driver.RemoveUnusedCommandParameters(command, sqlString);
 
-            SqlString sqlString = new SqlStringBuilder()
-                                            .AddParameter()
-                                            .ToSqlString();
-
-
-            driver.RemoveUnusedCommandParameters(command, sqlString);
-
-            NUnit.Framework.Assert.AreEqual(command.Parameters.Count, 1);
-        }
-
+			Assert.AreEqual(command.Parameters.Count, 1);
+		}
 	}
 }

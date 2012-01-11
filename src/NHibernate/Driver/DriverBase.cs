@@ -224,10 +224,10 @@ namespace NHibernate.Driver
 
 			cmd.Parameters
 				.Cast<IDbDataParameter>()
-                .Select(p => UseNamedPrefixInParameter ? p.ParameterName : FormatNameForSql(p.ParameterName) )
+				.Select(p => UseNamedPrefixInParameter ? p.ParameterName : FormatNameForSql(p.ParameterName) )
 				.Except(formatter.AssignedParameterNames)
 				.ToList()
-				.ForEach(ununsedParameterName => cmd.Parameters.RemoveAt(ununsedParameterName));
+				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
 
 		public virtual void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)
