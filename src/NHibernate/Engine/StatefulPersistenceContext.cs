@@ -1405,6 +1405,24 @@ namespace NHibernate.Engine
 			// because serialization is used for different things.
 			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
 
+			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
+			// otherwise they are still empty at this point (the .NET deserialization code calls
+			// OnDeserialization() on them AFTER it calls the current method).
+			entitiesByKey.OnDeserialization(sender);
+			entitiesByUniqueKey.OnDeserialization(sender);
+			//entityEntries.OnDeserialization(sender); // TODO: How to manage IdentityMaps?
+			proxiesByKey.OnDeserialization(sender);
+			entitySnapshotsByKey.OnDeserialization(sender);
+			//arrayHolders.OnDeserialization(sender);// TODO: How to manage IdentityMaps?
+			//collectionEntries.OnDeserialization(sender);// TODO: How to manage IdentityMaps?
+			collectionsByKey.OnDeserialization(sender);
+			//nullifiableEntityKeys.OnDeserialization(sender); // TODO: How to manage HashedSets?
+
+			if (unownedCollections != null)
+			{
+				unownedCollections.OnDeserialization(sender);
+			}
+
 			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
 			foreach (DictionaryEntry collectionEntry in collectionEntries)
 			{
