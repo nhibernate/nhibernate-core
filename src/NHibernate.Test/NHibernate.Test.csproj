@@ -846,8 +846,6 @@
     <Compile Include="NHSpecificTest\NH2507\Animal.cs" />
     <Compile Include="NHSpecificTest\NH2507\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2510\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH2527\FixtureWithNoBatcher.cs" />
-    <Compile Include="NHSpecificTest\NH2527\Model.cs" />
     <Compile Include="NHSpecificTest\NH2530\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2530\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2546\Model.cs" />
@@ -926,6 +924,9 @@
     <Compile Include="NHSpecificTest\NH2913\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2959\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3010\FixtureWithBatcher.cs" />
+    <Compile Include="NHSpecificTest\NH3010\FixtureWithNoBatcher.cs" />
+    <Compile Include="NHSpecificTest\NH3010\Model.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2782,6 +2783,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
+    <EmbeddedResource Include="NHSpecificTest\NH3010\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2959\Mappings.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Table\Entity.cs" />
     <Compile Include="IdGen\Enhanced\Table\BasicTableTest.cs" />
@@ -2844,7 +2846,6 @@
     <EmbeddedResource Include="NHSpecificTest\NH2488\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2490\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1925\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2527\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1323\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2580\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2390\Mappings.hbm.xml" />

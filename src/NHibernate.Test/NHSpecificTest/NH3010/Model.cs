@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Test.NHSpecificTest.NH2527 {
+﻿namespace NHibernate.Test.NHSpecificTest.NH3010 {
    using System;
    using System.Collections.Generic;
 
