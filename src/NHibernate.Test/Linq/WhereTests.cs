@@ -549,5 +549,18 @@ namespace NHibernate.Test.Linq
 			 select a).FirstOrDefault();
 		}
 
+		[Test]
+		public void TimeSheetsWithSamePredicateTwoTimes()
+		{
+			//NH-3009
+			Expression<Func<Timesheet, bool>> predicate = timesheet => timesheet.Entries.Any(e => e.Id != 1);
+
+			var query = db.Timesheets
+				.Where(predicate)
+				.Where(predicate)
+				.ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
 	}
 }
