@@ -177,6 +177,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
+			// Cast is needed because EXTRACT treats DATE not as legacy Oracle DATE but as ANSI DATE, without time elements.
+			// Therefore, you can extract only YEAR, MONTH, and DAY from a DATE value.
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(second from cast(?1 as timestamp))"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(minute from cast(?1 as timestamp))"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(hour from cast(?1 as timestamp))"));
+
+			RegisterFunction("date", new StandardSQLFunction("trunc", NHibernateUtil.Date));
+
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
 			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.Timestamp, false));
