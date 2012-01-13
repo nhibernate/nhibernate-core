@@ -258,7 +258,7 @@ namespace NHibernate.Dialect
 			return new DecodeCaseFragment(this);
 		}
 
-        public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			sql = sql.Trim();
 			bool isForUpdate = false;
@@ -288,11 +288,11 @@ namespace NHibernate.Dialect
 			{
 				pagingSelect.Add(" ) where rownum <=").Add(limit);
 			}
-            else
+			else
 			{
-			    // offset is specified, but limit is not.
-                pagingSelect.Add(" ) row_ ) where rownum_ >").Add(offset);
-            }
+				// offset is specified, but limit is not.
+				pagingSelect.Add(" ) row_ ) where rownum_ >").Add(offset);
+			}
 
 			if (isForUpdate)
 			{
@@ -477,10 +477,10 @@ namespace NHibernate.Dialect
 		private class LocateFunction : ISQLFunction
 		{
 			private static readonly ISQLFunction LocateWith2Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
-			                                                                                 "instr(?2, ?1)");
+																							 "instr(?2, ?1)");
 
 			private static readonly ISQLFunction LocateWith3Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
-			                                                                                 "instr(?2, ?1, ?3)");
+																							 "instr(?2, ?1, ?3)");
 
 			#region Implementation of ISQLFunction
 
