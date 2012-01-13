@@ -1399,11 +1399,33 @@ namespace NHibernate.Engine
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			log.Debug("Deserialization callback persistent-context");
+
 			// during deserialization, we need to reconnect all proxies and
 			// collections to this session, as well as the EntityEntry and
 			// CollectionEntry instances; these associations are transient
 			// because serialization is used for different things.
 			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
+
+			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
+			// otherwise they are still empty at this point (the .NET deserialization code calls
+			// OnDeserialization() on them AFTER it calls the current method).
+			entitiesByKey.OnDeserialization(sender);
+			entitiesByUniqueKey.OnDeserialization(sender);
+			((IDeserializationCallback)entityEntries).OnDeserialization(sender);
+			proxiesByKey.OnDeserialization(sender);
+			entitySnapshotsByKey.OnDeserialization(sender);
+			((IDeserializationCallback)arrayHolders).OnDeserialization(sender);
+			((IDeserializationCallback)collectionEntries).OnDeserialization(sender);
+			collectionsByKey.OnDeserialization(sender);
+
+			// If nullifiableEntityKeys is once used in the current method, HashedSets will need
+			// an OnDeserialization() method.
+			//nullifiableEntityKeys.OnDeserialization(sender);
+
+			if (unownedCollections != null)
+			{
+				unownedCollections.OnDeserialization(sender);
+			}
 
 			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
 			foreach (DictionaryEntry collectionEntry in collectionEntries)

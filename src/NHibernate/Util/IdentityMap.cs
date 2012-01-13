@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
 
 
 namespace NHibernate.Util
@@ -25,7 +26,7 @@ namespace NHibernate.Util
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public sealed class IdentityMap : IDictionary
+	public sealed class IdentityMap : IDictionary, IDeserializationCallback
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentityMap));
 
@@ -269,6 +270,11 @@ namespace NHibernate.Util
 				result[me.Value] = me.Key;
 			}
 			return result;
+		}
+
+		public void OnDeserialization(object sender)
+		{
+			((IDeserializationCallback)map).OnDeserialization(sender);
 		}
 	}
 }

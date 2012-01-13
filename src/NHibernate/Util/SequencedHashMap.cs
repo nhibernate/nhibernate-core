@@ -66,6 +66,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using NHibernate.DebugHelpers;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Util
 {
@@ -78,7 +79,7 @@ namespace NHibernate.Util
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	[Serializable]
-	public class SequencedHashMap : IDictionary
+	public class SequencedHashMap : IDictionary, IDeserializationCallback
 	{
 		[Serializable]
 		private class Entry
@@ -478,6 +479,10 @@ namespace NHibernate.Util
 			get { return (Last == null) ? null : Last.Value; }
 		}
 
+		public void OnDeserialization(object sender)
+		{
+			_entries.OnDeserialization(sender);
+		}
 
 		/// <summary>
 		/// Remove the Entry identified by the Key if it exists.
