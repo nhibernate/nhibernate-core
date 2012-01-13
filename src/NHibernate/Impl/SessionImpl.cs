@@ -73,6 +73,9 @@ namespace NHibernate.Impl
 		private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
 		[NonSerialized]
+		private readonly List<string> enabledFilterNames = new List<string>();
+
+		[NonSerialized]
 		private readonly StatefulPersistenceContext persistenceContext;
 
 		[NonSerialized]
@@ -117,6 +120,7 @@ namespace NHibernate.Impl
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 
 			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
+			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
 			connectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
 		}
@@ -152,6 +156,7 @@ namespace NHibernate.Impl
 			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
 
 			info.AddValue("enabledFilters", enabledFilters, typeof(IDictionary<string, IFilter>));
+			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
 			info.AddValue("connectionManager", connectionManager, typeof(ConnectionManager));
 		}
@@ -169,12 +174,17 @@ namespace NHibernate.Impl
 		{
 			log.Debug("OnDeserialization of the session.");
 
-			// don't need any section for IdentityMaps because .net does not have a problem
-			// serializing them like java does.
 			persistenceContext.SetSession(this);
-			foreach (FilterImpl filter in enabledFilters.Values)
+
+			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
+			// otherwise they are still empty at this point (the .NET deserialization code calls
+			// OnDeserialization() on them AFTER it calls the current method).
+			((IDeserializationCallback)enabledFilters).OnDeserialization(sender);
+
+			foreach (string filterName in enabledFilterNames)
 			{
-				filter.AfterDeserialize(Factory.GetFilterDefinition(filter.Name));
+				FilterImpl filter = (FilterImpl)enabledFilters[filterName];
+				filter.AfterDeserialize(Factory.GetFilterDefinition(filterName));
 			}
 		}
 
@@ -2184,6 +2194,10 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				FilterImpl filter = new FilterImpl(Factory.GetFilterDefinition(filterName));
 				enabledFilters[filterName] = filter;
+				if (!enabledFilterNames.Contains(filterName))
+				{
+					enabledFilterNames.Add(filterName);
+				}
 				return filter;
 			}
 		}
@@ -2194,6 +2208,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				enabledFilters.Remove(filterName);
+				enabledFilterNames.Remove(filterName);
 			}
 		}
 

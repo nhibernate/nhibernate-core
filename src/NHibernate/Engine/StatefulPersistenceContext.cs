@@ -1399,6 +1399,7 @@ namespace NHibernate.Engine
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			log.Debug("Deserialization callback persistent-context");
+
 			// during deserialization, we need to reconnect all proxies and
 			// collections to this session, as well as the EntityEntry and
 			// CollectionEntry instances; these associations are transient
@@ -1410,13 +1411,16 @@ namespace NHibernate.Engine
 			// OnDeserialization() on them AFTER it calls the current method).
 			entitiesByKey.OnDeserialization(sender);
 			entitiesByUniqueKey.OnDeserialization(sender);
-			//entityEntries.OnDeserialization(sender); // TODO: How to manage IdentityMaps?
+			((IDeserializationCallback)entityEntries).OnDeserialization(sender);
 			proxiesByKey.OnDeserialization(sender);
 			entitySnapshotsByKey.OnDeserialization(sender);
-			//arrayHolders.OnDeserialization(sender);// TODO: How to manage IdentityMaps?
-			//collectionEntries.OnDeserialization(sender);// TODO: How to manage IdentityMaps?
+			((IDeserializationCallback)arrayHolders).OnDeserialization(sender);
+			((IDeserializationCallback)collectionEntries).OnDeserialization(sender);
 			collectionsByKey.OnDeserialization(sender);
-			//nullifiableEntityKeys.OnDeserialization(sender); // TODO: How to manage HashedSets?
+
+			// If nullifiableEntityKeys is once used in the current method, HashedSets will need
+			// an OnDeserialization() method.
+			//nullifiableEntityKeys.OnDeserialization(sender);
 
 			if (unownedCollections != null)
 			{
