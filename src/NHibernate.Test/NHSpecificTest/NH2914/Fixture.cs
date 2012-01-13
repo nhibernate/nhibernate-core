@@ -8,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 {
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is Oracle8iDialect;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
