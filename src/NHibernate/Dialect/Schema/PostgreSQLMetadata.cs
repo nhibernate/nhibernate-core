@@ -83,7 +83,15 @@ namespace NHibernate.Dialect.Schema
 			object objValue = rs["CHARACTER_MAXIMUM_LENGTH"];
 			if (objValue != DBNull.Value)
 			{
-				ColumnSize = Convert.ToInt32(objValue);
+				long originalColumnSize = Convert.ToInt64(objValue);
+				if (originalColumnSize > (long)int.MaxValue)
+				{
+					ColumnSize = int.MaxValue;
+				}
+				else
+				{
+					ColumnSize = (int)originalColumnSize;
+				}
 			}
 			objValue = rs["NUMERIC_PRECISION"];
 			if (objValue != DBNull.Value)
