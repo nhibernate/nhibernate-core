@@ -107,7 +107,17 @@ namespace NHibernate.Dialect.Schema
 
 			aValue = rs["LENGTH"];
 			if (aValue != DBNull.Value)
-				ColumnSize = Convert.ToInt32(aValue);
+			{
+				long originalColumnSize = Convert.ToInt64(aValue);
+				if (originalColumnSize > (long)int.MaxValue)
+				{
+					ColumnSize = int.MaxValue;
+				}
+				else
+				{
+					ColumnSize = (int)originalColumnSize;
+				}
+			}
 
 			aValue = rs["PRECISION"];
 			if (aValue != DBNull.Value)
