@@ -63,15 +63,9 @@ namespace NHibernate.Dialect.Schema
 		public MsSqlColumnMetadata(DataRow rs) : base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			object aValue;
 
-			aValue = rs["CHARACTER_MAXIMUM_LENGTH"];
-			if (aValue != DBNull.Value)
-				ColumnSize = Convert.ToInt32(aValue);
-
-			aValue = rs["NUMERIC_PRECISION"];
-			if (aValue != DBNull.Value)
-				NumericalPrecision = Convert.ToInt32(aValue);
+			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
+			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
 			TypeName = Convert.ToString(rs["DATA_TYPE"]);			
