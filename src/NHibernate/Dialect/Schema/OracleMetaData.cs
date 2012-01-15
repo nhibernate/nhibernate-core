@@ -103,15 +103,9 @@ namespace NHibernate.Dialect.Schema
 			: base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			object aValue;
 
-			aValue = rs["LENGTH"];
-			if (aValue != DBNull.Value)
-				ColumnSize = Convert.ToInt32(aValue);
-
-			aValue = rs["PRECISION"];
-			if (aValue != DBNull.Value)
-				NumericalPrecision = Convert.ToInt32(aValue);
+			this.SetColumnSize(rs["LENGTH"]);
+			this.SetNumericalPrecision(rs["PRECISION"]);
 
 			Nullable = Convert.ToString(rs["NULLABLE"]);
 			TypeName = Convert.ToString(rs["DATATYPE"]);
