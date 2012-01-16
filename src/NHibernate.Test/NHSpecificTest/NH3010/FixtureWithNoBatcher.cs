@@ -1,22 +1,28 @@
 ﻿using NHibernate.AdoNet;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH3010 {
-	public class FixtureWithNoBatcher : BugTestCase {
-		protected override void Configure(Cfg.Configuration configuration) {
-			configuration.DataBaseIntegration(x => {
+namespace NHibernate.Test.NHSpecificTest.NH3010
+{
+	public class FixtureWithNoBatcher : BugTestCase
+	{
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			configuration.DataBaseIntegration(x =>
+			{
 				x.BatchSize = 0;
 				x.Batcher<NonBatchingBatcherFactory>();
 			});
 		}
 
-		protected override void OnSetUp() {
+		protected override void OnSetUp()
+		{
 			base.OnSetUp();
 
-			using (ISession session = OpenSession()) {
-				using (ITransaction tx = session.BeginTransaction()) {
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
 					var parent = new Parent();
 					var childOne = new Child();
 					parent.Childs.Add(childOne);
@@ -27,11 +33,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3010 {
 			}
 		}
 
-		protected override void OnTearDown() {
+		protected override void OnTearDown()
+		{
 			base.OnTearDown();
 
-			using (ISession session = OpenSession()) {
-				using (ITransaction tx = session.BeginTransaction()) {
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
 					session.Delete("from Child");
 					session.Delete("from Parent");
 					tx.Commit();
@@ -41,9 +50,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3010 {
 
 		// Test case from NH-2527
 		[Test]
-		public void DisposedCommandShouldNotBeReusedAfterRemoveAtAndInsert() {
-			using (ISession session = OpenSession()) {
-				using (ITransaction tx = session.BeginTransaction()) {
+		public void DisposedCommandShouldNotBeReusedAfterRemoveAtAndInsert()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
 					var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
 
 					Child childOne = parent.Childs[0];
@@ -65,9 +77,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3010 {
 
 		// Test case from NH-1477
 		[Test]
-		public void DisposedCommandShouldNotBeReusedAfterClearAndAdd() {
-			using (ISession session = OpenSession()) {
-				using (ITransaction tx = session.BeginTransaction()) {
+		public void DisposedCommandShouldNotBeReusedAfterClearAndAdd()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
 					var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
 
 					parent.Childs.Clear();
