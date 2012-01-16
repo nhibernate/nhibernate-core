@@ -61,7 +61,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private static string GetTypeNameForMapping(System.Type type)
 		{
-			return !type.IsGenericType  ? type.Name: type.FullName;
+			if (type.IsGenericType || type.IsNested)
+			{
+				return type.FullName;
+			}
+			return type.Name;
 		}
 	}
 }
