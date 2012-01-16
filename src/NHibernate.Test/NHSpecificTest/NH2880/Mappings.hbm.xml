@@ -8,18 +8,18 @@
 		<id name="Id">
 			<generator class="guid" />
 		</id>
-    <many-to-one name="Entity2" />
+		<many-to-one name="Entity2" />
 	</class>
 
-  <class name="Entity2">
-    <id name="Id">
-      <generator class="guid" />
-    </id>
-    <property name="Text" />
-  </class>
-  
-  <filter-def name="myFilter">
-    <filter-param name="myFilterParam" type="String"/>
-  </filter-def>
+	<class name="Entity2">
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+		<property name="Text" />
+	</class>
+
+	<filter-def name="myFilter">
+		<filter-param name="myFilterParam" type="String"/>
+	</filter-def>
 
 </hibernate-mapping>
