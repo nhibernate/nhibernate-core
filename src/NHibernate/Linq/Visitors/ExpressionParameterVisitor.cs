@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitConstantExpression(ConstantExpression expression)
 		{
-			if (!typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
+			if (!_parameters.ContainsKey(expression) && !typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
 			{
 				// We use null for the type to indicate that the caller should let HQL figure it out.
 				IType type = null;
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitConstantExpression(expression);
 		}
 
-		private bool IsNullObject(ConstantExpression expression)
+		private static bool IsNullObject(ConstantExpression expression)
 		{
 			return expression.Type == typeof(Object) && expression.Value == null;
 		}

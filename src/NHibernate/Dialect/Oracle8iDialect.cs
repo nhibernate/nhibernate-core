@@ -177,6 +177,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
+			// Cast is needed because EXTRACT treats DATE not as legacy Oracle DATE but as ANSI DATE, without time elements.
+			// Therefore, you can extract only YEAR, MONTH, and DAY from a DATE value.
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(second from cast(?1 as timestamp))"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(minute from cast(?1 as timestamp))"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(hour from cast(?1 as timestamp))"));
+
+			RegisterFunction("date", new StandardSQLFunction("trunc", NHibernateUtil.Date));
+
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.Date, false));
 			RegisterFunction("systimestamp", new NoArgSQLFunction("systimestamp", NHibernateUtil.Timestamp, false));
@@ -250,7 +258,7 @@ namespace NHibernate.Dialect
 			return new DecodeCaseFragment(this);
 		}
 
-        public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			sql = sql.Trim();
 			bool isForUpdate = false;
@@ -280,11 +288,11 @@ namespace NHibernate.Dialect
 			{
 				pagingSelect.Add(" ) where rownum <=").Add(limit);
 			}
-            else
+			else
 			{
-			    // offset is specified, but limit is not.
-                pagingSelect.Add(" ) row_ ) where rownum_ >").Add(offset);
-            }
+				// offset is specified, but limit is not.
+				pagingSelect.Add(" ) row_ ) where rownum_ >").Add(offset);
+			}
 
 			if (isForUpdate)
 			{
@@ -469,10 +477,10 @@ namespace NHibernate.Dialect
 		private class LocateFunction : ISQLFunction
 		{
 			private static readonly ISQLFunction LocateWith2Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
-			                                                                                 "instr(?2, ?1)");
+																							 "instr(?2, ?1)");
 
 			private static readonly ISQLFunction LocateWith3Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
-			                                                                                 "instr(?2, ?1, ?3)");
+																							 "instr(?2, ?1, ?3)");
 
 			#region Implementation of ISQLFunction
 
