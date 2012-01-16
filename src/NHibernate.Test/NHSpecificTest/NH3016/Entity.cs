@@ -4,6 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3016
 {
 	public class Entity
 	{
+		// nested class
 		public class Key
 		{
 			public virtual Guid Id { get; set; }
@@ -21,6 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3016
 		}
 
 		public virtual Key Id { get; set; }
+
 		public virtual string Name { get; set; }
 	}
 }
