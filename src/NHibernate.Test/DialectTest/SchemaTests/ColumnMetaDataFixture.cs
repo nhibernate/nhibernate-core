@@ -19,40 +19,25 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 			}
 		}
 
-		[Test]
-		public void SetColumnSizeAndNumericalPrecision()
+		[TestCase(null, null, 0, 0)]  // No size and no precision.
+		[TestCase(null, "7", 0, 7)]   // No size, but with numerical precision.
+		[TestCase("13", null, 13, 0)] // Size, but no precision.
+		[TestCase("5000000000", null, int.MaxValue, 0)]  // Oversize column should be bounded to int.MaxValue.
+		[TestCase("13", "7", 13, 7)]  // Can handle both size and precision together.
+		public void SetColumnSizeAndNumericalPrecision(object columnSizeInput, object precisionInput,
+			int expectedColumnSize, int expectedPrecision)
 		{
-			object nullValue = DBNull.Value;
-			const int standardColumnSize = 13;
-			object standardColumnSizeValue = standardColumnSize.ToString();
-			object tooLargeColumnSizeValue = 0x1234567890.ToString();
-			const int standardNumericalPrecision = 7;
-			object standardNumericalPrecisionValue = standardNumericalPrecision.ToString();
+			// The *Input above is supposed to be either null or strings.
 
-			// Check a column that has no size and no precision
-			var column1 = new TestableColumnMetaData(null, nullValue, nullValue);
-			Assert.AreEqual(0, column1.ColumnSize);
-			Assert.AreEqual(0, column1.NumericalPrecision);
+			if (columnSizeInput == null)
+				columnSizeInput = DBNull.Value;
+			if (precisionInput == null)
+				precisionInput = DBNull.Value;
 
-			// Check a column that has a numerical precision
-			var column2 = new TestableColumnMetaData(null, nullValue, standardNumericalPrecisionValue);
-			Assert.AreEqual(0, column2.ColumnSize);
-			Assert.AreEqual(standardNumericalPrecision, column2.NumericalPrecision);
+			var column = new TestableColumnMetaData(null, columnSizeInput, precisionInput);
 
-			// Check a column that has a size that fits into an int and has no numerical precision
-			var column3 = new TestableColumnMetaData(null, standardColumnSizeValue, nullValue);
-			Assert.AreEqual(standardColumnSize, column3.ColumnSize);
-			Assert.AreEqual(0, column3.NumericalPrecision);
-
-			// Check a column that has a size that does not fits into an int (VARCHAR(MAX)) and has no numerical precision
-			var column4 = new TestableColumnMetaData(null, tooLargeColumnSizeValue, nullValue);
-			Assert.AreEqual(int.MaxValue, column4.ColumnSize);
-			Assert.AreEqual(0, column4.NumericalPrecision);
-
-			// Check a column that has a size that fits into an int and has a numerical precision
-			var column5 = new TestableColumnMetaData(null, standardColumnSizeValue, standardNumericalPrecisionValue);
-			Assert.AreEqual(standardColumnSize, column5.ColumnSize);
-			Assert.AreEqual(standardNumericalPrecision, column5.NumericalPrecision);
+			Assert.AreEqual(expectedColumnSize, column.ColumnSize);
+			Assert.AreEqual(expectedPrecision, column.NumericalPrecision);
 		}
 	}
 }

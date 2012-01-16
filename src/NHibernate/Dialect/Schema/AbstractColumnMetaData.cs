@@ -55,14 +55,7 @@ namespace NHibernate.Dialect.Schema
 			if (columnSizeValue != DBNull.Value)
 			{
 				long longColumnSize = Convert.ToInt64(columnSizeValue);
-				if (longColumnSize > (long)int.MaxValue)
-				{
-					ColumnSize = int.MaxValue;
-				}
-				else
-				{
-					ColumnSize = (int)longColumnSize;
-				}
+				columnSize = (int)Math.Min(int.MaxValue, longColumnSize);
 			}
 		}
 
