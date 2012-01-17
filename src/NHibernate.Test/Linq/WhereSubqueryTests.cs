@@ -264,6 +264,63 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CategoriesSubQueryWithAsQueryableAndExternalPredicateWithClosure()
+		{
+			//NH-2998
+			var ids = new[] {1};
+			var quantities = new[] {100};
+
+			Expression<Func<OrderLine, bool>> predicate2 = e => quantities.Contains(e.Quantity);
+			Expression<Func<Product, bool>> predicate1 = e => !ids.Contains(e.ProductId)
+															  && e.OrderLines.AsQueryable().Any(predicate2);
+
+			var query = (from category in db.Categories
+						 where category.Products.AsQueryable().Any(predicate1)
+						 select category).ToList();
+
+			Assert.AreEqual(6, query.Count);
+		}
+
+		[Test]
+		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithSecondLevelClosure()
+		{
+			//NH-2998
+			var ids = new[] {1};
+
+			Expression<Func<TimesheetEntry, bool>> predicate = e => !ids.Contains(e.Id);
+
+			var query = (from timesheet in db.Timesheets
+						 where timesheet.Entries.AsQueryable().Any(predicate)
+						 select timesheet).ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
+		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithArray()
+		{
+			//NH-2998
+			Expression<Func<TimesheetEntry, bool>> predicate = e => !new[] {1}.Contains(e.Id);
+
+			var query = (from timesheet in db.Timesheets
+						 where timesheet.Entries.AsQueryable().Any(predicate)
+						 select timesheet).ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
+		public void TimeSheetsSubQueryWithAsQueryableWithArray()
+		{
+			//NH-2998
+			var query = (from timesheet in db.Timesheets
+						 where timesheet.Entries.AsQueryable().Any(e => !new[] {1}.Contains(e.Id))
+						 select timesheet).ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+
+		[Test]
 		public void HqlOrderLinesWithInnerJoinAndSubQuery()
 		{
 			//NH-3002
