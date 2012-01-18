@@ -32,11 +32,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		/**
-		 * Prepares a derived (i.e., not explicitly defined in the query) select clause.
-		 *
-		 * @param fromClause The from clause to which this select clause is linked.
-		 */
+
+		/// <summary>
+		/// Prepares a derived (i.e., not explicitly defined in the query) select clause.
+		/// </summary>
+		/// <param name="fromClause">The from clause to which this select clause is linked.</param>
 		public void InitializeDerivedSelectClause(FromClause fromClause)
 		{
 			if (_prepared)
@@ -105,12 +105,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
 		}
 
-		/**
- * Prepares an explicitly defined select clause.
- *
- * @param fromClause The from clause linked to this select clause.
- * @throws SemanticException
- */
+
+		/// <summary>
+		/// Prepares an explicitly defined select clause.
+		/// </summary>
+		/// <param name="fromClause">The from clause linked to this select clause.</param>
+		/// <exception cref="SemanticException"></exception>
 		public void InitializeExplicitSelectClause(FromClause fromClause)
 		{
 			if (_prepared)
