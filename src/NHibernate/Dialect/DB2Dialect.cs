@@ -163,6 +163,12 @@ namespace NHibernate.Dialect
 			get { return "default"; }
 		}
 
+
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return "nextval for " + sequenceName;
+		}
+
 		/// <summary></summary>
 		public override string GetSequenceNextValString(string sequenceName)
 		{

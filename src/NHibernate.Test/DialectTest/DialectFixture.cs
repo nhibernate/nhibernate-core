@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Dialect;
@@ -8,7 +9,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using SharpTestsEx;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest
 {
@@ -41,9 +42,9 @@ namespace NHibernate.Test.DialectTest
 			// Generic Dialect inherits all of the Quoting functions from
 			// Dialect (which is abstract)
 			d = new GenericDialect();
-			tableWithNothingToBeQuoted = new string[] {"plainname", "\"plainname\""};
-			tableAlreadyQuoted = new string[] {"\"Quote\"\"d[Na$`\"", "\"Quote\"\"d[Na$`\"", "Quote\"d[Na$`"};
-			tableThatNeedsToBeQuoted = new string[] {"Quote\"d[Na$`", "\"Quote\"\"d[Na$`\"", "Quote\"d[Na$`"};
+			tableWithNothingToBeQuoted = new string[] { "plainname", "\"plainname\"" };
+			tableAlreadyQuoted = new string[] { "\"Quote\"\"d[Na$`\"", "\"Quote\"\"d[Na$`\"", "Quote\"d[Na$`" };
+			tableThatNeedsToBeQuoted = new string[] { "Quote\"d[Na$`", "\"Quote\"\"d[Na$`\"", "Quote\"d[Na$`" };
 		}
 
 		[Test]
@@ -127,10 +128,10 @@ namespace NHibernate.Test.DialectTest
 		{
 			string[] actualUnquoted = new string[2];
 			string[] expectedUnquoted =
-				new string[] {tableThatNeedsToBeQuoted[AfterUnquoteIndex], tableAlreadyQuoted[AfterUnquoteIndex]};
+				new string[] { tableThatNeedsToBeQuoted[AfterUnquoteIndex], tableAlreadyQuoted[AfterUnquoteIndex] };
 
 			actualUnquoted =
-				d.UnQuote(new string[] {tableThatNeedsToBeQuoted[BeforeQuoteIndex], tableAlreadyQuoted[BeforeQuoteIndex]});
+				d.UnQuote(new string[] { tableThatNeedsToBeQuoted[BeforeQuoteIndex], tableAlreadyQuoted[BeforeQuoteIndex] });
 
 			ObjectAssert.AreEqual(expectedUnquoted, actualUnquoted, true);
 		}
@@ -140,8 +141,8 @@ namespace NHibernate.Test.DialectTest
 		{
 			Dictionary<string, string> props = new Dictionary<string, string>();
 			props[Environment.Dialect] = "\r\n\t "
-			                             + typeof(MsSql2000Dialect).AssemblyQualifiedName
-			                             + " \t\r\n  ";
+										 + typeof(MsSql2000Dialect).AssemblyQualifiedName
+										 + " \t\r\n  ";
 
 			Dialect.Dialect dialect = Dialect.Dialect.GetDialect(props);
 			Assert.IsTrue(dialect is MsSql2000Dialect);
@@ -156,21 +157,60 @@ namespace NHibernate.Test.DialectTest
 			{
 				Assert.Ignore("This test does not apply to " + dialect.GetType().FullName);
 			}
-			var sessions = (ISessionFactoryImplementor) conf.BuildSessionFactory();
+			var sessions = (ISessionFactoryImplementor)conf.BuildSessionFactory();
 			sessions.ConnectionProvider.Configure(conf.Properties);
 			IDriver driver = sessions.ConnectionProvider.Driver;
 
 			using (IDbConnection connection = sessions.ConnectionProvider.GetConnection())
 			{
 				IDbCommand statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString),
-				                                              new SqlType[0]);
+															  new SqlType[0]);
 				statement.Connection = connection;
-				using(IDataReader reader = statement.ExecuteReader())
+				using (IDataReader reader = statement.ExecuteReader())
 				{
 					Assert.That(reader.Read(), "should return one record");
 					Assert.That(reader[0], Is.InstanceOf<DateTime>());
 				}
 			}
+		}
+
+
+		/// <summary>
+		/// Test case data source for DialectSupportingSequencesMustFullfillSequenceContract().
+		/// </summary>
+		private IEnumerable<System.Type> GetAllDialectTypes()
+		{
+			var dialectBaseType = typeof(NHibernate.Dialect.Dialect);
+
+			return dialectBaseType.Assembly.GetExportedTypes()
+				.Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(dialectBaseType))
+				.ToList();
+		}
+
+
+		[TestCaseSource("GetAllDialectTypes")]
+		public void DialectSupportingSequencesMustFullfillSequenceContract(System.Type dialectType)
+		{
+			var dialect = (NHibernate.Dialect.Dialect)Activator.CreateInstance(dialectType);
+
+			if (!dialect.SupportsSequences)
+				Assert.Ignore("This test applies only to dialects that support sequences.");
+
+			// Just call every method that should work if SupportsSequences returns true, to
+			// verify that we at least don't get any exceptions because someone forgot to
+			// override something.
+
+			dialect.GetCreateSequenceString("foo");
+
+			if (dialect.SupportsPooledSequences)
+				dialect.GetCreateSequenceStrings("foo", 3, 3);
+
+			dialect.GetDropSequenceString("foo");
+			dialect.GetDropSequenceStrings("foo");
+			dialect.GetSelectSequenceNextValString("foo");
+			dialect.GetSequenceNextValString("foo");
+			var sql = dialect.QuerySequencesString;
+
 		}
 	}
 }
