@@ -133,30 +133,30 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        public override bool SupportsLimitOffset
-        {
-            get { return true; }
-        }
+		public override bool SupportsLimitOffset
+		{
+			get { return true; }
+		}
 
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
-        {
-            SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-            pagingBuilder.Add(queryString);
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			pagingBuilder.Add(queryString);
 
-            if (limit != null)
-            {
-                pagingBuilder.Add(" limit ");
-                pagingBuilder.Add(limit);
-            }
+			if (limit != null)
+			{
+				pagingBuilder.Add(" limit ");
+				pagingBuilder.Add(limit);
+			}
 
-            if (offset != null)
-            {
-                pagingBuilder.Add(" offset ");
-                pagingBuilder.Add(offset);
-            }
+			if (offset != null)
+			{
+				pagingBuilder.Add(" offset ");
+				pagingBuilder.Add(offset);
+			}
 
-            return pagingBuilder.ToSqlString();
-        }
+			return pagingBuilder.ToSqlString();
+		}
 
 		public override string GetForUpdateString(string aliases)
 		{
@@ -221,7 +221,7 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks
 		{
-		    get { return 10L; }   // Microseconds.
+			get { return 10L; }   // Microseconds.
 		}
 
 		public override bool SupportsCurrentTimestampSelection

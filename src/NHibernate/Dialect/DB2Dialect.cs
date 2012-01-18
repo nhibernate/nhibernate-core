@@ -199,10 +199,10 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
 			/*
-		     * "select * from (select row_number() over(orderby_clause) as rownum, "
+			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
@@ -229,12 +229,12 @@ namespace NHibernate.Dialect
 					.Add("<= ")
 					.Add(limit);
 			}
-            else
+			else
 			{
-			    // We just have an offset.
-			    pagingBuilder
-			        .Add("> ")
-			        .Add(offset);
+				// We just have an offset.
+				pagingBuilder
+					.Add("> ")
+					.Add(offset);
 			}
 
 			return pagingBuilder.ToSqlString();
