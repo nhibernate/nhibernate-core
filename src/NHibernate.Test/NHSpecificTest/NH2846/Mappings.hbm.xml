@@ -18,7 +18,7 @@
     </id>
     <property name="Title" />
   </class>
-  <class name="Comment">
+  <class name="`Comment`">
     <id name="Id">
       <generator class="identity" />
     </id>
