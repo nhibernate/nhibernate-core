@@ -208,29 +208,40 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							origin = fromElement.RealOrigin;
 						}
 
+						// Only perform the fetch if its owner is included in the select 
 						if (!_fromElementsForLoad.Contains(origin))
 						{
-							throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
+							// NH-2846: Before 2012-01-18, we threw this exception. However, some
+							// components using LINQ (e.g. paging) like to automatically append e.g. Count(). It
+							// can then be difficult to avoid having a bogus fetch statement, so just ignore those.
+							// An alternative solution may be to have the linq provider filter out the fetch instead.
+							// throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
+
+							//throw away the fromElement. It's clearly redundant.
+							fromElement.Parent.RemoveChild(fromElement);
 						}
-
-						IType type = fromElement.SelectType;
-						AddCollectionFromElement(fromElement);
-
-						if (type != null)
+						else
 						{
-							bool collectionOfElements = fromElement.IsCollectionOfValuesOrComponents;
-							if (!collectionOfElements)
+
+							IType type = fromElement.SelectType;
+							AddCollectionFromElement(fromElement);
+
+							if (type != null)
 							{
-								// Add the type to the list of returned sqlResultTypes.
-								fromElement.IncludeSubclasses = true;
-								_fromElementsForLoad.Add(fromElement);
-								//sqlResultTypeList.add( type );
-								// Generate the select expression.
-								String text = fromElement.RenderIdentifierSelect(size, k);
-								SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
-								if (generatedExpr != null)
+								bool collectionOfElements = fromElement.IsCollectionOfValuesOrComponents;
+								if (!collectionOfElements)
 								{
-									generatedExpr.FromElement = fromElement;
+									// Add the type to the list of returned sqlResultTypes.
+									fromElement.IncludeSubclasses = true;
+									_fromElementsForLoad.Add(fromElement);
+									//sqlResultTypeList.add( type );
+									// Generate the select expression.
+									String text = fromElement.RenderIdentifierSelect(size, k);
+									SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
+									if (generatedExpr != null)
+									{
+										generatedExpr.FromElement = fromElement;
+									}
 								}
 							}
 						}

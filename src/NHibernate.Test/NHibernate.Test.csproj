@@ -671,6 +671,8 @@
     <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2858\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH2858\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2846\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH2846\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1007\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1007\Fixture.cs" />
@@ -2815,6 +2817,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2846\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
