@@ -120,5 +120,20 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.AreEqual(1, list.Count);
 		}
+
+		[Test]
+		public void SingleKeyGroupAndCountWithHavingClause()
+		{
+			//NH-2833
+			var orderCounts = db.Orders
+				.GroupBy(o => o.Customer.CompanyName)
+				.Where(g => g.Count() > 10)
+				.Select(g => new { CompanyName = g.Key, OrderCount = g.Count() })
+				.ToList();
+
+			Assert.That(orderCounts, Has.Count.EqualTo(28));
+			var hornRow = orderCounts.Single(row => row.CompanyName == "Around the Horn");
+			Assert.That(hornRow.OrderCount, Is.EqualTo(13));
+		}
 	}
 }
