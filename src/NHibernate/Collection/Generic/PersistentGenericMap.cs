@@ -136,13 +136,8 @@ namespace NHibernate.Collection.Generic
 
 		bool IDictionary<TKey, TValue>.Remove(TKey key)
 		{
-			if (PutQueueEnabled)
-			{
-				object old = ReadElementByIndex(key);
-				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
-				return true;
-			}
-			else
+			object old = PutQueueEnabled ? ReadElementByIndex(key) : Unknown;
+			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
 				Initialize(true);
 				bool contained = gmap.Remove(key);
@@ -151,6 +146,11 @@ namespace NHibernate.Collection.Generic
 					Dirty();
 				}
 				return contained;
+			}
+			else
+			{
+				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
+				return true;
 			}
 		}
 

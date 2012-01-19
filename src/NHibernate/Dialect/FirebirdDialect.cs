@@ -148,6 +148,12 @@ namespace NHibernate.Dialect
 			get { return "add"; }
 		}
 
+
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return string.Format("gen_id({0}, 1 )", sequenceName);
+		}
+
 		public override string GetSequenceNextValString(string sequenceName)
 		{
 			return string.Format("select gen_id({0}, 1 ) from RDB$DATABASE", sequenceName);

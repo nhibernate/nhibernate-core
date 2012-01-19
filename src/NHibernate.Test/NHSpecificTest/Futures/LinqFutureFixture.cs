@@ -1,297 +1,306 @@
 ﻿using NHibernate.Driver;
-using NHibernate.Impl;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-    using System.Collections;
+	[TestFixture]
+	public class LinqFutureFixture : FutureFixture
+	{
+		[Test]
+		public void CoalesceShouldWorkForFutures()
+		{
+			int personId;
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "inserted name" };
+				var p2 = new Person { Name = null };
 
-    [TestFixture]
-    public class LinqFutureFixture : FutureFixture
-    {
+				s.Save(p1);
+				s.Save(p2);
+				personId = p2.Id;
+				tx.Commit();
+			}
 
-        [Test]
-        public void CoalesceShouldWorkForFutures()
-        {
-            int personId;
-            using (ISession s = OpenSession())
-            using (ITransaction tx = s.BeginTransaction())
-            {
-                var p1 = new Person { Name = "inserted name" };
-                var p2 = new Person { Name = null };
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
+				Assert.AreEqual(personId, person.Value.Id);
+			}
 
-                s.Save(p1);
-                s.Save(p2);
-                personId = p2.Id;
-                tx.Commit();
-            }
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
+			}
+		}
 
-            using (ISession s = OpenSession())
-            using (s.BeginTransaction())
-            {
-                var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
-                Assert.AreEqual(personId, person.Value.Id);
-            }
+		[Test]
+		[Ignore("Currently broken, see NH-2897")]
+		public void CanUseToFutureWithContains()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				var ids = new[] { 1, 2, 3 };
+				var persons10 = s.Query<Person>()
+					.Where(p => ids.Contains(p.Id))
+					.FetchMany(p => p.Children)
+					.Skip(5)
+					.Take(10)
+					.ToFuture().ToList();
 
-            using (ISession s = OpenSession())
-            using (ITransaction tx = s.BeginTransaction())
-            {
-                s.Delete("from Person");
-                tx.Commit();
-            }
-        }
+				Assert.IsNotNull(persons10);
+				Assert.Pass();
+			}
+		}
 
-				[Test]
-				public void CanUseSkipAndFetchManyWithToFuture()
+		[Test]
+		public void CanUseSkipAndFetchManyWithToFuture()
+		{
+			using (var s = sessions.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "Parent" };
+				var p2 = new Person { Parent = p1, Name = "Child" };
+				p1.Children.Add(p2);
+				s.Save(p1);
+				s.Save(p2);
+				tx.Commit();
+
+				s.Clear(); // we don't want caching
+			}
+
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons10 = s.Query<Person>()
+					.FetchMany(p => p.Children)
+					.Skip(5)
+					.Take(10)
+					.ToFuture();
+
+				var persons5 = s.Query<Person>()
+					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
 				{
-					using (var s = sessions.OpenSession())
-					using (var tx = s.BeginTransaction())
-					{
-						var p1 = new Person {Name = "Parent"};
-						var p2 = new Person {Parent = p1, Name = "Child"};
-						p1.Children.Add(p2);
-						s.Save(p1);
-						s.Save(p2);
-						tx.Commit();
+					foreach (var person in persons5) { }
 
-						s.Clear(); // we don't want caching
-					}
+					foreach (var person in persons10) { }
 
-					using (var s = sessions.OpenSession())
-					{
-						IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
-						var persons10 = s.Query<Person>()
-							.FetchMany(p => p.Children)
-							.Skip(5)
-							.Take(10)
-							.ToFuture();
-
-						var persons5 = s.Query<Person>()
-							.ToFuture();
-
-						using (var logSpy = new SqlLogSpy())
-						{
-							foreach (var person in persons5) {}
-
-							foreach (var person in persons10) {}
-
-							var events = logSpy.Appender.GetEvents();
-							Assert.AreEqual(1, events.Length);
-						}
-					}
-
-					using (ISession s = OpenSession())
-					using (ITransaction tx = s.BeginTransaction())
-					{
-						s.Delete("from Person");
-						tx.Commit();
-					}
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
 				}
+			}
 
-    	[Test]
-        public void CanUseFutureQuery()
-        {
-            using (var s = sessions.OpenSession())
-            {
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void CanUseFutureQuery()
+		{
+			using (var s = sessions.OpenSession())
+			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-                var persons10 = s.Query<Person>()
-                    .Take(10)
-                    .ToFuture();
-                var persons5 = s.Query<Person>()
-                    .Take(5)
-                    .ToFuture();
+				var persons10 = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+				var persons5 = s.Query<Person>()
+					.Take(5)
+					.ToFuture();
 
-                using (var logSpy = new SqlLogSpy())
-                {
-                    foreach (var person in persons5)
-                    {
-
-                    }
-
-                    foreach (var person in persons10)
-                    {
-
-                    }
-
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                }
-            }
-        }
-
-        [Test]
-        public void CanUseFutureQueryWithAnonymousType()
-        {
-            using (var s = sessions.OpenSession())
-            {
-                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
-                var persons = s.Query<Person>()
-                    .Select(p => new {Id = p.Id, Name = p.Name})
-                    .ToFuture();
-                var persons5 = s.Query<Person>()
-                    .Select(p => new { Id = p.Id, Name = p.Name })
-                    .Take(5)
-                    .ToFuture();
-
-                using (var logSpy = new SqlLogSpy())
-                {
-                    persons5.ToList(); // initialize the enumerable
-                    persons.ToList();
-
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                }
-            }
-        }
-
-
-
-        [Test]
-        public void CanUseFutureFetchQuery()
-        {
-					IDriver driver = sessions.ConnectionProvider.Driver;
-					if (!driver.SupportsMultipleQueries)
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in persons5)
 					{
-						Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 					}
-					using (var s = sessions.OpenSession())
-            using (var tx = s.BeginTransaction())
-            {
-                var p1 = new Person {Name = "Parent"};
-                var p2 = new Person {Parent = p1, Name = "Child"};
-                p1.Children.Add(p2);
-                s.Save(p1);
-                s.Save(p2);
-                tx.Commit();
-                
-                s.Clear(); // we don't want caching
-            }
 
-            using (var s = sessions.OpenSession())
-            {
-                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+					foreach (var person in persons10)
+					{
+					}
 
-                var persons = s.Query<Person>()
-                    .FetchMany(p => p.Children)
-                    .ToFuture();
-                var persons10 = s.Query<Person>()
-                    .FetchMany(p => p.Children)
-                    .Take(10)
-                    .ToFuture();
-               
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
 
-                using (var logSpy = new SqlLogSpy())
-                {
-
-                    Assert.That(persons.Any(x => x.Children.Any()), "No children found");
-                    Assert.That(persons10.Any(x => x.Children.Any()), "No children found");                 
-
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                }
-            }
-
-            using (ISession s = OpenSession())
-            using (ITransaction tx = s.BeginTransaction())
-            {
-                s.Delete("from Person");
-                tx.Commit();
-            }
-        }
-
-
-        [Test]
-        public void TwoFuturesRunInTwoRoundTrips()
-        {
-            using (var s = sessions.OpenSession())
-            {
+		[Test]
+		public void CanUseFutureQueryWithAnonymousType()
+		{
+			using (var s = sessions.OpenSession())
+			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-                using (var logSpy = new SqlLogSpy())
-                {
-                    var persons10 = s.Query<Person>()
-                        .Take(10)
-                        .ToFuture();
+				var persons = s.Query<Person>()
+					.Select(p => new { Id = p.Id, Name = p.Name })
+					.ToFuture();
+				var persons5 = s.Query<Person>()
+					.Select(p => new { Id = p.Id, Name = p.Name })
+					.Take(5)
+					.ToFuture();
 
-                    foreach (var person in persons10) { } // fire first future round-trip
+				using (var logSpy = new SqlLogSpy())
+				{
+					persons5.ToList(); // initialize the enumerable
+					persons.ToList();
 
-                    var persons5 = s.Query<Person>()
-                        .Take(5)
-                        .ToFuture();
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
 
-                    foreach (var person in persons5) { } // fire second future round-trip
+		[Test]
+		public void CanUseFutureFetchQuery()
+		{
+			IDriver driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+			{
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+			}
+			using (var s = sessions.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "Parent" };
+				var p2 = new Person { Parent = p1, Name = "Child" };
+				p1.Children.Add(p2);
+				s.Save(p1);
+				s.Save(p2);
+				tx.Commit();
 
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(2, events.Length);
-                }
-            }
-        }
+				s.Clear(); // we don't want caching
+			}
 
-        [Test]
-        public void CanCombineSingleFutureValueWithEnumerableFutures()
-        {
-            using (var s = sessions.OpenSession())
-            {
+			using (var s = sessions.OpenSession())
+			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-                var persons = s.Query<Person>()
-                    .Take(10)
-                    .ToFuture();
+				var persons = s.Query<Person>()
+					.FetchMany(p => p.Children)
+					.ToFuture();
+				var persons10 = s.Query<Person>()
+					.FetchMany(p => p.Children)
+					.Take(10)
+					.ToFuture();
 
-                var personCount = s.Query<Person>()
-                    .Select(x=>x.Id)
-                    .ToFutureValue();
+				using (var logSpy = new SqlLogSpy())
+				{
 
-                using (var logSpy = new SqlLogSpy())
-                {
-                    long count = personCount.Value;
+					Assert.That(persons.Any(x => x.Children.Any()), "No children found");
+					Assert.That(persons10.Any(x => x.Children.Any()), "No children found");
 
-                    foreach (var person in persons)
-                    {
-                    }
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
 
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                }
-            }
-        }
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
+			}
+		}
 
-        [Test]
-        public void CanExecuteMultipleQueriesOnSameExpression()
-        {
-            using (var s = sessions.OpenSession())
-            {
-                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-		    
-                var meContainer = s.Query<Person>()
-                    .Where(x=>x.Id == 1)
-                    .ToFutureValue();
-		    
-                var possiblefriends = s.Query<Person>()
-                    .Where(x => x.Id != 2)
-                    .ToFuture();
-		    
-                using (var logSpy = new SqlLogSpy())
-                {
-                    var me = meContainer.Value;
-			
-                    foreach (var person in possiblefriends)
-                    {
-                    }
-		    
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                	var wholeLog = logSpy.GetWholeLog();
-                    string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
-                    Assert.True(wholeLog.Contains(paramPrefix + "p0 = 1 [Type: Int32 (0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0)]"));
-                }
-            }
+		[Test]
+		public void TwoFuturesRunInTwoRoundTrips()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-        }
-    }
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.Query<Person>()
+						.Take(10)
+						.ToFuture();
+
+					foreach (var person in persons10) { } // fire first future round-trip
+
+					var persons5 = s.Query<Person>()
+						.Take(5)
+						.ToFuture();
+
+					foreach (var person in persons5) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public void CanCombineSingleFutureValueWithEnumerableFutures()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+
+				var personCount = s.Query<Person>()
+					.Select(x => x.Id)
+					.ToFutureValue();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					long count = personCount.Value;
+
+					foreach (var person in persons)
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public void CanExecuteMultipleQueriesOnSameExpression()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var meContainer = s.Query<Person>()
+					.Where(x => x.Id == 1)
+					.ToFutureValue();
+
+				var possiblefriends = s.Query<Person>()
+					.Where(x => x.Id != 2)
+					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var me = meContainer.Value;
+
+					foreach (var person in possiblefriends)
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+					var wholeLog = logSpy.GetWholeLog();
+					string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
+					Assert.True(wholeLog.Contains(paramPrefix + "p0 = 1 [Type: Int32 (0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0)]"));
+				}
+			}
+
+		}
+	}
 }

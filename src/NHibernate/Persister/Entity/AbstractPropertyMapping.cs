@@ -32,15 +32,11 @@ namespace NHibernate.Persister.Entity
 
 		public IType ToType(string propertyName)
 		{
-			try
-			{
-				IType type = typesByPropertyPath[propertyName];
-				return type;
-			}
-			catch(KeyNotFoundException)
-			{
+			IType type;
+			if (!typesByPropertyPath.TryGetValue(propertyName, out type))
 				throw PropertyException(propertyName);
-			}
+			
+			return type;
 		}
 
 		public bool TryToType(string propertyName, out IType type)
@@ -55,7 +51,7 @@ namespace NHibernate.Persister.Entity
 
 			string[] templates;
 			formulaTemplatesByPropertyPath.TryGetValue(propertyName, out templates);
-			string[] result = new string[columns.Length];
+			var result = new string[columns.Length];
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
@@ -69,14 +65,9 @@ namespace NHibernate.Persister.Entity
 		private string[] GetColumns(string propertyName)
 		{
 			string[] columns;
-			try
-			{
-				columns = columnsByPropertyPath[propertyName];
-			}
-			catch (KeyNotFoundException)
-			{
+			if (!columnsByPropertyPath.TryGetValue(propertyName, out columns))
 				throw PropertyException(propertyName);
-			}
+
 			return columns;
 		}
 
@@ -86,7 +77,7 @@ namespace NHibernate.Persister.Entity
 
 			string[] templates;
 			formulaTemplatesByPropertyPath.TryGetValue(propertyName, out templates);
-			string[] result = new string[columns.Length];
+			var result = new string[columns.Length];
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
@@ -116,12 +107,12 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new MappingException(
 					string.Format("broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",
-					              path, EntityName, type.Name, type.GetColumnSpan(factory), columns.Length));
+								  path, EntityName, type.Name, type.GetColumnSpan(factory), columns.Length));
 			}
 
 			if (type.IsAssociationType)
 			{
-				IAssociationType actType = (IAssociationType)type;
+				var actType = (IAssociationType)type;
 				if (actType.UseLHSPrimaryKey)
 				{
 					columns = IdentifierColumnNames;
@@ -146,7 +137,7 @@ namespace NHibernate.Persister.Entity
 
 			if (type.IsComponentType)
 			{
-				IAbstractComponentType actype = (IAbstractComponentType)type;
+				var actype = (IAbstractComponentType)type;
 				InitComponentPropertyPaths(path, actype, columns, formulaTemplates, factory);
 				if (actype.IsEmbedded)
 				{
@@ -190,7 +181,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected void InitComponentPropertyPaths(string path, IAbstractComponentType type, string[] columns,
-		                                          string[] formulaTemplates, IMapping factory)
+												  string[] formulaTemplates, IMapping factory)
 		{
 			IType[] types = type.Subtypes;
 			string[] properties = type.PropertyNames;
@@ -203,7 +194,7 @@ namespace NHibernate.Persister.Entity
 					int length = types[i].GetColumnSpan(factory);
 					string[] columnSlice = ArrayHelper.Slice(columns, begin, length);
 					string[] formulaSlice = formulaTemplates == null ?
-					                        null : ArrayHelper.Slice(formulaTemplates, begin, length);
+											null : ArrayHelper.Slice(formulaTemplates, begin, length);
 
 					InitPropertyPaths(subpath, types[i], columnSlice, formulaSlice, factory);
 					begin += length;
@@ -219,22 +210,17 @@ namespace NHibernate.Persister.Entity
 		{
 			if (string.IsNullOrEmpty(path))
 				return property;
-			else
-				return StringHelper.Qualify(path, property);
+			
+			return StringHelper.Qualify(path, property);
 		}
 
 		public string[] GetColumnNames(string propertyName)
 		{
-			try
-			{
-				string[] columns;
-				columns = columnsByPropertyPath[propertyName];
-				return columns;
-			}
-			catch (KeyNotFoundException)
-			{
+			string[] columns;
+			if (!columnsByPropertyPath.TryGetValue(propertyName, out columns))
 				throw new MappingException(string.Format("unknown property: {0} of: {1}", propertyName, EntityName));
-			}
+
+			return columns;
 		}
 	}
 }

@@ -54,8 +54,9 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-			if (resultOperator is GroupResultOperator)
-				_namer.Add((GroupResultOperator)resultOperator);
+			var groupBy = resultOperator as GroupResultOperator;
+			if (groupBy != null)
+				_namer.Add(groupBy);
 		}
 
 		public QuerySourceNamer Namer { get { return _namer; } }

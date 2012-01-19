@@ -57,6 +57,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
 			keyProperties.Should().Have.Count.EqualTo(2);
 			keyProperties.Select(x => x.Name).Should().Have.SameValuesAs("Code", "Name");
+			hbmCompositId.name.Should().Be(For<MyClass>.Property(x => x.Id).Name);
 		}
 
 		[Test]

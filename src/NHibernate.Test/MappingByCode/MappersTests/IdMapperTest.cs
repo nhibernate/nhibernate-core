@@ -134,6 +134,24 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			hbmId.Columns.Single().name.Should().Be("MyName");
 		}
 
+		[TestCase(-1, "-1")]
+		[TestCase(null, "null", Description = "CanSetExplicitNull")]
+		public void CanSetUnsavedValue(object unsavedValue, string expectedUnsavedValue)
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			mapper.UnsavedValue(unsavedValue);
+			hbmId.unsavedvalue.Should().Be(expectedUnsavedValue);
+		}
+
+		[Test]
+		public void UnsavedValueUnsetWhenNotSet()
+		{
+			var hbmId = new HbmId();
+			var mapper = new IdMapper(null, hbmId);
+			hbmId.unsavedvalue.Should().Be(null);
+		}
+
 		[Test]
 		public void CanSetLength()
 		{

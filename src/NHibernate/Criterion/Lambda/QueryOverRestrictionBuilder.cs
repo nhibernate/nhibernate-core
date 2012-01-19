@@ -124,7 +124,7 @@ namespace NHibernate.Criterion.Lambda
 		/// <summary>
 		/// Apply an "in" constraint to the named property
 		/// </summary>
-		public TReturn IsInG<T>(ICollection<T> values)
+		public TReturn IsInG<T>(IEnumerable<T> values)
 		{
 			return Add(projection.Create<ICriterion>(s => Restrictions.InG(s, values), p => Restrictions.InG(p, values)));
 		}

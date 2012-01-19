@@ -5,46 +5,46 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-    public class NhExpressionTreeVisitor : ExpressionTreeVisitor
-    {
-        public override Expression VisitExpression(Expression expression)
-        {
-            if (expression == null)
-            {
-                return null;
-            }
+	public class NhExpressionTreeVisitor : ExpressionTreeVisitor
+	{
+		public override Expression VisitExpression(Expression expression)
+		{
+			if (expression == null)
+			{
+				return null;
+			}
 
-            switch ((NhExpressionType) expression.NodeType)
-            {
-                case NhExpressionType.Average:
-                case NhExpressionType.Min:
-                case NhExpressionType.Max:
-                case NhExpressionType.Sum:
-                case NhExpressionType.Count:
-                case NhExpressionType.Distinct:
+			switch ((NhExpressionType)expression.NodeType)
+			{
+				case NhExpressionType.Average:
+				case NhExpressionType.Min:
+				case NhExpressionType.Max:
+				case NhExpressionType.Sum:
+				case NhExpressionType.Count:
+				case NhExpressionType.Distinct:
 					return VisitNhAggregate((NhAggregatedExpression)expression);
 				case NhExpressionType.New:
-                    return VisitNhNew((NhNewExpression) expression);
-                case NhExpressionType.Star:
-                    return VisitNhStar((NhStarExpression) expression);
-            }
+					return VisitNhNew((NhNewExpression)expression);
+				case NhExpressionType.Star:
+					return VisitNhStar((NhStarExpression)expression);
+			}
 
-            return base.VisitExpression(expression);
-        }
+			return base.VisitExpression(expression);
+		}
 
-        protected virtual Expression VisitNhStar(NhStarExpression expression)
-        {
-            var newExpression = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhStar(NhStarExpression expression)
+		{
+			var newExpression = VisitExpression(expression.Expression);
 
-            return newExpression != expression.Expression ? new NhStarExpression(newExpression) : expression;
-        }
+			return newExpression != expression.Expression ? new NhStarExpression(newExpression) : expression;
+		}
 
-        protected virtual Expression VisitNhNew(NhNewExpression expression)
-        {
-            var arguments = VisitAndConvert(expression.Arguments, "VisitNhNew");
+		protected virtual Expression VisitNhNew(NhNewExpression expression)
+		{
+			var arguments = VisitAndConvert(expression.Arguments, "VisitNhNew");
 
-            return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
-        }
+			return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
+		}
 
 		protected virtual Expression VisitNhAggregate(NhAggregatedExpression expression)
 		{
@@ -67,46 +67,46 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-        protected virtual Expression VisitNhDistinct(NhDistinctExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhDistinct(NhDistinctExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhDistinctExpression(nx) : expression;
-        }
+			return nx != expression.Expression ? new NhDistinctExpression(nx) : expression;
+		}
 
-        protected virtual Expression VisitNhCount(NhCountExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhCount(NhCountExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-						return nx != expression.Expression ? expression.CreateNew(nx) : expression;
-        }
+			return nx != expression.Expression ? expression.CreateNew(nx) : expression;
+		}
 
-        protected virtual Expression VisitNhSum(NhSumExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhSum(NhSumExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhSumExpression(nx) : expression;
-        }
+			return nx != expression.Expression ? new NhSumExpression(nx) : expression;
+		}
 
-        protected virtual Expression VisitNhMax(NhMaxExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhMax(NhMaxExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhMaxExpression(nx) : expression;
-        }
+			return nx != expression.Expression ? new NhMaxExpression(nx) : expression;
+		}
 
-        protected virtual Expression VisitNhMin(NhMinExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhMin(NhMinExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhMinExpression(nx) : expression;
-        }
+			return nx != expression.Expression ? new NhMinExpression(nx) : expression;
+		}
 
-        protected virtual Expression VisitNhAverage(NhAverageExpression expression)
-        {
-            Expression nx = VisitExpression(expression.Expression);
+		protected virtual Expression VisitNhAverage(NhAverageExpression expression)
+		{
+			Expression nx = VisitExpression(expression.Expression);
 
-            return nx != expression.Expression ? new NhAverageExpression(nx) : expression;
-        }
-    }
+			return nx != expression.Expression ? new NhAverageExpression(nx) : expression;
+		}
+	}
 }

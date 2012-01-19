@@ -216,7 +216,9 @@
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
+    <Compile Include="DialectTest\FunctionTests\SequenceSupportFixture.cs" />
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
+    <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
     <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
@@ -442,6 +444,7 @@
     <Compile Include="IdGen\Enhanced\Sequence\DefaultOptimizedSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Sequence\Entity.cs" />
     <Compile Include="IdGen\Enhanced\SourceMock.cs" />
+    <Compile Include="IdGen\Enhanced\Table\PooledLoTableTest.cs" />
     <Compile Include="IdTest\AssignedClass.cs" />
     <Compile Include="IdTest\AssignedFixture.cs" />
     <Compile Include="IdTest\TableGeneratorFixture.cs" />
@@ -646,6 +649,11 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2914\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2914\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Employee.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Employer.cs" />
+    <Compile Include="NHSpecificTest\NH2976\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />
@@ -664,6 +672,8 @@
     <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2858\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH2858\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2846\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH2846\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1007\Employer.cs" />
     <Compile Include="NHSpecificTest\NH1007\Fixture.cs" />
@@ -894,6 +904,7 @@
     <Compile Include="NHSpecificTest\NH2705\SubItemBase.cs" />
     <Compile Include="NHSpecificTest\NH2705\SubItemDetails.cs" />
     <Compile Include="NHSpecificTest\NH2705\Test.cs" />
+    <Compile Include="Linq\ByMethod\CountTests.cs" />
     <Compile Include="NHSpecificTest\NH2721\A.cs" />
     <Compile Include="NHSpecificTest\NH2721\B.cs" />
     <Compile Include="NHSpecificTest\NH2721\Fixture.cs" />
@@ -922,6 +933,10 @@
     <Compile Include="NHSpecificTest\NH2959\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2977\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3004\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3004\TestSqlClientDriver.cs" />
+    <Compile Include="NHSpecificTest\NH3016\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3016\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2778,7 +2793,19 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
+    <EmbeddedResource Include="NHSpecificTest\NH2914\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2959\Mappings.hbm.xml" />
+    <Compile Include="IdGen\Enhanced\Table\Entity.cs" />
+    <Compile Include="IdGen\Enhanced\Table\BasicTableTest.cs" />
+    <EmbeddedResource Include="IdGen\Enhanced\Table\PooledLo.hbm.xml" />
+    <EmbeddedResource Include="IdGen\Enhanced\Table\Pooled.hbm.xml" />
+    <Compile Include="IdGen\Enhanced\Table\PooledTableTest.cs" />
+    <EmbeddedResource Include="IdGen\Enhanced\Table\HiLo.hbm.xml" />
+    <Compile Include="IdGen\Enhanced\Table\HiLoTableTest.cs" />
+    <EmbeddedResource Include="IdGen\Enhanced\Table\Basic.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2976\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="IdGen\Enhanced\Sequence\DefaultOptimized.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\Pooled.hbm.xml" />
     <EmbeddedResource Include="IdGen\Enhanced\Forcedtable\HiLo.hbm.xml" />
@@ -2792,6 +2819,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2846\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />

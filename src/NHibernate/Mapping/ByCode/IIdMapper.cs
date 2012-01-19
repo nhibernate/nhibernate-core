@@ -14,6 +14,7 @@ namespace NHibernate.Mapping.ByCode
 		//void Type(System.System.Type persistentType, object parameters);
 		//void Column(Action<IColumnMapper> columnMapper);
 		//void Columns(params Action<IColumnMapper>[] columnMapper);
+		void UnsavedValue(object value);
 		void Column(string name);
 		void Length(int length);
 	}

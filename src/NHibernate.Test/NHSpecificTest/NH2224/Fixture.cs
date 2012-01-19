@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2224
 		}
 
 		[Test]
-		public void Test()
+		public void CanQueryBasedOnYearWithInOperator()
 		{
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2224
 						"year",
 						NHibernateUtil.DateTime,
 						Projections.Property("DateOfChange")),
-						new string[] { "2010", "2011" }));
+						new string[] { "2010", DateTime.Now.Year.ToString() }));
 
 				var result = criteria.List();
 				

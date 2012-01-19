@@ -16,6 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			this.id = id;
 			this.mapDoc = mapDoc;
 			id.@class = componentType.GetShortClassName(mapDoc);
+			id.name = declaringTypeMember.Name;
 			accessorPropertyMapper = new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => id.access = x);
 		}
 

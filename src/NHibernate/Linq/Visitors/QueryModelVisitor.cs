@@ -217,7 +217,7 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
 		{
-			foreach (Ordering clause in orderByClause.Orderings)
+			foreach (var clause in orderByClause.Orderings)
 			{
 				_hqlTree.AddOrderByClause(HqlGeneratorExpressionTreeVisitor.Visit(clause.Expression, VisitorParameters).AsExpression(),
 								clause.OrderingDirection == OrderingDirection.Asc

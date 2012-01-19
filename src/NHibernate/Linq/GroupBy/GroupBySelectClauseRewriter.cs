@@ -19,7 +19,7 @@ namespace NHibernate.Linq.GroupBy
 		private readonly GroupResultOperator _groupBy;
 		private readonly QueryModel _model;
 
-		public GroupBySelectClauseRewriter(GroupResultOperator groupBy, QueryModel model)
+		private GroupBySelectClauseRewriter(GroupResultOperator groupBy, QueryModel model)
 		{
 			_groupBy = groupBy;
 			_model = model;
@@ -37,49 +37,42 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			if (IsMemberOfModel(expression))
-			{
-				if (expression.Member.Name == "Key")
-				{
-					return _groupBy.KeySelector;
-				}
-				else
-				{
-					Expression elementSelector = _groupBy.ElementSelector;
-
-					if ((elementSelector is MemberExpression) || (elementSelector is QuerySourceReferenceExpression))
-					{
-						// If ElementSelector is MemberExpression, just return
-						return base.VisitMemberExpression(expression);
-					}
-					else if (elementSelector is NewExpression)
-					{
-						// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
-						// TODO - this wouldn't handle nested initialisers.  Should do a tree walk to find the correct member
-						var nex = elementSelector as NewExpression;
-
-						int i = 0;
-						foreach (var member in nex.Members)
-						{
-							if (member.Name == "get_" + expression.Member.Name)
-							{
-								return nex.Arguments[i];
-							}
-							i++;
-						}
-
-						throw new NotImplementedException();
-					}
-					else
-					{
-						throw new NotImplementedException();
-					}
-				}
-			}
-			else
+			if (!IsMemberOfModel(expression))
 			{
 				return base.VisitMemberExpression(expression);
 			}
+
+			if (expression.Member.Name == "Key")
+			{
+				return _groupBy.KeySelector;
+			}
+
+			var elementSelector = _groupBy.ElementSelector;
+
+			if ((elementSelector is MemberExpression) || (elementSelector is QuerySourceReferenceExpression))
+			{
+				// If ElementSelector is MemberExpression, just return
+				return base.VisitMemberExpression(expression);
+			}
+
+			if (elementSelector is NewExpression)
+			{
+				// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
+				// TODO - this wouldn't handle nested initialisers.  Should do a tree walk to find the correct member
+				var nex = elementSelector as NewExpression;
+
+				int i = 0;
+				foreach (var member in nex.Members)
+				{
+					if (member.Name == "get_" + expression.Member.Name)
+					{
+						return nex.Arguments[i];
+					}
+					i++;
+				}
+			}
+
+			throw new NotImplementedException();
 		}
 
 		// TODO - dislike this code intensly.  Should probably be a tree-walk in its own right
@@ -117,7 +110,7 @@ namespace NHibernate.Linq.GroupBy
 
 			var subQuery2 = querySource.FromExpression as SubQueryExpression;
 
-			return (subQuery2.QueryModel == _model);
+			return subQuery2 != null && subQuery2.QueryModel == _model;
 		}
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
@@ -125,7 +118,7 @@ namespace NHibernate.Linq.GroupBy
 			// TODO - is this safe?  All we are extracting is the select clause from the sub-query.  Assumes that everything
 			// else in the subquery has been removed.  If there were two subqueries, one aggregating & one not, this may not be a 
 			// valid assumption.  Should probably be passed a list of aggregating subqueries that we are flattening so that we can check...
-			return GroupBySelectClauseRewriter.ReWrite(expression.QueryModel.SelectClause.Selector, _groupBy, _model);
+			return ReWrite(expression.QueryModel.SelectClause.Selector, _groupBy, _model);
 		}
 	}
 }

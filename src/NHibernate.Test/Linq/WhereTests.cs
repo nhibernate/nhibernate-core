@@ -83,13 +83,13 @@ namespace NHibernate.Test.Linq
 						 select user).Single();
 		}
 
-      [Test]
-      [ExpectedException(typeof(InvalidOperationException))]
-      public void SingleElementWithQueryThatReturnsMultipleResults()
-      {
-         var query = (from user in db.Users
-                      select user).Single();
-      }
+	  [Test]
+	  [ExpectedException(typeof(InvalidOperationException))]
+	  public void SingleElementWithQueryThatReturnsMultipleResults()
+	  {
+		 var query = (from user in db.Users
+					  select user).Single();
+	  }
 
 		[Test]
 		public void SingleOrDefaultElementWithQueryThatReturnsNoResults()
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Linq
 									 where user.Name == "ayende" && user.RegisteredAt == new DateTime(2010, 06, 17)
 						 select user).FirstOrDefault();
 
-            Assert.IsNotNull(query);
+			Assert.IsNotNull(query);
 			Assert.AreEqual("ayende", query.Name);
 			Assert.AreEqual(new DateTime(2010, 06, 17), query.RegisteredAt);
 		}
@@ -264,7 +264,7 @@ namespace NHibernate.Test.Linq
 						{
 							user.Name,
 							RoleName = user.Role.Name,
-                            user.Role.Entity.Output
+							user.Role.Entity.Output
 						};
 
 			var list = query.ToList();
@@ -306,8 +306,8 @@ namespace NHibernate.Test.Linq
 		public void UsersWithArrayContains()
 		{
 			var names = new[] { "ayende", "rahien" };
-            
-		    var query = (from user in db.Users
+			
+			var query = (from user in db.Users
 						 where names.Contains(user.Name)
 						 select user).ToList();
 
@@ -370,8 +370,8 @@ namespace NHibernate.Test.Linq
 			ICollection<string> names = new List<string> {"ayende", "rahien"};
 
 			var query = (from user in db.Users
-			                 where names.Contains(user.Name)
-			                 select user);
+							 where names.Contains(user.Name)
+							 select user);
 			List<User> result = null;
 			Executing.This(() => result = query.ToList()).Should().NotThrow();
 			result.Count.Should().Be(2);
@@ -438,7 +438,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TimesheetsWithCollectionNotContains()
 		{
-            var entry = session.Get<TimesheetEntry>(1);
+			var entry = session.Get<TimesheetEntry>(1);
 
 			var query = (from sheet in db.Timesheets
 						 where !sheet.Entries.Contains(entry)
@@ -459,14 +459,14 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(2, query.Count);
 		}
 
-        [Test]
-        public void SearchOnObjectTypeWithExtensionMethod()
-        {
-            var query = (from o in session.Query<Animal>()
-                         select o).OfType<Dog>().ToList();
+		[Test]
+		public void SearchOnObjectTypeWithExtensionMethod()
+		{
+			var query = (from o in session.Query<Animal>()
+						 select o).OfType<Dog>().ToList();
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
 				[Test(Description = "Reported as bug NH-2206")]
 				public void SearchOnObjectTypeUpCastWithExtensionMethod()
@@ -486,68 +486,81 @@ namespace NHibernate.Test.Linq
 					Assert.AreEqual(2, query.Count);
 				}
 
-        [Test]
-        public void SearchOnObjectTypeWithIsKeyword()
-        {
-            var query = (from o in session.Query<Animal>()
-                         where o is Dog
-                         select o).ToList();
+		[Test]
+		public void SearchOnObjectTypeWithIsKeyword()
+		{
+			var query = (from o in session.Query<Animal>()
+						 where o is Dog
+						 select o).ToList();
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public void BitwiseQuery() 
-        {
-            var featureSet = FeatureSet.HasMore;
-            var query = (from o in session.Query<User>()
-                         where (o.Features & featureSet) == featureSet
-                         select o).ToList();
+		[Test]
+		public void BitwiseQuery() 
+		{
+			var featureSet = FeatureSet.HasMore;
+			var query = (from o in session.Query<User>()
+						 where (o.Features & featureSet) == featureSet
+						 select o).ToList();
 
-            Assert.IsNotNull(query);
-        }
+			Assert.IsNotNull(query);
+		}
 
-        [Test]
-        public void BitwiseQuery2()
-        {
-            var featureSet = FeatureSet.HasAll;
-            var query = (from o in session.Query<User>()
-                         where (o.Features & featureSet) == featureSet
-                         select o).ToList();
+		[Test]
+		public void BitwiseQuery2()
+		{
+			var featureSet = FeatureSet.HasAll;
+			var query = (from o in session.Query<User>()
+						 where (o.Features & featureSet) == featureSet
+						 select o).ToList();
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public void BitwiseQuery3()
-        {
-            var featureSet = FeatureSet.HasThat;
-            var query = (from o in session.Query<User>()
-                         where ((o.Features | featureSet) & featureSet) == featureSet
-                         select o).ToList();
+		[Test]
+		public void BitwiseQuery3()
+		{
+			var featureSet = FeatureSet.HasThat;
+			var query = (from o in session.Query<User>()
+						 where ((o.Features | featureSet) & featureSet) == featureSet
+						 select o).ToList();
 
-            Assert.AreEqual(3, query.Count);
-        }
+			Assert.AreEqual(3, query.Count);
+		}
 
-        [Test]
-        public void OfTypeWithWhereAndProjection()
-        {
-            // NH-2375
-            (from a
-                in session.Query<Animal>().OfType<Cat>()
-             where a.Pregnant
-             select a.Id).FirstOrDefault();
-        }
+		[Test]
+		public void OfTypeWithWhereAndProjection()
+		{
+			// NH-2375
+			(from a
+				in session.Query<Animal>().OfType<Cat>()
+			 where a.Pregnant
+			 select a.Id).FirstOrDefault();
+		}
 
-        [Test]
-        public void OfTypeWithWhere()
-        {
-            // NH-2375
-            (from a
-                in session.Query<Animal>().OfType<Cat>()
-             where a.Pregnant
-             select a).FirstOrDefault();
-        }
+		[Test]
+		public void OfTypeWithWhere()
+		{
+			// NH-2375
+			(from a
+				in session.Query<Animal>().OfType<Cat>()
+			 where a.Pregnant
+			 select a).FirstOrDefault();
+		}
 
-    }
+		[Test]
+		public void TimeSheetsWithSamePredicateTwoTimes()
+		{
+			//NH-3009
+			Expression<Func<Timesheet, bool>> predicate = timesheet => timesheet.Entries.Any(e => e.Id != 1);
+
+			var query = db.Timesheets
+				.Where(predicate)
+				.Where(predicate)
+				.ToList();
+
+			Assert.AreEqual(2, query.Count);
+		}
+	}
 }

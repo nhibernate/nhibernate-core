@@ -62,7 +62,7 @@ namespace NHibernate.Engine
 		                       string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
 			PositionalParameterTypes = positionalParameterTypes ?? new IType[0];
-			PositionalParameterValues = positionalParameterValues ?? new IType[0];
+			PositionalParameterValues = positionalParameterValues ?? new object[0];
 			NamedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
 			LockModes = lockModes;
 			RowSelection = rowSelection;
