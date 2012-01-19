@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -41,6 +42,21 @@ namespace NHibernate.Test.SqlCommandTest
 
 			sql = sql.Append(new SqlString(new object[] {" more parts ", " another part "}));
 			Assert.AreEqual(7, sql.Count, "Added a SqlString to a SqlString");
+		}
+
+		[Test]
+		public void Split()
+		{
+			SqlString sql = new SqlString(new string[] { "select", " alfa, beta, gamma", " from table" });
+			var parts1 = sql.Split(",").Select(s => s.ToString()).ToArray();
+			var expectedParts1 = new[] { "select alfa" , " beta", " gamma from table" };
+			Assert.That(parts1, Is.EqualTo(expectedParts1));
+
+			SqlString sql2 = sql.Substring(6);
+			sql2.Compact();
+			var parts2 = sql2.Split(",").Select(s => s.ToString()).ToArray();
+			var expectedParts2 = new[] { " alfa", " beta", " gamma from table" };
+			Assert.That(parts2, Is.EqualTo(expectedParts2));
 		}
 
 		[Test]
