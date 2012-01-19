@@ -16,7 +16,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void Append()
 		{
-			SqlString sql = new SqlString(new string[] {"select", " from table"});
+			SqlString sql = new SqlString(new string[] { "select", " from table" });
 
 			SqlString postAppendSql = sql.Append(" where A=B");
 
@@ -37,10 +37,10 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			SqlString sql =
 				new SqlString(
-					new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = ", Parameter.Placeholder});
+					new object[] { "select", " from table where a = ", Parameter.Placeholder, " and b = ", Parameter.Placeholder });
 			Assert.AreEqual(5, sql.Count, "Count with no nesting failed.");
 
-			sql = sql.Append(new SqlString(new object[] {" more parts ", " another part "}));
+			sql = sql.Append(new SqlString(new object[] { " more parts ", " another part " }));
 			Assert.AreEqual(7, sql.Count, "Added a SqlString to a SqlString");
 		}
 
@@ -49,7 +49,7 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			SqlString sql = new SqlString(new string[] { "select", " alfa, beta, gamma", " from table" });
 			var parts1 = sql.Split(",").Select(s => s.ToString()).ToArray();
-			var expectedParts1 = new[] { "select alfa" , " beta", " gamma from table" };
+			var expectedParts1 = new[] { "select alfa", " beta", " gamma from table" };
 			Assert.That(parts1, Is.EqualTo(expectedParts1));
 
 			SqlString sql2 = sql.Substring(6);
@@ -62,7 +62,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EndsWith()
 		{
-			SqlString sql = new SqlString(new string[] {"select", " from table"});
+			SqlString sql = new SqlString(new string[] { "select", " from table" });
 			Assert.IsTrue(sql.EndsWith("ble"));
 			Assert.IsFalse(sql.EndsWith("'"));
 		}
@@ -70,7 +70,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EndsWithEmptyString()
 		{
-			SqlString sql = new SqlString(new string[] {"", "select", " from table", ""});
+			SqlString sql = new SqlString(new string[] { "", "select", " from table", "" });
 			Assert.IsTrue(sql.EndsWith("ble"));
 			Assert.IsFalse(sql.EndsWith("'"));
 		}
@@ -78,7 +78,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void EndsWithParameter()
 		{
-			SqlString sql = new SqlString(new object[] {"", "select", " from table where id = ", Parameter.Placeholder});
+			SqlString sql = new SqlString(new object[] { "", "select", " from table where id = ", Parameter.Placeholder });
 			Assert.IsFalse(sql.EndsWith("'"));
 			Assert.IsFalse(sql.EndsWith(""));
 		}
@@ -88,7 +88,7 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			SqlString sql =
 				new SqlString(
-					new object[] {"select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder});
+					new object[] { "select ", "from table ", "where a = ", Parameter.Placeholder, " and c = ", Parameter.Placeholder });
 			SqlString replacedSql = sql.Replace("table", "replacedTable");
 			Assert.AreEqual(sql.ToString().Replace("table", "replacedTable"), replacedSql.ToString());
 
@@ -102,7 +102,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void StartsWith()
 		{
-			SqlString sql = new SqlString(new string[] {"select", " from table"});
+			SqlString sql = new SqlString(new string[] { "select", " from table" });
 			Assert.IsTrue(sql.StartsWithCaseInsensitive("s"));
 			Assert.IsFalse(sql.StartsWithCaseInsensitive(","));
 		}
@@ -118,7 +118,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void StartsWithEmptyString()
 		{
-			SqlString sql = new SqlString(new string[] {"", "select", " from table"});
+			SqlString sql = new SqlString(new string[] { "", "select", " from table" });
 			Assert.IsTrue(sql.StartsWithCaseInsensitive("s"));
 			Assert.IsFalse(sql.StartsWithCaseInsensitive(","));
 		}
@@ -144,14 +144,14 @@ namespace NHibernate.Test.SqlCommandTest
 		public void SubstringComplex()
 		{
 			SqlString str =
-				new SqlString(new object[] {"select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder});
+				new SqlString(new object[] { "select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder });
 
 			SqlString substr7 = str.Substring(7);
 			Assert.AreEqual(
-				new SqlString(new object[] {Parameter.Placeholder, " from table where x = ", Parameter.Placeholder}), substr7);
+				new SqlString(new object[] { Parameter.Placeholder, " from table where x = ", Parameter.Placeholder }), substr7);
 
 			SqlString substr10 = str.Substring(10);
-			Assert.AreEqual(new SqlString(new object[] {"rom table where x = ", Parameter.Placeholder}), substr10);
+			Assert.AreEqual(new SqlString(new object[] { "rom table where x = ", Parameter.Placeholder }), substr10);
 
 			Assert.AreEqual(SqlString.Empty, str.Substring(200));
 		}
@@ -160,13 +160,13 @@ namespace NHibernate.Test.SqlCommandTest
 		public void Substring2Complex()
 		{
 			SqlString str =
-				new SqlString(new object[] {"select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder});
+				new SqlString(new object[] { "select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder });
 
 			SqlString substr7_10 = str.Substring(7, 10);
-			Assert.AreEqual(new SqlString(new object[] {Parameter.Placeholder, " from tab"}), substr7_10);
+			Assert.AreEqual(new SqlString(new object[] { Parameter.Placeholder, " from tab" }), substr7_10);
 
 			SqlString substr10_200 = str.Substring(10, 200);
-			Assert.AreEqual(new SqlString(new object[] {"rom table where x = ", Parameter.Placeholder}), substr10_200);
+			Assert.AreEqual(new SqlString(new object[] { "rom table where x = ", Parameter.Placeholder }), substr10_200);
 
 			SqlString substr200_10 = str.Substring(200, 10);
 			Assert.AreEqual(SqlString.Empty, substr200_10);
@@ -176,7 +176,7 @@ namespace NHibernate.Test.SqlCommandTest
 		public void IndexOf()
 		{
 			SqlString str =
-				new SqlString(new object[] {"select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder});
+				new SqlString(new object[] { "select ", Parameter.Placeholder, " from table where x = ", Parameter.Placeholder });
 
 			Assert.AreEqual(0, str.IndexOfCaseInsensitive("select"));
 			Assert.AreEqual(1, str.IndexOfCaseInsensitive("el"));
@@ -187,14 +187,14 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void IndexOfNonCompacted()
 		{
-			SqlString str = new SqlString(new object[] {"select ", " from"});
+			SqlString str = new SqlString(new object[] { "select ", " from" });
 			Assert.AreEqual(6, str.IndexOfCaseInsensitive("  "));
 		}
 
 		[Test]
 		public void TrimAllString()
 		{
-			SqlString sql = new SqlString(new string[] {"   extra space", " in the middle", " at the end     "});
+			SqlString sql = new SqlString(new string[] { "   extra space", " in the middle", " at the end     " });
 			sql = sql.Trim();
 
 			Assert.AreEqual("extra space in the middle at the end", sql.ToString());
@@ -205,7 +205,7 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			Parameter p1 = Parameter.Placeholder;
 
-			SqlString sql = new SqlString(new object[] {p1, "   extra space   "});
+			SqlString sql = new SqlString(new object[] { p1, "   extra space   " });
 			sql = sql.Trim();
 
 			Assert.AreEqual("?   extra space", sql.ToString());
@@ -216,7 +216,7 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			Parameter p1 = Parameter.Placeholder;
 
-			SqlString sql = new SqlString(new object[] {"   extra space   ", p1});
+			SqlString sql = new SqlString(new object[] { "   extra space   ", p1 });
 			sql = sql.Trim();
 
 			Assert.AreEqual("extra space   ?", sql.ToString());
@@ -228,7 +228,7 @@ namespace NHibernate.Test.SqlCommandTest
 			Parameter p1 = Parameter.Placeholder;
 			Parameter p2 = Parameter.Placeholder;
 
-			SqlString sql = new SqlString(new object[] {p1, p2});
+			SqlString sql = new SqlString(new object[] { p1, p2 });
 			sql = sql.Trim();
 
 			Assert.AreEqual("??", sql.ToString());
@@ -237,7 +237,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void SubstringStartingWithLast()
 		{
-			SqlString sql = new SqlString(new object[] {"select x from y where z = ", Parameter.Placeholder, " order by t"});
+			SqlString sql = new SqlString(new object[] { "select x from y where z = ", Parameter.Placeholder, " order by t" });
 
 			Assert.AreEqual("order by t", sql.SubstringStartingWithLast("order by").ToString());
 		}
@@ -245,7 +245,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void NoSubstringStartingWithLast()
 		{
-			SqlString sql = new SqlString(new object[] {"select x from y where z = ", Parameter.Placeholder, " order by t"});
+			SqlString sql = new SqlString(new object[] { "select x from y where z = ", Parameter.Placeholder, " order by t" });
 
 			Assert.AreEqual("", sql.SubstringStartingWithLast("zzz").ToString());
 		}
@@ -255,16 +255,16 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			SqlString sql =
 				new SqlString(
-					new object[] {"select x from y where z = ", Parameter.Placeholder, " order by ", Parameter.Placeholder});
+					new object[] { "select x from y where z = ", Parameter.Placeholder, " order by ", Parameter.Placeholder });
 
-			Assert.AreEqual(new SqlString(new object[] {"order by ", Parameter.Placeholder}),
-			                sql.SubstringStartingWithLast("order by"));
+			Assert.AreEqual(new SqlString(new object[] { "order by ", Parameter.Placeholder }),
+							sql.SubstringStartingWithLast("order by"));
 		}
 
 		[Test]
 		public void SubstringStartingWithLastMultiplePossibilities()
 		{
-			SqlString sql = new SqlString(new string[] {" order by x", " order by z"});
+			SqlString sql = new SqlString(new string[] { " order by x", " order by z" });
 
 			Assert.AreEqual("order by z", sql.SubstringStartingWithLast("order by").ToString());
 		}
@@ -272,7 +272,7 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void Insert()
 		{
-			SqlString sql = new SqlString(new object[] {"begin ", Parameter.Placeholder, " end"});
+			SqlString sql = new SqlString(new object[] { "begin ", Parameter.Placeholder, " end" });
 
 			Assert.AreEqual("beginning ? end", sql.Insert(5, "ning").ToString());
 			Assert.AreEqual("begin middle? end", sql.Insert(6, "middle").ToString());
@@ -350,7 +350,7 @@ namespace NHibernate.Test.SqlCommandTest
 				SqlString.Parse(
 					"select (select foo from bar where foo=col order by foo) from table where col = (select yadda from blah where yadda=x order by yadda) order by col");
 			Assert.AreEqual(" from table where col = (select yadda from blah where yadda=x order by yadda) ",
-			                sql.GetSubselectString().ToString());
+							sql.GetSubselectString().ToString());
 		}
 
 		[Test]
@@ -390,7 +390,7 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			Parameter[] parameters1 = new Parameter[1];
 			Parameter[] parameters2 = new Parameter[1];
-			
+
 			SqlString parameterString1 = new SqlString(Parameter.Placeholder);
 			parameterString1.Parts.CopyTo(parameters1, 0);
 
