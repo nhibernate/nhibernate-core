@@ -53,7 +53,7 @@ namespace NHibernate.Impl
 
 		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
-			if(temporaryPersistenceContext.IsLoadFinished)
+			if (temporaryPersistenceContext.IsLoadFinished)
 			{
 				throw new SessionException("Collections cannot be fetched by a stateless session. You can eager load it through specific query.");
 			}
@@ -927,22 +927,22 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQueryOver<T,T> QueryOver<T>() where T : class
+		public IQueryOver<T, T> QueryOver<T>() where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), this));
+				return new QueryOver<T, T>(new CriteriaImpl(typeof(T), this));
 			}
 		}
 
-		public IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		public IQueryOver<T, T> QueryOver<T>(Expression<Func<T>> alias) where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
-				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), aliasPath, this));
+				return new QueryOver<T, T>(new CriteriaImpl(typeof(T), aliasPath, this));
 			}
 		}
 
@@ -993,7 +993,7 @@ namespace NHibernate.Impl
 				log.Debug("running IStatelessSession.Dispose()");
 				if (TransactionContext != null)
 				{
-					TransactionContext .ShouldCloseSessionOnDistributedTransactionCompleted = true;
+					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;
 				}
 				Dispose(true);

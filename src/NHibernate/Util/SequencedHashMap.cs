@@ -132,7 +132,7 @@ namespace NHibernate.Util
 				if (other == this) return true;
 
 				return ((_key == null ? other.Key == null : _key.Equals(other.Key)) &&
-				        (_value == null ? other.Value == null : _value.Equals(other.Value)));
+						(_value == null ? other.Value == null : _value.Equals(other.Value)));
 			}
 
 			public override string ToString()
@@ -176,7 +176,8 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Construct a new sequenced hash map with default initial size and load factor
 		/// </summary>
-		public SequencedHashMap() : this(0, 1.0F, null)
+		public SequencedHashMap()
+			: this(0, 1.0F, null)
 		{
 		}
 
@@ -184,7 +185,8 @@ namespace NHibernate.Util
 		/// Construct a new sequenced hash map with the specified initial size and default load factor
 		/// </summary>
 		/// <param name="capacity">the initial size for the hash table</param>
-		public SequencedHashMap(int capacity) : this(capacity, 1.0F, null)
+		public SequencedHashMap(int capacity)
+			: this(capacity, 1.0F, null)
 		{
 		}
 
@@ -193,7 +195,8 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="capacity">the initial size for the hashtable</param>
 		/// <param name="loadFactor">the load factor for the hash table</param>
-		public SequencedHashMap(int capacity, float loadFactor) : this(capacity, loadFactor, null)
+		public SequencedHashMap(int capacity, float loadFactor)
+			: this(capacity, loadFactor, null)
 		{
 		}
 
@@ -274,7 +277,7 @@ namespace NHibernate.Util
 		{
 			get
 			{
-				Entry entry = (Entry) _entries[o];
+				Entry entry = (Entry)_entries[o];
 				if (entry == null) return null;
 
 				return entry.Value;
@@ -283,7 +286,7 @@ namespace NHibernate.Util
 			{
 				_modCount++;
 
-				Entry e = (Entry) _entries[o];
+				Entry e = (Entry)_entries[o];
 				if (e != null)
 				{
 					RemoveEntry(e);
@@ -485,7 +488,7 @@ namespace NHibernate.Util
 		/// <param name="key">The Key to remove.</param>
 		private void RemoveImpl(object key)
 		{
-			Entry e = (Entry) _entries[key];
+			Entry e = (Entry)_entries[key];
 			if (e != null)
 			{
 				_entries.Remove(key);

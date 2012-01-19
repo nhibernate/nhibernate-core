@@ -433,11 +433,11 @@ namespace NHibernate.Impl
 				{
 					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
 				}
-				
+
 				if (obj.IsProxy())
 				{
-                    var proxy = obj as INHibernateProxy; 
-                    obj = proxy.HibernateLazyInitializer.GetImplementation(this);
+					var proxy = obj as INHibernateProxy;
+					obj = proxy.HibernateLazyInitializer.GetImplementation(this);
 					if (obj == null)
 					{
 						return LockMode.None;
@@ -627,38 +627,38 @@ namespace NHibernate.Impl
 			}
 		}
 
-        public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
-        {
-            using (new SessionIdLoggingContext(SessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                queryParameters.ValidateParameters();
-                var plan = GetHQLQueryPlan(queryExpression, false);
-                AutoFlushIfRequired(plan.QuerySpaces);
+		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, false);
+				AutoFlushIfRequired(plan.QuerySpaces);
 
-                bool success = false;
-                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-                try
-                {
-                    plan.PerformList(queryParameters, this, results);
-                    success = true;
-                }
-                catch (HibernateException)
-                {
-                    // Do not call Convert on HibernateExceptions
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    throw Convert(e, "Could not execute query");
-                }
-                finally
-                {
-                    dontFlushFromFind--;
-                    AfterOperation(success);
-                }
-            }
-        }
+				bool success = false;
+				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
+				}
+				finally
+				{
+					dontFlushFromFind--;
+					AfterOperation(success);
+				}
+			}
+		}
 
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
@@ -988,12 +988,12 @@ namespace NHibernate.Impl
 
 		public T Merge<T>(T entity) where T : class
 		{
-			return (T) Merge((object) entity);
+			return (T)Merge((object)entity);
 		}
 
 		public T Merge<T>(string entityName, T entity) where T : class
 		{
-			return (T) Merge(entityName, (object) entity);
+			return (T)Merge(entityName, (object)entity);
 		}
 
 		public object Merge(object obj)
@@ -1310,12 +1310,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				
+
 				if (obj.IsProxy())
 				{
-                    var proxy = obj as INHibernateProxy; 
-                    
-                    if (!persistenceContext.ContainsProxy(proxy))
+					var proxy = obj as INHibernateProxy;
+
+					if (!persistenceContext.ContainsProxy(proxy))
 					{
 						throw new TransientObjectException("proxy was not associated with the session");
 					}
@@ -1523,7 +1523,7 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-	
+
 		/// <summary>
 		/// Not for internal use
 		/// </summary>
@@ -1537,12 +1537,12 @@ namespace NHibernate.Impl
 				// Actually the case for proxies will probably work even with
 				// the session closed, but do the check here anyway, so that
 				// the behavior is uniform.
-				
+
 				if (obj.IsProxy())
 				{
-                    var proxy = obj as INHibernateProxy; 
-                    
-                    ILazyInitializer li = proxy.HibernateLazyInitializer;
+					var proxy = obj as INHibernateProxy;
+
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.Session != this)
 					{
 						throw new TransientObjectException("The proxy was not associated with this session");
@@ -1571,9 +1571,9 @@ namespace NHibernate.Impl
 			{
 				if (obj.IsProxy())
 				{
-                    INHibernateProxy proxy = obj as INHibernateProxy; 
-                    
-                    return proxy.HibernateLazyInitializer.Identifier;
+					INHibernateProxy proxy = obj as INHibernateProxy;
+
+					return proxy.HibernateLazyInitializer.Identifier;
 				}
 				else
 				{
@@ -1681,7 +1681,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()", SessionId));
-				if (TransactionContext!=null)
+				if (TransactionContext != null)
 				{
 					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
 					return;
@@ -1715,7 +1715,7 @@ namespace NHibernate.Impl
 				// know this call came through Dispose()
 				if (isDisposing && !IsClosed)
 				{
-					 Close();
+					Close();
 				}
 
 				// free unmanaged resources here
@@ -1853,22 +1853,22 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public IQueryOver<T,T> QueryOver<T>() where T : class
+		public IQueryOver<T, T> QueryOver<T>() where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), this));
+				return new QueryOver<T, T>(new CriteriaImpl(typeof(T), this));
 			}
 		}
 
-		public IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		public IQueryOver<T, T> QueryOver<T>(Expression<Func<T>> alias) where T : class
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
-				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), aliasPath, this));
+				return new QueryOver<T, T>(new CriteriaImpl(typeof(T), aliasPath, this));
 			}
 		}
 
@@ -1984,12 +1984,12 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				
+
 				if (obj.IsProxy())
 				{
-                    var proxy = obj as INHibernateProxy;
-                    
-                    //do not use proxiesByKey, since not all
+					var proxy = obj as INHibernateProxy;
+
+					//do not use proxiesByKey, since not all
 					//proxies that point to this session's
 					//instances are in that collection!
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
@@ -2428,7 +2428,7 @@ namespace NHibernate.Impl
 				fetchProfile = value;
 			}
 		}
-		
+
 		/// <inheritdoc />
 		public void SetReadOnly(object entityOrProxy, bool readOnly)
 		{
@@ -2438,14 +2438,14 @@ namespace NHibernate.Impl
 				persistenceContext.SetReadOnly(entityOrProxy, readOnly);
 			}
 		}
-		
+
 		/// <inheritdoc />
 		public bool DefaultReadOnly
 		{
 			get { return persistenceContext.DefaultReadOnly; }
 			set { persistenceContext.DefaultReadOnly = value; }
 		}
-		
+
 		/// <inheritdoc />
 		public bool IsReadOnly(object entityOrProxy)
 		{
