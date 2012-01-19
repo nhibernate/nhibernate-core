@@ -499,16 +499,16 @@ namespace NHibernate.SqlCommand
 			var startIndex = 0;
 			while (startIndex < _length)
 			{
-				var splitterIndex = this.IndexOf(splitter, startIndex, _length - startIndex, StringComparison.InvariantCultureIgnoreCase);
+				var splitterIndex = IndexOf(splitter, startIndex, _length - startIndex, StringComparison.InvariantCultureIgnoreCase);
 				if (splitterIndex < 0) break;
 
-				yield return new SqlString(this, startIndex, splitterIndex - startIndex);
+				yield return new SqlString(this, _sqlStartIndex + startIndex, splitterIndex - startIndex);
 				startIndex = splitterIndex + splitter.Length;
 			}
 
 			if (startIndex < _length)
 			{
-				yield return new SqlString(this, startIndex, _length - startIndex);
+				yield return new SqlString(this, _sqlStartIndex + startIndex, _length - startIndex);
 			}
 		}
 		
