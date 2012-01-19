@@ -21,13 +21,13 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString postAppendSql = sql.Append(" where A=B");
 
 			Assert.IsFalse(sql == postAppendSql, "should be a new object");
-			Assert.AreEqual(3, postAppendSql.Count);
+			Assert.AreEqual(1, postAppendSql.Count);
 
 			sql = postAppendSql;
 
 			postAppendSql = sql.Append(new SqlString(" and C=D"));
 
-			Assert.AreEqual(4, postAppendSql.Count);
+			Assert.AreEqual(1, postAppendSql.Count);
 
 			Assert.AreEqual("select from table where A=B and C=D", postAppendSql.ToString());
 		}
@@ -38,10 +38,10 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlString sql =
 				new SqlString(
 					new object[] {"select", " from table where a = ", Parameter.Placeholder, " and b = ", Parameter.Placeholder});
-			Assert.AreEqual(5, sql.Count, "Count with no nesting failed.");
+			Assert.AreEqual(4, sql.Count, "Count with no nesting failed.");
 
 			sql = sql.Append(new SqlString(new object[] {" more parts ", " another part "}));
-			Assert.AreEqual(7, sql.Count, "Added a SqlString to a SqlString");
+			Assert.AreEqual(5, sql.Count, "Added a SqlString to a SqlString");
 		}
 
 		[Test]

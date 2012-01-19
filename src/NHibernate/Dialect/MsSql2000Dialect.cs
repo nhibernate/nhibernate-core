@@ -15,6 +15,8 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
+	using System.Linq;
+
 	/// <summary>
 	/// An SQL dialect compatible with Microsoft SQL Server 2000.
 	/// </summary>
@@ -333,18 +335,97 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+        public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+        {
+        	int insertPoint;
+        	return TryFindLimitInsertPoint(querySqlString, out insertPoint)
+        		? querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "))
+        		: null;
+        }
+
+		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
 		{
-			/*
-			 * "SELECT TOP limit rest-of-sql-statement"
-			 */
+			var tokenEnum = sql.Tokenize(SqlTokenType.AllExceptWhitespaceOrComment).GetEnumerator();
+			if (tokenEnum.MoveNext())
+			{
+				while (TryParseUntil(tokenEnum, "select"))
+				{
+					if (!tokenEnum.MoveNext()) break;
+					if (TryParseUntilBeginOfColumnDefinitions(tokenEnum) && !tokenEnum.Current.Value.StartsWith("@"))
+					{
+						result = tokenEnum.Current.SqlIndex;
+						return true;
+					}
+				}
+			}
 
-			SqlStringBuilder topFragment = new SqlStringBuilder();
-			topFragment.Add(" top ");
-			topFragment.Add(limit);
-
-			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), topFragment.ToSqlString());
+			result = -1;
+			return false;
 		}
+
+		protected static bool TryParseUntil(IEnumerator<SqlToken> tokenEnum, string keyword)
+		{
+			var nestLevel = 0;
+			do
+			{
+				var token = tokenEnum.Current;
+				switch (token.TokenType)
+				{
+					case SqlTokenType.BlockBegin:
+						nestLevel++;
+						break;
+					case SqlTokenType.BlockEnd:
+						nestLevel--;
+						break;
+					case SqlTokenType.UnquotedText:
+						if (nestLevel == 0 && token.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)) return true;
+						break;
+				}
+			} while (tokenEnum.MoveNext());
+
+			return false;
+		}
+
+		protected static bool TryParseUntilBeginOfColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
+		{
+			// [ DISTINCT | ALL ]
+			if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase)
+				|| tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+			{
+				if (!tokenEnum.MoveNext()) return false;
+			}
+
+			// [ TOP { integer | ( expression ) } [PERCENT] [ WITH TIES ] ] 
+			if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
+			{
+				if (tokenEnum.MoveNext()) return false;
+				if (tokenEnum.Current.TokenType == SqlTokenType.BlockBegin)
+				{
+					do
+					{
+						if (!tokenEnum.MoveNext()) return false;
+					} while (tokenEnum.Current.TokenType != SqlTokenType.BlockEnd);
+				}
+				if (tokenEnum.MoveNext()) return false;
+
+
+				if (tokenEnum.Current.Equals("percent", StringComparison.InvariantCultureIgnoreCase))
+				{
+					if (!tokenEnum.MoveNext()) return false;
+				}
+				if (tokenEnum.Current.Equals("with", StringComparison.InvariantCultureIgnoreCase))
+				{
+					if (!tokenEnum.MoveNext()) return false;
+					if (tokenEnum.Current.Equals("ties", StringComparison.InvariantCultureIgnoreCase))
+					{
+						if (!tokenEnum.MoveNext()) return false;
+					}
+				}
+			}
+
+			return !tokenEnum.Current.Value.StartsWith("@");
+		}
+
 
 		/// <summary>
 		/// Does the <c>LIMIT</c> clause take a "maximum" row number
@@ -391,19 +472,6 @@ namespace NHibernate.Dialect
 			}
 
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
-		}
-
-		private static int GetAfterSelectInsertPoint(SqlString sql)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			else if (sql.StartsWithCaseInsensitive("select"))
-			{
-				return 6;
-			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
 		private bool NeedsLockHint(LockMode lockMode)
@@ -552,5 +620,5 @@ namespace NHibernate.Dialect
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
 		}
-	}
+    }
 }

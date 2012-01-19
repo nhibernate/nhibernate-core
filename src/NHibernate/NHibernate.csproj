@@ -590,6 +590,8 @@
     <Compile Include="SqlCommand\SqlSimpleSelectBuilder.cs" />
     <Compile Include="SqlCommand\SqlString.cs" />
     <Compile Include="SqlCommand\SqlStringBuilder.cs" />
+    <Compile Include="SqlCommand\SqlToken.cs" />
+    <Compile Include="SqlCommand\SqlTokenType.cs" />
     <Compile Include="SqlCommand\SqlUpdateBuilder.cs" />
     <Compile Include="SqlCommand\Template.cs" />
     <Compile Include="SqlCommand\WhereBuilder.cs" />

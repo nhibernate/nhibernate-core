@@ -53,6 +53,7 @@ namespace NHibernate.Loader
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SessionFactoryHelper _helper;
 		private ColumnNameCache _columnNameCache;
+	    private bool? _canUseLimits;
 
 		protected Loader(ISessionFactoryImplementor factory)
 		{
@@ -1087,7 +1088,9 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		internal bool UseLimit(RowSelection selection, Dialect.Dialect dialect)
 		{
-			return dialect.SupportsLimit && (HasMaxRows(selection) || HasOffset(selection));
+			return (_canUseLimits ?? true) 
+                && dialect.SupportsLimit 
+                && (HasMaxRows(selection) || HasOffset(selection));
 		}
 
 		/// <summary>
@@ -1725,8 +1728,7 @@ namespace NHibernate.Loader
 			Dialect.Dialect dialect = sessionFactory.Dialect;
 
 			RowSelection selection = queryParameters.RowSelection;
-			bool useLimit = UseLimit(selection, dialect);
-			if (useLimit)
+            if (UseLimit(selection, dialect))
 			{
 				bool hasFirstRow = GetFirstRow(selection) > 0;
 				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
@@ -1751,10 +1753,20 @@ namespace NHibernate.Loader
 					parameterSpecs.Add(takeParameter);
 				}
 				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
-				return dialect.GetLimitString(sqlString, skip, take, skipSqlParameter, takeSqlParameter);
-			}
+                SqlString result;
+                if (TryGetLimitString(dialect, sqlString, skip, take, skipSqlParameter, takeSqlParameter, out result)) return result;
+            }
 			return sqlString;
 		}
+
+        protected bool TryGetLimitString(Dialect.Dialect dialect, SqlString queryString, int? offset, int? limit, Parameter offsetParameter, Parameter limitParameter, out SqlString result)
+        {
+            result = dialect.GetLimitString(queryString, offset, limit, offsetParameter, limitParameter);
+            if (result != null) return true;
+
+            _canUseLimits = false;
+            return false;
+        }
 
 		#endregion
 	}

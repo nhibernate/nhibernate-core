@@ -247,14 +247,14 @@ namespace NHibernate.Loader.Custom.Sql
 			ParameterParser.Parse(sqlString, recognizer);
 			parametersSpecifications = recognizer.ParametersSpecifications.ToList();
 
-			return recognizer.result.ToSqlString();
+			return recognizer.Result;
 		}
 
 		public class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer
 		{
 			private readonly ISessionFactoryImplementor factory;
-			internal SqlStringBuilder result = new SqlStringBuilder();
-			internal int parameterCount = 0;
+			private readonly SqlStringBuilder result = new SqlStringBuilder();
+		    private readonly StringBuilder otherSqlBuffer = new StringBuilder();
 			private readonly List<IParameterSpecification> parametersSpecifications = new List<IParameterSpecification>();
 			private int positionalParameterCount;
 
@@ -268,9 +268,20 @@ namespace NHibernate.Loader.Custom.Sql
 				get { return parametersSpecifications; }
 			}
 
+		    public SqlString Result
+		    {
+                get
+                {
+                    FlushOtherSql();
+                    return result.ToSqlString().Compact();
+                }
+		    }
+
 			public void OutParameter(int position)
 			{
-				var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
+                FlushOtherSql();
+                
+                var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
 				var parameter = Parameter.Placeholder;
 				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
 				parametersSpecifications.Add(paramSpec);
@@ -279,7 +290,9 @@ namespace NHibernate.Loader.Custom.Sql
 
 			public void OrdinalParameter(int position)
 			{
-				var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
+                FlushOtherSql();
+                
+                var paramSpec = new PositionalParameterSpecification(1, position, positionalParameterCount++);
 				var parameter = Parameter.Placeholder;
 				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
 				parametersSpecifications.Add(paramSpec);
@@ -288,6 +301,8 @@ namespace NHibernate.Loader.Custom.Sql
 
 			public void NamedParameter(string name, int position)
 			{
+                FlushOtherSql();
+
 				var paramSpec = new NamedParameterSpecification(1, position, name);
 				var parameter = Parameter.Placeholder;
 				parameter.BackTrack = paramSpec.GetIdsForBackTrack(factory).First();
@@ -302,13 +317,22 @@ namespace NHibernate.Loader.Custom.Sql
 
 			public void Other(char character)
 			{
-				result.Add(character.ToString());
+			    otherSqlBuffer.Append(character);
 			}
 
 			public void Other(string sqlPart)
 			{
-				result.Add(sqlPart);
-			}
+                otherSqlBuffer.Append(sqlPart);
+            }
+
+            private void FlushOtherSql()
+            {
+                if (otherSqlBuffer.Length > 0)
+                {
+                    result.Add(otherSqlBuffer.ToString());
+                    otherSqlBuffer.Length = 0;
+                }
+            }
 		}
 	}
 }
