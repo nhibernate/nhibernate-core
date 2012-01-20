@@ -207,47 +207,58 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public static SqlString Parse(string sql)
 		{
-			var result = new SqlStringBuilder();
-			var content = new StringBuilder();
+			return new SqlString(ParseParts(sql));
+		}
 
-			bool inQuote = false;
-			foreach (char ch in sql)
+		private static IEnumerable<object> ParseParts(string text)
+		{
+			if (string.IsNullOrEmpty(text)) yield break;
+
+			int offset = 0;
+			int maxOffset = text.Length;
+			int partOffset = 0;
+
+			while (offset < maxOffset)
 			{
+				var ch = text[offset];
 				switch (ch)
 				{
-					case '?':
-						if (inQuote)
+					case '?':      // Parameter marker
+						if (offset > partOffset)
 						{
-							content.Append(ch);
+							yield return text.Substring(partOffset, offset - partOffset);
 						}
-						else
+						yield return Parameter.Placeholder;
+						partOffset = offset += 1;
+						break;
+					case '\'':      // String literals
+					case '\"':      // ANSI quoted identifiers
+					case '[':       // Sql Server quoted indentifiers
+						offset += ReadDelimitedText(text, maxOffset, offset);
+						continue;
+					case '/':
+						if (offset + 1 < maxOffset && text[offset + 1] == '*')
 						{
-							if (content.Length > 0)
-							{
-								result.Add(content.ToString());
-								content.Length = 0;
-							}
-							result.AddParameter();
+							offset += ReadMultilineComment(text, maxOffset, offset);
+							continue;
 						}
 						break;
-
-					case '\'':
-						inQuote = !inQuote;
-						content.Append(ch);
-						break;
-
-					default:
-						content.Append(ch);
+					case '-':
+						if (offset + 1 < maxOffset && text[offset + 1] == '-')
+						{
+							offset += ReadLineComment(text, maxOffset, offset);
+							continue;
+						}
 						break;
 				}
+
+				offset++;
 			}
 
-			if (content.Length > 0)
+			if (maxOffset > partOffset)
 			{
-				result.Add(content.ToString());
+				yield return text.Substring(partOffset, offset - partOffset);
 			}
-
-			return result.ToSqlString();
 		}
 
 		#endregion
@@ -777,15 +788,19 @@ namespace NHibernate.SqlCommand
 
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
+			const uint FNV_OFFSET_BASIS = 2166136261;
+			const uint FNV_PRIME = 16777619;
+
+			uint hashCode = FNV_OFFSET_BASIS;
 			unchecked
 			{
 				for (int i = 0; i < _parts.Count; i++)
 				{
-					hashCode += _parts[i].GetHashCode();
+					hashCode ^= (uint)_parts[i].GetHashCode();
+					hashCode *= FNV_PRIME;
 				}
+				return (int)hashCode;
 			}
-			return hashCode;
 		}
 
 		/// <summary>
@@ -944,7 +959,6 @@ namespace NHibernate.SqlCommand
 						int maxOffset = text.Length;
 						int tokenOffset = 0;
 						SqlTokenType nextTokenType = 0;
-						int nextTokenOffset = -1;
 						int nextTokenLength = 0;
 
 						while (offset < maxOffset)
@@ -953,81 +967,76 @@ namespace NHibernate.SqlCommand
 							switch (ch)
 							{
 								case '(':
-									nextTokenType = SqlTokenType.BlockBegin;
-									nextTokenOffset = offset;
+									nextTokenType = SqlTokenType.BracketOpen;
 									nextTokenLength = 1;
 									break;
 								case ')':
-									nextTokenType = SqlTokenType.BlockEnd;
-									nextTokenOffset = offset;
+									nextTokenType = SqlTokenType.BracketClose;
 									nextTokenLength = 1;
 									break;
 								case '\'':      // String literals
 								case '\"':      // ANSI quoted identifiers
 								case '[':       // Sql Server quoted indentifiers
-									nextTokenType = SqlTokenType.QuotedText;
-									nextTokenOffset = offset;
-									nextTokenLength = ReadQuotedText(text, maxOffset, ref offset);
+									nextTokenType = SqlTokenType.DelimitedText;
+									nextTokenLength = ReadDelimitedText(text, maxOffset, offset);
 									break;
 								case ',':
-									nextTokenType = SqlTokenType.ListSeparator;
-									nextTokenOffset = offset;
+									nextTokenType = SqlTokenType.Comma;
 									nextTokenLength = 1;
 									break;
-								case '*':
-									if (offset > 0 && text[offset - 1] == '/')
+								case '/':
+									if (offset + 1 < maxOffset && text[offset + 1] == '*')
 									{
 										nextTokenType = SqlTokenType.Comment;
-										nextTokenOffset = offset - 1;
-										nextTokenLength = ReadMultilineComment(text, maxOffset, ref offset);
+										nextTokenLength = ReadMultilineComment(text, maxOffset, offset);
 									}
 									break;
 								case '-':
-									if (offset > 0 && text[offset - 1] == '-')
+									if (offset + 1 < maxOffset && text[offset + 1] == '-')
 									{
 										nextTokenType = SqlTokenType.Comment;
-										nextTokenOffset = offset - 1;
-										nextTokenLength = ReadLineComment(text, maxOffset, ref offset);
+										nextTokenLength = ReadLineComment(text, maxOffset, offset);
 									}
 									break;
 								default:
 									if (char.IsWhiteSpace(ch))
 									{
 										nextTokenType = SqlTokenType.Whitespace;
-										nextTokenOffset = offset;
-										nextTokenLength = ReadWhitespace(text, maxOffset, ref offset);
+										nextTokenLength = ReadWhitespace(text, maxOffset, offset);
 									}
 									break;
 							}
 
 							if (nextTokenType != 0)
 							{
-								if (nextTokenOffset > tokenOffset)
+								if (offset > tokenOffset)
 								{
-									if (CanYield(SqlTokenType.UnquotedText))
+									if (CanYield(SqlTokenType.Text))
 									{
-										yield return new SqlToken(SqlTokenType.UnquotedText, _sql, sqlIndex + tokenOffset, nextTokenOffset - tokenOffset);
+										yield return new SqlToken(SqlTokenType.Text, _sql, sqlIndex + tokenOffset, offset - tokenOffset);
 									}
-									tokenOffset = nextTokenOffset;
 								}
 
 								if (CanYield(nextTokenType))
 								{
-									yield return new SqlToken(nextTokenType, _sql, sqlIndex + nextTokenOffset, nextTokenLength);
+									yield return new SqlToken(nextTokenType, _sql, sqlIndex + offset, nextTokenLength);
 								}
-								tokenOffset += nextTokenLength;
+
+								offset += nextTokenLength;
+								tokenOffset = offset;
 
 								nextTokenType = 0;
-								nextTokenOffset = -1;
 								nextTokenLength = 0;
 							}
-
-							offset++;
+							else
+							{
+								offset++;
+							}
 						}
 
-						if (offset > tokenOffset && CanYield(SqlTokenType.UnquotedText))
+						if (maxOffset > tokenOffset && CanYield(SqlTokenType.Text))
 						{
-							yield return new SqlToken(SqlTokenType.UnquotedText, _sql, sqlIndex + tokenOffset, maxOffset - tokenOffset);
+							yield return new SqlToken(SqlTokenType.Text, _sql, sqlIndex + tokenOffset, maxOffset - tokenOffset);
 						}
 						sqlIndex += maxOffset;
 					}
@@ -1038,90 +1047,98 @@ namespace NHibernate.SqlCommand
 			{
 				return (_includeTokens & tokenType) == tokenType;
 			}
+		}
 
-			private static int ReadQuotedText(string text, int maxOffset, ref int offset)
+		private static int ReadDelimitedText(string text, int maxOffset, int offset)
+		{
+			var startOffset = offset;
+			char quoteEndChar;
+
+			// Determine end delimiter
+			var quoteChar = text[offset++];
+			switch (quoteChar)
 			{
-				var startOffset = offset;
-				char quoteEndChar;
-
-				var quoteChar = text[offset++];
-				switch (quoteChar)
-				{
-					case '\'':
-					case '"':
-						quoteEndChar = quoteChar;
-						break;
-					case '[':
-						quoteEndChar = ']';
-						break;
-					default:
-						throw new SqlParseException(string.Format("Quoted text cannot start with '{0}' character", text[offset]));
-				}
-
-				// TODO: handle quote escaping
-				for (; offset < maxOffset; offset++)
-				{
-					if (text[offset] == quoteEndChar)
-					{
-						return offset + 1 - startOffset;
-					}
-				}
-
-				throw new SqlParseException(string.Format("Cannot find terminating '{0}' character for quoted text.", quoteEndChar));
+				case '\'':
+				case '"':
+					quoteEndChar = quoteChar;
+					break;
+				case '[':
+					quoteEndChar = ']';
+					break;
+				default:
+					throw new SqlParseException(string.Format("Quoted text cannot start with '{0}' character", text[offset]));
 			}
 
-			private static int ReadLineComment(string text, int maxOffset, ref int offset)
+			// Find end delimiter, but ignore escaped end delimiters
+			while (offset < maxOffset)
 			{
-				var startOffset = offset - 1;
-
-				offset++;
-				for (; offset < maxOffset; offset++)
+				if (text[offset++] == quoteEndChar)
 				{
-					switch (text[offset])
+					if (offset >= maxOffset || text[offset] != quoteEndChar)
 					{
-						case '\r':
-						case '\n':
-							return offset + 1 - startOffset;
-					}
-				}
-
-				return offset - startOffset;
-			}
-
-			private static int ReadMultilineComment(string text, int maxOffset, ref int offset)
-			{
-				var startOffset = offset - 1;
-
-				var prevChar = text[offset++];
-				for (; offset < maxOffset; offset++)
-				{
-					var ch = text[offset];
-					if (ch == '/' && prevChar == '*')
-					{
-						return offset + 1 - startOffset;
+						// Non-escaped delimiter char
+						return offset - startOffset;
 					}
 
-					prevChar = ch;
-				}
-
-				throw new SqlParseException(string.Format("Cannot find terminating '*/' string for multiline comment."));
-			}
-
-			private static int ReadWhitespace(string text, int maxOffset, ref int offset)
-			{
-				var startOffset = offset;
-
-				offset++;
-				while (offset < maxOffset)
-				{
-					if (!char.IsWhiteSpace(text[offset])) break;
+					// Escaped delimiter char
 					offset++;
 				}
-
-				var result = offset - startOffset;
-				offset--;
-				return result;
 			}
+
+			throw new SqlParseException(string.Format("Cannot find terminating '{0}' character for quoted text.", quoteEndChar));
+		}
+
+		private static int ReadLineComment(string text, int maxOffset, int offset)
+		{
+			var startOffset = offset;
+
+			offset += 2;
+			for (; offset < maxOffset; offset++)
+			{
+				switch (text[offset])
+				{
+					case '\r':
+					case '\n':
+						return offset - startOffset;
+				}
+			}
+
+			return offset - startOffset;
+		}
+
+		private static int ReadMultilineComment(string text, int maxOffset, int offset)
+		{
+			var startOffset = offset;
+			offset += 2;
+
+			var prevChar = '\0';
+			for (; offset < maxOffset; offset++)
+			{
+				var ch = text[offset];
+				if (ch == '/' && prevChar == '*')
+				{
+					return offset + 1 - startOffset;
+				}
+
+				prevChar = ch;
+			}
+
+			throw new SqlParseException(string.Format("Cannot find terminating '*/' string for multiline comment."));
+		}
+
+		private static int ReadWhitespace(string text, int maxOffset, int offset)
+		{
+			var startOffset = offset;
+
+			offset++;
+			while (offset < maxOffset)
+			{
+				if (!char.IsWhiteSpace(text[offset])) break;
+				offset++;
+			}
+
+			var result = offset - startOffset;
+			return result;
 		}
 	}
 }

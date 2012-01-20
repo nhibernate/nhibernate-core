@@ -48,7 +48,7 @@ namespace NHibernate.Dialect
 			}
 
 			var queryParser = new SqlSelectParser(queryString);
-			if (queryParser.SelectIndex <= 0) return null;
+			if (queryParser.SelectIndex < 0) return null;
 
 			var result = new SqlStringBuilder();
 			BuildSelectClauseForPagingQuery(queryParser, limit, result);
@@ -256,16 +256,24 @@ namespace NHibernate.Dialect
 
 					switch (token.TokenType)
 					{
-						case SqlTokenType.BlockBegin:
+						case SqlTokenType.BracketOpen:
 							blockLevel++;
 							break;
 
-						case SqlTokenType.BlockEnd:
+						case SqlTokenType.BracketClose:
 							blockLevel--;
 							break;
 
-						case SqlTokenType.UnquotedText:
+						case SqlTokenType.Text:
 							if (blockLevel != 0) break;
+
+							if (token.Equals(",", StringComparison.InvariantCultureIgnoreCase))
+							{
+								if (columnAliasToken != null)
+								{
+									yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+								}
+							}
 
 							if (token.Equals("from", StringComparison.InvariantCultureIgnoreCase))
 							{
@@ -284,13 +292,13 @@ namespace NHibernate.Dialect
 							columnAliasToken = token;
 							break;
 
-						case SqlTokenType.QuotedText:
+						case SqlTokenType.DelimitedText:
 							if (blockLevel != 0) break;
 
 							columnAliasToken = token;
 							break;
 
-						case SqlTokenType.ListSeparator:
+						case SqlTokenType.Comma:
 							if (blockLevel != 0) break;
 
 							if (columnAliasToken != null)
@@ -311,10 +319,10 @@ namespace NHibernate.Dialect
 			private ColumnDefinition ParseColumnDefinition(SqlToken beginToken, SqlToken endToken, SqlToken aliasToken)
 			{
 				var name = beginToken == endToken
-					? beginToken.ToString()
+					? beginToken.Value
 					: null;
 
-				var alias = aliasToken.ToString();
+				var alias = aliasToken.Value;
 				var dotIndex = alias.LastIndexOf('.');
 				alias = dotIndex >= 0
 					? alias.Substring(dotIndex + 1)
@@ -352,16 +360,16 @@ namespace NHibernate.Dialect
 
 					switch (token.TokenType)
 					{
-						case SqlTokenType.BlockBegin:
+						case SqlTokenType.BracketOpen:
 							blockLevel++;
 							break;
 
-						case SqlTokenType.BlockEnd:
+						case SqlTokenType.BracketClose:
 							blockLevel--;
 							if (blockLevel == 0) orderExprTokenCount++;
 							break;
 
-						case SqlTokenType.UnquotedText:
+						case SqlTokenType.Text:
 							if (blockLevel != 0) break;
 
 							if (orderExprTokenCount++ == 0)
@@ -378,13 +386,13 @@ namespace NHibernate.Dialect
 							}
 							break;
 
-						case SqlTokenType.QuotedText:
+						case SqlTokenType.DelimitedText:
 							if (blockLevel != 0) break;
 
 							if (orderExprTokenCount++ == 0) columnNameToken = token;
 							break;
 
-						case SqlTokenType.ListSeparator:
+						case SqlTokenType.Comma:
 							if (blockLevel != 0) break;
 
 							yield return ParseOrderDefinition(orderBeginToken, token,
@@ -411,7 +419,7 @@ namespace NHibernate.Dialect
 
 				if (columnNameToken != null)
 				{
-					string columnNameOrIndex = columnNameToken.ToString();
+					string columnNameOrIndex = columnNameToken.Value;
 					if (!TryGetColumnDefinition(columnNameOrIndex, out column))
 					{
 						// Column appears in order by clause, but not in select clause

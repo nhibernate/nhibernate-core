@@ -371,13 +371,13 @@ namespace NHibernate.Dialect
 				var token = tokenEnum.Current;
 				switch (token.TokenType)
 				{
-					case SqlTokenType.BlockBegin:
+					case SqlTokenType.BracketOpen:
 						nestLevel++;
 						break;
-					case SqlTokenType.BlockEnd:
+					case SqlTokenType.BracketClose:
 						nestLevel--;
 						break;
-					case SqlTokenType.UnquotedText:
+					case SqlTokenType.Text:
 						if (nestLevel == 0 && token.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)) return true;
 						break;
 				}
@@ -399,12 +399,12 @@ namespace NHibernate.Dialect
 			if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
 			{
 				if (tokenEnum.MoveNext()) return false;
-				if (tokenEnum.Current.TokenType == SqlTokenType.BlockBegin)
+				if (tokenEnum.Current.TokenType == SqlTokenType.BracketOpen)
 				{
 					do
 					{
 						if (!tokenEnum.MoveNext()) return false;
-					} while (tokenEnum.Current.TokenType != SqlTokenType.BlockEnd);
+					} while (tokenEnum.Current.TokenType != SqlTokenType.BracketClose);
 				}
 				if (tokenEnum.MoveNext()) return false;
 

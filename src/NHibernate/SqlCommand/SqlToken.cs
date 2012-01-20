@@ -55,8 +55,7 @@ namespace NHibernate.SqlCommand
 			{
 				switch (_tokenType)
 				{
-					case SqlTokenType.QuotedIdentifier:
-					case SqlTokenType.QuotedText:
+					case SqlTokenType.DelimitedText:
 						return _length > 2
 							? this.Value.Substring(2, _length - 2)
 							: string.Empty;
@@ -69,6 +68,35 @@ namespace NHibernate.SqlCommand
 		#endregion
 
 		#region Instance methods
+
+		public override bool Equals(object obj)
+		{
+			var other = obj as SqlToken;
+			if (ReferenceEquals(other, null)) return false;
+
+			return _tokenType.Equals(other._tokenType)
+				&& _sqlIndex.Equals(other._sqlIndex)
+				&& _length.Equals(other._length)
+				&& _sql.Equals(other._sql);
+		}
+
+		public override int GetHashCode()
+		{
+			const uint FNV_OFFSET_BASIS = 2166136261;
+			const uint FNV_PRIME = 16777619;
+
+			uint hashCode = FNV_OFFSET_BASIS;
+			unchecked
+			{
+				hashCode ^= (uint)_tokenType;
+				hashCode *= FNV_PRIME;
+				hashCode ^= (uint)_sqlIndex;
+				hashCode *= FNV_PRIME;
+				hashCode ^= (uint)_length;
+				hashCode *= FNV_PRIME;
+				return (int)hashCode;
+			}
+		}
 
 		public bool Equals(string value)
 		{
@@ -83,7 +111,7 @@ namespace NHibernate.SqlCommand
 
 		public override string ToString()
 		{
-			return this.Value;
+			return string.Format("{0}({1})", this.TokenType, this.Value);
 		}
 
 		#endregion

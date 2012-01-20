@@ -19,44 +19,39 @@
         Comment = 0x2,
 
 		/// <summary>
-		/// Keyword, operator, unquoted identifier or unquoted literal
+		/// Keywords, operators or undelimited identifiers. 
 		/// </summary>
-		UnquotedText = 0x4,
+		Text = 0x4,
 
 		/// <summary>
-		/// Quoted identifier, surrounded by double quotes or straight brackets.
-		/// </summary>
-		QuotedIdentifier = 0x8,
-		
-		/// <summary>
-        /// Quoted text, surrounded by single quotes.
+        /// Delimited identifiers or string literals.
         /// </summary>
-        QuotedText = 0x10,
+        DelimitedText = 0x8,
 
-        /// <summary>
+		/// <summary>
+		/// A query parameter.
+		/// </summary>
+		Parameter = 0x10,
+
+		/// <summary>
         /// List separator, the ',' character.
         /// </summary>
-        ListSeparator = 0x20,
+        Comma = 0x20,
 
         /// <summary>
         /// Begin of an expression block, consisting of a '(' character.
         /// </summary>
-        BlockBegin = 0x40,
+        BracketOpen = 0x40,
 
         /// <summary>
         /// End of an expression block, consisting of a ')' character.
         /// </summary>
-        BlockEnd = 0x80,
-
-        /// <summary>
-        /// A query parameter.
-        /// </summary>
-        Parameter = 0x100,
+        BracketClose = 0x80,
 
 		/// <summary>
 		/// Tokens for begin or end of expression blocks.
 		/// </summary>
-		AllBlockBeginOrEnd = BlockBegin | BlockEnd,
+		AllBrackets = BracketOpen | BracketClose,
 
 		/// <summary>
 		/// Includes all token types except whitespace or comments
@@ -71,6 +66,6 @@
 		/// <summary>
 		/// Includes all token types
 		/// </summary>
-		All = Whitespace | Comment | QuotedText | ListSeparator | BlockBegin | BlockEnd | Parameter | UnquotedText | QuotedIdentifier,
+		All = Whitespace | Comment | Text | Comma | BracketOpen | BracketClose | Parameter | DelimitedText,
     }
 }
