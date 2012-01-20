@@ -219,72 +219,72 @@ namespace NHibernate.Test.DialectTest
 		public void GetLimitStringWithSqlComments()
 		{
 			var d = new MsSql2005Dialect();
-		    var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
+			var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
 			Assert.That(limitSqlQuery, Is.Not.Null);
 			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(" /* criteria query */ SELECT TOP (2) p from lcdtm"));
 		}
 
-        [Test]
-        public void GetLimitStringWithSqlCommonTableExpression()
-        {
-            const string SQL = @"
-                WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
-                (   -- Anchor member definition
-                    SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
-                    FROM    MyEmployees
-                    WHERE   ManagerID IS NULL
-                    
-                    UNION ALL
-                    
-                    -- Recursive member definition
-                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
-                    FROM    MyEmployees AS e
-                    INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
-                )
-                -- Statement that executes the CTE
-                SELECT  ManagerID, EmployeeID, Title, Level
-                FROM    DirectReports";
+		[Test]
+		public void GetLimitStringWithSqlCommonTableExpression()
+		{
+			const string SQL = @"
+				WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+				(   -- Anchor member definition
+					SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+					FROM    MyEmployees
+					WHERE   ManagerID IS NULL
+					
+					UNION ALL
+					
+					-- Recursive member definition
+					SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+					FROM    MyEmployees AS e
+					INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
+				)
+				-- Statement that executes the CTE
+				SELECT  ManagerID, EmployeeID, Title, Level
+				FROM    DirectReports";
 
-            const string EXPECTED_SQL = @"
-                WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
-                (   -- Anchor member definition
-                    SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
-                    FROM    MyEmployees
-                    WHERE   ManagerID IS NULL
-                    
-                    UNION ALL
-                    
-                    -- Recursive member definition
-                    SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
-                    FROM    MyEmployees AS e
-                    INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
-                )
-                -- Statement that executes the CTE
-                SELECT  TOP (2) ManagerID, EmployeeID, Title, Level
-                FROM    DirectReports";
+			const string EXPECTED_SQL = @"
+				WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+				(   -- Anchor member definition
+					SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+					FROM    MyEmployees
+					WHERE   ManagerID IS NULL
+					
+					UNION ALL
+					
+					-- Recursive member definition
+					SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+					FROM    MyEmployees AS e
+					INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
+				)
+				-- Statement that executes the CTE
+				SELECT  TOP (2) ManagerID, EmployeeID, Title, Level
+				FROM    DirectReports";
 
-            var d = new MsSql2005Dialect();
-            var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
-            Assert.That(limitSqlQuery, Is.Not.Null);
-            Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
-        }
+			var d = new MsSql2005Dialect();
+			var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
+			Assert.That(limitSqlQuery, Is.Not.Null);
+			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
+		}
 
 		[Test]
 		public void DontReturnLimitStringForStoredProcedureCall()
 		{
 			VerifyLimitStringForStoredProcedureCalls("EXEC sp_stored_procedures");
 			VerifyLimitStringForStoredProcedureCalls(@"
-                DECLARE @id int
-                SELECT  @id = id FROM persons WHERE name LIKE ?
-                EXEC    get_person_summary @id");
+				DECLARE @id int
+				SELECT  @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
 			VerifyLimitStringForStoredProcedureCalls(@"
-                DECLARE @id int
-                SELECT DISTINCT TOP 1 @id = id FROM persons WHERE name LIKE ?
-                EXEC    get_person_summary @id");
+				DECLARE @id int
+				SELECT DISTINCT TOP 1 @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
 			VerifyLimitStringForStoredProcedureCalls(@"
-                DECLARE @id int
-                SELECT DISTINCT TOP (?) PERCENT WITH TIES @id = id FROM persons WHERE name LIKE ?
-                EXEC    get_person_summary @id");
+				DECLARE @id int
+				SELECT DISTINCT TOP (?) PERCENT WITH TIES @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
 		}
 
 		private static void VerifyLimitStringForStoredProcedureCalls(string sql)
