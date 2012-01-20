@@ -13,6 +13,26 @@ namespace NHibernate.SqlCommand
 	/// and sent to the Database for execution.
 	/// </summary>
 	/// <remarks>
+	/// <para>A <see cref="SqlString"/> represents a (potentially partial) SQL query string 
+	/// thay may or may not contain query parameter references. A <see cref="SqlString"/>
+	/// decomposes the underlying SQL query string into a list of parts. Each part is either
+	/// 1) a string part, which represents a fragment of the underlying SQL query string that 
+	/// does not contain any parameter references, or 2) a parameter part, which represents
+	/// a single query parameter reference in the underlying SQL query string.
+	/// </para>
+	/// <para>The <see cref="SqlString"/> constructors ensure that the number of string parts 
+	/// in a <see cref="SqlString"/> are kept to an absolute minimum (as compact as possible) 
+	/// by concatenating any adjoining string parts into a single string part.
+	/// </para>
+	/// <para>
+	/// Substring operations on a <see cref="SqlString"/> (such as <see cref="Substring(int,int)"/>, 
+	/// <see cref="Split"/>, <see cref="Trim"/>) return a <see cref="SqlString"/> that reuses the parts 
+	/// list of the <see cref="SqlString"/> instance on which the operation was performed. 
+	/// Besides a reference to this parts list, the resulting <see cref="SqlString"/> instance 
+	/// also stores the character offset into the original underlying SQL string at which the 
+	/// substring starts and the length of the substring. By avoiding the unnecessary rebuilding 
+	/// of part lists these operations have O(1) behaviour rather than O(n) behaviour.
+	/// </para>
 	/// <para>
 	/// If you need to modify this object pass it to a <see cref="SqlStringBuilder"/> and
 	/// get a new object back from it.
@@ -21,15 +41,47 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class SqlString: ICollection, IEnumerable<object>
 	{
+		/// <summary>
+		/// Empty <see cref="SqlString"/> instance.
+		/// </summary>
 		public static readonly SqlString Empty = new SqlString(Enumerable.Empty<object>());
 
 		#region Instance fields
 
+		/// <summary>
+		/// Immutable list of string and parameter parts that make up this <see cref="SqlString"/>.
+		/// This list may be shared by multiple <see cref="SqlString"/> instances that present 
+		/// different fragments of a common underlying SQL query string.
+		/// </summary>
 		private readonly List<Part> _parts;
+
+		/// <summary>
+		/// List of SQL query parameter references that occur in this <see cref="SqlString"/>.
+		/// </summary>
 		private readonly SortedList<int, Parameter> _parameters;
+
+		/// <summary>
+		/// Cached index of first part in <see cref="_parts"/> that contains (part of)
+		/// a SQL fragment that falls within the scope of this <see cref="SqlString"/> instance.
+		/// </summary>
 		private readonly int _firstPartIndex;
+
+		/// <summary>
+		/// Cached index of last part in <see cref="_parts"/> that contains (part of)
+		/// a SQL fragment that falls within the scope of this <see cref="SqlString"/> instance.
+		/// </summary>
 		private readonly int _lastPartIndex;
+
+		/// <summary>
+		/// Index of first character of the underlying SQL query string that is within scope of
+		/// this <see cref="SqlString"/> instance.
+		/// </summary>
 		private readonly int _sqlStartIndex;
+
+		/// <summary>
+		/// Number of characters of the underlying SQL query string that are within scope of
+		/// this <see cref="SqlString"/> instance from <see cref="_sqlStartIndex"/> onwards.
+		/// </summary>
 		private readonly int _length;
 
 		#endregion
@@ -110,6 +162,10 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
+		/// <summary>
+		/// Creates <see cref="SqlString"/> consisting of single string part.
+		/// </summary>
+		/// <param name="sql">A SQL fragment</param>
 		public SqlString(string sql)
 		{
 			if (sql == null) throw new ArgumentNullException("sql");
@@ -119,6 +175,10 @@ namespace NHibernate.SqlCommand
 			_length = sql.Length;
 		}
 
+		/// <summary>
+		/// Creates <see cref="SqlString"/> consisting of single parameter part.
+		/// </summary>
+		/// <param name="parameter">A query parameter</param>
 		public SqlString(Parameter parameter)
 		{
 			if (parameter == null) throw new ArgumentNullException("parameter");
@@ -128,6 +188,13 @@ namespace NHibernate.SqlCommand
 			_length = _parts[0].Length;
 		}
 
+		/// <summary>
+		/// Creates <see cref="SqlString"/> consisting of multiple parts.
+		/// </summary>
+		/// <param name="parts">Arbitrary number of parts, which must be 
+		/// either <see cref="string"/>, <see cref="Parameter"/> or <see cref="SqlString"/>
+		/// values.</param>
+		/// <remarks>The <see cref="SqlString"/> instance is automatically compacted.</remarks>
 		public SqlString(params object[] parts)
 			: this((IEnumerable<object>)parts)
 		{}
@@ -346,7 +413,7 @@ namespace NHibernate.SqlCommand
 		}
 		
 		/// <summary>
-		/// Make a copy of the SqlString, with new parameter references (Placeholders)
+		/// Makes a copy of the SqlString, with new parameter references (Placeholders)
 		/// </summary>
 		public SqlString Copy()
 		{
