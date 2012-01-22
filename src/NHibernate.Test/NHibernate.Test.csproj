@@ -493,6 +493,7 @@
     <Compile Include="Linq\BinaryBooleanExpressionTests.cs" />
     <Compile Include="Linq\BinaryExpressionOrdererTests.cs" />
     <Compile Include="Linq\BooleanMethodExtensionExample.cs" />
+    <Compile Include="Linq\ByMethod\AssertOrderedBy.cs" />
     <Compile Include="Linq\ByMethod\CastTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
