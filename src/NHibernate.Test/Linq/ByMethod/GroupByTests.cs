@@ -28,7 +28,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void MultipleKeyGroupAndCount()
 		{
-			var orderCounts = db.Orders.GroupBy(o => new {o.Customer, o.Employee}).Select(g => g.Count()).ToList();
+			var orderCounts = db.Orders.GroupBy(o => new { o.Customer, o.Employee }).Select(g => g.Count()).ToList();
 			Assert.AreEqual(464, orderCounts.Count);
 			Assert.AreEqual(830, orderCounts.Sum());
 		}
@@ -58,12 +58,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void GroupBySelectKeyShouldUseServerSideGrouping()
 		{
-			using(var spy = new SqlLogSpy())
+			using (var spy = new SqlLogSpy())
 			{
 				var orders = (from o in db.Orders
 							  group o by o.OrderDate
-							  into g
-							  select g.Key).ToList();
+								  into g
+								  select g.Key).ToList();
 
 				Assert.That(orders.Count, Is.EqualTo(481));
 				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Is.StringContaining("group by order0_.OrderDate"));
@@ -96,7 +96,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(i => i.Name)
 				.Select(g => new
 								 {
-									 Name = g.Max(i => i.Name), 
+									 Name = g.Max(i => i.Name),
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.OrderBy(x => x.Name)
@@ -105,7 +105,68 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Count, Is.EqualTo(77));
 			AssertOrderedBy.Ascending(result, x => x.Name);
 		}
-		
+
+
+		[Test]
+		public void SingleKeyPropertyGroupAndOrderByProjectedCount()
+		{
+			// NH-2560
+
+			var orderCounts = db.Orders
+				.GroupBy(o => o.Customer.CustomerId)
+				.Select(g =>
+				new
+				{
+					CustomerId = g.Key,
+					OrderCount = g.Count()
+				})
+				.OrderByDescending(t => t.OrderCount)
+				.ToList();
+
+			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
+		}
+
+
+		[Test]
+		[Ignore("Generates incorrect SQL. Reported as NH-3026.")]
+		public void SingleKeyPropertyGroupAndOrderByCountBeforeProjection()
+		{
+			// NH-3026, variation of NH-2560.
+			// This is a variation of SingleKeyPropertyGroupAndOrderByProjectedCount()
+			// that puts the ordering expression inside the OrderBy, without first
+			// going through a select clause.
+
+			var orderCounts = db.Orders
+				.GroupBy(o => o.Customer.CustomerId)
+				.OrderByDescending(g => g.Count())
+				.Select(g =>
+				new
+				{
+					CustomerId = g.Key,
+					OrderCount = g.Count()
+				})
+				.ToList();
+
+			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
+		}
+
+
+		[Test]
+		[Ignore("Generates incorrect SQL. Reported as NH-3027.")]
+		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
+		{
+			// NH-3027
+
+			var orderCounts = db.Orders
+				.GroupBy(o => o.Customer)
+				.Select(g => new { Customer = g.Key, OrderCount = g.Count() })
+				.OrderByDescending(t => t.OrderCount)
+				.ToList();
+
+			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
+		}
+
+
 		[Test]
 		public void SingleKeyGroupAndOrderByNonKeyAggregateProjection()
 		{
@@ -215,7 +276,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				if (obj.GetType() != GetType())
 					return false;
 
-				var other = (Tup<T1, T2>) obj;
+				var other = (Tup<T1, T2>)obj;
 
 				return Equals(Item1, other.Item1) && Equals(Item2, other.Item2);
 			}
