@@ -128,7 +128,6 @@ namespace NHibernate.Test.Linq.ByMethod
 
 
 		[Test]
-		[Ignore("Generates incorrect SQL. Reported as NH-3026.")]
 		public void SingleKeyPropertyGroupAndOrderByCountBeforeProjection()
 		{
 			// NH-3026, variation of NH-2560.
