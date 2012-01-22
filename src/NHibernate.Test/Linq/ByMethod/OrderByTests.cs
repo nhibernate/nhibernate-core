@@ -37,6 +37,24 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void OrderByCalculatedAggregatedSubselectProperty()
+		{
+			//NH-2781
+			var result = db.Orders
+				.Select(o => new
+								 {
+									 o.OrderId,
+									 TotalQuantity = o.OrderLines.Sum(c => c.Quantity)
+								 })
+				.OrderBy(s => s.TotalQuantity)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(830));
+
+			AssertOrderedBy.Ascending(result, s => s.TotalQuantity);
+		}
+
+		[Test]
 		[Ignore("NHibernate does not currently support subqueries in select clause (no way to specify a projection from a detached criteria).")]
 		public void AggregateAscendingOrderByClause()
 		{

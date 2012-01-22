@@ -25,15 +25,17 @@ namespace NHibernate.Linq
 		private readonly List<LambdaExpression> _postExecuteTransformers = new List<LambdaExpression>();
 		private bool _hasDistinctRootOperator;
 		private HqlExpression _skipCount;
-		private HqlExpression _takeCount; 
+		private HqlExpression _takeCount;
 		private HqlHaving _hqlHaving;
 		private HqlTreeNode _root;
+		private HqlOrderBy _orderBy;
 
 		public HqlTreeNode Root
 		{
 			get
 			{
 				ExecuteAddHavingClause(_hqlHaving);
+				ExecuteAddOrderBy(_orderBy);
 				ExecuteAddSkipClause(_skipCount);
 				ExecuteAddTakeClause(_takeCount);
 				return _root;
@@ -97,16 +99,11 @@ namespace NHibernate.Linq
 
 		public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
 		{
-			var orderByRoot = _root.NodesPreOrder.OfType<HqlOrderBy>().FirstOrDefault();
+			if (_orderBy == null)
+				_orderBy = TreeBuilder.OrderBy();
 
-			if (orderByRoot == null)
-			{
-				orderByRoot = TreeBuilder.OrderBy();
-				_root.As<HqlQuery>().AddChild(orderByRoot);
-			}
-
-			orderByRoot.AddChild(orderBy);
-			orderByRoot.AddChild(direction);
+			_orderBy.AddChild(orderBy);
+			_orderBy.AddChild(direction);
 		}
 
 		public void AddSkipClause(HqlExpression toSkip)
@@ -117,6 +114,15 @@ namespace NHibernate.Linq
 		public void AddTakeClause(HqlExpression toTake)
 		{
 			_takeCount = toTake;
+		}
+
+		private void ExecuteAddOrderBy(HqlTreeNode orderBy)
+		{
+			if (orderBy == null)
+				return;
+
+			if (!_root.NodesPreOrder.OfType<HqlOrderBy>().Any())
+				_root.As<HqlQuery>().AddChild(orderBy);
 		}
 
 		private void ExecuteAddTakeClause(HqlExpression toTake)
