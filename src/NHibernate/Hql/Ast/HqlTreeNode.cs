@@ -353,6 +353,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlHaving : HqlStatement
+	{
+		public HqlHaving(IASTFactory factory, HqlExpression expression)
+			: base(HqlSqlWalker.HAVING, "having", factory, expression)
+		{
+		}
+	}
+
 	public class HqlSkip : HqlStatement
 	{
 		public HqlSkip(IASTFactory factory, HqlExpression parameter)

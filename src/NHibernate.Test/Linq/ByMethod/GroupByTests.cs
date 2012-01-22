@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -21,7 +22,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void MultipleKeyGroupAndCount()
 		{
-			var orderCounts = db.Orders.GroupBy(o => new { o.Customer, o.Employee }).Select(g => g.Count()).ToList();
+			var orderCounts = db.Orders.GroupBy(o => new {o.Customer, o.Employee}).Select(g => g.Count()).ToList();
 			Assert.AreEqual(464, orderCounts.Count);
 			Assert.AreEqual(830, orderCounts.Sum());
 		}
@@ -46,6 +47,21 @@ namespace NHibernate.Test.Linq.ByMethod
 				orders.Select(g => new TupGrouping<Customer, Employee, Order>(g.Key.Customer, g.Key.Employee, g)),
 				o => o.Customer,
 				o => o.Employee);
+		}
+
+		[Test]
+		public void GroupBySelectKeyShouldUseServerSideGrouping()
+		{
+			using(var spy = new SqlLogSpy())
+			{
+				var orders = (from o in db.Orders
+							  group o by o.OrderDate
+							  into g
+							  select g.Key).ToList();
+
+				Assert.That(orders.Count, Is.EqualTo(481));
+				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Is.StringContaining("group by order0_.OrderDate"));
+			}
 		}
 
 		private void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)

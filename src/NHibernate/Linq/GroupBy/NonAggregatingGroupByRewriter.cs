@@ -69,7 +69,7 @@ namespace NHibernate.Linq.GroupBy
 
 		private static bool IsNonAggregatingGroupBy(QueryModel queryModel)
 		{
-			return new GroupByAggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector) == false;
+			return new IsNonAggregatingGroupByDetectionVisitor().IsNonAggregatingGroupBy(queryModel.SelectClause.Selector);
 		}
 	}
 
