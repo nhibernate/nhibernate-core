@@ -55,7 +55,6 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
-		[Ignore("NHibernate does not currently support subqueries in select clause (no way to specify a projection from a detached criteria).")]
 		public void AggregateAscendingOrderByClause()
 		{
 			var query = from c in db.Customers
@@ -64,14 +63,11 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			var customers = query.ToList();
 
-			if (customers.Count > 1)
-			{
-				Assert.Less(customers[0].Orders.Count, customers[1].Orders.Count);
-			}
+			// Verify ordering for first 10 customers - to avoid loading all orders.
+			AssertOrderedBy.Ascending(customers.Take(10).ToList(), customer => customer.Orders.Count);
 		}
 
 		[Test]
-		[Ignore("NHibernate does not currently support subqueries in select clause (no way to specify a projection from a detached criteria).")]
 		public void AggregateDescendingOrderByClause()
 		{
 			var query = from c in db.Customers
@@ -80,10 +76,8 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			var customers = query.ToList();
 
-			if (customers.Count > 1)
-			{
-				Assert.Greater(customers[0].Orders.Count, customers[1].Orders.Count);
-			}
+			// Verify ordering for first 10 customers - to avoid loading all orders.
+			AssertOrderedBy.Descending(customers.Take(10).ToList(), customer => customer.Orders.Count);
 		}
 
 		[Test]
