@@ -113,7 +113,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToOne.foreignkey = foreignKeyName;
 		}
 
-		#endregion
+	    public void PropertyRef(string propertyReferencedName)
+	    {
+	        manyToOne.propertyref = propertyReferencedName;
+	    }
+
+	    public void NotFound(NotFoundMode mode)
+	    {
+	        manyToOne.notfound = mode.ToHbm();
+	    }
+
+	    #endregion
 
 		#region Implementation of IAccessorPropertyMapper
 
