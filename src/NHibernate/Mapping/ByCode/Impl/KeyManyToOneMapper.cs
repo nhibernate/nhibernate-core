@@ -39,8 +39,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!member.GetPropertyOrFieldType().IsAssignableFrom(entityType))
 			{
 				throw new ArgumentOutOfRangeException("entityType",
-				                                      string.Format("The type is incompatible; expected assignable to {0}",
-				                                                    member.GetPropertyOrFieldType()));
+													  string.Format("The type is incompatible; expected assignable to {0}",
+																	member.GetPropertyOrFieldType()));
 			}
 			manyToOne.@class = entityType.GetShortClassName(mapDoc);
 		}
@@ -116,6 +116,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToOne.foreignkey = foreignKeyName;
 		}
 
+		public void PropertyRef(string propertyReferencedName)
+		{
+			//Not supported
+		}
+
+		public void NotFound(NotFoundMode mode)
+		{
+			manyToOne.notfound = mode.ToHbm();
+		}
+
 		#endregion
 
 		#region Implementation of IAccessorPropertyMapper
@@ -147,11 +157,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			HbmColumn hbm = manyToOne.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = manyToOne.column1,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					name = manyToOne.column1,
+				  };
 			string defaultColumnName = member.Name;
 			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
 			if (ColumnTagIsRequired(hbm))
@@ -188,8 +198,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.length != null || hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()

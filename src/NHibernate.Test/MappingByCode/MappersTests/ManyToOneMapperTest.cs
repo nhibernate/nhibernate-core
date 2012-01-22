@@ -301,5 +301,44 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			hbm.foreignkey.Should().Be("MyFkName");
 		}
-	}
+
+		[Test]
+		public void CanSetPropertyRefName()
+		{
+			var hbmMapping = new HbmMapping();
+			var member = typeof(MyClass).GetProperty("Relation");
+			var hbm = new HbmManyToOne();
+			var mapper = new ManyToOneMapper(member, hbm, hbmMapping);
+
+			mapper.PropertyRef("PropertyRefName");
+
+			hbm.propertyref.Should().Be("PropertyRefName");
+		}
+
+        [Test]
+        public void CanSetNotFoundWithExceptionMode()
+        {
+            var hbmMapping = new HbmMapping();
+            var member = typeof(MyClass).GetProperty("Relation");
+            var hbm = new HbmManyToOne();
+            var mapper = new ManyToOneMapper(member, hbm, hbmMapping);
+
+            mapper.NotFound(NotFoundMode.Exception);
+
+            hbm.notfound.Should().Be(HbmNotFoundMode.Exception);
+        }
+
+        [Test]
+        public void CanSetNotFoundWithIgnoreMode()
+        {
+            var hbmMapping = new HbmMapping();
+            var member = typeof(MyClass).GetProperty("Relation");
+            var hbm = new HbmManyToOne();
+            var mapper = new ManyToOneMapper(member, hbm, hbmMapping);
+
+            mapper.NotFound(NotFoundMode.Ignore);
+
+            hbm.notfound.Should().Be(HbmNotFoundMode.Ignore);
+        }
+    }
 }
