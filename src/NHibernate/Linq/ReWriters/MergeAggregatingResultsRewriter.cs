@@ -75,6 +75,11 @@ namespace NHibernate.Linq.ReWriters
 			whereClause.TransformExpressions(e => MergeAggregatingResultsInExpressionRewriter.Rewrite(e, new NameGenerator(queryModel)));
 		}
 
+		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
+		{
+			ordering.TransformExpressions(e => MergeAggregatingResultsInExpressionRewriter.Rewrite(e, new NameGenerator(queryModel)));
+		}
+
 		private static Expression TransformCountExpression(Expression expression)
 		{
 			if (expression.NodeType == ExpressionType.MemberInit || 
