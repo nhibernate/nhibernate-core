@@ -11,7 +11,7 @@ namespace NHibernate.Driver
 	public class BasicResultSetsCommand: IResultSetsCommand
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicResultSetsCommand));
-		private SqlString sqlString = new SqlString();
+		private SqlString sqlString = SqlString.Empty;
 
 		public BasicResultSetsCommand(ISessionImplementor session)
 		{
