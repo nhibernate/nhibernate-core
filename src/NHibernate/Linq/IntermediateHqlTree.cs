@@ -25,13 +25,15 @@ namespace NHibernate.Linq
 		private readonly List<LambdaExpression> _postExecuteTransformers = new List<LambdaExpression>();
 		private bool _hasDistinctRootOperator;
 		private HqlExpression _skipCount;
-		private HqlExpression _takeCount;
+		private HqlExpression _takeCount; 
+		private HqlHaving _hqlHaving;
 		private HqlTreeNode _root;
 
 		public HqlTreeNode Root
 		{
 			get
 			{
+				ExecuteAddHavingClause(_hqlHaving);
 				ExecuteAddSkipClause(_skipCount);
 				ExecuteAddTakeClause(_takeCount);
 				return _root;
@@ -152,6 +154,15 @@ namespace NHibernate.Linq
 			}
 		}
 
+		private void ExecuteAddHavingClause(HqlHaving hqlHaving)
+		{
+			if (hqlHaving == null)
+				return;
+
+			if (!_root.NodesPreOrder.OfType<HqlHaving>().Any())
+				_root.As<HqlQuery>().AddChild(hqlHaving);
+		}
+
 		public void AddWhereClause(HqlBooleanExpression where)
 		{
 			var currentWhere = _root.NodesPreOrder.OfType<HqlWhere>().FirstOrDefault();
@@ -166,6 +177,21 @@ namespace NHibernate.Linq
 
 				currentWhere.ClearChildren();
 				currentWhere.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
+			}
+		}
+
+		public void AddHavingClause(HqlBooleanExpression where)
+		{
+			if (_hqlHaving == null)
+			{
+				_hqlHaving = TreeBuilder.Having(where);
+			}
+			else
+			{
+				var currentClause = (HqlBooleanExpression) _hqlHaving.Children.Single();
+
+				_hqlHaving.ClearChildren();
+				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
 			}
 		}
 

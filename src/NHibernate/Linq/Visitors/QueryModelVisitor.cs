@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
 using NHibernate.Linq.ResultOperators;
@@ -24,12 +25,12 @@ namespace NHibernate.Linq.Visitors
 
 			// Merge aggregating result operators (distinct, count, sum etc) into the select clause
 			MergeAggregatingResultsRewriter.ReWrite(queryModel);
+			
+			// Swap out non-aggregating group-bys
+			NonAggregatingGroupByRewriter.ReWrite(queryModel);
 
 			// Rewrite aggregate group-by statements
 			AggregatingGroupByRewriter.ReWrite(queryModel);
-
-			// Swap out non-aggregating group-bys
-			NonAggregatingGroupByRewriter.ReWrite(queryModel);
 
 			// Rewrite aggregating group-joins
 			AggregatingGroupJoinRewriter.ReWrite(queryModel);
@@ -212,7 +213,15 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			// Visit the predicate to build the query
-			_hqlTree.AddWhereClause(HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression());
+			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression();
+			if (whereClause is NhHavingClause)
+			{
+				_hqlTree.AddHavingClause(expression);
+			}
+			else
+			{
+				_hqlTree.AddWhereClause(expression);
+			}
 		}
 
 		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
