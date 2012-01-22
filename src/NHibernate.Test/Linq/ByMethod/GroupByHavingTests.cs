@@ -91,7 +91,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(list.Single().Count, Is.EqualTo(5));
 		}
 
-		[Test]
+		[Test, Description("I suspect that this case isn't executed correctly - the sql doesn't mention the orderlines. /Oskar 2012-01-22")]
 		public void HavingCountSelectTupleKeyCountOfOrderLines()
 		{
 			var list = (from o in db.Orders
