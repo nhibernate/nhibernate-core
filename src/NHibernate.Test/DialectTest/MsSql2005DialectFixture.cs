@@ -219,7 +219,7 @@ namespace NHibernate.Test.DialectTest
 		public void GetLimitStringWithSqlComments()
 		{
 			var d = new MsSql2005Dialect();
-			Assert.Throws<NotSupportedException>(() => d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2")));
+			Assert.That(d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2")), Is.Null);
 		}
 	}
 }

@@ -38,20 +38,20 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			var result = new SqlStringBuilder();
-
-			if (offset == null)
+			if (offset != null)
 			{
-				int insertPoint = GetAfterSelectInsertPoint(queryString);
-
-				return result
-					.Add(queryString.Substring(0, insertPoint))
-					.Add(" TOP (")
-					.Add(limit)
-					.Add(") ")
-					.Add(queryString.Substring(insertPoint))
-					.ToSqlString();
+				return GetPagingLimitString(queryString, offset, limit);
 			}
+
+			int insertPoint;
+			return TryGetAfterSelectInsertPoint(queryString, out insertPoint)
+				? queryString.Insert(insertPoint, new SqlString(" TOP (", limit, ") "))
+				: null;
+		}
+
+		private static SqlString GetPagingLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			var result = new SqlStringBuilder();
 
 			int fromIndex = GetFromIndex(queryString);
 			SqlString select = queryString.Substring(0, fromIndex);
@@ -149,19 +149,6 @@ namespace NHibernate.Dialect
 				fromIndex = querySqlString.ToString().ToLowerInvariant().IndexOf(subselect.ToLowerInvariant());
 			}
 			return fromIndex;
-		}
-
-		private int GetAfterSelectInsertPoint(SqlString sql)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			if (sql.StartsWithCaseInsensitive("select"))
-			{
-				return 6;
-			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
 		/// <summary>

@@ -1450,20 +1450,22 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
+		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
 		/// </summary>
 		/// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
+		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause. Returns <c>null</c> 
+		/// if <paramref name="queryString"/> represents a SQL statement to which a limit clause cannot be added, 
+		/// for example when the query string is custom SQL invoking a stored procedure.</returns>
 		public virtual SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			throw new NotSupportedException("Dialect does not have support for limit strings.");
 		}
 
 		/// <summary>
-		/// Generates a string to limit the result set to a number of maximum results with a specified offset into the results.
+		/// Attempts to generate a string to limit the result set to a number of maximum results with a specified offset into the results.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
 		/// Performs error checking based on the various dialect limit support options.  If both parameters and fixed valeus are
 		/// specified, this will use the parameter option if possible.  Otherwise, it will fall back to a fixed string.

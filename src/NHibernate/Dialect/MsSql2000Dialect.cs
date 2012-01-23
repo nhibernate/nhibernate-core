@@ -339,11 +339,10 @@ namespace NHibernate.Dialect
 			 * "SELECT TOP limit rest-of-sql-statement"
 			 */
 
-			SqlStringBuilder topFragment = new SqlStringBuilder();
-			topFragment.Add(" top ");
-			topFragment.Add(limit);
-
-			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), topFragment.ToSqlString());
+			int insertPoint;
+			return TryGetAfterSelectInsertPoint(querySqlString, out insertPoint)
+				? querySqlString.Insert(insertPoint, new SqlString(" top ", limit))
+				: null;
 		}
 
 		/// <summary>
@@ -393,17 +392,21 @@ namespace NHibernate.Dialect
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 		}
 
-		private static int GetAfterSelectInsertPoint(SqlString sql)
+		protected bool TryGetAfterSelectInsertPoint(SqlString sql, out int result)
 		{
 			if (sql.StartsWithCaseInsensitive("select distinct"))
 			{
-				return 15;
+				result = 15;
+				return true;
 			}
-			else if (sql.StartsWithCaseInsensitive("select"))
+			if (sql.StartsWithCaseInsensitive("select"))
 			{
-				return 6;
+				result = 6;
+				return true;
 			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
+
+			result = -1;
+			return false;
 		}
 
 		private bool NeedsLockHint(LockMode lockMode)
