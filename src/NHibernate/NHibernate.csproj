@@ -580,7 +580,9 @@
     <Compile Include="SqlCommand\JoinFragment.cs" />
     <Compile Include="SqlCommand\OracleJoinFragment.cs" />
     <Compile Include="SqlCommand\Parameter.cs" />
+    <Compile Include="SqlCommand\Parser\MsSqlSelectParser.cs" />
     <Compile Include="SqlCommand\Parser\SqlToken.cs" />
+    <Compile Include="SqlCommand\Parser\SqlTokenizerExtensions.cs" />
     <Compile Include="SqlCommand\Parser\SqlTokenType.cs" />
     <Compile Include="SqlCommand\QueryJoinFragment.cs" />
     <Compile Include="SqlCommand\QuerySelect.cs" />

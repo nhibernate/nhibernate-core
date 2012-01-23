@@ -9,6 +9,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.SqlCommand.Parser;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -335,14 +336,25 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			/*
-			 * "SELECT TOP limit rest-of-sql-statement"
-			 */
-
 			int insertPoint;
-			return TryGetAfterSelectInsertPoint(querySqlString, out insertPoint)
-				? querySqlString.Insert(insertPoint, new SqlString(" top ", limit))
+			return TryFindLimitInsertPoint(querySqlString, out insertPoint)
+				? querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "))
 				: null;
+		}
+
+		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
+		{
+			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
+			
+			SqlToken selectToken;
+			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken))
+			{
+				result = tokenEnum.Current.SqlIndex;
+				return true;
+			}
+
+			result = -1;
+			return false;
 		}
 
 		/// <summary>
@@ -390,23 +402,6 @@ namespace NHibernate.Dialect
 			}
 
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
-		}
-
-		protected bool TryGetAfterSelectInsertPoint(SqlString sql, out int result)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				result = 15;
-				return true;
-			}
-			if (sql.StartsWithCaseInsensitive("select"))
-			{
-				result = 6;
-				return true;
-			}
-
-			result = -1;
-			return false;
 		}
 
 		private bool NeedsLockHint(LockMode lockMode)
@@ -513,7 +508,7 @@ namespace NHibernate.Dialect
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
-		
+
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
