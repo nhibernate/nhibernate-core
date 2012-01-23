@@ -17,7 +17,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public sealed class ProxyFactory
 	{
-		private static readonly ConstructorInfo baseConstructor = typeof(object).GetConstructor(new System.Type[0]);
+		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");
 
 		private static readonly MethodInfo getValue = typeof (SerializationInfo).GetMethod("GetValue", BindingFlags.Public | BindingFlags.Instance, null,
@@ -31,19 +31,28 @@ namespace NHibernate.Proxy.DynamicProxy
 		public ProxyFactory()
 			: this(new DefaultyProxyMethodBuilder()) {}
 
+		public ProxyFactory(IProxyAssemblyBuilder proxyAssemblyBuilder)
+			: this(new DefaultyProxyMethodBuilder(), proxyAssemblyBuilder) {}
+
 		public ProxyFactory(IProxyMethodBuilder proxyMethodBuilder)
+			: this(new DefaultyProxyMethodBuilder(), new DefaultProxyAssemblyBuilder()) {}
+
+		public ProxyFactory(IProxyMethodBuilder proxyMethodBuilder, IProxyAssemblyBuilder proxyAssemblyBuilder)
 		{
 			if (proxyMethodBuilder == null)
 			{
 				throw new ArgumentNullException("proxyMethodBuilder");
 			}
 			ProxyMethodBuilder = proxyMethodBuilder;
+			ProxyAssemblyBuilder = proxyAssemblyBuilder;
 			Cache = new ProxyCache();
 		}
 
 		public IProxyCache Cache { get; private set; }
 
 		public IProxyMethodBuilder ProxyMethodBuilder { get; private set; }
+
+		public IProxyAssemblyBuilder ProxyAssemblyBuilder { get; private set; }
 
 		public object CreateProxy(System.Type instanceType, IInterceptor interceptor, params System.Type[] baseInterfaces)
 		{
@@ -83,19 +92,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			string moduleName = string.Format("{0}Module", typeName);
 
 			var name = new AssemblyName(assemblyName);
-#if DEBUG
-			AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
-#else
-      AssemblyBuilderAccess access = AssemblyBuilderAccess.Run;
-#endif
-			AssemblyBuilder assemblyBuilder = currentDomain.DefineDynamicAssembly(name, access);
-
-#if DEBUG
-			ModuleBuilder moduleBuilder =
-				assemblyBuilder.DefineDynamicModule(moduleName, string.Format("{0}.mod", moduleName), true);
-#else
-       ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(moduleName);
-#endif
+			AssemblyBuilder assemblyBuilder = ProxyAssemblyBuilder.DefineDynamicAssembly(currentDomain, name);
+			ModuleBuilder moduleBuilder = ProxyAssemblyBuilder.DefineDynamicModule(moduleName);
 
 			TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class |
 			                                TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
@@ -124,7 +122,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
-			ConstructorBuilder defaultConstructor = DefineConstructor(typeBuilder);
+			ConstructorBuilder defaultConstructor = DefineConstructor(typeBuilder, parentType);
 
 			// Implement IProxy
 			var implementor = new ProxyImplementor();
@@ -143,9 +141,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			AddSerializationSupport(baseType, baseInterfaces, typeBuilder, interceptorField, defaultConstructor);
 			System.Type proxyType = typeBuilder.CreateType();
 
-#if DEBUG_PROXY_OUTPUT
-     assemblyBuilder.Save("generatedAssembly.dll");
-#endif
+			ProxyAssemblyBuilder.Save();
 			return proxyType;
 		}
 
@@ -177,7 +173,7 @@ namespace NHibernate.Proxy.DynamicProxy
 					.Concat(interfaces.SelectMany(interfaceType => interfaceType.GetMethods())).Distinct();
 		}
 
-		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder)
+		private static ConstructorBuilder DefineConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
 			const MethodAttributes constructorAttributes = MethodAttributes.Public |
 			                                               MethodAttributes.HideBySig | MethodAttributes.SpecialName |
@@ -185,6 +181,13 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			ConstructorBuilder constructor =
 				typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, new System.Type[0]);
+
+			var baseConstructor = parentType.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new System.Type[0], null);
+
+			// if there is no default constructor, or the default constructor is private/internal, call System.Object constructor
+			// this works, but the generated assembly will fail PeVerify (cannot use in medium trust for example)
+			if (baseConstructor == null || baseConstructor.IsPrivate || baseConstructor.IsAssembly)
+				baseConstructor = defaultBaseConstructor;
 
 			ILGenerator IL = constructor.GetILGenerator();
 

@@ -64,7 +64,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Callvirt, getInterceptor);
 
 			// if (interceptor == null)
-			// 		throw new NullReferenceException();
+			// 		return base.method(...);
 
 			Label skipThrow = IL.DefineLabel();
 
@@ -72,8 +72,14 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ldnull);
 			IL.Emit(OpCodes.Bne_Un, skipThrow);
 
-			IL.Emit(OpCodes.Newobj, notImplementedConstructor);
-			IL.Emit(OpCodes.Throw);
+			IL.Emit(OpCodes.Pop); // get rid of the reference to the duplicated interceptor
+			IL.Emit(OpCodes.Ldarg_0);
+
+			for(int i=0; i<method.GetParameters().Length; i++)
+				IL.Emit(OpCodes.Ldarg_S, (sbyte)(i + 1));
+
+			IL.Emit(OpCodes.Call, method);
+			IL.Emit(OpCodes.Ret);
 
 			IL.MarkLabel(skipThrow);
 			// Push the 'this' pointer onto the stack

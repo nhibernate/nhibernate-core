@@ -224,6 +224,7 @@
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="DynamicProxyTests\PeVerifyFixture.cs" />
     <Compile Include="DynamicProxyTests\GenericMethodsTests\GenericMethodShouldBeProxied.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\IMyProxy.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
     <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
     <Compile Include="DynamicProxyTests\PassThroughInterceptor.cs" />
+    <Compile Include="DynamicProxyTests\PeVerifier.cs" />
     <Compile Include="DynamicProxyTests\ProxiedMembers\Fixture.cs" />
     <Compile Include="DynamicProxyTests\ProxiedMembers\MetodWithRefDictionaryTest.cs" />
     <Compile Include="EngineTest\CallableParserFixture.cs" />

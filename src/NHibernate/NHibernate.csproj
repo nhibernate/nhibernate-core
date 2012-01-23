@@ -542,6 +542,7 @@
     <Compile Include="Proxy\DefaultProxyFactory.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultArgumentHandler.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultMethodEmitter.cs" />
+    <Compile Include="Proxy\DynamicProxy\DefaultProxyAssemblyBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultProxyMethodBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\HashSetExtensions.cs" />
     <Compile Include="Proxy\DynamicProxy\IArgumentHandler.cs" />
@@ -551,6 +552,7 @@
     <Compile Include="Proxy\DynamicProxy\InvocationHandler.cs" />
     <Compile Include="Proxy\DynamicProxy\InvocationInfo.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxy.cs" />
+    <Compile Include="Proxy\DynamicProxy\IProxyAssemblyBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyCache.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyMethodBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\OpCodesMap.cs" />
