@@ -104,8 +104,10 @@ namespace NHibernate.Loader.Collection
 					parameters.Add(takeParameterName, new TypedValue(takeParameter.ExpectedType, take.Value, EntityMode.Poco));
 					parameterSpecs.Add(takeParameter);
 				}
+
 				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
-				return dialect.GetLimitString(subquery, skip, take, skipSqlParameter, takeSqlParameter);
+				SqlString result;
+				if (TryGetLimitString(dialect, subquery, skip, take, skipSqlParameter, takeSqlParameter, out result)) return result;
 			}
 			return subquery;
 		}

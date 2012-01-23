@@ -1020,6 +1020,7 @@
     <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2959\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2977\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3010\FixtureWithBatcher.cs" />
     <Compile Include="NHSpecificTest\NH3010\FixtureWithNoBatcher.cs" />
     <Compile Include="NHSpecificTest\NH3010\Model.cs" />
