@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -40,7 +41,16 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			// Find the sub trees that can be expressed purely in HQL
-			_hqlNodes = new SelectClauseHqlNominator(_parameters).Nominate(expression);
+			var nominator = new SelectClauseHqlNominator(_parameters);
+			nominator.Visit(expression);
+			_hqlNodes = nominator.HqlCandidates;
+
+			// Linq2SQL ignores calls to local methods. Linq2EF seems to not support
+			// calls to local methods at all. For NHibernate we support local methods,
+			// but prevent their use together with server-side distinct, since it may
+			// end up being wrong.
+			if (distinct != null && nominator.ContainsUntranslatedMethodCalls)
+				throw new NotSupportedException("Cannot use distinct on result that depends on methods for which no SQL equivalent exist.");
 
 			// Now visit the tree
 			var projection = VisitExpression(expression);
