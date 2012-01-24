@@ -201,6 +201,36 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
 
+		[Test]
+		public void GroupByWithAndAlsoContainsInWhereClause()
+		{
+			//NH-3032
+			var collection = db.Products.Select(x => x.Supplier).ToList();
+
+			var result = db.Products
+				.Where(x => x.Discontinued == true && collection.Contains(x.Supplier))
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.ToList();
+ 
+			Assert.That(result.Count, Is.EqualTo(8));
+		}
+
+		[Test]
+		public void GroupByWithContainsInWhereClause()
+		{
+			//NH-3032
+			var collection = db.Products.Select(x => x.Supplier).ToList();
+
+			var result = db.Products
+				.Where(x => collection.Contains(x.Supplier))
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.ToList();
+ 
+			Assert.That(result.Count, Is.EqualTo(62));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
