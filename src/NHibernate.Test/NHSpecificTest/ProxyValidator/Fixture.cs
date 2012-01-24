@@ -1,4 +1,6 @@
 using System;
+using System.Security;
+using System.Security.Permissions;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -10,21 +12,48 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	{
 		private readonly IProxyValidator pv = new DynProxyTypeValidator();
 
-		private void Validate(System.Type type)
-		{
-			ICollection<string> errors = pv.ValidateType(type);
-			if (errors != null)
-			{
-				throw new InvalidProxyTypeException(errors);
-			}
-		}
+        private static void Validate(IProxyValidator validator, System.Type type)
+        {
+            var errors = validator.ValidateType(type);
+            if (errors != null)
+            {
+                throw new InvalidProxyTypeException(errors);
+            }
+        }
+
+	    private void Validate(System.Type type)
+	    {
+	        Validate(pv, type);
+	    }
+
+	    private void ValidateInNonTrustedDomain(System.Type type)
+        {
+
+            var setup = new AppDomainSetup { ApplicationBase = AppDomain.CurrentDomain.BaseDirectory, ShadowCopyFiles = "true"};
+            var permissions = new PermissionSet(null);
+            permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
+            permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.SerializationFormatter));
+            permissions.AddPermission(new FileIOPermission(PermissionState.Unrestricted));
+            var domain = AppDomain.CreateDomain("Non Trust AppDomain", null, setup, permissions);
+	        var validatorType = typeof (DynProxyTypeValidatorCrossDomainDecorator);
+            var validator = (DynProxyTypeValidatorCrossDomainDecorator)
+                    domain.CreateInstanceAndUnwrap(validatorType.Assembly.FullName, validatorType.FullName);
+            validator.ValidateType(type);
+        }
+
+
 
 		public class ValidClass
 		{
 			private int privateField;
 			protected int protectedField;
 
-			public virtual int SomeProperty
+		    public ValidClass(int privateField)
+		    {
+		        this.privateField = privateField;
+		    }
+
+		    public virtual int SomeProperty
 			{
 				get { return privateField; }
 				set { privateField = value; }
@@ -70,22 +99,43 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Validate(typeof(ValidClass));
 		}
 
-		public class InvalidPrivateConstructor : ValidClass
+		public class ValidClassWithNonPrivateConstructor
 		{
-			private InvalidPrivateConstructor()
-			{
-			}
+			
 		}
 
 		[Test]
-		public void PrivateConstructor()
+		public void PrivateConstructorInTrustedEnvironment()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPrivateConstructor)));
+			Assert.DoesNotThrow(() => Validate(typeof(ValidClass)));
 		}
+
+
+        [Test]
+        public void NonPrivateConstructorInTrustedEnvironment()
+        {
+            Assert.DoesNotThrow(() => Validate(typeof(ValidClassWithNonPrivateConstructor)));
+        }
+
+        [Test]
+        public void PrivateConstructorInNonTrustedEnvironment()
+        {
+            Assert.Throws<InvalidProxyTypeException>(() => ValidateInNonTrustedDomain(typeof(ValidClass)));
+        }
+
+        [Test]
+        public void NonPrivateConstructorInNonTrustedEnvironment()
+        {
+            Assert.DoesNotThrow(() => ValidateInNonTrustedDomain(typeof(ValidClassWithNonPrivateConstructor)));
+        }
 
 		public class InvalidNonVirtualProperty : ValidClass
 		{
-			public int NonVirtualProperty
+		    public InvalidNonVirtualProperty(int privateField) : base(privateField)
+		    {
+		    }
+
+		    public int NonVirtualProperty
 			{
 				get { return 1; }
 				set { }
@@ -101,6 +151,10 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		public class InvalidPublicField : ValidClass
 		{
 			public int publicField;
+
+		    public InvalidPublicField(int privateField) : base(privateField)
+		    {
+		    }
 		}
 
 		[Test]
@@ -111,8 +165,12 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualEvent : ValidClass
 		{
+            public InvalidNonVirtualEvent(int privateField)
+                : base(privateField)
+            {
+            }
 #pragma warning disable 67
-			public event EventHandler NonVirtualEvent;
+		    public event EventHandler NonVirtualEvent;
 #pragma warning restore 67
 		}
 
@@ -166,7 +224,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualInternalProperty : ValidClass
 		{
-			internal int NonVirtualProperty
+		    public InvalidNonVirtualInternalProperty(int privateField) : base(privateField)
+		    {
+		    }
+
+		    internal int NonVirtualProperty
 			{
 				get { return 1; }
 				set { }
@@ -178,6 +240,9 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 #pragma warning disable 649
 			internal int internalField;
 #pragma warning restore 649
+		    public InvalidInternalField(int privateField) : base(privateField)
+		    {
+		    }
 		}
 
 		[Test]
@@ -194,7 +259,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualProtectedProperty : ValidClass
 		{
-			protected int NonVirtualProperty
+		    public InvalidNonVirtualProtectedProperty(int privateField) : base(privateField)
+		    {
+		    }
+
+		    protected int NonVirtualProperty
 			{
 				get { return 1; }
 				set { }
@@ -210,7 +279,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidNonVirtualProtectedInternalProperty : ValidClass
 		{
-			protected internal int NonVirtualProperty
+		    public InvalidNonVirtualProtectedInternalProperty(int privateField) : base(privateField)
+		    {
+		    }
+
+		    protected internal int NonVirtualProperty
 			{
 				get { return 1; }
 				set { }
@@ -230,7 +303,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class NonVirtualPublicImplementsInterface : ValidClass, INonVirtualPublicImplementsInterface
 		{
-			public int NonVirtualMethodImplementsInterface
+		    public NonVirtualPublicImplementsInterface(int privateField) : base(privateField)
+		    {
+		    }
+
+		    public int NonVirtualMethodImplementsInterface
 			{
 				get { return 0; }
 			}
@@ -244,7 +321,11 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		public class InvalidVirtualPrivateAutoProperty : ValidClass
 		{
-			public virtual int NonVirtualSetterProperty
+		    public InvalidVirtualPrivateAutoProperty(int privateField) : base(privateField)
+		    {
+		    }
+
+		    public virtual int NonVirtualSetterProperty
 			{
 				get;
 				private set;
@@ -256,5 +337,20 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidVirtualPrivateAutoProperty)));
 		}
+
+        public class DynProxyTypeValidatorCrossDomainDecorator : MarshalByRefObject
+        {
+            private readonly IProxyValidator pv;
+
+            public DynProxyTypeValidatorCrossDomainDecorator()
+            {
+                pv = new DynProxyTypeValidator();
+            }
+
+            public void ValidateType(System.Type type)
+            {
+                Validate(pv, type);
+            }
+        }
 	}
 }
