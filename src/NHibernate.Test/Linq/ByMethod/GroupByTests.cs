@@ -84,7 +84,7 @@ namespace NHibernate.Test.Linq.ByMethod
 								 })
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
+			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
 
@@ -102,7 +102,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.OrderBy(x => x.UnitPrice)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
+			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
 
@@ -179,7 +179,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.OrderBy(x => x.TotalUnitsInStock)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
+			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.TotalUnitsInStock);
 		}
 
@@ -197,7 +197,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.OrderBy(x => x.UnitPrice)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
+			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
 
