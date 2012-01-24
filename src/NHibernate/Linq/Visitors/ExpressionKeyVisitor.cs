@@ -78,7 +78,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			NamedParameter param;
 
-			if (_constantToParameterMap.TryGetValue(expression, out param))
+			if (_constantToParameterMap.TryGetValue(expression, out param) && insideSelectClause == false)
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
@@ -169,8 +169,25 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMemberMemberBinding(binding);
 		}
 
+		private bool insideSelectClause;
 		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
 		{
+			var old = insideSelectClause;
+
+			switch (expression.Method.Name)
+			{
+				case "First":
+				case "FirstOrDefault":
+				case "Single":
+				case "SingleOrDefault":
+				case "Select":
+					insideSelectClause = true;
+					break;
+				default:
+					insideSelectClause = false;
+					break;
+			}
+
 			VisitExpression(expression.Object);
 			_string.Append('.');
 			VisitMethod(expression.Method);
@@ -178,6 +195,7 @@ namespace NHibernate.Linq.Visitors
 			VisitList(expression.Arguments, AppendCommas);
 			_string.Append(')');
 
+			insideSelectClause = old;
 			return expression;
 		}
 
