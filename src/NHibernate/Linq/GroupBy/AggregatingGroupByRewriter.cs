@@ -54,13 +54,18 @@ namespace NHibernate.Linq.GroupBy
 
 			queryModel.ResultOperators.Add(groupBy);
 
-			foreach (var whereClause in queryModel.BodyClauses.OfType<WhereClause>().ToArray())
+			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
-				//all outer where clauses actually are having clauses
-				var clause = new NhHavingClause(whereClause.Predicate);
+				var clause = queryModel.BodyClauses[i];
+				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
 
-				queryModel.BodyClauses.Add(clause);
-				queryModel.BodyClauses.Remove(whereClause);
+				//all outer where clauses actually are having clauses
+				var whereClause = clause as WhereClause;
+				if (whereClause != null)
+				{
+					queryModel.BodyClauses.RemoveAt(i);
+					queryModel.BodyClauses.Insert(i, new NhHavingClause(whereClause.Predicate));
+				}
 			}
 
 			foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
@@ -71,9 +76,6 @@ namespace NHibernate.Linq.GroupBy
 			// Replace the outer select clause...
 			queryModel.SelectClause.TransformExpressions(s => 
 				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
-
-			foreach (var clause in queryModel.BodyClauses)
-				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
 
 			// Point all query source references to the outer from clause
 			queryModel.TransformExpressions(s =>
