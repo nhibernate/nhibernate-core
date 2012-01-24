@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Permissions;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -7,6 +9,7 @@ namespace NHibernate.Proxy
 	public class DynProxyTypeValidator : IProxyValidator
 	{
 		private readonly List<string> errors = new List<string>();
+	    private bool? skipVerificationEnabled;
 
 		/// <summary>
 		/// Validates whether <paramref name="type"/> can be specified as the base class
@@ -107,11 +110,16 @@ namespace NHibernate.Proxy
 
 		protected virtual bool HasVisibleDefaultConstructor(System.Type type)
 		{
-			ConstructorInfo constructor =
-				type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
-				                    System.Type.EmptyTypes, null);
+            if (!SkipVerificationEnabled)
+            {
+                ConstructorInfo constructor =
+                    type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
+                                        System.Type.EmptyTypes, null);
 
-			return constructor != null && !constructor.IsPrivate;
+                return constructor != null && !constructor.IsPrivate;
+
+            }
+            return true;
 		}
 
 		protected void CheckNotSealed(System.Type type)
@@ -121,5 +129,26 @@ namespace NHibernate.Proxy
 				EnlistError(type, "type should not be sealed");
 			}
 		}
+
+        private bool SkipVerificationEnabled
+        {
+            get
+            {
+                if (!skipVerificationEnabled.HasValue)
+                {
+                    try
+                    {
+                        new SecurityPermission(SecurityPermissionFlag.SkipVerification).Demand();
+                        skipVerificationEnabled = true;
+                    }
+                    catch (Exception)
+                    {
+                        skipVerificationEnabled = false;
+                    }
+                }
+
+                return skipVerificationEnabled.Value;
+            }
+        }
 	}
 }
