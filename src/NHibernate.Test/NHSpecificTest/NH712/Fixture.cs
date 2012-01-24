@@ -22,7 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 				Assert.Ignore("Test only works with reflection optimization enabled");
 			}
 			else
-				Assert.Throws<InstantiationException>(
+                // Test was rewrited: default constructor is not required now.
+				//Assert.Throws<InstantiationException>(
+                Assert.DoesNotThrow(
 					() =>
 					new Configuration().AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly).BuildSessionFactory());
 		}
