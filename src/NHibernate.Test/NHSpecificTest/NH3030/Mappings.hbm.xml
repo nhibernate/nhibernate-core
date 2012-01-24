@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping  xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"  namespace="NHibernate.Test.NHSpecificTest.NH3030" default-lazy="false" default-access="field.camelcase">
+
+  <class name="EntityWithoutDefaultCtor">
+    <id column="Id" type="int">
+      <generator class="assigned" />
+    </id>
+    <property name="Name"/>
+    <component name="Money" class="ComponentWithoutDefaultCtor">
+      <property name="Currency"/>
+      <property name="Amount"/>
+    </component>
+  </class>
+
+</hibernate-mapping>
