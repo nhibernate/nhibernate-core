@@ -110,15 +110,16 @@ namespace NHibernate.Driver
 			}
 		}
 
-		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		protected static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 
-			// Override the defaults using data from SqlType - except for LOB types
-			if (sqlType.LengthDefined && !IsText(dbParam, sqlType) && !IsBlob(dbParam, sqlType))
-			{
-				dbParam.Size = sqlType.Length;
-			}
+			// no longer override the defaults using data from SqlType, since LIKE expressions needs larger columns
+			// https://nhibernate.jira.com/browse/NH-3036
+			//if (sqlType.LengthDefined && !IsText(dbParam, sqlType) && !IsBlob(dbParam, sqlType))
+			//{
+			//	dbParam.Size = sqlType.Length;
+			//}
 
 			if (sqlType.PrecisionDefined)
 			{
@@ -127,7 +128,7 @@ namespace NHibernate.Driver
 			}
 		}
 
-		private static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		protected static void SetDefaultParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			switch (dbParam.DbType)
 			{
@@ -161,7 +162,7 @@ namespace NHibernate.Driver
 		/// <param name="dbParam">The parameter</param>
 		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
 		/// <returns>True, if the parameter should be interpreted as a Clob, otherwise False</returns>
-		private static bool IsText(IDbDataParameter dbParam, SqlType sqlType)
+		protected static bool IsText(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			return (sqlType is StringClobSqlType) || ((DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedString));
 		}
@@ -172,7 +173,7 @@ namespace NHibernate.Driver
 		/// <param name="dbParam">The parameter</param>
 		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
 		/// <returns>True, if the parameter should be interpreted as a Blob, otherwise False</returns>
-		private static bool IsBlob(IDbDataParameter dbParam, SqlType sqlType)
+		protected static bool IsBlob(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			return (sqlType is BinaryBlobSqlType) || ((DbType.Binary == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedBinary));
 		}

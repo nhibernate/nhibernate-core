@@ -9,6 +9,7 @@ namespace NHibernate.Test.TypesTest
 	{
 		private int _id;
 		private string _stringValue;
+		private string _longStringValue;
 
 		public StringClass()
 		{
@@ -25,6 +26,12 @@ namespace NHibernate.Test.TypesTest
 		{
 			get { return _stringValue; }
 			set { _stringValue = value; }
+		}
+
+		public string LongStringValue
+		{
+			get { return _longStringValue; }
+			set { _longStringValue = value; }
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace NHibernate.Type
 			parameter.Value = value;
 
 			if (parameter.Size > 0 && ((string)value).Length > parameter.Size)
-				throw new HibernateException("The length of the string value exceeds the length configured in the mapping.");
+				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 
 		public override object Get(IDataReader rs, int index)
