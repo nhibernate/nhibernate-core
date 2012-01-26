@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -81,6 +82,9 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void CriteriaLikeParameterCanExceedColumnSize()
 		{
+			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -99,6 +103,9 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void HqlLikeParameterCanExceedColumnSize()
 		{
+			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
