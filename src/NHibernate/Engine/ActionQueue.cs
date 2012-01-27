@@ -315,83 +315,8 @@ namespace NHibernate.Engine
 		 //violations
 		private void SortInsertActions()
 		{
-			// IMPLEMENTATION NOTES:
-			//
-			// The main data structure in this ordering algorithm is the 'positionToAction'
-			// map. Essentially this can be thought of as an put-ordered map (the problem with
-			// actually implementing it that way and doing away with the 'nameList' is that
-			// we'd end up having potential duplicate key values).  'positionToAction' maintains
-			// a mapping from a position within the 'nameList' structure to a "partial queue"
-			// of actions.
-
-			Dictionary<int,List<EntityInsertAction>> positionToAction = 
-				new Dictionary<int, List<EntityInsertAction>>();
-			List<string> nameList = new List<string>();
-
-			while (!(insertions.Count == 0))
-			{
-				// todo-events : test behaviour
-				// in Java they use an implicit cast to EntityInsertAction 
-				// but it may be not work because the insertions list may contain EntityIdentityInsertAction
-				// (I don't like that "goto"too)
-				object tempObject = insertions[0];
-				insertions.RemoveAt(0);
-				EntityInsertAction action = (EntityInsertAction)tempObject;
-				string thisEntityName = action.EntityName;
-
-				// see if we have already encountered this entity-name...
-				if (!nameList.Contains(thisEntityName))
-				{
-					// we have not, so create the proper entries in nameList and positionToAction
-					List<EntityInsertAction> segmentedActionQueue = new List<EntityInsertAction>();
-					segmentedActionQueue.Add(action);
-					nameList.Add(thisEntityName);
-					positionToAction[nameList.IndexOf(thisEntityName)] = segmentedActionQueue;
+			new InsertActionSorter(this).Sort();
 				}
-				else
-				{
-					// we have seen it before, so we need to determine if this insert action is
-					// is dependent upon a previously processed action in terms of FK
-					// relationships (this FK checking is done against the entity's property-state
-					// associated with the action...)
-					int lastPos = nameList.LastIndexOf(thisEntityName);
-					object[] states = action.State;
-					for (int i = 0; i < states.Length; i++)
-					{
-						for (int j = 0; j < nameList.Count; j++)
-						{
-							List<EntityInsertAction> tmpList = positionToAction[j];
-							for (int k = 0; k < tmpList.Count; k++)
-							{
-								EntityInsertAction checkAction = tmpList[k];
-								if (checkAction.Instance == states[i] && j > lastPos)
-								{
-									// 'checkAction' is inserting an entity upon which 'action' depends...
-									// note: this is an assumption and may not be correct in the case of one-to-one
-									List<EntityInsertAction> segmentedActionQueue = new List<EntityInsertAction>();
-									segmentedActionQueue.Add(action);
-									nameList.Add(thisEntityName);
-									positionToAction[nameList.LastIndexOf(thisEntityName)] = segmentedActionQueue;
-									goto loopInsertion;
-								}
-							}
-						}
-					}
-
-					List<EntityInsertAction> actionQueue = positionToAction[lastPos];
-					actionQueue.Add(action);
-				}
-loopInsertion: ;
-			}
-
-			// now iterate back through positionToAction map and move entityInsertAction back to insertion list
-			for (int p = 0; p < nameList.Count; p++)
-			{
-				List<EntityInsertAction> actionQueue = positionToAction[p];
-				foreach (EntityInsertAction action in actionQueue)
-					insertions.Add(action);
-			}
-		}
 
 		public IList<EntityDeleteAction> CloneDeletions()
 		{
@@ -573,6 +498,130 @@ loopInsertion: ;
 					session.Factory.UpdateTimestampsCache.Invalidate(querySpacesToInvalidate.ToArray());
 				}
 				querySpacesToInvalidate.Clear();
+			}
+		}
+
+		[Serializable]
+		private class InsertActionSorter
+		{
+			private readonly ActionQueue _actionQueue;
+
+			// the mapping of entity names to their latest batch numbers.
+			private readonly Dictionary<string, int> _latestBatches = new Dictionary<string, int>();
+			private readonly Dictionary<object, int> _entityBatchNumber;
+
+			// the map of batch numbers to EntityInsertAction lists
+			private readonly Dictionary<int, List<EntityInsertAction>> _actionBatches = new Dictionary<int, List<EntityInsertAction>>();
+
+			public InsertActionSorter(ActionQueue actionQueue)
+			{
+				_actionQueue = actionQueue;
+
+				//optimize the hash size to eliminate a rehash.
+				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1);
+			}
+
+			public void Sort()
+			{
+				// the list of entity names that indicate the batch number
+				foreach (EntityInsertAction action in _actionQueue.insertions)
+				{
+					// remove the current element from insertions. It will be added back later.
+					var entityName = action.EntityName;
+
+					// the entity associated with the current action.
+					var currentEntity = action.Instance;
+
+					int batchNumber;
+					if (_latestBatches.ContainsKey(entityName))
+					{
+						// There is already an existing batch for this type of entity.
+						// Check to see if the latest batch is acceptable.
+						batchNumber = FindBatchNumber(action, entityName);
+					}
+					else
+					{
+						// add an entry for this type of entity.
+						// we can be assured that all referenced entities have already
+						// been processed,
+						// so specify that this entity is with the latest batch.
+						// doing the batch number before adding the name to the list is
+						// a faster way to get an accurate number.
+
+						batchNumber = _actionBatches.Count;
+						_latestBatches[entityName] = batchNumber;
+					}
+					_entityBatchNumber[currentEntity] = batchNumber;
+					AddToBatch(batchNumber, action);
+				}
+				_actionQueue.insertions.Clear();
+
+				// now rebuild the insertions list. There is a batch for each entry in the name list.
+				for (var i = 0; i < _actionBatches.Count; i++)
+				{
+					var batch = _actionBatches[i];
+					foreach (var action in batch)
+					{
+						_actionQueue.insertions.Add(action);
+					}
+				}
+			}
+
+			/// <summary>
+			/// Finds an acceptable batch for this entity to be a member as part of the <see cref="InsertActionSorter" />
+			/// </summary>
+			/// <param name="action">The action being sorted</param>
+			/// <param name="entityName">The name of the entity affected by the action</param>
+			/// <returns>An appropriate batch number; todo document this process better</returns>
+			private int FindBatchNumber(EntityInsertAction action, string entityName)
+			{
+				// loop through all the associated entities and make sure they have been
+				// processed before the latest
+				// batch associated with this entity type.
+
+				// the current batch number is the latest batch for this entity type.
+				var latestBatchNumberForType = _latestBatches[entityName];
+
+				// loop through all the associations of the current entity and make sure that they are processed
+				// before the current batch number
+				var propertyValues = action.State;
+				var propertyTypes = action.Persister.ClassMetadata.PropertyTypes;
+
+				for (var i = 0; i < propertyValues.Length; i++)
+				{
+					var value = propertyValues[i];
+					var type = propertyTypes[i];
+
+					if (type.IsEntityType && value != null)
+					{
+						// find the batch number associated with the current association, if any.
+						int associationBatchNumber;
+						if (_entityBatchNumber.TryGetValue(value, out associationBatchNumber) && associationBatchNumber > latestBatchNumberForType)
+						{
+							// create a new batch for this type. The batch number is the number of current batches.
+							latestBatchNumberForType = _actionBatches.Count;
+							_latestBatches[entityName] = latestBatchNumberForType;
+							// since this entity will now be processed in the latest possible batch,
+							// we can be assured that it will come after all other associations,
+							// there's not need to continue checking.
+							break;
+						}
+					}
+				}
+				return latestBatchNumberForType;
+			}
+
+			private void AddToBatch(int batchNumber, EntityInsertAction action)
+			{
+				List<EntityInsertAction> actions;
+
+				if (!_actionBatches.TryGetValue(batchNumber, out actions))
+				{
+					actions = new List<EntityInsertAction>();
+					_actionBatches[batchNumber] = actions;
+				}
+
+				actions.Add(action);
 			}
 		}
 	}
