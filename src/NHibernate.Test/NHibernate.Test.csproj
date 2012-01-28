@@ -575,6 +575,10 @@
     <Compile Include="MappingByCode\IntegrationTests\NH2728\SampleTest.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Toy.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2738\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2825\Child.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2825\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2825\FixtureByCode.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH2825\Parent.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\IdMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\ManyToOneMapperTest.cs" />
@@ -2801,6 +2805,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
+    <EmbeddedResource Include="MappingByCode\IntegrationTests\NH2825\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2880\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2982\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2914\Mappings.hbm.xml" />
