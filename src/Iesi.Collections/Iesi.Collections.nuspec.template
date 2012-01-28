@@ -14,5 +14,6 @@
   </metadata>
   <files>
     <file src="Iesi.Collections.*" target="lib\Net35" />
+	<file src="..\..\..\src\Iesi.Collections\**\*.cs" target="src" />
   </files>
 </package>
