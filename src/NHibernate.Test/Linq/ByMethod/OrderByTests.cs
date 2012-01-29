@@ -7,6 +7,19 @@ namespace NHibernate.Test.Linq.ByMethod
 	public class OrderByTests : LinqTestCase
 	{
 		[Test]
+		public void GroupByThenOrderBy()
+		{
+			var query = from c in db.Customers
+						group c by c.Address.Country into g
+						orderby g.Key
+						select new { Country = g.Key, Count = g.Count() };
+
+			var ids = query.ToList();
+			Assert.NotNull(ids);
+			AssertOrderedBy.Ascending(ids, arg => arg.Country);
+		}
+		
+		[Test]
 		public void AscendingOrderByClause()
 		{
 			var query = from c in db.Customers
