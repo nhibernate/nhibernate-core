@@ -939,6 +939,9 @@
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3004\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3004\TestSqlClientDriver.cs" />
+    <Compile Include="NHSpecificTest\NH3030\ComponentWithoutDefaultCtor.cs" />
+    <Compile Include="NHSpecificTest\NH3030\EntityWithoutDefaultCtor.cs" />
+    <Compile Include="NHSpecificTest\NH3030\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2797,6 +2800,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
+    <EmbeddedResource Include="NHSpecificTest\NH3030\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2914\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2959\Mappings.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Table\Entity.cs" />

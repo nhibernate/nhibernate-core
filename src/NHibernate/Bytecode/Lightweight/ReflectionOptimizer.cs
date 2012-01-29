@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
 using NHibernate.Properties;
@@ -74,28 +75,24 @@ namespace NHibernate.Bytecode.Lightweight
 
 				return (CreateInstanceInvoker)method.CreateDelegate(typeof(CreateInstanceInvoker));
 			}
-			else
+			
+			ConstructorInfo constructor = ReflectHelper.GetDefaultConstructor(type);
+			
+            if (constructor != null)
 			{
-				ConstructorInfo constructor = ReflectHelper.GetDefaultConstructor(type);
-				if (constructor != null)
-				{
-					il.Emit(OpCodes.Newobj, constructor);
-					il.Emit(OpCodes.Ret);
+				il.Emit(OpCodes.Newobj, constructor);
+				il.Emit(OpCodes.Ret);
 
-					return (CreateInstanceInvoker) method.CreateDelegate(typeof (CreateInstanceInvoker));
-				}
-				else
-				{
-					ThrowExceptionForNoDefaultCtor(type);
-				}
+				return (CreateInstanceInvoker) method.CreateDelegate(typeof (CreateInstanceInvoker));
 			}
-			return null;
+
+            return () => FormatterServices.GetUninitializedObject(type);
 		}
 
-		protected virtual void ThrowExceptionForNoDefaultCtor(System.Type type)
-		{
-			throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
-		}
+//		protected virtual void ThrowExceptionForNoDefaultCtor(System.Type type)
+//		{
+//			throw new InstantiationException("Object class " + type + " must declare a default (no-argument) constructor", type);
+//		}
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{

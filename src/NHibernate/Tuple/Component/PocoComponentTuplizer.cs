@@ -48,6 +48,8 @@ namespace NHibernate.Tuple.Component
 			{
 				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
 			}
+            
+            instantiator = BuildInstantiator(component);
 		}
 
 		public override System.Type MappedClass
