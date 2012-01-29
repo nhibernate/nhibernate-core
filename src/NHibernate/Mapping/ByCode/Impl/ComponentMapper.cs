@@ -70,6 +70,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			component.lazy = isLazy;
 		}
 
+		public void Unique(bool unique)
+		{
+			component.unique = unique;
+		}
+
 		public void Class(System.Type componentType)
 		{
 			component.@class = componentType.GetShortClassName(mapDoc);

@@ -43,6 +43,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Lazy(bool isLazy) {}
 
+		public void Unique(bool unique) {}
+
 		public void Class(System.Type componentType)
 		{
 			realMapper.Class(componentType);
