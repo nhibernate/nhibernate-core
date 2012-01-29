@@ -53,6 +53,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			// not supported by HbmNestedCompositeElement
 		}
 
+		public void Unique(bool unique)
+		{
+			// not supported by HbmNestedCompositeElement
+		}
+
 		public void Class(System.Type componentConcreteType)
 		{
 			component.@class = componentConcreteType.GetShortClassName(mapDoc);
@@ -69,7 +74,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			System.Type nestedComponentType = property.GetPropertyOrFieldType();
 			var hbm = new HbmNestedCompositeElement
-			          {name = property.Name, @class = nestedComponentType.GetShortClassName(mapDoc)};
+					  {name = property.Name, @class = nestedComponentType.GetShortClassName(mapDoc)};
 			mapping(new ComponentNestedElementMapper(nestedComponentType, mapDoc, hbm, property));
 			AddProperty(hbm);
 		}

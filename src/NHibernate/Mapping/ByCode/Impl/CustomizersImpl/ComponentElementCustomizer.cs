@@ -55,6 +55,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
 		}
 
+		public void Unique(bool unique)
+		{
+			customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Unique(unique));
+		}
+
 		public void Class<TConcrete>() where TConcrete : TComponent
 		{
 			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Class(typeof (TConcrete)));
