@@ -161,7 +161,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (_projection ?? (object)propertyName) + Op + value;
+			return (_projection ?? (object)propertyName) + Op + ValueToStrings();
 		}
 
 		/// <summary>
@@ -171,6 +171,15 @@ namespace NHibernate.Criterion
 		protected virtual string Op
 		{
 			get { return op; }
+		}
+
+		string ValueToStrings()
+		{
+			if(value!=null && value.GetType().IsPrimitive)
+			{
+				return value.ToString();
+			}
+			return ObjectUtils.IdentityToString(value);
 		}
 	}
 }
