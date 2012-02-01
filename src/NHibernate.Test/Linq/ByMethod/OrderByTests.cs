@@ -153,5 +153,29 @@ namespace NHibernate.Test.Linq.ByMethod
 			// We to ToList() first or it skips the generation of the joins.
 			Assert.AreEqual(allAnimals.ToList().Count(), orderedAnimals.ToList().Count());
 		}
+		
+		[Test]
+		public void OrderByWithSelfReferencedSubquery1()
+		{
+			//NH-3044
+			var result = (from order in db.Orders
+						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
+						  orderby order.Customer.CustomerId 
+						  select order).ToList();
+
+			AssertOrderedBy.Ascending(result.Take(5).ToList(), x => x.Customer.CustomerId);
+		}
+		
+		[Test]
+		public void OrderByWithSelfReferencedSubquery2()
+		{
+			//NH-3044
+			var result = (from order in db.Orders
+						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
+						  orderby order.ShippingDate descending 
+						  select order).ToList();
+
+			AssertOrderedBy.Descending(result.Take(5).ToList(), x => x.ShippingDate);
+		}
 	}
 }
