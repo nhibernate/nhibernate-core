@@ -601,10 +601,11 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(query, false);
-				AutoFlushIfRequired(plan.QuerySpaces);
+                
+                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+                AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
 					plan.PerformList(queryParameters, this, results);
@@ -634,10 +635,11 @@ namespace NHibernate.Impl
                 CheckAndUpdateSessionStatus();
                 queryParameters.ValidateParameters();
                 var plan = GetHQLQueryPlan(queryExpression, false);
+                
+                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
                 AutoFlushIfRequired(plan.QuerySpaces);
 
                 bool success = false;
-                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
                 try
                 {
                     plan.PerformList(queryParameters, this, results);
@@ -677,9 +679,10 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(query, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
+                
+                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+                AutoFlushIfRequired(plan.QuerySpaces);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
 					return plan.PerformIterate<T>(queryParameters, this);
@@ -698,9 +701,10 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(query, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
+                
+                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+                AutoFlushIfRequired(plan.QuerySpaces);
 
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
 					return plan.PerformIterate(queryParameters, this);
@@ -1936,9 +1940,9 @@ namespace NHibernate.Impl
 					spaces.AddAll(loaders[i].QuerySpaces);
 				}
 
-				AutoFlushIfRequired(spaces);
+                dontFlushFromFind++;
 
-				dontFlushFromFind++;
+                AutoFlushIfRequired(spaces);
 
 				bool success = false;
 				try
@@ -2079,10 +2083,11 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 
 				CustomLoader loader = new CustomLoader(customQuery, Factory);
-				AutoFlushIfRequired(loader.QuerySpaces);
+                
+                dontFlushFromFind++;
+                AutoFlushIfRequired(loader.QuerySpaces);
 
 				bool success = false;
-				dontFlushFromFind++;
 				try
 				{
 					ArrayHelper.AddAll(results, loader.List(this, queryParameters));

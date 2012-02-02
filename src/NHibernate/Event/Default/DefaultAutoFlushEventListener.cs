@@ -67,7 +67,7 @@ namespace NHibernate.Event.Default
 		{
 			return
 				!(source.FlushMode < FlushMode.Auto)
-				&& source.DontFlushFromFind == 0
+				&& source.DontFlushFromFind <= 1
 				&& ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0));
 		}
 	}
