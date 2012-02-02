@@ -121,7 +121,7 @@ namespace NHibernate.Linq
 			if (orderBy == null)
 				return;
 
-			if (!_root.NodesPreOrder.OfType<HqlOrderBy>().Any())
+			if (!_root.NodesPreOrder.Any(x => x == orderBy))
 				_root.As<HqlQuery>().AddChild(orderBy);
 		}
 
