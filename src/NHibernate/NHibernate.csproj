@@ -320,7 +320,7 @@
     <Compile Include="Mapping\ByCode\ICompositeIdMapper.cs" />
     <Compile Include="Mapping\ByCode\IDynamicComponentAttributesMapper.cs" />
     <Compile Include="Mapping\ByCode\IManyToAnyMapper.cs" />
-    <Compile Include="Mapping\ByCode\Impl\ComponentAsIdLikeComponetAttributesMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\ComponentAsIdLikeComponentAttributesMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComponentAsIdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComposedIdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ComponentAsIdCustomizer.cs" />

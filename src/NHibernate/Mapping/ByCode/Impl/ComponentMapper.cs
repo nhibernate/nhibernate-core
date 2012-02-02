@@ -7,9 +7,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class ComponentMapper : AbstractPropertyContainerMapper, IComponentMapper
 	{
-		private readonly IAccessorPropertyMapper accessorPropertyMapper;
-		private readonly HbmComponent component;
-		private ComponentParentMapper parentMapper;
+		private readonly IAccessorPropertyMapper _accessorPropertyMapper;
+		private readonly HbmComponent _component;
+		private ComponentParentMapper _parentMapper;
 
 		public ComponentMapper(HbmComponent component, System.Type componentType, MemberInfo declaringTypeMember, HbmMapping mapDoc)
 			: this(component,componentType, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc)
@@ -19,9 +19,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public ComponentMapper(HbmComponent component, System.Type componentType, IAccessorPropertyMapper accessorMapper, HbmMapping mapDoc)
 			: base(componentType, mapDoc)
 		{
-			this.component = component;
-			component.@class = componentType.GetShortClassName(mapDoc);
-			accessorPropertyMapper = accessorMapper;
+			_component = component;
+			_component.@class = componentType.GetShortClassName(mapDoc);
+			_accessorPropertyMapper = accessorMapper;
 		}
 
 		#region Overrides of AbstractPropertyContainerMapper
@@ -33,7 +33,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				throw new ArgumentNullException("property");
 			}
 			var toAdd = new[] {property};
-			component.Items = component.Items == null ? toAdd : component.Items.Concat(toAdd).ToArray();
+			_component.Items = _component.Items == null ? toAdd : _component.Items.Concat(toAdd).ToArray();
 		}
 
 		#endregion
@@ -57,27 +57,27 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Update(bool consideredInUpdateQuery)
 		{
-			component.update = consideredInUpdateQuery;
+			_component.update = consideredInUpdateQuery;
 		}
 
 		public void Insert(bool consideredInInsertQuery)
 		{
-			component.insert = consideredInInsertQuery;
+			_component.insert = consideredInInsertQuery;
 		}
 
 		public void Lazy(bool isLazy)
 		{
-			component.lazy = isLazy;
+			_component.lazy = isLazy;
 		}
 
 		public void Unique(bool unique)
 		{
-			component.unique = unique;
+			_component.unique = unique;
 		}
 
 		public void Class(System.Type componentType)
 		{
-			component.@class = componentType.GetShortClassName(mapDoc);
+			_component.@class = componentType.GetShortClassName(mapDoc);
 		}
 
 		#endregion
@@ -86,29 +86,29 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Access(Accessor accessor)
 		{
-			accessorPropertyMapper.Access(accessor);
+			_accessorPropertyMapper.Access(accessor);
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			accessorPropertyMapper.Access(accessorType);
+			_accessorPropertyMapper.Access(accessorType);
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
 		{
-			component.optimisticlock = takeInConsiderationForOptimisticLock;
+			_component.optimisticlock = takeInConsiderationForOptimisticLock;
 		}
 
 		#endregion
 
 		private IComponentParentMapper GetParentMapper(MemberInfo parent)
 		{
-			if (parentMapper != null)
+			if (_parentMapper != null)
 			{
-				return parentMapper;
+				return _parentMapper;
 			}
-			component.parent = new HbmParent();
-			return parentMapper = new ComponentParentMapper(component.parent, parent);
+			_component.parent = new HbmParent();
+			return _parentMapper = new ComponentParentMapper(_component.parent, parent);
 		}
 	}
 }

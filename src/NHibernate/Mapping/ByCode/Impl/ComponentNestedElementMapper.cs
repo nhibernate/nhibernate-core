@@ -7,18 +7,18 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class ComponentNestedElementMapper : IComponentElementMapper
 	{
-		private readonly IAccessorPropertyMapper accessorPropertyMapper;
-		private readonly HbmNestedCompositeElement component;
-		private readonly System.Type componentType;
-		protected readonly HbmMapping mapDoc;
-		private IComponentParentMapper parentMapper;
+		private readonly IAccessorPropertyMapper _accessorPropertyMapper;
+		private readonly HbmNestedCompositeElement _component;
+		private readonly System.Type _componentType;
+		private readonly HbmMapping _mapDoc;
+		private IComponentParentMapper _parentMapper;
 
 		public ComponentNestedElementMapper(System.Type componentType, HbmMapping mapDoc, HbmNestedCompositeElement component, MemberInfo declaringComponentMember)
 		{
-			this.componentType = componentType;
-			this.mapDoc = mapDoc;
-			this.component = component;
-			accessorPropertyMapper = new AccessorPropertyMapper(declaringComponentMember.DeclaringType, declaringComponentMember.Name, x => component.access = x);
+			_componentType = componentType;
+			_mapDoc = mapDoc;
+			_component = component;
+			_accessorPropertyMapper = new AccessorPropertyMapper(declaringComponentMember.DeclaringType, declaringComponentMember.Name, x => component.access = x);
 		}
 
 		#region Implementation of IComponentElementMapper
@@ -60,12 +60,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Class(System.Type componentConcreteType)
 		{
-			component.@class = componentConcreteType.GetShortClassName(mapDoc);
+			_component.@class = componentConcreteType.GetShortClassName(_mapDoc);
 		}
 
 		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
-			var hbmProperty = new HbmProperty {name = property.Name};
+			var hbmProperty = new HbmProperty { name = property.Name };
 			mapping(new PropertyMapper(property, hbmProperty));
 			AddProperty(hbmProperty);
 		}
@@ -73,16 +73,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Component(MemberInfo property, Action<IComponentElementMapper> mapping)
 		{
 			System.Type nestedComponentType = property.GetPropertyOrFieldType();
-			var hbm = new HbmNestedCompositeElement
-					  {name = property.Name, @class = nestedComponentType.GetShortClassName(mapDoc)};
-			mapping(new ComponentNestedElementMapper(nestedComponentType, mapDoc, hbm, property));
+			var hbm = new HbmNestedCompositeElement { name = property.Name, @class = nestedComponentType.GetShortClassName(_mapDoc) };
+			mapping(new ComponentNestedElementMapper(nestedComponentType, _mapDoc, hbm, property));
 			AddProperty(hbm);
 		}
 
 		public void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
 		{
-			var hbm = new HbmManyToOne {name = property.Name};
-			mapping(new ManyToOneMapper(property, hbm, mapDoc));
+			var hbm = new HbmManyToOne { name = property.Name };
+			mapping(new ManyToOneMapper(property, hbm, _mapDoc));
 			AddProperty(hbm);
 		}
 
@@ -92,12 +91,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Access(Accessor accessor)
 		{
-			accessorPropertyMapper.Access(accessor);
+			_accessorPropertyMapper.Access(accessor);
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			accessorPropertyMapper.Access(accessorType);
+			_accessorPropertyMapper.Access(accessorType);
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
@@ -113,18 +112,18 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] {property};
-			component.Items = component.Items == null ? toAdd : component.Items.Concat(toAdd).ToArray();
+			var toAdd = new[] { property };
+			_component.Items = _component.Items == null ? toAdd : _component.Items.Concat(toAdd).ToArray();
 		}
 
 		private IComponentParentMapper GetParentMapper(MemberInfo parent)
 		{
-			if (parentMapper != null)
+			if (_parentMapper != null)
 			{
-				return parentMapper;
+				return _parentMapper;
 			}
-			component.parent = new HbmParent();
-			return parentMapper = new ComponentParentMapper(component.parent, parent);
+			_component.parent = new HbmParent();
+			return _parentMapper = new ComponentParentMapper(_component.parent, parent);
 		}
 	}
 }
