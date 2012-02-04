@@ -28,11 +28,11 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				
 				typeNames.Get(value.Value);
 			}
-			catch (ArgumentException arg)
+			catch (ArgumentException)
 			{
 				return false;
 			}
-			catch (Exception arg)
+			catch (Exception)
 			{
 				Assert.Fail("Probably a bug in the test case.");
 			}

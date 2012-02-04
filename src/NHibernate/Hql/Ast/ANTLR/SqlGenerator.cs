@@ -94,7 +94,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 
 		/// <summary>
-		/// Add a aspace if the previous token was not a space or a parenthesis.
+		/// Add a space if the previous token was not a space or a parenthesis.
 		/// </summary>
 		private void OptionalSpace()
 		{
@@ -172,7 +172,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		protected virtual void FromFragmentSeparator(IASTNode a)
 		{
-			// check two "adjecent" nodes at the top of the from-clause tree
+			// check two "adjacent" nodes at the top of the from-clause tree
 			IASTNode next = a.NextSibling;
 			if (next == null || !HasText(a))
 			{

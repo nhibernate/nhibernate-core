@@ -77,7 +77,7 @@ namespace NHibernate.Test.Immutable
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
 				s.SetReadOnly(c, false);
 			}
-			catch (System.InvalidOperationException ex)
+			catch (System.InvalidOperationException)
 			{
 				// expected
 			}
@@ -887,7 +887,7 @@ namespace NHibernate.Test.Immutable
 				t.Commit();
 				Assert.Fail( "should have failed because reassociated object has a dirty collection");
 			}
-			catch (HibernateException ex)
+			catch (HibernateException)
 			{
 				// expected
 			}
@@ -1132,7 +1132,7 @@ namespace NHibernate.Test.Immutable
 				t.Commit();
 				Assert.Fail("should have failed because an immutable collection was changed");
 			}
-			catch ( HibernateException ex )
+			catch ( HibernateException )
 			{
 				// expected
 				t.Rollback();

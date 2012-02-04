@@ -87,11 +87,11 @@ namespace NHibernate.Hql.Util
 			{
 				return (IQueryableCollection)sfi.GetCollectionPersister(role);
 			}
-			catch (InvalidCastException cce)
+			catch (InvalidCastException)
 			{
 				throw new QueryException("collection is not queryable: " + role);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				throw new QueryException("collection not found: " + role);
 			}
@@ -126,7 +126,7 @@ namespace NHibernate.Hql.Util
 			{
 				return sfi.GetEntityPersister(name);
 			}
-			catch (MappingException ignore)
+			catch (MappingException)
 			{
 				// unable to locate it using this name
 			}

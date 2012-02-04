@@ -11,7 +11,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 	public class Fixture : BugTestCase
 	{
 
-		private Configuration cfg;
 		private StringBuilder schemaBuilder;
 
 		private void AddString(string sqlString)
@@ -24,11 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 			return (dialect is Dialect.MsSql2000Dialect);
 		}
 
-		protected override void Configure(Configuration configuration)
-		{
-			base.Configure(configuration);
-			cfg = configuration;
-		}
 
 		[Test] 
 		public void Can_Parameterise_Auxiliary_Database_Objects() 
