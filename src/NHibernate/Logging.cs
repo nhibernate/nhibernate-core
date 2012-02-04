@@ -58,7 +58,7 @@ namespace NHibernate
 			var loggerFactoryType = System.Type.GetType(nhibernateLoggerClass);
 			try
 			{
-				loggerFactory = (ILoggerFactory) Activator.CreateInstance(loggerFactoryType);
+				loggerFactory = (ILoggerFactory)Activator.CreateInstance(loggerFactoryType);
 			}
 			catch (MissingMethodException ex)
 			{
@@ -66,7 +66,7 @@ namespace NHibernate
 			}
 			catch (InvalidCastException ex)
 			{
-				throw new ApplicationException(loggerFactoryType + "Type does not implement " + typeof (ILoggerFactory), ex);
+				throw new ApplicationException(loggerFactoryType + "Type does not implement " + typeof(ILoggerFactory), ex);
 			}
 			catch (Exception ex)
 			{
@@ -87,9 +87,9 @@ namespace NHibernate
 				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
 				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
 
-				if (File.Exists(log4NetDllPath))
+				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
 				{
-					nhibernateLoggerClass = typeof (Log4NetLoggerFactory).AssemblyQualifiedName;
+					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
 			}
 			else
@@ -138,7 +138,7 @@ namespace NHibernate
 	{
 		public bool IsErrorEnabled
 		{
-			get { return false;}
+			get { return false; }
 		}
 
 		public bool IsFatalEnabled
