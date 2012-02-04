@@ -4,13 +4,14 @@ using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class SelectAndOrderByJoinDetector : NhExpressionTreeVisitor
+	internal class SelectJoinDetector : NhExpressionTreeVisitor
 	{
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
-		private bool _isIdentifier;
+		private bool _hasIdentifier;
+		private int _identifierMemberExpressionDepth;
 
-		internal SelectAndOrderByJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
+		public SelectJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
 		{
 			_isEntityDecider = isEntityDecider;
 			_joiner = joiner;
@@ -18,18 +19,22 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			_isIdentifier |= _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
-
+			if (_isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name))
+				_hasIdentifier = true;
+			else if (_hasIdentifier)
+				_identifierMemberExpressionDepth++;
+			
 			var result = base.VisitMemberExpression(expression);
+			_identifierMemberExpressionDepth--;
 
-			if (expression.Type.IsNonPrimitive() && _isEntityDecider.IsEntity(expression.Type) && !_isIdentifier)
+			if (_isEntityDecider.IsEntity(expression.Type) && (!_hasIdentifier || _identifierMemberExpressionDepth > 0))
 			{
 				var key = ExpressionKeyVisitor.Visit(expression, null);
 				return _joiner.AddJoin(result, key);
 			}
 
-			_isIdentifier = false;
-			
+			_hasIdentifier = false;
+
 			return result;
 		}
 

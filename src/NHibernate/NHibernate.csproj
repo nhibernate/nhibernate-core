@@ -292,8 +292,9 @@
     <Compile Include="Linq\Visitors\JoinBuilder.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
-    <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
     <Compile Include="Loader\TopologicalSorter.cs" />

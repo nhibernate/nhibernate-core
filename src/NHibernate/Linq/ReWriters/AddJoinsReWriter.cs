@@ -13,14 +13,16 @@ namespace NHibernate.Linq.ReWriters
 	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
 	{
 		private readonly ISessionFactory _sessionFactory;
-		private readonly SelectAndOrderByJoinDetector _selectAndOrderByJoinDetector;
+		private readonly SelectJoinDetector _selectJoinDetector;
+		private readonly ResultOperatorAndOrderByJoinDetector _resultOperatorAndOrderByJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
 
 		private AddJoinsReWriter(ISessionFactory sessionFactory, QueryModel queryModel)
 		{
 			_sessionFactory = sessionFactory;
 			var joiner = new Joiner(queryModel);
-			_selectAndOrderByJoinDetector = new SelectAndOrderByJoinDetector(this, joiner);
+			_selectJoinDetector = new SelectJoinDetector(this, joiner);
+			_resultOperatorAndOrderByJoinDetector = new ResultOperatorAndOrderByJoinDetector(this, joiner);
 			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
@@ -31,17 +33,17 @@ namespace NHibernate.Linq.ReWriters
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-			_selectAndOrderByJoinDetector.Transform(selectClause);
+			_selectJoinDetector.Transform(selectClause);
 		}
 
 		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
 		{
-			_selectAndOrderByJoinDetector.Transform(ordering);
+			_resultOperatorAndOrderByJoinDetector.Transform(ordering);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
-			_selectAndOrderByJoinDetector.Transform(resultOperator);
+			_resultOperatorAndOrderByJoinDetector.Transform(resultOperator);
 		}
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)

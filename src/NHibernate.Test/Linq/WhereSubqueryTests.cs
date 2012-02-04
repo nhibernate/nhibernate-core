@@ -374,7 +374,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test]
-		public void OrderLinesWith2ImpliedJoinByIdShouldNotContainsImpliedJoin()
+		public void OrderLinesWith2ImpliedJoinByIdShouldNotContainImpliedJoin()
 		{
 			//NH-2946 + NH-3003 = NH-2451
 			using (var spy = new SqlLogSpy())
@@ -388,6 +388,57 @@ where c.Order.Customer.CustomerId = 'VINET'
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(2));
 				Assert.That(Count(spy, "Orders"), Is.EqualTo(1));
+			}
+		}
+		
+		[Test]
+		public void OrderLinesFilterByCustomerIdSelectLineShouldNotContainJoinWithCustomer()
+		{
+			//NH-2946
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.Customer.CustomerId == "VINET"
+							 select l).ToList();
+
+				Assert.AreEqual(10, lines.Count);
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(1));
+				Assert.That(Count(spy, "Customers"), Is.EqualTo(0));
+			}
+		}
+		
+		[Test]
+		public void OrderLinesFilterByCustomerIdSelectCustomerIdShouldNotContainJoinWithCustomer()
+		{
+			//NH-2946
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.Customer.CustomerId == "VINET"
+							 select l.Order.Customer.CustomerId).ToList();
+
+				Assert.AreEqual(10, lines.Count);
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(1));
+				Assert.That(Count(spy, "Customers"), Is.EqualTo(0));
+			}
+		}
+		
+		[Test]
+		public void OrderLinesFilterByCustomerIdSelectCustomerShouldContainJoinWithCustomer()
+		{
+			//NH-2946
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.Customer.CustomerId == "VINET"
+							 select l.Order.Customer).ToList();
+
+				Assert.AreEqual(10, lines.Count);
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(2));
+				Assert.That(Count(spy, "Customers"), Is.EqualTo(1));
 			}
 		}
 		
@@ -441,6 +492,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test]
+		public void OrderLinesFilterByOrderIdAndSelectOrder()
+		{
+			//NH-2946
+			using (var spy = new SqlLogSpy())
+			{
+				var lines = (from l in db.OrderLines
+							 where l.Order.OrderId == 100
+							 select l.Order).ToList();
+
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(1));
+				Assert.That(Count(spy, "Orders"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public void OrderLinesWithFilterByOrderIdShouldNotProduceJoins()
 		{
 			//NH-2946
@@ -478,6 +545,21 @@ where c.Order.Customer.CustomerId = 'VINET'
 			{
 				(from l in db.OrderLines
 				 orderby l.Order.OrderId
+				 select l).ToList();
+
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public void OrderLinesWithOrderByOrderShouldNotProduceJoins()
+		{
+			//NH-2946
+			using (var spy = new SqlLogSpy())
+			{
+				(from l in db.OrderLines
+				 orderby l.Order
 				 select l).ToList();
 
 				var countJoins = CountJoins(spy);
