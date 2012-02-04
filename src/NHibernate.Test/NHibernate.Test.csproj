@@ -942,6 +942,8 @@
     <Compile Include="NHSpecificTest\NH2893\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2913\CostItem.cs" />
     <Compile Include="NHSpecificTest\NH2913\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2959\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2982\Fixture.cs" />
@@ -2801,6 +2803,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2960\Mappings.hbm.xml" />
     <Compile Include="IdGen\Enhanced\Sequence\HiLoSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Sequence\PooledSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\BasicForcedTableSequenceTest.cs" />

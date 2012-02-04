@@ -672,8 +672,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						System.Type mappedClass = q.GetMappedClass(EntityMode.Poco);
-						if (mappedClass != null && clazz.IsAssignableFrom(mappedClass))
+						if (IsMatchingImplementor(entityOrClassName, clazz, q))
 						{
 							bool assignableSuperclass;
 							if (q.IsInherited)
@@ -696,6 +695,24 @@ namespace NHibernate.Impl
 			knownMap = results.ToArray();
 			entityNameImplementorsMap[entityOrClassName] = knownMap;
 			return knownMap;
+		}
+
+		private static bool IsMatchingImplementor(string entityOrClassName, System.Type entityClass, IQueryable implementor)
+		{
+			var implementorClass = implementor.GetMappedClass(EntityMode.Poco);
+			if (implementorClass == null) 
+			{
+				return false;
+			}
+			if (entityClass.Equals(implementorClass))
+			{
+				// It is possible to have multiple mappings for the same entity class, but with different entity names.
+				// When querying for a specific entity name, we should only return entities for the requested entity name
+				// and not return entities for any other entity names that may map to the same entity class.
+				bool isEntityName = !entityOrClassName.Equals(entityClass.FullName);
+				return !isEntityName || entityOrClassName.Equals(implementor.EntityName);
+			}
+			return entityClass.IsAssignableFrom(implementorClass);
 		}
 
 		public string GetImportedClassName(string className)
