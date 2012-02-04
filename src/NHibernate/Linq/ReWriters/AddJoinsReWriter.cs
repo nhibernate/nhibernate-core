@@ -39,6 +39,11 @@ namespace NHibernate.Linq.ReWriters
 			_selectAndOrderByJoinDetector.Transform(ordering);
 		}
 
+		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
+		{
+			_selectAndOrderByJoinDetector.Transform(resultOperator);
+		}
+
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
 			_whereJoinDetector.Transform(whereClause);
