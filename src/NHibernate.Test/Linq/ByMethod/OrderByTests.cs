@@ -1,4 +1,5 @@
 using System.Linq;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -6,6 +7,12 @@ namespace NHibernate.Test.Linq.ByMethod
 	[TestFixture]
 	public class OrderByTests : LinqTestCase
 	{
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.ShowSql, "true");
+		}
+
 		[Test]
 		public void GroupByThenOrderBy()
 		{
@@ -150,8 +157,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			// Check join result.
 			var allAnimals = db.Animals;
 			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
+// ReSharper disable RemoveToList.2
 			// We to ToList() first or it skips the generation of the joins.
 			Assert.AreEqual(allAnimals.ToList().Count(), orderedAnimals.ToList().Count());
+// ReSharper restore RemoveToList.2
 		}
 		
 		[Test]
@@ -174,6 +183,10 @@ namespace NHibernate.Test.Linq.ByMethod
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
 						  orderby order.ShippingDate descending 
 						  select order).ToList();
+
+			// Different databases may sort null either first or last.
+			// We only bother about the non-null values here.
+			result = result.Where(x => x.ShippingDate != null).ToList();
 
 			AssertOrderedBy.Descending(result.Take(5).ToList(), x => x.ShippingDate);
 		}
