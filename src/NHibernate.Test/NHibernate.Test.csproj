@@ -501,6 +501,7 @@
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
+    <Compile Include="Linq\JoinTests.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\DynamicQueryTests.cs" />
