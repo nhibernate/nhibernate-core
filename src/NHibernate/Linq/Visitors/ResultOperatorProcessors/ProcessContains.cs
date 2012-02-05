@@ -32,10 +32,17 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			else
 			{
 				// This is an "exists" style statement
-				tree.AddWhereClause(tree.TreeBuilder.Equality(
-								   tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
-								   itemExpression));
-				tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
+				if (itemExpression is HqlParameter)
+				{
+					tree.AddWhereClause(tree.TreeBuilder.Equality(
+						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
+						itemExpression));
+					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
+				}
+				else
+				{
+					tree.SetRoot(tree.TreeBuilder.In(itemExpression, tree.Root));
+				}
 			}
 		}
 

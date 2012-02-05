@@ -357,5 +357,127 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.AreEqual(10, lines.Count);
 		}
 
+		[Test]
+		public void OrdersWithSubquery1()
+		{
+			//NH-2904
+			var query = (from order in db.Orders
+						 where order.OrderLines.Any()
+						 select order).ToList();
+
+			Assert.AreEqual(830, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery2()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   select line.Order;
+
+			var query = (from order in db.Orders
+						 where subquery.Contains(order)
+						 select order).ToList();
+
+			Assert.AreEqual(830, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery3()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   select line.Order.OrderId;
+
+			var query = (from order in db.Orders
+						 where subquery.Contains(order.OrderId)
+						 select order).ToList();
+
+			Assert.AreEqual(830, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery4()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   select line.Order;
+
+			var query = (from order in db.Orders
+						 where subquery.Any(x => x.OrderId == order.OrderId)
+						 select order).ToList();
+
+			Assert.AreEqual(830, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery5()
+		{
+			//NH-2904
+			var query = (from order in db.Orders
+						 where order.OrderLines.Any(x => x.Quantity == 5)
+						 select order).ToList();
+
+			Assert.AreEqual(61, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery6()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   where line.Quantity == 5
+						   select line.Order;
+
+			var query = (from order in db.Orders
+						 where subquery.Contains(order)
+						 select order).ToList();
+
+			Assert.AreEqual(61, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery7()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   where line.Quantity == 5
+						   select line.Order.OrderId;
+
+			var query = (from order in db.Orders
+						 where subquery.Contains(order.OrderId)
+						 select order).ToList();
+
+			Assert.AreEqual(61, query.Count);
+		}
+
+		[Test]
+		public void OrdersWithSubquery8()
+		{
+			//NH-2904
+			var subquery = from line in db.OrderLines
+						   where line.Quantity == 5
+						   select line.Order;
+
+			var query = (from order in db.Orders
+						 where subquery.Any(x => x.OrderId == order.OrderId)
+						 select order).ToList();
+
+			Assert.AreEqual(61, query.Count);
+		}
+
+		[Test]
+		public void ProductsWithSubquery()
+		{
+			//NH-2899
+			var result = (from p in db.Products
+						  where (from c in db.Categories
+								 where c.Name == "Confections"
+								 select c).Contains(p.Category)
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
 	}
 }
