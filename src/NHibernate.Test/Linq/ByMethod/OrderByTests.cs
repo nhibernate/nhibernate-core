@@ -1,5 +1,6 @@
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -166,6 +167,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void OrderByWithSelfReferencedSubquery1()
 		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
+
 			//NH-3044
 			var result = (from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
@@ -178,6 +182,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void OrderByWithSelfReferencedSubquery2()
 		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
+
 			//NH-3044
 			var result = (from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
