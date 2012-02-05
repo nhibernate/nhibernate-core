@@ -43,14 +43,5 @@ namespace NHibernate.Linq.Visitors
 			selectClause.TransformExpressions(VisitExpression);
 		}
 
-		public void Transform(ResultOperatorBase resultOperator)
-		{
-			resultOperator.TransformExpressions(VisitExpression);
-		}
-
-		public void Transform(Ordering ordering)
-		{
-			ordering.TransformExpressions(VisitExpression);
-		}
 	}
 }
