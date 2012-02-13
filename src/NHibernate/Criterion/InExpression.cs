@@ -124,7 +124,6 @@ namespace NHibernate.Criterion
 					throw new QueryException("Cannot use projections that return more than a single column with InExpression");
 				}
 				type = types[0];
-				list.AddRange(_projection.GetTypedValues(criteria, criteriaQuery));
 			}
 
 			if (type.IsComponentType)
