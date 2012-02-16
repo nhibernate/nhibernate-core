@@ -7,6 +7,9 @@ using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using Remotion.Linq.Clauses.Expressions;
+using System.Collections;
+using NHibernate.Metadata;
+using NHibernate.Type;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -357,7 +360,7 @@ namespace NHibernate.Linq.Visitors
 
 			// Look for "special" properties (DateTime.Month etc)
 			IHqlGeneratorForProperty generator;
-
+			
 			if (_functionRegistry.TryGetGenerator(expression.Member, out generator))
 			{
 				return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
@@ -366,6 +369,8 @@ namespace NHibernate.Linq.Visitors
 			// Else just emit standard HQL for a property reference
 			return _hqlTreeBuilder.Dot(VisitExpression(expression.Expression).AsExpression(), _hqlTreeBuilder.Ident(expression.Member.Name));
 		}
+
+		
 
 		protected HqlTreeNode VisitConstantExpression(ConstantExpression expression)
 		{
@@ -401,12 +406,40 @@ namespace NHibernate.Linq.Visitors
 			IHqlGeneratorForMethod generator;
 
 			var method = expression.Method;
+			string memberName;
+			if (IsDynamicComponentDictionary(expression, out memberName))
+			{
+				return _hqlTreeBuilder.Dot(VisitExpression(expression.Object).AsExpression(), _hqlTreeBuilder.Ident(memberName));
+			}
 			if (!_functionRegistry.TryGetGenerator(method, out generator))
 			{
 				throw new NotSupportedException(method.ToString());
 			}
 
 			return generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
+		}
+
+		private bool IsDynamicComponentDictionary(MethodCallExpression expression, out string memberName)
+		{
+			memberName = "";
+			MemberExpression member;
+			ConstantExpression key;
+			IClassMetadata metaData;
+			IType propertyType;
+			if (expression.Method.Name == "get_Item" && // an IDictionary item getter?
+				typeof(IDictionary).IsAssignableFrom(expression.Object.Type) && //an IDictionary?
+				(key=expression.Arguments.First().As<ConstantExpression>())!=null && //a constant as the argument?
+				key.Type==typeof(string) && //a string argument?
+				(member=expression.Object.As<MemberExpression>())!=null && //need the owning member
+				(metaData=_parameters.SessionFactory.GetClassMetadata(member.Expression.Type))!=null && //to get its owning member (the mapped type) and its metadata
+ 				(propertyType=metaData.GetPropertyType(member.Member.Name))!=null && //which gets us the property mapping for the IDictionary
+				propertyType.IsComponentType //and finally check if its mapped as a component
+				)
+			{
+				memberName = (string)key.Value;
+				return true;
+			}
+			return false;
 		}
 
 		protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)
