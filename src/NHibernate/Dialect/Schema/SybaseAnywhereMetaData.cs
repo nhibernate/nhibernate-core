@@ -117,16 +117,10 @@ namespace NHibernate.Dialect.Schema
 		public SybaseAnywhereColumnMetaData(DataRow rs) : base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			object objValue = rs["COLUMN_SIZE"];
-			if (objValue != DBNull.Value)
-			{
-				ColumnSize = Convert.ToInt32(objValue);
-			}
-			objValue = rs["PRECISION"];
-			if (objValue != DBNull.Value)
-			{
-				NumericalPrecision = Convert.ToInt32(objValue);
-			}
+			
+			this.SetColumnSize(rs["COLUMN_SIZE"]);
+			this.SetNumericalPrecision(rs["PRECISION"]);
+
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
 			TypeName = Convert.ToString(rs["DATA_TYPE"]);
 		}

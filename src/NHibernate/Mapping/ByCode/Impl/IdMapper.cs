@@ -63,6 +63,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
+		public void UnsavedValue(object value)
+		{
+			hbmId.unsavedvalue = value != null ? value.ToString() : "null";
+		}
+
 		public void Column(string name)
 		{
 			hbmId.column1 = name;
@@ -90,10 +95,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (generatorParameters != null)
 			{
 				hbmGenerator.param = (from pi in generatorParameters.GetType().GetProperties()
-				                      let pname = pi.Name
-				                      let pvalue = pi.GetValue(generatorParameters, null)
-				                      select
-				                      	new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}}).
+									  let pname = pi.Name
+									  let pvalue = pi.GetValue(generatorParameters, null)
+									  select
+										new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}}).
 					ToArray();
 			}
 			else

@@ -24,17 +24,14 @@ namespace NHibernate.Linq.Visitors
 		public static void ReWrite(QueryModel model)
 		{
 			// firstly, get the group join clauses
-			var groupJoinClauses = model.BodyClauses.Where(bc => bc is GroupJoinClause).Cast<GroupJoinClause>();
-
-			if (groupJoinClauses.Count() == 0)
+			var clauses = model.BodyClauses.OfType<GroupJoinClause>().ToArray();
+			if (!clauses.Any())
 			{
 				// No group join here..
 				return;
 			}
 
-			var rewriter = new NonAggregatingGroupJoinRewriter(model, groupJoinClauses);
-
-			rewriter.ReWrite();
+			new NonAggregatingGroupJoinRewriter(model, clauses).ReWrite();
 		}
 
 		private void ReWrite()
@@ -50,11 +47,11 @@ namespace NHibernate.Linq.Visitors
 				//
 				// Option 2: Results of group join are only used in a plain "from" expression, such as:
 				//                from o in db.Orders
-                //                from p in db.Products
-                //                join d in db.OrderLines
-                //                    on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-                //                    into details
-                //                from d in details
+				//                from p in db.Products
+				//                join d in db.OrderLines
+				//                    on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+				//                    into details
+				//                from d in details
 				//                select new {o.OrderId, p.ProductId, d.UnitPrice};
 				//           In this case, simply change the group join to a join; the results of the grouping are being 
 				//           removed by the subsequent "from"
@@ -85,7 +82,7 @@ namespace NHibernate.Linq.Visitors
 				}
 				else if (IsOuterJoin(nonAggregatingJoin))
 				{
-					
+
 				}
 				else
 				{
@@ -106,7 +103,7 @@ namespace NHibernate.Linq.Visitors
 			// TODO - don't like use of _locator here; would rather we got this passed in.  Ditto on next line (esp. the cast)
 			_model.BodyClauses.Remove(_locator.Clauses[0]);
 
-			var querySourceSwapper = new SwapQuerySourceVisitor((IQuerySource) _locator.Clauses[0], nonAggregatingJoin.JoinClause);
+			var querySourceSwapper = new SwapQuerySourceVisitor((IQuerySource)_locator.Clauses[0], nonAggregatingJoin.JoinClause);
 			_model.SelectClause.TransformExpressions(querySourceSwapper.Swap);
 		}
 

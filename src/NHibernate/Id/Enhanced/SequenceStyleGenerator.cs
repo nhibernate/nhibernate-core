@@ -42,7 +42,7 @@ namespace NHibernate.Id.Enhanced
 	///   </tr>
 	///   <tr>
 	///     <td><see cref="ForceTableParam"/></td>
-	///     <td><b><i>false<i/></b></td>
+	///     <td><b><i>false</i></b></td>
 	///     <td>Allows explicit definition of which optimization strategy to use</td>
 	///   </tr>
 	/// </table>

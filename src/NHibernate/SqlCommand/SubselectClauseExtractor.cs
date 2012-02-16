@@ -22,7 +22,7 @@ namespace NHibernate.SqlCommand
 		private int lastOrderByIndex;
 		private int lastOrderByPartIndex;
 		private int parenNestCount;
-		private object[] sqlParts;
+		private SqlString sql;
 
 		/// <summary>
 		/// Contains the subselect clause as it is being built.
@@ -32,11 +32,11 @@ namespace NHibernate.SqlCommand
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SubselectClauseExtractor"/> class.
 		/// </summary>
-		/// <param name="sqlParts">The parts of an <see cref="SqlString" /> to extract the subselect clause from.</param>
-		public SubselectClauseExtractor(object[] sqlParts)
+		/// <param name="sql">The <see cref="SqlString" /> to extract the subselect clause from.</param>
+		public SubselectClauseExtractor(SqlString sql)
 		{
-			builder = new SqlStringBuilder(sqlParts.Length);
-			this.sqlParts = sqlParts;
+			builder = new SqlStringBuilder(sql.Count);
+			this.sql = sql;
 			lastOrderByIndex = -1;
 			lastOrderByPartIndex = -1;
 		}
@@ -76,7 +76,7 @@ namespace NHibernate.SqlCommand
 		/// statement.</returns>
 		public SqlString GetSqlString()
 		{
-			IEnumerator partEnumerator = sqlParts.GetEnumerator();
+			IEnumerator partEnumerator = sql.GetEnumerator();
 			parenNestCount = 0;
 			// Process the parts until FROM is found
 			while (partEnumerator.MoveNext())
@@ -101,7 +101,7 @@ namespace NHibernate.SqlCommand
 
 		public static bool HasOrderBy(SqlString subselect)
 		{
-			var extractor = new SubselectClauseExtractor((object[])subselect.Parts);
+			var extractor = new SubselectClauseExtractor(subselect);
 			extractor.GetSqlString();
 			return extractor.lastOrderByPartIndex >= 0;
 		}

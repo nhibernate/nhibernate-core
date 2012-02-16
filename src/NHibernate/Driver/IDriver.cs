@@ -90,7 +90,7 @@ namespace NHibernate.Driver
 		/// Remove 'extra' parameters from the IDbCommand
 		/// </summary>
 		/// <remarks>
-		/// We sometimes create more parameters than necessary (see NH-2792 & also comments in SqlStringFormatter.ISqlStringVisitor.Parameter)
+		/// We sometimes create more parameters than necessary (see NH-2792 &amp; also comments in SqlStringFormatter.ISqlStringVisitor.Parameter)
 		/// </remarks>
 		void RemoveUnusedCommandParameters(IDbCommand cmd, SqlString sqlString);
 

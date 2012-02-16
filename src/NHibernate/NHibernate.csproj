@@ -282,18 +282,21 @@
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
+    <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
+    <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
     <Compile Include="Linq\ReWriters\MoveOrderByToEndRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
-    <Compile Include="Linq\Visitors\AbstractJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\JoinBuilder.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
-    <Compile Include="Linq\Visitors\SelectAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
     <Compile Include="Loader\TopologicalSorter.cs" />
@@ -319,7 +322,7 @@
     <Compile Include="Mapping\ByCode\ICompositeIdMapper.cs" />
     <Compile Include="Mapping\ByCode\IDynamicComponentAttributesMapper.cs" />
     <Compile Include="Mapping\ByCode\IManyToAnyMapper.cs" />
-    <Compile Include="Mapping\ByCode\Impl\ComponentAsIdLikeComponetAttributesMapper.cs" />
+    <Compile Include="Mapping\ByCode\Impl\ComponentAsIdLikeComponentAttributesMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComponentAsIdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ComposedIdMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ComponentAsIdCustomizer.cs" />
@@ -541,6 +544,7 @@
     <Compile Include="Proxy\DefaultProxyFactory.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultArgumentHandler.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultMethodEmitter.cs" />
+    <Compile Include="Proxy\DynamicProxy\DefaultProxyAssemblyBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\DefaultProxyMethodBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\HashSetExtensions.cs" />
     <Compile Include="Proxy\DynamicProxy\IArgumentHandler.cs" />
@@ -550,6 +554,7 @@
     <Compile Include="Proxy\DynamicProxy\InvocationHandler.cs" />
     <Compile Include="Proxy\DynamicProxy\InvocationInfo.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxy.cs" />
+    <Compile Include="Proxy\DynamicProxy\IProxyAssemblyBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyCache.cs" />
     <Compile Include="Proxy\DynamicProxy\IProxyMethodBuilder.cs" />
     <Compile Include="Proxy\DynamicProxy\OpCodesMap.cs" />
@@ -985,7 +990,7 @@
     <Compile Include="Linq\NhLinqExpressionReturnType.cs" />
     <Compile Include="Linq\DefaultQueryProvider.cs" />
     <Compile Include="Linq\Visitors\ExpressionKeyVisitor.cs" />
-    <Compile Include="Linq\GroupBy\GroupByAggregateDetectionVisitor.cs" />
+    <Compile Include="Linq\GroupBy\IsNonAggregatingGroupByDetectionVisitor.cs" />
     <Compile Include="Linq\GroupBy\AggregatingGroupByRewriter.cs" />
     <Compile Include="Linq\GroupJoin\AggregatingGroupJoinRewriter.cs" />
     <Compile Include="Linq\ResultOperators\ClientSideTransformOperator.cs" />

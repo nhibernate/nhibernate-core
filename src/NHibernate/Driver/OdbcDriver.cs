@@ -43,7 +43,7 @@ namespace NHibernate.Driver
 			get { return String.Empty; }
 		}
 
-		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		protected static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
@@ -69,10 +69,9 @@ namespace NHibernate.Driver
 		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
-			//if (IsPrepareSqlEnabled)
-			{
-				SetParameterSizes(command.Parameters, parameterTypes);
-			}
+
+			SetParameterSizes(command.Parameters, parameterTypes);
+
 			return command;
 		}
 

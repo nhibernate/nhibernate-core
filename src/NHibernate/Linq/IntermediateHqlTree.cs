@@ -26,12 +26,16 @@ namespace NHibernate.Linq
 		private bool _hasDistinctRootOperator;
 		private HqlExpression _skipCount;
 		private HqlExpression _takeCount;
+		private HqlHaving _hqlHaving;
 		private HqlTreeNode _root;
+		private HqlOrderBy _orderBy;
 
 		public HqlTreeNode Root
 		{
 			get
 			{
+				ExecuteAddHavingClause(_hqlHaving);
+				ExecuteAddOrderBy(_orderBy);
 				ExecuteAddSkipClause(_skipCount);
 				ExecuteAddTakeClause(_takeCount);
 				return _root;
@@ -80,12 +84,12 @@ namespace NHibernate.Linq
 
 		public void AddFromClause(HqlTreeNode from)
 		{
-			_root.NodesPreOrder.Where(n => n is HqlFrom).First().AddChild(from);
+			_root.NodesPreOrder.OfType<HqlFrom>().First().AddChild(from);
 		}
 
 		public void AddSelectClause(HqlTreeNode select)
 		{
-			_root.NodesPreOrder.Where(n => n is HqlSelectFrom).First().AddChild(select);
+			_root.NodesPreOrder.OfType<HqlSelectFrom>().First().AddChild(select);
 		}
 
 		public void AddGroupByClause(HqlGroupBy groupBy)
@@ -95,16 +99,11 @@ namespace NHibernate.Linq
 
 		public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
 		{
-			var orderByRoot = _root.NodesPreOrder.Where(n => n is HqlOrderBy).FirstOrDefault();
+			if (_orderBy == null)
+				_orderBy = TreeBuilder.OrderBy();
 
-			if (orderByRoot == null)
-			{
-				orderByRoot = TreeBuilder.OrderBy();
-				_root.As<HqlQuery>().AddChild(orderByRoot);
-			}
-
-			orderByRoot.AddChild(orderBy);
-			orderByRoot.AddChild(direction);
+			_orderBy.AddChild(orderBy);
+			_orderBy.AddChild(direction);
 		}
 
 		public void AddSkipClause(HqlExpression toSkip)
@@ -117,6 +116,15 @@ namespace NHibernate.Linq
 			_takeCount = toTake;
 		}
 
+		private void ExecuteAddOrderBy(HqlTreeNode orderBy)
+		{
+			if (orderBy == null)
+				return;
+
+			if (!_root.NodesPreOrder.Any(x => x == orderBy))
+				_root.As<HqlQuery>().AddChild(orderBy);
+		}
+
 		private void ExecuteAddTakeClause(HqlExpression toTake)
 		{
 			if (toTake == null)
@@ -124,8 +132,8 @@ namespace NHibernate.Linq
 				return;
 			}
 
-			HqlQuery hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
-			HqlTreeNode takeRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlTake);
+			var hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
+			var takeRoot = hqlQuery.Children.OfType<HqlTake>().FirstOrDefault();
 
 			// were present we ignore the new value
 			if (takeRoot == null)
@@ -143,8 +151,8 @@ namespace NHibernate.Linq
 				return;
 			}
 			// We should check the value instead delegate the behavior to the result SQL-> MSDN: If count is less than or equal to zero, all elements of source are yielded.
-			HqlQuery hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
-			HqlTreeNode skipRoot = hqlQuery.Children.FirstOrDefault(n => n is HqlSkip);
+			var hqlQuery = _root.NodesPreOrder.OfType<HqlQuery>().First();
+			var skipRoot = hqlQuery.Children.OfType<HqlSkip>().FirstOrDefault();
 			if (skipRoot == null)
 			{
 				skipRoot = TreeBuilder.Skip(toSkip);
@@ -152,10 +160,18 @@ namespace NHibernate.Linq
 			}
 		}
 
+		private void ExecuteAddHavingClause(HqlHaving hqlHaving)
+		{
+			if (hqlHaving == null)
+				return;
+
+			if (!_root.NodesPreOrder.OfType<HqlHaving>().Any())
+				_root.As<HqlQuery>().AddChild(hqlHaving);
+		}
+
 		public void AddWhereClause(HqlBooleanExpression where)
 		{
-			var currentWhere = _root.NodesPreOrder.Where(n => n is HqlWhere).FirstOrDefault();
-
+			var currentWhere = _root.NodesPreOrder.OfType<HqlWhere>().FirstOrDefault();
 			if (currentWhere == null)
 			{
 				currentWhere = TreeBuilder.Where(where);
@@ -167,6 +183,21 @@ namespace NHibernate.Linq
 
 				currentWhere.ClearChildren();
 				currentWhere.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
+			}
+		}
+
+		public void AddHavingClause(HqlBooleanExpression where)
+		{
+			if (_hqlHaving == null)
+			{
+				_hqlHaving = TreeBuilder.Having(where);
+			}
+			else
+			{
+				var currentClause = (HqlBooleanExpression) _hqlHaving.Children.Single();
+
+				_hqlHaving.ClearChildren();
+				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
 			}
 		}
 

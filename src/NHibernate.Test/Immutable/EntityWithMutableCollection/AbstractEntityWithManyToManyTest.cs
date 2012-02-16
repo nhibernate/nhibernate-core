@@ -890,7 +890,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				s.Merge(pOrig);
 				Assert.That(isContractVersioned, Is.False);
 			}
-			catch (StaleObjectStateException ex)
+			catch (StaleObjectStateException)
 			{
 				Assert.That(isContractVersioned, Is.True);
 			}
@@ -952,7 +952,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				t.Commit();
 				Assert.That(isContractVersioned, Is.False);
 			}
-			catch (StaleObjectStateException ex)
+			catch (StaleObjectStateException)
 			{
 				Assert.That(isContractVersioned, Is.True);
 				t.Rollback();

@@ -23,79 +23,79 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public SQLiteDialect()
 		{
-            RegisterColumnTypes();
-            RegisterFunctions();
-            RegisterKeywords();
-            RegisterDefaultProperties();
+			RegisterColumnTypes();
+			RegisterFunctions();
+			RegisterKeywords();
+			RegisterDefaultProperties();
 		}
 
-        protected virtual void RegisterColumnTypes()
-        {
-            RegisterColumnType(DbType.Binary, "BLOB");
-            RegisterColumnType(DbType.Byte, "TINYINT");
-            RegisterColumnType(DbType.Int16, "SMALLINT");
-            RegisterColumnType(DbType.Int32, "INT");
-            RegisterColumnType(DbType.Int64, "BIGINT");
-            RegisterColumnType(DbType.SByte, "INTEGER");
-            RegisterColumnType(DbType.UInt16, "INTEGER");
-            RegisterColumnType(DbType.UInt32, "INTEGER");
-            RegisterColumnType(DbType.UInt64, "INTEGER");
-            RegisterColumnType(DbType.Currency, "NUMERIC");
-            RegisterColumnType(DbType.Decimal, "NUMERIC");
-            RegisterColumnType(DbType.Double, "DOUBLE");
-            RegisterColumnType(DbType.Single, "DOUBLE");
-            RegisterColumnType(DbType.VarNumeric, "NUMERIC");
-            RegisterColumnType(DbType.AnsiString, "TEXT");
-            RegisterColumnType(DbType.String, "TEXT");
-            RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
-            RegisterColumnType(DbType.StringFixedLength, "TEXT");
+		protected virtual void RegisterColumnTypes()
+		{
+			RegisterColumnType(DbType.Binary, "BLOB");
+			RegisterColumnType(DbType.Byte, "TINYINT");
+			RegisterColumnType(DbType.Int16, "SMALLINT");
+			RegisterColumnType(DbType.Int32, "INT");
+			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.SByte, "INTEGER");
+			RegisterColumnType(DbType.UInt16, "INTEGER");
+			RegisterColumnType(DbType.UInt32, "INTEGER");
+			RegisterColumnType(DbType.UInt64, "INTEGER");
+			RegisterColumnType(DbType.Currency, "NUMERIC");
+			RegisterColumnType(DbType.Decimal, "NUMERIC");
+			RegisterColumnType(DbType.Double, "DOUBLE");
+			RegisterColumnType(DbType.Single, "DOUBLE");
+			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+			RegisterColumnType(DbType.AnsiString, "TEXT");
+			RegisterColumnType(DbType.String, "TEXT");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
+			RegisterColumnType(DbType.StringFixedLength, "TEXT");
 
-            RegisterColumnType(DbType.Date, "DATE");
-            RegisterColumnType(DbType.DateTime, "DATETIME");
-            RegisterColumnType(DbType.Time, "TIME");
-            RegisterColumnType(DbType.Boolean, "BOOL");
-            RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
-        }
+			RegisterColumnType(DbType.Date, "DATE");
+			RegisterColumnType(DbType.DateTime, "DATETIME");
+			RegisterColumnType(DbType.Time, "TIME");
+			RegisterColumnType(DbType.Boolean, "BOOL");
+			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+		}
 
-        protected virtual void RegisterFunctions()
-        {
-            // Using strftime returns 0-padded strings.  '07' <> 7, so it is better to convert to an integer.
-            RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%S', ?1) as int)"));
-            RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%M', ?1) as int)"));
-            RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%H', ?1) as int)"));
-            RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%d', ?1) as int)"));
-            RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
-            RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
-            // Uses local time like MSSQL and PostgreSQL.
-            RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
-            // The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
-            // The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
-            // as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
-            // 'YYYY-MM-DD 00:00:00' format for the date function.
-            RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
+		protected virtual void RegisterFunctions()
+		{
+			// Using strftime returns 0-padded strings.  '07' <> 7, so it is better to convert to an integer.
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%S', ?1) as int)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%M', ?1) as int)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%H', ?1) as int)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%d', ?1) as int)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
+			// Uses local time like MSSQL and PostgreSQL.
+			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
+			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
+			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
+			// 'YYYY-MM-DD 00:00:00' format for the date function.
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
 
-            RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
-            RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
-            RegisterFunction("trim", new AnsiTrimEmulationFunction());
-            RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 
-            RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
-            RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
-            RegisterFunction("cast", new SQLiteCastFunction());
-        }
+			RegisterFunction("cast", new SQLiteCastFunction());
+		}
 
-        protected virtual void RegisterKeywords()
-        {
-            RegisterKeyword("int"); // Used in our function templates.
-        }
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeyword("int"); // Used in our function templates.
+		}
 
-        protected virtual void RegisterDefaultProperties()
-        {
-            DefaultProperties[Cfg.Environment.ConnectionDriver] = "NHibernate.Driver.SQLite20Driver";
-            DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
-        }
+		protected virtual void RegisterDefaultProperties()
+		{
+			DefaultProperties[Cfg.Environment.ConnectionDriver] = "NHibernate.Driver.SQLite20Driver";
+			DefaultProperties[Cfg.Environment.QuerySubstitutions] = "true 1, false 0, yes 'Y', no 'N'";
+		}
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
@@ -160,28 +160,28 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-        public override bool SupportsLimitOffset
-        {
-            get { return true; }
-        }
+		public override bool SupportsLimitOffset
+		{
+			get { return true; }
+		}
 
 		public override string IdentityColumnString
 		{
 			get
 			{
-                // Adding the "autoincrement" keyword ensures that the same id will
-                // not be generated twice.  When just utilizing "integer primary key",
-                // SQLite just takes the max value currently in the table and adds one.
-                // This causes problems with caches that use primary keys of deleted
-                // entities.
+				// Adding the "autoincrement" keyword ensures that the same id will
+				// not be generated twice.  When just utilizing "integer primary key",
+				// SQLite just takes the max value currently in the table and adds one.
+				// This causes problems with caches that use primary keys of deleted
+				// entities.
 				return "integer primary key autoincrement";
 			}
 		}
 
-        public override bool GenerateTablePrimaryKeyConstraintForIdentityColumn
-        {
-            get { return false; }
-        }
+		public override bool GenerateTablePrimaryKeyConstraintForIdentityColumn
+		{
+			get { return false; }
+		}
 
 		public override string Qualify(string catalog, string schema, string table)
 		{
@@ -240,26 +240,26 @@ namespace NHibernate.Dialect
 			get { return "DEFAULT VALUES"; }
 		}
 
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
-        {
-            SqlStringBuilder pagingBuilder = new SqlStringBuilder();
-            pagingBuilder.Add(queryString);
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			pagingBuilder.Add(queryString);
 
-            pagingBuilder.Add(" limit ");
-            if (limit != null)
-                pagingBuilder.Add(limit);
-            else
-                // We must have a limit present if we have an offset.
-                pagingBuilder.Add(int.MaxValue.ToString());
+			pagingBuilder.Add(" limit ");
+			if (limit != null)
+				pagingBuilder.Add(limit);
+			else
+				// We must have a limit present if we have an offset.
+				pagingBuilder.Add(int.MaxValue.ToString());
 
-            if (offset != null)
-            {
-                pagingBuilder.Add(" offset ");
-                pagingBuilder.Add(offset);
-            }
+			if (offset != null)
+			{
+				pagingBuilder.Add(" offset ");
+				pagingBuilder.Add(offset);
+			}
 
-            return pagingBuilder.ToSqlString();
-        }
+			return pagingBuilder.ToSqlString();
+		}
 
 		public override bool SupportsTemporaryTables
 		{
@@ -281,28 +281,28 @@ namespace NHibernate.Dialect
 			get { return "select randomblob(16)"; }
 		}
 
-        /// <summary>
-        /// SQLite does not currently support dropping foreign key constraints by alter statements.
-        /// This means that tables cannot be dropped if there are any rows that depend on those.
-        /// If there are cycles between tables, it would even be excessively difficult to delete
-        /// the data in the right order first.  Because of this, we just turn off the foreign
-        /// constraints before we drop the schema and hope that we're not going to break anything. :(
-        /// We could theoretically check for data consistency afterwards, but we don't currently.
-        /// </summary>
-        public override string DisableForeignKeyConstraintsString
-        {
-            get { return "PRAGMA foreign_keys = OFF"; }
-        }
+		/// <summary>
+		/// SQLite does not currently support dropping foreign key constraints by alter statements.
+		/// This means that tables cannot be dropped if there are any rows that depend on those.
+		/// If there are cycles between tables, it would even be excessively difficult to delete
+		/// the data in the right order first.  Because of this, we just turn off the foreign
+		/// constraints before we drop the schema and hope that we're not going to break anything. :(
+		/// We could theoretically check for data consistency afterwards, but we don't currently.
+		/// </summary>
+		public override string DisableForeignKeyConstraintsString
+		{
+			get { return "PRAGMA foreign_keys = OFF"; }
+		}
 
-        public override string EnableForeignKeyConstraintsString
-        {
-            get { return "PRAGMA foreign_keys = ON"; }
-        }
+		public override string EnableForeignKeyConstraintsString
+		{
+			get { return "PRAGMA foreign_keys = ON"; }
+		}
 
-        public override bool SupportsForeignKeyConstraintInAlterTable
-        {
-            get { return false; }
-        }
+		public override bool SupportsForeignKeyConstraintInAlterTable
+		{
+			get { return false; }
+		}
 
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction

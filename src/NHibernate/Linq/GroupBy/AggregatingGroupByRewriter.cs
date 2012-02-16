@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.GroupBy
 {
@@ -33,20 +35,14 @@ namespace NHibernate.Linq.GroupBy
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
 			if ((subQueryExpression != null) &&
-			    (subQueryExpression.QueryModel.ResultOperators.Count() == 1) &&
-			    (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) &&
-			    (IsAggregatingGroupBy(queryModel)))
+				(subQueryExpression.QueryModel.ResultOperators.Count() == 1) &&
+				(subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator))
 			{
-				new AggregatingGroupByRewriter().FlattenSubQuery(subQueryExpression, queryModel);
+				FlattenSubQuery(subQueryExpression, queryModel);
 			}
 		}
 
-		private static bool IsAggregatingGroupBy(QueryModel queryModel)
-		{
-			return new GroupByAggregateDetectionVisitor().Visit(queryModel.SelectClause.Selector);
-		}
-
-		private void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
+		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// Move the result operator up 
 			if (queryModel.ResultOperators.Count != 0)
@@ -57,6 +53,20 @@ namespace NHibernate.Linq.GroupBy
 			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
 
 			queryModel.ResultOperators.Add(groupBy);
+
+			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
+			{
+				var clause = queryModel.BodyClauses[i];
+				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
+
+				//all outer where clauses actually are having clauses
+				var whereClause = clause as WhereClause;
+				if (whereClause != null)
+				{
+					queryModel.BodyClauses.RemoveAt(i);
+					queryModel.BodyClauses.Insert(i, new NhHavingClause(whereClause.Predicate));
+				}
+			}
 
 			foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
 			{

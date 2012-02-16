@@ -80,16 +80,10 @@ namespace NHibernate.Dialect.Schema
 		public PostgreSQLColumnMetadata(DataRow rs) : base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			object objValue = rs["CHARACTER_MAXIMUM_LENGTH"];
-			if (objValue != DBNull.Value)
-			{
-				ColumnSize = Convert.ToInt32(objValue);
-			}
-			objValue = rs["NUMERIC_PRECISION"];
-			if (objValue != DBNull.Value)
-			{
-				NumericalPrecision = Convert.ToInt32(objValue);
-			}
+			
+			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
+			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
+
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
 			TypeName = Convert.ToString(rs["DATA_TYPE"]);
 		}

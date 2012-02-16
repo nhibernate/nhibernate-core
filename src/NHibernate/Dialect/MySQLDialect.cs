@@ -29,7 +29,7 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class MySQLDialect : Dialect
 	{
-   		private readonly TypeNames castTypeNames = new TypeNames();
+		private readonly TypeNames castTypeNames = new TypeNames();
 
 			public MySQLDialect()
 			{
@@ -176,28 +176,28 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
-        {
-            var pagingBuilder = new SqlStringBuilder(queryString);
-            pagingBuilder.Add(" limit ");
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			var pagingBuilder = new SqlStringBuilder(queryString);
+			pagingBuilder.Add(" limit ");
 
-            if (offset != null)
-            {
-                pagingBuilder.Add(offset);
-                pagingBuilder.Add(", ");
-            }
+			if (offset != null)
+			{
+				pagingBuilder.Add(offset);
+				pagingBuilder.Add(", ");
+			}
 
-            if (limit != null)
-                pagingBuilder.Add(limit);
-            else
-                pagingBuilder.Add(int.MaxValue.ToString());
+			if (limit != null)
+				pagingBuilder.Add(limit);
+			else
+				pagingBuilder.Add(int.MaxValue.ToString());
 
-            return pagingBuilder.ToSqlString();
-        }
+			return pagingBuilder.ToSqlString();
+		}
 
 		public override string GetAddForeignKeyConstraintString(string constraintName, string[] foreignKey,
-		                                                        string referencedTable, string[] primaryKey,
-		                                                        bool referencesPrimaryKey)
+																string referencedTable, string[] primaryKey,
+																bool referencesPrimaryKey)
 		{
 			string cols = String.Join(StringHelper.CommaSpace, foreignKey);
 			return

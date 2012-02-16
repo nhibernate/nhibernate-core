@@ -8,27 +8,29 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class KeyManyToOneMapper : IManyToOneMapper
 	{
-		private readonly IAccessorPropertyMapper entityPropertyMapper;
-		private readonly HbmKeyManyToOne manyToOne;
-		private readonly HbmMapping mapDoc;
-		private readonly MemberInfo member;
+		private readonly IAccessorPropertyMapper _entityPropertyMapper;
+		private readonly HbmKeyManyToOne _manyToOne;
+		private readonly HbmMapping _mapDoc;
+		private readonly MemberInfo _member;
 
 		public KeyManyToOneMapper(MemberInfo member, HbmKeyManyToOne manyToOne, HbmMapping mapDoc)
 		{
-			this.member = member;
-			this.manyToOne = manyToOne;
-			this.mapDoc = mapDoc;
+			_member = member;
+			_manyToOne = manyToOne;
+			_mapDoc = mapDoc;
+
 			if (member == null)
 			{
-				this.manyToOne.access = "none";
+				_manyToOne.access = "none";
 			}
+
 			if (member == null)
 			{
-				entityPropertyMapper = new NoMemberPropertyMapper();
+				_entityPropertyMapper = new NoMemberPropertyMapper();
 			}
 			else
 			{
-				entityPropertyMapper = new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x);
+				_entityPropertyMapper = new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x);
 			}
 		}
 
@@ -36,13 +38,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Class(System.Type entityType)
 		{
-			if (!member.GetPropertyOrFieldType().IsAssignableFrom(entityType))
+			if (!_member.GetPropertyOrFieldType().IsAssignableFrom(entityType))
 			{
 				throw new ArgumentOutOfRangeException("entityType",
-				                                      string.Format("The type is incompatible; expected assignable to {0}",
-				                                                    member.GetPropertyOrFieldType()));
+					String.Format("The type is incompatible; expected assignable to {0}", _member.GetPropertyOrFieldType()));
 			}
-			manyToOne.@class = entityType.GetShortClassName(mapDoc);
+			_manyToOne.@class = entityType.GetShortClassName(_mapDoc);
 		}
 
 		public void Cascade(Cascade cascadeStyle)
@@ -85,16 +86,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			switch (lazyRelation.ToHbm())
 			{
 				case HbmLaziness.False:
-					manyToOne.lazy = HbmRestrictedLaziness.False;
-					manyToOne.lazySpecified = true;
+					_manyToOne.lazy = HbmRestrictedLaziness.False;
+					_manyToOne.lazySpecified = true;
 					break;
 				case HbmLaziness.Proxy:
-					manyToOne.lazy = HbmRestrictedLaziness.Proxy;
-					manyToOne.lazySpecified = true;
+					_manyToOne.lazy = HbmRestrictedLaziness.Proxy;
+					_manyToOne.lazySpecified = true;
 					break;
 				case HbmLaziness.NoProxy:
-					manyToOne.lazy = HbmRestrictedLaziness.False;
-					manyToOne.lazySpecified = true;
+					_manyToOne.lazy = HbmRestrictedLaziness.False;
+					_manyToOne.lazySpecified = true;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -113,7 +114,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void ForeignKey(string foreignKeyName)
 		{
-			manyToOne.foreignkey = foreignKeyName;
+			_manyToOne.foreignkey = foreignKeyName;
+		}
+
+		public void PropertyRef(string propertyReferencedName)
+		{
+			//Not supported
+		}
+
+		public void NotFound(NotFoundMode mode)
+		{
+			_manyToOne.notfound = mode.ToHbm();
 		}
 
 		#endregion
@@ -122,12 +133,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Access(Accessor accessor)
 		{
-			entityPropertyMapper.Access(accessor);
+			_entityPropertyMapper.Access(accessor);
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			entityPropertyMapper.Access(accessorType);
+			_entityPropertyMapper.Access(accessorType);
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
@@ -141,27 +152,27 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Column(Action<IColumnMapper> columnMapper)
 		{
-			if (manyToOne.Columns.Count() > 1)
+			if (_manyToOne.Columns.Count() > 1)
 			{
 				throw new MappingException("Multi-columns property can't be mapped through single-column API.");
 			}
-			HbmColumn hbm = manyToOne.Columns.SingleOrDefault();
+			HbmColumn hbm = _manyToOne.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = manyToOne.column1,
-			      };
-			string defaultColumnName = member.Name;
-			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
+				  ??
+				  new HbmColumn
+				  {
+					  name = _manyToOne.column1,
+				  };
+			string defaultColumnName = _member.Name;
+			columnMapper(new ColumnMapper(hbm, _member != null ? defaultColumnName : "unnamedcolumn"));
 			if (ColumnTagIsRequired(hbm))
 			{
-				manyToOne.column = new[] {hbm};
+				_manyToOne.column = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
 			{
-				manyToOne.column1 = defaultColumnName == null || !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
+				_manyToOne.column1 = defaultColumnName == null || !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
 			}
 		}
 
@@ -173,11 +184,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			foreach (var action in columnMapper)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i++;
+				string defaultColumnName = (_member != null ? _member.Name : "unnamedcolumn") + i++;
 				action(new ColumnMapper(hbm, defaultColumnName));
 				columns.Add(hbm);
 			}
-			manyToOne.column = columns.ToArray();
+			_manyToOne.column = columns.ToArray();
 		}
 
 		public void Column(string name)
@@ -188,13 +199,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.length != null || hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()
 		{
-			manyToOne.column1 = null;
+			_manyToOne.column1 = null;
 		}
 
 		#endregion

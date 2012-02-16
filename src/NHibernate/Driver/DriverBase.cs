@@ -221,13 +221,14 @@ namespace NHibernate.Driver
 
 			var formatter = GetSqlStringFormatter();
 			formatter.Format(sqlString);
+			var assignedParameterNames = new HashSet<string>(formatter.AssignedParameterNames);
 
 			cmd.Parameters
 				.Cast<IDbDataParameter>()
 				.Select(p => p.ParameterName)
-				.Except(formatter.AssignedParameterNames)
+				.Where(p => !assignedParameterNames.Contains(UseNamedPrefixInParameter ? p : FormatNameForSql(p)))
 				.ToList()
-				.ForEach(ununsedParameterName => cmd.Parameters.RemoveAt(ununsedParameterName));
+				.ForEach(unusedParameterName => cmd.Parameters.RemoveAt(unusedParameterName));
 		}
 
 		public virtual void ExpandQueryParameters(IDbCommand cmd, SqlString sqlString)

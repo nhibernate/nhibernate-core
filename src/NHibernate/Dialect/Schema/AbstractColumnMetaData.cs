@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 
 namespace NHibernate.Dialect.Schema
@@ -47,6 +48,23 @@ namespace NHibernate.Dialect.Schema
 		public override string ToString()
 		{
 			return "ColumnMetadata(" + name + ')';
+		}
+
+		protected void SetColumnSize(object columnSizeValue)
+		{
+			if (columnSizeValue != DBNull.Value)
+			{
+				long longColumnSize = Convert.ToInt64(columnSizeValue);
+				columnSize = (int)Math.Min(int.MaxValue, longColumnSize);
+			}
+		}
+
+		protected void SetNumericalPrecision(object numericalPrecisionValue)
+		{
+			if (numericalPrecisionValue != DBNull.Value)
+			{
+				NumericalPrecision = Convert.ToInt32(numericalPrecisionValue);
+			}
 		}
 	}
 }

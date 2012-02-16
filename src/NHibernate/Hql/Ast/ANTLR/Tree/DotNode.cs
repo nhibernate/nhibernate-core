@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class DotNode : FromReferenceNode, ISelectExpression 
+	public class DotNode : FromReferenceNode 
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(DotNode));
 
@@ -101,14 +101,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (_path == null)
 				{
-					FromReferenceNode lhs = GetLhs();
+					var lhs = GetLhs();
 					if (lhs == null)
 					{
 						_path = Text;
 					}
 					else
 					{
-						SqlNode rhs = (SqlNode) lhs.NextSibling;
+						var rhs = (SqlNode) lhs.NextSibling;
 						_path = lhs.Path + "." + rhs.OriginalText;
 					}
 				}
@@ -165,25 +165,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			CheckSubclassOrSuperclassPropertyReference(lhs, propName);
 		}
 
-        public override void ResolveInFunctionCall(bool generateJoin, bool implicitJoin)
-        {
-            if (IsResolved)
-            {
-                return;
-            }
+		public override void ResolveInFunctionCall(bool generateJoin, bool implicitJoin)
+		{
+			if (IsResolved)
+			{
+				return;
+			}
 
-            IType propertyType = PrepareLhs();			// Prepare the left hand side and get the data type.
+			IType propertyType = PrepareLhs();			// Prepare the left hand side and get the data type.
 
-            if (propertyType != null && propertyType.IsCollectionType)
-            {
-                ResolveIndex(null);
-            }
-            else
-            {
-                ResolveFirstChild();
-                Resolve(generateJoin, implicitJoin);
-            }
-        }
+			if (propertyType != null && propertyType.IsCollectionType)
+			{
+				ResolveIndex(null);
+			}
+			else
+			{
+				ResolveFirstChild();
+				Resolve(generateJoin, implicitJoin);
+			}
+		}
 
 		public override void Resolve(bool generateJoin, bool implicitJoin, string classAlias, IASTNode parent)
 		{
@@ -245,7 +245,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		
 		public FromReferenceNode GetLhs()
 		{
-			FromReferenceNode lhs = ((FromReferenceNode)GetChild(0));
+			var lhs = ((FromReferenceNode)GetChild(0));
 			if (lhs == null)
 			{
 				throw new InvalidOperationException("DOT node with no left-hand-side!");
@@ -322,7 +322,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			//We do not look for an existing join on the same path, because
 			//it makes sense to join twice on the same collection role
-			FromElementFactory factory = new FromElementFactory(
+			var factory = new FromElementFactory(
 					currentFromClause,
 					GetLhs().FromElement,
 					propName,
@@ -498,9 +498,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			bool found = elem != null;
 			// even though we might find a pre-existing element by join path, for FromElements originating in a from-clause
-			// we should only ever use the found element if the aliases match (null != null here).  Implied joins are
-			// always (?) ok to reuse.
-			bool useFoundFromElement = found && ( elem.IsImplied || ( AreSame(classAlias, elem.ClassAlias ) ) );
+			// we should only ever use the found element if the aliases match (null != null here).  
+			// Implied joins are ok to reuse only if in same from clause (are there any other cases when we should reject implied joins?).
+			bool useFoundFromElement = found &&
+									   (elem.IsImplied && elem.FromClause == currentFromClause || // NH different behavior (NH-3002)
+										AreSame(classAlias, elem.ClassAlias));
 
 			if ( ! useFoundFromElement )
 			{
@@ -509,7 +511,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				JoinSequence joinSequence = SessionFactoryHelper
 					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
 
-				FromElementFactory factory = new FromElementFactory(
+				var factory = new FromElementFactory(
 						currentFromClause,
 						GetLhs().FromElement,
 						joinPath,
@@ -547,7 +549,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_impliedJoin = elem;
 			if (GetFirstChild().Type == HqlSqlWalker.DOT)
 			{
-				DotNode dotLhs = (DotNode)GetFirstChild();
+				var dotLhs = (DotNode)GetFirstChild();
 				if (dotLhs.GetImpliedJoin() != null)
 				{
 					_impliedJoin = dotLhs.GetImpliedJoin();
@@ -634,7 +636,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (IsDotNode(parent))
 			{
-				DotNode dotNode = (DotNode)parent;
+				var dotNode = (DotNode)parent;
 
 				IASTNode rhs = dotNode.GetChild(1);
 				_propertyName = rhs.Text;

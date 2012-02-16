@@ -139,6 +139,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlWhere(_factory, expression);
 		}
 
+		public HqlHaving Having(HqlExpression expression)
+		{
+			return new HqlHaving(_factory, expression);
+		}
+
 		// TODO - constant will be removed when we have parameter handling done properly.  Particularly bad datetime handling here, so it'll be good to delete it :)
 		public HqlConstant Constant(object value)
 		{

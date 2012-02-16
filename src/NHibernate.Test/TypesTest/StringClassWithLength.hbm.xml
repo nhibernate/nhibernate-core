@@ -9,5 +9,6 @@
 		</id>
 		
 		<property name="StringValue" type="String" column="str" length="10"/>
+		<property name="LongStringValue" type="String" column="longstr" length="4000" />
 	</class>
 </hibernate-mapping>
