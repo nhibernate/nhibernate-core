@@ -10,6 +10,7 @@ using Remotion.Linq.Clauses.Expressions;
 using System.Collections;
 using NHibernate.Metadata;
 using NHibernate.Type;
+using System.Collections.Generic;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -421,24 +422,30 @@ namespace NHibernate.Linq.Visitors
 
 		private bool IsDynamicComponentDictionary(MethodCallExpression expression, out string memberName)
 		{
-			memberName = "";
-			MemberExpression member;
-			ConstantExpression key;
-			IClassMetadata metaData;
-			IType propertyType;
-			if (expression.Method.Name == "get_Item" && // an IDictionary item getter?
-				typeof(IDictionary).IsAssignableFrom(expression.Object.Type) && //an IDictionary?
-				(key=expression.Arguments.First().As<ConstantExpression>())!=null && //a constant as the argument?
-				key.Type==typeof(string) && //a string argument?
-				(member=expression.Object.As<MemberExpression>())!=null && //need the owning member
-				(metaData=_parameters.SessionFactory.GetClassMetadata(member.Expression.Type))!=null && //to get its owning member (the mapped type) and its metadata
- 				(propertyType=metaData.GetPropertyType(member.Member.Name))!=null && //which gets us the property mapping for the IDictionary
-				propertyType.IsComponentType //and finally check if its mapped as a component
-				)
+			//an IDictionary item getter?
+			if (expression.Method.Name == "get_Item" && typeof(IDictionary).IsAssignableFrom(expression.Object.Type))
 			{
-				memberName = (string)key.Value;
-				return true;
+				//a  string constant expression as the argument?	
+				ConstantExpression key=expression.Arguments.First().As<ConstantExpression>();
+				if (key != null && key.Type == typeof(string))
+				{
+					//The potential member name
+					memberName = (string)key.Value;
+					//need the owning member
+					MemberExpression member = expression.Object.As<MemberExpression>();
+					if (member != null)
+					{
+						IClassMetadata metaData = _parameters.SessionFactory.GetClassMetadata(member.Expression.Type);
+						if (metaData != null)
+						{
+							// is it mapped as a component?
+							IType propertyType = metaData.GetPropertyType(member.Member.Name);
+							return (propertyType != null && propertyType.IsComponentType); 
+						}
+					}
+				}
 			}
+			memberName = null;
 			return false;
 		}
 
