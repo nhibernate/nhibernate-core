@@ -988,7 +988,7 @@ namespace NHibernate.Mapping
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
-				bool typesMatch = column.GetSqlType(dialect, mapping).StartsWith(columnInfo.TypeName, StringComparison.InvariantCultureIgnoreCase);
+				bool typesMatch = column.GetSqlType(dialect, mapping).StartsWith(columnInfo.TypeName, StringComparison.OrdinalIgnoreCase);
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
