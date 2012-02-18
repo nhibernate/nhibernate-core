@@ -987,18 +987,15 @@ namespace NHibernate.Mapping
 					                                           dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
 				}
 
-				else
+				//TODO: Add new method to ColumnMetadata :getTypeCode
+				bool typesMatch = column.GetSqlType(dialect, mapping).StartsWith(columnInfo.TypeName, StringComparison.InvariantCultureIgnoreCase);
+				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
+				if (!typesMatch)
 				{
-					//TODO: Add new method to ColumnMetadata :getTypeCode
-					bool typesMatch = column.GetSqlType(dialect, mapping).ToLower().StartsWith(columnInfo.TypeName.ToLower());
-						//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
-					if (!typesMatch)
-					{
-						throw new HibernateException(string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
-						                                           dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
-						                                           column.Name, columnInfo.TypeName.ToLower(),
-						                                           column.GetSqlType(dialect, mapping)));
-					}
+					throw new HibernateException(string.Format("Wrong column type in {0} for column {1}. Found: {2}, Expected {3}",
+															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
+															   column.Name, columnInfo.TypeName.ToLowerInvariant(),
+															   column.GetSqlType(dialect, mapping)));
 				}
 			}
 		}

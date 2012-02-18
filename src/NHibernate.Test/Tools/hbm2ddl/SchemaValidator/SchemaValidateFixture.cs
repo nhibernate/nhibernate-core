@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
@@ -15,37 +11,56 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 		[Test]
 		public void ShouldVerifySameTable()
 		{
-			string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
-			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))
-			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true,true,false);
+			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
+			var cfg = BuildConfiguration(resource);
 
-			var v1schemaValidator = new NHibernate.Tool.hbm2ddl.SchemaValidator((v1cfg));
-			v1schemaValidator.Validate();
+			new SchemaExport(cfg).Execute(true, true, false);
 
+			var validator = new Tool.hbm2ddl.SchemaValidator((cfg));
+			validator.Validate();
+		}
+
+		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
+		public void ShouldVerifySameTableTurkish()
+		{
+			//NH-3063
+			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
+			var cfg = BuildConfiguration(resource);
+
+			new SchemaExport(cfg).Execute(true, true, false);
+
+			var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
+			validator.Validate();
 		}
 
 		[Test]
 		public void ShouldNotVerifyModifiedTable()
 		{
-			string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
-			string resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.2_Version.hbm.xml";
-			Configuration v1cfg = TestConfigurationHelper.GetDefaultConfiguration();
-			Configuration v2cfg = TestConfigurationHelper.GetDefaultConfiguration();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource1))
-				v1cfg.AddInputStream(stream);
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource2))
-				v2cfg.AddInputStream(stream);
-			new NHibernate.Tool.hbm2ddl.SchemaExport(v1cfg).Execute(true, true, false);
-			var v2schemaValidator = new NHibernate.Tool.hbm2ddl.SchemaValidator((v2cfg));
+			const string resource1 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
+			var cfgV1 = BuildConfiguration(resource1);
+
+			const string resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.2_Version.hbm.xml";
+			var cfgV2 = BuildConfiguration(resource2);
+
+			new SchemaExport(cfgV1).Execute(true, true, false);
+
+			var validatorV2 = new Tool.hbm2ddl.SchemaValidator(cfgV2);
 			try
 			{
-				v2schemaValidator.Validate();				
+				validatorV2.Validate();
 			}
 			catch (HibernateException e)
 			{
 				Assert.That(e.Message, Is.StringStarting("Missing column: Name"));
 			}
+		}
+
+		private static Configuration BuildConfiguration(string resource)
+		{
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+				cfg.AddInputStream(stream);
+			return cfg;
 		}
 	}
 }
