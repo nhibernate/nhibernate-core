@@ -7,27 +7,27 @@ namespace NHibernate.Dialect.Schema
 {
 	public class PostgreSQLDataBaseMetadata : AbstractDataBaseSchema
 	{
-		public PostgreSQLDataBaseMetadata(DbConnection connection) : base(connection) {}
+		public PostgreSQLDataBaseMetadata(DbConnection connection) : base(connection) { }
 
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
 		{
 			return new PostgreSQLTableMetadata(rs, this, extras);
 		}
 
-        public override bool StoresMixedCaseQuotedIdentifiers
-        {
-            get { return false; }
-        }
+		public override bool StoresMixedCaseQuotedIdentifiers
+		{
+			get { return false; }
+		}
 
-        public override bool StoresLowerCaseIdentifiers
-        {
-            get { return true; }
-        }
+		public override bool StoresLowerCaseIdentifiers
+		{
+			get { return true; }
+		}
 	}
 
 	public class PostgreSQLTableMetadata : AbstractTableMetadata
 	{
-		public PostgreSQLTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) {}
+		public PostgreSQLTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
 		protected override IColumnMetadata GetColumnMetadata(DataRow rs)
 		{
@@ -41,7 +41,7 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-		    return Convert.ToString(rs["CONSTRAINT_NAME"]);
+			return Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
 
 		protected override IForeignKeyMetadata GetForeignKeyMetadata(DataRow rs)
@@ -77,10 +77,11 @@ namespace NHibernate.Dialect.Schema
 
 	public class PostgreSQLColumnMetadata : AbstractColumnMetaData
 	{
-		public PostgreSQLColumnMetadata(DataRow rs) : base(rs)
+		public PostgreSQLColumnMetadata(DataRow rs)
+			: base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			
+
 			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
 			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 
@@ -91,7 +92,8 @@ namespace NHibernate.Dialect.Schema
 
 	public class PostgreSQLIndexMetadata : AbstractIndexMetadata
 	{
-		public PostgreSQLIndexMetadata(DataRow rs) : base(rs)
+		public PostgreSQLIndexMetadata(DataRow rs)
+			: base(rs)
 		{
 			Name = Convert.ToString(rs["INDEX_NAME"]);
 		}
@@ -99,7 +101,8 @@ namespace NHibernate.Dialect.Schema
 
 	public class PostgreSQLForeignKeyMetadata : AbstractForeignKeyMetadata
 	{
-		public PostgreSQLForeignKeyMetadata(DataRow rs) : base(rs)
+		public PostgreSQLForeignKeyMetadata(DataRow rs)
+			: base(rs)
 		{
 			Name = Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
