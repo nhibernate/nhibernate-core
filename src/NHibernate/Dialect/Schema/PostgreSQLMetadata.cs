@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Dialect.Schema
@@ -23,6 +24,57 @@ namespace NHibernate.Dialect.Schema
 		{
 			get { return true; }
 		}
+
+		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern, string columnNamePattern)
+		{
+			var table = base.GetColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
+
+			// Unlike MSSQL, the Postgresql data provider doesn't override the culture.
+			// This may cause problems in e.g. Turkish culture due to different casing rules.
+			table.Locale = CultureInfo.InvariantCulture;
+			return table;
+		}
+
+		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
+		{
+			var table = base.GetTables(catalog, schemaPattern, tableNamePattern, types);
+
+			// Unlike MSSQL, the Postgresql data provider doesn't override the culture.
+			// This may cause problems in e.g. Turkish culture due to different casing rules.
+			table.Locale = CultureInfo.InvariantCulture;
+			return table;
+		}
+
+		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
+		{
+			var table = base.GetIndexColumns(catalog, schemaPattern, tableName, indexName);
+
+			// Unlike MSSQL, the Postgresql data provider doesn't override the culture.
+			// This may cause problems in e.g. Turkish culture due to different casing rules.
+			table.Locale = CultureInfo.InvariantCulture;
+			return table;
+		}
+
+		public override DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
+		{
+			var indexInfo = base.GetIndexInfo(catalog, schemaPattern, tableName);
+
+			// Unlike MSSQL, the Postgresql data provider doesn't override the culture.
+			// This may cause problems in e.g. Turkish culture due to different casing rules.
+			indexInfo.Locale = CultureInfo.InvariantCulture;
+			return indexInfo;
+		}
+
+		public override DataTable GetForeignKeys(string catalog, string schema, string table)
+		{
+			var foreignKeys = base.GetForeignKeys(catalog, schema, table);
+
+			// Unlike MSSQL, the Postgresql data provider doesn't override the culture.
+			// This may cause problems in e.g. Turkish culture due to different casing rules.
+			foreignKeys.Locale = CultureInfo.InvariantCulture;
+			return foreignKeys;
+		}
+
 	}
 
 	public class PostgreSQLTableMetadata : AbstractTableMetadata
