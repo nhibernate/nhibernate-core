@@ -2,6 +2,8 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
+using System.Linq.Expressions;
+using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664
 {
@@ -112,6 +114,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 
 					Assert.That(spy.GetWholeLog(), Is.StringContaining("Description=@p0"));
 				}
+			}
+		}
+
+		[Test]
+		public void Different_Key_In_DynamicComponentDictionary_Returns_Different_Keys()
+		{
+			using (var session = OpenSession())
+			{
+				Expression<Func<IEnumerable>> key1 = () => (from a in session.Query<Product>() where a.Properties["Name"] == "val" select a);
+				Expression<Func<IEnumerable>> key2 = () => (from a in session.Query<Product>() where a.Properties["Description"] == "val" select a);
+
+				var nhKey1 = new NhLinqExpression(key1.Body, session.SessionFactory);
+				var nhKey2 = new NhLinqExpression(key2.Body, session.SessionFactory);
+
+				Assert.AreNotEqual(nhKey1.Key, nhKey2.Key);
 			}
 		}
 	}

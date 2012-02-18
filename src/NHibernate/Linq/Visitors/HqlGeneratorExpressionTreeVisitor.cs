@@ -7,10 +7,6 @@ using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using Remotion.Linq.Clauses.Expressions;
-using System.Collections;
-using NHibernate.Metadata;
-using NHibernate.Type;
-using System.Collections.Generic;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -365,7 +361,7 @@ namespace NHibernate.Linq.Visitors
 
 			// Look for "special" properties (DateTime.Month etc)
 			IHqlGeneratorForProperty generator;
-			
+
 			if (_functionRegistry.TryGetGenerator(expression.Member, out generator))
 			{
 				return generator.BuildHql(expression.Member, expression.Expression, _hqlTreeBuilder, this);
@@ -374,8 +370,6 @@ namespace NHibernate.Linq.Visitors
 			// Else just emit standard HQL for a property reference
 			return _hqlTreeBuilder.Dot(VisitExpression(expression.Expression).AsExpression(), _hqlTreeBuilder.Ident(expression.Member.Name));
 		}
-
-		
 
 		protected HqlTreeNode VisitConstantExpression(ConstantExpression expression)
 		{
@@ -411,46 +405,12 @@ namespace NHibernate.Linq.Visitors
 			IHqlGeneratorForMethod generator;
 
 			var method = expression.Method;
-			string memberName;
-			if (IsDynamicComponentDictionary(expression, out memberName))
-			{
-				return _hqlTreeBuilder.Dot(VisitExpression(expression.Object).AsExpression(), _hqlTreeBuilder.Ident(memberName));
-			}
 			if (!_functionRegistry.TryGetGenerator(method, out generator))
 			{
 				throw new NotSupportedException(method.ToString());
 			}
 
 			return generator.BuildHql(method, expression.Object, expression.Arguments, _hqlTreeBuilder, this);
-		}
-
-		private bool IsDynamicComponentDictionary(MethodCallExpression expression, out string memberName)
-		{
-			//an IDictionary item getter?
-			if (expression.Method.Name == "get_Item" && typeof(IDictionary).IsAssignableFrom(expression.Object.Type))
-			{
-				//a  string constant expression as the argument?	
-				ConstantExpression key=expression.Arguments.First().As<ConstantExpression>();
-				if (key != null && key.Type == typeof(string))
-				{
-					//The potential member name
-					memberName = (string)key.Value;
-					//need the owning member
-					MemberExpression member = expression.Object.As<MemberExpression>();
-					if (member != null)
-					{
-						IClassMetadata metaData = _parameters.SessionFactory.GetClassMetadata(member.Expression.Type);
-						if (metaData != null)
-						{
-							// is it mapped as a component?
-							IType propertyType = metaData.GetPropertyType(member.Member.Name);
-							return (propertyType != null && propertyType.IsComponentType); 
-						}
-					}
-				}
-			}
-			memberName = null;
-			return false;
 		}
 
 		protected HqlTreeNode VisitLambdaExpression(LambdaExpression expression)
