@@ -427,16 +427,16 @@ namespace NHibernate.Mapping
 				}
 			}
 
-            if (!dialect.SupportsForeignKeyConstraintInAlterTable)
-            {
-                foreach (ForeignKey foreignKey in ForeignKeyIterator)
-                {
-                    if (foreignKey.HasPhysicalConstraint)
-                    {
-                        buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
-                    }
-                }
-            }
+			if (!dialect.SupportsForeignKeyConstraintInAlterTable)
+			{
+				foreach (ForeignKey foreignKey in ForeignKeyIterator)
+				{
+					if (foreignKey.HasPhysicalConstraint)
+					{
+						buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
+					}
+				}
+			}
 
 			buf.Append(StringHelper.ClosedParen);
 
@@ -590,7 +590,7 @@ namespace NHibernate.Mapping
 		}
 
 		public string[] SqlAlterStrings(Dialect.Dialect dialect, IMapping p, ITableMetadata tableInfo, string defaultCatalog,
-		                                string defaultSchema)
+										string defaultSchema)
 		{
 			StringBuilder root =
 				new StringBuilder("alter table ").Append(GetQualifiedName(dialect, defaultCatalog, defaultSchema)).Append(' ').
@@ -627,7 +627,7 @@ namespace NHibernate.Mapping
 				}
 
 				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
-				                           && (!column.IsNullable || dialect.SupportsNotNullUnique);
+										   && (!column.IsNullable || dialect.SupportsNotNullUnique);
 				if (useUniqueConstraint)
 				{
 					alter.Append(" unique");
@@ -752,7 +752,7 @@ namespace NHibernate.Mapping
 		/// existing <see cref="ForeignKey"/>.
 		/// </remarks>
 		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable<Column> keyColumns, string referencedEntityName,
-		                                           IEnumerable<Column> referencedColumns)
+												   IEnumerable<Column> referencedColumns)
 		{
 			IEnumerable<Column> kCols = keyColumns;
 			IEnumerable<Column> refCols = referencedColumns;
@@ -984,7 +984,7 @@ namespace NHibernate.Mapping
 				if (columnInfo == null)
 				{
 					throw new HibernateException(string.Format("Missing column: {0} in {1}", column.Name,
-					                                           dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
+															   dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name)));
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
