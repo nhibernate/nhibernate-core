@@ -31,6 +31,10 @@ namespace NHibernate.Linq.Visitors
 			_parameters = parameters;
 		}
 
+
+		public ISessionFactory SessionFactory { get { return _parameters.SessionFactory; } }
+
+
 		public HqlTreeNode Visit(Expression expression)
 		{
 			return VisitExpression(expression);
