@@ -13331,6 +13331,11 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                                   <message><![CDATA[System.InvalidCastException : Unable to cast object of type 'Oracle.DataAccess.Client.OracleConnection' to type 'System.Data.Common.DbConnection'.]]></message>
                                 </failure>
                               </test-case>
+                              <test-case name="NHibernate.Test.Tools.hbm2ddl.SchemaValidator.SchemaValidateFixture.ShouldVerifySameTableTurkish" executed="True" result="Error" success="False" asserts="1">
+                                <failure>
+                                  <message><![CDATA[System.InvalidCastException : Unable to cast object of type 'Oracle.DataAccess.Client.OracleConnection' to type 'System.Data.Common.DbConnection'.]]></message>
+                                </failure>
+                              </test-case>
                             </results>
                           </test-suite>
                         </results>
