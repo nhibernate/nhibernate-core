@@ -17,7 +17,7 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
-		<property name="Date"/>
+		<property name="Date" column="`Date`"/>
 		<many-to-one name="Customer" class="Customer" column="CustomerId"/>
 	</class>
 </hibernate-mapping>

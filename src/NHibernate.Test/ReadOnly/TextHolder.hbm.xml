@@ -9,7 +9,7 @@
 			<generator class="increment" />
 		</id>
 		<property name="TheText">
-			<column name="TXT" sql-type="text" />
+			<column name="TXT" />
 		</property>
 	</class>
 

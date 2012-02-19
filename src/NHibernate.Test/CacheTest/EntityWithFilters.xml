@@ -5,7 +5,7 @@
 	<class name="EntityWithFilters">
 		<id type="int"/>
 		<property name="Description"/>
-		<property name="Value"/>
+		<property name="Value" column="`Value`"/>
 		
 		<filter name="DescriptionLike" />
 		<filter name="DescriptionEqualAndValueGT" />
@@ -16,7 +16,7 @@
 	<filter-def name="DescriptionLike" condition="Description like :pLike">
 		<filter-param name="pLike" type="string"/>
 	</filter-def>
-	<filter-def name="DescriptionEqualAndValueGT" condition="Description = :pDesc and Value > :pValue">
+	<filter-def name="DescriptionEqualAndValueGT" condition="Description = :pDesc and `Value` > :pValue">
 		<filter-param name="pDesc" type="string"/>
 		<filter-param name="pValue" type="int"/>
 	</filter-def> 
