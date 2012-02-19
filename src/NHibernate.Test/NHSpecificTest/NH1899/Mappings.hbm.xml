@@ -9,7 +9,7 @@
         <map name="_relations" table="RelationsTable" lazy="false" cascade="all-delete-orphan">
             <key column="ParentID" />            
             <index column="KeyId" type="NHibernate.Test.NHSpecificTest.NH1899.Key, NHibernate.Test" />
-            <element column="Value" type="NHibernate.Test.NHSpecificTest.NH1899.Value, NHibernate.Test" />
+            <element column="`Value`" type="NHibernate.Test.NHSpecificTest.NH1899.Value, NHibernate.Test" />
         </map>
     </class>
 </hibernate-mapping>

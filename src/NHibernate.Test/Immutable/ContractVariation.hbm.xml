@@ -75,7 +75,7 @@
 			<key-property name="Version" />
 		</composite-id>
 		<property name="Text">
-			<column name="Text" sql-type="text" />
+			<column name="Text"/>
 		</property>
 		<set name="Infos" inverse="false" mutable="true" cascade="all-delete-orphan">
 			<key>
