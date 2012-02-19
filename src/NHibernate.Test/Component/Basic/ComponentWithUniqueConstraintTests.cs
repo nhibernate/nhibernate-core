@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
@@ -13,11 +14,6 @@ namespace NHibernate.Test.Component.Basic
 {
 	public class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is MsSql2008Dialect;
-		}
-
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -86,8 +82,9 @@ namespace NHibernate.Test.Component.Basic
 						session.Save(e2);
 						session.Flush();
 					});
-				Assert.That(exception.InnerException, Is.TypeOf<SqlException>().Or.TypeOf<OdbcException>());
-				Assert.That(exception.InnerException.Message, Is.StringContaining("UNIQUE KEY"));
+				Assert.That(exception.InnerException, Is.AssignableTo<DbException>());
+				Assert.That(exception.InnerException.Message,
+					Is.StringContaining("unique").IgnoreCase.And.StringContaining("constraint").IgnoreCase);
 			}
 		}
 	}
