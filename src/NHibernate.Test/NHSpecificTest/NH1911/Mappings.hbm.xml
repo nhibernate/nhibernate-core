@@ -8,7 +8,7 @@
 			<generator class="native" />
 		</id>
 		<property name="Name" />
-		<property name="Level" />
+		<property name="Level" column="`Level`" />
 	</class>
 
 </hibernate-mapping>
