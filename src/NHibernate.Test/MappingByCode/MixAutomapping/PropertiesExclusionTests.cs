@@ -9,8 +9,10 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 	{
 		public class MyEntity
 		{
-			private string noReadOnlyWithField;
+			private string noReadOnlyWithField = null;
+#pragma warning disable 169
 			private string pizza;
+#pragma warning restore 169
 
 			public string ReadOnly
 			{

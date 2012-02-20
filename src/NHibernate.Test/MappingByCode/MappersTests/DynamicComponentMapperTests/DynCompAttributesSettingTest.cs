@@ -13,7 +13,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 		private class Person
 		{
 			public int Id { get; set; }
-			private IDictionary info;
+			private IDictionary info = null;
 			public IDictionary Info
 			{
 				get { return info; }
