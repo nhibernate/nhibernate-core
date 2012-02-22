@@ -40,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		}
 
 		[Test]
-		[Ignore("Currently broken, see NH-2897")]
 		public void CanUseToFutureWithContains()
 		{
 			using (var s = sessions.OpenSession())
@@ -54,7 +53,21 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 					.ToFuture().ToList();
 
 				Assert.IsNotNull(persons10);
-				Assert.Pass();
+			}
+		}
+
+		[Test]
+		public void CanUseToFutureWithContains2()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				var ids = new[] { 1, 2, 3 };
+				var persons10 = s.Query<Person>()
+					.Where(p => ids.Contains(p.Id))
+					.ToFuture()
+					.ToList();
+
+				Assert.IsNotNull(persons10);
 			}
 		}
 
