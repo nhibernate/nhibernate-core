@@ -1,20 +1,18 @@
 ﻿using NHibernate.AdoNet;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH2527
+namespace NHibernate.Test.NHSpecificTest.NH3010
 {
 	public class FixtureWithNoBatcher : BugTestCase
 	{
-
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x =>
-																				{
-																					x.BatchSize = 0;
-																					x.Batcher<NonBatchingBatcherFactory>();
-																				});
+			{
+				x.BatchSize = 0;
+				x.Batcher<NonBatchingBatcherFactory>();
+			});
 		}
 
 		protected override void OnSetUp()
@@ -50,8 +48,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2527
 			}
 		}
 
+		// Test case from NH-2527
 		[Test]
-		public void DisposedCommandShouldNotBeReused()
+		public void DisposedCommandShouldNotBeReusedAfterRemoveAtAndInsert()
 		{
 			using (ISession session = OpenSession())
 			{
@@ -72,6 +71,32 @@ namespace NHibernate.Test.NHSpecificTest.NH2527
 
 					Assert.AreEqual(childTwo.Id, parent.Childs[0].Id);
 					Assert.AreEqual(childOne.Id, parent.Childs[1].Id);
+				}
+			}
+		}
+
+		// Test case from NH-1477
+		[Test]
+		public void DisposedCommandShouldNotBeReusedAfterClearAndAdd()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
+
+					parent.Childs.Clear();
+
+					var childOne = new Child();
+					parent.Childs.Add(childOne);
+
+					var childTwo = new Child();
+					parent.Childs.Add(childTwo);
+
+					Assert.DoesNotThrow(() => { tx.Commit(); });
+
+					Assert.AreEqual(childOne.Id, parent.Childs[0].Id);
+					Assert.AreEqual(childTwo.Id, parent.Childs[1].Id);
 				}
 			}
 		}
