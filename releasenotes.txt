@@ -1,7 +1,7 @@
-Build 3.3.0.GA
+Build 3.3.0.CR1
 =============================
 
-** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.GA
+** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.CR1
 
 	##### Possible Breaking Changes #####
 		* [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
