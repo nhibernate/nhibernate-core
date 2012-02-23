@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3010
 {
 	public class FixtureWithNoBatcher : BugTestCase
 	{
-		protected override void Configure(Cfg.Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x =>
 			{
@@ -17,34 +17,26 @@ namespace NHibernate.Test.NHSpecificTest.NH3010
 
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-
 			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var parent = new Parent();
-					var childOne = new Child();
-					parent.Childs.Add(childOne);
-					session.Save(parent);
+				var parent = new Parent();
+				var childOne = new Child();
+				parent.Childs.Add(childOne);
+				session.Save(parent);
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-
 			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					session.Delete("from Child");
-					session.Delete("from Parent");
-					tx.Commit();
-				}
+				session.Delete("from Child");
+				session.Delete("from Parent");
+				tx.Commit();
 			}
 		}
 
@@ -53,25 +45,23 @@ namespace NHibernate.Test.NHSpecificTest.NH3010
 		public void DisposedCommandShouldNotBeReusedAfterRemoveAtAndInsert()
 		{
 			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
+				var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
 
-					Child childOne = parent.Childs[0];
+				Child childOne = parent.Childs[0];
 
-					var childTwo = new Child();
-					parent.Childs.Add(childTwo);
+				var childTwo = new Child();
+				parent.Childs.Add(childTwo);
 
-					Child childToMove = parent.Childs[1];
-					parent.Childs.RemoveAt(1);
-					parent.Childs.Insert(0, childToMove);
+				Child childToMove = parent.Childs[1];
+				parent.Childs.RemoveAt(1);
+				parent.Childs.Insert(0, childToMove);
 
-					Assert.DoesNotThrow(() => { tx.Commit(); });
+				Assert.DoesNotThrow(tx.Commit);
 
-					Assert.AreEqual(childTwo.Id, parent.Childs[0].Id);
-					Assert.AreEqual(childOne.Id, parent.Childs[1].Id);
-				}
+				Assert.That(childTwo.Id, Is.EqualTo(parent.Childs[0].Id));
+				Assert.That(childOne.Id, Is.EqualTo(parent.Childs[1].Id));
 			}
 		}
 
@@ -80,24 +70,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3010
 		public void DisposedCommandShouldNotBeReusedAfterClearAndAdd()
 		{
 			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
+				var parent = session.CreateCriteria<Parent>().UniqueResult<Parent>();
 
-					parent.Childs.Clear();
+				parent.Childs.Clear();
 
-					var childOne = new Child();
-					parent.Childs.Add(childOne);
+				var childOne = new Child();
+				parent.Childs.Add(childOne);
 
-					var childTwo = new Child();
-					parent.Childs.Add(childTwo);
+				var childTwo = new Child();
+				parent.Childs.Add(childTwo);
 
-					Assert.DoesNotThrow(() => { tx.Commit(); });
+				Assert.DoesNotThrow(tx.Commit);
 
-					Assert.AreEqual(childOne.Id, parent.Childs[0].Id);
-					Assert.AreEqual(childTwo.Id, parent.Childs[1].Id);
-				}
+				Assert.That(childOne.Id, Is.EqualTo(parent.Childs[0].Id));
+				Assert.That(childTwo.Id, Is.EqualTo(parent.Childs[1].Id));
 			}
 		}
 	}

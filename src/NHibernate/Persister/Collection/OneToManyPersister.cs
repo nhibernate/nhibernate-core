@@ -291,7 +291,7 @@ namespace NHibernate.Persister.Collection
 					}
 					finally
 					{
-						if (st != null)
+						if (!useBatch && st != null)
 						{
 							session.Batcher.CloseCommand(st, null);
 						}
