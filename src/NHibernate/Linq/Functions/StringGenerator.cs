@@ -73,21 +73,6 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
-		public class EqualsGenerator : BaseHqlGeneratorForMethod
-		{
-			public EqualsGenerator()
-			{
-				SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.Equals((string)null)) };
-			}
-
-			public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-			{
-				return treeBuilder.Equality(
-						visitor.Visit(targetObject).AsExpression(),
-						visitor.Visit(arguments[0]).AsExpression());
-			}
-		}
-
 		public class ToLowerGenerator : BaseHqlGeneratorForMethod
 		{
 			public ToLowerGenerator()

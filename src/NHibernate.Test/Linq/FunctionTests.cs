@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -173,6 +175,137 @@ namespace NHibernate.Test.Linq
 				session.Delete("from AnotherEntity e where e.Id > 5");
 				session.Flush();
 			}
+		}
+
+		[Test]
+		public void WhereStringEqual()
+		{
+			var query = (from item in db.Users
+						 where item.Name.Equals("ayende")
+						 select item).ToList();
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereIntEqual()
+		{
+			var query = (from item in db.Users
+						 where item.Id.Equals(-1)
+						 select item).ToList();
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereShortEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Short.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolConstantEqual()
+		{
+			var query = from item in db.Role
+			            where item.IsActive.Equals(true)
+			            select item;
+			
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolParameterEqual()
+		{
+			var query = from item in db.Role
+						where item.IsActive.Equals(1 == 1)
+			            select item;
+			
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolFuncEqual()
+		{
+			Func<bool> f = () => 1 == 1;
+
+			var query = from item in db.Role
+						where item.IsActive.Equals(f())
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereLongEqual()
+		{
+			var query = from item in db.PatientRecords
+						 where item.Id.Equals(-1)
+						 select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereDateTimeEqual()
+		{
+			var query = from item in db.Users
+						where item.RegisteredAt.Equals(DateTime.Today)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+		
+		[Test]
+		public void WhereGuidEqual()
+		{
+			var query = from item in db.Shippers
+						where item.Reference.Equals(Guid.Empty)
+						select item;
+
+			ObjectDumper.Write(query);
+		}		
+
+		[Test]
+		public void WhereDoubleEqual()
+		{
+			var query = from item in db.Animals
+						where item.BodyWeight.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+	
+		[Test]
+		public void WhereFloatEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Float.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+
+		[Test]
+		public void WhereCharEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Char.Equals('A')
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+	
+		[Test]
+		public void WhereDecimalEqual()
+		{
+			var query = from item in db.OrderLines
+						where item.Discount.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
 		}
 	}
 }
