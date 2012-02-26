@@ -1143,10 +1143,11 @@ namespace NHibernate.Dialect
 			return value ? "1" : "0";
 		}
 
-		protected static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn)
+		internal static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn, out Dictionary<SqlString, SqlString> columnToAlias)
 		{
 			columnsOrAliases = new List<SqlString>();
 			aliasToColumn = new Dictionary<SqlString, SqlString>();
+			columnToAlias = new Dictionary<SqlString, SqlString>();
 
 			var tokens = new QuotedAndParenthesisStringTokenizer(select).GetTokens();
 			int index = 0;
@@ -1210,6 +1211,7 @@ namespace NHibernate.Dialect
 
 				columnsOrAliases.Add(alias);
 				aliasToColumn[alias] = token;
+				columnToAlias[token] = alias;
 			}
 		}
 

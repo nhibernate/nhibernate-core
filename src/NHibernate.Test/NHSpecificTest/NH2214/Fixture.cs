@@ -40,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		}
 
 		[Test]
-		[Ignore("Failing")]
 		public void PagedQueryWithDistinct()
 		{
 			using (ISession session = OpenSession())
@@ -50,8 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 
 				var criteria = DetachedCriteria
 					.For<DomainClass>("d")
-					.SetProjection(
-						Projections.Distinct(Projections.ProjectionList().Add(Projections.Property("Name"))))
+					.SetProjection(Projections.Distinct(Projections.ProjectionList().Add(Projections.Property("Name"))))
 					.SetFirstResult((page - 1)*rows)
 					.SetMaxResults(rows)
 					.AddOrder(Order.Asc("Name"));
@@ -65,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		}
 
 		[Test]
-		[Ignore("Failing")]
 		public void PagedQueryWithDistinctAndOrderingByNonProjectedColumn()
 		{
 			using (ISession session = OpenSession())
@@ -87,13 +84,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		}
 
 		[Test]
-		[Ignore("Failing")]
 		public void PagedLinqQueryWithDistinct()
 		{
 			using (ISession session = OpenSession())
 			{
-				int page = 2;
-				int rows = 2;
+				const int page = 2;
+				const int rows = 2;
 
 				var query = (from t in session.Query<DomainClass>()
 				             orderby t.Name

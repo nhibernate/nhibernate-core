@@ -4,6 +4,7 @@ Build 3.3.0.CR1
 ** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.CR1
 
 	##### Possible Breaking Changes #####
+		* [NH-2214] - SQL Server 2005/2008: Exception thrown when paging a statement that requires distinct results, and is ordered by a column that is not included in the result set of the query
 		* [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
 		* [NH-2953] - SequenceStyleGenerator now forces use of a table if a pooled optimizer is chosen and the dialect doesn't support pooled sequences.
 		* [NH-2960] - Queries for an entity name will now not include instances of the same class mapped using a different entity name.
