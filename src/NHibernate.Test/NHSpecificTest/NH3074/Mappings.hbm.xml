@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+			assembly="NHibernate.Test"
+			namespace="NHibernate.Test.NHSpecificTest.NH3074">
+
+	<class name="Animal">
+		<id name="Id">
+			<generator class="assigned" />
+		</id>
+		<property name="Weight" />
+
+		<union-subclass name="Cat">
+			<property name="NumberOfLegs" />
+		</union-subclass>
+	</class>
+</hibernate-mapping>
