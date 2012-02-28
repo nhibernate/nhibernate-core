@@ -7,12 +7,12 @@
 		<map name="TypedDates">
 			<key column="ParentId" />
 			<index column="Idx" type="int" />
-			<element column="Value" />
+			<element column="`Value`" />
 		</map>
 		<map name="UntypedDates">
 			<key column="ParentId" />
 			<index column="Idx" type="int" />
-			<element column="Value" type="System.Nullable`1[[System.DateTime, mscorlib]]" />
+			<element column="`Value`" type="System.Nullable`1[[System.DateTime, mscorlib]]" />
 		</map>
 	</class>
 </hibernate-mapping>

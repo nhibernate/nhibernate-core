@@ -20,7 +20,7 @@
       <generator class="hilo" />
     </id>
 
-    <property name="Number" type="Int32" />
+    <property name="Number" type="Int32" column="`Number`" />
     <many-to-one name="Customer" column="CustomerID" class="Customer" />
   </class>
 

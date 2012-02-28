@@ -10,8 +10,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 	{
 		private class Entity
 		{
-			private ICollection<string> others;
-			private IDictionary<string, string> emails;
+			private ICollection<string> others = null;
+			private IDictionary<string, string> emails = null;
 			public IDictionary<string, string> NickNames { get; set; }
 
 			public ICollection<KeyValuePair<string, string>> Emails

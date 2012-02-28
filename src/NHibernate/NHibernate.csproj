@@ -148,6 +148,7 @@
     <Compile Include="Dialect\MySQLDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
+    <Compile Include="Dialect\Schema\SchemaHelper.cs" />
     <Compile Include="Dialect\SQLiteDialect.cs" />
     <Compile Include="Dialect\SybaseASE15Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere10Dialect.cs" />
@@ -284,6 +285,7 @@
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
+    <Compile Include="Linq\Functions\EqualsGenerator.cs" />
     <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />

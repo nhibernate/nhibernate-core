@@ -202,6 +202,9 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.Decimal:
 					SetText("decimal");
 					break;
+				case TypeCode.Single:
+					SetText("single");
+					break;
 				case TypeCode.DateTime:
 					SetText("datetime");
 					break;

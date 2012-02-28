@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
@@ -12,11 +14,6 @@ namespace NHibernate.Test.Component.Basic
 {
 	public class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is MsSql2008Dialect;
-		}
-
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -79,15 +76,15 @@ namespace NHibernate.Test.Component.Basic
 				var e1 = new Employee { HireDate = DateTime.Today, Person = new Person { Name = "Bill", Dob = new DateTime(2000, 1, 1) } };
 				var e2 = new Employee { HireDate = DateTime.Today, Person = new Person { Name = "Bill", Dob = new DateTime(2000, 1, 1) } };
 
-				Assert.That(() =>
-				{
-					session.Save(e1);
-					session.Save(e2);
-					session.Flush();
-				},
-				Throws.Exception.TypeOf<GenericADOException>()
-					.With.InnerException.TypeOf<SqlException>()
-					.And.InnerException.Message.StringContaining("UNIQUE KEY"));
+				var exception = Assert.Throws<GenericADOException>(() =>
+					{
+						session.Save(e1);
+						session.Save(e2);
+						session.Flush();
+					});
+				Assert.That(exception.InnerException, Is.AssignableTo<DbException>());
+				Assert.That(exception.InnerException.Message,
+					Is.StringContaining("unique").IgnoreCase.And.StringContaining("constraint").IgnoreCase);
 			}
 		}
 	}

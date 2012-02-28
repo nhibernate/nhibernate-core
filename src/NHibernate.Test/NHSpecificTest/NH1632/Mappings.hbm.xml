@@ -12,7 +12,7 @@
 		
 		<property name="NumA"/>
 		<property name="NumB"/>
-		<property name="Sum" access="readonly"/>
+		<property name="Sum" access="readonly" column="`Sum`"/>
 	</class>
 
 	<class name="Person">

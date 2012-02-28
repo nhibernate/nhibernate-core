@@ -24,7 +24,7 @@ namespace NHibernate.Test.ReadOnly
 				return new string[]
 					{
 						"ReadOnly.DataPoint.hbm.xml",
-						"ReadOnly.TextHolder.hbm.xml"
+						//"ReadOnly.TextHolder.hbm.xml"
 					};
 			}
 		}

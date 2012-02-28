@@ -17,11 +17,11 @@
 			<composite-element class="Component">
 				<property name="Name" column="Component_Name"	/>
 				<nested-composite-element name="SubComponent" access="property" class="SubComponent">
-					<property name="SubName" column="Component_SubComponent_SubName"	/>
-					<property name="SubName1" column="Component_SubComponent_SubName1"	/>
+					<property name="SubName" column="Comp_SubComp_SubName"	/>
+					<property name="SubName1" column="Comp_SubComp_SubName1"	/>
 					<nested-composite-element name="Nested" access="property" class="SubComponent">
-						<property name="SubName" column="Component_SubComponent_Nested_SubName"	/>
-						<property name="SubName1" column="Component_SubComponent_Nested_SubName1"	/>
+						<property name="SubName" column="Comp_SubComp_Nested_SubName"	/>
+						<property name="SubName1" column="Comp_SubComp_Nested_SubName1"	/>
 					</nested-composite-element>
 				</nested-composite-element>
 			</composite-element>
@@ -41,10 +41,10 @@
 				<nested-composite-element name="Component" class="Component">
 					<property name="Name" column="Component_Name"	/>
 					<nested-composite-element name="SubComponent" access="property" class="SubComponent">
-						<property name="SubName" column="Component_SubComponent_SubName"	/>
+						<property name="SubName" column="Comp_SubComp_SubName"	/>
 						<nested-composite-element name="Nested" access="property" class="SubComponent">
-							<property name="SubName" column="Component_SubComponent_Nested_SubName"	/>
-							<property name="SubName1" column="Component_SubComponent_Nested_SubName1"	/>
+							<property name="SubName" column="Comp_SubComp_Nested_SubName"	/>
+							<property name="SubName1" column="Comp_SubComp_Nested_SubName1"	/>
 						</nested-composite-element>
 					</nested-composite-element>
 				</nested-composite-element>
