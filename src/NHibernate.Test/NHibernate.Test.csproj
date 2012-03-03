@@ -952,6 +952,8 @@
     <Compile Include="NHSpecificTest\NH2982\Model.cs" />
     <Compile Include="NHSpecificTest\NH3004\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3004\TestSqlClientDriver.cs" />
+    <Compile Include="NHSpecificTest\NH3074\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3074\Model.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
