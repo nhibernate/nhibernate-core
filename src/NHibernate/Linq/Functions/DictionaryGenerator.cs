@@ -14,6 +14,11 @@ namespace NHibernate.Linq.Functions
 	{
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			string memberName;
+			if (VisitorUtil.IsDynamicComponentDictionaryGetter(method, targetObject, arguments, visitor.SessionFactory, out memberName))
+			{
+				return treeBuilder.Dot(visitor.Visit(targetObject).AsExpression(), treeBuilder.Ident(memberName));
+			}
 			return treeBuilder.DictionaryItem(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
 		}
 	}

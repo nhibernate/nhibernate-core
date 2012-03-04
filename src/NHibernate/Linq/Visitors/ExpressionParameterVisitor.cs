@@ -13,14 +13,29 @@ namespace NHibernate.Linq.Visitors
 	public class ExpressionParameterVisitor : NhExpressionTreeVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
+		private readonly ISessionFactory _sessionFactory;
 
-		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression)
+		public ExpressionParameterVisitor(ISessionFactory sessionFactory)
 		{
-			var visitor = new ExpressionParameterVisitor();
+			_sessionFactory = sessionFactory;
+		}
+
+		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactory sessionFactory)
+		{
+			var visitor = new ExpressionParameterVisitor(sessionFactory);
 			
 			visitor.VisitExpression(expression);
 
 			return visitor._parameters;
+		}
+
+		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
+		{
+			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
+			{
+				return expression;
+			}
+			return base.VisitMethodCallExpression(expression);
 		}
 
 		protected override Expression VisitConstantExpression(ConstantExpression expression)
