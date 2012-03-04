@@ -5,6 +5,7 @@ using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -35,6 +36,13 @@ namespace NHibernate.Dialect
 			base.RegisterKeywords();
 			RegisterKeyword("xml");
 		}
+
+        protected override void RegisterFunctions()
+        {
+            base.RegisterFunctions();
+            RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
+            RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
+        }
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
@@ -170,7 +178,7 @@ namespace NHibernate.Dialect
 		/// <param name="statement"> the statement to evaluate</param>
 		/// <returns>true if the statment contains no parenthesis or an equal number of
 		///  opening and closing parenthesis;otherwise false </returns>
-		private static bool HasMatchingParens(IEnumerable<char> statement)
+		protected static bool HasMatchingParens(IEnumerable<char> statement)
 		{
 			//unmatched paren count
 			int unmatchedParen = 0;
