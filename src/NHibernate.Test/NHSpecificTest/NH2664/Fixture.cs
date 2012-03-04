@@ -97,23 +97,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 		{
 			using (var session = OpenSession())
 			{
-				using (var spy = new SqlLogSpy())
-				{
-					//Query by name
-					var product =
-						(from p in session.Query<Product>() where p.Properties["Name"] == "val" select p).Single();
+				// Query by name
+				var product1 = (from p in session.Query<Product>()
+								where p.Properties["Name"] == "First Product"
+								select p).Single();
+				Assert.That(product1.ProductId, Is.EqualTo("1"));
 
-					Assert.That(spy.GetWholeLog(), Is.StringContaining("Name=@p0"));
-				}
-
-				using (var spy = new SqlLogSpy())
-				{
-					//Query by description
-					var product =
-						(from p in session.Query<Product>() where p.Properties["Description"] == "val" select p).Single();
-
-					Assert.That(spy.GetWholeLog(), Is.StringContaining("Description=@p0"));
-				}
+				// Query by description (this test is to verify that the dictionary
+				// index isn't cached from the query above.
+				var product2 = (from p in session.Query<Product>()
+								where p.Properties["Description"] == "Second Description"
+								select p).Single();
+				Assert.That(product2.ProductId, Is.EqualTo("2"));
 			}
 		}
 
