@@ -84,10 +84,12 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.NodeType == ExpressionType.Call)
 			{
+				var methodCallExpression = (MethodCallExpression) expression;
 				IHqlGeneratorForMethod methodGenerator;
-				if (_functionRegistry.TryGetGenerator(((MethodCallExpression)expression).Method, out methodGenerator))
+				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out methodGenerator))
 				{
-					return true;
+					return methodCallExpression.Object == null || // is static or extension method
+						   methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
 				}
 			}
 			return false;
