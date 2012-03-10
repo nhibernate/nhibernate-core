@@ -69,7 +69,7 @@ namespace NHibernate.Criterion
 			
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
-			Parameter[] parameters = GetTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			Parameter[] parameters = GetParameterTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{
@@ -110,25 +110,21 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			List<TypedValue> list = new List<TypedValue>();
-			IType type;
-			if (_projection == null)
-			{
-				type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
-			}
-			else
-			{
-				IType[] types = _projection.GetTypes(criteria, criteriaQuery);
-				if (types.Length != 1)
-				{
-					throw new QueryException("Cannot use projections that return more than a single column with InExpression");
-				}
-				type = types[0];
-				list.AddRange(_projection.GetTypedValues(criteria, criteriaQuery));
-			}
+			var list = GetParameterTypedValues(criteria, criteriaQuery);
+
+			if (_projection != null)
+				list.InsertRange(0, _projection.GetTypedValues(criteria, criteriaQuery));
+
+			return list.ToArray();
+		}
+
+		private List<TypedValue> GetParameterTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			IType type = GetElementType(criteria, criteriaQuery);
 
 			if (type.IsComponentType)
 			{
+				List<TypedValue> list = new List<TypedValue>();
 				IAbstractComponentType actype = (IAbstractComponentType) type;
 				IType[] types = actype.Subtypes;
 
@@ -142,16 +138,28 @@ namespace NHibernate.Criterion
 						list.Add(new TypedValue(types[i], subval, EntityMode.Poco));
 					}
 				}
+
+				return list;
 			}
 			else
 			{
-				for (int j = 0; j < _values.Length; j++)
-				{
-					list.Add(new TypedValue(type, _values[j], EntityMode.Poco));
-				}
+				return _values.Select(v => new TypedValue(type, v, EntityMode.Poco)).ToList();
 			}
+		}
 
-			return list.ToArray();
+		/// <summary>
+		/// Determine the type of the elements in the IN clause.
+		/// </summary>
+		private IType GetElementType(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (_projection == null)
+				return criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
+
+			IType[] types = _projection.GetTypes(criteria, criteriaQuery);
+			if (types.Length != 1)
+				throw new QueryException("Cannot use projections that return more than a single column with InExpression");
+
+			return types[0];
 		}
 
 		public object[] Values
