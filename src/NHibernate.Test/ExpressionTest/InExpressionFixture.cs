@@ -40,5 +40,25 @@ namespace NHibernate.Test.ExpressionTest
 			Assert.AreEqual("1=0", sql.ToString());
 			session.Close();
 		}
+
+		[Test]
+		public void InSqlFunctionTest()
+		{
+			using (var session = factory.OpenSession())
+			{
+				CreateObjects(typeof(Simple), session);
+				var inExpression = Restrictions.In(
+					Projections.SqlFunction(
+						"substring",
+						NHibernateUtil.String,
+						Projections.Property("Name"),
+						Projections.Constant(1),
+						Projections.Constant(1)),
+					new object[] { "A", "B" });
+				var sql = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
+				Assert.That(sql.ToString(), Is.EqualTo("substring(sql_alias.Name, ?, ?) in (?, ?)"));
+				Assert.That(criteriaQuery.CollectedParameters.Count, Is.EqualTo(4));
+			}
+		}
 	}
 }
