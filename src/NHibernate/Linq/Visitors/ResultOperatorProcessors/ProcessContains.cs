@@ -48,7 +48,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		private static HqlRange GetFromRangeClause(HqlTreeNode node)
 		{
-			return node.NodesPreOrder.Single(n => n is HqlRange).As<HqlRange>();
+			return node.NodesPreOrder.OfType<HqlRange>().Single();
 		}
 
 		private static HqlAlias GetFromAlias(HqlTreeNode node)

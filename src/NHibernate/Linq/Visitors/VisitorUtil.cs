@@ -22,7 +22,7 @@ namespace NHibernate.Linq.Visitors
 			if (method.Name != "get_Item" || !typeof(IDictionary).IsAssignableFrom(targetObject.Type))
 				return false;
 
-			var key = arguments.First().As<ConstantExpression>();
+			var key = arguments.First() as ConstantExpression;
 			if (key == null || key.Type != typeof(string))
 				return false;
 
@@ -30,7 +30,7 @@ namespace NHibernate.Linq.Visitors
 			memberName = (string)key.Value;
 
 			// Need the owning member (the dictionary).
-			var member = targetObject.As<MemberExpression>();
+			var member = targetObject as MemberExpression;
 			if (member == null)
 				return false;
 
