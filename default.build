@@ -358,7 +358,7 @@
         </items>
       </in>
       <do>
-        <echo message="nuget push -source http://packages.nuget.org/v1/ ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+        <echo message="nuget push ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
       </do>
     </foreach>
   </target>
@@ -375,7 +375,6 @@
       <do>
         <exec basedir="${tools.dir}" workingdir="${nuget.nupackages.dir}" program="NuGet.exe">
           <arg value="push" />
-          <arg line="-source http://packages.nuget.org/v1/"/>
           <arg value="${filename}" />
         </exec>
       </do>
