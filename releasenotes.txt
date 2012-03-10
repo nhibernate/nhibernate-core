@@ -95,7 +95,6 @@ Build 3.3.0.CR1
     * [NH-2974] - Add unsaved-value attribute in mapping by code.
     * [NH-2980] - Port enhanced TableGenerator from Hibernate
     * [NH-3024] - Mapping-by-Code does not allow Unique in Component mapping
-    * [NH-3040] - SymbolSource support along with NuGet
 
 ** Patch
     * [NH-2004] - SequenceStyleGenerator + TableStructure opens multiple transactions.
