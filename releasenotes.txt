@@ -10,6 +10,7 @@ Build 3.3.0.CR1
         * [NH-2953] - SequenceStyleGenerator now forces use of a table if a pooled optimizer is chosen and the dialect doesn't support pooled sequences.
         * [NH-2960] - Queries for an entity name will now not include instances of the same class mapped using a different entity name.
         * [NH-2664] - IHqlExpressionVisitor has new property ISessionFactory SessionFactory { get; }
+        * [NH-3067] - The use of Substring() in Linq queries have been corrected so the zero-based index parameter in C# is converted to one-based index in SQL.
 
 ** Bug
     * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers
@@ -109,6 +110,7 @@ Build 3.3.0.CR1
     * [NH-2964] - WhereRestrictionOn().IsInG() is a icollection not ienumerable like it should be
     * [NH-2982] - SimpleExpression.ToString() can result in unwanted loading of lazy objects
     * [NH-3010] - Fix for batching/command behaviour in OneToManyPersister
+    * [NH-3067] - Linq - substring function does not work
 
 ** Task
     * [NH-2672] - Upgrade Npgsql lib file to next release after 2.0.11.91.
