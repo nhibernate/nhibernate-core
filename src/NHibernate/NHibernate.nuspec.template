@@ -18,11 +18,13 @@
   </metadata>
   <files>
     <file src="NHibernate.dll" target="lib\Net35" />
+	<file src="NHibernate.pdb" target="lib\Net35" />
     <file src="NHibernate.xml" target="lib\Net35" />
     <file src="*.xsd" target="lib\Net35" />
     <file src="NHibernate.releasenotes.txt" target="lib\Net35" />
     <file src="NHibernate.readme.html" target="lib\Net35" />
     <file src="NHibernate.license.txt" target="lib\Net35" />
     <file src="NHibernateXmlConfigurationTemplates\*" target="lib\Net35\NHibernateXmlConfigurationTemplates" />
+	<file src="..\..\..\src\NHibernate\**\*.cs" target="src" />
   </files>
 </package>
