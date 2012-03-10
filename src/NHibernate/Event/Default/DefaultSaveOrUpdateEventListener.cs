@@ -159,7 +159,14 @@ namespace NHibernate.Event.Default
 		/// <returns> The entity's identifier value after saving.</returns>
 		protected virtual object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
 		{
-			return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
+			if (@event.RequestedId == null)
+			{
+				return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
+			}
+			else
+			{
+				return SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session);
+			}
 		}
 
 		/// <summary> 

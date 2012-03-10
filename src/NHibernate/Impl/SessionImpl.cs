@@ -494,7 +494,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary>
+		public void Save(string entityName, object obj, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSave(new SaveOrUpdateEvent(entityName, obj, id, this));
+			}
+		}
+
+	   	/// <summary>
 		/// Save a transient object with a manually assigned ID
 		/// </summary>
 		/// <param name="obj"></param>
@@ -544,6 +552,14 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public void Update(string entityName, object obj, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this));
+			}
+		}
+
 		public void SaveOrUpdate(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -557,6 +573,14 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+			}
+		}
+
+		public void SaveOrUpdate(string entityName, object obj, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this));
 			}
 		}
 
