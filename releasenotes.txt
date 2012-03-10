@@ -65,6 +65,7 @@ Build 3.3.0.CR1
     * [NH-3002] - HQL: parser is trying to reuse parent implied join for subquery
     * [NH-3003] - Linq: extra joins
     * [NH-3004] - DriverBase.RemoveUnusedCommandParameters removes all parameters when UseNamedPrefixInSql = true and UseNamedPrefixInParameter = false
+    * [NH-3008] - Excess DB parameters created when passing SqlFunctionProjection to LHS of InExpression
     * [NH-3009] - Linq trying to add parameters twice if same predicate is used in query more then once 
     * [NH-3016] - Mapping by code does not properly support nested types
     * [NH-3019] - LINQ: Select Key from group by generates wrong SQL
