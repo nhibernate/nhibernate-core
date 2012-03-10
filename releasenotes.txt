@@ -15,7 +15,9 @@ Build 3.3.0.CR1
 ** Bug
     * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers
     * [NH-2214] - Distinct and Row_number problem
+    * [NH-2347] - Casts inside aggregate functions are incorrectly applied outside of them
     * [NH-2419] - Linq Provider Problem with group by with an order by clause
+    * [NH-2429] - SQL Server Linq Average function on Interger field only returns truncated interger value
     * [NH-2439] - LINQ 'in' query not fully interpreted
     * [NH-2451] - LINQ Issue - joining twice with same table when used in both select and where. Second join is a full select and filtered in where instead of a join .. on
     * [NH-2452] - NH 3.0 Linq provider does not correctly translate standard .Key property when grouping 
