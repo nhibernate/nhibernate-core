@@ -4,6 +4,7 @@ using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Test.ExpressionTest
 		{
 			ISession session = factory.OpenSession();
 
-			ICriterion inExpression = Expression.In("Count", new int[] {3, 4, 5});
+			ICriterion inExpression = Expression.In("Count", new int[] { 3, 4, 5 });
 
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
@@ -56,8 +57,19 @@ namespace NHibernate.Test.ExpressionTest
 						Projections.Constant(1)),
 					new object[] { "A", "B" });
 				var sql = inExpression.ToSqlString(criteria, criteriaQuery, new CollectionHelper.EmptyMapClass<string, IFilter>());
-				Assert.That(sql.ToString(), Is.EqualTo("substring(sql_alias.Name, ?, ?) in (?, ?)"));
-				Assert.That(criteriaQuery.CollectedParameters.Count, Is.EqualTo(4));
+
+				// Allow some dialectal differences in function name and parameter style.
+				Assert.That(sql.ToString(),
+					Is.StringStarting("substring(sql_alias.Name").Or.StringStarting("substr(sql_alias.Name"));
+				Assert.That(sql.ToString(), Is.StringEnding(") in (?, ?)"));
+
+				// Ensure no parameters are duplicated.
+				var parameters = criteriaQuery.CollectedParameters.ToList();
+				Assert.That(parameters.Count, Is.EqualTo(4));
+				Assert.That(parameters[0].Value, Is.EqualTo(1));
+				Assert.That(parameters[1].Value, Is.EqualTo(1));
+				Assert.That(parameters[2].Value, Is.EqualTo("A"));
+				Assert.That(parameters[3].Value, Is.EqualTo("B"));
 			}
 		}
 	}
