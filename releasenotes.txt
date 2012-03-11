@@ -11,6 +11,7 @@ Build 3.3.0.CR1
         * [NH-2960] - Queries for an entity name will now not include instances of the same class mapped using a different entity name.
         * [NH-2664] - IHqlExpressionVisitor has new property ISessionFactory SessionFactory { get; }
         * [NH-3067] - The use of Substring() in Linq queries have been corrected so the zero-based index parameter in C# is converted to one-based index in SQL.
+        * [NH-2528] - Throw exception instead of silently truncate string and blob data
 
 ** Bug
     * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers
@@ -22,6 +23,7 @@ Build 3.3.0.CR1
     * [NH-2451] - LINQ Issue - joining twice with same table when used in both select and where. Second join is a full select and filtered in where instead of a join .. on
     * [NH-2452] - NH 3.0 Linq provider does not correctly translate standard .Key property when grouping 
     * [NH-2492] - Problem with ROW_NUMBER and DISTINCT operator using LINQ
+    * [NH-2511] - System.ArgumentException: Object of type 'System.Linq.Expressions.ConstantExpression' cannot be converted to type 'System.Linq.Expressions.LambdaExpression' when passing an expression through a method
     * [NH-2527] - AbstractBatcher reuses disposed IDbCommands which causes an ArgumentOutOfRangeException with OracleDataClientDriver
     * [NH-2560] - NoViableAltException with ordering by projection in GroupBy
     * [NH-2664] - Linq, cannot query dynamic-component
