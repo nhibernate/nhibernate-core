@@ -1,7 +1,7 @@
-Build 3.3.0.CR1
+Build 3.3.0.GA
 =============================
 
-** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.CR1
+** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.GA
 
     ##### Possible Breaking Changes #####
         * [NH-2214] - SQL Server 2005/2008: Exception is now thrown when paging a statement that requires distinct results, and is ordered by a column that is not included in the result set of the query
@@ -12,6 +12,10 @@ Build 3.3.0.CR1
         * [NH-2664] - IHqlExpressionVisitor has new property ISessionFactory SessionFactory { get; }
         * [NH-3067] - The use of Substring() in Linq queries have been corrected so the zero-based index parameter in C# is converted to one-based index in SQL.
         * [NH-2528] - Throw exception instead of silently truncate string and blob data
+        * [NH-3086] - The base dialect now defaults to ANSI syntax for substring. A custom dialect may need to adjust for this.
+
+Build 3.3.0.CR1
+=============================
 
 ** Bug
     * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers

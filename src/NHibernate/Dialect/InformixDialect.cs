@@ -62,7 +62,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 2147483647, "TEXT");
 			RegisterColumnType(DbType.String, "VARCHAR(255)");
 
-			RegisterFunction("substring", new AnsiSubstringFunction()); // base class override
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
 			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));  // defined in base class
