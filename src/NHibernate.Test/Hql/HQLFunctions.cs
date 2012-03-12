@@ -226,6 +226,49 @@ namespace NHibernate.Test.Hql
 			}			
 		}
 
+
+		[Test]
+		public void SubStringTwoParameters()
+		{
+			// All dialects that support the substring function should support
+			// the two-parameter overload - emulating it by generating the 
+			// third parameter (length) if the database requires three parameters.
+
+			IgnoreIfNotSupported("substring");
+
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 20);
+				s.Save(a1);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				string hql;
+
+				// In the select clause.
+				hql = "select substring(a.Description, 3) from Animal a";
+				IList lresult = s.CreateQuery(hql).List();
+				Assert.AreEqual(1, lresult.Count);
+				Assert.AreEqual("cdef", lresult[0]);
+
+				// In the where clause.
+				hql = "from Animal a where substring(a.Description, 4) = 'def'";
+				var result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+				// With parameters and nested function calls.
+				hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
+				result = (Animal) s.CreateQuery(hql)
+				                  	.SetParameter(0, "foo")
+									.SetParameter("start", 4)
+				                  	.UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+			}
+		}
+
+
 		[Test]
 		public void SubString()
 		{
@@ -239,16 +282,6 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			{
 				string hql;
-
-				bool twoArgSubstringSupported = Dialect.Functions["substring"] is AnsiSubstringFunction;
-
-				if (twoArgSubstringSupported)
-				{
-					hql = "select substring(a.Description, 3) from Animal a";
-					IList lresult = s.CreateQuery(hql).List();
-					Assert.AreEqual(1, lresult.Count);
-					Assert.AreEqual("cdef", lresult[0]);
-				}
 
 				hql = "from Animal a where substring(a.Description, 2, 3) = 'bcd'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
@@ -283,13 +316,6 @@ namespace NHibernate.Test.Hql
 					.List();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual("bcd", results[0]);
-
-				if (twoArgSubstringSupported)
-				{
-					hql = "from Animal a where substring(a.Description, 4) = 'def'";
-					result = (Animal) s.CreateQuery(hql).UniqueResult();
-					Assert.AreEqual("abcdef", result.Description);
-				}
 			}
 		}
 
