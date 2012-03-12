@@ -138,6 +138,7 @@
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
     <Compile Include="Dialect\Function\AvgQueryFunctionInfo.cs" />
+    <Compile Include="Dialect\Function\EmulatedLengthSubstringFunction.cs" />
     <Compile Include="Dialect\Function\CountQueryFunctionInfo.cs" />
     <Compile Include="Dialect\Function\SumQueryFunctionInfo.cs" />
     <Compile Include="Dialect\GenericDialect.cs" />
