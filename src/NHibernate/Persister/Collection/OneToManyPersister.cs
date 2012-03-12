@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -14,41 +16,36 @@ using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
-using System.Collections.Generic;
-using NHibernate.Cfg;
 
 namespace NHibernate.Persister.Collection
 {
-	/// <summary>
-	/// Summary description for OneToManyPersister.
-	/// </summary>
 	public class OneToManyPersister : AbstractCollectionPersister
 	{
-		private readonly bool cascadeDeleteEnabled;
-		private readonly bool keyIsNullable;
-		private readonly bool keyIsUpdateable;
+		private readonly bool _cascadeDeleteEnabled;
+		private readonly bool _keyIsNullable;
+		private readonly bool _keyIsUpdateable;
 
 		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory)
 			: base(collection, cache, cfg, factory)
 		{
-			cascadeDeleteEnabled = collection.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
-			keyIsNullable = collection.Key.IsNullable;
-			keyIsUpdateable = collection.Key.IsUpdateable;
+			_cascadeDeleteEnabled = collection.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
+			_keyIsNullable = collection.Key.IsNullable;
+			_keyIsUpdateable = collection.Key.IsUpdateable;
 		}
 
 		protected override bool RowDeleteEnabled
 		{
-			get { return keyIsUpdateable && keyIsNullable; }
+			get { return _keyIsUpdateable && _keyIsNullable; }
 		}
 
 		protected override bool RowInsertEnabled
 		{
-			get { return keyIsUpdateable; }
+			get { return _keyIsUpdateable; }
 		}
 
 		public override bool CascadeDeleteEnabled
 		{
-			get { return cascadeDeleteEnabled; }
+			get { return _cascadeDeleteEnabled; }
 		}
 
 		public override bool IsOneToMany
@@ -67,10 +64,11 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory)
+			var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, "null")
 				.SetIdentityColumn(KeyColumnNames, KeyType);
+
 			if (HasIndex)
 				update.AddColumns(IndexColumnNames, "null");
 
@@ -89,9 +87,11 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateInsertRowString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
+			var update = new SqlUpdateBuilder(Factory.Dialect, Factory);
+
 			update.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, KeyType);
+
 			if (HasIndex && !indexContainsFormula)
 				update.AddColumns(IndexColumnNames, IndexType);
 
@@ -120,7 +120,7 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteRowString()
 		{
-			SqlUpdateBuilder update = new SqlUpdateBuilder(Factory.Dialect, Factory);
+			var update = new SqlUpdateBuilder(Factory.Dialect, Factory);
 			update.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, "null");
 
@@ -133,7 +133,8 @@ namespace NHibernate.Persister.Collection
 			//use a combination of foreign key columns and pk columns, since
 			//the ordering of removal and addition is not guaranteed when
 			//a child moves from one parent to another
-			update.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+			update
+				.AddWhereFragment(KeyColumnNames, KeyType, " = ")
 				.AddWhereFragment(ElementColumnNames, ElementType, " = ");
 
 			return update.ToSqlCommandInfo();
@@ -153,10 +154,11 @@ namespace NHibernate.Persister.Collection
 		{
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching
-
 			try
 			{
+				const int offset = 0;
 				int count = 0;
+
 				if (RowDeleteEnabled)
 				{
 					bool useBatch = true;
@@ -166,7 +168,6 @@ namespace NHibernate.Persister.Collection
 					{
 						int i = 0;
 						IEnumerable entries = collection.Entries(this);
-						int offset = 0;
 						IExpectation expectation = Expectations.None;
 
 						foreach (object entry in entries)
@@ -182,17 +183,13 @@ namespace NHibernate.Persister.Collection
 										expectation = Expectations.AppropriateExpectation(DeleteCheckStyle);
 										useBatch = expectation.CanBeBatched;
 										st = useBatch
-										     	? session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
-										     	                                      SqlDeleteRowString.ParameterTypes)
-										     	: session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
-										     	                                 SqlDeleteRowString.ParameterTypes);
+												? session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes)
+												: session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
 										//offset += expectation.prepare(st);
 									}
 									else
 									{
-										st =
-											session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
-											                                    SqlDeleteRowString.ParameterTypes);
+										st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
 									}
 								}
 
@@ -243,22 +240,18 @@ namespace NHibernate.Persister.Collection
 						IEnumerable entries = collection.Entries(this);
 						foreach (object entry in entries)
 						{
-							int offset = 0;
 							if (collection.NeedsUpdating(entry, i, ElementType))
 							{
 								if (useBatch)
 								{
 									if (st == null)
 									{
-										st =
-											session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
-											                                    SqlInsertRowString.ParameterTypes);
+										st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
 									}
 								}
 								else
 								{
-									st =
-										session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
+									st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
 								}
 
 								//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
@@ -291,7 +284,7 @@ namespace NHibernate.Persister.Collection
 					}
 					finally
 					{
-						if (st != null)
+						if (!useBatch && st != null)
 						{
 							session.Batcher.CloseCommand(st, null);
 						}
@@ -301,24 +294,21 @@ namespace NHibernate.Persister.Collection
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle,
-				                                 "could not update collection rows: " + MessageHelper.InfoString(this, id));
+				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.InfoString(this, id));
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix,
-			string collectionSuffix, bool includeCollectionColumns)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
-			StringBuilder buf = new StringBuilder();
+			var buf = new StringBuilder();
 
 			if (includeCollectionColumns)
 			{
 				buf.Append(SelectFragment(lhsAlias, collectionSuffix)).Append(StringHelper.CommaSpace);
 			}
 
-			IOuterJoinLoadable ojl = (IOuterJoinLoadable) ElementPersister;
-			return buf.Append(ojl.SelectFragment(lhsAlias, entitySuffix)) //use suffix for the entity columns
-				.ToString();
+			var ojl = (IOuterJoinLoadable)ElementPersister;
+			return buf.Append(ojl.SelectFragment(lhsAlias, entitySuffix)).ToString(); //use suffix for the entity columns
 		}
 
 		protected override SelectFragment GenerateSelectFragment(string alias, string columnSuffix)
@@ -353,48 +343,50 @@ namespace NHibernate.Persister.Collection
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable) ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+			return ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
 		}
 
 		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable) ElementPersister).WhereJoinFragment(alias, innerJoin, includeSubclasses);
+			return ((IJoinable)ElementPersister).WhereJoinFragment(alias, innerJoin, includeSubclasses);
 		}
 
 		public override string TableName
 		{
-			get { return ((IJoinable) ElementPersister).TableName; }
+			get { return ((IJoinable)ElementPersister).TableName; }
 		}
 
 		protected override string FilterFragment(string alias)
 		{
 			string result = base.FilterFragment(alias);
-			IJoinable j = ElementPersister as IJoinable;
+			var j = ElementPersister as IJoinable;
 			if (j != null)
 				result += j.OneToManyFilterFragment(alias);
-
 			return result;
 		}
 
-		protected override ICollectionInitializer CreateSubselectInitializer(
-			SubselectFetch subselect,
-			ISessionImplementor session)
+		protected override ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect, ISessionImplementor session)
 		{
-			return
-				new SubselectOneToManyLoader(this, subselect.ToSubselectString(CollectionType.LHSPropertyName), subselect.Result,
-				                             subselect.QueryParameters, session.Factory,
-				                             session.EnabledFilters);
+			return new SubselectOneToManyLoader(
+				this,
+				subselect.ToSubselectString(CollectionType.LHSPropertyName),
+				subselect.Result,
+				subselect.QueryParameters, session.Factory,
+				session.EnabledFilters);
 		}
 
 		public override object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
 			return new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index)) ?? NotFoundObject;
 		}
+
 		#region NH Specific
+
 		protected override SqlCommandInfo GenerateIdentityInsertRowString()
 		{
 			throw new NotSupportedException("Identity insert is not needed for one-to-many association");
 		}
+
 		#endregion
 	}
 }

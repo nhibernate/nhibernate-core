@@ -468,10 +468,10 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
-		    IEntityPersister value;
-            if (entityPersisters.TryGetValue(entityName, out value) == false)
-                throw new MappingException("No persister for: " + entityName);
-            return value;
+			IEntityPersister value;
+			if (entityPersisters.TryGetValue(entityName, out value) == false)
+				throw new MappingException("No persister for: " + entityName);
+			return value;
 		}
 
 		public IEntityPersister TryGetEntityPersister(string entityName)
@@ -483,10 +483,10 @@ namespace NHibernate.Impl
 
 		public ICollectionPersister GetCollectionPersister(string role)
 		{
-		    ICollectionPersister value;
-		    if(collectionPersisters.TryGetValue(role, out value) == false)
+			ICollectionPersister value;
+			if(collectionPersisters.TryGetValue(role, out value) == false)
 				throw new MappingException("Unknown collection role: " + role);
-            return value;
+			return value;
 		}
 
 		public ISet<string> GetCollectionRolesByEntityParticipant(string entityName)
@@ -672,8 +672,7 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						System.Type mappedClass = q.GetMappedClass(EntityMode.Poco);
-						if (mappedClass != null && clazz.IsAssignableFrom(mappedClass))
+						if (IsMatchingImplementor(entityOrClassName, clazz, q))
 						{
 							bool assignableSuperclass;
 							if (q.IsInherited)
@@ -696,6 +695,24 @@ namespace NHibernate.Impl
 			knownMap = results.ToArray();
 			entityNameImplementorsMap[entityOrClassName] = knownMap;
 			return knownMap;
+		}
+
+		private static bool IsMatchingImplementor(string entityOrClassName, System.Type entityClass, IQueryable implementor)
+		{
+			var implementorClass = implementor.GetMappedClass(EntityMode.Poco);
+			if (implementorClass == null) 
+			{
+				return false;
+			}
+			if (entityClass.Equals(implementorClass))
+			{
+				// It is possible to have multiple mappings for the same entity class, but with different entity names.
+				// When querying for a specific entity name, we should only return entities for the requested entity name
+				// and not return entities for any other entity names that may map to the same entity class.
+				bool isEntityName = !entityOrClassName.Equals(entityClass.FullName);
+				return !isEntityName || entityOrClassName.Equals(implementor.EntityName);
+			}
+			return entityClass.IsAssignableFrom(implementorClass);
 		}
 
 		public string GetImportedClassName(string className)
@@ -791,7 +808,7 @@ namespace NHibernate.Impl
 				schemaExport.Drop(false, true);
 			}
 
-		    eventListeners.DestroyListeners();
+			eventListeners.DestroyListeners();
 		}
 
 		public void Evict(System.Type persistentClass, object id)
@@ -999,10 +1016,10 @@ namespace NHibernate.Impl
 
 		public FilterDefinition GetFilterDefinition(string filterName)
 		{
-		    FilterDefinition value;
-		    if(filters.TryGetValue(filterName,out value)==false)
+			FilterDefinition value;
+			if(filters.TryGetValue(filterName,out value)==false)
 				throw new HibernateException("No such filter configured [" + filterName + "]");
-            return value;
+			return value;
 		}
 
 		public ICollection<string> DefinedFilterNames

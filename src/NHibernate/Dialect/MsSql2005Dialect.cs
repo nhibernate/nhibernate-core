@@ -1,9 +1,7 @@
 using System.Data;
-using System.Text;
 using NHibernate.Driver;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
-using NHibernate.SqlCommand.Parser;
 
 namespace NHibernate.Dialect
 {
@@ -37,89 +35,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-			if (offset == null)
-			{
-				int insertPoint;
-				return TryFindLimitInsertPoint(queryString, out insertPoint)
-					? queryString.Insert(insertPoint, new SqlString("TOP (", limit, ") "))
-					: null;
-			}
-
-			var queryParser = new MsSqlSelectParser(queryString);
-			if (queryParser.SelectIndex < 0) return null;
-
-			var result = new SqlStringBuilder();
-			BuildSelectClauseForPagingQuery(queryParser, limit, result);
-			BuildFromClauseForPagingQuery(queryParser, result);
-			BuildWhereAndOrderClausesForPagingQuery(offset, result);
-			return result.ToSqlString();
-		}
-
-		private static void BuildSelectClauseForPagingQuery(MsSqlSelectParser sqlQuery, SqlString limit, SqlStringBuilder result)
-		{
-			result.Add(sqlQuery.Sql.Substring(0, sqlQuery.SelectIndex));
-			result.Add("SELECT ");
-
-			if (limit != null)
-			{
-				result.Add("TOP (").Add(limit).Add(") ");
-			}
-			else
-			{
-				// ORDER BY can only be used in subqueries if TOP is also specified.
-				result.Add("TOP (" + int.MaxValue + ") ");
-			}
-
-			var sb = new StringBuilder();
-			foreach (var column in sqlQuery.ColumnDefinitions)
-			{
-				if (sb.Length > 0) sb.Append(", ");
-				sb.Append(column.Alias);
-			}
-
-			result.Add(sb.ToString());
-		}
-
-		private static void BuildFromClauseForPagingQuery(MsSqlSelectParser sqlQuery, SqlStringBuilder result)
-		{
-			var selectClause = sqlQuery.Sql.Substring(sqlQuery.SelectIndex, sqlQuery.FromIndex - sqlQuery.SelectIndex);
-			var subselectClause = sqlQuery.OrderByIndex >= 0
-				? sqlQuery.Sql.Substring(sqlQuery.FromIndex, sqlQuery.OrderByIndex - sqlQuery.FromIndex)
-				: sqlQuery.Sql.Substring(sqlQuery.FromIndex);
-
-			result.Add(" FROM (")
-				.Add(selectClause.Trim())
-				.Add(", ROW_NUMBER() OVER(ORDER BY ");
-
-			int orderIndex = 0;
-			foreach (var order in sqlQuery.OrderDefinitions)
-			{
-				if (orderIndex++ > 0) result.Add(", ");
-				if (order.Column.Name != null)
-				{
-					result.Add(order.Column.Name);
-				}
-				else
-				{
-					result.Add(sqlQuery.Sql.Substring(order.Column.SqlIndex, order.Column.SqlLength).Trim());
-				}
-				if (order.IsDescending) result.Add(" DESC");
-			}
-			if (orderIndex == 0)
-			{
-				result.Add("CURRENT_TIMESTAMP");
-			}
-
-			result.Add(") as __hibernate_sort_row ")
-				.Add(subselectClause.Trim())
-				.Add(") as query");
-		}
-
-		private static void BuildWhereAndOrderClausesForPagingQuery(SqlString offset, SqlStringBuilder result)
-		{
-			result.Add(" WHERE query.__hibernate_sort_row > ")
-				.Add(offset)
-				.Add(" ORDER BY query.__hibernate_sort_row");
+			return new MsSql2005DialectQueryPager(queryString).PageBy(offset, limit);
 		}
 
 		/// <summary>

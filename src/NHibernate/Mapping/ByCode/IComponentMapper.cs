@@ -11,6 +11,7 @@ namespace NHibernate.Mapping.ByCode
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
 		void Lazy(bool isLazy);
+		void Unique(bool unique);
 		void Class(System.Type componentType);
 	}
 
@@ -23,6 +24,7 @@ namespace NHibernate.Mapping.ByCode
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
 		void Lazy(bool isLazy);
+		void Unique(bool unique);
 		void Class<TConcrete>() where TConcrete : TComponent;
 	}
 

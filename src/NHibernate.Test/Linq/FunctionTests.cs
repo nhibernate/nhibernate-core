@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -10,23 +12,36 @@ namespace NHibernate.Test.Linq
 	public class FunctionTests : LinqTestCase
 	{
 		[Test]
-		public void SubstringFunction()
+		public void SubstringFunction2()
 		{
-			var query = from e in db.Employees
-						where e.FirstName.Substring(1, 2) == "An"
-						select e;
+			var query = (from e in db.Employees
+						 where e.FirstName.Substring(0, 2) == "An"
+						 select e).ToList();
 
-			ObjectDumper.Write(query);
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void SubstringFunction1()
+		{
+			var query = (from e in db.Employees
+						 where e.FirstName.Substring(3) == "rew"
+						 select e).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
 		}
 
 		[Test]
 		public void LeftFunction()
 		{
-			var query = from e in db.Employees
-                        where e.FirstName.Substring(1, 2) == "An"
-                        select e.FirstName.Substring(3);
+			var query = (from e in db.Employees
+						 where e.FirstName.Substring(0, 2) == "An"
+						 select e.FirstName.Substring(3)).ToList();
 
-			ObjectDumper.Write(query);
+			Assert.That(query.Count, Is.EqualTo(2));
+			Assert.That(query[0], Is.EqualTo("rew")); //Andrew
+			Assert.That(query[1], Is.EqualTo("e")); //Anne
 		}
 
 		[Test]
@@ -173,6 +188,137 @@ namespace NHibernate.Test.Linq
 				session.Delete("from AnotherEntity e where e.Id > 5");
 				session.Flush();
 			}
+		}
+
+		[Test]
+		public void WhereStringEqual()
+		{
+			var query = (from item in db.Users
+						 where item.Name.Equals("ayende")
+						 select item).ToList();
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereIntEqual()
+		{
+			var query = (from item in db.Users
+						 where item.Id.Equals(-1)
+						 select item).ToList();
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereShortEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Short.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolConstantEqual()
+		{
+			var query = from item in db.Role
+			            where item.IsActive.Equals(true)
+			            select item;
+			
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolParameterEqual()
+		{
+			var query = from item in db.Role
+						where item.IsActive.Equals(1 == 1)
+			            select item;
+			
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereBoolFuncEqual()
+		{
+			Func<bool> f = () => 1 == 1;
+
+			var query = from item in db.Role
+						where item.IsActive.Equals(f())
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereLongEqual()
+		{
+			var query = from item in db.PatientRecords
+						 where item.Id.Equals(-1)
+						 select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereDateTimeEqual()
+		{
+			var query = from item in db.Users
+						where item.RegisteredAt.Equals(DateTime.Today)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+		
+		[Test]
+		public void WhereGuidEqual()
+		{
+			var query = from item in db.Shippers
+						where item.Reference.Equals(Guid.Empty)
+						select item;
+
+			ObjectDumper.Write(query);
+		}		
+
+		[Test]
+		public void WhereDoubleEqual()
+		{
+			var query = from item in db.Animals
+						where item.BodyWeight.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+	
+		[Test]
+		public void WhereFloatEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Float.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+
+		[Test]
+		public void WhereCharEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Char.Equals('A')
+						select item;
+
+			ObjectDumper.Write(query);
+		}	
+	
+		[Test]
+		public void WhereDecimalEqual()
+		{
+			var query = from item in db.OrderLines
+						where item.Discount.Equals(-1)
+						select item;
+
+			ObjectDumper.Write(query);
 		}
 	}
 }

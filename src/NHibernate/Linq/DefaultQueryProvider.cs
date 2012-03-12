@@ -64,7 +64,7 @@ namespace NHibernate.Linq
 
 		protected NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{
-			var nhLinqExpression = new NhLinqExpression(expression);
+			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
 			query = Session.CreateQuery(nhLinqExpression);
 

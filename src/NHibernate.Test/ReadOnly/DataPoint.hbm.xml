@@ -10,10 +10,10 @@
 			<generator class="increment" />
 		</id>
 		<property name="X">
-			<column name="xval" not-null="true" precision="25" scale="19" unique-key="xy" />
+			<column name="xval" not-null="true" precision="18" scale="15" unique-key="xy" />
 		</property>
 		<property name="Y">
-			<column name="yval" not-null="true" precision="25" scale="19" unique-key="xy" />
+			<column name="yval" not-null="true" precision="18" scale="15" unique-key="xy" />
 		</property>
 		<property name="Description" />
 	</class>

@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1349
 			get { return companyCount; }
 			set { companyCount = value; }
 		}
-		public virtual string ToString()
+		public override string ToString()
 		{
 			return (this.id + "] [" + this.accountNumber + "]  [" + this.name + "] [" + this.type + "]  [" + this.CompanyCount + "]");
 

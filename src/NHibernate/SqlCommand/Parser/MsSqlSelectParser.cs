@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+
 namespace NHibernate.SqlCommand.Parser
 {
+	using System.Linq;
+
 	/// <summary>
 	/// Represents SQL Server SELECT query parser, primarily intended to support generation of 
 	/// limit queries by SQL Server dialects.
@@ -10,6 +13,7 @@ namespace NHibernate.SqlCommand.Parser
 	{
 		private readonly List<ColumnDefinition> _columns = new List<ColumnDefinition>();
 		private readonly List<OrderDefinition> _orders = new List<OrderDefinition>();
+		private int _nextOrderAliasIndex;
 
 		public MsSqlSelectParser(SqlString sql)
 		{
@@ -23,9 +27,11 @@ namespace NHibernate.SqlCommand.Parser
 			// Custom SQL may contain multiple SELECT statements, for example to assign parameters. 
 			// Therefore we loop over SELECT statements until a SELECT is found that returns data.
 			SqlToken selectToken;
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken))
+			bool isDistinct;
+			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken, out isDistinct))
 			{
 				this.SelectIndex = selectToken.SqlIndex;
+				this.IsDistinct = isDistinct;
 				_columns.AddRange(ParseColumnDefinitions(tokenEnum));
 				if (tokenEnum.TryParseUntil("from"))
 				{
@@ -35,7 +41,14 @@ namespace NHibernate.SqlCommand.Parser
 					if (tokenEnum.TryParseUntilFirstOrderColumn(out orderToken))
 					{
 						this.OrderByIndex = orderToken.SqlIndex;
-						_orders.AddRange(ParseOrderDefinitions(tokenEnum));
+						foreach (var order in ParseOrderDefinitions(tokenEnum))
+						{
+							_orders.Add(order);
+							if (!order.Column.InSelectClause)
+							{
+								_columns.Add(order.Column);
+							}
+						}
 					}
 				}
 				return;
@@ -46,15 +59,51 @@ namespace NHibernate.SqlCommand.Parser
 		public int SelectIndex { get; private set; }
 		public int FromIndex { get; private set; }
 		public int OrderByIndex { get; private set; }
+		public bool IsDistinct { get; private set; }
 
-		public IEnumerable<ColumnDefinition> ColumnDefinitions
+		/// <summary>
+		/// Column definitions in SELECT clause
+		/// </summary>
+		public IEnumerable<ColumnDefinition> SelectColumns
 		{
-			get { return _columns; }
+			get { return _columns.Where(c => c.InSelectClause); }
 		}
 
-		public IEnumerable<OrderDefinition> OrderDefinitions
+		/// <summary>
+		/// Column definitions for columns that appear in ORDER BY clause 
+		/// but do not appear in SELECT clause.
+		/// </summary>
+		public IEnumerable<ColumnDefinition> NonSelectColumns
+		{
+			get { return _columns.Where(c => !c.InSelectClause); }
+		}
+
+		/// <summary>
+		/// Sort orders as defined in ORDER BY clause
+		/// </summary>
+		public IEnumerable<OrderDefinition> Orders
 		{
 			get { return _orders; }
+		}
+
+		public SqlString SelectClause
+		{
+			get { return this.Sql.Substring(this.SelectIndex, this.FromIndex - this.SelectIndex).Trim(); }
+		}
+
+		public SqlString FromAndWhereClause
+		{
+			get
+			{
+				return this.OrderByIndex >= 0
+					? this.Sql.Substring(this.FromIndex, this.OrderByIndex - this.FromIndex).Trim()
+					: this.Sql.Substring(this.FromIndex).Trim();
+			}
+		}
+
+		public SqlString ColumnExpression(ColumnDefinition column)
+		{
+			return this.Sql.Substring(column.SqlIndex, column.SqlLength);
 		}
 
 		private IEnumerable<ColumnDefinition> ParseColumnDefinitions(IEnumerator<SqlToken> tokenEnum)
@@ -64,6 +113,7 @@ namespace NHibernate.SqlCommand.Parser
 			SqlToken columnEndToken = null;
 			SqlToken columnAliasToken = null;
 
+			SqlToken prevToken = null;
 			do
 			{
 				var token = tokenEnum.Current;
@@ -88,7 +138,7 @@ namespace NHibernate.SqlCommand.Parser
 						{
 							if (columnAliasToken != null)
 							{
-								yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+								yield return ParseSelectColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
 							}
 						}
 
@@ -96,14 +146,14 @@ namespace NHibernate.SqlCommand.Parser
 						{
 							if (columnAliasToken != null)
 							{
-								yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+								yield return ParseSelectColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
 							}
 							yield break;
 						}
 
 						if (token.Equals("as", StringComparison.InvariantCultureIgnoreCase))
 						{
-							columnEndToken = token;
+							columnEndToken = prevToken;
 						}
 
 						columnAliasToken = token;
@@ -120,20 +170,22 @@ namespace NHibernate.SqlCommand.Parser
 
 						if (columnAliasToken != null)
 						{
-							yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+							yield return ParseSelectColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
 						}
 						columnBeginToken = columnEndToken = columnAliasToken = null;
 						break;
 				}
+
+				prevToken = token;
 			} while (tokenEnum.MoveNext());
 
 			if (columnAliasToken != null)
 			{
-				yield return ParseColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
+				yield return ParseSelectColumnDefinition(columnBeginToken, columnEndToken ?? columnAliasToken, columnAliasToken);
 			}
 		}
 
-		private ColumnDefinition ParseColumnDefinition(SqlToken beginToken, SqlToken endToken, SqlToken aliasToken)
+		private ColumnDefinition ParseSelectColumnDefinition(SqlToken beginToken, SqlToken endToken, SqlToken aliasToken)
 		{
 			var name = beginToken == endToken
 				? beginToken.Value
@@ -146,27 +198,27 @@ namespace NHibernate.SqlCommand.Parser
 				: alias;
 
 			var sqlIndex = beginToken.SqlIndex;
-			var sqlLength = (endToken != null ? endToken.SqlIndex : this.Sql.Length) - beginToken.SqlIndex;
+			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : this.Sql.Length) - beginToken.SqlIndex;
 
-			return new ColumnDefinition(sqlIndex, sqlLength, name, alias);
+			return new ColumnDefinition(sqlIndex, sqlLength, name, alias, true);
 		}
 
-		private ColumnDefinition ParseColumnDefinition(SqlToken beginToken, SqlToken endToken, string alias)
+		private ColumnDefinition ParseOrderColumnDefinition(SqlToken beginToken, SqlToken endToken, string alias)
 		{
 			var sqlIndex = beginToken.SqlIndex;
-			var sqlLength = (endToken != null ? endToken.SqlIndex : this.Sql.Length) - beginToken.SqlIndex;
+			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : this.Sql.Length) - beginToken.SqlIndex;
 
-			return new ColumnDefinition(sqlIndex, sqlLength, null, alias);
+			return new ColumnDefinition(sqlIndex, sqlLength, null, alias, false);
 		}
 
 		private IEnumerable<OrderDefinition> ParseOrderDefinitions(IEnumerator<SqlToken> tokenEnum)
 		{
 			int blockLevel = 0;
-			int orderExprTokenCount = 0;
 			SqlToken orderBeginToken = null;
-			SqlToken columnNameToken = null;
+			SqlToken orderEndToken = null;
 			SqlToken directionToken = null;
 
+			SqlToken prevToken = null;
 			do
 			{
 				var token = tokenEnum.Current;
@@ -183,70 +235,60 @@ namespace NHibernate.SqlCommand.Parser
 
 					case SqlTokenType.BracketClose:
 						blockLevel--;
-						if (blockLevel == 0) orderExprTokenCount++;
 						break;
 
 					case SqlTokenType.Text:
 						if (blockLevel != 0) break;
 
-						if (orderExprTokenCount++ == 0)
-						{
-							columnNameToken = token;
-							break;
-						}
-
 						if (token.Equals("asc", StringComparison.InvariantCultureIgnoreCase)
 							|| token.Equals("desc", StringComparison.InvariantCultureIgnoreCase))
 						{
-							if (directionToken == null) orderExprTokenCount--;
+							orderEndToken = prevToken;
 							directionToken = token;
 						}
 						break;
 
 					case SqlTokenType.DelimitedText:
 						if (blockLevel != 0) break;
-
-						if (orderExprTokenCount++ == 0) columnNameToken = token;
 						break;
 
 					case SqlTokenType.Comma:
 						if (blockLevel != 0) break;
 
-						yield return ParseOrderDefinition(orderBeginToken, token,
-							orderExprTokenCount == 1 ? columnNameToken : null, directionToken);
-						orderBeginToken = columnNameToken = directionToken = null;
-						orderExprTokenCount = 0;
+						yield return ParseOrderDefinition(orderBeginToken, orderEndToken ?? prevToken, directionToken);
+						orderBeginToken = orderEndToken = directionToken = null;
 						break;
 				}
+
+				prevToken = token;
 			} while (tokenEnum.MoveNext());
 
 			if (orderBeginToken != null)
 			{
-				yield return ParseOrderDefinition(orderBeginToken, null,
-					orderExprTokenCount == 1 ? columnNameToken : null, directionToken);
+				yield return ParseOrderDefinition(orderBeginToken, orderEndToken ?? prevToken, directionToken);
 			}
 		}
 
-		private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken columnNameToken, SqlToken directionToken)
+		private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken directionToken)
 		{
 			ColumnDefinition column;
 			bool? isDescending = directionToken != null
 				? directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase)
 				: default(bool?);
 
-			if (columnNameToken != null)
+			if (beginToken == endToken)
 			{
-				string columnNameOrIndex = columnNameToken.Value;
+				string columnNameOrIndex = beginToken.Value;
 				if (!TryGetColumnDefinition(columnNameOrIndex, out column))
 				{
 					// Column appears in order by clause, but not in select clause
-					column = ParseColumnDefinition(columnNameToken, isDescending.HasValue ? directionToken : endToken, columnNameToken);
+					column = ParseOrderColumnDefinition(beginToken, endToken, "__c" + _nextOrderAliasIndex++);
 				}
 			}
 			else
 			{
 				// Calculated sort order
-				column = ParseColumnDefinition(beginToken, isDescending.HasValue ? directionToken : endToken, "__order" + _columns.Count);
+				column = ParseOrderColumnDefinition(beginToken, endToken, "__c" + _nextOrderAliasIndex++);
 			}
 
 			return new OrderDefinition(column, isDescending ?? false);
@@ -284,13 +326,23 @@ namespace NHibernate.SqlCommand.Parser
 			public string Alias { get; private set; }
 			public int SqlIndex { get; private set; }
 			public int SqlLength { get; private set; }
+			public bool InSelectClause { get; private set; }
 
-			internal ColumnDefinition(int sqlIndex, int sqlLength, string name, string alias)
+			internal ColumnDefinition(int sqlIndex, int sqlLength, string name, string alias, bool inSelectClause)
 			{
 				this.SqlIndex = sqlIndex;
 				this.SqlLength = sqlLength;
 				this.Name = name;
 				this.Alias = alias;
+				this.InSelectClause = inSelectClause;
+			}
+
+			public override string ToString()
+			{
+				if (this.Name == null) return this.Alias;
+				return this.Name != this.Alias
+					? this.Name + " AS " + this.Alias
+					: this.Name;
 			}
 		}
 
@@ -303,6 +355,13 @@ namespace NHibernate.SqlCommand.Parser
 			{
 				this.Column = column;
 				this.IsDescending = isDescending;
+			}
+
+			public override string ToString()
+			{
+				return this.IsDescending
+					? this.Column + " DESC"
+					: this.Column.ToString();
 			}
 		}
 	}

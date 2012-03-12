@@ -46,7 +46,7 @@
 			<index column="Indexer" type="Int32"/>
 			<composite-element class="Entry">
 				<property name="Key1" type="Double" access="field" />
-				<property name="Value" type="Double" access="field"/>
+				<property name="Value" type="Double" access="field" column="`Value`"/>
 			</composite-element>
 		</list>
 	</class>

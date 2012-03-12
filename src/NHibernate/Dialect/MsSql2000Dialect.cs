@@ -347,7 +347,8 @@ namespace NHibernate.Dialect
 			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
 			
 			SqlToken selectToken;
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken))
+			bool isDistinct;
+			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken, out isDistinct))
 			{
 				result = tokenEnum.Current.SqlIndex;
 				return true;

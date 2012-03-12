@@ -9,7 +9,7 @@
 		</id>
 		<bag name="RequestsFailed" inverse="true" cascade="none" lazy="extra"
 				 optimistic-lock="false"
-				 where="MachineRequestCompletionStatusInt != 1">
+				 where="RequestCompletionStatus != 1">
 			<key column="EnvId"/>
 			<one-to-many class="MachineRequest"/>
 			<filter name="CurrentOnly"/>
@@ -23,7 +23,7 @@
 			<generator class="assigned"/>
 		</id>
 		<property name="EnvId"/>
-		<property name="MachineRequestCompletionStatusInt"/>
+		<property name="RequestCompletionStatus"/>
 	</class>
 
 	<filter-def name="CurrentOnly"  condition="1 = 0"/>

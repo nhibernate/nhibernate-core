@@ -1,105 +1,65 @@
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.ReWriters
 {
 	internal interface IIsEntityDecider
 	{
 		bool IsEntity(System.Type type);
+		bool IsIdentifier(System.Type type, string propertyName);
 	}
 
 	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
 	{
-		private readonly Dictionary<string, NhJoinClause> _joins = new Dictionary<string, NhJoinClause>();
-		private readonly Dictionary<MemberExpression, QuerySourceReferenceExpression> _expressionMap = new Dictionary<MemberExpression, QuerySourceReferenceExpression>();
-		private readonly NameGenerator _nameGenerator;
 		private readonly ISessionFactory _sessionFactory;
+		private readonly SelectJoinDetector _selectJoinDetector;
+		private readonly ResultOperatorAndOrderByJoinDetector _resultOperatorAndOrderByJoinDetector;
+		private readonly WhereJoinDetector _whereJoinDetector;
 
-		private AddJoinsReWriter(NameGenerator nameGenerator, ISessionFactory sessionFactory)
+		private AddJoinsReWriter(ISessionFactory sessionFactory, QueryModel queryModel)
 		{
-			_nameGenerator = nameGenerator;
 			_sessionFactory = sessionFactory;
+			var joiner = new Joiner(queryModel);
+			_selectJoinDetector = new SelectJoinDetector(this, joiner);
+			_resultOperatorAndOrderByJoinDetector = new ResultOperatorAndOrderByJoinDetector(this, joiner);
+			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
-			new AddJoinsReWriter(new NameGenerator(queryModel), sessionFactory).ReWrite(queryModel);
-		}
-
-		private void ReWrite(QueryModel queryModel)
-		{
-			VisitQueryModel(queryModel);
-
-			if (_joins.Count > 0)
-			{
-				MemberExpressionSwapper swap = new MemberExpressionSwapper(_expressionMap);
-				queryModel.TransformExpressions(swap.VisitExpression);
-
-				foreach (var join in _joins.Values)
-				{
-					queryModel.BodyClauses.Add(join);
-				}
-			}
+			new AddJoinsReWriter(sessionFactory, queryModel).VisitQueryModel(queryModel);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
-			new SelectAndOrderByJoinDetector(_nameGenerator, this, _joins, _expressionMap).VisitExpression(selectClause.Selector);
+			_selectJoinDetector.Transform(selectClause);
+		}
+
+		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
+		{
+			_resultOperatorAndOrderByJoinDetector.Transform(ordering);
+		}
+
+		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
+		{
+			_resultOperatorAndOrderByJoinDetector.Transform(resultOperator);
 		}
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
-			WhereJoinDetector.Find(whereClause.Predicate, _nameGenerator,
-											  this,
-											  _joins,
-											  _expressionMap);
-		}
-
-		public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
-		{
-			var joinDetector = new SelectAndOrderByJoinDetector(_nameGenerator, this, _joins, _expressionMap);
-			foreach (Ordering ordering in orderByClause.Orderings)
-			{
-				joinDetector.VisitExpression(ordering.Expression);
-			}
+			_whereJoinDetector.Transform(whereClause);
 		}
 
 		public bool IsEntity(System.Type type)
 		{
 			return _sessionFactory.GetClassMetadata(type) != null;
 		}
-	}
 
-	public class MemberExpressionSwapper : NhExpressionTreeVisitor
-	{
-		private readonly Dictionary<MemberExpression, QuerySourceReferenceExpression> _expressionMap;
-
-		public MemberExpressionSwapper(Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
+		public bool IsIdentifier(System.Type type, string propertyName)
 		{
-			_expressionMap = expressionMap;
-		}
-
-		protected override Expression VisitMemberExpression(MemberExpression expression)
-		{
-			if (expression == null)
-			{
-				return null;
-			}
-
-			QuerySourceReferenceExpression replacement;
-
-			if (_expressionMap.TryGetValue(expression, out replacement))
-			{
-				return replacement;
-			}
-			else
-			{
-				return base.VisitMemberExpression(expression);
-			}
+			var metadata = _sessionFactory.GetClassMetadata(type);
+			return metadata != null && propertyName.Equals(metadata.IdentifierPropertyName);
 		}
 	}
 }

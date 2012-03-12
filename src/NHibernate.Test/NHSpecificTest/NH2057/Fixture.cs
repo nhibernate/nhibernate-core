@@ -12,21 +12,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 	public class Fixture : BugTestCase
 	{
 		[Test]
+		[Description("This test fails intermittently on SQL Server ODBC. Not sure why.")]
 		public void WillCloseWhenUsingDTC()
 		{
-            SessionImpl s;
-            using (var tx = new TransactionScope())
+			SessionImpl s;
+			using (var tx = new TransactionScope())
 			{
-			    using (s = (SessionImpl)OpenSession())
-                {
-                    s.Get<Person>(1);
-                }
-                //not closed because the tx is opened yet
-                Assert.False(s.IsClosed);
-                tx.Complete();
+				using (s = (SessionImpl)OpenSession())
+				{
+					s.Get<Person>(1);
+				}
+				//not closed because the tx is opened yet
+				Assert.False(s.IsClosed);
+				tx.Complete();
 			}
-            Assert.True(s.IsClosed);
-		} 
+			Assert.True(s.IsClosed);
+		}
 
 	}
 }

@@ -75,17 +75,17 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2452
 			var result = db.Products
-				.GroupBy(i => i.Name)
+				.GroupBy(i => i.UnitPrice)
 				.OrderBy(g => g.Key)
 				.Select(g => new
 								 {
-									 Name = g.Max(i => i.Name),
+									 UnitPrice = g.Max(i => i.UnitPrice),
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
-			AssertOrderedBy.Ascending(result, x => x.Name);
+			Assert.That(result.Count, Is.EqualTo(62));
+			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
 
 		[Test]
@@ -93,19 +93,18 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2452
 			var result = db.Products
-				.GroupBy(i => i.Name)
+				.GroupBy(i => i.UnitPrice)
 				.Select(g => new
 								 {
-									 Name = g.Max(i => i.Name),
+									 UnitPrice = g.Max(i => i.UnitPrice),
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
-				.OrderBy(x => x.Name)
+				.OrderBy(x => x.UnitPrice)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
-			AssertOrderedBy.Ascending(result, x => x.Name);
+			Assert.That(result.Count, Is.EqualTo(62));
+			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
 		}
-
 
 		[Test]
 		public void SingleKeyPropertyGroupAndOrderByProjectedCount()
@@ -171,16 +170,16 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2452
 			var result = db.Products
-				.GroupBy(p => p.Name)
+				.GroupBy(p => p.UnitPrice)
 				.Select(g => new
 								 {
-									 Name = g.Max(i => i.Name),
+									 UnitPrice = g.Max(i => i.UnitPrice),
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.OrderBy(x => x.TotalUnitsInStock)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
+			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.TotalUnitsInStock);
 		}
 
@@ -189,17 +188,47 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2452
 			var result = db.Products
-				.GroupBy(i => i.Name)
+				.GroupBy(i => i.UnitPrice)
 				.Select(g => new
 								 {
-									 Name = g.Key,
+									 UnitPrice = g.Key,
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
-				.OrderBy(x => x.Name)
+				.OrderBy(x => x.UnitPrice)
 				.ToList();
 
-			Assert.That(result.Count, Is.EqualTo(77));
-			AssertOrderedBy.Ascending(result, x => x.Name);
+			Assert.That(result.Count, Is.EqualTo(62));
+			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
+		}
+
+		[Test]
+		public void GroupByWithAndAlsoContainsInWhereClause()
+		{
+			//NH-3032
+			var collection = db.Products.Select(x => x.Supplier).ToList();
+
+			var result = db.Products
+				.Where(x => x.Discontinued == true && collection.Contains(x.Supplier))
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.ToList();
+ 
+			Assert.That(result.Count, Is.EqualTo(8));
+		}
+
+		[Test]
+		public void GroupByWithContainsInWhereClause()
+		{
+			//NH-3032
+			var collection = db.Products.Select(x => x.Supplier).ToList();
+
+			var result = db.Products
+				.Where(x => collection.Contains(x.Supplier))
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.ToList();
+ 
+			Assert.That(result.Count, Is.EqualTo(62));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)

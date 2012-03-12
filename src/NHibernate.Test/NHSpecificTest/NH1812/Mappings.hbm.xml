@@ -17,6 +17,6 @@
 		<id name="Id">
 			<generator class="native" />
 		</id>
-		<property name="Start" />
+		<property name="Start" column="`Start`" />
 	</class>
 </hibernate-mapping>

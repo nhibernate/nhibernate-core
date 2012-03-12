@@ -14,7 +14,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		private class Animal
 		{
 			public int Id { get; set; }
-			private ICollection<Animal> children;
+			private ICollection<Animal> children = null;
 			public ICollection<Animal> Children
 			{
 				get { return children; }

@@ -64,18 +64,23 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Callvirt, getInterceptor);
 
 			// if (interceptor == null)
-			// 		throw new NullReferenceException();
+			// 		return base.method(...);
 
-			Label skipThrow = IL.DefineLabel();
+			Label skipBaseCall = IL.DefineLabel();
 
-			IL.Emit(OpCodes.Dup);
 			IL.Emit(OpCodes.Ldnull);
-			IL.Emit(OpCodes.Bne_Un, skipThrow);
+			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
-			IL.Emit(OpCodes.Newobj, notImplementedConstructor);
-			IL.Emit(OpCodes.Throw);
+			IL.Emit(OpCodes.Ldarg_0);
 
-			IL.MarkLabel(skipThrow);
+			for(int i=0; i<method.GetParameters().Length; i++)
+				IL.Emit(OpCodes.Ldarg_S, (sbyte)(i + 1));
+
+			IL.Emit(OpCodes.Call, method);
+			IL.Emit(OpCodes.Ret);
+
+			IL.MarkLabel(skipBaseCall);
+
 			// Push the 'this' pointer onto the stack
 			IL.Emit(OpCodes.Ldarg_0);
 
@@ -103,6 +108,10 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			IL.Emit(OpCodes.Newobj, infoConstructor);
 			IL.Emit(OpCodes.Stloc_1);
+
+			// this.Interceptor.Intercept(info);
+			IL.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Callvirt, getInterceptor);
 			IL.Emit(OpCodes.Ldloc_1);
 			IL.Emit(OpCodes.Callvirt, handlerMethod);
 

@@ -1,4 +1,6 @@
 using System.Linq;
+using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -6,6 +8,25 @@ namespace NHibernate.Test.Linq.ByMethod
 	[TestFixture]
 	public class OrderByTests : LinqTestCase
 	{
+		protected override void Configure(Cfg.Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.ShowSql, "true");
+		}
+
+		[Test]
+		public void GroupByThenOrderBy()
+		{
+			var query = from c in db.Customers
+						group c by c.Address.Country into g
+						orderby g.Key
+						select new { Country = g.Key, Count = g.Count() };
+
+			var ids = query.ToList();
+			Assert.NotNull(ids);
+			AssertOrderedBy.Ascending(ids, arg => arg.Country);
+		}
+		
 		[Test]
 		public void AscendingOrderByClause()
 		{
@@ -137,8 +158,44 @@ namespace NHibernate.Test.Linq.ByMethod
 			// Check join result.
 			var allAnimals = db.Animals;
 			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
+// ReSharper disable RemoveToList.2
 			// We to ToList() first or it skips the generation of the joins.
 			Assert.AreEqual(allAnimals.ToList().Count(), orderedAnimals.ToList().Count());
+// ReSharper restore RemoveToList.2
+		}
+		
+		[Test]
+		public void OrderByWithSelfReferencedSubquery1()
+		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
+
+			//NH-3044
+			var result = (from order in db.Orders
+						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
+						  orderby order.Customer.CustomerId 
+						  select order).ToList();
+
+			AssertOrderedBy.Ascending(result.Take(5).ToList(), x => x.Customer.CustomerId);
+		}
+		
+		[Test]
+		public void OrderByWithSelfReferencedSubquery2()
+		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("On Oracle this generates a correlated subquery two levels deep which isn't supported until Oracle 10g.");
+
+			//NH-3044
+			var result = (from order in db.Orders
+						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
+						  orderby order.ShippingDate descending 
+						  select order).ToList();
+
+			// Different databases may sort null either first or last.
+			// We only bother about the non-null values here.
+			result = result.Where(x => x.ShippingDate != null).ToList();
+
+			AssertOrderedBy.Descending(result.Take(5).ToList(), x => x.ShippingDate);
 		}
 	}
 }

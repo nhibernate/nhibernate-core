@@ -31,9 +31,10 @@ namespace NHibernate.SqlCommand.Parser
 			return false;
 		}
 
-		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum, out SqlToken selectToken)
+		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum, out SqlToken selectToken, out bool isDistinct)
 		{
 			selectToken = null;
+			isDistinct = false;
 
 			while (tokenEnum.TryParseUntil("select"))
 			{
@@ -41,8 +42,12 @@ namespace NHibernate.SqlCommand.Parser
 				if (!tokenEnum.MoveNext()) return false;
 
 				// [ DISTINCT | ALL ]
-				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase)
-					|| tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+				if (tokenEnum.Current.Equals("distinct", StringComparison.InvariantCultureIgnoreCase))
+				{
+					isDistinct = true;
+					if (!tokenEnum.MoveNext()) return false;
+				}
+				else if	(tokenEnum.Current.Equals("all", StringComparison.InvariantCultureIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 				}

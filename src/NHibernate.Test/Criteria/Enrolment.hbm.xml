@@ -18,7 +18,7 @@
 	<class name="CourseMeeting">
 		<composite-id name="Id" class="CourseMeetingId">
 			<key-property name="CourseCode"/>
-			<key-property name="Day"/>
+			<key-property name="Day" column="`Day`"/>
 			<key-property name="Period"/>
 			<key-property name="Location"/>
 		</composite-id>

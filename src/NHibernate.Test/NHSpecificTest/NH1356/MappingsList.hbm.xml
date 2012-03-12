@@ -8,7 +8,7 @@
 
 		<list name="Addresses" table="Addresses" lazy="false" generic="true">
 			<key column="PersonId" />
-			<index column="Position" />
+			<index column="`Position`" />
 
 			<composite-element class="Address">
 				<property name="Street" access="field.camelcase" />

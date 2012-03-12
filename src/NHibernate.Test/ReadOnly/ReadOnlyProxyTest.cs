@@ -24,7 +24,7 @@ namespace NHibernate.Test.ReadOnly
 				return new string[]
 					{
 						"ReadOnly.DataPoint.hbm.xml",
-						"ReadOnly.TextHolder.hbm.xml"
+						//"ReadOnly.TextHolder.hbm.xml"
 					};
 			}
 		}
@@ -907,7 +907,7 @@ namespace NHibernate.Test.ReadOnly
 				s.Refresh(dp);
 				Assert.Fail("should have thrown UnresolvableObjectException" );
 			}
-			catch (UnresolvableObjectException ex)
+			catch (UnresolvableObjectException)
 			{
 				// expected
 			}
@@ -936,7 +936,7 @@ namespace NHibernate.Test.ReadOnly
 				s.Refresh(dpProxyInit);
 				Assert.Fail("should have thrown UnresolvableObjectException");
 			}
-			catch (UnresolvableObjectException ex)
+			catch (UnresolvableObjectException)
 			{
 				// expected
 			}
@@ -957,7 +957,7 @@ namespace NHibernate.Test.ReadOnly
 				NHibernateUtil.Initialize(dpProxy);
 				Assert.Fail("should have thrown UnresolvableObjectException");
 			}
-			catch (UnresolvableObjectException ex)
+			catch (UnresolvableObjectException)
 			{
 				// expected
 			}
@@ -1601,7 +1601,7 @@ namespace NHibernate.Test.ReadOnly
 	 			((INHibernateProxy)dp).HibernateLazyInitializer.ReadOnly = true;
 				Assert.Fail("should have failed because session was detached");
 			}
-			catch (TransientObjectException ex)
+			catch (TransientObjectException)
 			{
 				// expected
 				Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.IsReadOnlySettingAvailable, Is.False);

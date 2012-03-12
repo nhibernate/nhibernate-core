@@ -5,6 +5,8 @@ namespace NHibernate.Linq.Visitors
 {
 	public interface IHqlExpressionVisitor
 	{
+		ISessionFactory SessionFactory { get; }
+
 		HqlTreeNode Visit(Expression expression);
 	}
 }

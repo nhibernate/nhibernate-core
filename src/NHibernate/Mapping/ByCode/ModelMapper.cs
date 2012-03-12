@@ -736,7 +736,7 @@ namespace NHibernate.Mapping.ByCode
 				classMapper.ComponentAsId(poidPropertyOrField, compoAsId =>
 				                                               {
 				                                               	var memberPath = new PropertyPath(null, poidPropertyOrField);
-				                                               	var componentMapper = new ComponentAsIdLikeComponetAttributesMapper(compoAsId);
+				                                               	var componentMapper = new ComponentAsIdLikeComponentAttributesMapper(compoAsId);
 				                                               	InvokeBeforeMapComponent(memberPath, componentMapper);
 
 				                                               	System.Type componentType = poidPropertyOrField.GetPropertyOrFieldType();

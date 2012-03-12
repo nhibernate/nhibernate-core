@@ -216,58 +216,6 @@ namespace NHibernate.SqlCommand
 			_length = sqlIndex;
 		}
 
-
-		private void Add(object part, StringBuilder pendingContent, ref int sqlIndex)
-		{
-			var stringPart = part as string;
-			if (stringPart != null)
-			{
-				pendingContent.Append(stringPart);
-				return;
-			}
-
-			var parameter = part as Parameter;
-			if (parameter != null)
-			{
-				AppendAndResetPendingContent(pendingContent, ref sqlIndex);
-
-				_parts.Add(new Part(sqlIndex));
-				_parameters.Add(sqlIndex, parameter);
-				sqlIndex += 1;
-				return;
-			}
-
-			var sql = part as SqlString;
-			if (sql != null)
-			{
-				foreach (var otherPart in sql)
-				{
-					Add(otherPart, pendingContent, ref sqlIndex);
-				}
-				return;
-			}
-
-			throw new ArgumentException("Only string, Parameter or SqlString values are supported as SqlString parts.");
-		}
-
-
-		/// <summary>
-		/// It the pendingContent is non-empty, append it as a new part and reset the pendingContent
-		/// to empty. The new part will be given the sqlIndex. After return, the sqlIndex will have
-		/// been updated to the next available index.
-		/// </summary>
-		/// <param name="pendingContent"></param>
-		/// <param name="sqlIndex"></param>
-		private void AppendAndResetPendingContent(StringBuilder pendingContent, ref int sqlIndex)
-		{
-			if (pendingContent.Length > 0)
-			{
-				_parts.Add(new Part(sqlIndex, pendingContent.ToString()));
-				sqlIndex += pendingContent.Length;
-				pendingContent.Length = 0;
-			}
-		}
-
 		#endregion
 
 		#region Factory methods
@@ -475,12 +423,13 @@ namespace NHibernate.SqlCommand
 			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
 		}
 
-
 		/// <summary>
 		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>
-		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
-		/// case.</param>
+		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower</param>
+		/// <param name="startIndex">The zero-based index of the search starting position.</param>
+		/// <param name="length">The number of character positions to examine.</param>
+		/// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
 		/// <remarks>
 		/// The text must be located entirely in a string part of the <see cref="SqlString" />.
 		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
@@ -490,7 +439,7 @@ namespace NHibernate.SqlCommand
 		/// if not found.</returns>
 		public int IndexOf(string text, int startIndex, int length, StringComparison stringComparison)
 		{
-			if (text == null) throw new ArgumentNullException("value");
+			if (text == null) throw new ArgumentNullException("text");
 
 			var sqlSearchStartIndex = _sqlStartIndex + startIndex;
 			var maxSearchLength = Math.Min(length, _sqlStartIndex + _length - sqlSearchStartIndex);
@@ -529,7 +478,6 @@ namespace NHibernate.SqlCommand
 			return new SqlString(new object[] { Substring(0, index), sql, Substring(index, _length - index) });
 		}
 
-
 		/// <summary>
 		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>
@@ -547,12 +495,13 @@ namespace NHibernate.SqlCommand
 			return LastIndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
 		}
 
-
 		/// <summary>
 		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>
-		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
-		/// case.</param>
+		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower case.</param>
+		/// <param name="startIndex">The zero-based index of the search starting position.</param>
+		/// <param name="length">The number of character positions to examine.</param>
+		/// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
 		/// <remarks>
 		/// The text must be located entirely in a string part of the <see cref="SqlString" />.
 		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
@@ -562,7 +511,7 @@ namespace NHibernate.SqlCommand
 		/// if not found.</returns>
 		private int LastIndexOf(string text, int startIndex, int length, StringComparison stringComparison)
 		{
-			if (text == null) throw new ArgumentNullException("value");
+			if (text == null) throw new ArgumentNullException("text");
 
 			var sqlSearchEndIndex = _sqlStartIndex + Math.Min(_length, startIndex + length);
 			var maxSearchLength = sqlSearchEndIndex - _sqlStartIndex - startIndex;
@@ -784,10 +733,54 @@ namespace NHibernate.SqlCommand
 			return sqlIndex >= part.SqlIndex && sqlIndex < part.SqlIndex + part.Length ? min : -1;
 		}
 
-		internal static int LengthOfPart(object part)
+		private void Add(object part, StringBuilder pendingContent, ref int sqlIndex)
 		{
-			var partString = part as string;
-			return partString == null ? 1 : partString.Length;
+			var stringPart = part as string;
+			if (stringPart != null)
+			{
+				pendingContent.Append(stringPart);
+				return;
+			}
+
+			var parameter = part as Parameter;
+			if (parameter != null)
+			{
+				AppendAndResetPendingContent(pendingContent, ref sqlIndex);
+
+				_parts.Add(new Part(sqlIndex));
+				_parameters.Add(sqlIndex, parameter);
+				sqlIndex += 1;
+				return;
+			}
+
+			var sql = part as SqlString;
+			if (sql != null)
+			{
+				foreach (var otherPart in sql)
+				{
+					Add(otherPart, pendingContent, ref sqlIndex);
+				}
+				return;
+			}
+
+			throw new ArgumentException("Only string, Parameter or SqlString values are supported as SqlString parts.");
+		}
+
+		/// <summary>
+		/// It the pendingContent is non-empty, append it as a new part and reset the pendingContent
+		/// to empty. The new part will be given the sqlIndex. After return, the sqlIndex will have
+		/// been updated to the next available index.
+		/// </summary>
+		/// <param name="pendingContent"></param>
+		/// <param name="sqlIndex"></param>
+		private void AppendAndResetPendingContent(StringBuilder pendingContent, ref int sqlIndex)
+		{
+			if (pendingContent.Length > 0)
+			{
+				_parts.Add(new Part(sqlIndex, pendingContent.ToString()));
+				sqlIndex += pendingContent.Length;
+				pendingContent.Length = 0;
+			}
 		}
 
 		#endregion
@@ -850,7 +843,7 @@ namespace NHibernate.SqlCommand
 			{
 				part = _parts[partIndex++];
 				yield return part.IsParameter
-					? (object)this._parameters[part.SqlIndex]
+					? (object)_parameters[part.SqlIndex]
 					: part.Content;
 			}
 
@@ -990,42 +983,39 @@ namespace NHibernate.SqlCommand
 
 			public Part(int sqlIndex, string content)
 			{
-				this.SqlIndex = sqlIndex;
-				this.Content = content;
-				this.IsParameter = false;
+				SqlIndex = sqlIndex;
+				Content = content;
+				IsParameter = false;
 			}
 
-			public Part(int sqlIndex)
+			public Part(int sqlIndex) : this(sqlIndex, "?")
 			{
-				this.SqlIndex = sqlIndex;
-				this.Content = "?";
-				this.IsParameter = true;
+				IsParameter = true;
 			}
 
 			public int Length
 			{
-				get { return this.Content.Length; }
+				get { return Content.Length; }
 			}
 
 			public bool Equals(Part other)
 			{
-				return this.IsParameter == other.IsParameter
-					&& this.Content == other.Content;
+				return IsParameter == other.IsParameter && Content == other.Content;
 			}
 
 			public override bool Equals(object obj)
 			{
-				return (obj is Part && this.Equals((Part)obj));
+				return (obj is Part && Equals((Part)obj));
 			}
 
 			public override int GetHashCode()
 			{
-				return this.Content.GetHashCode();
+				return Content.GetHashCode();
 			}
 
 			public override string ToString()
 			{
-				return this.Content;
+				return Content;
 			}
 		}
 	}

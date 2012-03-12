@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
@@ -54,38 +55,38 @@ namespace NHibernate.Linq.Visitors
 	/// 
 	/// The code here is based on the excellent work started by Harald Mueller.
 	/// </summary>
-	internal class WhereJoinDetector : AbstractJoinDetector
+	internal class WhereJoinDetector : NhExpressionTreeVisitor
 	{
 		// TODO: There are a number of types of expressions that we didn't handle here due to time constraints.  For example, the ?: operator could be checked easily.
+		private readonly IIsEntityDecider _isEntityDecider;
+		private readonly IJoiner _joiner;
 
-		private Stack<bool> _handled = new Stack<bool>();
+		private readonly Stack<bool> _handled = new Stack<bool>();
 		
 		// Stack of result values of each expression.  After an expression has processed itself, it adds itself to the stack.
-		private Stack<ExpressionValues> _values = new Stack<ExpressionValues>();
+		private readonly Stack<ExpressionValues> _values = new Stack<ExpressionValues>();
 
 		// The following is used for member expressions traversal.
-		private int _memberExpressionDepth = 0;
+		private int _memberExpressionDepth;
 
-		internal
-			WhereJoinDetector(NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
-			: base(nameGenerator, isEntityDecider, joins, expressionMap)
+		internal WhereJoinDetector(IIsEntityDecider isEntityDecider, IJoiner joiner)
 		{
+			_isEntityDecider = isEntityDecider;
+			_joiner = joiner;
 		}
 
-		internal static void Find(Expression expression, NameGenerator nameGenerator, IIsEntityDecider isEntityDecider, Dictionary<string, NhJoinClause> joins, Dictionary<MemberExpression, QuerySourceReferenceExpression> expressionMap)
+		public void Transform(WhereClause whereClause)
 		{
-			WhereJoinDetector f = new WhereJoinDetector(nameGenerator, isEntityDecider, joins, expressionMap);
+			whereClause.TransformExpressions(VisitExpression);
 
-			f.VisitExpression(expression);
-
-			ExpressionValues values = f._values.Pop();
+			var values = _values.Pop();
 
 			foreach (var memberExpression in values.MemberExpressions)
 			{
 				// If outer join can never produce true, we can safely inner join.
 				if (!values.GetValues(memberExpression).Contains(true))
 				{
-					f.MakeInnerIfJoined(memberExpression);
+					_joiner.MakeInnerIfJoined(memberExpression);
 				}
 			}
 		}
@@ -269,6 +270,13 @@ namespace NHibernate.Linq.Visitors
 			return result;
 		}
 
+		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		{
+			if (expression.QueryModel.IsIdentityQuery())
+				expression.QueryModel.TransformExpressions(VisitExpression);
+			return expression;
+		}
+
 		// We would usually get NULL if one of our inner member expresions was null.
 		// However, it's possible a method call will convert the null value from the failed join into a non-null value.
 		// This could be optimized by actually checking what the method does.  For example StartsWith("s") would leave null as null and would still allow us to inner join.
@@ -287,38 +295,38 @@ namespace NHibernate.Linq.Visitors
 			// I'm not sure what processing re-linq does to strange member expressions.
 			// TODO: I suspect this code doesn't add the right joins for the last case.
 
-			_memberExpressionDepth++;
+			var isIdentifier = _isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name);
+
+			if (!isIdentifier)
+				_memberExpressionDepth++;
+
 			var result = base.VisitMemberExpression(expression);
-			_memberExpressionDepth--;
+
+			if (!isIdentifier)
+				_memberExpressionDepth--;
 
 			ExpressionValues values = _values.Pop().Operation(pvs => pvs.MemberAccess(expression.Type));
 			if (_isEntityDecider.IsEntity(expression.Type))
 			{
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.
-				// TODO: Add an exception for the Id property.
+				var key = ExpressionKeyVisitor.Visit(expression, null);
 				if (_memberExpressionDepth > 0)
-					AddJoin(expression);
-				
-				string key = ExpressionKeyVisitor.Visit(expression, null);
+				{
+					result = _joiner.AddJoin(result, key);
+				}
+
 				values.MemberExpressionValuesIfEmptyOuterJoined[key] = PossibleValueSet.CreateNull(expression.Type);
 			}
 			SetResultValues(values);
-
+			
 			return result;
 		}
 
 		private static bool IsNullConstantExpression(Expression expression)
 		{
-			if (expression is ConstantExpression)
-			{
-				var constant = (ConstantExpression)expression;
-				return constant.Value == null;
-			}
-			else
-			{
-				return false;
-			}
+			var constant = expression as ConstantExpression;
+			return constant != null && constant.Value == null;
 		}
 
 		private void SetResultValues(ExpressionValues values)
@@ -378,7 +386,7 @@ namespace NHibernate.Linq.Visitors
 
 			public ExpressionValues Operation(ExpressionValues mergeWith, Func<PossibleValueSet, PossibleValueSet, PossibleValueSet> operation)
 			{
-				ExpressionValues result = new ExpressionValues(operation(Values, mergeWith.Values));
+				var result = new ExpressionValues(operation(Values, mergeWith.Values));
 				foreach (string memberExpression in MemberExpressions.Union(mergeWith.MemberExpressions))
 				{
 					var left = GetValues(memberExpression);
@@ -390,7 +398,7 @@ namespace NHibernate.Linq.Visitors
 
 			public ExpressionValues Operation(Func<PossibleValueSet, PossibleValueSet> operation)
 			{
-				ExpressionValues result = new ExpressionValues(operation(Values));
+				var result = new ExpressionValues(operation(Values));
 				foreach (string memberExpression in MemberExpressions)
 				{
 					result.MemberExpressionValuesIfEmptyOuterJoined.Add(memberExpression, operation(GetValues(memberExpression)));

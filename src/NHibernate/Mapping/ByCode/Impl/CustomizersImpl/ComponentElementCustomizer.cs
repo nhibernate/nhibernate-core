@@ -6,9 +6,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
 	public class ComponentElementCustomizer<TComponent> : IComponentElementMapper<TComponent>
 	{
-		private readonly ICustomizersHolder customizersHolder;
-		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;
-		private readonly PropertyPath propertyPath;
+		private readonly ICustomizersHolder _customizersHolder;
+		private readonly IModelExplicitDeclarationsHolder _explicitDeclarationsHolder;
+		private readonly PropertyPath _propertyPath;
 
 		public ComponentElementCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, PropertyPath propertyPath, ICustomizersHolder customizersHolder)
 		{
@@ -16,13 +16,16 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			this.explicitDeclarationsHolder = explicitDeclarationsHolder;
-			this.propertyPath = propertyPath;
-			this.customizersHolder = customizersHolder;
-			explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
+
+			_explicitDeclarationsHolder = explicitDeclarationsHolder;
+			_propertyPath = propertyPath;
+			_customizersHolder = customizersHolder;
+
+			_explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
+			
 			if (propertyPath != null)
 			{
-				explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
+				_explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
 			}
 		}
 
@@ -36,38 +39,43 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent, Action<IComponentParentMapper> parentMapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(parent);
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
-			explicitDeclarationsHolder.AddAsPersistentMember(member);
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
+			_explicitDeclarationsHolder.AddAsPersistentMember(member);
 		}
 
 		public void Update(bool consideredInUpdateQuery)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Update(consideredInUpdateQuery));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Update(consideredInUpdateQuery));
 		}
 
 		public void Insert(bool consideredInInsertQuery)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Insert(consideredInInsertQuery));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Insert(consideredInInsertQuery));
 		}
 
 		public void Lazy(bool isLazy)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
+		}
+
+		public void Unique(bool unique)
+		{
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Unique(unique));
 		}
 
 		public void Class<TConcrete>() where TConcrete : TComponent
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Class(typeof (TConcrete)));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Class(typeof (TConcrete)));
 		}
 
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
-			explicitDeclarationsHolder.AddAsProperty(member);
-			explicitDeclarationsHolder.AddAsProperty(memberOf);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf), mapping);
+			_explicitDeclarationsHolder.AddAsProperty(member);
+			_explicitDeclarationsHolder.AddAsProperty(memberOf);
 		}
 
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property)
@@ -79,19 +87,19 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			where TNestedComponent : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			mapping(new ComponentElementCustomizer<TNestedComponent>(explicitDeclarationsHolder, new PropertyPath(propertyPath, member), customizersHolder));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, member), _customizersHolder));
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			mapping(new ComponentElementCustomizer<TNestedComponent>(explicitDeclarationsHolder, new PropertyPath(propertyPath, memberOf), customizersHolder));
+			mapping(new ComponentElementCustomizer<TNestedComponent>(_explicitDeclarationsHolder, new PropertyPath(_propertyPath, memberOf), _customizersHolder));
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IManyToOneMapper> mapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, member), mapping);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, member), mapping);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			customizersHolder.AddCustomizer(new PropertyPath(propertyPath, memberOf), mapping);
-			explicitDeclarationsHolder.AddAsManyToOneRelation(member);
-			explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
+			_customizersHolder.AddCustomizer(new PropertyPath(_propertyPath, memberOf), mapping);
+			_explicitDeclarationsHolder.AddAsManyToOneRelation(member);
+			_explicitDeclarationsHolder.AddAsManyToOneRelation(memberOf);
 		}
 
 		public void ManyToOne<TProperty>(Expression<Func<TComponent, TProperty>> property) where TProperty : class
@@ -101,17 +109,17 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Access(Accessor accessor)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessor));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessor));
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessorType));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessorType));
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
 		{
-			customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.OptimisticLock(takeInConsiderationForOptimisticLock));
+			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.OptimisticLock(takeInConsiderationForOptimisticLock));
 		}
 
 		#endregion
