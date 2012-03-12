@@ -259,12 +259,15 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 
 				// With parameters and nested function calls.
-				hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
-				result = (Animal) s.CreateQuery(hql)
-				                  	.SetParameter(0, "foo")
-									.SetParameter("start", 4)
-				                  	.UniqueResult();
-				Assert.AreEqual("abcdef", result.Description);
+				if (!(Dialect is FirebirdDialect))  // Firebird only supports integer literals for start (and length).
+				{
+					hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
+					result = (Animal) s.CreateQuery(hql)
+					                  	.SetParameter(0, "foo")
+					                  	.SetParameter("start", 4)
+					                  	.UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
 			}
 		}
 
@@ -293,6 +296,14 @@ namespace NHibernate.Test.Hql
 					.UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
+
+				if (Dialect is FirebirdDialect)
+				{
+					// Firebird only supports integer literals for start (and length).
+					return;
+				}
+
+				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
 				result = (Animal)s.CreateQuery(hql)
