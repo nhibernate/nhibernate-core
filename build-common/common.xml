@@ -172,6 +172,7 @@
 	</target>
 
 	<target name="set-project-configuration">
+		<property name="project.config" value="debug" overwrite="false" />
 		<if test="${not(target::exists('set-' + project.config + '-project-configuration'))}">
 			<fail message="Unknown configuration: '${project.config}'" />
 		</if>
