@@ -144,6 +144,7 @@
     <Compile Include="Dialect\InsertGeneratedIdentifierRetrievalMethod.cs" />
     <Compile Include="Dialect\MsSql2000Dialect.cs" />
     <Compile Include="Dialect\MsSql2005DialectQueryPager.cs" />
+    <Compile Include="Dialect\MsSql2012Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MsSqlAzure2008Dialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
