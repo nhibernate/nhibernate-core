@@ -35,7 +35,7 @@ namespace NHibernate.Dialect.Function
 			if (args.Count == 2)
 			{
 				// Have the DB calculate the length argument itself.
-				var lengthArg = new SqlString("len(", args[0], ") + 1 - ", args[1]);
+				var lengthArg = new SqlString("len(", args[0], ") + 1 - (", args[1], ")");
 				args = new[] { args[0], args[1], lengthArg };
 
 				// Future possibility: Some databases, e.g. MSSQL, allows the length
