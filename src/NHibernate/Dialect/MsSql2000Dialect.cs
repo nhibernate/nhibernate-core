@@ -341,26 +341,11 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			int insertPoint;
-			return TryFindLimitInsertPoint(querySqlString, out insertPoint)
-				? querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "))
-				: null;
-		}
+			var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator();
+			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
 
-		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
-		{
-			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
-			
-			SqlToken selectToken;
-			bool isDistinct;
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken, out isDistinct))
-			{
-				result = tokenEnum.Current.SqlIndex;
-				return true;
-			}
-
-			result = -1;
-			return false;
+			int insertPoint = tokenEnum.Current.SqlIndex;
+			return querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "));
 		}
 
 		/// <summary>

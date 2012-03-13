@@ -31,6 +31,13 @@ namespace NHibernate.SqlCommand.Parser
 			return false;
 		}
 
+		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum)
+		{
+			SqlToken selectToken;
+			bool isDistinct;
+			return TryParseUntilFirstMsSqlSelectColumn(tokenEnum, out selectToken, out isDistinct);
+		}
+
 		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum, out SqlToken selectToken, out bool isDistinct)
 		{
 			selectToken = null;
