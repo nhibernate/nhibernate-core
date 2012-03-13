@@ -33,10 +33,11 @@ namespace NHibernate.Dialect
 
 		private SqlString PageByLimitOnly(SqlString limit)
 		{
-			int insertPoint;
-			return TryFindLimitInsertPoint(_sourceQuery, out insertPoint)
-					   ? _sourceQuery.Insert(insertPoint, new SqlString("TOP (", limit, ") "))
-					   : null;
+			var tokenEnum = new SqlTokenizer(_sourceQuery).GetEnumerator();
+			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
+			
+			int insertPoint = tokenEnum.Current.SqlIndex;
+			return _sourceQuery.Insert(insertPoint, new SqlString("TOP (", limit, ") "));
 		}
 
 		private SqlString PageByLimitAndOffset(SqlString offset, SqlString limit)
@@ -56,22 +57,6 @@ namespace NHibernate.Dialect
 			}
 			BuildWhereAndOrderClausesForPagingQuery(offset, result);
 			return result.ToSqlString();
-		}
-
-		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
-		{
-			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
-
-			SqlToken selectToken;
-			bool isDistinct;
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out selectToken, out isDistinct))
-			{
-				result = tokenEnum.Current.SqlIndex;
-				return true;
-			}
-
-			result = -1;
-			return false;
 		}
 
 		private static void BuildSelectClauseForPagingQuery(MsSqlSelectParser sqlQuery, SqlString limit, SqlStringBuilder result)
