@@ -50,6 +50,8 @@ namespace NHibernate.Cfg
 
 		public string DefaultCatalogName { get; internal set; }
 
+        public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
+
 		public string SessionFactoryName { get; internal set; }
 
 		public bool IsAutoCreateSchema { get; internal set; }

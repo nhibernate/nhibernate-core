@@ -167,7 +167,7 @@ namespace NHibernate.Engine
 						end = i;
 						//checkForEnd = false;
 					}
-					else if (!IsCached(ce.LoadedKey, collectionPersister, entityMode))
+					else if (!IsCached(ce.LoadedKey, collectionPersister))
 					{
 						keys[i++] = ce.LoadedKey;
 						//count++;
@@ -220,7 +220,7 @@ namespace NHibernate.Engine
 					}
 					else
 					{
-						if (!IsCached(key, persister, entityMode))
+						if (!IsCached(key, persister))
 						{
 							ids[i++] = key.Identifier;
 						}
@@ -236,24 +236,21 @@ namespace NHibernate.Engine
 			return ids; //we ran out of ids to try
 		}
 
-		private bool IsCached(EntityKey entityKey, IEntityPersister persister, EntityMode entityMode)
+		private bool IsCached(EntityKey entityKey, IEntityPersister persister)
 		{
 			if (persister.HasCache)
 			{
-				CacheKey key =
-					new CacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName, entityMode,
-					             context.Session.Factory);
+				CacheKey key = context.Session.GenerateCacheKey(entityKey.Identifier, persister.IdentifierType, entityKey.EntityName);
 				return persister.Cache.Cache.Get(key) != null;
 			}
 			return false;
 		}
 
-		private bool IsCached(object collectionKey, ICollectionPersister persister, EntityMode entityMode)
+		private bool IsCached(object collectionKey, ICollectionPersister persister)
 		{
 			if (persister.HasCache)
 			{
-				CacheKey cacheKey =
-					new CacheKey(collectionKey, persister.KeyType, persister.Role, entityMode, context.Session.Factory);
+			    CacheKey cacheKey = context.Session.GenerateCacheKey(collectionKey, persister.KeyType, persister.Role);
 				return persister.Cache.Cache.Get(cacheKey) != null;
 			}
 			return false;

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
+using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -28,6 +30,21 @@ namespace NHibernate.Impl
 
 		private readonly Guid sessionId = Guid.NewGuid();
 		private bool closed;
+
+        private string _tenantIdentifier;
+        public string TenantIdentifier
+        {
+            get
+            {
+                return _tenantIdentifier;
+            }
+            set
+            {
+                if (MultiTenancyStrategy.None == factory.Settings.MultiTenancyStrategy)
+                    throw new HibernateException("Sessionfactory was not configured for multi-tenancy");
+                _tenantIdentifier = value;
+            }
+        }
 
 		public ITransactionContext TransactionContext
 		{
@@ -70,6 +87,21 @@ namespace NHibernate.Impl
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }
+
+        public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
+        {
+            return GenerateEntityKey(id, persister, EntityMode);
+        }
+
+        public EntityKey GenerateEntityKey(object id, IEntityPersister persister, EntityMode entityMode)
+        {
+            return new EntityKey(id, persister, entityMode, TenantIdentifier);
+        }
+
+        public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
+        {
+            return new CacheKey(id, type, entityOrRoleName, EntityMode, TenantIdentifier, Factory);
+        }
 
 		public ISessionFactoryImplementor Factory
 		{

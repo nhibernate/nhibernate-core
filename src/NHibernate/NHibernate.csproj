@@ -125,13 +125,16 @@
     <Compile Include="Cfg\ImprovedNamingStrategy.cs" />
     <Compile Include="Cfg\INamingStrategy.cs" />
     <Compile Include="Cfg\Mappings.cs" />
+    <Compile Include="Cfg\MultiTenancyStrategy.cs" />
     <Compile Include="Cfg\Settings.cs" />
     <Compile Include="Cfg\SettingsFactory.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
+    <Compile Include="Connection\AbstractMultiTenantConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
+    <Compile Include="Connection\IMultiTenantConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
     <Compile Include="Criterion\IEnhancedProjection.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
