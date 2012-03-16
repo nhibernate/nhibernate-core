@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2812"
+				   assembly="NHibernate.Test">
+	<class name="EntityWithAByteValue">
+		<id name="Id" type="Guid">
+			<generator class="guid" />
+		</id>
+		<property name="ByteValue" not-null="true" />
+	</class>
+</hibernate-mapping>

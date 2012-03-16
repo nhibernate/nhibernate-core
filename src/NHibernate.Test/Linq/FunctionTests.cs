@@ -309,8 +309,18 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public void WhereByteEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Byte.Equals(1)
+						select item;
+
+			ObjectDumper.Write(query);
 		}	
-	
+
 		[Test]
 		public void WhereDecimalEqual()
 		{

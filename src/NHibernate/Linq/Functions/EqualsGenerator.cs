@@ -23,7 +23,8 @@ namespace NHibernate.Linq.Functions
 			                   		ReflectionHelper.GetMethodDefinition<double>(x => x.Equals(default(double))),
 			                   		ReflectionHelper.GetMethodDefinition<float>(x => x.Equals(default(float))),
 			                   		ReflectionHelper.GetMethodDefinition<decimal>(x => x.Equals(default(decimal))),
-			                   		ReflectionHelper.GetMethodDefinition<char>(x => x.Equals(default(char)))
+			                   		ReflectionHelper.GetMethodDefinition<char>(x => x.Equals(default(char))),
+									ReflectionHelper.GetMethodDefinition<byte>(x => x.Equals(default(byte)))
 			                   	};
 		}
 
