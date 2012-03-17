@@ -242,7 +242,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = Array.IndexOf(lookup[item.Id % 4].Codes, item.Id % 4, 0) / 7,
+							index = Array.IndexOf(lookup[1 + item.Id % 4].Codes, 1 + item.Id % 4, 0) / 7,
 						};
 
 			var result = query.ToList();
@@ -258,7 +258,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup[item.Id % 4],
+							index = lookup[1 + item.Id % 4],
 						};
 
 			var result = query.ToList();
@@ -274,7 +274,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup[item.Id % 4],
+							index = lookup[1 + item.Id % 4],
 						};
 
 			var result = query.ToList();
