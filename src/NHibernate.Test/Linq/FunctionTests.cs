@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
@@ -14,6 +15,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void SubstringFunction2()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird before 2.0 only support integer literals for substring() - NH generates parameters.");
+
 			var query = (from e in db.Employees
 						 where e.FirstName.Substring(0, 2) == "An"
 						 select e).ToList();
@@ -24,6 +28,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void SubstringFunction1()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird before 2.0 only support integer literals for substring() - NH generates parameters.");
+
 			var query = (from e in db.Employees
 						 where e.FirstName.Substring(3) == "rew"
 						 select e).ToList();
