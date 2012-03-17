@@ -242,7 +242,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = Array.IndexOf(lookup[item.Id].Codes, item.Id, 0) / 7,
+							index = Array.IndexOf(lookup[item.Id % 4].Codes, item.Id % 4, 0) / 7,
 						};
 
 			var result = query.ToList();
@@ -258,7 +258,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup[item.Id],
+							index = lookup[item.Id % 4],
 						};
 
 			var result = query.ToList();
@@ -274,7 +274,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup[item.Id],
+							index = lookup[item.Id % 4],
 						};
 
 			var result = query.ToList();
@@ -290,7 +290,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup.ContainsKey(item.Id),
+							isPresent  = lookup.ContainsKey(item.Id),
 						};
 
 			var result = query.ToList();
@@ -306,7 +306,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup.Contains(item.Id),
+							isPresent = lookup.Contains(item.Id),
 						};
 
 			var result = query.ToList();
@@ -322,7 +322,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							index = lookup.Contains(item.Id),
+							isPresent = lookup.Contains(item.Id),
 						};
 
 			var result = query.ToList();
@@ -339,18 +339,16 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 								   {
-									   Value = value.Substring(item.Id),
+									   Start = item.Id % 10,
+									   Value = value.Substring(item.Id % 10),
 								   };
 
-			var result = query.ToList()
-				.Select(x => x.Value)
-				.OrderBy(x => x)
-				.ToList();
+			var result = query.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(3));
-			Assert.That(result[0], Is.EqualTo("234567890"));
-			Assert.That(result[1], Is.EqualTo("34567890"));
-			Assert.That(result[2], Is.EqualTo("4567890"));
+			Assert.That(result[0].Value, Is.EqualTo(value.Substring(result[0].Start)));
+			Assert.That(result[1].Value, Is.EqualTo(value.Substring(result[1].Start)));
+			Assert.That(result[2].Value, Is.EqualTo(value.Substring(result[2].Start)));
 		}
 
 		private string FormatName(string name, DateTime? lastLoginDate)
