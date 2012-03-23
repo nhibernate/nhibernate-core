@@ -289,6 +289,7 @@
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
+    <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
