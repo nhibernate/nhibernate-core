@@ -292,6 +292,7 @@
     <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />
     <Compile Include="Linq\Functions\CompareGenerator.cs" />
+    <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
