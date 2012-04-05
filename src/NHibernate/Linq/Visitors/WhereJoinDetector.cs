@@ -272,8 +272,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			if (expression.QueryModel.IsIdentityQuery())
-				expression.QueryModel.TransformExpressions(VisitExpression);
+			expression.QueryModel.TransformExpressions(VisitExpression);
 			return expression;
 		}
 
@@ -311,7 +310,8 @@ namespace NHibernate.Linq.Visitors
 				// Don't add joins for things like a.B == a.C where B and C are entities.
 				// We only need to join B when there's something like a.B.D.
 				var key = ExpressionKeyVisitor.Visit(expression, null);
-				if (_memberExpressionDepth > 0)
+				if (_memberExpressionDepth > 0 &&
+					_joiner.CanAddJoin(expression))
 				{
 					result = _joiner.AddJoin(result, key);
 				}

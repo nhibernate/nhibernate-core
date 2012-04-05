@@ -28,7 +28,9 @@ namespace NHibernate.Linq.Visitors
 			var result = base.VisitMemberExpression(expression);
 			_identifierMemberExpressionDepth--;
 
-			if (_isEntityDecider.IsEntity(expression.Type) && (!_hasIdentifier || _identifierMemberExpressionDepth > 0))
+			if (_isEntityDecider.IsEntity(expression.Type) &&
+				(!_hasIdentifier || _identifierMemberExpressionDepth > 0) &&
+				_joiner.CanAddJoin(expression))
 			{
 				var key = ExpressionKeyVisitor.Visit(expression, null);
 				return _joiner.AddJoin(result, key);
