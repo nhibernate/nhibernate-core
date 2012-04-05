@@ -479,5 +479,39 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
+
+		[Test]
+		public void SubqueryWhereFailingTest()
+		{
+			//NH-3111
+			var list = (db.OrderLines
+				.Select(ol => new
+				{
+					ol.Discount,
+					ShipperPhoneNumber = db.Shippers
+						.Where(sh => sh.ShipperId == ol.Order.Shipper.ShipperId)
+						.Select(sh => sh.PhoneNumber)
+						.FirstOrDefault()
+				})).ToList();
+
+			Assert.That(list.Count, Is.EqualTo(2155));
+		}
+
+		[Test]
+		public void SubqueryWhereFailingTest2()
+		{
+			//NH-3111
+			var list = db.OrderLines
+				.Select(ol => new
+				{
+					ol.Discount,
+					ShipperPhoneNumber = db.Shippers
+						.Where(sh => sh == ol.Order.Shipper)
+						.Select(sh => sh.PhoneNumber)
+						.FirstOrDefault()
+				}).ToList();
+
+			Assert.That(list.Count, Is.EqualTo(2155));
+		} 
 	}
 }
