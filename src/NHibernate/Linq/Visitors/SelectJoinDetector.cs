@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -43,5 +44,10 @@ namespace NHibernate.Linq.Visitors
 			selectClause.TransformExpressions(VisitExpression);
 		}
 
+		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		{
+			expression.QueryModel.TransformExpressions(VisitExpression);
+			return expression;
+		}
 	}
 }
