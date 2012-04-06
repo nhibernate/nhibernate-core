@@ -313,7 +313,7 @@ namespace NHibernate.Loader
 
 			if (optionalObject != null && !string.IsNullOrEmpty(optionalEntityName))
 			{
-				return new EntityKey(optionalId, session.GetEntityPersister(optionalEntityName, optionalObject), session.EntityMode);
+                return session.GenerateEntityKey(optionalId, session.GetEntityPersister(optionalEntityName, optionalObject));
 			}
 			else
 			{
@@ -799,7 +799,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return resultId == null ? null : new EntityKey(resultId, persister, session.EntityMode);
+            return resultId == null ? null : session.GenerateEntityKey(resultId, persister);
 		}
 
 		/// <summary>

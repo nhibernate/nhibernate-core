@@ -17,6 +17,7 @@ namespace NHibernate.Engine
 		private readonly string entityName;
 		private readonly IType identifierType;
 		private readonly bool isBatchLoadable;
+	    private readonly string tenantId;
 
 		[NonSerialized]
 		private ISessionFactoryImplementor factory;
@@ -24,32 +25,36 @@ namespace NHibernate.Engine
 
 		private readonly EntityMode entityMode;
 
-		/// <summary> Construct a unique identifier for an entity class instance</summary>
-		public EntityKey(object id, IEntityPersister persister, EntityMode entityMode)
-			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory, entityMode) {}
+        /// <summary> Construct a unique identifier for an entity class instance
+        /// </summary>
+        public EntityKey(object id, IEntityPersister persister, EntityMode entityMode, string tenantId)
+            : this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory, entityMode, tenantId) { }
 
-		/// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
-		/// <param name="identifier">The identifier value </param>
-		/// <param name="rootEntityName">The root entity name </param>
-		/// <param name="entityName">The specific entity name </param>
-		/// <param name="identifierType">The type of the identifier value </param>
-		/// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
-		/// <param name="factory">The session factory </param>
-		/// <param name="entityMode">The entity's entity mode </param>
-		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory, EntityMode entityMode)
-		{
-			if (identifier == null)
-				throw new AssertionFailure("null identifier");
+        /// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
+        /// <param name="identifier">The identifier value </param>
+        /// <param name="rootEntityName">The root entity name </param>
+        /// <param name="entityName">The specific entity name </param>
+        /// <param name="identifierType">The type of the identifier value </param>
+        /// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
+        /// <param name="factory">The session factory </param>
+        /// <param name="entityMode">The entity's entity mode </param>
+        /// <param name="tenantId">The tenant identifier of the session to which this key belongs</param>
+        private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory, EntityMode entityMode, string tenantId)
+        {
+            if (identifier == null)
+                throw new AssertionFailure("null identifier");
 
-			this.identifier = identifier;
-			this.rootEntityName = rootEntityName;
-			this.entityName = entityName;
-			this.identifierType = identifierType;
-			isBatchLoadable = batchLoadable;
-			this.factory = factory;
-			this.entityMode = entityMode;
-			hashCode = GenerateHashCode();
-		}
+            this.identifier = identifier;
+            this.rootEntityName = rootEntityName;
+            this.entityName = entityName;
+            this.identifierType = identifierType;
+            isBatchLoadable = batchLoadable;
+            this.factory = factory;
+            this.entityMode = entityMode;
+            this.tenantId = tenantId;
+            hashCode = GenerateHashCode();
+            
+        }
 
 		public bool IsBatchLoadable
 		{
@@ -73,7 +78,8 @@ namespace NHibernate.Engine
 
 			return
 				otherKey.rootEntityName.Equals(rootEntityName)
-				&& identifierType.IsEqual(otherKey.Identifier, Identifier, entityMode, factory);
+				&& identifierType.IsEqual(otherKey.Identifier, Identifier, entityMode, factory)
+                && string.Equals(tenantId, otherKey.tenantId);
 		}
 
 		private int GenerateHashCode()

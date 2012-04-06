@@ -18,7 +18,7 @@ namespace NHibernate.Test.CacheTest
 
 		private CacheKey CreateCacheKey(string text)
 		{
-			return new CacheKey(text, NHibernateUtil.String, "Foo", EntityMode.Poco, null);
+			return new CacheKey(text, NHibernateUtil.String, "Foo", EntityMode.Poco, null, null);
 		}
 
 		public void DoTestCache(ICacheProvider cacheProvider)

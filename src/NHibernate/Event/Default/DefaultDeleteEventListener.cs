@@ -65,7 +65,7 @@ namespace NHibernate.Event.Default
 					throw new TransientObjectException("the detached instance passed to delete() had a null identifier");
 				}
 
-				EntityKey key = new EntityKey(id, persister, source.EntityMode);
+                EntityKey key = source.GenerateEntityKey(id, persister);
 
 				persistenceContext.CheckUniqueness(key, entity);
 
@@ -197,7 +197,7 @@ namespace NHibernate.Event.Default
 
 			// before any callbacks, etc, so subdeletions see that this deletion happened first
 			persistenceContext.SetEntryStatus(entityEntry, Status.Deleted);
-			EntityKey key = new EntityKey(entityEntry.Id, persister, session.EntityMode);
+            EntityKey key = session.GenerateEntityKey(entityEntry.Id, persister);
 
 			CascadeBeforeDelete(session, persister, entity, entityEntry, transientEntities);
 

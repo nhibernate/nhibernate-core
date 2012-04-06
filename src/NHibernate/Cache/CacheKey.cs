@@ -17,25 +17,27 @@ namespace NHibernate.Cache
 		private readonly string entityOrRoleName;
 		private readonly int hashCode;
 		private readonly EntityMode entityMode;
+        private readonly string tenantId;
 
-		/// <summary> 
-		/// Construct a new key for a collection or entity instance.
-		/// Note that an entity name should always be the root entity 
-		/// name, not a subclass entity name. 
-		/// </summary>
-		/// <param name="id">The identifier associated with the cached data </param>
-		/// <param name="type">The Hibernate type mapping </param>
-		/// <param name="entityOrRoleName">The entity or collection-role name. </param>
-		/// <param name="entityMode">The entiyt mode of the originating session </param>
-		/// <param name="factory">The session factory for which we are caching </param>
-		public CacheKey(object id, IType type, string entityOrRoleName, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			key = id;
-			this.type = type;
-			this.entityOrRoleName = entityOrRoleName;
-			this.entityMode = entityMode;
-			hashCode = type.GetHashCode(key, entityMode, factory);
-		}
+        /// <summary> 
+        /// Construct a new key for a collection or entity instance.
+        /// Note that an entity name should always be the root entity 
+        /// name, not a subclass entity name. 
+        /// </summary>
+        /// <param name="id">The identifier associated with the cached data </param>
+        /// <param name="type">The Hibernate type mapping </param>
+        /// <param name="entityOrRoleName">The entity or collection-role name. </param>
+        /// <param name="entityMode">The entiyt mode of the originating session </param>
+        /// <param name="factory">The session factory for which we are caching </param>
+        public CacheKey(object id, IType type, string entityOrRoleName, EntityMode entityMode, string tenantId, ISessionFactoryImplementor factory)
+        {
+            key = id;
+            this.type = type;
+            this.entityOrRoleName = entityOrRoleName;
+            this.entityMode = entityMode;
+            this.tenantId = tenantId;
+            hashCode = type.GetHashCode(key, entityMode, factory);
+        }
 
 		//Mainly for SysCache and Memcache
 		public override String ToString()

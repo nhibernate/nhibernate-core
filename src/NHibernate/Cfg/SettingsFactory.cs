@@ -111,6 +111,11 @@ namespace NHibernate.Cfg
 			settings.DefaultSchemaName = defaultSchema;
 			settings.DefaultCatalogName = defaultCatalog;
 
+            string multiTenancyStrategy = PropertiesHelper.GetString(
+                Environment.MultiTenancyStrategy, properties, MultiTenancyStrategyParser.NoneXmlName);
+            settings.MultiTenancyStrategy = MultiTenancyStrategyParser.Convert(multiTenancyStrategy);
+            log.Info("multi-tenancy strategy: " + multiTenancyStrategy);
+
 			int batchFetchSize = PropertiesHelper.GetInt32(Environment.DefaultBatchFetchSize, properties, 1);
 			log.Info("Default batch fetch size: " + batchFetchSize);
 			settings.DefaultBatchFetchSize = batchFetchSize;
