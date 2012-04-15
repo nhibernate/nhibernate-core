@@ -210,9 +210,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = db.Products
 				.Where(x => x.Discontinued == true && collection.Contains(x.Supplier))
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.ToList();
- 
+
 			Assert.That(result.Count, Is.EqualTo(8));
 		}
 
@@ -225,9 +225,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = db.Products
 				.Where(x => collection.Contains(x.Supplier))
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.ToList();
- 
+
 			Assert.That(result.Count, Is.EqualTo(62));
 		}
 

@@ -198,7 +198,7 @@ namespace NHibernate.Impl
 		{
 			ErrorIfClosed();
 			EnlistInAmbientTransactionIfNeeded();
-	    }
+		}
 
 		protected internal virtual void ErrorIfClosed()
 		{
@@ -260,20 +260,20 @@ namespace NHibernate.Impl
 			}
 		}
 
-        public virtual IQuery CreateQuery(IQueryExpression queryExpression)
-        {
-            using (new SessionIdLoggingContext(SessionId))
-            {
-                CheckAndUpdateSessionStatus();
-                var queryPlan = GetHQLQueryPlan(queryExpression, false);
+		public virtual IQuery CreateQuery(IQueryExpression queryExpression)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				var queryPlan = GetHQLQueryPlan(queryExpression, false);
 				var query = new ExpressionQueryImpl(queryPlan.QueryExpression, 
 												this,
-                                                queryPlan.ParameterMetadata
+												queryPlan.ParameterMetadata
 												);
-                query.SetComment("[expression]");
-                return query;
-            }
-        }
+				query.SetComment("[expression]");
+				return query;
+			}
+		}
 
 		public virtual IQuery CreateQuery(string queryString)
 		{
@@ -305,13 +305,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-        protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
-        {
-            using (new SessionIdLoggingContext(SessionId))
-            {
-                return factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, shallow, EnabledFilters);
-            }
-        }
+		protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, shallow, EnabledFilters);
+			}
+		}
 
 		protected internal virtual NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
@@ -342,7 +342,7 @@ namespace NHibernate.Impl
 
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
-		    factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
+			factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace NHibernate.Driver
 	/// </p>
 	/// <p>
 	/// The homepage for the .NET DataProvider is: 
-    /// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
+	/// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
 	public class NpgsqlDriver : ReflectionBasedDriver
@@ -75,13 +75,13 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-        protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
-        {
-            base.InitializeParameter(dbParam, name, sqlType);
+		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
+		{
+			base.InitializeParameter(dbParam, name, sqlType);
 
-            // Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
-            if (sqlType.DbType == DbType.Currency)
-                dbParam.DbType = DbType.Decimal;
-        }
+			// Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
+			if (sqlType.DbType == DbType.Currency)
+				dbParam.DbType = DbType.Decimal;
+		}
 	}
 }
