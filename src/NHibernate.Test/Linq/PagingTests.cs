@@ -32,7 +32,7 @@ namespace NHibernate.Test.Linq
 			var q = (from c in db.Customers
 					 orderby c.CustomerId
 					 select c.CustomerId).Take(5).Take(6);
-
+			
 			var query = q.ToList();
 
 			Assert.AreEqual(5, query.Count);
@@ -50,14 +50,88 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(76, query.Count);
 		}
 
-
-
 		[Test]
 		[Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
 		public void CountAfterTakeShouldReportTheCorrectNumber()
 		{
 			var users = db.Customers.Skip(3).Take(10);
 			Assert.AreEqual(10, users.Count());
+		}
+
+		[Test]
+		public void OrderedPagedProductsWithOuterProjection()
+		{
+			//NH-3108
+			var inMemoryIds = db.Products.ToList()
+				.OrderBy(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
+				.ToList();
+
+			var ids = db.Products 
+				.OrderBy(p => p.ProductId) 
+				.Skip(10).Take(20) 
+				.Select(p => p.ProductId) 
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void OrderedPagedProductsWithInnerProjection()
+		{
+			//NH-3108 (not failing)
+			var inMemoryIds = db.Products.ToList() 
+				.OrderBy(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			var ids = db.Products 
+				.OrderBy(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void DescendingOrderedPagedProductsWithOuterProjection()
+		{
+			//NH-3108
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(p => p.ProductId) 
+				.Skip(10).Take(20) 
+				.Select(p => p.ProductId) 
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void DescendingOrderedPagedProductsWithInnerProjection()
+		{
+			//NH-3108 (not failing)
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
 	}
 }
