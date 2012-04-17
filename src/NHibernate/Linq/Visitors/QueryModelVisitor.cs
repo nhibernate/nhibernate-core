@@ -37,6 +37,9 @@ namespace NHibernate.Linq.Visitors
 			// Rewrite non-aggregating group-joins
 			NonAggregatingGroupJoinRewriter.ReWrite(queryModel);
 
+			// Rewrite paging
+			PagingRewriter.ReWrite(queryModel);
+
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
