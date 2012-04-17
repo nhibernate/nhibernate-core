@@ -31,6 +31,7 @@ namespace NHibernate.Linq.GroupBy
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// we can not flattern subquery if outer query has body clauses.
+			var subQueryMainFromClause = subQueryExpression.QueryModel.MainFromClause;
 			if (queryModel.BodyClauses.Count == 0)
 			{
 				foreach (var resultOperator in subQueryExpression.QueryModel.ResultOperators)
@@ -38,11 +39,10 @@ namespace NHibernate.Linq.GroupBy
 
 				foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
 					queryModel.BodyClauses.Add(bodyClause);
-
 			}
 			else
 			{
-				var cro = new ContainsResultOperator(queryModel.SelectClause.Selector);
+				var cro = new ContainsResultOperator(new QuerySourceReferenceExpression(subQueryMainFromClause));
 
 				var subQueryModel = subQueryExpression.QueryModel.Clone();
 				subQueryModel.ResultOperators.Add(cro);
@@ -54,10 +54,10 @@ namespace NHibernate.Linq.GroupBy
 			}
 
 			// Point all query source references to the outer from clause
-			queryModel.TransformExpressions(s => new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap(s));
+			queryModel.TransformExpressions(s => new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryMainFromClause).Swap(s));
 
 			// Replace the outer query source
-			queryModel.MainFromClause = subQueryExpression.QueryModel.MainFromClause;
+			queryModel.MainFromClause = subQueryMainFromClause;
 		}
 	}
 }
