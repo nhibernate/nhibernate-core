@@ -22,7 +22,8 @@ namespace NHibernate.Linq.ReWriters
 			if (resultOperator is CountResultOperator || resultOperator is LongCountResultOperator)
 			{
 				// For count operators, we can remove any order-by result operators
-				foreach (IBodyClause orderby in queryModel.BodyClauses.Where(bc => bc is OrderByClause).ToList())
+				var bodyClauses = queryModel.BodyClauses.OfType<OrderByClause>().ToList();
+				foreach (var orderby in bodyClauses)
 				{
 					queryModel.BodyClauses.Remove(orderby);
 				}
