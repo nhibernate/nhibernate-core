@@ -173,5 +173,47 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
+
+		[Test]
+		public void PagedProductsWithOuterWhereClauseAndProjection()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => x.ProductId)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => x.ProductId)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+		
+		[Test]
+		public void PagedProductsWithOuterWhereClauseAndComplexProjection()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => new { x.ProductId })
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => new { x.ProductId })
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
 	}
 }
