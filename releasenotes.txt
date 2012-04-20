@@ -14,6 +14,13 @@ Build 3.3.0.GA
         * [NH-2528] - Throw exception instead of silently truncate string and blob data
         * [NH-3086] - The base dialect now defaults to ANSI syntax for substring. A custom dialect may need to adjust for this.
 
+** Bug
+    * [NH-2956] - SybaseSQLAnywhere10Dialect doesn't override OffsetStartsAtOne
+    * [NH-3111] - Wrong SQL generated when subquery uses objects from parent query
+
+** Improvement
+    * [NH-3086] - All dialects should support substring() with two arguments
+
 Build 3.3.0.CR1
 =============================
 
