@@ -18,6 +18,11 @@ namespace NHibernate.Linq.Visitors
 			_joiner = joiner;
 		}
 
+		public void Transform(SelectClause selectClause)
+		{
+			selectClause.TransformExpressions(VisitExpression);
+		}
+
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
 			if (_isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name))
@@ -26,7 +31,8 @@ namespace NHibernate.Linq.Visitors
 				_identifierMemberExpressionDepth++;
 			
 			var result = base.VisitMemberExpression(expression);
-			_identifierMemberExpressionDepth--;
+			if (_hasIdentifier)
+				_identifierMemberExpressionDepth--;
 
 			if (_isEntityDecider.IsEntity(expression.Type) &&
 				(!_hasIdentifier || _identifierMemberExpressionDepth > 0) &&
@@ -39,11 +45,6 @@ namespace NHibernate.Linq.Visitors
 			_hasIdentifier = false;
 
 			return result;
-		}
-
-		public void Transform(SelectClause selectClause)
-		{
-			selectClause.TransformExpressions(VisitExpression);
 		}
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
