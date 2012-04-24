@@ -35,7 +35,7 @@ namespace NHibernate.Linq.GroupBy
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
 			if ((subQueryExpression != null) &&
-				(subQueryExpression.QueryModel.ResultOperators.Count() == 1) &&
+				(subQueryExpression.QueryModel.ResultOperators.Count == 1) &&
 				(subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
