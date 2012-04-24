@@ -148,7 +148,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-
 		[Test]
 		[Ignore("Generates incorrect SQL. Reported as NH-3027.")]
 		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
@@ -163,7 +162,6 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
-
 
 		[Test]
 		public void SingleKeyGroupAndOrderByNonKeyAggregateProjection()
@@ -229,6 +227,23 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(62));
+		}
+
+		[Test]
+		public void GroupByTwoFieldsWhereOneOfThemIsTooDeep()
+		{
+			var query = (from ol in db.OrderLines
+						 let superior = ol.Order.Employee.Superior
+						 group ol by new {ol.Order.OrderId, SuperiorId = superior.EmployeeId}
+						 into temp
+						 select new
+									{
+										OrderId = (int?) temp.Key.OrderId,
+										SuperiorId = (int?) temp.Key.SuperiorId,
+										Count = temp.Count(),
+									}).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
