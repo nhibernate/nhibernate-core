@@ -18,14 +18,15 @@ namespace NHibernate.Linq.GroupJoin
 		public GroupJoinClause Detect(Expression expression)
 		{
 			VisitExpression(expression);
-			return _groupJoin;    
+			return _groupJoin;
 		}
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
-			if (_results.AggregatingClauses.Contains(expression.ReferencedQuerySource as GroupJoinClause))
+			var groupJoinClause = expression.ReferencedQuerySource as GroupJoinClause;
+			if (groupJoinClause != null && _results.AggregatingClauses.Contains(groupJoinClause))
 			{
-				_groupJoin = expression.ReferencedQuerySource as GroupJoinClause;
+				_groupJoin = groupJoinClause;
 			}
 
 			return base.VisitQuerySourceReferenceExpression(expression);

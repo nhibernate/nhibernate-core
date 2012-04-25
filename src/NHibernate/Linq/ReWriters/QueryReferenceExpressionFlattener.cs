@@ -17,11 +17,11 @@ namespace NHibernate.Linq.ReWriters
 		private readonly QueryModel _model;
 		// NOTE: Skip/Take are not completelly flattenable since Take(10).Skip(5).Take(2) should result in a subqueries-tsunami (so far not common understanding from our users)
 		private static readonly List<System.Type> FlattenableResultOperactors = new List<System.Type>
-		                                                                        {
-		                                                                        	typeof(CacheableResultOperator),
-																																							typeof(SkipResultOperator),
-																																							typeof(TakeResultOperator),
-																																						};
+																				{
+																					typeof(CacheableResultOperator),
+																					typeof(SkipResultOperator),
+																					typeof(TakeResultOperator),
+																				};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)
 		{
@@ -70,8 +70,8 @@ namespace NHibernate.Linq.ReWriters
 			var fromClauseBase = expression.ReferencedQuerySource as FromClauseBase;
 
 			if (fromClauseBase != null &&
-			    fromClauseBase.FromExpression is QuerySourceReferenceExpression &&
-			    expression.Type == fromClauseBase.FromExpression.Type)
+				fromClauseBase.FromExpression is QuerySourceReferenceExpression &&
+				expression.Type == fromClauseBase.FromExpression.Type)
 			{
 				return fromClauseBase.FromExpression;
 			}

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.Visitors;
@@ -29,7 +28,7 @@ namespace NHibernate.Linq.GroupBy
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
 			if ((subQueryExpression != null) 
-				&& (subQueryExpression.QueryModel.ResultOperators.Count() == 1) 
+				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
 				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
 				&& (IsNonAggregatingGroupBy(queryModel)))
 			{

@@ -34,9 +34,9 @@ namespace NHibernate.Linq.GroupJoin
 		public static void ReWrite(QueryModel model)
 		{
 			// firstly, get the group join clauses
-			var groupJoin = model.BodyClauses.Where(bc => bc is GroupJoinClause).Cast<GroupJoinClause>();
+			var groupJoin = model.BodyClauses.OfType<GroupJoinClause>();
 
-			if (groupJoin.Count() == 0)
+			if (!groupJoin.Any())
 			{
 				// No group join here..
 				return;
