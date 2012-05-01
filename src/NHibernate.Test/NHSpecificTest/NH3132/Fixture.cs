@@ -80,5 +80,30 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
                 Assert.AreEqual("First", product.Name);
             }
         }
+
+        [Test]
+        public void Correct_value_gets_saved()
+        {
+            using (var session = OpenSession())
+            {
+                Product product = session.CreateCriteria(typeof(Product))
+                    .Add(Restrictions.Eq("Name", "First"))
+                    .UniqueResult<Product>();
+
+                Assert.IsNotNull(product);
+                product.Name = "Changed";
+
+                session.Flush();
+                
+                session.Clear();
+
+                Product product1 = session.CreateCriteria(typeof(Product))
+                    .Add(Restrictions.Eq("Name", "Changed"))
+                    .UniqueResult<Product>();
+                
+                Assert.IsNotNull(product1);
+                Assert.AreEqual("Changed", product1.Name);
+            }
+        }
     }
 }
