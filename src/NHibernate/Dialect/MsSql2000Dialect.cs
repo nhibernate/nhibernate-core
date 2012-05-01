@@ -9,6 +9,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.SqlCommand.Parser;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -337,15 +338,11 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			/*
-			 * "SELECT TOP limit rest-of-sql-statement"
-			 */
+			var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator();
+			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
 
-			SqlStringBuilder topFragment = new SqlStringBuilder();
-			topFragment.Add(" top ");
-			topFragment.Add(limit);
-
-			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), topFragment.ToSqlString());
+			int insertPoint = tokenEnum.Current.SqlIndex;
+			return querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "));
 		}
 
 		/// <summary>
@@ -393,19 +390,6 @@ namespace NHibernate.Dialect
 			}
 
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
-		}
-
-		private static int GetAfterSelectInsertPoint(SqlString sql)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			else if (sql.StartsWithCaseInsensitive("select"))
-			{
-				return 6;
-			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
 		private bool NeedsLockHint(LockMode lockMode)
@@ -512,7 +496,7 @@ namespace NHibernate.Dialect
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
-		
+
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{

@@ -218,6 +218,7 @@
     <Compile Include="Criteria\Reptile.cs" />
     <Compile Include="DialectTest\FunctionTests\SubstringSupportFixture.cs" />
     <Compile Include="DialectTest\FunctionTests\SequenceSupportFixture.cs" />
+    <Compile Include="DialectTest\MsSql2012DialectFixture.cs" />
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
@@ -954,6 +955,7 @@
     <Compile Include="NHSpecificTest\NH2960\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2959\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2959\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2977\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3010\FixtureWithBatcher.cs" />
     <Compile Include="NHSpecificTest\NH3010\FixtureWithNoBatcher.cs" />
     <Compile Include="NHSpecificTest\NH3010\Model.cs" />
@@ -1002,6 +1004,7 @@
     <Compile Include="ReadOnly\StudentDto.cs" />
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
+    <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
     <Compile Include="Stateless\FetchingLazyCollections\LazyCollectionFetchTests.cs" />
