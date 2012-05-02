@@ -7,6 +7,7 @@
     </id>
     <property name="Name" />
     <many-to-one name="Inventory" column="Id" class="Inventory" update="false" insert="false" not-found="ignore" lazy="no-proxy" />
+    <many-to-one name="Brand" column="Brand" class="Brand" />
   </class>
 
   <class name="Inventory" table="Inventory">
@@ -14,5 +15,12 @@
       <generator class="assigned"/>
     </id>
     <property name="Quantity"/>
+  </class>
+
+  <class name="Brand" table="Brands">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+    <property name="Name"/>
   </class>
 </hibernate-mapping>

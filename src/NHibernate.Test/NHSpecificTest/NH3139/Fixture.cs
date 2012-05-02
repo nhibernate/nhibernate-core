@@ -1,5 +1,6 @@
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Proxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3139
@@ -35,9 +36,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 			{
 				using (var tran = session.BeginTransaction())
 				{
+					Brand brand = new Brand(){Name = "Brand"};
+					session.Save(brand);
+
 					//this product has no inventory row
 					Product product = new Product();
 					product.Name = "First";
+					product.Brand = brand;
 					session.Save(product);
 
 					tran.Commit();
@@ -55,6 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 				{
 					session.Delete("from Product");
 					session.Delete("from Inventory");
+					session.Delete("from Brand");
 					tran.Commit();
 				}
 			}
@@ -74,6 +80,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 				Assert.IsNull(product.Inventory);
 				//Second check will fail because we now have a proxy
 				Assert.IsTrue(product.Inventory == null);
+			}
+		}
+
+		[Test]
+		public void Other_entities_are_still_proxies()
+		{
+			using (var session = OpenSession())
+			{
+				Product product = session.CreateCriteria(typeof(Product))
+					.Add(Restrictions.Eq("Name", "First"))
+					.UniqueResult<Product>();
+
+				Assert.IsNotNull(product);
+				Assert.That(product.Brand is INHibernateProxy);
 			}
 		}
     }

@@ -97,7 +97,7 @@ namespace NHibernate.Intercept
 
 			if (IsInitializedField(fieldName))
 			{
-				if (value.IsProxy())
+				if (value.IsProxy() && IsInitializedAssociation(fieldName))
 					return InitializeOrGetAssociation((INHibernateProxy) value, fieldName);
 
 				return value;
@@ -123,6 +123,11 @@ namespace NHibernate.Intercept
 				return InitializeOrGetAssociation(nhproxy, fieldName);
 			}
 			return InvokeImplementation;
+		}
+
+		private bool IsInitializedAssociation(string fieldName)
+		{
+			return loadedUnwrapProxyFieldNames.Contains(fieldName);
 		}
 
 		private bool IsUninitializedAssociation(string fieldName)
