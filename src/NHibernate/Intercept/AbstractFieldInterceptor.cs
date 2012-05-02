@@ -97,6 +97,9 @@ namespace NHibernate.Intercept
 
 			if (IsInitializedField(fieldName))
 			{
+				if (value.IsProxy())
+					return InitializeOrGetAssociation((INHibernateProxy) value, fieldName);
+
 				return value;
 			}
 
