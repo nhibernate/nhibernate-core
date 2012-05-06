@@ -32,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3124
 		}
 
 		[Test]
-		[Ignore("Failing - re-linq regards the char ('A') as an integer type and wants to cast the LHS of the expression to the same.")]
 		public void LinqStatementGeneratesIncorrectCastToInteger()
 		{
 			using (ISession session = OpenSession())
