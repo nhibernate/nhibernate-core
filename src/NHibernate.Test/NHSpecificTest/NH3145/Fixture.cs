@@ -5,10 +5,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
-	{        
+	{
 		[Test]
-        [Ignore("Not fixed yet.")]
-        public void QueryWithLazyBaseClassShouldNotThrowNoPersisterForError()
+		[Ignore("Not fixed yet.")]
+		public void QueryWithLazyBaseClassShouldNotThrowNoPersisterForError()
 		{
 			try
 			{
@@ -19,28 +19,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 					{
 						LongContent = "LongLongLongLongLong"
 					};
-                    var root = new Root
-                    {
-                        Base = item1
-                    };
+					var root = new Root
+					{
+						Base = item1
+					};
 					s.Save(item1);
-                    s.Save(root);
+					s.Save(root);
 					t.Commit();
 				}
 
-                // This will succeed if either:
-                // a) we do not initialize root.Base
-                // or
-                // b) Base.LongContent is made non-lazy (remove lazy properties)
+				// This will succeed if either:
+				// a) we do not initialize root.Base
+				// or
+				// b) Base.LongContent is made non-lazy (remove lazy properties)
 
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var root = s.CreateQuery("from Root").UniqueResult<Root>();
-                    NHibernateUtil.Initialize(root.Base);
-                    var q = s.CreateQuery("from Derived d where d = ?")
-                        .SetEntity(0, root.Base);
-                    q.Executing(query => query.List()).NotThrows();
+					NHibernateUtil.Initialize(root.Base);
+					var q = s.CreateQuery("from Derived d where d = ?")
+						.SetEntity(0, root.Base);
+					q.Executing(query => query.List()).NotThrows();
 				}
 			}
 			finally
@@ -48,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-                    s.Delete("from Root");
-                    s.Delete("from Derived");
+					s.Delete("from Root");
+					s.Delete("from Derived");
 					t.Commit();
 				}
 			}
