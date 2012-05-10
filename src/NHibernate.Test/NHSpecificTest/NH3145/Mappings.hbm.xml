@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.NH3145"
+           assembly="NHibernate.Test"
+>
+  <class name="Root">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <many-to-one name="Base" class="Base" not-null="true"/>
+  </class>  
+  
+  <class name="Base" abstract="true">
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <discriminator column="Discriminator" type="String" />
+    <property name="LongContent" lazy="true" not-null="true"/>
+  </class>
+  
+  <subclass name="Derived" extends="Base" discriminator-value="Derived">
+  </subclass>
+</hibernate-mapping>
