@@ -46,7 +46,8 @@ namespace NHibernate.Proxy
 				{
 					return li.PersistentClass;
 				}
-				return li.GetImplementation().GetType();
+				//NH-3145 : implementation could be a IFieldInterceptorAccessor 
+				entity = li.GetImplementation();
 			}
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
 			if (fieldInterceptorAccessor != null)
@@ -63,3 +64,4 @@ namespace NHibernate.Proxy
 		}
 	}
 }
+
