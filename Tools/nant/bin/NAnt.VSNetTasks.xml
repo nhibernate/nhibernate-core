@@ -245,6 +245,11 @@
               </code>
             </example>
         </member>
+        <member name="F:NAnt.VSNet.Tasks.SolutionTask._customproperties">
+            <summary>
+            Private var containing custom properties.
+            </summary>
+        </member>
         <member name="M:NAnt.VSNet.Tasks.SolutionTask.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:NAnt.VSNet.Tasks.SolutionTask"/> class.
@@ -354,6 +359,16 @@
                 <para>WebDAV support requires permission changes to be made on your project server.  These changes may affect          
                 the security of the server and should not be applied to a public installation.</para>
                 <para>Consult your web server or the NAnt Wiki documentation for more information.</para>
+            </remarks>
+        </member>
+        <member name="P:NAnt.VSNet.Tasks.SolutionTask.CustomProperties">
+            <summary>
+            Set of properties set at solution level. Builders for projects in solution may or may not use them.
+            </summary>
+            <remarks>
+            <para>
+            TODO: some documentataion which properties could be defined here.
+            </para>
             </remarks>
         </member>
         <member name="P:NAnt.VSNet.Tasks.SolutionTask.AssemblyFolderList">
@@ -928,9 +943,9 @@
         <member name="M:NAnt.VSNet.ConfigurationBase.EvaluateMacro(System.Text.RegularExpressions.Match)">
             <summary>
             Is called each time a regular expression match is found during a 
-            <see cref="M:System.Text.RegularExpressions.Regex.Replace(System.String,System.Text.RegularExpressions.MatchEvaluator)"/> operation.
+            <see cref="M:Regex.Replace(string, MatchEvaluator)"/> operation.
             </summary>
-            <param name="m">The <see cref="T:System.Text.RegularExpressions.Match"/> resulting from a single regular expression match during a <see cref="M:System.Text.RegularExpressions.Regex.Replace(System.String,System.Text.RegularExpressions.MatchEvaluator)"/>.</param>
+            <param name="m">The <see cref="T:System.Text.RegularExpressions.Match"/> resulting from a single regular expression match during a <see cref="M:Regex.Replace(string, MatchEvaluator)"/>.</param>
             <returns>
             The expanded <see cref="T:System.Text.RegularExpressions.Match"/>.
             </returns>
@@ -1209,11 +1224,11 @@
             </summary>
             <remarks>
               <para>
-              For <see cref="F:NAnt.VSNet.ProjectLocation.Local"/> projects, this is defined
+              For <see cref="T:NAnt.VSNet.ProjectLocation.Local" /> projects, this is defined
               as <c>&lt;Project Directory&lt;\obj</c>.
               </para>
               <para>
-              For <see cref="F:NAnt.VSNet.ProjectLocation.Web"/> projects, this is defined
+              For <see cref="T:NAnt.VSNet.ProjectLocation.Web" /> projects, this is defined
               as <c>%HOMEPATH%\VSWebCache\&lt;Machine Name&gt;\&lt;Project Directory&gt;\obj</c>.
               </para>
             </remarks>
@@ -1438,13 +1453,13 @@
             Gets a value indicating if this is a web project.
             </summary>
             <value>
-            <see langword="true"/> if this is a web project; otherwise,
-            <see langword="false"/>.
+            <see langword="true" /> if this is a web project; otherwise,
+            <see langword="false" />.
             </value>
             <remarks>
             If the url of a web project has been mapped to a local path
             (using the &lt;webmap&gt; element), then this property will return
-            <see langword="false"/> for a <see cref="F:NAnt.VSNet.ProjectLocation.Web"/>
+            <see langword="false" /> for a <see cref="T:NAnt.VSNet.ProjectLocation.Web" />
             project.
             </remarks>
         </member>
@@ -2251,6 +2266,16 @@
         <member name="F:NAnt.VSNet.ProductVersion.Whidbey">
             <summary>
             Visual Studio 2005
+            </summary>
+        </member>
+        <member name="F:NAnt.VSNet.ProductVersion.Orcas">
+            <summary>
+            Visual Studio 2008
+            </summary>
+        </member>
+        <member name="F:NAnt.VSNet.ProductVersion.Rosario">
+            <summary>
+            Visual Studio 2010
             </summary>
         </member>
         <member name="T:NAnt.VSNet.ProjectLocation">
@@ -3192,9 +3217,9 @@
         <member name="M:NAnt.VSNet.VcAssemblyReference.EvaluateMacro(System.Text.RegularExpressions.Match)">
             <summary>
             Is called each time a regular expression match is found during a 
-            <see cref="M:System.Text.RegularExpressions.Regex.Replace(System.String,System.Text.RegularExpressions.MatchEvaluator)"/> operation.
+            <see cref="M:Regex.Replace(string, MatchEvaluator)"/> operation.
             </summary>
-            <param name="m">The <see cref="T:System.Text.RegularExpressions.Match"/> resulting from a single regular expression match during a <see cref="M:System.Text.RegularExpressions.Regex.Replace(System.String,System.Text.RegularExpressions.MatchEvaluator)"/>.</param>
+            <param name="m">The <see cref="T:System.Text.RegularExpressions.Match"/> resulting from a single regular expression match during a <see cref="M:Regex.Replace(string, MatchEvaluator)"/>.</param>
             <returns>
             The expanded <see cref="T:System.Text.RegularExpressions.Match"/>.
             </returns>
@@ -3354,7 +3379,7 @@
             <param name="projectDefault">The value to return if setting is not defined in both the file and project configuration.</param>
             <returns>
             The value of a setting for the specified tool, or 
-            <paramref name="defaultValue"/> if the setting is not defined in
+            <paramref name="settingName"/> if the setting is not defined in
             both the file and project configuration.
             </returns>
             <remarks>
@@ -3621,7 +3646,7 @@
             Get the location of the project.
             </summary>
             <value>
-            <see cref="F:NAnt.VSNet.ProjectLocation.Local"/>.
+            <see cref="T:NAnt.VSNet.ProjectLocation.Local" />.
             </value>
             <remarks>
             For now, we only support local Visual C++ projects.

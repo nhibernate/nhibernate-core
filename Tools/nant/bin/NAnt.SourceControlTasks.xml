@@ -6,7 +6,7 @@
     <members>
         <member name="T:NAnt.SourceControl.Tasks.AbstractCvsTask">
             <summary>
-            A base class for creating tasks for executing CVS client commands on a 
+            A base class for creating tasks for executing CVS client commands on a
             CVS repository.
             </summary>
         </member>
@@ -232,7 +232,7 @@
         </member>
         <member name="F:NAnt.SourceControl.Tasks.AbstractCvsTask.DefaultRecursive">
             <summary>
-            Default value for the recursive directive.  The default is 
+            Default value for the recursive directive.  The default is
             <see langword="false" />.
             </summary>
         </member>
@@ -254,7 +254,7 @@
         </member>
         <member name="F:NAnt.SourceControl.Tasks.AbstractCvsTask.CvsPassfile">
             <summary>
-            Name of the password file that cvs stores pserver 
+            Name of the password file that cvs stores pserver
                 cvsroot/ password pairings.
             </summary>
         </member>
@@ -275,7 +275,7 @@
         </member>
         <member name="F:NAnt.SourceControl.Tasks.AbstractCvsTask.SharpCvsExe">
             <summary>
-            The temporary name of the sharpcvslib binary file, to avoid 
+            The temporary name of the sharpcvslib binary file, to avoid
             conflicts in the path variable.
             </summary>
         </member>
@@ -293,14 +293,24 @@
         </member>
         <member name="M:NAnt.SourceControl.Tasks.AbstractCvsTask.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:NAnt.SourceControl.Tasks.AbstractCvsTask"/> 
+            Initializes a new instance of the <see cref="T:NAnt.SourceControl.Tasks.AbstractCvsTask"/>
             class.
             </summary>
+        </member>
+        <member name="M:NAnt.SourceControl.Tasks.AbstractCvsTask.ToCvsDateTimeString(System.DateTime)">
+            <summary>
+            Converts a <see cref="T:System.DateTime"/> value to a <see cref="T:System.String"/>
+            representation that can be interpreted by cvs.
+            </summary>
+            <param name="item"><see cref="T:System.DateTime"/> to convert.</param>
+            <returns>
+            <see cref="T:System.String"/> interpretation of <paramref name="item"/>.
+            </returns>
         </member>
         <member name="M:NAnt.SourceControl.Tasks.AbstractCvsTask.PrepareProcess(System.Diagnostics.Process)">
             <summary>
             Build up the command line arguments, determine which executable is being
-                used and find the path to that executable and set the working 
+                used and find the path to that executable and set the working
                 directory.
             </summary>
             <param name="process">The process to prepare.</param>
@@ -332,7 +342,7 @@
         </member>
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.VcsExeName">
             <summary>
-            The name of the cvs binary, or <c>cvs.exe</c> at the time this 
+            The name of the cvs binary, or <c>cvs.exe</c> at the time this
             was written.
             </summary>
         </member>
@@ -344,7 +354,7 @@
         </member>
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.VcsHomeEnv">
             <summary>
-            The name of the version control system specific home environment 
+            The name of the version control system specific home environment
             variable.
             </summary>
         </member>
@@ -380,7 +390,7 @@
             </summary>
             <value>
             A full path (i.e. including file name) of your cvs binary:
-                On Windows: c:\vcs\cvs\cvs.exe 
+                On Windows: c:\vcs\cvs\cvs.exe
                 On *nix: /usr/bin/cvs
             </value>
         </member>
@@ -422,7 +432,7 @@
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.UseSharpCvsLib">
             <summary>
             <para>
-            <see langword="true" /> if the SharpCvsLib binaries that come bundled 
+            <see langword="true" /> if the SharpCvsLib binaries that come bundled
             with NAnt should be used to perform the cvs commands, <see langword="false" />
             otherwise.
             </para>
@@ -432,7 +442,7 @@
             <c>sourcecontrol.usesharpcvslib</c> to <see langword="false" />.
             </para>
             <warn>
-            If you choose not to use SharpCvsLib to checkout from cvs you will 
+            If you choose not to use SharpCvsLib to checkout from cvs you will
             need to include a cvs.exe binary in your path.
             </warn>
             </summary>
@@ -440,14 +450,12 @@
                 To use a cvs client in your path instead of sharpcvslib specify
                     the property:
                 &gt;property name="sourcecontrol.usesharpcvslib" value="false"&lt;
-                
-                The default settings is to use sharpcvslib and the setting closest
+                            The default settings is to use sharpcvslib and the setting closest
                 to the task execution is used to determine which value is used
                 to execute the process.
-                
-                For instance if the attribute usesharpcvslib was set to false 
-                and the global property was set to true, the usesharpcvslib is 
-                closes to the point of execution and would be used and is false. 
+                            For instance if the attribute usesharpcvslib was set to false
+                and the global property was set to true, the usesharpcvslib is
+                closes to the point of execution and would be used and is false.
                 Therefore the sharpcvslib binary would NOT be used.
             </example>
         </member>
@@ -458,13 +466,13 @@
         </member>
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.Quiet">
             <summary>
-            Indicates if the output from the cvs command should be supressed.  
+            Indicates if the output from the cvs command should be supressed.
             The default is <see langword="false" />.
             </summary>
         </member>
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.ReallyQuiet">
             <summary>
-            Indicates if the output from the cvs command should be stopped.  
+            Indicates if the output from the cvs command should be stopped.
             The default is <see langword="false" />.
             </summary>
         </member>
@@ -476,7 +484,7 @@
         </member>
         <member name="P:NAnt.SourceControl.Tasks.AbstractCvsTask.ReadWrite">
             <summary>
-            <see langword="true" /> if the sandbox files should be checked out in 
+            <see langword="true" /> if the sandbox files should be checked out in
             read/write mode. The default is <see langword="true" />.
             </summary>
         </member>
