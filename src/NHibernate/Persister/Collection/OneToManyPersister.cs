@@ -161,47 +161,41 @@ namespace NHibernate.Persister.Collection
 
 				if (RowDeleteEnabled)
 				{
-					bool useBatch = true;
+					IExpectation deleteExpectation = Expectations.AppropriateExpectation(DeleteCheckStyle);
+					bool useBatch = deleteExpectation.CanBeBatched;
+					SqlCommandInfo sql = SqlDeleteRowString;
 					IDbCommand st = null;
 					// update removed rows fks to null
 					try
 					{
 						int i = 0;
 						IEnumerable entries = collection.Entries(this);
-						IExpectation expectation = Expectations.None;
 
 						foreach (object entry in entries)
 						{
 							if (collection.NeedsUpdating(entry, i, ElementType))
 							{
 								// will still be issued when it used to be null
-								if (st == null)
+								if (useBatch)
 								{
-									SqlCommandInfo sql = SqlDeleteRowString;
-									if (DeleteCallable)
-									{
-										expectation = Expectations.AppropriateExpectation(DeleteCheckStyle);
-										useBatch = expectation.CanBeBatched;
-										st = useBatch
-												? session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes)
-												: session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
-										//offset += expectation.prepare(st);
-									}
-									else
-									{
-										st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
-									}
+									st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
+																			 SqlDeleteRowString.ParameterTypes);
+								}
+								else
+								{
+									st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
+																		SqlDeleteRowString.ParameterTypes);
 								}
 
 								int loc = WriteKey(st, id, offset, session);
 								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(expectation);
+									session.Batcher.AddToBatch(deleteExpectation);
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									deleteExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
 								}
 								count++;
 							}
@@ -227,9 +221,9 @@ namespace NHibernate.Persister.Collection
 
 				if (RowInsertEnabled)
 				{
-					IExpectation expectation = Expectations.AppropriateExpectation(InsertCheckStyle);
+					IExpectation insertExpectation = Expectations.AppropriateExpectation(InsertCheckStyle);
 					//bool callable = InsertCallable;
-					bool useBatch = expectation.CanBeBatched;
+					bool useBatch = insertExpectation.CanBeBatched;
 					SqlCommandInfo sql = SqlInsertRowString;
 					IDbCommand st = null;
 
@@ -244,17 +238,16 @@ namespace NHibernate.Persister.Collection
 							{
 								if (useBatch)
 								{
-									if (st == null)
-									{
-										st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
-									}
+									st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
+																			 SqlInsertRowString.ParameterTypes);
 								}
 								else
 								{
-									st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
+									st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text,
+																		SqlInsertRowString.ParameterTypes);
 								}
 
-								//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
+								//offset += insertExpectation.Prepare(st, Factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
 								if (HasIndex && !indexContainsFormula)
 								{
@@ -263,11 +256,11 @@ namespace NHibernate.Persister.Collection
 								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(expectation);
+									session.Batcher.AddToBatch(insertExpectation);
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
 								}
 								count++;
 							}
