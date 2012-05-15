@@ -964,6 +964,8 @@
     <Compile Include="NHSpecificTest\NH3074\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3074\Model.cs" />
     <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3148\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3148\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
