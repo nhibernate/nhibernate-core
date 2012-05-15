@@ -18,7 +18,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			return entityClass.IsInterface
 			       	? entityClass.GetInterfaceProperties()
-			       	: entityClass.GetProperties(RootClassPropertiesBindingFlags).Concat(GetFieldsOfHierarchy(entityClass));
+					: entityClass.GetPropertiesOfHierarchy().Concat(GetFieldsOfHierarchy(entityClass));
 		}
 
 		public IEnumerable<MemberInfo> GetRootEntityMembers(System.Type entityClass)

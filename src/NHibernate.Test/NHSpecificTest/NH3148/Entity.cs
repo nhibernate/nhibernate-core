@@ -9,7 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3148
 
 	class EntityBase
 	{
-		public virtual EntityId Id { get; set; }
+		public virtual EntityId ComponentId { get; set; }
+		public virtual Guid Id { get; set; }
 	}
 
 	class Entity : EntityBase
