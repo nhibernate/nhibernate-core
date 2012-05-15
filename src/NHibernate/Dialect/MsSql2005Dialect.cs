@@ -94,10 +94,10 @@ namespace NHibernate.Dialect
             {
                 if (lockMode == LockMode.UpgradeNoWait)
                 {
-                    return tableName + " with (updlock, rowlock)";
+                    return tableName + " with (updlock, rowlock, nowait)";
                 }
 
-                return tableName + " with (updlock, rowlock, nowait)";
+                return tableName + " with (updlock, rowlock)";
             }
 
             return tableName;
