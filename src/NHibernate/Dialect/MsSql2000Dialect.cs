@@ -408,7 +408,7 @@ namespace NHibernate.Dialect
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 
-		private bool NeedsLockHint(LockMode lockMode)
+		protected bool NeedsLockHint(LockMode lockMode)
 		{
 			return lockMode.GreaterThan(LockMode.Read);
 		}
