@@ -417,7 +417,14 @@ namespace NHibernate.Dialect
 		{
 			if (NeedsLockHint(lockMode))
 			{
-				return tableName + " with (updlock, rowlock)";
+                if (lockMode == LockMode.Upgrade)
+                {
+                    return tableName + " with (updlock, rowlock)";                    
+                }
+                else if (lockMode == LockMode.UpgradeNoWait)
+                {
+                    return tableName + " with (updlock, rowlock, nowait)";
+                }
 			}
 
 			return tableName;
