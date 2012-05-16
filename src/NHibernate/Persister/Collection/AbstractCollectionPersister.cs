@@ -2149,21 +2149,39 @@ namespace NHibernate.Persister.Collection
 		}
 
 		// Since 5.2
-		[Obsolete("Use GetSelectByUniqueKeyString(string[] propertyNames) instead.")]
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes) instead.")]
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
-			return
-				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName).AddColumns(KeyColumnNames).
-					AddWhereFragment(KeyColumnNames, KeyType, " = ").ToSqlString();
+			return GetSelectByUniqueKeyString(null, out _);
 		}
 
-		public virtual SqlString GetSelectByUniqueKeyString(string[] propertyNames)
+		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
 		{
-			// 6.0 TODO: directly implement it.
-#pragma warning disable 618
-			// The default implementation does not use the property name.
-			return GetSelectByUniqueKeyString(propertyNames[0]);
-#pragma warning restore 618
+			if (suppliedPropertyNames != null)
+				throw new NotSupportedException("Collections does not support custom property names for selecting by unique key");
+
+			parameterTypes = HasIndex ?  new[] { KeyType, IndexType, ElementType } : new[] { KeyType, ElementType };
+			var builder =
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+					.SetTableName(qualifiedTableName)
+					.AddColumns(new[] {identifierColumnName})
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ");
+
+			if (HasIndex)
+				builder.AddWhereFragment(IndexColumnNames, IndexType, " = ");
+
+			return builder
+				.AddWhereFragment(ElementColumnNames, ElementType, " = ")
+				.ToSqlString();
+		}
+
+		public void BindSelectByUniqueKey(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames)
+		{
+			binder.BindValues(selectCommand);
 		}
 
 		public string GetInfoString()

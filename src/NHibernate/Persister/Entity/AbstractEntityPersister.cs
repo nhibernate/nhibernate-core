@@ -257,6 +257,9 @@ namespace NHibernate.Persister.Entity
 
 		protected readonly BasicEntityPropertyMapping propertyMapping;
 
+		// This must be a Lazy<T>, because instances of this class must be thread safe.
+		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
+
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
 		{
@@ -513,6 +516,34 @@ namespace NHibernate.Persister.Entity
 
 			temporaryIdTableName = persistentClass.TemporaryIdTableName;
 			temporaryIdTableDDL = persistentClass.TemporaryIdTableDDL;
+
+			defaultUniqueKeyPropertyNamesForSelectId = new Lazy<string[]>(
+				() =>
+				{
+					var naturalIdPropertyIndices = NaturalIdentifierProperties;
+					if (naturalIdPropertyIndices == null)
+					{
+						throw new IdentifierGenerationException(
+							"no natural-id property defined; need to specify [key] in generator parameters");
+					}
+
+					foreach (var naturalIdPropertyIndex in naturalIdPropertyIndices)
+					{
+						var inclusion = PropertyInsertGenerationInclusions[naturalIdPropertyIndex];
+						if (inclusion != ValueInclusion.None)
+						{
+							throw new IdentifierGenerationException(
+								"natural-id also defined as insert-generated; need to specify [key] in generator parameters");
+						}
+					}
+
+					var uniqueKeyPropertyNames = new string[naturalIdPropertyIndices.Length];
+					for (var idx = 0; idx < naturalIdPropertyIndices.Length; idx++)
+					{
+						uniqueKeyPropertyNames[idx] = PropertyNames[naturalIdPropertyIndices[idx]];
+					}
+					return uniqueKeyPropertyNames;
+				});
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -2644,7 +2675,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		// Since 5.2
-		[Obsolete("Use GetSelectByUniqueKeyString(string[] propertyNames) instead.")]
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes) instead.")]
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
@@ -2653,8 +2684,11 @@ namespace NHibernate.Persister.Entity
 			       .AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
 		}
 
-		public virtual SqlString GetSelectByUniqueKeyString(string[] propertyNames)
+		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
 		{
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+
 			// 6.0 TODO: remove the next if block
 			if (propertyNames.Length == 1)
 			{
@@ -2675,6 +2709,27 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return builder.ToSqlString();
+		}
+
+		public void BindSelectByUniqueKey(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames)
+		{
+			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
+			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var entity = binder.Entity;
+			for (var i = 0; i < propertyNames.Length; i++)
+			{
+				var uniqueKeyValue = GetPropertyValue(entity, propertyNames[i]);
+				parameterTypes[i].NullSafeSet(selectCommand, uniqueKeyValue, i, session);
+			}
+		}
+
+		private string[] GetUniqueKeyPropertyNames(string[] suppliedPropertyNames)
+		{
+			return suppliedPropertyNames ?? defaultUniqueKeyPropertyNamesForSelectId.Value;
 		}
 
 		/// <summary>

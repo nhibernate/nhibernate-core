@@ -555,6 +555,21 @@ namespace NHibernate.Persister.Collection
 
 		#region NH specific
 
+		#region IPostInsertIdentityPersister Members
+
+		public Task BindSelectByUniqueKeyAsync(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return binder.BindValuesAsync(selectCommand, cancellationToken);
+		}
+		#endregion
 
 		/// <summary>
 		/// Perform an SQL INSERT, and then retrieve a generated identifier.

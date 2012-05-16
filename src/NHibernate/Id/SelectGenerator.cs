@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -38,38 +39,6 @@ namespace NHibernate.Id
 
 		#endregion
 
-		private static string[] DetermineNameOfPropertiesToUse(IEntityPersister persister, string supplied)
-		{
-			if (supplied != null)
-			{
-				return supplied.Split(',').Select(p => p.Trim()).ToArray();
-			}
-
-			var naturalIdPropertyIndices = persister.NaturalIdentifierProperties;
-			if (naturalIdPropertyIndices == null)
-			{
-				throw new IdentifierGenerationException(
-					"no natural-id property defined; need to specify [key] in generator parameters");
-			}
-
-			foreach (var naturalIdPropertyIndex in naturalIdPropertyIndices)
-			{
-				var inclusion = persister.PropertyInsertGenerationInclusions[naturalIdPropertyIndex];
-				if (inclusion != ValueInclusion.None)
-				{
-					throw new IdentifierGenerationException(
-						"natural-id also defined as insert-generated; need to specify [key] in generator parameters");
-				}
-			}
-
-			var result = new string[naturalIdPropertyIndices.Length];
-			for (var i = 0; i < naturalIdPropertyIndices.Length; i++)
-			{
-				result[i] = persister.PropertyNames[naturalIdPropertyIndices[i]];
-			}
-			return result;
-		}
-
 		#region Nested type: SelectGeneratorDelegate
 
 		/// <summary> The delegate for the select generation strategy.</summary>
@@ -79,9 +48,8 @@ namespace NHibernate.Id
 			private readonly SqlString idSelectString;
 			private readonly IType idType;
 			private readonly IPostInsertIdentityPersister persister;
-			private readonly IEntityPersister entityPersister;
 
-			private readonly string[] uniqueKeyPropertyNames;
+			private readonly string[] uniqueKeySuppliedPropertyNames;
 			private readonly IType[] uniqueKeyTypes;
 
 			internal SelectGeneratorDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory,
@@ -90,12 +58,9 @@ namespace NHibernate.Id
 				this.persister = persister;
 				this.factory = factory;
 
-				entityPersister = (IEntityPersister) persister;
-				uniqueKeyPropertyNames = DetermineNameOfPropertiesToUse(entityPersister, suppliedUniqueKeyPropertyNames);
+				uniqueKeySuppliedPropertyNames = suppliedUniqueKeyPropertyNames?.Split(',').Select(p => p.Trim()).ToArray();
 
-				uniqueKeyTypes = uniqueKeyPropertyNames.Select(p => entityPersister.GetPropertyType(p)).ToArray();
-
-				idSelectString = persister.GetSelectByUniqueKeyString(uniqueKeyPropertyNames);
+				idSelectString = persister.GetSelectByUniqueKeyString(uniqueKeySuppliedPropertyNames, out uniqueKeyTypes);
 				idType = persister.IdentifierType;
 			}
 
@@ -117,8 +82,13 @@ namespace NHibernate.Id
 				return new IdentifierGeneratingInsert(factory);
 			}
 
+			// Since 5.2
+			[Obsolete("Use or override BindParameters(ISessionImplementor session, DbCommand ps, IBinder binder) instead.")]
 			protected internal override void BindParameters(ISessionImplementor session, DbCommand ps, object entity)
 			{
+				var entityPersister = (IEntityPersister) persister;
+				var uniqueKeyPropertyNames = uniqueKeySuppliedPropertyNames ??
+					PostInsertIdentityPersisterExtension.DetermineNameOfPropertiesToUse(entityPersister);
 				for (var i = 0; i < uniqueKeyPropertyNames.Length; i++)
 				{
 					var uniqueKeyValue = entityPersister.GetPropertyValue(entity, uniqueKeyPropertyNames[i]);
@@ -126,12 +96,35 @@ namespace NHibernate.Id
 				}
 			}
 
+			protected internal override void BindParameters(ISessionImplementor session, DbCommand ps, IBinder binder)
+			{
+				// 6.0 TODO: remove the "if" block and do the other TODO of this method
+				if (persister is IEntityPersister)
+				{
+#pragma warning disable 618
+					BindParameters(session, ps, binder.Entity);
+#pragma warning restore 618
+					return;
+				}
+
+				if (persister is ICompositeKeyPostInsertIdentityPersister compositeKeyPersister)
+				{
+					compositeKeyPersister.BindSelectByUniqueKey(session, ps, binder, uniqueKeySuppliedPropertyNames);
+					return;
+				}
+
+				// 6.0 TODO: remove by merging ICompositeKeyPostInsertIdentityPersister in IPostInsertIdentityPersister
+				binder.BindValues(ps);
+			}
+
 			protected internal override object GetResult(ISessionImplementor session, DbDataReader rs, object entity)
 			{
 				if (!rs.Read())
 				{
-					throw new IdentifierGenerationException(
-						$"The inserted row could not be located by the unique key: {string.Join(", ", uniqueKeyPropertyNames)}");
+					var message = "The inserted row could not be located by the unique key";
+					if (uniqueKeySuppliedPropertyNames != null)
+						message = $"{message} (supplied unique key: {string.Join(", ", uniqueKeySuppliedPropertyNames)})";
+					throw new IdentifierGenerationException(message);
 				}
 				return idType.NullSafeGet(rs, persister.RootTableKeyColumnNames, session, entity);
 			}
