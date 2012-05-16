@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -37,30 +38,35 @@ namespace NHibernate.Id
 
 		#endregion
 
-		private static string DetermineNameOfPropertyToUse(IEntityPersister persister, string supplied)
+		private static string[] DetermineNameOfPropertiesToUse(IEntityPersister persister, string supplied)
 		{
 			if (supplied != null)
 			{
-				return supplied;
+				return new string[] { supplied };
 			}
 			int[] naturalIdPropertyIndices = persister.NaturalIdentifierProperties;
+
 			if (naturalIdPropertyIndices == null)
 			{
 				throw new IdentifierGenerationException("no natural-id property defined; need to specify [key] in "
 				                                        + "generator parameters");
 			}
-			if (naturalIdPropertyIndices.Length > 1)
+			foreach (var naturalIdPropertyIndex in naturalIdPropertyIndices)
 			{
-				throw new IdentifierGenerationException("select generator does not currently support composite "
-				                                        + "natural-id properties; need to specify [key] in generator parameters");
+				ValueInclusion inclusion = persister.PropertyInsertGenerationInclusions[naturalIdPropertyIndex];
+				if (inclusion != ValueInclusion.None)
+				{
+					throw new IdentifierGenerationException("natural-id also defined as insert-generated; need to specify [key] "
+															+ "in generator parameters");
+				}
 			}
-			ValueInclusion inclusion = persister.PropertyInsertGenerationInclusions[naturalIdPropertyIndices[0]];
-			if (inclusion != ValueInclusion.None)
+
+			string[] result = new string[naturalIdPropertyIndices.Length];
+			for (int i = 0; i < naturalIdPropertyIndices.Length; i++)
 			{
-				throw new IdentifierGenerationException("natural-id also defined as insert-generated; need to specify [key] "
-				                                        + "in generator parameters");
+				result[i] = persister.PropertyNames[naturalIdPropertyIndices[i]];
 			}
-			return persister.PropertyNames[naturalIdPropertyIndices[0]];
+			return result;
 		}
 
 		#region Nested type: SelectGeneratorDelegate
@@ -73,19 +79,48 @@ namespace NHibernate.Id
 			private readonly IType idType;
 			private readonly IPostInsertIdentityPersister persister;
 
-			private readonly string uniqueKeyPropertyName;
-			private readonly IType uniqueKeyType;
+			private readonly string[] uniqueKeyPropertyNames;
+			private readonly IType[] uniqueKeyTypes;
 
 			internal SelectGeneratorDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory,
 			                                 string suppliedUniqueKeyPropertyName) : base(persister)
 			{
 				this.persister = persister;
 				this.factory = factory;
-				uniqueKeyPropertyName = DetermineNameOfPropertyToUse((IEntityPersister) persister, suppliedUniqueKeyPropertyName);
 
-				idSelectString = persister.GetSelectByUniqueKeyString(uniqueKeyPropertyName);
-				uniqueKeyType = ((IEntityPersister) persister).GetPropertyType(uniqueKeyPropertyName);
+				if (persister is IEntityPersister)
+				{
+					uniqueKeyPropertyNames = DetermineNameOfPropertiesToUse((IEntityPersister)persister, suppliedUniqueKeyPropertyName);					
+
+					uniqueKeyTypes = new IType[uniqueKeyPropertyNames.Length];
+					for (int i = 0; i < uniqueKeyPropertyNames.Length; i++)
+					{
+						uniqueKeyTypes[i] = ((IEntityPersister)persister).GetPropertyType(uniqueKeyPropertyNames[i]);
+					}
+
+				}
+				else if (persister is AbstractCollectionPersister)
+				{
+					var collectionPersister = (AbstractCollectionPersister)persister;
+
+					uniqueKeyPropertyNames = new string[2];
+					uniqueKeyTypes = new IType[2];
+
+					uniqueKeyPropertyNames[0] = collectionPersister.KeyColumnNames[0];
+					uniqueKeyTypes[0] = collectionPersister.KeyType;
+
+					uniqueKeyPropertyNames[1] = collectionPersister.ElementColumnNames[0];
+					uniqueKeyTypes[1] = collectionPersister.ElementType;					
+				}
+				else 
+				{
+					throw new IdentifierGenerationException(string.Format("Persister if type {0} is not supported by Select Generator", persister.GetType()));
+				}
+
+				idSelectString = persister.GetSelectByUniqueKeyString(uniqueKeyPropertyNames);
 				idType = persister.IdentifierType;
+
+
 			}
 
 			protected internal override SqlString SelectSQL
@@ -95,7 +130,14 @@ namespace NHibernate.Id
 
 			protected internal override SqlType[] ParametersTypes
 			{
-				get { return uniqueKeyType.SqlTypes(factory); }
+				get
+				{
+					var sqlTypes = new List<SqlType>();
+					foreach (var uniqueKeyType in uniqueKeyTypes)
+						sqlTypes.AddRange(uniqueKeyType.SqlTypes(factory));
+
+					return sqlTypes.ToArray();
+				}
 			}
 
 			public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
@@ -103,11 +145,21 @@ namespace NHibernate.Id
 				return new IdentifierGeneratingInsert(factory);
 			}
 
-			protected internal override void BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
+			protected internal override void BindParameters(ISessionImplementor session, IDbCommand ps, IBinder binder)
 			{
-				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName,
-				                                                                        session.EntityMode);
-				uniqueKeyType.NullSafeSet(ps, uniqueKeyValue, 0, session);
+				for (int i = 0; i < uniqueKeyPropertyNames.Length; i++)
+				{
+					if (persister is IEntityPersister)
+					{
+						object uniqueKeyValue = ((IEntityPersister)persister).GetPropertyValue(binder.Entity, uniqueKeyPropertyNames[i],
+																								session.EntityMode);
+						uniqueKeyTypes[i].NullSafeSet(ps, uniqueKeyValue, i, session);
+					}
+					else if (persister is AbstractCollectionPersister)
+					{
+						binder.BindValues(ps);
+					}
+				}
 			}
 
 			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object entity)
@@ -115,7 +167,7 @@ namespace NHibernate.Id
 				if (!rs.Read())
 				{
 					throw new IdentifierGenerationException("the inserted row could not be located by the unique key: "
-					                                        + uniqueKeyPropertyName);
+															+ uniqueKeyPropertyNames);
 				}
 				return idType.NullSafeGet(rs, persister.RootTableKeyColumnNames, session, entity);
 			}

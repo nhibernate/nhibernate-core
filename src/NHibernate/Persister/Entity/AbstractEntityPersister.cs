@@ -2575,12 +2575,18 @@ namespace NHibernate.Persister.Entity
 			return identityDelegate.PerformInsert(sql, session, binder);
 		}
 
-		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
+		public virtual SqlString GetSelectByUniqueKeyString(string[] propertyNames)
 		{
-			return new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
-				.SetTableName(GetTableName(0))
-				.AddColumns(GetKeyColumns(0))
-				.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
+			var uniqueKey = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+							.SetTableName(GetTableName(0))
+							.AddColumns(GetKeyColumns(0));
+
+			foreach (string propertyName in propertyNames)
+			{
+				uniqueKey.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ");
+			}
+
+			return uniqueKey.ToSqlString();
 		}
 
 		/// <summary>

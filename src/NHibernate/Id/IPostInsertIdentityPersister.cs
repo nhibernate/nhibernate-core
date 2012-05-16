@@ -24,14 +24,14 @@ namespace NHibernate.Id
 
 		/// <summary> 
 		/// Get a SQL select string that performs a select based on a unique
-		/// key determined by the given property name). 
+		/// key determined by the given array of property names). 
 		/// </summary>
 		/// <param name="propertyName">
 		/// The name of the property which maps to the
 		/// column(s) to use in the select statement restriction.
 		/// </param>
 		/// <returns> The SQL select string </returns>
-		SqlString GetSelectByUniqueKeyString(string propertyName);
+		SqlString GetSelectByUniqueKeyString(string[] propertyNames);
 
 		#region NH specific
 		/// <summary>
