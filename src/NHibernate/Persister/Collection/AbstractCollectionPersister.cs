@@ -31,7 +31,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -2148,11 +2148,22 @@ namespace NHibernate.Persister.Collection
 			return batchSize;
 		}
 
+		// Since 5.2
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] propertyNames) instead.")]
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return
 				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName).AddColumns(KeyColumnNames).
 					AddWhereFragment(KeyColumnNames, KeyType, " = ").ToSqlString();
+		}
+
+		public virtual SqlString GetSelectByUniqueKeyString(string[] propertyNames)
+		{
+			// 6.0 TODO: directly implement it.
+#pragma warning disable 618
+			// The default implementation does not use the property name.
+			return GetSelectByUniqueKeyString(propertyNames[0]);
+#pragma warning restore 618
 		}
 
 		public string GetInfoString()

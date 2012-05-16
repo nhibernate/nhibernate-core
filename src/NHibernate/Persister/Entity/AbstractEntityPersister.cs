@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
 	{
 		#region InclusionChecker
 
@@ -2643,12 +2643,38 @@ namespace NHibernate.Persister.Entity
 			return identityDelegate.PerformInsert(sql, session, binder);
 		}
 
+		// Since 5.2
+		[Obsolete("Use GetSelectByUniqueKeyString(string[] propertyNames) instead.")]
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
 		{
 			return new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
-				.SetTableName(GetTableName(0))
-				.AddColumns(GetKeyColumns(0))
-				.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
+			       .SetTableName(GetTableName(0))
+			       .AddColumns(GetKeyColumns(0))
+			       .AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ").ToSqlString();
+		}
+
+		public virtual SqlString GetSelectByUniqueKeyString(string[] propertyNames)
+		{
+			// 6.0 TODO: remove the next if block
+			if (propertyNames.Length == 1)
+			{
+				// In case it is overriden, call the obsoleted method for avoiding a possible breaking change
+#pragma warning disable 618
+				return GetSelectByUniqueKeyString(propertyNames[0]);
+#pragma warning restore 618
+			}
+
+			var builder =
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
+					.SetTableName(GetTableName(0))
+					.AddColumns(GetKeyColumns(0));
+
+			foreach (var propertyName in propertyNames)
+			{
+				builder.AddWhereFragment(GetPropertyColumnNames(propertyName), GetPropertyType(propertyName), " = ");
+			}
+
+			return builder.ToSqlString();
 		}
 
 		/// <summary>

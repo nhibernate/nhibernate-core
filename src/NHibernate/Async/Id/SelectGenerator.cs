@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.Persister.Entity;
@@ -29,20 +30,13 @@ namespace NHibernate.Id
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 
-			protected internal override Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity, CancellationToken cancellationToken)
+			protected internal override async Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				cancellationToken.ThrowIfCancellationRequested();
+				for (var i = 0; i < uniqueKeyPropertyNames.Length; i++)
 				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
-				try
-				{
-					object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName);
-					return uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session, cancellationToken);
-				}
-				catch (System.Exception ex)
-				{
-					return Task.FromException<object>(ex);
+					var uniqueKeyValue = entityPersister.GetPropertyValue(entity, uniqueKeyPropertyNames[i]);
+					await (uniqueKeyTypes[i].NullSafeSetAsync(ps, uniqueKeyValue, i, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -51,8 +45,8 @@ namespace NHibernate.Id
 				cancellationToken.ThrowIfCancellationRequested();
 				if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 				{
-					throw new IdentifierGenerationException("the inserted row could not be located by the unique key: "
-					                                        + uniqueKeyPropertyName);
+					throw new IdentifierGenerationException(
+						$"The inserted row could not be located by the unique key: {string.Join(", ", uniqueKeyPropertyNames)}");
 				}
 				return await (idType.NullSafeGetAsync(rs, persister.RootTableKeyColumnNames, session, entity, cancellationToken)).ConfigureAwait(false);
 			}

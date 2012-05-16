@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3150"
+                   assembly="NHibernate.Test">
+  <class name="Worker">
+    <id name="Id">
+      <generator class="select"/>
+    </id>
+
+    <natural-id>
+      <property name="Name"/>
+      <property name="Position"/>
+    </natural-id>
+  </class>
+
+  <class name="WorkerWithExplicitKey">
+    <id name="Id">
+      <generator class="select">
+        <param name="key">Name, Position</param>
+      </generator>
+    </id>
+
+    <property name="Name"/>
+    <property name="Position"/>
+  </class>
+
+  <class name="WorkerWithComponent">
+    <id name="Id">
+      <generator class="select"/>
+    </id>
+
+    <natural-id>
+      <component name="Nid">
+        <property name="Name"/>
+        <property name="Position"/>
+      </component>
+    </natural-id>
+  </class>
+
+  <database-object>
+    <create>
+      CREATE TRIGGER dbo.id_gen_Worker ON dbo.Worker
+      INSTEAD OF INSERT
+      AS
+      BEGIN
+      SET NOCOUNT ON;
+
+      declare @lastval int
+      set @lastval = (select max(Id) from Worker)
+      if @lastval is null set @lastval = 0
+
+      SELECT * INTO #Inserted FROM Inserted
+      UPDATE #Inserted set Id = @lastval+1
+      SET NOCOUNT OFF;
+      INSERT INTO Worker SELECT * FROM #Inserted
+      END
+    </create>
+    <drop>
+      DROP TRIGGER dbo.id_gen_Worker;
+    </drop>
+  </database-object>
+
+  <database-object>
+    <create>
+      CREATE TRIGGER dbo.id_gen_WorkerWithExplicitKey ON dbo.WorkerWithExplicitKey
+      INSTEAD OF INSERT
+      AS
+      BEGIN
+      SET NOCOUNT ON;
+
+      declare @lastval int
+      set @lastval = (select max(Id) from WorkerWithExplicitKey)
+      if @lastval is null set @lastval = 0
+
+      SELECT * INTO #Inserted FROM Inserted
+      UPDATE #Inserted set Id = @lastval+1
+      SET NOCOUNT OFF;
+      INSERT INTO WorkerWithExplicitKey SELECT * FROM #Inserted
+      END
+    </create>
+    <drop>
+      DROP TRIGGER dbo.id_gen_WorkerWithExplicitKey;
+    </drop>
+  </database-object>
+
+  <database-object>
+    <create>
+      CREATE TRIGGER dbo.id_gen_WorkerWithComponent ON dbo.WorkerWithComponent
+      INSTEAD OF INSERT
+      AS
+      BEGIN
+      SET NOCOUNT ON;
+
+      declare @lastval int
+      set @lastval = (select max(Id) from WorkerWithComponent)
+      if @lastval is null set @lastval = 0
+
+      SELECT * INTO #Inserted FROM Inserted
+      UPDATE #Inserted set Id = @lastval+1
+      SET NOCOUNT OFF;
+      INSERT INTO WorkerWithComponent SELECT * FROM #Inserted
+      END
+    </create>
+    <drop>
+      DROP TRIGGER dbo.id_gen_WorkerWithComponent;
+    </drop>
+  </database-object>
+</hibernate-mapping>
