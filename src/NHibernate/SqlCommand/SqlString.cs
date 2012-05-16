@@ -560,7 +560,7 @@ namespace NHibernate.SqlCommand
 
 		internal SqlString[] SplitWithRegex(string pattern)
 		{
-			return Regex.Split(ToString(), pattern).Select(Parse).ToArray();
+			return Regex.Split(ToString(), pattern).Select(s => SqlString.Parse(s)).ToArray();
 		}
 
 		private IEnumerable<SqlString> SplitParts(string splitter)
