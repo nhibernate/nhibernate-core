@@ -67,8 +67,8 @@ namespace NHibernate.Dialect
 			if (orderIndex > 0 && HasMatchingParens(_sourceQuery.Substring(orderIndex).ToString()))
 			{
 				fromAndWhere = _sourceQuery.Substring(fromIndex, orderIndex - fromIndex).Trim();
-				SqlString orderBy = _sourceQuery.Substring(orderIndex).Trim();
-				sortExpressions = orderBy.Substring(9).Split(",");
+				SqlString orderBy = _sourceQuery.Substring(orderIndex).Trim().Substring(9);
+				sortExpressions = orderBy.SplitWithRegex(@"(?<!\([^\)]*),{1}");
 			}
 			else
 			{
