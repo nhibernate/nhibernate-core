@@ -506,7 +506,7 @@ loopInsertion: ;
 		private class AfterTransactionCompletionProcessQueue 
 		{
 			private ISessionImplementor session;
-			private ISet<string> querySpacesToInvalidate = new HashedSet<string>();
+			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();
 			private IList<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
 
 			public bool HasActions

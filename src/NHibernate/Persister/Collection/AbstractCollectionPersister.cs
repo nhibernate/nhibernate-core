@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -239,7 +238,7 @@ namespace NHibernate.Persister.Collection
 				keyColumnAliases[k] = col.GetAlias(dialect);
 				k++;
 			}
-			ISet<string> distinctColumns = new HashedSet<string>();
+			HashSet<string> distinctColumns = new HashSet<string>();
 			CheckColumnDuplication(distinctColumns, collection.Key.ColumnIterator);
 
 			#region Element
@@ -1654,7 +1653,7 @@ namespace NHibernate.Persister.Collection
 
 		public abstract bool ConsumesCollectionAlias();
 
-		private void CheckColumnDuplication(ISet<string> distinctColumns, IEnumerable<ISelectable> columns)
+		private void CheckColumnDuplication(HashSet<string> distinctColumns, IEnumerable<ISelectable> columns)
 		{
 			foreach (ISelectable sel in columns)
 			{

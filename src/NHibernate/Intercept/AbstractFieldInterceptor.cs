@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Proxy;
@@ -14,7 +15,7 @@ namespace NHibernate.Intercept
 		private ISessionImplementor session;
 		private ISet<string> uninitializedFields;
 		private readonly ISet<string> unwrapProxyFieldNames;
-		private readonly ISet<string> loadedUnwrapProxyFieldNames = new HashedSet<string>();
+		private readonly HashSet<string> loadedUnwrapProxyFieldNames = new HashSet<string>();
 		private readonly string entityName;
 		private readonly System.Type mappedClass;
 

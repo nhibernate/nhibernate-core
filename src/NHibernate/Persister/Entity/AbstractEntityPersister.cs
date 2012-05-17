@@ -345,7 +345,7 @@ namespace NHibernate.Persister.Entity
 			propertySelectable = new bool[hydrateSpan];
 			propertyColumnUpdateable = new bool[hydrateSpan][];
 			propertyColumnInsertable = new bool[hydrateSpan][];
-			ISet<Property> thisClassProperties = new HashedSet<Property>();
+			var thisClassProperties = new HashSet<Property>();
 
 			lazyProperties = new HashedSet<string>();
 			List<string> lazyNames = new List<string>();
