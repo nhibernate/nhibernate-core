@@ -1380,12 +1380,11 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			// TODO persistent context (verify behavior)
 			return new StringBuilder()
 				.Append("PersistenceContext[entityKeys=")
-				.Append(new HashedSet(entitiesByKey.Keys))
+				.Append(CollectionPrinter.ToString(entitiesByKey.Keys))
 				.Append(",collectionKeys=")
-				.Append(new HashedSet(collectionsByKey.Keys))
+				.Append(CollectionPrinter.ToString(collectionsByKey.Keys))
 				.Append("]")
 				.ToString();
 		}
