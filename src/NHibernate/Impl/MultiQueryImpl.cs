@@ -697,7 +697,7 @@ namespace NHibernate.Impl
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
-			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
 			ISet<string> querySpaces = new HashedSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);

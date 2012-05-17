@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
@@ -21,7 +21,7 @@ namespace NHibernate.Cache
 		private readonly int _firstRow = RowSelection.NoValue;
 		private readonly int _maxRows = RowSelection.NoValue;
 		private readonly IDictionary<string, TypedValue> _namedParameters;
-		private readonly ISet _filters;
+		private readonly ISet<FilterKey> _filters;
 		private readonly IResultTransformer _customTransformer;
 		private readonly int _hashCode;
 
@@ -37,7 +37,7 @@ namespace NHibernate.Cache
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-						ISet filters)
+						ISet<FilterKey> filters)
 		{
 			_factory = factory;
 			_sqlQueryString = queryString;

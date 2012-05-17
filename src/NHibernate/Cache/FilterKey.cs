@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
@@ -51,11 +51,12 @@ namespace NHibernate.Cache
 			return string.Format("FilterKey[{0}{1}]", _filterName, CollectionPrinter.ToString(_filterParameters));
 		}
 
-		public static ISet CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
+		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
 		{
 			if (enabledFilters.Count == 0)
 				return null;
-			Set result = new HashedSet();
+
+			var result = new HashedSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes, entityMode);
