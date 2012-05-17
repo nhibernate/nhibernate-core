@@ -13,9 +13,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
-	internal interface ISetSnapshot<T>: ICollection<T>, ICollection
+	internal interface ISetSnapshot<T> : ICollection<T>, ICollection
 	{
-		T this[T element]{ get;}
+		T this[T element] { get; }
 	}
 
 	[Serializable]
@@ -29,7 +29,7 @@ namespace NHibernate.Collection
 
 		public SetSnapShot(int capacity)
 		{
-			elements = new List<T>(capacity);			
+			elements = new List<T>(capacity);
 		}
 
 		public SetSnapShot(IEnumerable<T> collection)
@@ -107,7 +107,7 @@ namespace NHibernate.Collection
 			get
 			{
 				var idx = elements.IndexOf(element);
-				if(idx >=0)
+				if (idx >= 0)
 				{
 					return elements[idx];
 				}
@@ -127,7 +127,7 @@ namespace NHibernate.Collection
 	/// to .NET</a> that was written by JasonSmith.
 	/// </remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof (CollectionProxy))]
+	[DebuggerTypeProxy(typeof(CollectionProxy))]
 	public class PersistentSet : AbstractPersistentCollection, ISet
 	{
 		/// <summary>
@@ -144,16 +144,17 @@ namespace NHibernate.Collection
 		/// have its' <c>GetHashCode()</c> and <c>Equals()</c> methods called during the load
 		/// process.
 		/// </remarks>
-		[NonSerialized] private IList tempList;
+		[NonSerialized]
+		private IList tempList;
 
-		public PersistentSet() {} // needed for serialization
+		public PersistentSet() { } // needed for serialization
 
 		/// <summary> 
 		/// Constructor matching super.
 		/// Instantiates a lazy set (the underlying set is un-initialized).
 		/// </summary>
 		/// <param name="session">The session to which this set will belong. </param>
-		public PersistentSet(ISessionImplementor session) : base(session) {}
+		public PersistentSet(ISessionImplementor session) : base(session) { }
 
 		/// <summary> 
 		/// Instantiates a non-lazy set (the underlying set is constructed
@@ -161,7 +162,8 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="session">The session to which this set will belong. </param>
 		/// <param name="original">The underlying set data. </param>
-		public PersistentSet(ISessionImplementor session, ISet original) : base(session)
+		public PersistentSet(ISessionImplementor session, ISet original)
+			: base(session)
 		{
 			// Sets can be just a view of a part of another collection.
 			// do we need to copy it to be sure it won't be changing
@@ -228,7 +230,7 @@ namespace NHibernate.Collection
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			set = (ISet) persister.CollectionType.Instantiate(anticipatedSize);
+			set = (ISet)persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		/// <summary>
@@ -239,7 +241,7 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			object[] array = (object[]) disassembled;
+			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
@@ -342,7 +344,7 @@ namespace NHibernate.Collection
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (ISetSnapshot<object>) GetSnapshot();
+			var sn = (ISetSnapshot<object>)GetSnapshot();
 			object oldKey = sn[entry];
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
