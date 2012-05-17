@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Classic;
