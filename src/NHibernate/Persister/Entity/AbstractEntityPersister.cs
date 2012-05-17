@@ -29,6 +29,7 @@ using NHibernate.Util;
 using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
+using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -1188,7 +1189,7 @@ namespace NHibernate.Persister.Entity
 				return null;
 			}
 
-			return RenderSelect(ArrayHelper.ToIntArray(tableNumbers), columnNumbers.ToArray(), formulaNumbers.ToArray());
+			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
 		public virtual object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session)

@@ -11,6 +11,7 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Impl
 {
@@ -810,7 +811,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				return ArrayHelper.ToStringArray(parameterMetadata.NamedParameterNames);
+				return parameterMetadata.NamedParameterNames.ToArray();
 			}
 		}
 
