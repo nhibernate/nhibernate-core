@@ -5,8 +5,6 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Iesi.Collections;
-
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -978,7 +976,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Cascade delete an entity instance</summary>
-		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet transientEntities)
+		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2482,7 +2480,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void FireDelete(DeleteEvent @event, ISet transientEntities)
+		private void FireDelete(DeleteEvent @event, ISet<object> transientEntities)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
