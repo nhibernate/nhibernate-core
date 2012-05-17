@@ -16,7 +16,7 @@ namespace NHibernate.Loader
 	{
 		private readonly ISessionFactoryImplementor factory;
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
-		private readonly ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
+		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
 		private static readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);

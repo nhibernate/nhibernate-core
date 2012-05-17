@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
-
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Util;
 
@@ -179,7 +177,7 @@ namespace NHibernate.Engine.Query
 		{
 			private readonly string query;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
 
 			public HQLQueryPlanKey(string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -189,11 +187,11 @@ namespace NHibernate.Engine.Query
 
 				if (enabledFilters == null || (enabledFilters.Count == 0))
 				{
-					filterNames = new HashedSet<string>();
+					filterNames = new HashSet<string>();
 				}
 				else
 				{
-					filterNames = new HashedSet<string>(enabledFilters.Keys);
+					filterNames = new HashSet<string>(enabledFilters.Keys);
 				}
 
 				int hash = query.GetHashCode();
@@ -219,7 +217,7 @@ namespace NHibernate.Engine.Query
 					return false;
 				}
 
-				if (!CollectionHelper.SetEquals(filterNames, that.filterNames))
+				if (!filterNames.SetEquals(that.filterNames))
 				{
 					return false;
 				}
@@ -244,7 +242,7 @@ namespace NHibernate.Engine.Query
 			private readonly string query;
 			private readonly string collectionRole;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
 
 			public FilterQueryPlanKey(string query, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -255,11 +253,11 @@ namespace NHibernate.Engine.Query
 
 				if (enabledFilters == null || (enabledFilters.Count == 0))
 				{
-					filterNames = new HashedSet<string>();
+					filterNames = new HashSet<string>();
 				}
 				else
 				{
-					filterNames = new HashedSet<string>(enabledFilters.Keys);
+					filterNames = new HashSet<string>(enabledFilters.Keys);
 				}
 
 				int hash = query.GetHashCode();
@@ -284,7 +282,7 @@ namespace NHibernate.Engine.Query
 				{
 					return false;
 				}
-				if (!CollectionHelper.SetEquals(filterNames, that.filterNames))
+				if (!filterNames.SetEquals(that.filterNames))
 				{
 					return false;
 				}

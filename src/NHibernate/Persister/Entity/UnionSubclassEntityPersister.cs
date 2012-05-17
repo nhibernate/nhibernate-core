@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
@@ -9,6 +8,7 @@ using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -116,14 +116,10 @@ namespace NHibernate.Persister.Entity
 				spaces[i] = iSyncTab.Current;
 			}
 
-			HashedSet<string> subclassTables = new HashedSet<string>();
-			foreach (Table table in persistentClass.SubclassTableClosureIterator)
-			{
-				subclassTables.Add(
-					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName));
-			}
-			subclassSpaces = new string[subclassTables.Count];
-			subclassTables.CopyTo(subclassSpaces, 0);
+			subclassSpaces = persistentClass.SubclassTableClosureIterator
+				.Select(table =>
+					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName))
+				.Distinct().ToArray();
 
 			subquery = GenerateSubquery(persistentClass, mapping);
 
@@ -354,7 +350,7 @@ namespace NHibernate.Persister.Entity
 				return model.Table.GetQualifiedName(dialect, settings.DefaultCatalogName, settings.DefaultSchemaName);
 			}
 
-			HashedSet<Column> columns = new HashedSet<Column>();
+			var columns = new HashSet<Column>();
 			foreach (Table table in model.SubclassTableClosureIterator)
 			{
 				if (!table.IsAbstractUnionTable)

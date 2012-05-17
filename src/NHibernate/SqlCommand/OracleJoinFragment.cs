@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Util;
@@ -79,7 +80,7 @@ namespace NHibernate.SqlCommand
 			AddCondition(SqlString.Parse(buf.ToString()));
 		}
 
-		private static readonly ISet<char> Operators = new HashedSet<char>();
+		private static readonly HashSet<char> Operators = new HashSet<char>();
 
 		static OracleJoinFragment()
 		{
