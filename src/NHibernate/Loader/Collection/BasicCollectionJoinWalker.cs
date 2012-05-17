@@ -86,21 +86,6 @@ namespace NHibernate.Loader.Collection
 			SqlString = select.ToSqlString();
 		}
 
-		/// <summary>
-		/// We can use an inner join for first many-to-many association
-		/// </summary>
-		protected JoinType GetJoinType(IAssociationType type, FetchMode config, String path, ISet visitedAssociations,
-			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth)
-		{
-			JoinType joinType = base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, null);
-
-			//we can use an inner join for the many-to-many
-			if (joinType == JoinType.LeftOuterJoin && string.Empty.Equals(path))
-			{
-				joinType = JoinType.InnerJoin;
-			}
-			return joinType;
-		}
 
 		public override string ToString()
 		{
