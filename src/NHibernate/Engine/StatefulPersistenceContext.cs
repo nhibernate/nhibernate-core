@@ -66,7 +66,7 @@ namespace NHibernate.Engine
 		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
 
 		// Set of EntityKeys of deleted objects
-		private readonly HashedSet<EntityKey> nullifiableEntityKeys;
+		private readonly ISet<EntityKey> nullifiableEntityKeys;
 
 		// properties that we have tried to load, and not found in the database
 		private ISet<AssociationKey> nullAssociations;
@@ -177,7 +177,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		public ISet NullifiableEntityKeys
+		public ISet<EntityKey> NullifiableEntityKeys
 		{
 			get { return nullifiableEntityKeys; }
 		}
