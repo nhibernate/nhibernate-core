@@ -74,13 +74,13 @@ namespace NHibernate.Util
 			return result.ToString();
 		}
 
-		private static string ICollectionToString(ICollection collection)
+		public static string ToString(IEnumerable elements)
 		{
 			StringBuilder result = new StringBuilder();
 			result.Append("[");
 
 			bool first = true;
-			foreach (object item in collection)
+			foreach (object item in elements)
 			{
 				if (!first)
 				{
@@ -94,14 +94,5 @@ namespace NHibernate.Util
 			return result.ToString();
 		}
 
-		public static string ToString(IList list)
-		{
-			return ICollectionToString(list);
-		}
-
-		public static string ToString(ISet set)
-		{
-			return ICollectionToString(set);
-		}
 	}
 }
