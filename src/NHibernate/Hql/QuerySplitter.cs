@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
-using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql.Classic;
 using NHibernate.Hql.Util;
@@ -14,8 +13,8 @@ namespace NHibernate.Hql
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
 
-		private static readonly ISet beforeClassTokens = new HashedSet();
-		private static readonly ISet notAfterClassTokens = new HashedSet();
+		private static readonly ISet<string> beforeClassTokens = new HashedSet<string>();
+		private static readonly ISet<string> notAfterClassTokens = new HashedSet<string>();
 
 		static QuerySplitter()
 		{

@@ -10,7 +10,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.Bytecode;
@@ -1115,7 +1114,7 @@ namespace NHibernate.Cfg
 
 			log.Info("processing foreign key constraints");
 
-			ISet done = new HashedSet();
+			ISet<ForeignKey> done = new HashedSet<ForeignKey>();
 			foreach (var table in TableMappings)
 			{
 				SecondPassCompileForeignKeys(table, done);
@@ -1139,7 +1138,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private void SecondPassCompileForeignKeys(Table table, ISet done)
+		private void SecondPassCompileForeignKeys(Table table, ISet<ForeignKey> done)
 		{
 			table.CreateForeignKeys();
 

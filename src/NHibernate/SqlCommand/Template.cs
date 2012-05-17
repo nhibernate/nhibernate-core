@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Classic;
 using NHibernate.Util;
@@ -11,9 +12,9 @@ namespace NHibernate.SqlCommand
 {
 	public sealed class Template
 	{
-		private static readonly ISet Keywords = new HashedSet();
-		private static readonly ISet BeforeTableKeywords = new HashedSet();
-		private static readonly ISet FunctionKeywords = new HashedSet();
+		private static readonly ISet<string> Keywords = new HashedSet<string>();
+		private static readonly ISet<string> BeforeTableKeywords = new HashedSet<string>();
+		private static readonly ISet<string> FunctionKeywords = new HashedSet<string>();
 
 		static Template()
 		{

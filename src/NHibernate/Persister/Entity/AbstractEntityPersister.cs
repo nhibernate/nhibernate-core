@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.AdoNet;
@@ -346,7 +345,7 @@ namespace NHibernate.Persister.Entity
 			propertySelectable = new bool[hydrateSpan];
 			propertyColumnUpdateable = new bool[hydrateSpan][];
 			propertyColumnInsertable = new bool[hydrateSpan][];
-			ISet thisClassProperties = new HashedSet();
+			ISet<Property> thisClassProperties = new HashedSet<Property>();
 
 			lazyProperties = new HashedSet<string>();
 			List<string> lazyNames = new List<string>();
