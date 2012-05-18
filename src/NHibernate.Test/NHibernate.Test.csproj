@@ -962,6 +962,10 @@
     <Compile Include="NHSpecificTest\NH3004\TestSqlClientDriver.cs" />
     <Compile Include="NHSpecificTest\NH3074\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3074\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3126\InvalidCastTestCase.cs" />
+    <Compile Include="NHSpecificTest\NH3126\Item.cs" />
+    <Compile Include="NHSpecificTest\NH3126\Property.cs" />
+    <Compile Include="NHSpecificTest\NH3126\PropertyValue.cs" />
     <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
@@ -2817,6 +2821,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3126\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2664\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2214\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2960\Mappings.hbm.xml" />
