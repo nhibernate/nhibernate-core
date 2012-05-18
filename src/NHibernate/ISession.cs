@@ -100,7 +100,7 @@ namespace NHibernate
 		/// Cache mode determines the manner in which this session can interact with
 		/// the second level cache.
 		/// </remarks>
-		CacheMode CacheMode { get; set;}
+		CacheMode CacheMode { get; set; }
 
 		/// <summary>
 		/// Get the <see cref="ISessionFactory" /> that created this instance.
@@ -177,7 +177,7 @@ namespace NHibernate
 		/// we flushed this session?
 		/// </summary>
 		bool IsDirty();
-		
+
 		/// <summary>
 		/// Is the specified entity (or proxy) read-only?
 		/// </summary>
@@ -191,7 +191,7 @@ namespace NHibernate
 		/// <seealso cref="ISession.DefaultReadOnly" />
 		/// <seealso cref="ISession.SetReadOnly(object, bool)" />
 		bool IsReadOnly(object entityOrProxy);
-		
+
 		/// <summary>
 		/// Change the read-only status of an entity (or proxy).
 		/// </summary>
@@ -216,7 +216,7 @@ namespace NHibernate
 		/// <seealso cref="ISession.DefaultReadOnly" />
 		/// <seealso cref="ISession.IsReadOnly(object)" />
 		void SetReadOnly(object entityOrProxy, bool readOnly);
-	
+
 		/// <summary>
 		/// The read-only status for entities (and proxies) loaded into this Session.
 		/// </summary>
@@ -240,7 +240,7 @@ namespace NHibernate
 		/// <seealso cref="ISession.IsReadOnly(object)" />
 		/// <seealso cref="ISession.SetReadOnly(object, bool)" />
 		bool DefaultReadOnly { get; set; }
-		
+
 		/// <summary>
 		/// Return the identifier of an entity instance cached by the <c>ISession</c>
 		/// </summary>
@@ -745,7 +745,7 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An IQueryOver&lt;T&gt; object</returns>
-		IQueryOver<T,T> QueryOver<T>() where T : class;
+		IQueryOver<T, T> QueryOver<T>() where T : class;
 
 		/// <summary>
 		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
@@ -753,7 +753,7 @@ namespace NHibernate
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <param name="alias">The alias of the entity</param>
 		/// <returns>An IQueryOver&lt;T&gt; object</returns>
-		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
+		IQueryOver<T, T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
 		/// Creates a new <c>IQueryOver{T};</c> for the entity class.
