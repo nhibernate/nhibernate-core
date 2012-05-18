@@ -238,7 +238,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(2, query.Count);
 		}
-		
+
 		[Test]
 		public void TimeSheetsWithStringContainsSubQueryWithAsQueryable()
 		{
@@ -267,8 +267,8 @@ namespace NHibernate.Test.Linq
 		public void CategoriesSubQueryWithAsQueryableAndExternalPredicateWithClosure()
 		{
 			//NH-2998
-			var ids = new[] {1};
-			var quantities = new[] {100};
+			var ids = new[] { 1 };
+			var quantities = new[] { 100 };
 
 			Expression<Func<OrderLine, bool>> predicate2 = e => quantities.Contains(e.Quantity);
 			Expression<Func<Product, bool>> predicate1 = e => !ids.Contains(e.ProductId)
@@ -285,7 +285,7 @@ namespace NHibernate.Test.Linq
 		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithSecondLevelClosure()
 		{
 			//NH-2998
-			var ids = new[] {1};
+			var ids = new[] { 1 };
 
 			Expression<Func<TimesheetEntry, bool>> predicate = e => !ids.Contains(e.Id);
 
@@ -300,7 +300,7 @@ namespace NHibernate.Test.Linq
 		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithArray()
 		{
 			//NH-2998
-			Expression<Func<TimesheetEntry, bool>> predicate = e => !new[] {1}.Contains(e.Id);
+			Expression<Func<TimesheetEntry, bool>> predicate = e => !new[] { 1 }.Contains(e.Id);
 
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
@@ -314,7 +314,7 @@ namespace NHibernate.Test.Linq
 		{
 			//NH-2998
 			var query = (from timesheet in db.Timesheets
-						 where timesheet.Entries.AsQueryable().Any(e => !new[] {1}.Contains(e.Id))
+						 where timesheet.Entries.AsQueryable().Any(e => !new[] { 1 }.Contains(e.Id))
 						 select timesheet).ToList();
 
 			Assert.AreEqual(2, query.Count);
@@ -467,6 +467,23 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test]
+		public void OrdersWithSubqueryWithJoin()
+		{
+			//NH-3147
+			var subquery = from line in db.OrderLines
+						   join product in db.Products
+							   on line.Product.ProductId equals product.ProductId
+						   where line.Quantity == 5
+						   select line.Order;
+
+			var query = (from order in db.Orders
+						 where subquery.Contains(order)
+						 select order).ToList();
+
+			Assert.AreEqual(61, query.Count);
+		}
+
+		[Test]
 		public void ProductsWithSubquery()
 		{
 			//NH-2899
@@ -512,7 +529,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 				}).ToList();
 
 			Assert.That(list.Count, Is.EqualTo(2155));
-		} 
+		}
 
 		[Test]
 		public void SubqueryWhereFailingTest3()
@@ -529,6 +546,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 				}).ToList();
 
 			Assert.That(list.Count, Is.EqualTo(2155));
-		} 
+		}
 	}
 }
