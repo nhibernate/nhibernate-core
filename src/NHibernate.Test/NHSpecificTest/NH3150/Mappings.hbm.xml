@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH3150"
+				   assembly="NHibernate.Test">
+	<class name="Worker">
+		<id name="id">
+			<generator class="select"/>
+		</id>
+
+		<natural-id >
+			<property name="name"/>
+			<property name="position" />
+		</natural-id>		
+	</class>
+
+	<class name="Worker2">
+		<id name="id">
+			<generator class="identity"/>
+		</id>
+
+		<idbag name="roles" inverse="false" cascade="all-delete-orphan" table="workerRoles">
+			<collection-id column="id" type="Int32">
+				<generator class="select" />
+			</collection-id>
+			<key column="worker_id" />
+			<many-to-many column="role_id" class="Role" fetch="join" />
+		</idbag>
+	</class>
+
+	<class name="Role" >
+		<id name="id">
+			<generator class="identity"/>
+		</id>
+		<property name="description"/>
+	</class>
+
+		<database-object>
+		<create>
+			CREATE TRIGGER dbo.id_gen_Worker ON  dbo.Worker
+			INSTEAD OF INSERT
+			AS
+			BEGIN
+			SET NOCOUNT ON;
+
+			declare @lastval int
+			set @lastval = (select max(id) from Worker)
+			if @lastval is null set @lastval = 0
+
+			SELECT * INTO #Inserted FROM Inserted
+			UPDATE #Inserted set id = @lastval+1
+			SET NOCOUNT OFF;
+			INSERT INTO Worker SELECT * FROM #Inserted
+			END
+			GO
+		</create>
+		<drop>
+			DROP TRIGGER dbo.id_gen_Worker;
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
+	</database-object>
+
+
+	<database-object>
+		<create>
+			CREATE TRIGGER dbo.id_gen_workerRoles ON  dbo.workerRoles
+			INSTEAD OF INSERT
+			AS
+			BEGIN
+			SET NOCOUNT ON;
+
+			declare @lastval int
+			set @lastval = (select max(id) from workerRoles)
+			if @lastval is null set @lastval = 0
+
+			SELECT * INTO #Inserted FROM Inserted
+			UPDATE #Inserted set id = @lastval+1
+			SET NOCOUNT OFF;
+			INSERT INTO workerRoles SELECT * FROM #Inserted
+			END
+			GO
+		</create>
+		<drop>
+			DROP TRIGGER dbo.id_gen_workerRoles;
+		</drop>
+		<dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
+	</database-object>
+		
+</hibernate-mapping>

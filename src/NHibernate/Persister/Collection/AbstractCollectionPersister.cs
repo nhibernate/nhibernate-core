@@ -2052,11 +2052,14 @@ namespace NHibernate.Persister.Collection
 			get { return new string[] {IdentifierColumnName}; }
 		}
 
-		public SqlString GetSelectByUniqueKeyString(string propertyName)
+		public SqlString GetSelectByUniqueKeyString(string[] propertyNames)
 		{
-			return
-				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName).AddColumns(KeyColumnNames).
-					AddWhereFragment(KeyColumnNames, KeyType, " = ").ToSqlString();
+			return 
+				new SqlSimpleSelectBuilder(Factory.Dialect, Factory).SetTableName(qualifiedTableName)
+					.AddColumns(new string[] {identifierColumnName})
+					.AddWhereFragment(KeyColumnNames, KeyType, " = ")
+					.AddWhereFragment(ElementColumnNames, ElementType, " = ")
+					.ToSqlString();				
 		}
 
 		public string GetInfoString()
