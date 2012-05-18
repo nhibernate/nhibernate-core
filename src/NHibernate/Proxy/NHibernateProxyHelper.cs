@@ -1,6 +1,5 @@
 using NHibernate.Cfg;
 using NHibernate.Intercept;
-using NHibernate.Persister.Entity;
 
 namespace NHibernate.Proxy
 {
@@ -11,11 +10,6 @@ namespace NHibernate.Proxy
 	/// </summary>
 	public static class NHibernateProxyHelper
 	{
-		static  NHibernateProxyHelper()
-		{
-			//can't instantiate
-		}
-
 		/// <summary> 
 		/// Get the class of an instance or the underlying class of a proxy (without initializing the proxy!). 
 		/// It is almost always better to use the entity name!
@@ -26,14 +20,11 @@ namespace NHibernate.Proxy
 		{
 			if (obj.IsProxy())
 			{
-                INHibernateProxy proxy = obj as INHibernateProxy; 
-                
-                return proxy.HibernateLazyInitializer.PersistentClass;
+				var proxy = obj as INHibernateProxy;
+
+				return proxy.HibernateLazyInitializer.PersistentClass;
 			}
-			else
-			{
-				return obj.GetType();
-			}
+			return obj.GetType();
 		}
 
 		/// <summary>
@@ -49,8 +40,8 @@ namespace NHibernate.Proxy
 		{
 			if (entity.IsProxy())
 			{
-                var proxy = entity as INHibernateProxy; 
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
+				var proxy = entity as INHibernateProxy;
+				var li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					return li.PersistentClass;
@@ -66,9 +57,9 @@ namespace NHibernate.Proxy
 			return entity.GetType();
 		}
 
-        public static bool IsProxy(this object entity)
-        {
-            return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity);
-        }
+		public static bool IsProxy(this object entity)
+		{
+			return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity);
+		}
 	}
 }
