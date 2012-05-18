@@ -3,61 +3,61 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-    [TestFixture]
-    public class PagingTests : LinqTestCase
-    {
-        [Test]
-        public void Customers1to5()
-        {
-            var q = (from c in db.Customers select c.CustomerId).Take(5);
-            var query = q.ToList();
+	[TestFixture]
+	public class PagingTests : LinqTestCase
+	{
+		[Test]
+		public void Customers1to5()
+		{
+			var q = (from c in db.Customers select c.CustomerId).Take(5);
+			var query = q.ToList();
 
-            Assert.AreEqual(5, query.Count);
-        }
+			Assert.AreEqual(5, query.Count);
+		}
 
-        [Test]
-        public void Customers11to20()
-        {
-            var query = (from c in db.Customers
-                         orderby c.CustomerId
-                         select c.CustomerId).Skip(10).Take(10).ToList();
-            Assert.AreEqual(query[0], "BSBEV");
-            Assert.AreEqual(10, query.Count);
-        }
+		[Test]
+		public void Customers11to20()
+		{
+			var query = (from c in db.Customers
+						 orderby c.CustomerId
+						 select c.CustomerId).Skip(10).Take(10).ToList();
+			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual(10, query.Count);
+		}
 
-        [Test]
-        [Ignore("Multiple Takes (or Skips) not handled correctly")]
-        public void CustomersChainedTake()
-        {
-            var q = (from c in db.Customers
-                     orderby c.CustomerId
-                     select c.CustomerId).Take(5).Take(6);
-            
-            var query = q.ToList();
+		[Test]
+		[Ignore("Multiple Takes (or Skips) not handled correctly")]
+		public void CustomersChainedTake()
+		{
+			var q = (from c in db.Customers
+					 orderby c.CustomerId
+					 select c.CustomerId).Take(5).Take(6);
 
-            Assert.AreEqual(5, query.Count);
-            Assert.AreEqual("ALFKI", query[0]);
-            Assert.AreEqual("BLAUS", query[4]);
-        }
+			var query = q.ToList();
 
-        [Test]
-        [Ignore("Multiple Takes (or Skips) not handled correctly")]
-        public void CustomersChainedSkip()
-        {
-            var q = (from c in db.Customers select c.CustomerId).Skip(10).Skip(5);
-            var query = q.ToList();
-            Assert.AreEqual(query[0], "CONSH");
-            Assert.AreEqual(76, query.Count);
-        }
+			Assert.AreEqual(5, query.Count);
+			Assert.AreEqual("ALFKI", query[0]);
+			Assert.AreEqual("BLAUS", query[4]);
+		}
+
+		[Test]
+		[Ignore("Multiple Takes (or Skips) not handled correctly")]
+		public void CustomersChainedSkip()
+		{
+			var q = (from c in db.Customers select c.CustomerId).Skip(10).Skip(5);
+			var query = q.ToList();
+			Assert.AreEqual(query[0], "CONSH");
+			Assert.AreEqual(76, query.Count);
+		}
 
 
 
-        [Test]
-        [Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
-        public void CountAfterTakeShouldReportTheCorrectNumber()
-        {
-            var users = db.Customers.Skip(3).Take(10);
-            Assert.AreEqual(10, users.Count());
-        }
-    }
+		[Test]
+		[Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
+		public void CountAfterTakeShouldReportTheCorrectNumber()
+		{
+			var users = db.Customers.Skip(3).Take(10);
+			Assert.AreEqual(10, users.Count());
+		}
+	}
 }
