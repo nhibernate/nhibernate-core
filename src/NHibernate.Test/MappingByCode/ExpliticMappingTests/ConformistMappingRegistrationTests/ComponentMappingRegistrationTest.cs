@@ -20,6 +20,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			public string First { get; set; }
 			public string Last { get; set; }
 		}
+
 		private class MyClassMap : ClassMapping<MyClass>
 		{
 			public MyClassMap()
@@ -32,12 +33,14 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 				Component(x => x.Name);
 			}
 		}
+
 		private class NameMap : ComponentMapping<Name>
 		{
 			public NameMap()
 			{
 				Property(x => x.First, map => map.Length(20));
 				Property(x => x.Last, map => map.Length(30));
+				Unique(true);
 			}
 		}
 
@@ -72,9 +75,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			hbmComponent.Properties.Should().Have.Count.EqualTo(2);
 			var hbmp1 = hbmComponent.Properties.OfType<HbmProperty>().Single(x => x.name == "First");
 			var hbmp2 = hbmComponent.Properties.OfType<HbmProperty>().Single(x => x.name == "Last");
-
 			hbmp1.length.Should().Be("20");
 			hbmp2.length.Should().Be("30");
-		}		
+			hbmComponent.unique.Should().Be.EqualTo(true);
+		}
 	}
 }

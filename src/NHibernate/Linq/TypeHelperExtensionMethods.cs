@@ -43,6 +43,11 @@ namespace NHibernate.Linq
             return !type.IsPrimitive();
         }
 
+
+        /// <summary>
+        /// Peform an unsafe cast to T (i.e. (T)source). This is only for
+        /// syntactically more pleasing code.
+        /// </summary>
         public static T As<T>(this object source)
         {
             return (T)source;

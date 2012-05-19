@@ -37,6 +37,17 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
+			var parent = expression.Expression as MemberExpression;
+
+			Expression result;
+			if (parent != null &&
+				parent.Member.Name == "Key" &&
+				IsMemberOfModel(parent) &&
+				TryFindTransparentPropertyOfAnonymousObject(_groupBy.KeySelector, expression.Member.Name, out result))
+			{
+				return result;
+			}
+
 			if (!IsMemberOfModel(expression))
 			{
 				return base.VisitMemberExpression(expression);
@@ -55,24 +66,35 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
-			if (elementSelector is NewExpression)
-			{
-				// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
-				// TODO - this wouldn't handle nested initialisers.  Should do a tree walk to find the correct member
-				var nex = elementSelector as NewExpression;
+			// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
+			if (TryFindTransparentPropertyOfAnonymousObject(elementSelector, expression.Member.Name, out result))
+				return result;
 
-				int i = 0;
-				foreach (var member in nex.Members)
+			throw new NotImplementedException();
+		}
+
+		private static bool TryFindTransparentPropertyOfAnonymousObject(Expression expression, string memberName, out Expression result)
+		{
+			// This method bypasses usage of anonymous object properties.
+			// For ex. `new { a = SomeProperty, b = OtherProperty, c = OneMoreProperty }.a` would be transformed to
+			// `SomeProperty`
+			// TODO - this wouldn't handle nested initialisers.  Should do a tree walk to find the correct member
+			var newExpression = expression as NewExpression;
+			if (newExpression != null)
+			{
+				var i = 0;
+				foreach (var member in newExpression.Members)
 				{
-					if (member.Name == "get_" + expression.Member.Name)
+					if (member.Name == "get_" + memberName)
 					{
-						return nex.Arguments[i];
+						result = newExpression.Arguments[i];
+						return true;
 					}
 					i++;
 				}
 			}
-
-			throw new NotImplementedException();
+			result = null;
+			return false;
 		}
 
 		// TODO - dislike this code intensly.  Should probably be a tree-walk in its own right

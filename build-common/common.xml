@@ -66,60 +66,84 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="3.2.1.GA" overwrite="false" />
+	<property name="project.version" value="3.3.0.GA" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
+	
 	<property name="project.version.short" value="${shortversion}" />
 
-	<!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
+	<!-- Compute and set project.version.numeric and project.version.nuget from project.version if it hasn't been set already -->
 	<if test="${not property::exists('project.version.numeric')}">
 
 		<script language="C#">
+			<references>
+				<include name="System.dll" />
+			</references>
+			<imports>
+				<import namespace="System.Text.RegularExpressions" />
+			</imports>
 			<code><![CDATA[
-				public const int BaseAlpha = 1000;
-				public const int BaseBeta  = 2000;
-				public const int BaseCR    = 3000;
-				public const int BaseGA    = 4000;
-				// SP is same as GA because GA has no number and SP's start with 1.
-				public const int BaseSP    = 4000;
-
+				public const string VersionRegex = @"^(?<major>.+)\.{1}(?<minor>.+)\.{1}(?<build>.+)\.{1}(?<qualifier>Alpha|Beta|CR|GA|SP*)(?<qualifierNumber>\d*)$";
+			
 				public static void ScriptMain(Project project)
 				{
-					project.Properties["project.version.numeric"] = ToNumericVersion(
-						project.Properties["project.version"]);
+					string version = project.Properties["project.version"];
+					project.Properties["project.version.numeric"] = ToNumericVersion(version);
+					project.Properties["project.version.nuget"] = ToNuGetVersion(version);
+				}
+
+				public static string ToNuGetVersion(string version)
+				{
+					Match matches = Regex.Match(version, VersionRegex, RegexOptions.Singleline);
+					if (matches.Success == false) throw new BuildException("Unrecognised version number.");
+					if (matches.Groups.Count < 4) throw new BuildException("Unrecognised version number.");
+					
+					string qualifier = matches.Groups["qualifier"].Value;
+					
+					if (qualifier == "GA") return ToNumericVersion(version);
+					
+					return String.Concat(
+						String.Join(".", new string[] { matches.Groups["major"].Value, matches.Groups["minor"].Value, matches.Groups["build"].Value }),
+						"-",
+						matches.Groups["qualifier"].Value,
+						matches.Groups["qualifierNumber"].Value);
 				}
 
 				public static string ToNumericVersion(string version)
 				{
-					int qualifierStart = version.LastIndexOf('.') + 1;
-					int qualifierNumberStart = version.IndexOfAny(
-						"0123456789".ToCharArray(),
-						qualifierStart);
+					const int BaseAlpha = 1000;
+					const int BaseBeta = 2000;
+					const int BaseCR = 3000;
+					const int BaseGA = 4000;
+					const int BaseSP = 4000; // SP is same as GA because GA has no number and SP's start with 1.
 
-					if (qualifierNumberStart < 0) qualifierNumberStart = version.Length;
+					Match matches = Regex.Match(version, VersionRegex);
+					if (matches.Success == false) throw new BuildException("Unrecognised version number.");
+					if (matches.Groups.Count < 4) throw new BuildException("Unrecognised version number.");
 
-					string qualifier = version.Substring(qualifierStart, qualifierNumberStart - qualifierStart);
-					int qualifierNumber = qualifierNumberStart < version.Length
-						? int.Parse(version.Substring(qualifierNumberStart))
-						: 0;
-
+					string qualifier = matches.Groups["qualifier"].Value;
+					int qualifierNumber;
+					Int32.TryParse(matches.Groups["qualifierNumber"].Value, out qualifierNumber);
 					int revisionBase;
-
+					
 					switch (qualifier)
 					{
 						case "Alpha": revisionBase = BaseAlpha; break;
-						case "Beta":  revisionBase = BaseBeta; break;
-						case "CR":    revisionBase = BaseCR; break;
-						case "GA":    revisionBase = BaseGA; break;
-						case "SP":    revisionBase = BaseSP; break;
-
+						case "Beta": revisionBase = BaseBeta; break;
+						case "CR": revisionBase = BaseCR; break;
+						case "GA": revisionBase = BaseGA; break;
+						case "SP": revisionBase = BaseSP; break;
 						default: throw new BuildException("Unknown version qualifier " + qualifier);
 					}
 
-					string revisionNumber = (revisionBase + qualifierNumber).ToString();
+					int revisionNumber = revisionBase + qualifierNumber;
 
-					return version.Substring(0, qualifierStart) + revisionNumber;
+					return String.Join(".", new string[] { 
+						matches.Groups["major"].Value, 
+						matches.Groups["minor"].Value, 
+						matches.Groups["build"].Value, 
+						revisionNumber.ToString() });
 				}
 			]]></code>
 		</script>

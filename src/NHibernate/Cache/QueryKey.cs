@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
@@ -14,19 +14,19 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class QueryKey
 	{
-		private readonly ISessionFactoryImplementor factory;
-		private readonly SqlString sqlQueryString;
-		private readonly IType[] types;
-		private readonly object[] values;
-		private readonly int firstRow = RowSelection.NoValue;
-		private readonly int maxRows = RowSelection.NoValue;
-		private readonly IDictionary<string, TypedValue> namedParameters;
-		private readonly ISet filters;
-		private readonly IResultTransformer customTransformer;
-		private readonly int hashCode;
+		private readonly ISessionFactoryImplementor _factory;
+		private readonly SqlString _sqlQueryString;
+		private readonly IType[] _types;
+		private readonly object[] _values;
+		private readonly int _firstRow = RowSelection.NoValue;
+		private readonly int _maxRows = RowSelection.NoValue;
+		private readonly IDictionary<string, TypedValue> _namedParameters;
+		private readonly ISet<FilterKey> _filters;
+		private readonly IResultTransformer _customTransformer;
+		private readonly int _hashCode;
 
-		private int[] multiQueriesFirstRows;
-		private int[] multiQueriesMaxRows;
+		private int[] _multiQueriesFirstRows;
+		private int[] _multiQueriesMaxRows;
 
 
 		/// <summary>
@@ -37,111 +37,111 @@ namespace NHibernate.Cache
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-		                ISet filters)
+						ISet<FilterKey> filters)
 		{
-			this.factory = factory;
-			sqlQueryString = queryString;
-			types = queryParameters.PositionalParameterTypes;
-			values = queryParameters.PositionalParameterValues;
+			_factory = factory;
+			_sqlQueryString = queryString;
+			_types = queryParameters.PositionalParameterTypes;
+			_values = queryParameters.PositionalParameterValues;
 
 			RowSelection selection = queryParameters.RowSelection;
 			if (selection != null)
 			{
-				firstRow = selection.FirstRow;
-				maxRows = selection.MaxRows;
+				_firstRow = selection.FirstRow;
+				_maxRows = selection.MaxRows;
 			}
 			else
 			{
-				firstRow = RowSelection.NoValue;
-				maxRows = RowSelection.NoValue;
+				_firstRow = RowSelection.NoValue;
+				_maxRows = RowSelection.NoValue;
 			}
-			namedParameters = queryParameters.NamedParameters;
-			this.filters = filters;
-			customTransformer = queryParameters.ResultTransformer;
-			hashCode = ComputeHashCode();
+			_namedParameters = queryParameters.NamedParameters;
+			_filters = filters;
+			_customTransformer = queryParameters.ResultTransformer;
+			_hashCode = ComputeHashCode();
 		}
 
 		public bool HasResultTransformer
 		{
-			get { return customTransformer != null; }
+			get { return _customTransformer != null; }
 		}
 
 		public QueryKey SetFirstRows(int[] firstRows)
 		{
-			multiQueriesFirstRows = firstRows;
+			_multiQueriesFirstRows = firstRows;
 			return this;
 		}
 
 		public QueryKey SetMaxRows(int[] maxRows)
 		{
-			multiQueriesMaxRows = maxRows;
+			_multiQueriesMaxRows = maxRows;
 			return this;
 		}
 
 		public override bool Equals(object other)
 		{
-			QueryKey that = (QueryKey) other;
-			if (!sqlQueryString.Equals(that.sqlQueryString))
+			QueryKey that = (QueryKey)other;
+			if (!_sqlQueryString.Equals(that._sqlQueryString))
 			{
 				return false;
 			}
-			if (firstRow != that.firstRow
-			    || maxRows != that.maxRows)
-			{
-				return false;
-			}
-
-			if (!Equals(customTransformer, that.customTransformer))
+			if (_firstRow != that._firstRow
+				|| _maxRows != that._maxRows)
 			{
 				return false;
 			}
 
-			if (types == null)
+			if (!Equals(_customTransformer, that._customTransformer))
 			{
-				if (that.types != null)
+				return false;
+			}
+
+			if (_types == null)
+			{
+				if (that._types != null)
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (that.types == null)
+				if (that._types == null)
 				{
 					return false;
 				}
-				if (types.Length != that.types.Length)
+				if (_types.Length != that._types.Length)
 				{
 					return false;
 				}
 
-				for (int i = 0; i < types.Length; i++)
+				for (int i = 0; i < _types.Length; i++)
 				{
-					if (!types[i].Equals(that.types[i]))
+					if (!_types[i].Equals(that._types[i]))
 					{
 						return false;
 					}
-					if (!Equals(values[i], that.values[i]))
+					if (!Equals(_values[i], that._values[i]))
 					{
 						return false;
 					}
 				}
 			}
 
-			if (!CollectionHelper.SetEquals(filters, that.filters))
+			if (!CollectionHelper.SetEquals(_filters, that._filters))
 			{
 				return false;
 			}
 
-			if (!CollectionHelper.DictionaryEquals(namedParameters, that.namedParameters))
+			if (!CollectionHelper.DictionaryEquals(_namedParameters, that._namedParameters))
 			{
 				return false;
 			}
 
-			if(!CollectionHelper.CollectionEquals<int>(multiQueriesFirstRows, that.multiQueriesFirstRows))
+			if (!CollectionHelper.CollectionEquals<int>(_multiQueriesFirstRows, that._multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if(!CollectionHelper.CollectionEquals<int>(multiQueriesMaxRows, that.multiQueriesMaxRows))
+			if (!CollectionHelper.CollectionEquals<int>(_multiQueriesMaxRows, that._multiQueriesMaxRows))
 			{
 				return false;
 			}
@@ -150,7 +150,7 @@ namespace NHibernate.Cache
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			return _hashCode;
 		}
 
 		public int ComputeHashCode()
@@ -158,46 +158,46 @@ namespace NHibernate.Cache
 			unchecked
 			{
 				int result = 13;
-				result = 37 * result + firstRow.GetHashCode();
-				result = 37 * result + maxRows.GetHashCode();
+				result = 37 * result + _firstRow.GetHashCode();
+				result = 37 * result + _maxRows.GetHashCode();
 
-				result = 37 * result + ( namedParameters == null ? 0: CollectionHelper.GetHashCode(namedParameters));
+				result = 37 * result + (_namedParameters == null ? 0 : CollectionHelper.GetHashCode(_namedParameters));
 
-				for (int i = 0; i < types.Length; i++)
+				for (int i = 0; i < _types.Length; i++)
 				{
-					result = 37 * result + (types[i] == null ? 0 : types[i].GetHashCode());
+					result = 37 * result + (_types[i] == null ? 0 : _types[i].GetHashCode());
 				}
-				for (int i = 0; i < values.Length; i++)
+				for (int i = 0; i < _values.Length; i++)
 				{
-					result = 37 * result + (values[i] == null ? 0 : values[i].GetHashCode());
+					result = 37 * result + (_values[i] == null ? 0 : _values[i].GetHashCode());
 				}
 
-				if(multiQueriesFirstRows!=null)
+				if (_multiQueriesFirstRows != null)
 				{
-					foreach (int multiQueriesFirstRow in multiQueriesFirstRows)
+					foreach (int multiQueriesFirstRow in _multiQueriesFirstRows)
 					{
-						result = 37*result + multiQueriesFirstRow;
+						result = 37 * result + multiQueriesFirstRow;
 					}
 				}
 
-				if(multiQueriesMaxRows!=null)
+				if (_multiQueriesMaxRows != null)
 				{
-					foreach (int multiQueriesMaxRow in multiQueriesMaxRows)
+					foreach (int multiQueriesMaxRow in _multiQueriesMaxRows)
 					{
-						result = 37*result + multiQueriesMaxRow;
+						result = 37 * result + multiQueriesMaxRow;
 					}
 				}
 
-				if (filters != null)
+				if (_filters != null)
 				{
-					foreach (object filter in filters)
+					foreach (object filter in _filters)
 					{
 						result = 37 * result + filter.GetHashCode();
 					}
 				}
 
-				result = 37 * result + (customTransformer == null ? 0 : customTransformer.GetHashCode());
-				result = 37 * result + sqlQueryString.GetHashCode();
+				result = 37 * result + (_customTransformer == null ? 0 : _customTransformer.GetHashCode());
+				result = 37 * result + _sqlQueryString.GetHashCode();
 				return result;
 			}
 		}
@@ -206,55 +206,55 @@ namespace NHibernate.Cache
 		{
 			StringBuilder buf = new StringBuilder()
 				.Append("sql: ")
-				.Append(sqlQueryString);
+				.Append(_sqlQueryString);
 
-			Printer print = new Printer(factory);
+			Printer print = new Printer(_factory);
 
-			if (values != null)
+			if (_values != null)
 			{
 				buf
 					.Append("; parameters: ")
-					.Append(print.ToString(types, values));
+					.Append(print.ToString(_types, _values));
 			}
-			if (namedParameters != null)
+			if (_namedParameters != null)
 			{
 				buf
 					.Append("; named parameters: ")
-					.Append(print.ToString(namedParameters));
+					.Append(print.ToString(_namedParameters));
 			}
-			if (filters != null)
+			if (_filters != null)
 			{
-				buf.Append("; filters: ").Append(CollectionPrinter.ToString(filters));
+				buf.Append("; filters: ").Append(CollectionPrinter.ToString(_filters));
 			}
-			if (firstRow != RowSelection.NoValue)
+			if (_firstRow != RowSelection.NoValue)
 			{
-				buf.Append("; first row: ").Append(firstRow);
+				buf.Append("; first row: ").Append(_firstRow);
 			}
-			if (maxRows != RowSelection.NoValue)
+			if (_maxRows != RowSelection.NoValue)
 			{
-				buf.Append("; max rows: ").Append(maxRows);
+				buf.Append("; max rows: ").Append(_maxRows);
 			}
 
-			if(multiQueriesFirstRows!=null)
+			if (_multiQueriesFirstRows != null)
 			{
 				buf.Append("; multi queries - first rows: ");
-				for (int i = 0; i < multiQueriesFirstRows.Length; i++)
+				for (int i = 0; i < _multiQueriesFirstRows.Length; i++)
 				{
 					buf.Append("#").Append(i)
 						.Append("=")
-						.Append(multiQueriesFirstRows[i]);
+						.Append(_multiQueriesFirstRows[i]);
 				}
 				buf.Append("; ");
 			}
 
-			if(multiQueriesMaxRows!=null)
+			if (_multiQueriesMaxRows != null)
 			{
 				buf.Append("; multi queries - max rows: ");
-				for (int i = 0; i < multiQueriesMaxRows.Length; i++)
+				for (int i = 0; i < _multiQueriesMaxRows.Length; i++)
 				{
 					buf.Append("#").Append(i)
 						.Append("=")
-						.Append(multiQueriesMaxRows[i]);
+						.Append(_multiQueriesMaxRows[i]);
 				}
 				buf.Append("; ");
 			}

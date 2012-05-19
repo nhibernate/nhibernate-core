@@ -96,17 +96,13 @@
   <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec for NHibernate">
     <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.nuspec.template" tofile="${nuspec.destination.file}"/>
-    <xmlpoke file="${nuspec.destination.file}"
-             xpath="/package/metadata/dependencies/dependency[@id = 'Iesi.Collections']/@version"
-             value="${project.version.numeric}" />
-    <xmlpoke file="${nuspec.destination.file}"
-             xpath="/package/metadata/version"
-             value="${project.version.numeric}" />
+    <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version.nuget}" />
   </target>
 
   <target name="nuget" depends="init nuget.set-properties nuspec">
     <!-- Prepare working dir with file needed by NHibernate.nuspec -->
     <copy file="${bin.dir}/NHibernate.dll" todir="${nuget.workingdir}"/>
+	<copy file="${bin.dir}/NHibernate.pdb" todir="${nuget.workingdir}"/>
     <copy file="${bin.dir}/NHibernate.xml" todir="${nuget.workingdir}"/>
     <copy file="${root.dir}/releasenotes.txt" tofile="${nuget.workingdir}/NHibernate.releasenotes.txt"/>
     <exec program="CScript.exe" commandline="${root.dir}/Tools/showdown/showdown.wsf ${root.dir}/README.md ${nuget.workingdir}/NHibernate.readme.html"/>
@@ -124,6 +120,7 @@
 
     <exec basedir="${tools.dir}" workingdir="${nuget.workingdir}" program="NuGet.exe">
       <arg value="pack" />
+	  <arg value="-symbols" />
       <arg value="${nuspec.destination.filename}" />
     </exec>
   </target>

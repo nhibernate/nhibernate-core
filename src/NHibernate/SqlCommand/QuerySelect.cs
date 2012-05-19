@@ -1,6 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -33,7 +33,7 @@ namespace NHibernate.SqlCommand
 		/// might be parameters, other portions of the clause come in
 		/// as strings since there are no parameters.
 		/// </remarks>
-		private static readonly ISet dontSpace = new HashedSet();
+		private static readonly HashSet<object> dontSpace = new HashSet<object>();
 
 		/// <summary></summary>
 		static QuerySelect()

@@ -22,18 +22,6 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
-		{
-			if (@event.RequestedId == null)
-			{
-				return base.SaveWithGeneratedOrRequestedId(@event);
-			}
-			else
-			{
-				return SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session);
-			}
-		}
-
 		protected override bool ReassociateIfUninitializedProxy(object obj, ISessionImplementor source)
 		{
 			if (!NHibernateUtil.IsInitialized(obj))

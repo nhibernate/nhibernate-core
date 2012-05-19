@@ -8,7 +8,7 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
-		<property name="Time" type="TimeAsTimeSpan"/>
+		<property name="Time" type="TimeAsTimeSpan" column="`Time`"/>
 	</class>
 
 </hibernate-mapping>

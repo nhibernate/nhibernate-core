@@ -80,12 +80,12 @@ namespace NHibernate.Criterion
 		{
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNamesForSimpleExpression(
-					propertyName, 
-					_projection, 
-					criteriaQuery, 
-					criteria, 
-					enabledFilters, 
-					this, 
+					propertyName,
+					_projection,
+					criteriaQuery,
+					criteria,
+					enabledFilters,
+					this,
 					value);
 
 			Parameter[] parameters = criteriaQuery.NewQueryParameter(GetParameterTypedValue(criteria, criteriaQuery)).ToArray();
@@ -130,13 +130,13 @@ namespace NHibernate.Criterion
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var typedValues = new List<TypedValue>();
-			
+
 			if (_projection != null)
 			{
 				typedValues.AddRange(_projection.GetTypedValues(criteria, criteriaQuery));
 			}
 			typedValues.Add(GetParameterTypedValue(criteria, criteriaQuery));
-			
+
 			return typedValues.ToArray();
 		}
 
@@ -161,7 +161,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (_projection ?? (object)propertyName) + Op + value;
+			return (_projection ?? (object)propertyName) + Op + ValueToStrings();
 		}
 
 		/// <summary>
@@ -171,6 +171,15 @@ namespace NHibernate.Criterion
 		protected virtual string Op
 		{
 			get { return op; }
+		}
+
+		string ValueToStrings()
+		{
+			if(value!=null && value.GetType().IsPrimitive)
+			{
+				return value.ToString();
+			}
+			return ObjectUtils.IdentityToString(value);
 		}
 	}
 }

@@ -9,7 +9,6 @@ using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors.ResultOperatorProcessors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;

@@ -130,5 +130,28 @@ namespace NHibernate.Test.LazyProperty
 				s.Merge(book);
 			}
 		}
+
+
+		[Test]
+		public void CanUpdateNonLazyWithoutLoadingLazyProperty()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			using (var trans = s.BeginTransaction())
+			{
+				book = s.Get<Book>(1);
+				book.Name += "updated";
+
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				trans.Commit();
+			}
+
+
+			using (ISession s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+				Assert.That(book.Name, Is.EqualTo("some nameupdated"));
+			}
+		}
 	}
 }

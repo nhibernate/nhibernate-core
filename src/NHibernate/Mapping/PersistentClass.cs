@@ -962,7 +962,7 @@ namespace NHibernate.Mapping
 
 		private void CheckPropertyDuplication()
 		{
-			HashedSet<string> names = new HashedSet<string>();
+			var names = new HashSet<string>();
 			foreach (Property prop in PropertyIterator)
 			{
 				if (!names.Add(prop.Name))

@@ -15,7 +15,7 @@
 			<key-many-to-one class="Customer" name="Customer" not-found="ignore" />
 			<key-property name="CustomKey" />
 		</composite-id>
-		<property name="Value" />
+		<property name="Value" column="`Value`" />
 	</class>
 
 </hibernate-mapping>

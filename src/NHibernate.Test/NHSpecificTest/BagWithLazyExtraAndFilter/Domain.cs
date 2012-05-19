@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 	public class MachineRequest
 	{
 		public virtual long Id { get; set; }
-		public virtual int MachineRequestCompletionStatusInt { get; set; }
+		public virtual int RequestCompletionStatus { get; set; }
 		public virtual long EnvId { get; set; }
 	}
 }

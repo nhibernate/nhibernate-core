@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
@@ -7,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -59,7 +61,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			userAliasList.Add(criteria.Alias); //root entity comes *last*
-			userAliases = ArrayHelper.ToStringArray(userAliasList);
+			userAliases = userAliasList.ToArray();
 		}
 
 		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)

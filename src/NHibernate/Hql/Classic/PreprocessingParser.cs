@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Classic
@@ -8,12 +7,12 @@ namespace NHibernate.Hql.Classic
 	/// <summary>HQL lexical analyzer (not really a parser)</summary>
 	public class PreprocessingParser : IParser
 	{
-		private static readonly ISet<string> operators;
+		private static readonly HashSet<string> operators;
 		private static readonly IDictionary<string,string> collectionProps;
 
 		static PreprocessingParser()
 		{
-			operators = new HashedSet<string>();
+			operators = new HashSet<string>();
 			operators.Add("<=");
 			operators.Add(">=");
 			operators.Add("=>");

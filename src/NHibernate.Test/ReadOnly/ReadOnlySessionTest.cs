@@ -25,11 +25,12 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get
 			{
-				return new string[]
-					{
-						"ReadOnly.DataPoint.hbm.xml",
-						"ReadOnly.TextHolder.hbm.xml"
-					};
+				var mappings = new List<string> { "ReadOnly.DataPoint.hbm.xml" };
+
+				if (TextHolder.SupportedForDialect(Dialect))
+					mappings.Add("ReadOnly.TextHolder.hbm.xml");
+
+				return mappings;
 			}
 		}
 		
@@ -988,6 +989,9 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void ReadOnlyOnTextType()
 		{
+			if (!TextHolder.SupportedForDialect(Dialect))
+				Assert.Ignore("Dialect doesn't support the 'text' data type.");
+
 			string origText = "some huge text string";
 			string newText = "some even bigger text string";
 			long id = 0;

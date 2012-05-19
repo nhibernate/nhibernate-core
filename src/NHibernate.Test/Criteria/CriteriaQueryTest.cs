@@ -304,7 +304,7 @@ namespace NHibernate.Test.Criteria
 
 						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 					}
-					catch (QueryException ex)
+					catch (QueryException)
 					{
 						// expected
 					}
@@ -325,7 +325,7 @@ namespace NHibernate.Test.Criteria
 
 						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 					}
-					catch (QueryException ex)
+					catch (QueryException)
 					{
 						// expected
 					}
@@ -347,7 +347,7 @@ namespace NHibernate.Test.Criteria
 					
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
-				catch (NHibernate.Exceptions.GenericADOException ex)
+				catch (NHibernate.Exceptions.GenericADOException)
 				{
 					// expected
 				}
@@ -371,7 +371,7 @@ namespace NHibernate.Test.Criteria
 						.List();
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
-				catch (NHibernate.Exceptions.GenericADOException ex)
+				catch (NHibernate.Exceptions.GenericADOException)
 				{
 					// expected
 				}
@@ -397,7 +397,7 @@ namespace NHibernate.Test.Criteria
 					
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
-				catch (NHibernate.Exceptions.GenericADOException ex)
+				catch (NHibernate.Exceptions.GenericADOException)
 				{
 					// expected
 				}

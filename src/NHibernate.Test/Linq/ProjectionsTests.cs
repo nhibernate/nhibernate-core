@@ -232,7 +232,124 @@ namespace NHibernate.Test.Linq
 			var query = db.Orders.Select(o => new { o.OrderId, o.OrderLines });
 			var result = query.ToList();
 			Assert.Pass();
-		} 
+		}
+
+		[Test]
+		public void CanProjectComplexDictionaryIndexer()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 }.ToDictionary(x => x, x => new { Codes = new[] { x } });
+			var query = from item in db.Users
+						select new
+						{
+							index = Array.IndexOf(lookup[1 + item.Id % 4].Codes, 1 + item.Id % 4, 0) / 7,
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectComplexParameterDictionaryIndexer()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 }.ToDictionary(x => x, x => new { Codes = new[] { x } });
+			var query = from item in db.Users
+						select new
+						{
+							index = lookup[1 + item.Id % 4],
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectParameterDictionaryIndexer()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 }.ToDictionary(x => x, x => x);
+			var query = from item in db.Users
+						select new
+						{
+							index = lookup[1 + item.Id % 4],
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectParameterDictionaryContainsKey()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 }.ToDictionary(x => x, x => x);
+			var query = from item in db.Users
+						select new
+						{
+							isPresent  = lookup.ContainsKey(item.Id),
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectParameterArrayContains()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 };
+			var query = from item in db.Users
+						select new
+						{
+							isPresent = lookup.Contains(item.Id),
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectParameterStringContains()
+		{
+			//NH-3000
+			var lookup = new[] { 1, 2, 3, 4 };
+			var query = from item in db.Users
+						select new
+						{
+							isPresent = lookup.Contains(item.Id),
+						};
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void CanProjectParameterSubstring()
+		{
+			//NH-3000
+			const string value = "1234567890";
+
+			var query = from item in db.Users
+						select new
+								   {
+									   Start = item.Id % 10,
+									   Value = value.Substring(item.Id % 10),
+								   };
+
+			var result = query.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(3));
+			Assert.That(result[0].Value, Is.EqualTo(value.Substring(result[0].Start)));
+			Assert.That(result[1].Value, Is.EqualTo(value.Substring(result[1].Start)));
+			Assert.That(result[2].Value, Is.EqualTo(value.Substring(result[2].Start)));
+		}
 
 		private string FormatName(string name, DateTime? lastLoginDate)
 		{

@@ -106,6 +106,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
+
+			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 		}
 		
 		public override string AddColumnString

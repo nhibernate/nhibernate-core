@@ -1,31 +1,155 @@
-Build 3.2.1.GA
+Build 3.3.0.GA
 =============================
 
-** Known BREAKING CHANGES from NH3.2.0.GA to NH3.2.1.GA
+** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.GA
 
-	##### Possible Breaking Changes #####
-		* [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
-		* [NH-2953] - SequenceStyleGenerator now forces use of a table if a pooled optimizer is chosen and the dialect doesn't support pooled sequences.
+    ##### Possible Breaking Changes #####
+        * [NH-2214] - SQL Server 2005/2008: Exception is now thrown when paging a statement that requires distinct results, and is ordered by a column that is not included in the result set of the query
+                    - Dialog.ExtractColumnOrAliasNames method signature and visibility changed - may affect custom dialects that use this method
+        * [NH-2950] - IAccessCallback.NextValue property renamed and changed to a method called IAccessCallback.GetNextValue()
+        * [NH-2953] - SequenceStyleGenerator now forces use of a table if a pooled optimizer is chosen and the dialect doesn't support pooled sequences.
+        * [NH-2960] - Queries for an entity name will now not include instances of the same class mapped using a different entity name.
+        * [NH-2664] - IHqlExpressionVisitor has new property ISessionFactory SessionFactory { get; }
+        * [NH-3067] - The use of Substring() in Linq queries have been corrected so the zero-based index parameter in C# is converted to one-based index in SQL.
+        * [NH-2528] - Throw exception instead of silently truncate string and blob data
+        * [NH-3086] - The base dialect now defaults to ANSI syntax for substring. A custom dialect may need to adjust for this.
+
+** Bug
+    * [NH-2956] - SybaseSQLAnywhere10Dialect doesn't override OffsetStartsAtOne
+    * [NH-3111] - Wrong SQL generated when subquery uses objects from parent query
+
+** Improvement
+    * [NH-3086] - All dialects should support substring() with two arguments
+
+Build 3.3.0.CR1
+=============================
+
+** Bug
+    * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers
+    * [NH-2214] - Distinct and Row_number problem
+    * [NH-2347] - Casts inside aggregate functions are incorrectly applied outside of them
+    * [NH-2419] - Linq Provider Problem with group by with an order by clause
+    * [NH-2429] - SQL Server Linq Average function on Interger field only returns truncated interger value
+    * [NH-2439] - LINQ 'in' query not fully interpreted
+    * [NH-2451] - LINQ Issue - joining twice with same table when used in both select and where. Second join is a full select and filtered in where instead of a join .. on
+    * [NH-2452] - NH 3.0 Linq provider does not correctly translate standard .Key property when grouping 
+    * [NH-2492] - Problem with ROW_NUMBER and DISTINCT operator using LINQ
+    * [NH-2511] - System.ArgumentException: Object of type 'System.Linq.Expressions.ConstantExpression' cannot be converted to type 'System.Linq.Expressions.LambdaExpression' when passing an expression through a method
+    * [NH-2527] - AbstractBatcher reuses disposed IDbCommands which causes an ArgumentOutOfRangeException with OracleDataClientDriver
+    * [NH-2560] - NoViableAltException with ordering by projection in GroupBy
+    * [NH-2664] - Linq, cannot query dynamic-component
+    * [NH-2706] - subselect in LINQ query with Contains clause produces wrong SQL
+    * [NH-2722] - Linq Count() does not respect previous calls to Select() or Distinct()
+    * [NH-2744] - NewArrayInit Is not Implemented
+    * [NH-2763] - queryover fails where referencing enum in VB.NET
+    * [NH-2781] - linq's OrderBy by a calculated column doesn't work
+    * [NH-2809] - Incorrect specification of VARBINARY(MAX) in MsSql2005Dialect
+    * [NH-2828] - Persist uploads not initialized collections on flush
+    * [NH-2833] - "where" clause not working after "group by", generates wrong SQL
+    * [NH-2846] - Fetch on Count Throws Error
+    * [NH-2850] - Unable to use enums in NH 3.2 QueryOver checked comparison
+    * [NH-2853] - SetFirstResult and SetMaxResults do not work correctly on Oracle (ODP.NET)
+    * [NH-2856] - Retrieval of cached query with Fetch throws exception
+    * [NH-2857] - Medium Trust Bug in 3.2
+    * [NH-2858] - ToString() on Guid column with SQL Server Dialects
+    * [NH-2863] - Criteria API restriction over aggregate function wrapped in NotExpression is wrongly placed in WHERE clause instead of HAVING clause which generates invalid SQL
+    * [NH-2869] - Custom extension methods in the select clause are not projected using HQL
+    * [NH-2880] - Proxies loose their session reference on session deserialization
+    * [NH-2881] - Fix not found key handling on extra lazy one to many maps
+    * [NH-2886] - Informix support broken
+    * [NH-2889] - QueryOver component with multiple properties results in Sql Error
+    * [NH-2891] - Too many parameters removed (Pervasive SQL) - SELECT doesn't work
+    * [NH-2893] - NHibernate SQL Parameter on IBM.Data.DB2.iSeries provider
+    * [NH-2904] - Wrong query generation with LINQ subquery
+    * [NH-2906] - Using the same parameter name for two differently typed where clauses throws an exception
+    * [NH-2913] - LINQ query that contains .Any() produces invalid SQL
+    * [NH-2917] - Paging error with Skip().Take().
+    * [NH-2925] - Improper SQL  is generated for Take (pagination) for dialects which have UseMaxForLimit = true (like Oracle)
+    * [NH-2927] - Oracle Dialect does not handle the correct resolution for timestamp version columns
+    * [NH-2937] - Invalid index 0 for this DB2ParameterCollection with Count=0.
+    * [NH-2940] - OracleDialect creates wrong sql using SetFirstResult with criteria queries
+    * [NH-2946] - Superfluous join when querying by foreign key given Id with LINQ
+    * [NH-2954] - PostgreSQL should SupportsPooledSequences
+    * [NH-2959] - Polymorphic queries in MultiQuery, MultiCriteria and Futures cause ArgumentOutOfRangeException
+    * [NH-2960] - Query using entity name also returns entities of same type but different entity name
+    * [NH-2967] - MySQL Schema Update tool fails with exception
+    * [NH-2976] - AbstractPersistentCollection.Remove does not remove item from an uninitialized dictionary
+    * [NH-2989] - ComponentAsId does not set Id Property
+    * [NH-2998] - Allow to use AsQueryable on child collection
+    * [NH-3000] - QuerySyntaxException: Exception of type 'Antlr.Runtime.NoViableAltException' was thrown. when projection contains complex code [regression]
+    * [NH-3001] - NHibernate.HibernateException: Query Source could not be identified
+    * [NH-3002] - HQL: parser is trying to reuse parent implied join for subquery
+    * [NH-3003] - Linq: extra joins
+    * [NH-3004] - DriverBase.RemoveUnusedCommandParameters removes all parameters when UseNamedPrefixInSql = true and UseNamedPrefixInParameter = false
+    * [NH-3008] - Excess DB parameters created when passing SqlFunctionProjection to LHS of InExpression
+    * [NH-3009] - Linq trying to add parameters twice if same predicate is used in query more then once 
+    * [NH-3016] - Mapping by code does not properly support nested types
+    * [NH-3019] - LINQ: Select Key from group by generates wrong SQL
+    * [NH-3020] - Firebird and DB2 dialect claims to support sequences, but throws in GetSelectSequenceNextValString(string) (since not overriden)
+    * [NH-3026] - Linq order by grouped count before select clause gives wrong sql
+    * [NH-3031] - Cannot Sum Property of Type Single
+    * [NH-3032] - Group By and Condition Throws Exception
+    * [NH-3036] - Wrong SqlType size set for LIKE statement
+    * [NH-3044] - Self-joined query with subquery and where - where applied to subquery rather than the external query
+    * [NH-3059] - Contains broken when used on a path (Works in previous version)
+    * [NH-3063] - Turkish-I problem in ValidateColumn
+    * [NH-3064] - Schema validation fails for ODBC
+    * [NH-3073] - Equal in Linq-provider is only implemented for string
+
+** Improvement
+    * [NH-1007] - Add a generator attribute to id
+    * [NH-2528] - Throw exception instead of silently truncate string and blob data
+    * [NH-2825] - Add property-ref and not-found attributes in mapping by code
+    * [NH-2835] - SQL Anywhere dialect/driver improvements
+    * [NH-2870] - Simplify Development on NHibernate for Contributors
+    * [NH-2875] - Add Foreign Key to one-to-one mapping by code
+    * [NH-2883] - DisableLogFormatedSql is not useful
+    * [NH-2899] - Support for "in (<subquery>)" in Linq
+    * [NH-2950] - Update optimizers for enhanced id generators (ported from Hibernate)
+    * [NH-2953] - Update the SequenceStyleGenerator
+    * [NH-2962] - Fix PostgreSQL and Firebird timestamp selection and precision
+    * [NH-2974] - Add unsaved-value attribute in mapping by code.
+    * [NH-2980] - Port enhanced TableGenerator from Hibernate
+    * [NH-3024] - Mapping-by-Code does not allow Unique in Component mapping
+    * [NH-3040] - SymbolSource support along with NuGet
+
+** Patch
+    * [NH-2004] - SequenceStyleGenerator + TableStructure opens multiple transactions.
+    * [NH-2545] - Comparing strings in VB throws NotSupportedException
+    * [NH-2840] - Improper SQL is generated for Take (pagination) for dialects which have UseMaxForLimit = true (like Oracle)
+    * [NH-2864] - Fix for nuget package creation.
+    * [NH-2905] - Support for multistep joins in Linq
+    * [NH-2914] - Functions for DateTime properties in OracleDialect
+    * [NH-2924] - CLONE - Improper SQL is generated for Take (pagination) for dialects which have UseMaxForLimit = true (like Oracle)
+    * [NH-2936] - Better Sequence Support for Firebird
+    * [NH-2964] - WhereRestrictionOn().IsInG() is a icollection not ienumerable like it should be
+    * [NH-2982] - SimpleExpression.ToString() can result in unwanted loading of lazy objects
+    * [NH-3010] - Fix for batching/command behaviour in OneToManyPersister
+    * [NH-3067] - Linq - substring function does not work
+
+** Task
+    * [NH-2672] - Upgrade Npgsql lib file to next release after 2.0.11.91.
+    * [NH-2752] - Re-enable CriteriaQueryTest.AllowToSetLimitOnSubquries for SQLite
 
 Build 3.2.0.GA (rev6000)
 =============================
 
 ** Known BREAKING CHANGES from NH3.1.0.GA to NH3.2.0.GA
 
-	##### Design time #####
-		* removed obsolete "use_outer_join" property from nhibernate-configuration.xsd (simply remove it from your xml configuration)
+    ##### Design time #####
+        * removed obsolete "use_outer_join" property from nhibernate-configuration.xsd (simply remove it from your xml configuration)
 
-	##### Possible Breaking Changes #####
-		* All Dialect.GetLimitString() methods replaced with a single GetLimitString method with a new signature.
-		  For dialects the developers don't perform routine tests on, efforts were made to ensure the new limit string
-		  method conforms to the database documentation.  Please report any limit-related bugs discovered at runtime.
-		* [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
-		* [NH-2593] - For Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
-		* - ICollectionPersister added property to fix [NH-2489]
-		* [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
-		* For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
-		* For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
-		* Dialect base: removed some no more needed properties
+    ##### Possible Breaking Changes #####
+        * All Dialect.GetLimitString() methods replaced with a single GetLimitString method with a new signature.
+          For dialects the developers don't perform routine tests on, efforts were made to ensure the new limit string
+          method conforms to the database documentation.  Please report any limit-related bugs discovered at runtime.
+        * [NH-2550] - Allow public access to FieldInterceptor Session (IFieldInterceptor changed)
+        * [NH-2593] - For Microsoft SQL Server the default batch-size (adonet.batch_size) is set to 20 where not explicit defined in the session-factory configuration
+        * - ICollectionPersister added property to fix [NH-2489]
+        * [NH-2605] Refactorize MultiQuery/MultiCriteria implementation to delegate responsibility to IDrive (IDrive changed).
+        * For users who don't look at Log-ERROR, to prevent wrong behavior when lazy-properties are used the DynamicProxyValidator validates the accessability of properties setters.
+        * For those implementing IDrive without inherit from DriveBase: IDrive.AdjustCommand
+        * Dialect base: removed some no more needed properties
 
 ** Bug
     * [NH-2792] - Using a named parameter multiple times in a native SQL query results in invalid parameter binding (exception in some drivers)
@@ -239,15 +363,15 @@ Build 3.1.0.GA (rev5425)
 
 ** Known BREAKING CHANGES from NH3.0.0.GA to NH3.1.0.GA
 
-	##### Design time #####
-		* [NH-2481] - Deprecated: ISession.SaveOrUpdateCopy methods - use ISession.Merge methods instead
+    ##### Design time #####
+        * [NH-2481] - Deprecated: ISession.SaveOrUpdateCopy methods - use ISession.Merge methods instead
 
-	##### Run time #####
-		* [NH-2481] - An exception will now be thrown when an entity references a transient entity and cascade="merge|all" is not configured on the association
+    ##### Run time #####
+        * [NH-2481] - An exception will now be thrown when an entity references a transient entity and cascade="merge|all" is not configured on the association
 
-	##### Possible Breaking Changes #####
-		* [NH-2461] - Signature change for IQuery.SetParameterList
-		* [NH-2556] - NH is too tolerante to incorrect naming when access="field.XXX" is used
+    ##### Possible Breaking Changes #####
+        * [NH-2461] - Signature change for IQuery.SetParameterList
+        * [NH-2556] - NH is too tolerante to incorrect naming when access="field.XXX" is used
 
 ** Sub-task
     * [NH-2525] - Wrong parameter used for limit claues in MySQL
@@ -332,18 +456,18 @@ Build 3.0.0.GA (rev5290)
 =============================
 ** Known BREAKING CHANGES from NH2.1.1.GA to NH3.0.0.GA
 
-	##### Design time #####
-		* [NH-2392] - ICompositeUserType.NullSafeSet method signature changed
+    ##### Design time #####
+        * [NH-2392] - ICompositeUserType.NullSafeSet method signature changed
 
-	##### Run time #####
-		* [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
-		* [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
-			    - Sybase Adaptive Server Enterprise (ASE) dialects removed.
+    ##### Run time #####
+        * [NH-2199] - null values in maps/dictionaries are no longer silenty ignored/deleted
+        * [NH-1894] - SybaseAnywhereDialect has been removed, and replaced with SybaseASA9Dialect.
+                - Sybase Adaptive Server Enterprise (ASE) dialects removed.
 
-	##### Possible Breaking Changes #####
-		* [NH-2251] - Signature change for GetLimitString in Dialect
-		* [NH-2284] - Obsolete members removed
-		* Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
+    ##### Possible Breaking Changes #####
+        * [NH-2251] - Signature change for GetLimitString in Dialect
+        * [NH-2284] - Obsolete members removed
+        * Related to [NH-2358]: DateTimeOffset type now works as a DateTimeOffset instead a "surrogate" of DateTime
 
 ** Bug
     * [NH-2222] - Wrong type for constant/parameter value used
@@ -377,7 +501,7 @@ Build 3.0.0.CR1 (rev5265)
 
 ** Patch
     * [NH-2392] - ICompositeUserType support for cases where not all parameters should be set (such as dynamic-update)
-		
+        
 Build 3.0.0.Beta2 (rev5254)
 =============================
 
@@ -706,38 +830,38 @@ Build 2.1.1.GA (rev4814)
 Build 2.1.0
 ========================
 ** Known BREAKING CHANGES from NH2.0.xGA to NH2.1.0
-	##### Run time #####
-		* If you want work using lazy loading with LinFu.DynamicProxy now you must deploy NHibernate.ByteCode.LinFu.dll
-		* If you want work using lazy loading with Castle.DynamicProxy2 now you must deploy NHibernate.ByteCode.Castle.dll
-		* If you want work using lazy loading with Spring.Aop now you must deploy NHibernate.ByteCode.Spring.dll
-		* compatible only with .NET2.0 SP1 or above (System.DateTimeOffset)
-		* In SchemaExport.Execute the parameter "format" was removed; (NH-1701) enabled configuration property format_sql (default true)
-		* Antlr3.Runtime.dll is required
-		* the syntax foo.bar.baz.elements or foo.bar.baz.indices is not longer supported.  Use the alternative syntax of elements(foo.bar.baz) or indices(foo.bar.baz) instead
-			Note: in some case, where a sub-select is needed, the collection is enough example: FROM m IN CLASS Master WHERE NOT EXISTS( FROM m.Details d WHERE NOT d.I=5 )
-		* INamingStrategy.PropertyToColumnName does not include the component property path
+    ##### Run time #####
+        * If you want work using lazy loading with LinFu.DynamicProxy now you must deploy NHibernate.ByteCode.LinFu.dll
+        * If you want work using lazy loading with Castle.DynamicProxy2 now you must deploy NHibernate.ByteCode.Castle.dll
+        * If you want work using lazy loading with Spring.Aop now you must deploy NHibernate.ByteCode.Spring.dll
+        * compatible only with .NET2.0 SP1 or above (System.DateTimeOffset)
+        * In SchemaExport.Execute the parameter "format" was removed; (NH-1701) enabled configuration property format_sql (default true)
+        * Antlr3.Runtime.dll is required
+        * the syntax foo.bar.baz.elements or foo.bar.baz.indices is not longer supported.  Use the alternative syntax of elements(foo.bar.baz) or indices(foo.bar.baz) instead
+            Note: in some case, where a sub-select is needed, the collection is enough example: FROM m IN CLASS Master WHERE NOT EXISTS( FROM m.Details d WHERE NOT d.I=5 )
+        * INamingStrategy.PropertyToColumnName does not include the component property path
 
-	##### Possible Breaking Changes #####
-		* ISession interface has additional methods
-		* ICriteria.SetProjection now takes a params array of projections, instead of a single projection
-			Only a breaking change if you are implementing ICriteria, there is full source code compatability
-		* IStatelessSession interface has additional methods
-		* DefaultProxyFactoryFactory removed
-		* IProxyFactoryFactory now provide the IProxyValidator implementation
-		* Now filters are working even with many-to-one association for Criteria and HQL (NH-1293, NH-1179)
+    ##### Possible Breaking Changes #####
+        * ISession interface has additional methods
+        * ICriteria.SetProjection now takes a params array of projections, instead of a single projection
+            Only a breaking change if you are implementing ICriteria, there is full source code compatability
+        * IStatelessSession interface has additional methods
+        * DefaultProxyFactoryFactory removed
+        * IProxyFactoryFactory now provide the IProxyValidator implementation
+        * Now filters are working even with many-to-one association for Criteria and HQL (NH-1293, NH-1179)
 
-	##### Initialization time #####
-		* The ProxyValidator check for "internal virtual" (to be intercepted by proxy need "protected internal virtual")
-		* The session-factory configuration property "proxyfactory.factory_class" is mandatory; You must choose one of the availables NHibernate.ByteCode
+    ##### Initialization time #####
+        * The ProxyValidator check for "internal virtual" (to be intercepted by proxy need "protected internal virtual")
+        * The session-factory configuration property "proxyfactory.factory_class" is mandatory; You must choose one of the availables NHibernate.ByteCode
 
-	##### Breaking Changes #####
-		* see NH-1633 if you are using SQL native queries
-		* CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
-		* ISessionFactory.Settings is gone (moved to ISessionFactoryImplementor.Settings)
-		* Obsolete ORACLE dialects was removed (new implementations are available)
-		* ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
-		* ADOException now use string instead SqlString
-		* IParameterizedType is using IDictionary<string, string>
+    ##### Breaking Changes #####
+        * see NH-1633 if you are using SQL native queries
+        * CriteriaUtil is gone. NHibernate.Transform.Transformers now returns predefined IResultTransformer.
+        * ISessionFactory.Settings is gone (moved to ISessionFactoryImplementor.Settings)
+        * Obsolete ORACLE dialects was removed (new implementations are available)
+        * ISQLExceptionConverter was changed in order to have more flexibility about information available for the conversion and followed management.
+        * ADOException now use string instead SqlString
+        * IParameterizedType is using IDictionary<string, string>
 
 Build 2.1.0.Beta2 (rev4501)
 =============================
@@ -867,7 +991,7 @@ Build 2.1.0.Alpha3 (rev4378)
     * [NH-1769] - Transaction completion on rollback with TransactionScope can cause ObjectDisposedException
     * [NH-1777] - Removed some duplicated casts
     * [NH-1783] - DateType should store only the date part of a System.DateTime to a column
-		
+        
 Build 2.1.0.Alpha2 (rev4167)
 ========================
 
@@ -898,7 +1022,7 @@ Build 2.1.0.Alpha2 (rev4167)
     * [NH-1708] - MS SQL CE Metadata implementation
     * [NH-1712] - Release notes missing info about removal of CriteriaUtil
     * [NH-1713] - NH-1707 results in buggy PrepareStatement behavior
-		
+        
 Build 2.1.0.Alpha1
 ========================
 
@@ -1124,49 +1248,49 @@ Build 2.0.1.GA
 Build 2.0.0.GA
 ========================
 ** BREAKING CHANGES from NH1.2.1GA to NH2.0.0
-	##### Infrastructure #####
-		* .NET 1.1 is no longer supported
-		* Nullables.NHibernate is no longer supported (use nullable types of .NET 2.0)
-		* Contrib projects moved to http://sourceforge.net/projects/nhcontrib
+    ##### Infrastructure #####
+        * .NET 1.1 is no longer supported
+        * Nullables.NHibernate is no longer supported (use nullable types of .NET 2.0)
+        * Contrib projects moved to http://sourceforge.net/projects/nhcontrib
 
-	##### Compile time #####
-		* NHibernate.Expression namespace was renamed to NHibernate.Criterion
-		* IInterceptor have additional methods. (IsUnsaved was renamed IsTransient)
-		* INamingStrategy
-		* IType
-		* IEntityPersister
-		* IVersionType
-		* IBatcher
-		* IUserCollectionType
-		* IEnhancedUserType
-		* IPropertyAccessor
-		* ValueTypeType renamed to PrimitiveType 
+    ##### Compile time #####
+        * NHibernate.Expression namespace was renamed to NHibernate.Criterion
+        * IInterceptor have additional methods. (IsUnsaved was renamed IsTransient)
+        * INamingStrategy
+        * IType
+        * IEntityPersister
+        * IVersionType
+        * IBatcher
+        * IUserCollectionType
+        * IEnhancedUserType
+        * IPropertyAccessor
+        * ValueTypeType renamed to PrimitiveType 
 
-	##### Possible Breaking Changes for external frameworks #####
-		* Various classes were moved between namespaces
-		* Various classes have been renamed (to match Hibernate 3.2 names)
-		* ISession interface have additional methods
-		* ICacheProvider
-		* ICriterion
-		* CriteriaQueryTranslator
+    ##### Possible Breaking Changes for external frameworks #####
+        * Various classes were moved between namespaces
+        * Various classes have been renamed (to match Hibernate 3.2 names)
+        * ISession interface have additional methods
+        * ICacheProvider
+        * ICriterion
+        * CriteriaQueryTranslator
 
-	##### Initialization time #####
-		* <nhibernate> section, in App.config, is no longer supported and will be ignored. Configuration schema for configuration file and App.config is now identical, and the App.config section name is: <hibernate-configuration>
-		* <hibernate-configuration> have a different schema and all properties names are cheked
-		* configuration properties are no longer prefixed by "hibernate.", if before you would specify "hibernate.dialect", now you specify just "dialect"
-		* All named queries will be validated at initialization time, an exception will be thrown if any is not valid (can be disabled if needed)
-		* Stricter checks for proxying classes (all public methods must be virtual)
+    ##### Initialization time #####
+        * <nhibernate> section, in App.config, is no longer supported and will be ignored. Configuration schema for configuration file and App.config is now identical, and the App.config section name is: <hibernate-configuration>
+        * <hibernate-configuration> have a different schema and all properties names are cheked
+        * configuration properties are no longer prefixed by "hibernate.", if before you would specify "hibernate.dialect", now you specify just "dialect"
+        * All named queries will be validated at initialization time, an exception will be thrown if any is not valid (can be disabled if needed)
+        * Stricter checks for proxying classes (all public methods must be virtual)
 
-	##### Run time #####
-		* SaveOrUpdateCopy() returns a new instance of the entity without changing the original
-		* AutoFlush will not occur outside a transaction - Database transactions are never optional, all communication with the database must occur inside a transaction, whatever you read or write data.
-		* NHibernate will return long for count(*) queries on SQL Server
-		* <formula> must contain parenthesis when needed
-		* The HQL functions names may cause conflic in your HQL (reserved names are: substring,locate,trim,length,bit_length,coalesce,nullif,abs,mod,sqrt,upper,lower,cast,extract,concat,current_timestamp,sysdate,second,minute,hour,day,month,year,str)
-		* <any> when meta-type="class" the persistent type is a string containing the Class.FullName (In order to set a parameter in a query you must use SetParameter("paraName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType) )
+    ##### Run time #####
+        * SaveOrUpdateCopy() returns a new instance of the entity without changing the original
+        * AutoFlush will not occur outside a transaction - Database transactions are never optional, all communication with the database must occur inside a transaction, whatever you read or write data.
+        * NHibernate will return long for count(*) queries on SQL Server
+        * <formula> must contain parenthesis when needed
+        * The HQL functions names may cause conflic in your HQL (reserved names are: substring,locate,trim,length,bit_length,coalesce,nullif,abs,mod,sqrt,upper,lower,cast,extract,concat,current_timestamp,sysdate,second,minute,hour,day,month,year,str)
+        * <any> when meta-type="class" the persistent type is a string containing the Class.FullName (In order to set a parameter in a query you must use SetParameter("paraName", typeof(YourClass).FullName, NHibernateUtil.ClassMetaType) )
 
-	##### Mapping #####
-		* <any> : default meta-type is "string" (was "class") 
+    ##### Mapping #####
+        * <any> : default meta-type is "string" (was "class") 
 
 Build 2.0.0.CR2
 ========================
@@ -1199,7 +1323,7 @@ Build 2.0.0.CR1
 ** Task
     * [NH-1410] - Spelling mistake in error message: sublcass must be subclass
 
-		
+        
 Build 2.0.0.Beta2
 ========================
 ** Bug

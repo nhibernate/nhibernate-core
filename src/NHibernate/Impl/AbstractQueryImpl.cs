@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Classic;
@@ -11,6 +10,7 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Impl
 {
@@ -87,9 +87,9 @@ namespace NHibernate.Impl
 		{
 			if (parameterMetadata.NamedParameterNames.Count != namedParameters.Count + namedParameterLists.Count)
 			{
-				var missingParams = new HashedSet<string>(parameterMetadata.NamedParameterNames);
-				missingParams.RemoveAll(namedParameterLists.Keys);
-				missingParams.RemoveAll(namedParameters.Keys);
+				var missingParams = new HashSet<string>(parameterMetadata.NamedParameterNames);
+				missingParams.ExceptWith(namedParameterLists.Keys);
+				missingParams.ExceptWith(namedParameters.Keys);
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
@@ -810,7 +810,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				return ArrayHelper.ToStringArray(parameterMetadata.NamedParameterNames);
+				return parameterMetadata.NamedParameterNames.ToArray();
 			}
 		}
 

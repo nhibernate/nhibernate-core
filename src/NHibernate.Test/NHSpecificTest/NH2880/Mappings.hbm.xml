@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2880">
+
+	<class name="Entity1">
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+		<many-to-one name="Entity2" />
+	</class>
+
+	<class name="Entity2">
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+		<property name="Text" />
+	</class>
+
+	<filter-def name="myFilter">
+		<filter-param name="myFilterParam" type="String"/>
+	</filter-def>
+
+</hibernate-mapping>

@@ -277,7 +277,7 @@
         <member name="P:NAnt.Compression.Tasks.ZipTask.DuplicateHandling">
             <summary>
             Specifies the behaviour when a duplicate file is found. The default
-            is <see cref="F:NAnt.Compression.Types.DuplicateHandling.Add"/>.
+            is <see cref="T:NAnt.Compression.Types.DuplicateHandling.Add" />.
             </summary>
         </member>
         <member name="P:NAnt.Compression.Tasks.ZipTask.Encoding">

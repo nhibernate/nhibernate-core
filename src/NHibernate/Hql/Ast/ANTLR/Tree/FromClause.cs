@@ -26,7 +26,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		private int _fromElementCounter;
 
-        private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
+		private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
 		private readonly NullableDictionary<string, FromElement> _fromElementsByPath = new NullableDictionary<string, FromElement>();
 		private readonly List<FromElement> _fromElements = new List<FromElement>();
@@ -35,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// All of the implicit FROM xxx JOIN yyy elements that are the destination of a collection.  These are created from
 		/// index operators on collection property references.
 		/// </summary>
-        private readonly NullableDictionary<string, FromElement> _collectionJoinFromElementsByPath = new NullableDictionary<string, FromElement>();
+		private readonly NullableDictionary<string, FromElement> _collectionJoinFromElementsByPath = new NullableDictionary<string, FromElement>();
 
 		/// <summary>
 		/// Pointer to the parent FROM clause, if there is one.
@@ -250,14 +250,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public string GetDisplayText()
 		{
 			return "FromClause{" +
-			       "level=" + _level +
-			       ", fromElementCounter=" + _fromElementCounter +
-			       ", fromElements=" + _fromElements.Count +
-			       ", fromElementByClassAlias=" + _fromElementByClassAlias.Keys +
-			       ", fromElementByTableAlias=" + _fromElementByTableAlias.Keys +
-			       ", fromElementsByPath=" + _fromElementsByPath.Keys +
-			       ", collectionJoinFromElementsByPath=" + _collectionJoinFromElementsByPath.Keys +
-			       "}";
+				   "level=" + _level +
+				   ", fromElementCounter=" + _fromElementCounter +
+				   ", fromElements=" + _fromElements.Count +
+				   ", fromElementByClassAlias=" + _fromElementByClassAlias.Keys +
+				   ", fromElementByTableAlias=" + _fromElementByTableAlias.Keys +
+				   ", fromElementsByPath=" + _fromElementsByPath.Keys +
+				   ", collectionJoinFromElementsByPath=" + _collectionJoinFromElementsByPath.Keys +
+				   "}";
 		}
 
 		private void CheckForDuplicateClassAlias(string classAlias)

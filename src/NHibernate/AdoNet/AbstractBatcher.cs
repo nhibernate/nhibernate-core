@@ -35,8 +35,8 @@ namespace NHibernate.AdoNet
 		private IDbCommand _batchCommand;
 		private SqlString _batchCommandSql;
 		private SqlType[] _batchCommandParameterTypes;
-		private readonly ISet<IDbCommand> _commandsToClose = new HashedSet<IDbCommand>();
-		private readonly ISet<IDataReader> _readersToClose = new HashedSet<IDataReader>();
+		private readonly HashSet<IDbCommand> _commandsToClose = new HashSet<IDbCommand>();
+		private readonly HashSet<IDataReader> _readersToClose = new HashSet<IDataReader>();
 		private readonly IDictionary<IDataReader, Stopwatch> _readersDuration = new Dictionary<IDataReader, Stopwatch>();
 		private IDbCommand _lastQuery;
 		private bool _releasing;
@@ -120,16 +120,7 @@ namespace NHibernate.AdoNet
 
 		public virtual IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
-			/* NH:
-			 * The code inside this block was added for a strange behaviour
-			 * discovered using Firebird (some times for us is external issue).
-			 * The problem is that batchCommandSql as a value, batchCommand is not null
-			 * BUT batchCommand.CommandText is null (I don't know who clear it)
-			 */
-			bool forceCommandRecreate = _batchCommand == null || string.IsNullOrEmpty(_batchCommand.CommandText);
-			/****************************************/
-			if (sql.Equals(_batchCommandSql) &&
-				ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes) && !forceCommandRecreate)
+			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
 				if (Log.IsDebugEnabled)
 				{

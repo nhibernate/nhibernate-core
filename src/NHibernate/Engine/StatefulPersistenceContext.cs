@@ -66,7 +66,7 @@ namespace NHibernate.Engine
 		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
 
 		// Set of EntityKeys of deleted objects
-		private readonly HashedSet<EntityKey> nullifiableEntityKeys;
+		private readonly ISet<EntityKey> nullifiableEntityKeys;
 
 		// properties that we have tried to load, and not found in the database
 		private ISet<AssociationKey> nullAssociations;
@@ -177,7 +177,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		public ISet NullifiableEntityKeys
+		public ISet<EntityKey> NullifiableEntityKeys
 		{
 			get { return nullifiableEntityKeys; }
 		}
@@ -533,7 +533,7 @@ namespace NHibernate.Engine
 		{
 			EntityEntry e =
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
-				                disableVersionIncrement, lazyPropertiesAreUnfetched);
+								disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
 			SetHasNonReadOnlyEnties(status);
@@ -592,9 +592,9 @@ namespace NHibernate.Engine
 			//}
 			if (value.IsProxy())
 			{
-                var proxy = value as INHibernateProxy; 
-                
-                if (log.IsDebugEnabled)
+				var proxy = value as INHibernateProxy; 
+				
+				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
@@ -640,9 +640,9 @@ namespace NHibernate.Engine
 
 			if (maybeProxy.IsProxy())
 			{
-                INHibernateProxy proxy = maybeProxy as INHibernateProxy; 
-                
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
+				INHibernateProxy proxy = maybeProxy as INHibernateProxy; 
+				
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
@@ -669,9 +669,9 @@ namespace NHibernate.Engine
 			//}
 			if (maybeProxy.IsProxy())
 			{
-                var proxy = maybeProxy as INHibernateProxy; 
-                
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
+				var proxy = maybeProxy as INHibernateProxy; 
+				
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object
 			}
@@ -1354,8 +1354,8 @@ namespace NHibernate.Engine
 			var newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
-			         oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
-			         oldEntry.LoadedWithLazyPropertiesUnfetched);
+					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
+					 oldEntry.LoadedWithLazyPropertiesUnfetched);
 		}
 
 		public bool IsLoadFinished
@@ -1380,12 +1380,11 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			// TODO persistent context (verify behavior)
 			return new StringBuilder()
 				.Append("PersistenceContext[entityKeys=")
-				.Append(new HashedSet(entitiesByKey.Keys))
+				.Append(CollectionPrinter.ToString(entitiesByKey.Keys))
 				.Append(",collectionKeys=")
-				.Append(new HashedSet(collectionsByKey.Keys))
+				.Append(CollectionPrinter.ToString(collectionsByKey.Keys))
 				.Append("]")
 				.ToString();
 		}
@@ -1399,11 +1398,33 @@ namespace NHibernate.Engine
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
 			log.Debug("Deserialization callback persistent-context");
+
 			// during deserialization, we need to reconnect all proxies and
 			// collections to this session, as well as the EntityEntry and
 			// CollectionEntry instances; these associations are transient
 			// because serialization is used for different things.
 			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
+
+			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
+			// otherwise they are still empty at this point (the .NET deserialization code calls
+			// OnDeserialization() on them AFTER it calls the current method).
+			entitiesByKey.OnDeserialization(sender);
+			entitiesByUniqueKey.OnDeserialization(sender);
+			((IDeserializationCallback)entityEntries).OnDeserialization(sender);
+			proxiesByKey.OnDeserialization(sender);
+			entitySnapshotsByKey.OnDeserialization(sender);
+			((IDeserializationCallback)arrayHolders).OnDeserialization(sender);
+			((IDeserializationCallback)collectionEntries).OnDeserialization(sender);
+			collectionsByKey.OnDeserialization(sender);
+
+			// If nullifiableEntityKeys is once used in the current method, HashedSets will need
+			// an OnDeserialization() method.
+			//nullifiableEntityKeys.OnDeserialization(sender);
+
+			if (unownedCollections != null)
+			{
+				unownedCollections.OnDeserialization(sender);
+			}
 
 			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
 			foreach (DictionaryEntry collectionEntry in collectionEntries)

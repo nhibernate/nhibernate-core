@@ -27,6 +27,10 @@ namespace NHibernate.Linq.Visitors
 			_parameters = parameters;
 		}
 
+
+		public ISessionFactory SessionFactory { get { return _parameters.SessionFactory; } }
+
+
 		public HqlTreeNode Visit(Expression expression)
 		{
 			return VisitExpression(expression);
@@ -153,7 +157,11 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitNhAverage(NhAverageExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
+			if (expression.Type != expression.Expression.Type)
+				hqlExpression = _hqlTreeBuilder.Cast(hqlExpression, expression.Type);
+
+			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Average(hqlExpression), expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
@@ -341,7 +349,12 @@ namespace NHibernate.Linq.Visitors
 					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
+				{
+					if (expression.Operand.Type.IsPrimitive && expression.Type.IsPrimitive)
+						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
+
 					return VisitExpression(expression.Operand);
+				}
 			}
 
 			throw new NotSupportedException(expression.ToString());

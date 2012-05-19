@@ -11,7 +11,7 @@
 		<property name="Name" column="name" />
 		<list name="Bs" cascade="all-delete-orphan" inverse="false">
 			<key column="a_id" />
-      <index column="position" />
+      <index column="`position`" />
       <one-to-many class="B" />
 		</list>
 	</class>

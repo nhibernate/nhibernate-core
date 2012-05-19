@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.MappingByCode.IntegrationTests.NH2825">
+
+	<class name="Parent">
+		<id name="Id" generator="guid.comb" />
+		<property name="ParentCode" unique="true" />
+		<property name="Name" />
+		<bag name="Children" inverse="true" cascade="persist">
+			<key column="ParentParentCode" property-ref="ParentCode" />
+			<one-to-many class="Child"/>
+		</bag>
+	</class>
+
+	<class name="Child">
+		<id name="Id" generator="guid.comb" />
+		<property name="Name" />
+		<many-to-one name="Parent" property-ref="ParentCode" column="ParentParentCode" />
+	</class>
+
+</hibernate-mapping>

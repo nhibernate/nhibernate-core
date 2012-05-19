@@ -20,8 +20,9 @@ namespace NHibernate.Dialect.Schema
 
 		protected override void ParseTableInfo(DataRow rs)
 		{
-			Catalog = Convert.ToString(rs["TABLE_CATALOG"]);
-			Schema = Convert.ToString(rs["TABLE_SCHEMA"]);
+			// Clearly, we cannot use the same names when connected via ODBC...
+			Catalog = SchemaHelper.GetString(rs, "TABLE_CATALOG", "TABLE_CAT");
+			Schema = SchemaHelper.GetString(rs, "TABLE_SCHEMA", "TABLE_SCHEM");
 			if (string.IsNullOrEmpty(Catalog)) Catalog = null;
 			if (string.IsNullOrEmpty(Schema)) Schema = null;
 			Name = Convert.ToString(rs["TABLE_NAME"]);
@@ -64,11 +65,15 @@ namespace NHibernate.Dialect.Schema
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
 
-			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
-			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
+			// Clearly, we cannot use the same names when connected via ODBC...
+			this.SetColumnSize(SchemaHelper.GetValue(rs, "CHARACTER_MAXIMUM_LENGTH", "COLUMN_SIZE"));
+			this.SetNumericalPrecision(SchemaHelper.GetValue(rs, "NUMERIC_PRECISION", "COLUMN_SIZE"));
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
-			TypeName = Convert.ToString(rs["DATA_TYPE"]);			
+
+			// For the type name, DATA_TYPE is numeric when using ODBC, so use the
+			// string-valued ODBC-only TYPE_NAME as first alternative.
+			TypeName = SchemaHelper.GetString(rs, "TYPE_NAME", "DATA_TYPE");
 		}
 	}
 

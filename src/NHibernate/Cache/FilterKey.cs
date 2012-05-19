@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
@@ -11,24 +11,24 @@ namespace NHibernate.Cache
 	[Serializable]
 	public class FilterKey
 	{
-		private readonly string filterName;
-		private readonly Dictionary<string, TypedValue> filterParameters = new Dictionary<string, TypedValue>();
+		private readonly string _filterName;
+		private readonly Dictionary<string, TypedValue> _filterParameters = new Dictionary<string, TypedValue>();
 
 		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types, EntityMode entityMode)
 		{
-			filterName = name;
+			_filterName = name;
 			foreach (KeyValuePair<string, object> me in @params)
 			{
 				IType type = types[me.Key];
-				filterParameters[me.Key] = new TypedValue(type, me.Value, entityMode);
+				_filterParameters[me.Key] = new TypedValue(type, me.Value, entityMode);
 			}
 		}
 
 		public override int GetHashCode()
 		{
 			int result = 13;
-			result = 37 * result + filterName.GetHashCode();
-			result = 37 * result + CollectionHelper.GetHashCode(filterParameters);
+			result = 37 * result + _filterName.GetHashCode();
+			result = 37 * result + CollectionHelper.GetHashCode(_filterParameters);
 			return result;
 		}
 
@@ -39,23 +39,24 @@ namespace NHibernate.Cache
 			{
 				return false;
 			}
-			if (!that.filterName.Equals(filterName))
+			if (!that._filterName.Equals(_filterName))
 				return false;
-			if (!CollectionHelper.DictionaryEquals<string, TypedValue>(that.filterParameters, filterParameters))
+			if (!CollectionHelper.DictionaryEquals<string, TypedValue>(that._filterParameters, _filterParameters))
 				return false;
 			return true;
 		}
 
 		public override string ToString()
 		{
-			return string.Format("FilterKey[{0}{1}]", filterName, CollectionPrinter.ToString(filterParameters));
+			return string.Format("FilterKey[{0}{1}]", _filterName, CollectionPrinter.ToString(_filterParameters));
 		}
 
-		public static ISet CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
+		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
 		{
 			if (enabledFilters.Count == 0)
 				return null;
-			Set result = new HashedSet();
+
+			var result = new HashedSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
 				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes, entityMode);

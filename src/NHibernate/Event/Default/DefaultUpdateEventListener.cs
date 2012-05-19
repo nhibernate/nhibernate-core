@@ -31,6 +31,11 @@ namespace NHibernate.Event.Default
 			}
 		}
 
+		protected override object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
+		{
+			return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
+		}
+
 		/// <summary> 
 		/// If the user specified an id, assign it to the instance and use that, 
 		/// otherwise use the id already assigned to the instance

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -41,6 +38,13 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void SumNullableDecimal()
 		{
 			decimal? total = db.Orders.Sum(ol => ol.Freight);
+			Assert.Greater(total, 0);
+		}
+
+		[Test]
+		public void SumSingle()
+		{
+			float total = db.Products.Sum(p => p.ShippingWeight);
 			Assert.Greater(total, 0);
 		}
 	}

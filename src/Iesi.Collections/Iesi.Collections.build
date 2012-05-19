@@ -38,18 +38,18 @@
   <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec for Iesi.Collections">
     <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="Iesi.Collections.nuspec.template" tofile="${nuspec.destination.file}"/>
-    <xmlpoke file="${nuspec.destination.file}"
-             xpath="/package/metadata/version"
-             value="${project.version.numeric}" />
+    <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version.nuget}" />
   </target>
   
   <target name="nuget" depends="init nuget.set-properties nuspec">
     <!-- Prepare working dir with file needed by Iesi.Collections.nuspec -->
     <copy file="${bin.dir}/Iesi.Collections.dll" todir="${nuget.workingdir}"/>
+	<copy file="${bin.dir}/Iesi.Collections.pdb" todir="${nuget.workingdir}"/>
     <copy file="${bin.dir}/Iesi.Collections.xml" todir="${nuget.workingdir}"/>
 
     <exec basedir="${tools.dir}" workingdir="${nuget.workingdir}" program="NuGet.exe">
       <arg value="pack" />
+	  <arg value="-symbols" />
       <arg value="${nuspec.destination.filename}" />
     </exec>
   </target>

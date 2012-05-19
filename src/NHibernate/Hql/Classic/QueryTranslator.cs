@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
@@ -1468,8 +1467,8 @@ namespace NHibernate.Hql.Classic
 		}
 
 
-		private static readonly ISet beforeClassTokens = new HashedSet();
-		private static readonly ISet notAfterClassTokens = new HashedSet();
+		private static readonly ISet<string> beforeClassTokens = new HashedSet<string>();
+		private static readonly ISet<string> notAfterClassTokens = new HashedSet<string>();
 
 		/// <summary></summary>
 		static QueryTranslator()

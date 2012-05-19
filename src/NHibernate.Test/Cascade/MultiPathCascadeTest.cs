@@ -163,7 +163,7 @@ namespace NHibernate.Test.Cascade
 				s.Merge(h);
 				Assert.Fail("should have thrown TransientObjectException");
 			}
-			catch (TransientObjectException ex)
+			catch (TransientObjectException)
 			{
 				// expected
 			}
@@ -215,7 +215,7 @@ namespace NHibernate.Test.Cascade
 				s.Merge(g);
 				Assert.Fail("should have thrown TransientObjectException");
 			}
-			catch (TransientObjectException ex)
+			catch (TransientObjectException )
 			{
 				// expected
 			}
@@ -267,7 +267,7 @@ namespace NHibernate.Test.Cascade
 				s.Merge(h);
 				Assert.Fail("should have thrown TransientObjectException");
 			}
-			catch (TransientObjectException ex)
+			catch (TransientObjectException)
 			{
 				// expected
 			}

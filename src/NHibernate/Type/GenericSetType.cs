@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericSetType(string role, string propertyRef)
-			: base(role, propertyRef, false) {}
+			: base(role, propertyRef, false) { }
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the set.
@@ -52,18 +52,18 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-		    var set = collection as ISet<T>;
-            if(set==null)
-            {
-                var stronglyTypedCollection = collection as ICollection<T>;
-                if(stronglyTypedCollection==null)
-                    throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
-                set = new HashedSet<T>(stronglyTypedCollection);
-            }
-		    return new PersistentGenericSet<T>(session, set);
+			var set = collection as ISet<T>;
+			if (set == null)
+			{
+				var stronglyTypedCollection = collection as ICollection<T>;
+				if (stronglyTypedCollection == null)
+					throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
+				set = new HashedSet<T>(stronglyTypedCollection);
+			}
+			return new PersistentGenericSet<T>(session, set);
 		}
 
-	    public override object Instantiate(int anticipatedSize)
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet<T>();
 		}

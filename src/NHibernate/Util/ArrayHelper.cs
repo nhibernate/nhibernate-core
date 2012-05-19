@@ -36,10 +36,6 @@ namespace NHibernate.Util
 			return true;
 		}
 
-		public static string[] ToStringArray(object[] objects)
-		{
-			return (string[]) ToArray(objects, typeof(string));
-		}
 
 		public static string[] FillArray(string str, int length)
 		{
@@ -79,15 +75,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static int[] ToIntArray(ICollection coll)
-		{
-			return (int[]) ToArray(coll, typeof(int));
-		}
-
-		public static bool[] ToBooleanArray(ICollection col)
-		{
-			return (bool[])ToArray(col, typeof(bool));
-		}
 
 		public static string[] Slice(string[] strings, int begin, int length)
 		{
@@ -201,7 +188,7 @@ namespace NHibernate.Util
 			foreach (object obj in from)
 			{
 				// There is bug in .NET, before version 4, where adding null to a List<Nullable<T>> through the non-generic IList interface throws an exception.
-				// TODO: Everything but the to.Add(obj) should should be conditionally compiled only for versions of .NET earlier than 4.
+				// TODO: Everything but the to.Add(obj) should be conditionally compiled only for versions of .NET earlier than 4.
 				if (obj == null)
 				{
 					if (addNull == null)
@@ -334,10 +321,6 @@ namespace NHibernate.Util
 			return (string[]) ToArray(coll, typeof(string));
 		}
 
-		public static string[] ToStringArray(ICollection<string> coll)
-		{
-			return new List<string>(coll).ToArray();
-		}
 
 		public static SqlType[] ToSqlTypeArray(ICollection coll)
 		{

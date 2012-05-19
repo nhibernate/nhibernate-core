@@ -14,6 +14,7 @@ namespace NHibernate.Mapping.ByCode
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;
 		private readonly ICandidatePersistentMembersProvider membersProvider;
 		private readonly IModelInspector modelInspector;
+		private readonly List<Import> imports = new List<Import>();
 
 		public ModelMapper() : this(new ExplicitlyDeclaredModel()) { }
 
@@ -531,6 +532,16 @@ namespace NHibernate.Mapping.ByCode
 			customizeAction(customizer);
 		}
 
+		public void Import<TImportClass>()
+		{
+			Import<TImportClass>(typeof(TImportClass).Name);
+		}
+
+		public void Import<TImportClass>(string rename)
+		{
+			imports.Add(new Import(typeof(TImportClass), rename));
+		}
+
 		public HbmMapping CompileMappingFor(IEnumerable<System.Type> types)
 		{
 			if (types == null)
@@ -550,7 +561,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				defaultNamespace = firstType.Namespace;
 			}
-			var mapping = new HbmMapping {assembly = defaultAssemblyName, @namespace = defaultNamespace};
+			var mapping = NewHbmMapping(defaultAssemblyName, defaultNamespace);
 			foreach (System.Type type in RootClasses(typeToMap))
 			{
 				MapRootClass(type, mapping);
@@ -572,16 +583,26 @@ namespace NHibernate.Mapping.ByCode
 
 			foreach (System.Type type in RootClasses(typeToMap))
 			{
-				var mapping = new HbmMapping {assembly = type.Assembly.GetName().Name, @namespace = type.Namespace};
+				var mapping = NewHbmMapping(type.Assembly.GetName().Name, type.Namespace);
 				MapRootClass(type, mapping);
 				yield return mapping;
 			}
 			foreach (System.Type type in Subclasses(typeToMap))
 			{
-				var mapping = new HbmMapping {assembly = type.Assembly.GetName().Name, @namespace = type.Namespace};
+				var mapping = NewHbmMapping(type.Assembly.GetName().Name, type.Namespace);
 				AddSubclassMapping(mapping, type);
 				yield return mapping;
 			}
+		}
+
+		private HbmMapping NewHbmMapping(string defaultAssemblyName, string defaultNamespace)
+		{
+			var hbmMapping = new HbmMapping {assembly = defaultAssemblyName, @namespace = defaultNamespace};
+
+			imports.ForEach(i => i.AddToMapping(hbmMapping));
+			imports.Clear();
+
+			return hbmMapping;
 		}
 
 		private IEnumerable<System.Type> Subclasses(IEnumerable<System.Type> types)
@@ -736,7 +757,7 @@ namespace NHibernate.Mapping.ByCode
 				classMapper.ComponentAsId(poidPropertyOrField, compoAsId =>
 				                                               {
 				                                               	var memberPath = new PropertyPath(null, poidPropertyOrField);
-				                                               	var componentMapper = new ComponentAsIdLikeComponetAttributesMapper(compoAsId);
+				                                               	var componentMapper = new ComponentAsIdLikeComponentAttributesMapper(compoAsId);
 				                                               	InvokeBeforeMapComponent(memberPath, componentMapper);
 
 				                                               	System.Type componentType = poidPropertyOrField.GetPropertyOrFieldType();

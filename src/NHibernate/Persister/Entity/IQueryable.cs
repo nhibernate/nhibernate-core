@@ -79,7 +79,7 @@ namespace NHibernate.Persister.Entity
 		bool VersionPropertyInsertable { get;}
 
 		/// <summary>
-		/// Given a query alias and an identifying suffix, render the intentifier select fragment.
+		/// Given a query alias and an identifying suffix, render the identifier select fragment.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="suffix"></param>

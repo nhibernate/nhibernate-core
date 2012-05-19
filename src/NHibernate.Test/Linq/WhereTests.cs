@@ -562,5 +562,28 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(2, query.Count);
 		}
+
+		[Test]
+		public void AnimalsWithFathersSerialNumberListContains()
+		{
+			var serialNumbers = new List<string> { "5678", "789" };
+			var query = (from animal in db.Animals
+						 where animal.Father != null && serialNumbers.Contains(animal.Father.SerialNumber)
+						 select animal).ToList();
+
+			Assert.AreEqual(1, query.Count);
+		}
+
+		[Test]
+		public void AnimalsWithFathersSerialNumberListContainsWithLocalVariable()
+		{
+			var serialNumbers = new List<string> { "5678", "789" };
+			var query = (from animal in db.Animals
+						 let father = animal.Father
+						 where father != null && serialNumbers.Contains(father.SerialNumber)
+						 select animal).ToList();
+
+			Assert.AreEqual(1, query.Count);
+		}
 	}
 }

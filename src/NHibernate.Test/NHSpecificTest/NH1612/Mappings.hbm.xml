@@ -13,7 +13,7 @@
     <property name="Name" column="name" type="String" length="50" not-null="true" />
     <map name="Statistics" table="stats">
       <key column="area_code" />
-      <index column="year" type="Int32" />
+      <index column="year_" type="Int32" />
       <composite-element class="AreaStatistics">
         <property name="CitizenCount" column="citizen_count" type="Int32" />
         <nested-composite-element name="GDP" class="MonetaryValue">
@@ -76,7 +76,7 @@
   <sql-query name="AreaStatisticsLoader" xml:space="preserve">
     <load-collection role="Area.Statistics" alias="s">
       <return-property name="key" column="area_code" />
-      <return-property name="index" column="year" />
+      <return-property name="index" column="year_" />
       <return-property name="element.CitizenCount" column="citizen_count" />
       <return-property name="element.GDP">
         <return-column name="gdp_currency" />
@@ -85,7 +85,7 @@
       <return-property name="element.Reporter" column="reporter_id" />
     </load-collection>
     SELECT  area_code
-        ,   year
+        ,   year_
         ,   citizen_count
         ,   gdp_currency
         ,   gdp_amount
@@ -213,7 +213,7 @@
         ,   a.version AS {a.Version}
         ,   a.name AS {a.Name}
         ,   s.area_code AS {s.key}
-        ,   s.year AS {s.index}
+        ,   s.year_ AS {s.index}
         ,   s.citizen_count AS {s.element.CitizenCount}
         ,   s.gdp_currency AS {s.element.GDP.CurrencySymbol}
         ,   s.gdp_amount AS {s.element.GDP.Amount}
@@ -233,7 +233,7 @@
     </return>
     <return-join property="a.Statistics" alias="s">
       <return-property name="key" column="code" />
-      <return-property name="index" column="year" />
+      <return-property name="index" column="year_" />
       <return-property name="element.CitizenCount" column="citizen_count" />
       <return-property name="element.GDP">
         <return-column name="gdp_currency" />
@@ -245,7 +245,7 @@
         ,   a.area_type
         ,   a.version
         ,   a.name
-        ,   s.year
+        ,   s.year_
         ,   s.citizen_count
         ,   s.gdp_currency
         ,   s.gdp_amount
@@ -264,7 +264,7 @@
         ,   a.version AS {a.Version}
         ,   a.name AS {a.Name}
         ,   s.area_code AS {s.key}
-        ,   s.year AS {s.index}
+        ,   s.year_ AS {s.index}
         ,   s.citizen_count AS {s.element.CitizenCountMisspelled}
         ,   s.gdp_currency AS {s.element.GDP.CurrencySymbol}
         ,   s.gdp_amount AS {s.element.GDP.Amount}

@@ -22,5 +22,7 @@ namespace NHibernate.Mapping.ByCode
 		void Update(bool consideredInUpdateQuery);
 		void Insert(bool consideredInInsertQuery);
 		void ForeignKey(string foreignKeyName);
+		void PropertyRef(string propertyReferencedName);
+		void NotFound(NotFoundMode mode);
 	}
 }

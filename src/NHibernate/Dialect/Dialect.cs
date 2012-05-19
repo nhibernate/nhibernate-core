@@ -84,7 +84,7 @@ namespace NHibernate.Dialect
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
 			
 			// standard sql92 functions (can be overridden by subclasses)
-			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
+			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
 			RegisterFunction("trim", new AnsiTrimFunction());
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
@@ -1143,10 +1143,11 @@ namespace NHibernate.Dialect
 			return value ? "1" : "0";
 		}
 
-		protected static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn)
+		internal static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn, out Dictionary<SqlString, SqlString> columnToAlias)
 		{
 			columnsOrAliases = new List<SqlString>();
 			aliasToColumn = new Dictionary<SqlString, SqlString>();
+			columnToAlias = new Dictionary<SqlString, SqlString>();
 
 			var tokens = new QuotedAndParenthesisStringTokenizer(select).GetTokens();
 			int index = 0;
@@ -1210,6 +1211,7 @@ namespace NHibernate.Dialect
 
 				columnsOrAliases.Add(alias);
 				aliasToColumn[alias] = token;
+				columnToAlias[token] = alias;
 			}
 		}
 

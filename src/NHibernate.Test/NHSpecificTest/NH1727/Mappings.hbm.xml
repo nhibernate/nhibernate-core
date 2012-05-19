@@ -14,7 +14,7 @@
                  class="ClassB"/>
     
     <property name="Name"/>
-    <property name="Value" />
+    <property name="Value" column="`Value`"/>
     
     <filter name="bEquals"
             condition=":b = B"/>

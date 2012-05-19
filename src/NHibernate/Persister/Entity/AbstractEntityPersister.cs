@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.AdoNet;
@@ -29,6 +28,7 @@ using NHibernate.Util;
 using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
+using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -345,7 +345,7 @@ namespace NHibernate.Persister.Entity
 			propertySelectable = new bool[hydrateSpan];
 			propertyColumnUpdateable = new bool[hydrateSpan][];
 			propertyColumnInsertable = new bool[hydrateSpan][];
-			ISet thisClassProperties = new HashedSet();
+			var thisClassProperties = new HashSet<Property>();
 
 			lazyProperties = new HashedSet<string>();
 			List<string> lazyNames = new List<string>();
@@ -1188,7 +1188,7 @@ namespace NHibernate.Persister.Entity
 				return null;
 			}
 
-			return RenderSelect(ArrayHelper.ToIntArray(tableNumbers), columnNumbers.ToArray(), formulaNumbers.ToArray());
+			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
 		public virtual object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session)

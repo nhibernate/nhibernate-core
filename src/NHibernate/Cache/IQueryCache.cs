@@ -13,8 +13,8 @@ namespace NHibernate.Cache
 	/// </summary>
 	public interface IQueryCache
 	{
-		ICache Cache { get;}
-		string RegionName { get;}
+		ICache Cache { get; }
+		string RegionName { get; }
 
 		void Clear();
 		bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session);

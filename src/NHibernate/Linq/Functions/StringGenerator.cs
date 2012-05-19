@@ -73,21 +73,6 @@ namespace NHibernate.Linq.Functions
 			}
 		}
 
-		public class EqualsGenerator : BaseHqlGeneratorForMethod
-		{
-			public EqualsGenerator()
-			{
-				SupportedMethods = new[] { ReflectionHelper.GetMethodDefinition<string>(x => x.Equals((string)null)) };
-			}
-
-			public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-			{
-				return treeBuilder.Equality(
-						visitor.Visit(targetObject).AsExpression(),
-						visitor.Visit(arguments[0]).AsExpression());
-			}
-		}
-
 		public class ToLowerGenerator : BaseHqlGeneratorForMethod
 		{
 			public ToLowerGenerator()
@@ -132,18 +117,17 @@ namespace NHibernate.Linq.Functions
                                            ReflectionHelper.GetMethodDefinition<string>(s => s.Substring(0, 0))
                                        };
 			}
+
 			public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 			{
-				if (arguments.Count == 1)
-				{
-					return treeBuilder.MethodCall("substring", visitor.Visit(targetObject).AsExpression(),
-							treeBuilder.Constant(0),
-							visitor.Visit(arguments[0]).AsExpression());
-				}
+				var stringExpr = visitor.Visit(targetObject).AsExpression();
+				var start = treeBuilder.Add(visitor.Visit(arguments[0]).AsExpression(), treeBuilder.Constant(1));
 
-				return treeBuilder.MethodCall("substring", visitor.Visit(targetObject).AsExpression(),
-						visitor.Visit(arguments[0]).AsExpression(),
-						visitor.Visit(arguments[1]).AsExpression());
+				if (arguments.Count == 1)
+					return treeBuilder.MethodCall("substring", stringExpr, start);
+
+				var length = visitor.Visit(arguments[1]).AsExpression();
+				return treeBuilder.MethodCall("substring", stringExpr, start, length);
 			}
 		}
 
