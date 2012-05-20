@@ -970,6 +970,8 @@
     <Compile Include="NHSpecificTest\NH3149\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3149\Model.cs" />
     <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3153\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3153\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2825,6 +2827,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3153\SchemaInClass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3153\SchemaInMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3149\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3126\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3145\Mappings.hbm.xml" />
