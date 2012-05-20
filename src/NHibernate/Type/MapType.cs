@@ -107,11 +107,14 @@ namespace NHibernate.Type
 
 		public override object IndexOf(object collection, object element)
 		{
-			IEnumerable iter = (IDictionary)collection;
-			foreach (DictionaryEntry me in iter)
+			var dictionary = (IDictionary) collection;
+			var enumerator = dictionary.GetEnumerator();
+			while (enumerator.MoveNext())
 			{
-				if (me.Value == element)
-					return me.Key;				
+				if (enumerator.Value == element)
+				{
+					return enumerator.Key;
+				}
 			}
 			return null;
 		}

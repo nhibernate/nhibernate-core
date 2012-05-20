@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3126">
+  <class name="Item" table="Item">
+    <id name="Id" type="guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" />
+    <map name="PropertyValues" inverse="false" table="PropertyValue" cascade="all-delete-orphan">
+      <key column="ItemId" not-null="true" />
+      <index column="PropertyId" type="guid" />
+      <one-to-many class="PropertyValue" />
+    </map>
+  </class>
+  <class name="Property" table="Property">
+    <id name="Id" type="guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" />
+  </class>
+  <class name="PropertyValue" table="PropertyValue">
+    <id name="Id" type="guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Value" />
+  </class>
+</hibernate-mapping>

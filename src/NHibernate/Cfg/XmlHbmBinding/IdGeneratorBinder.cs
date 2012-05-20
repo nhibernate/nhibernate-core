@@ -39,10 +39,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			var results = new Dictionary<string, string>();
 
+			// By default, any tables for the id generator will be in the same schema as
+			// the owning entity table. If this isn't specified, grab it from the root
+			// mappings element instead. It can also be overriden with a parameter in the
+			// <generator> clause itself.
+
 			if (schema != null)
 				results[Id.PersistentIdGeneratorParmsNames.Schema] = schema;
-			if (mappings.SchemaName != null)
-				results[Id.PersistentIdGeneratorParmsNames.Schema] = mappings.Dialect.QuoteForSchemaName(mappings.SchemaName);
+			else if (mappings.SchemaName != null)
+				results[Id.PersistentIdGeneratorParmsNames.Schema] = mappings.SchemaName;
 
 			if (mappings.PreferPooledValuesLo != null)
 				results[Environment.PreferPooledValuesLo] = mappings.PreferPooledValuesLo;
