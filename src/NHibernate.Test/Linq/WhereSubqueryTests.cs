@@ -497,6 +497,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
+		[Test, Ignore("Not fixed yet.")]
+		public void SubqueryWithGroupBy()
+		{
+			//NH-3155
+			var sq = db.Orders
+				.GroupBy(x => x.ShippingDate)
+				.Select(x => x.Max(o => o.OrderId));
+
+			var result = db.Orders
+				.Where(x => sq.Contains(x.OrderId))
+				.Select(x => x.OrderId)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(388));
+		}
+
 		[Test]
 		public void SubqueryWhereFailingTest()
 		{
