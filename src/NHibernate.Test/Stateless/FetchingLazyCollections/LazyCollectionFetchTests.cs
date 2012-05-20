@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Linq;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -125,6 +127,24 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
 				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should NOT be initialized").Be.False();
+
+				tx.Commit();
+			}
+
+			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				IList<Family<Human>> hf = s.Query<Family<Human>>().FetchMany(f => f.Childs).ToList();
+				Assert.That(hf.Count, Is.EqualTo(1));
+				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
+				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
+				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should be initialized").Be.True();
+
+				IList<Family<Reptile>> rf = s.Query<Family<Reptile>>().FetchMany(f => f.Childs).ToList();
+				Assert.That(rf.Count, Is.EqualTo(1));
+				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
+				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
+				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should be initialized").Be.True();
 
 				tx.Commit();
 			}
