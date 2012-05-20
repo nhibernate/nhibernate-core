@@ -1,11 +1,11 @@
 @echo off
 pushd %~dp0
 
-set NANT=%~dp0Tools\nant\bin\NAnt.exe -t:net-3.5
-set BUILDTOOL=%~dp0Tools\BuildTool\bin\Release\BuildTool.exe
+set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-3.5
+set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
-set NUNIT=%~dp0Tools\nunit\nunit-x86.exe
+set NUNIT="%~dp0Tools\nunit\nunit-x86.exe"
 
 :main-menu
 echo ========================= NHIBERNATE BUILD MENU ==========================
@@ -118,27 +118,27 @@ goto test-setup-generic
 :test-setup-generic
 set /p CFGNAME=Enter a name for your test configuration or press enter to use default name: 
 if /I "%CFGNAME%"=="" set CFGNAME=%CONFIG_NAME%-%PLATFORM%
-mkdir %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+mkdir "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 if /I "%LIB_FILES%"=="" goto test-setup-generic-skip-copy
-copy %LIB_FILES% %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+copy %LIB_FILES% "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 if /I "%LIB_FILES2%"=="" goto test-setup-generic-skip-copy
-copy %LIB_FILES2% %AVAILABLE_CONFIGURATIONS%\%CFGNAME%
+copy %LIB_FILES2% "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%"
 :test-setup-generic-skip-copy
-copy src\NHibernate.Config.Templates\%CONFIG_NAME%.cfg.xml %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
+copy src\NHibernate.Config.Templates\%CONFIG_NAME%.cfg.xml "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml"
 echo Done setting up files.  Starting notepad to edit connection string in file:
 echo %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
-start notepad %AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml
+start notepad "%AVAILABLE_CONFIGURATIONS%\%CFGNAME%\hibernate.cfg.xml"
 echo When you're done, don't forget to activate the configuration through the menu.
 goto main-menu
 
 
 :test-activate
-%BUILDTOOL% pick-folder %AVAILABLE_CONFIGURATIONS% folder.tmp "Which test configuration should be activated?"
+%BUILDTOOL% pick-folder "%AVAILABLE_CONFIGURATIONS%" folder.tmp "Which test configuration should be activated?"
 set /p FOLDER=<folder.tmp
 del folder.tmp
-mkdir %CURRENT_CONFIGURATION% 2> nul
-del /q %CURRENT_CONFIGURATION%\*
-copy %FOLDER%\* %CURRENT_CONFIGURATION%
+mkdir "%CURRENT_CONFIGURATION%" 2> nul
+del /q "%CURRENT_CONFIGURATION%\*"
+copy %FOLDER%\* "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
@@ -273,51 +273,51 @@ if errorlevel 1 goto teamcity-firebird32
 if errorlevel 0 goto teamcity-trunk
 
 :teamcity-trunk
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-firebird32
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird32
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-firebird64
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=firebird64
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-sqlite32
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite32
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-sqlite64
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlite64
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-postgresql
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=postgresql
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-oracle32
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle32
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :teamcity-sqlServerOdbc
-move %CURRENT_CONFIGURATION% %CURRENT_CONFIGURATION%-backup 2> nul
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=sqlServerOdbc
-move %CURRENT_CONFIGURATION%-backup %CURRENT_CONFIGURATION% 2> nul
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
 :end
