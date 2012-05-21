@@ -24,6 +24,6 @@
     <id name="Id" type="guid">
       <generator class="guid.comb" />
     </id>
-    <property name="Value" />
+    <property name="Value" column="`Value`" />
   </class>
 </hibernate-mapping>
