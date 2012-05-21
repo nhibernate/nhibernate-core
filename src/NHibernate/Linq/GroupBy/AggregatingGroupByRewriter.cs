@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
@@ -26,10 +25,8 @@ namespace NHibernate.Linq.GroupBy
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
 	/// </para>
 	/// </summary>
-	public class AggregatingGroupByRewriter
+	public static class AggregatingGroupByRewriter
 	{
-		private AggregatingGroupByRewriter() { }
-
 		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
@@ -45,16 +42,14 @@ namespace NHibernate.Linq.GroupBy
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// Move the result operator up 
-			if (queryModel.ResultOperators.Count != 0)
-			{
+			if (queryModel.ResultOperators.Count > 0)
 				throw new NotImplementedException();
-			}
 
-			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
+			var groupBy = (GroupResultOperator)subQueryExpression.QueryModel.ResultOperators[0];
 
 			queryModel.ResultOperators.Add(groupBy);
 
-			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
+			for (var i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
 				var clause = queryModel.BodyClauses[i];
 				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
