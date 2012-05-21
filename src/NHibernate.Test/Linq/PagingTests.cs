@@ -154,6 +154,50 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void PagedProductsWithOuterWhereClauseResort()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithInnerAndOuterWhereClauses()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.Where(x => x.UnitsInStock < 100)
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			var ids = db.Products
+				.Where(x => x.UnitsInStock < 100)
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
 		public void PagedProductsWithOuterWhereClauseEquivalent()
 		{
 			//NH-2588
@@ -168,6 +212,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20);
 
 			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.UnitsInStock > 0);
 

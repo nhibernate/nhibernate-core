@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Visitors;
@@ -31,26 +32,33 @@ namespace NHibernate.Linq.GroupBy
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// we can not flattern subquery if outer query has body clauses.
-			var subQueryMainFromClause = subQueryExpression.QueryModel.MainFromClause;
+			var subQueryModel = subQueryExpression.QueryModel;
+			var subQueryMainFromClause = subQueryModel.MainFromClause;
 			if (queryModel.BodyClauses.Count == 0)
 			{
-				foreach (var resultOperator in subQueryExpression.QueryModel.ResultOperators)
+				foreach (var resultOperator in subQueryModel.ResultOperators)
 					queryModel.ResultOperators.Add(resultOperator);
 
-				foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
+				foreach (var bodyClause in subQueryModel.BodyClauses)
 					queryModel.BodyClauses.Add(bodyClause);
 			}
 			else
 			{
 				var cro = new ContainsResultOperator(new QuerySourceReferenceExpression(subQueryMainFromClause));
 
-				var subQueryModel = subQueryExpression.QueryModel.Clone();
-				subQueryModel.ResultOperators.Add(cro);
-				subQueryModel.ResultTypeOverride = typeof (bool);
+				var newSubQueryModel = subQueryModel.Clone();
+				newSubQueryModel.ResultOperators.Add(cro);
+				newSubQueryModel.ResultTypeOverride = typeof (bool);
 
-				var where = new WhereClause(new SubQueryExpression(subQueryModel));
-
+				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);
+
+				if (!queryModel.BodyClauses.OfType<OrderByClause>().Any())
+				{
+					var orderByClauses = subQueryModel.BodyClauses.OfType<OrderByClause>();
+					foreach (var orderByClause in orderByClauses)
+						queryModel.BodyClauses.Add(orderByClause);
+				}
 			}
 
 			// Point all query source references to the outer from clause
