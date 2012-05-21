@@ -970,7 +970,6 @@
     <Compile Include="NHSpecificTest\NH3126\Property.cs" />
     <Compile Include="NHSpecificTest\NH3126\PropertyValue.cs" />
     <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
-    <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3149\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3149\Model.cs" />
     <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
