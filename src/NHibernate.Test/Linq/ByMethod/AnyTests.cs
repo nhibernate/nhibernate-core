@@ -35,5 +35,15 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.AreEqual(0, result.Count);
 		}
+
+		[Test]
+		public void AnyWithCount()
+		{
+			//NH-2654
+			var result = db.Orders
+				.Any(p => p.OrderLines.Count == 0);
+
+			Assert.IsFalse(result);
+		}
 	}
 }
