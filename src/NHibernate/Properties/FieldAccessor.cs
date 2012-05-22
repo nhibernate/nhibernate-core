@@ -3,6 +3,9 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
+using NHibernate.Intercept;
+using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 
 namespace NHibernate.Properties
@@ -101,7 +104,7 @@ namespace NHibernate.Properties
 
 		private static FieldInfo GetField(System.Type type, string fieldName, System.Type originalType)
 		{
-			if (type == null || type == typeof (object))
+			if (type == null || type == typeof(object))
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Field
@@ -154,6 +157,22 @@ namespace NHibernate.Properties
 			}
 		}
 
+		private static object GetTarget(object maybeProxy)
+		{
+			//wish there were an interface to unwrap with
+			var proxy = maybeProxy as IProxy;
+			if (proxy != null)
+			{
+				var fieldInterceptor = proxy.Interceptor as DefaultDynamicLazyFieldInterceptor;
+				if (fieldInterceptor != null)
+				{
+					return fieldInterceptor.TargetInstance;
+				}
+			}
+
+			return maybeProxy;
+		}
+
 		/// <summary>
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 		/// </summary>
@@ -190,7 +209,7 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return field.GetValue(target);
+					return field.GetValue(GetTarget(target));
 				}
 				catch (Exception e)
 				{
@@ -275,7 +294,7 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					field.SetValue(target, value);
+					field.SetValue(GetTarget(target), value);
 				}
 				catch (ArgumentException ae)
 				{
@@ -287,13 +306,13 @@ namespace NHibernate.Properties
 						// all related to an ISet and IDictionary mixups.
 						string msg =
 							String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
-										  field.FieldType.ToString());
+														field.FieldType.ToString());
 						throw new PropertyAccessException(ae, msg, true, clazz, name);
 					}
 					else
 					{
 						throw new PropertyAccessException(ae, "ArgumentException while setting the field value by reflection", true, clazz,
-														  name);
+																							name);
 					}
 				}
 				catch (Exception e)
