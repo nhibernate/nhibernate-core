@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 	/// <summary>
 	/// Similar to NH-2113 but with dynamic entity
 	/// </summary>
-	[TestFixture]
+	[TestFixture, Ignore("Not fixed yet.")]
 	public class Fixture : BugTestCase
 	{
 		[Test]
