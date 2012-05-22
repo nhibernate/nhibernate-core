@@ -101,7 +101,7 @@ namespace NHibernate.Properties
 
 		private static FieldInfo GetField(System.Type type, string fieldName, System.Type originalType)
 		{
-			if (type == null || type == typeof(object))
+			if (type == null || type == typeof (object))
 			{
 				// the full inheritance chain has been walked and we could
 				// not find the Field
@@ -110,7 +110,7 @@ namespace NHibernate.Properties
 
 			FieldInfo field =
 				type.GetField(fieldName,
-				              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+							  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			if (field == null)
 			{
 				// recursively call this method for the base Type
@@ -287,13 +287,13 @@ namespace NHibernate.Properties
 						// all related to an ISet and IDictionary mixups.
 						string msg =
 							String.Format("The type {0} can not be assigned to a field of type {1}", value.GetType().ToString(),
-														field.FieldType.ToString());
+										  field.FieldType.ToString());
 						throw new PropertyAccessException(ae, msg, true, clazz, name);
 					}
 					else
 					{
 						throw new PropertyAccessException(ae, "ArgumentException while setting the field value by reflection", true, clazz,
-																							name);
+														  name);
 					}
 				}
 				catch (Exception e)
