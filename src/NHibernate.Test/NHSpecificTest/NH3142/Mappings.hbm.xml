@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3142" default-access="property"
+                   default-lazy="true">
+	<class name="DomainParent">
+		<composite-id>
+			<key-property name="Id1"/>
+			<key-property name="Id2"/>
+		</composite-id>
+		<set name="Children" inverse="true" batch-size="4">
+			<key>
+				<column name="ParentId1" />
+				<column name="ParentId2" />
+			</key>
+			<one-to-many class="DomainChild" />
+		</set>
+	</class>
+
+	<class name="DomainChild">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<property name="ParentId1"/>
+		<property name="ParentId2"/>
+	</class>
+
+	<class name="DomainParentWithComponentId">
+		<composite-id name="Id" class="DomainParentIdentifier">
+			<key-property name="Id1"/>
+			<key-property name="Id2"/>
+		</composite-id>
+		<set name="Children" inverse="true" batch-size="4">
+			<key>
+				<column name="ParentId1" />
+				<column name="ParentId2" />
+			</key>
+			<one-to-many class="DomainChildWCId" />
+		</set>
+	</class>
+
+	<class name="DomainChildWCId">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<property name="ParentId1"/>
+		<property name="ParentId2"/>
+	</class>
+</hibernate-mapping>
