@@ -43,5 +43,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2812
 				Assert.AreEqual(1, query.Count);
 			}
 		}
+
+		[Test]
+		public void PerformingAQueryOnAByteColumnShouldNotThrowEquals()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var query = (from e in session.Query<EntityWithAByteValue>()
+							 where e.ByteValue.Equals(1)
+							 select e)
+							 .ToList();
+
+				Assert.AreEqual(1, query.Count);
+			}
+		}
 	}
 }
