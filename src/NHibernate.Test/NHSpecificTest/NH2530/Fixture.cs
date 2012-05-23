@@ -26,12 +26,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2530
 			{
 				script.AppendLine(string.Format("INSERT INTO [NextHighVaues] (Entity, NextHigh) VALUES ('{0}',1);", entity.Name));
 			}
-			return new SimpleAuxiliaryDatabaseObject(script.ToString(), null, new HashedSet<string> { typeof(MsSql2000Dialect).FullName, typeof(MsSql2005Dialect).FullName, typeof(MsSql2008Dialect).FullName });
+			var dialects = new HashedSet<string>
+							   {
+								   typeof (MsSql2000Dialect).FullName,
+								   typeof (MsSql2005Dialect).FullName,
+								   typeof (MsSql2008Dialect).FullName,
+								   typeof (MsSql2012Dialect).FullName
+							   };
+			return new SimpleAuxiliaryDatabaseObject(script.ToString(), null, dialects);
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return (dialect is Dialect.MsSql2000Dialect);
+			return (dialect is MsSql2000Dialect);
 		}
 
 		[Test]
