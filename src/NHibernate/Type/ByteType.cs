@@ -42,7 +42,7 @@ namespace NHibernate.Type
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			((IDataParameter)cmd.Parameters[index]).Value = (byte)value;
+			((IDataParameter) cmd.Parameters[index]).Value = Convert.ToByte(value);
 		}
 
 		public override string Name
