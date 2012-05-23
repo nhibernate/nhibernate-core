@@ -24,7 +24,7 @@ namespace NHibernate.Type
 			{
 				if (copy[i])
 				{
-					if (values[i] == LazyPropertyInitializer.UnfetchedProperty || values[i] == BackrefPropertyAccessor.Unknown)
+					if (Equals(LazyPropertyInitializer.UnfetchedProperty, values[i]) || Equals(BackrefPropertyAccessor.Unknown, values[i]))
 					{
 						target[i] = values[i];
 					}
@@ -44,7 +44,7 @@ namespace NHibernate.Type
 		{
 			for (int i = 0; i < types.Length; i++)
 			{
-				if (row[i] != LazyPropertyInitializer.UnfetchedProperty && row[i] != BackrefPropertyAccessor.Unknown)
+				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, row[i]) && !Equals(BackrefPropertyAccessor.Unknown, row[i]))
 				{
 					types[i].BeforeAssemble(row[i], session);
 				}
@@ -64,7 +64,7 @@ namespace NHibernate.Type
 			var assembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
 			{
-				if (row[i] == LazyPropertyInitializer.UnfetchedProperty || row[i] == BackrefPropertyAccessor.Unknown)
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, row[i]) || Equals(BackrefPropertyAccessor.Unknown, row[i]))
 				{
 					assembled[i] = row[i];
 				}
@@ -92,7 +92,7 @@ namespace NHibernate.Type
 				{
 					disassembled[i] = LazyPropertyInitializer.UnfetchedProperty;
 				}
-				else if (row[i] == LazyPropertyInitializer.UnfetchedProperty || row[i] == BackrefPropertyAccessor.Unknown)
+				else if (Equals(LazyPropertyInitializer.UnfetchedProperty, row[i]) || Equals(BackrefPropertyAccessor.Unknown, row[i]))
 				{
 					disassembled[i] = row[i];
 				}
@@ -120,7 +120,7 @@ namespace NHibernate.Type
 			var copied = new object[original.Length];
 			for (int i = 0; i < original.Length; i++)
 			{
-				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, original[i]) || Equals(BackrefPropertyAccessor.Unknown, original[i]))
 				{
 					copied[i] = target[i];
 				}
@@ -150,7 +150,7 @@ namespace NHibernate.Type
 			object[] copied = new object[original.Length];
 			for (int i = 0; i < types.Length; i++)
 			{
-				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, original[i]) || Equals(BackrefPropertyAccessor.Unknown, original[i]))
 				{
 					copied[i] = target[i];
 				}
@@ -182,7 +182,7 @@ namespace NHibernate.Type
 			object[] copied = new object[original.Length];
 			for (int i = 0; i < types.Length; i++)
 			{
-				if (original[i] == LazyPropertyInitializer.UnfetchedProperty || original[i] == BackrefPropertyAccessor.Unknown)
+				if (Equals(LazyPropertyInitializer.UnfetchedProperty, original[i]) || Equals(BackrefPropertyAccessor.Unknown, original[i]))
 				{
 					copied[i] = target[i];
 				}
@@ -239,7 +239,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < span; i++)
 			{
 				bool dirty =
-					currentState[i] != LazyPropertyInitializer.UnfetchedProperty &&
+					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
 					properties[i].IsDirtyCheckable(anyUninitializedProperties)
 					&& properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
 
@@ -290,7 +290,7 @@ namespace NHibernate.Type
 			for (int i = 0; i < span; i++)
 			{
 				bool dirty =
-					currentState[i] != LazyPropertyInitializer.UnfetchedProperty &&
+					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
 					properties[i].IsDirtyCheckable(anyUninitializedProperties)
 					&& properties[i].Type.IsModified(previousState[i], currentState[i], includeColumns[i], session);
 

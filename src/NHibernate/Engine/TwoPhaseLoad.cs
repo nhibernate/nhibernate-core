@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
 				object value = hydratedState[i];
-				if (value != LazyPropertyInitializer.UnfetchedProperty && value != BackrefPropertyAccessor.Unknown)
+				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
 					hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
 				}
