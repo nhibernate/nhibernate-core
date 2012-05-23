@@ -45,5 +45,11 @@ namespace NHibernate.Dialect
 		{
 			get { return "select name from sys.sequences"; }
 		}
+
+		protected override void RegisterFunctions()
+		{
+			base.RegisterFunctions();
+			RegisterFunction("iif", new StandardSafeSQLFunction("iif", 3));
+		}
 	}
 }
