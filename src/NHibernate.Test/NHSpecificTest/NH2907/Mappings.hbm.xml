@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+							assembly="NHibernate.Test"
+							namespace="NHibernate.Test.NHSpecificTest.NH2907">
+	<class entity-name="Loan" table="loans">
+		<composite-id name="CompId">
+			<key-property name="Id" type="int" />
+			<key-many-to-one name="Group"
+								  column="GroupID"
+								  class="Group"/>
+		</composite-id>
+		<property name="Name" type="string"/>
+	</class>
+
+	<class name="Group" table="groups">
+		<id name="Id">
+			<column name="GroupId"/>
+			<generator class="native"/>
+		</id>
+		<property name="Name" type="string"/>
+	</class>
+</hibernate-mapping>

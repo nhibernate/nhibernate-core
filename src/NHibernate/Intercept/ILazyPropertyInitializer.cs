@@ -1,11 +1,17 @@
+using System;
 using NHibernate.Engine;
 
 namespace NHibernate.Intercept
 {
+	[Serializable]
+	public struct UnfetchedLazyProperty
+	{
+	}
+
 	public struct LazyPropertyInitializer
 	{
 		/// <summary> Marker value for uninitialized properties</summary>
-		public readonly static object UnfetchedProperty= new object();
+		public static readonly object UnfetchedProperty = new UnfetchedLazyProperty();
 	}
 
 	/// <summary> Contract for controlling how lazy properties get initialized. </summary>

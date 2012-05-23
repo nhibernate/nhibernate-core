@@ -73,61 +73,61 @@ namespace NHibernate.Test.Linq
 			Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
 		}
 
-        [Test]
-        public void CanSelectNestedAnonymousTypeWithMultipleReferences()
-        {
-            var query = from user in db.Users
-                        select new
-                        {
-                            user.Name,
-                            Enums = new
-                            {
-                                user.Enum1,
-                                user.Enum2
-                            },
-                            RoleName = user.Role.Name,
-                            RoleIsActive = (bool?) user.Role.IsActive
-                        };
+		[Test]
+		public void CanSelectNestedAnonymousTypeWithMultipleReferences()
+		{
+			var query = from user in db.Users
+						select new
+						{
+							user.Name,
+							Enums = new
+							{
+								user.Enum1,
+								user.Enum2
+							},
+							RoleName = user.Role.Name,
+							RoleIsActive = (bool?) user.Role.IsActive
+						};
 
-            var list = query.ToList();
-            Assert.AreEqual(3, list.Count);
+			var list = query.ToList();
+			Assert.AreEqual(3, list.Count);
 
-            //assert role names -- to ensure that the correct values were used to invoke constructor
-            Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
-        }
-
-        [Test]
-        public void CanSelectNestedAnonymousTypeWithComponentReference()
-        {
-            var query = from user in db.Users
-                        select new
-                        {
-                            user.Name,
-                            Enums = new
-                            {
-                                user.Enum1,
-                                user.Enum2
-                            },
-                            RoleName = user.Role.Name,
-                            ComponentProperty = user.Component.Property1
-                        };
-
-            var list = query.ToList();
-            Assert.AreEqual(3, list.Count);
-
-            //assert role names -- to ensure that the correct values were used to invoke constructor
-            Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
-        }
+			//assert role names -- to ensure that the correct values were used to invoke constructor
+			Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
+		}
 
 		[Test]
-        public void CanSelectNestedMemberInitExpression()
+		public void CanSelectNestedAnonymousTypeWithComponentReference()
+		{
+			var query = from user in db.Users
+						select new
+						{
+							user.Name,
+							Enums = new
+							{
+								user.Enum1,
+								user.Enum2
+							},
+							RoleName = user.Role.Name,
+							ComponentProperty = user.Component.Property1
+						};
+
+			var list = query.ToList();
+			Assert.AreEqual(3, list.Count);
+
+			//assert role names -- to ensure that the correct values were used to invoke constructor
+			Assert.IsTrue(list.All(u => u.RoleName == "Admin" || u.RoleName == "User" || String.IsNullOrEmpty(u.RoleName)));
+		}
+
+		[Test]
+		public void CanSelectNestedMemberInitExpression()
 		{
 			var query = from user in db.Users
 						select new UserDto(user.Id, user.Name)
 						{
 							InvalidLoginAttempts = user.InvalidLoginAttempts,
 							Dto2 = new UserDto2
-							           {
+									   {
 								RegisteredAt = user.RegisteredAt,
 								Enum = user.Enum2
 							},
@@ -142,7 +142,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-        public void CanSelectNestedMemberInitWithinNewExpression()
+		public void CanSelectNestedMemberInitWithinNewExpression()
 		{
 			var query = from user in db.Users
 						select new
@@ -150,7 +150,7 @@ namespace NHibernate.Test.Linq
 							user.Name,
 							user.InvalidLoginAttempts,
 							Dto = new UserDto2
-							          {
+									  {
 								RegisteredAt = user.RegisteredAt,
 								Enum = user.Enum2
 							},
@@ -293,6 +293,23 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(0, timesheets[0].EntryCount);
 			Assert.AreEqual(2, timesheets[1].EntryCount);
 			Assert.AreEqual(4, timesheets[2].EntryCount);
+		}
+
+
+		[Test]
+		public void CanSelectWrappedType()
+		{
+			//NH-2151
+			var query = from user in db.Users
+						select new Wrapper<User> { item = user, message = user.Name + " " + user.Role };
+
+			Assert.IsTrue(query.ToArray().Length > 0);
+		}
+
+		public class Wrapper<T>
+		{
+			public T item;
+			public string message;
 		}
 	}
 }

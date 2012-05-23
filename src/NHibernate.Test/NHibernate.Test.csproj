@@ -673,6 +673,8 @@
     <Compile Include="NHSpecificTest\NH2880\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2880\Model.cs" />
     <Compile Include="NHSpecificTest\NH2500\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2898\BinaryFormatterCache.cs" />
+    <Compile Include="NHSpecificTest\NH2898\BinaryFormatterCacheProvider.cs" />
     <Compile Include="NHSpecificTest\NH2914\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2914\Model.cs" />
     <Compile Include="NHSpecificTest\NH2976\Employee.cs" />
@@ -682,6 +684,8 @@
     <Compile Include="NHSpecificTest\NH2905\Model.cs" />
     <Compile Include="NHSpecificTest\NH2951\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2951\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2907\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2907\Fixture.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\Fixture.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\Model.cs" />
     <Compile Include="NHSpecificTest\DataReaderWrapperTest\TheUserType.cs" />
@@ -982,10 +986,16 @@
     <Compile Include="NHSpecificTest\NH3016\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3145\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3145\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3132\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3132\Product.cs" />
+    <Compile Include="NHSpecificTest\NH3139\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3139\Product.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
     <Compile Include="NHSpecificTest\ProxyValidator\ShouldBeProxiableTests.cs" />
+    <Compile Include="NHSpecificTest\NH2898\ItemWithLazyProperty.cs" />
+    <Compile Include="NHSpecificTest\NH2898\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
@@ -2830,12 +2840,15 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2898\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2808\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3153\SchemaInClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3153\SchemaInMapping.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3149\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3126\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3145\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3132\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3139\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2664\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2214\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2960\Mappings.hbm.xml" />
@@ -2876,6 +2889,7 @@
     <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2846\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2907\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />

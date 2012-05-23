@@ -58,7 +58,7 @@ namespace NHibernate.Tuple.Component
 		public override object[] GetPropertyValues(object component)
 		{
 			// NH Different behavior : for NH-1101
-			if (component == BackrefPropertyAccessor.Unknown || component == null)
+			if (Equals(BackrefPropertyAccessor.Unknown, component) || component == null)
 			{
 				return new object[propertySpan];
 			}

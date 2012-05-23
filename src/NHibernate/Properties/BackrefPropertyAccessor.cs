@@ -5,11 +5,16 @@ using NHibernate.Engine;
 
 namespace NHibernate.Properties
 {
+	[Serializable]
+	public struct UnknownBackrefProperty
+	{
+	}
+
 	/// <summary> Represents a "back-reference" to the id of a collection owner. </summary>
 	[Serializable]
 	public class BackrefPropertyAccessor : IPropertyAccessor
 	{
-		public static readonly object Unknown = new object();
+		public static readonly object Unknown = new UnknownBackrefProperty();
 		private readonly string propertyName;
 		private readonly string entityName;
 

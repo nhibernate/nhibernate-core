@@ -465,6 +465,17 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.AreEqual(61, query.Count);
 		}
+		
+		[Test]
+		public void CategoriesWithDiscountedProducts()
+		{
+			//NH-2654
+			var query = (from c in db.Categories
+						 where c.Products.Any(p => p.Discontinued)
+						 select c).ToList();
+
+			Assert.AreEqual(5, query.Count);
+		}
 
 		[Test]
 		public void OrdersWithSubqueryWithJoin()
