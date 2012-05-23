@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Linq.ExpressionTransformers;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
@@ -17,28 +17,26 @@ namespace NHibernate.Linq
 {
 	public static class NhRelinqQueryParser
 	{
-		private static readonly QueryParser _queryParser;
+		private static readonly QueryParser QueryParser;
 
 		static NhRelinqQueryParser()
 		{
-			var nodeTypeProvider = new NHibernateNodeTypeProvider();
-
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
-			// Register custom expression transformers here:
-			// transformerRegistry.Register (new MyExpressionTransformer());
+			transformerRegistry.Register(new RemoveCharToIntConversion());
 
 			var processor = ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry);
 			// Add custom processors here:
 			// processor.InnerProcessors.Add (new MyExpressionTreeProcessor());
 
-			var expressionTreeParser = new ExpressionTreeParser(nodeTypeProvider, processor);
+			var nodeTypeProvider = new NHibernateNodeTypeProvider();
 
-			_queryParser = new QueryParser(expressionTreeParser);			
+			var expressionTreeParser = new ExpressionTreeParser(nodeTypeProvider, processor);
+			QueryParser = new QueryParser(expressionTreeParser);
 		}
 
 		public static QueryModel Parse(Expression expression)
 		{
-			return _queryParser.GetParsedQuery(expression);
+			return QueryParser.GetParsedQuery(expression);
 		}
 	}
 

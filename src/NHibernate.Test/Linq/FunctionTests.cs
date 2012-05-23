@@ -60,8 +60,8 @@ namespace NHibernate.Test.Linq
 								{
 									Before = e.FirstName,
 									AfterMethod = e.FirstName.Replace("An", "Zan"),
-                                    AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
-                                    AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
+									AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
+									AfterExtension2 = e.FirstName.ReplaceExtension("An", "Zan")
 								};
 
 			var s = ObjectDumper.Write(query);
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("Locate function not supported.");
 
 			var query = from e in db.Employees
-                        where e.FirstName.IndexOf('A') == 1
+						where e.FirstName.IndexOf('A') == 1
 						select e.FirstName;
 
 			ObjectDumper.Write(query);
@@ -113,70 +113,70 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("Locate function not supported.");
 
 			var query = from e in db.Employees
-		                where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
-		    			select e.FirstName;
+						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
+						select e.FirstName;
 
 			ObjectDumper.Write(query);
 		}
 
-        [Test]
-        public void ToStringFunction()
-        {
-            var query = from ol in db.OrderLines
-                        where ol.Quantity.ToString() == "4"
-                        select ol;
+		[Test]
+		public void ToStringFunction()
+		{
+			var query = from ol in db.OrderLines
+						where ol.Quantity.ToString() == "4"
+						select ol;
 
-            Assert.AreEqual(55, query.Count());
-        }
+			Assert.AreEqual(55, query.Count());
+		}
 
-        [Test]
-        public void ToStringWithContains()
-        {
-            var query = from ol in db.OrderLines
-                        where ol.Quantity.ToString().Contains("5")
-                        select ol;
+		[Test]
+		public void ToStringWithContains()
+		{
+			var query = from ol in db.OrderLines
+						where ol.Quantity.ToString().Contains("5")
+						select ol;
 
-            Assert.AreEqual(498, query.Count());
-        }
+			Assert.AreEqual(498, query.Count());
+		}
 
-        [Test]
-        public void Coalesce()
-        {
-            Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
-        }
+		[Test]
+		public void Coalesce()
+		{
+			Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").Count());
+		}
 
-        [Test]
-        public void Trim()
-        {
-            List<int> idsToDelete = new List<int>();
-            try
-            {
-                AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
-                AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
-                AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
-                session.Save(ae1);
-                idsToDelete.Add(ae1.Id);
-                session.Save(ae2);
-                idsToDelete.Add(ae2.Id);
-                session.Save(ae3);
-                idsToDelete.Add(ae3.Id);
-                session.Flush();
+		[Test]
+		public void Trim()
+		{
+			List<int> idsToDelete = new List<int>();
+			try
+			{
+				AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
+				AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
+				AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
+				session.Save(ae1);
+				idsToDelete.Add(ae1.Id);
+				session.Save(ae2);
+				idsToDelete.Add(ae2.Id);
+				session.Save(ae3);
+				idsToDelete.Add(ae3.Id);
+				session.Flush();
 
-                Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
-                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
+				Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
 
-                // Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
-                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
-                Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
-            }
-            finally
-            {
-                foreach (int idToDelete in idsToDelete)
-                    session.Delete(session.Get<AnotherEntity>(idToDelete));
-                session.Flush();
-            }
-        }
+				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
+			}
+			finally
+			{
+				foreach (int idToDelete in idsToDelete)
+					session.Delete(session.Get<AnotherEntity>(idToDelete));
+				session.Flush();
+			}
+		}
 
 		[Test, Ignore()]
 		public void TrimTrailingWhitespace()
@@ -230,8 +230,8 @@ namespace NHibernate.Test.Linq
 		public void WhereBoolConstantEqual()
 		{
 			var query = from item in db.Role
-			            where item.IsActive.Equals(true)
-			            select item;
+						where item.IsActive.Equals(true)
+						select item;
 			
 			ObjectDumper.Write(query);
 		}
@@ -241,7 +241,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
-			            select item;
+						select item;
 			
 			ObjectDumper.Write(query);
 		}
@@ -316,8 +316,18 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}	
-	
+		}
+
+		[Test]
+		public void WhereByteEqual()
+		{
+			var query = from item in session.Query<Foo>()
+						where item.Byte.Equals(1)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
 		[Test]
 		public void WhereDecimalEqual()
 		{
