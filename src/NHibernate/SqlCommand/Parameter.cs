@@ -63,7 +63,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
-		/// Generates an array of parameters for the given <see cref="SqlType">SqlTypes</see>.
+		/// Generates an array of parameters.
 		/// </summary>
 		/// <param name="count">The number of parameters to generate.</param>
 		/// <returns>An array of <see cref="Parameter"/> objects</returns>
