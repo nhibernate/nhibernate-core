@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -7,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
 	{
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return dialect is Dialect.MsSql2005Dialect;
-		}
-
 		protected override Cfg.MappingSchema.HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
