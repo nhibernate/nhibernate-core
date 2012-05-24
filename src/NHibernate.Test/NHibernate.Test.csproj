@@ -663,6 +663,7 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3070\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2789\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2347\Entity.cs" />
