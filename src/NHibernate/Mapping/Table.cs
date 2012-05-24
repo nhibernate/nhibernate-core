@@ -394,7 +394,7 @@ namespace NHibernate.Mapping
 					}
 					else
 					{
-						UniqueKey uk = GetUniqueKey(col.GetQuotedName(dialect) + "_");
+						UniqueKey uk = GetOrCreateUniqueKey(col.GetQuotedName(dialect) + "_");
 						uk.AddColumn(col);
 					}
 				}
