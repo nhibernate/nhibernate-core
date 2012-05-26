@@ -693,6 +693,7 @@
     <Compile Include="Util\ArrayHelper.cs" />
     <Compile Include="Util\CollectionPrinter.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\EnumeratorAdapter.cs" />
     <Compile Include="Util\IdentityMap.cs" />
     <Compile Include="Util\JoinedEnumerable.cs" />
     <Compile Include="Util\ObjectUtils.cs" />

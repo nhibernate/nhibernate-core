@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -37,6 +37,6 @@ namespace NHibernate.Event
 		void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready);
 
 		/// <summary> Cascade delete an entity instance</summary>
-		void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet transientEntities);
+		void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
 	}
 }

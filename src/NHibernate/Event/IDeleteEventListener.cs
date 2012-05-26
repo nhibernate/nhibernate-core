@@ -1,4 +1,4 @@
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Event
 {
@@ -9,6 +9,6 @@ namespace NHibernate.Event
 		/// <param name="event">The delete event to be handled. </param>
 		void OnDelete(DeleteEvent @event);
 
-		void OnDelete(DeleteEvent @event, ISet transientEntities);
+		void OnDelete(DeleteEvent @event, ISet<object> transientEntities);
 	}
 }

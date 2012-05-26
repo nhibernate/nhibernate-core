@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -8,7 +9,7 @@ namespace NHibernate.Util
 	/// Set implementation that use == instead of equals() as its comparison mechanism
 	/// that base its implementation of IdentityMap
 	/// </summary>
-	public class IdentitySet : Set
+	public class IdentitySet : Set<object>
 	{
 		private IDictionary map;
 		private static readonly object DumpValue = new object();
@@ -25,7 +26,7 @@ namespace NHibernate.Util
 			return tempObject == null;
 		}
 
-		public override bool AddAll(ICollection c)
+		public override bool AddAll(ICollection<object> c)
 		{
 			bool changed = false;
 
@@ -45,7 +46,7 @@ namespace NHibernate.Util
 			return map[o] == DumpValue;
 		}
 
-		public override bool ContainsAll(ICollection c)
+		public override bool ContainsAll(ICollection<object> c)
 		{
 			foreach (object o in c)
 			{
@@ -62,7 +63,7 @@ namespace NHibernate.Util
 			return tempObject == DumpValue;
 		}
 
-		public override bool RemoveAll(ICollection c)
+		public override bool RemoveAll(ICollection<object> c)
 		{
 			bool changed = false;
 			foreach (object o in c)
@@ -73,20 +74,25 @@ namespace NHibernate.Util
 			return changed;
 		}
 
-		public override bool RetainAll(ICollection c)
+		public override bool RetainAll(ICollection<object> c)
 		{
 			//doable if needed
 			throw new NotSupportedException();
 		}
 
-		public override void CopyTo(Array array, int index)
+		public override void CopyTo(object[] array, int index)
 		{
 			map.CopyTo(array, index);
 		}
 
-		public override IEnumerator GetEnumerator()
+		protected override void NonGenericCopyTo(Array array, int index)
 		{
-			return map.GetEnumerator();
+			map.CopyTo(array, index);
+		}
+
+		public override IEnumerator<object> GetEnumerator()
+		{
+			return new EnumeratorAdapter<object>(map.GetEnumerator());
 		}
 
 		public override bool IsEmpty
