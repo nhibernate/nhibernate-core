@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH826
 {
@@ -30,9 +29,9 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 	public class ActivitySet : Entity
 	{
-		private ISet _activities = new HashedSet();
+		private ISet<Activity> _activities = new HashedSet<Activity>();
 
-		public ISet Activities
+		public ISet<Activity> Activities
 		{
 			get { return _activities; }
 			set { _activities = value; }
@@ -45,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 	public class EvaluationActivity : Activity
 	{
-		private ISet _questions;
+		private ISet<Question> _questions;
 
-		public ISet Questions
+		public ISet<Question> Questions
 		{
 			get { return _questions; }
 			set { _questions = value; }

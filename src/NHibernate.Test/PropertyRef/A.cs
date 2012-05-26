@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.PropertyRef
 {
@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyRef
         private int _id;
         private int _extraId;
         private string _name;
-        private ISet _items = new HashedSet();
+        private ISet<B> _items = new HashedSet<B>();
 
         public int Id
         {
@@ -28,7 +28,7 @@ namespace NHibernate.Test.PropertyRef
             set { _name = value; }
         }
 
-        public virtual ISet Items
+        public virtual ISet<B> Items
         {
             get { return _items; }
             set { _items = value; }

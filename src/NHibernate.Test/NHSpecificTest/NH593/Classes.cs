@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH593
 {
 	public class Blog
 	{
-		private ISet _posts;
-		private ISet _users;
+		private ISet<Post> _posts;
+		private ISet<User> _users;
 		private IDictionary _attributes;
 
 		private int blog_id;
@@ -32,13 +32,13 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 			set { _attributes = value; }
 		}
 
-		public virtual ISet Posts
+		public virtual ISet<Post> Posts
 		{
 			get { return _posts; }
 			set { _posts = value; }
 		}
 
-		public virtual ISet Users
+		public virtual ISet<User> Users
 		{
 			get { return _users; }
 			set { _users = value; }
@@ -47,8 +47,8 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 		public Blog()
 		{
 			_attributes = new Hashtable();
-			_posts = new HashedSet();
-			_users = new HashedSet();
+			_posts = new HashedSet<Post>();
+			_users = new HashedSet<User>();
 		}
 
 		public Blog(string name)
@@ -149,9 +149,9 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 	{
 		private string _userName;
 		private int _userId;
-		private ISet _blogs;
+		private ISet<Blog> _blogs;
 
-		public virtual ISet Blogs
+		public virtual ISet<Blog> Blogs
 		{
 			get { return _blogs; }
 			set { _blogs = value; }
@@ -171,7 +171,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 
 		public User()
 		{
-			_blogs = new HashedSet();
+			_blogs = new HashedSet<Blog>();
 		}
 
 		public User(string name)

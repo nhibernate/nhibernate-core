@@ -1,4 +1,4 @@
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -6,7 +6,7 @@ namespace NHibernate.Test.Hql.Ast
 	{
 		private long id;
 		private float bodyWeight;
-		private ISet offspring;
+		private ISet<Animal> offspring;
 		private Animal mother;
 		private Animal father;
 		private string description;
@@ -25,7 +25,7 @@ namespace NHibernate.Test.Hql.Ast
 			set { bodyWeight = value; }
 		}
 
-		public virtual ISet Offspring
+		public virtual ISet<Animal> Offspring
 		{
 			get { return offspring; }
 			set { offspring = value; }
@@ -65,7 +65,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			if (offspring == null)
 			{
-				offspring = new HashedSet();
+				offspring = new HashedSet<Animal>();
 			}
 
 			offspring.Add(offSpring);

@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	public class Blog
 	{
-		private ISet _posts;
-		private ISet _users;
+		private ISet<Post> _posts;
+		private ISet<User> _users;
 
 		private int blog_id;
 
@@ -25,13 +25,13 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			set { blog_name = value; }
 		}
 
-		public virtual ISet Posts
+		public virtual ISet<Post> Posts
 		{
 			get { return _posts; }
 			set { _posts = value; }
 		}
 
-		public virtual ISet Users
+		public virtual ISet<User> Users
 		{
 			get { return _users; }
 			set { _users = value; }
@@ -39,8 +39,8 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		public Blog()
 		{
-			_posts = new HashedSet();
-			_users = new HashedSet();
+			_posts = new HashedSet<Post>();
+			_users = new HashedSet<User>();
 		}
 
 		public Blog(string name)
@@ -105,9 +105,9 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		private Blog _blog;
 		private string post_title;
 		private IList _comments;
-		private ISet categories = new HashedSet();
+		private ISet<Category> categories = new HashedSet<Category>();
 
-		public ISet Categories
+		public ISet<Category> Categories
 		{
 			get { return categories; }
 			set { categories = value; }
@@ -154,9 +154,9 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 	{
 		private string _userName;
 		private int _userId;
-		private ISet _blogs;
+		private ISet<Blog> _blogs;
 
-		public virtual ISet Blogs
+		public virtual ISet<Blog> Blogs
 		{
 			get { return _blogs; }
 			set { _blogs = value; }
@@ -176,7 +176,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		public User()
 		{
-			_blogs = new HashedSet();
+			_blogs = new HashedSet<Blog>();
 		}
 
 		public User(string name)
@@ -190,7 +190,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 	{
 		private int category_id;
 		private string name;
-		private ISet posts = new HashedSet();
+		private ISet<Post> posts = new HashedSet<Post>();
 
 		public Category()
 		{
@@ -213,7 +213,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			set { name = value; }
 		}
 
-		public ISet Posts
+		public ISet<Post> Posts
 		{
 			get { return posts; }
 			set { posts = value; }

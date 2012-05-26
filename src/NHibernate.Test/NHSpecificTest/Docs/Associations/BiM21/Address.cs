@@ -1,11 +1,11 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 {
 	public class Address
 	{
-		private ISet _people;
+		private ISet<Person> _people;
 		private int _id;
 
 		public Address()
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			set { _id = value; }
 		}
 
-		public ISet People
+		public ISet<Person> People
 		{
 			get { return _people; }
 			set { _people = value; }

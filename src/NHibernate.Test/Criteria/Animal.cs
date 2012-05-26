@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Criteria
 {
@@ -21,9 +21,9 @@ namespace NHibernate.Test.Criteria
 			set { bodyWeight = value; }
 		}
 
-		private ISet offspring;
+		private ISet<Animal> offspring;
 
-		public virtual ISet Offspring
+		public virtual ISet<Animal> Offspring
 		{
 			get { return offspring; }
 			set { offspring = value; }
@@ -83,7 +83,7 @@ namespace NHibernate.Test.Criteria
 		{
 			if (this.Offspring == null)
 			{
-				this.Offspring = new HashedSet();
+				this.Offspring = new HashedSet<Animal>();
 			}
 			this.Offspring.Add(offspring);
 		}
