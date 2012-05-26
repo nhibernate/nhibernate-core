@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.DomainModel
 {
@@ -33,12 +33,12 @@ namespace NHibernate.DomainModel
 		private IDictionary _stringGlarchMap;
 		private IDictionary _anyToAny;
 		private IList _manyToAny;
-		private ISet _fooSet;
-		private ISet _stringSet;
-		private ISet _topFoos;
-		private ISet _cascadingBars;
-		private ISet _cached;
-		private ISet _sortablez;
+		private ISet<FooProxy> _fooSet;
+		private ISet<string> _stringSet;
+		private ISet<Bar> _topFoos;
+		private ISet<BarProxy> _cascadingBars;
+		private ISet<CompositeElement> _cached;
+		private ISet<Sortable> _sortablez;
 		private IList _bag;
 		private IList _fooBag;
 		private IList _idFooBag;
@@ -273,7 +273,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for fooSet
 		/// </summary>
-		public ISet FooSet
+		public ISet<FooProxy> FooSet
 		{
 			get { return this._fooSet; }
 			set { this._fooSet = value; }
@@ -282,7 +282,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for stringSet
 		/// </summary>
-		public ISet StringSet
+		public ISet<string> StringSet
 		{
 			get { return this._stringSet; }
 			set { this._stringSet = value; }
@@ -291,7 +291,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for topFoos
 		/// </summary>
-		public ISet TopFoos
+		public ISet<Bar> TopFoos
 		{
 			get { return this._topFoos; }
 			set { this._topFoos = value; }
@@ -300,7 +300,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for cascadingBars
 		/// </summary>
-		public ISet CascadingBars
+		public ISet<BarProxy> CascadingBars
 		{
 			get { return this._cascadingBars; }
 			set { this._cascadingBars = value; }
@@ -309,7 +309,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for cached
 		/// </summary>
-		public ISet Cached
+		public ISet<CompositeElement> Cached
 		{
 			get { return this._cached; }
 			set { this._cached = value; }
@@ -318,7 +318,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for sortablez
 		/// </summary>
-		public ISet Sortablez
+		public ISet<Sortable> Sortablez
 		{
 			get { return this._sortablez; }
 			set { this._sortablez = value; }
@@ -384,10 +384,7 @@ namespace NHibernate.DomainModel
 		{
 			DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-			StringSet = new HashedSet();
-			StringSet.Add("foo");
-			StringSet.Add("bar");
-			StringSet.Add("baz");
+			StringSet = new HashedSet<string> {"foo", "bar", "baz"};
 
 			StringDateMap = new SortedList();
 			StringDateMap.Add("now", DateTime.Now);
@@ -395,18 +392,17 @@ namespace NHibernate.DomainModel
 			// according to SQL Server the big bag happened in 1753 ;)
 			StringDateMap.Add("big bang", new DateTime(1753, 01, 01));
 			//StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );
-			ArrayList list = new ArrayList();
-			list.AddRange(StringSet);
-			StringList = list;
+			StringArray = StringSet.ToArray();
+			StringList = new ArrayList(StringArray);
 			IntArray = new int[] {1, 3, 3, 7};
 			FooArray = new Foo[0];
-			StringArray = (String[]) list.ToArray(typeof(string));
+			
 			Customs = new ArrayList();
 			Customs.Add(new String[] {"foo", "bar"});
 			Customs.Add(new String[] {"A", "B"});
 			Customs.Add(new String[] {"1", "2"});
 
-			FooSet = new HashedSet();
+			FooSet = new HashedSet<FooProxy>();
 			Components = new FooComponent[]
 				{
 					new FooComponent("foo", 42, null, null),
@@ -433,7 +429,7 @@ namespace NHibernate.DomainModel
 			Bag.Add("duplicate");
 			Bag.Add("unique");
 
-			Cached = new ListSet();
+			Cached = new OrderedSet<CompositeElement>();
 
 			CompositeElement ce = new CompositeElement();
 			ce.Foo = "foo";

@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
@@ -39,7 +37,7 @@ namespace NHibernate.DomainModel
 		private FumCompositeID _id;
 		private Fum _fo;
 		private Qux[] _quxArray;
-		private ISet _friends; // <set> mapping
+		private ISet<Fum> _friends; // <set> mapping
 		private DateTime m_LastUpdated;
 		private MapComponent _mapComponent = new MapComponent();
 
@@ -50,7 +48,7 @@ namespace NHibernate.DomainModel
 		public Fum(FumCompositeID id)
 		{
 			_id = id;
-			_friends = new HashedSet();
+			_friends = new HashedSet<Fum>();
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...
@@ -96,7 +94,7 @@ namespace NHibernate.DomainModel
 			set { this._quxArray = value; }
 		}
 
-		public ISet Friends
+		public ISet<Fum> Friends
 		{
 			get { return _friends; }
 			set { this._friends = value; }

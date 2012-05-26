@@ -1,13 +1,10 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
 	public class NotMono : Top
 	{
-		private ISet _strings;
-
 		public NotMono() : base()
 		{
 		}
@@ -16,10 +13,6 @@ namespace NHibernate.DomainModel
 		{
 		}
 
-		public ISet Strings
-		{
-			get { return _strings; }
-			set { _strings = value; }
-		}
+		public ISet<string> Strings { get; set; }
 	}
 }

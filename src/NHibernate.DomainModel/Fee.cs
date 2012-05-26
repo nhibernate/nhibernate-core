@@ -1,6 +1,5 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -11,7 +10,7 @@ namespace NHibernate.DomainModel
 		public Fee _anotherFee;
 		public String _fi;
 		public String _key;
-		public ISet _fees;
+		public ISet<string> _fees;
 		private Qux _qux;
 		private FooComponent _compon;
 		private int _count;
@@ -38,7 +37,7 @@ namespace NHibernate.DomainModel
 			set { this._key = value; }
 		}
 
-		public ISet Fees
+		public ISet<string> Fees
 		{
 			get { return _fees; }
 			set { _fees = value; }

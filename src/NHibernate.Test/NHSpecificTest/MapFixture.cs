@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 
 			Parent bobJones = (Parent) s.Load(typeof(Parent), 1);
-			ISet friends = bobJones.AdultFriends;
+			ISet<Parent> friends = bobJones.AdultFriends;
 
 			int currentId = 0;
 			int previousId = 0;

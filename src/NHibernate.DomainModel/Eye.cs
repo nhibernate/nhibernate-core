@@ -1,6 +1,5 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -12,7 +11,7 @@ namespace NHibernate.DomainModel
 		private long id;
 		private string name;
 		private Jay jay;
-		private ISet jays = new HashedSet();
+		private ISet<Jay> jays = new HashedSet<Jay>();
 
 		public Eye()
 		{
@@ -36,7 +35,7 @@ namespace NHibernate.DomainModel
 			set { jay = value; }
 		}
 
-		public virtual ISet Jays
+		public virtual ISet<Jay> Jays
 		{
 			get { return jays; }
 			set { jays = value; }

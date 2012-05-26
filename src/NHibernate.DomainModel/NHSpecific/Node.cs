@@ -1,6 +1,5 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -11,8 +10,8 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private string _id;
 
-		private ISet _previousNodes;
-		private ISet _destinationNodes;
+		private ISet<Node> _previousNodes;
+		private ISet<Node> _destinationNodes;
 
 		private Node()
 		{
@@ -20,8 +19,8 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public Node(string id)
 		{
-			_destinationNodes = new HashedSet();
-			_previousNodes = new HashedSet();
+			_destinationNodes = new HashedSet<Node>();
+			_previousNodes = new HashedSet<Node>();
 			_id = id;
 		}
 
@@ -42,7 +41,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// Any modifications to the "inverse" side should not be persisted - unless
 		/// the modifications are also made to the non-inverse side.
 		/// </remarks>
-		public ISet PreviousNodes
+		public ISet<Node> PreviousNodes
 		{
 			get { return _previousNodes; }
 			set { _previousNodes = value; }
@@ -67,7 +66,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// testing.  The DestinationNodes is the Property that controls which 
 		/// modifications get persisted.
 		/// </remarks>
-		public ISet DestinationNodes
+		public ISet<Node> DestinationNodes
 		{
 			get { return _destinationNodes; }
 			set { _destinationNodes = value; }
@@ -76,7 +75,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		/// <summary>
 		/// This is the only way to hook nodes together right now.
 		/// </summary>
-		/// <param name="node">A Node this Node can go to.</param>
+		/// <param name="destinationNode">A Node this Node can go to.</param>
 		public void AddDestinationNode(Node destinationNode)
 		{
 			DestinationNodes.Add(destinationNode);

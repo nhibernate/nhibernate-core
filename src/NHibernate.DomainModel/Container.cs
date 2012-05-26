@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -87,14 +86,14 @@ namespace NHibernate.DomainModel
 		private IList _components;
 		private IList _manyToMany;
 		// <set> mapping
-		private ISet _composites;
+		private ISet<ContainerInnerClass> _composites;
 		private IList _cascades;
 		private long _id;
 		private IList _bag;
 		private IList _lazyBag = new ArrayList();
 		private IDictionary _ternaryMap;
 		//<set> mapping
-		private ISet _ternarySet;
+		private ISet<Ternary> _ternarySet;
 
 
 		public virtual IList OneToMany
@@ -115,7 +114,7 @@ namespace NHibernate.DomainModel
 			set { _components = value; }
 		}
 
-		public virtual ISet Composites
+		public virtual ISet<ContainerInnerClass> Composites
 		{
 			get { return _composites; }
 			set { _composites = value; }
@@ -151,7 +150,7 @@ namespace NHibernate.DomainModel
 			set { _ternaryMap = value; }
 		}
 
-		public virtual ISet TernarySet
+		public virtual ISet<Ternary> TernarySet
 		{
 			get { return _ternarySet; }
 			set { _ternarySet = value; }

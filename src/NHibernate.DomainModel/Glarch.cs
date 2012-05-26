@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
@@ -14,10 +12,10 @@ namespace NHibernate.DomainModel
 		private GlarchProxy _next;
 		private short _order;
 		private IList _strings;
-		private ISet _stringSets;
+		private ISet<string> _stringSets;
 		private IList _fooComponents;
 		private GlarchProxy[] _proxyArray;
-		private ISet _proxySet;
+		private ISet<GlarchProxy> _proxySet;
 
 		[NonSerialized]
 		private IDictionary _dynaBean;
@@ -75,7 +73,7 @@ namespace NHibernate.DomainModel
 		/// Gets or sets the _stringSets
 		/// </summary> 
 		//TODO: figure out why this is not in the mapping???
-		public ISet StringSets
+		public ISet<string> StringSets
 		{
 			get { return _stringSets; }
 			set { _stringSets = value; }
@@ -105,7 +103,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _proxySet
 		/// </summary> 
-		public ISet ProxySet
+		public ISet<GlarchProxy> ProxySet
 		{
 			get { return _proxySet; }
 			set { _proxySet = value; }

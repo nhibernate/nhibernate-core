@@ -1,6 +1,5 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -12,7 +11,7 @@ namespace NHibernate.DomainModel
 		private long _key;
 		private string _value;
 		// <set> mapping
-		private ISet _manies;
+		private ISet<Many> _manies;
 		private int _x;
 		private int _v;
 
@@ -28,7 +27,7 @@ namespace NHibernate.DomainModel
 			set { _value = value; }
 		}
 
-		public ISet Manies
+		public ISet<Many> Manies
 		{
 			get { return _manies; }
 			set { _manies = value; }

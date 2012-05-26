@@ -1,17 +1,16 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
 	[Serializable]
 	public class Fixed : Broken
 	{
-		private ISet _set;
+		private ISet<Broken> _set;
 		private IList _list;
 
-		public ISet Set
+		public ISet<Broken> Set
 		{
 			get { return _set; }
 			set { _set = value; }

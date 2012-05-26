@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -27,7 +27,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			// create the objects to search on		
 			one = new One();
 			one.X = 20;
-			one.Manies = new HashedSet();
+			one.Manies = new HashedSet<Many>();
 
 			Many many1 = new Many();
 			many1.X = 10;
