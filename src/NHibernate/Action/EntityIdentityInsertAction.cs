@@ -41,7 +41,7 @@ namespace NHibernate.Action
 				if (!isDelayed)
 					throw new HibernateException("Cannot request delayed entity-key for non-delayed post-insert-id generation");
 
-				return new EntityKey(new DelayedPostInsertIdentifier(), Persister, Session.EntityMode);
+				return Session.GenerateEntityKey(new DelayedPostInsertIdentifier(), Persister);
 			}
 		}
 

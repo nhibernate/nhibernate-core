@@ -1208,7 +1208,7 @@ namespace NHibernate.Persister.Entity
 
 			if (HasCache)
 			{
-				CacheKey cacheKey = new CacheKey(id, IdentifierType, EntityName, session.EntityMode, Factory);
+				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
 				object ce = Cache.Get(cacheKey, session.Timestamp);
 				if (ce != null)
 				{
@@ -3076,7 +3076,7 @@ namespace NHibernate.Persister.Entity
 				// first we need to locate the "loaded" state
 				//
 				// Note, it potentially could be a proxy, so perform the location the safe way...
-				EntityKey key = new EntityKey(id, this, session.EntityMode);
+				EntityKey key = session.GenerateEntityKey(id, this);
 				object entity = session.PersistenceContext.GetEntity(key);
 				if (entity != null)
 				{
@@ -3719,7 +3719,7 @@ namespace NHibernate.Persister.Entity
 			// check to see if it is in the second-level cache
 			if (HasCache)
 			{
-				CacheKey ck = new CacheKey(id, IdentifierType, RootEntityName, session.EntityMode, session.Factory);
+				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
 				if (Cache.Get(ck, session.Timestamp) != null)
 					return false;
 			}

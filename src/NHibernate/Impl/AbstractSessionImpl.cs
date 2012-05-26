@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -70,6 +71,21 @@ namespace NHibernate.Impl
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }
+
+		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
+		{
+			return GenerateEntityKey(id, persister, EntityMode);
+		}
+
+		protected EntityKey GenerateEntityKey(object id, IEntityPersister persister, EntityMode entityMode)
+		{
+			return new EntityKey(id, persister, entityMode);
+		}
+
+		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
+		{
+			return new CacheKey(id, type, entityOrRoleName, EntityMode, Factory);
+		}
 
 		public ISessionFactoryImplementor Factory
 		{

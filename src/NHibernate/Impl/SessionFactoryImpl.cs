@@ -847,7 +847,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey(id, p.IdentifierType, p.RootEntityName, EntityMode.Poco, this);
+				CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 				p.Cache.Remove(ck);
 			}
 		}
@@ -887,7 +887,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id, this));
 				}
-				CacheKey cacheKey = new CacheKey(id, p.IdentifierType, p.RootEntityName, EntityMode.Poco, this);
+				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
 				p.Cache.Remove(cacheKey);
 			}
 		}
@@ -901,9 +901,23 @@ namespace NHibernate.Impl
 				{
 					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
 				}
-				CacheKey ck = new CacheKey(id, p.KeyType, p.Role, EntityMode.Poco, this);
+				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				p.Cache.Remove(ck);
 			}
+		}
+
+		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName)
+		{
+			// if there is a session context, use that to generate the key.
+			if (CurrentSessionContext != null)
+			{
+				return CurrentSessionContext
+					.CurrentSession()
+					.GetSessionImplementation()
+					.GenerateCacheKey(id, type, entityOrRoleName);
+			}
+
+			return new CacheKey(id, type, entityOrRoleName, EntityMode.Poco, this);
 		}
 
 		public void EvictCollection(string roleName)

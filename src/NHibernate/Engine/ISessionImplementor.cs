@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
@@ -303,5 +304,9 @@ namespace NHibernate.Engine
 		ITransactionContext TransactionContext { get; set; }
 
 		void CloseSessionFromDistributedTransaction();
+
+		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
+
+		CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName);
 	}
 }

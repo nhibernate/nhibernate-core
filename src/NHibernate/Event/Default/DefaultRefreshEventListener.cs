@@ -56,7 +56,7 @@ namespace NHibernate.Event.Default
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, source.Factory));
 				}
-				EntityKey key = new EntityKey(id, persister, source.EntityMode);
+				EntityKey key = source.GenerateEntityKey(id, persister);
 				if (source.PersistenceContext.GetEntry(key) != null)
 				{
 					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " + 
@@ -84,7 +84,7 @@ namespace NHibernate.Event.Default
 
 			if (e != null)
 			{
-				EntityKey key = new EntityKey(id, persister, source.EntityMode);
+				EntityKey key = source.GenerateEntityKey(id, persister);
 				source.PersistenceContext.RemoveEntity(key);
 				if (persister.HasCollections)
 					new EvictVisitor(source).Process(obj, persister);
@@ -92,7 +92,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, source.EntityMode, source.Factory);
+				CacheKey ck = source.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 				persister.Cache.Remove(ck);
 			}
 

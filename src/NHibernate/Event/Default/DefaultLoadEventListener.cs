@@ -65,7 +65,7 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			EntityKey keyToLoad = new EntityKey(@event.EntityId, persister, source.EntityMode);
+			EntityKey keyToLoad = source.GenerateEntityKey(@event.EntityId, persister);
 			try
 			{
 				if (loadType.IsNakedEntityReturned)
@@ -248,7 +248,7 @@ namespace NHibernate.Event.Default
 			CacheKey ck;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.EntityMode, source.Factory);
+				ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
 				sLock = persister.Cache.Lock(ck, null);
 			}
 			else
@@ -420,7 +420,7 @@ namespace NHibernate.Event.Default
 			{
 				ISessionFactoryImplementor factory = source.Factory;
 
-				CacheKey ck = new CacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName, source.EntityMode, factory);
+				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
 				object ce = persister.Cache.Get(ck, source.Timestamp);
 
 				if (factory.Statistics.IsStatisticsEnabled)
@@ -468,7 +468,7 @@ namespace NHibernate.Event.Default
 			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 
 			// make it circular-reference safe
-			EntityKey entityKey = new EntityKey(id, subclassPersister, session.EntityMode);
+			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
 			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;

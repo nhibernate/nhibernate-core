@@ -70,7 +70,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
 				if (loaded != null)
 				{
 					return loaded;
@@ -827,7 +827,7 @@ namespace NHibernate.Impl
 
 				if (persister.HasCache)
 				{
-					CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
+					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 					persister.Cache.Remove(ck);
 				}
 
