@@ -1,7 +1,7 @@
 Build vNext
 =============================
 
-** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.GA
+** Known BREAKING CHANGES from NH3.3.0.GA to vNext
 
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
