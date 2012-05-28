@@ -477,24 +477,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.AreEqual(5, query.Count);
 		}
 
-		[Test]
-		public void OrdersWithSubqueryWithJoin()
-		{
-			//NH-3147
-			var subquery = from line in db.OrderLines
-						   join product in db.Products
-							   on line.Product.ProductId equals product.ProductId
-						   where line.Quantity == 5
-						   select line.Order;
-
-			var query = (from order in db.Orders
-						 where subquery.Contains(order)
-						 select order).ToList();
-
-			Assert.AreEqual(61, query.Count);
-		}
-
-		[Test]
+        [Test]
 		public void OrdersWithSubqueryWithJoin()
 		{
 			//NH-3147
