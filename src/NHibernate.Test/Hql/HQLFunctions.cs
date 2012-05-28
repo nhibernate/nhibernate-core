@@ -20,7 +20,7 @@ namespace NHibernate.Test.Hql
 					{
 						{"locate", new[] {typeof (FirebirdDialect), typeof (PostgreSQLDialect), typeof (SQLiteDialect)}},
 						{"bit_length", new[] {typeof (SQLiteDialect)}},
-						{"extract", new[] {typeof (MsSql2000Dialect), typeof (MsSql2005Dialect), typeof (MsSql2008Dialect), typeof (SQLiteDialect)}},
+						{"extract", new[] {typeof (SQLiteDialect)}},
 						{"nullif", new[] {typeof (Oracle8iDialect)}}
 					};
 		}

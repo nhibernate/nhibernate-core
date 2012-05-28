@@ -164,6 +164,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
+			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
 		}
 
 		protected virtual void RegisterGuidTypeMapping()
