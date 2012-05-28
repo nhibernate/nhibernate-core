@@ -124,7 +124,7 @@ namespace NHibernate.Test.Interceptor
 			}
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test]
 		public void ComponentInterceptor()
 		{
 			const int checkPerm = 500;
