@@ -2986,6 +2986,12 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
+    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
