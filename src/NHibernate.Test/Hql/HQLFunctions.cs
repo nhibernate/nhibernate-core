@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using NHibernate.Dialect;
-using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql
@@ -11,25 +10,24 @@ namespace NHibernate.Test.Hql
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]
-	//, Ignore("HQLFunctions not yet completely implemented (HQL parser don't parse HQLFunction)")]
 	public class HQLFunctions : TestCase
 	{
-		static Hashtable notSupportedStandardFunction = new Hashtable();
+		static readonly Hashtable notSupportedStandardFunction;
 		static HQLFunctions()
 		{
-			notSupportedStandardFunction.Add("locate",
-				new[] { typeof(FirebirdDialect), typeof(PostgreSQLDialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("bit_length",
-				new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("extract",
-                new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("nullif",
-				new[] { typeof(Oracle8iDialect)});
+			notSupportedStandardFunction =
+				new Hashtable
+					{
+						{"locate", new[] {typeof (FirebirdDialect), typeof (PostgreSQLDialect), typeof (SQLiteDialect)}},
+						{"bit_length", new[] {typeof (SQLiteDialect)}},
+						{"extract", new[] {typeof (SQLiteDialect)}},
+						{"nullif", new[] {typeof (Oracle8iDialect)}}
+					};
 		}
 
 		private bool IsOracleDialect()
 		{
-			return typeof (Oracle8iDialect).IsInstanceOfType(Dialect);
+			return Dialect is Oracle8iDialect;
 		}
 
 		private void IgnoreIfNotSupported(string functionName)

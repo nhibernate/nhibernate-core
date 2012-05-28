@@ -29,9 +29,9 @@
         </drop>
         <dialect-scope name="NHibernate.Dialect.Oracle9Dialect"/>
         <dialect-scope name="NHibernate.Dialect.OracleDialect"/>
-		<dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
-		<dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
-		<dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
+		    <dialect-scope name="NHibernate.Dialect.Oracle8iDialect"/>
+		    <dialect-scope name="NHibernate.Dialect.Oracle9iDialect"/>
+		    <dialect-scope name="NHibernate.Dialect.Oracle10gDialect"/>
 	</database-object>
 
 	<database-object>
@@ -50,7 +50,8 @@
 		</drop>
 		<dialect-scope name="NHibernate.Dialect.MsSql2000Dialect"/>
 		<dialect-scope name="NHibernate.Dialect.MsSql2005Dialect"/>
-        <dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
+		<dialect-scope name="NHibernate.Dialect.MsSql2008Dialect"/>
+		<dialect-scope name="NHibernate.Dialect.MsSql2012Dialect"/>
 	</database-object>
 
 	<database-object>
