@@ -20,6 +20,7 @@ namespace NHibernate.Test.Interceptor
 			}
 		}
 
+		[Test]
 		public void CollectionIntercept()
 		{
 			ISession s = OpenSession(new CollectionInterceptor());
@@ -39,6 +40,7 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 		}
 
+		[Test]
 		public void PropertyIntercept()
 		{
 			ISession s = OpenSession(new PropertyInterceptor());
@@ -68,11 +70,12 @@ namespace NHibernate.Test.Interceptor
 			}
 		}
 
-		/*
-		 * Here the interceptor resets the
-		 * current-state to the same thing as the current db state; this
-		 * causes EntityPersister.FindDirty() to return no dirty properties.
-		 */
+		///
+		///Here the interceptor resets the
+		///current-state to the same thing as the current db state; this
+		///causes EntityPersister.FindDirty() to return no dirty properties.
+		///
+		[Test]
 		public void PropertyIntercept2()
 		{
 			ISession s = OpenSession();
@@ -97,6 +100,7 @@ namespace NHibernate.Test.Interceptor
 			t.Commit();
 			s.Close();
 		}
+
 		private class MyComponentInterceptor : EmptyInterceptor
 		{
 			readonly int checkPerm;
@@ -120,9 +124,9 @@ namespace NHibernate.Test.Interceptor
 			}
 		}
 
+		[Test]
 		public void ComponentInterceptor()
 		{
-
 			const int checkPerm = 500;
 			const string checkComment = "generated from interceptor";
 
@@ -148,6 +152,7 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 		}
 
+		[Test]
 		public void StatefulIntercept()
 		{
 			StatefulInterceptor statefulInterceptor = new StatefulInterceptor();
@@ -170,6 +175,5 @@ namespace NHibernate.Test.Interceptor
 			t.Commit();
 			s.Close();
 		}
-
 	}
 }
