@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Extralazy
 {
@@ -8,8 +8,8 @@ namespace NHibernate.Test.Extralazy
 		private string name;
 		private string password;
 		private IDictionary session = new Hashtable();
-		private ISet documents = new HashedSet();
-		private ISet photos = new HashedSet();
+		private ISet<Document> documents = new HashedSet<Document>();
+		private ISet<Photo> photos = new HashedSet<Photo>();
 		protected User() {}
 		public User(string name, string password)
 		{
@@ -35,14 +35,14 @@ namespace NHibernate.Test.Extralazy
 			set { session = value; }
 		}
 
-		public virtual ISet Documents
+		public virtual ISet<Document> Documents
 		{
 			get { return documents; }
 			set { documents = value; }
 		}
 
 
-		public virtual ISet Photos
+		public virtual ISet<Photo> Photos
 		{
 			get { return photos; }
 			set { photos = value; }

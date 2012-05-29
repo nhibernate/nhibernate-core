@@ -1,12 +1,12 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
 	[Serializable]
 	public class User : Party
 	{
-		private ISet _groups = new HashedSet();
+		private ISet<UserGroup> _groups = new HashedSet<UserGroup>();
 
 		internal User() : this("")
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 		{
 		}
 
-		public ISet Groups
+		public ISet<UserGroup> Groups
 		{
 			get { return _groups; }
 			set { _groups = value; }
