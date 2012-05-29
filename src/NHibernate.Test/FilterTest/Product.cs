@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -10,8 +10,8 @@ namespace NHibernate.Test.FilterTest
 		private int stockNumber; // int for ease of hashCode() impl
 		private DateTime effectiveStartDate;
 		private DateTime effectiveEndDate;
-		private ISet orderLineItems;
-		private ISet categories;
+		private ISet<LineItem> orderLineItems;
+		private ISet<Category> categories;
 
 		public virtual void AddCategory(Category category)
 		{
@@ -22,13 +22,13 @@ namespace NHibernate.Test.FilterTest
 
 			if (categories == null)
 			{
-				categories = new HashedSet();
+				categories = new HashedSet<Category>();
 			}
 
 			categories.Add(category);
 			if (category.Products == null)
 			{
-				category.Products = new HashedSet();
+				category.Products = new HashedSet<Product>();
 			}
 			category.Products.Add(this);
 		}
@@ -63,13 +63,13 @@ namespace NHibernate.Test.FilterTest
 			set { effectiveEndDate = value; }
 		}
 
-		public virtual ISet OrderLineItems
+		public virtual ISet<LineItem> OrderLineItems
 		{
 			get { return orderLineItems; }
 			set { orderLineItems = value; }
 		}
 
-		public virtual ISet Categories
+		public virtual ISet<Category> Categories
 		{
 			get { return categories; }
 			set { categories = value; }

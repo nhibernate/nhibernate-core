@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
@@ -8,8 +8,8 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		private long id;
 		private String name;
 		private MySibling sibling;
-		private ISet nonInverseChildren = new HashedSet();
-		private ISet inverseChildren = new HashedSet();
+		private ISet<MyChild> nonInverseChildren = new HashedSet<MyChild>();
+		private ISet<MyChild> inverseChildren = new HashedSet<MyChild>();
 
 		public MyEntity()
 		{
@@ -38,13 +38,13 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			set { sibling = value; }
 		}
 
-		public virtual ISet NonInverseChildren
+		public virtual ISet<MyChild> NonInverseChildren
 		{
 			get { return nonInverseChildren; }
 			set { nonInverseChildren = value; }
 		}
 
-		public virtual ISet InverseChildren
+		public virtual ISet<MyChild> InverseChildren
 		{
 			get { return inverseChildren; }
 			set { inverseChildren = value; }

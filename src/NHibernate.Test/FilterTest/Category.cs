@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Test.FilterTest
 		private String name;
 		private DateTime effectiveStartDate;
 		private DateTime effectiveEndDate;
-		private ISet products;
+		private ISet<Product> products;
 
 		public Category()
 		{
@@ -51,7 +51,7 @@ namespace NHibernate.Test.FilterTest
 			set { effectiveEndDate = value; }
 		}
 
-		public virtual ISet Products
+		public virtual ISet<Product> Products
 		{
 			get { return products; }
 			set { products = value; }

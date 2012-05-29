@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			child2.RelatedObject = obj2;
 			child2.Name = "Child 2";
 
-			parent.Children = new SortedSet(new ChildComparer());
+			parent.Children = new SortedSet<Child>(new ChildComparer());
 			parent.Children.Add(child1);
 			parent.Children.Add(child2);
 
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			dc2.Name = "Different Child 2";
 			dc2.Child = child2;
 
-			parent.DifferentChildren = new HashedSet();
+			parent.DifferentChildren = new HashedSet<DifferentChild>();
 			parent.DifferentChildren.Add(dc1);
 			parent.DifferentChildren.Add(dc2);
 			using (ISession session = OpenSession())

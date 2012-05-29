@@ -1,20 +1,20 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2202
 {
 	public class Employee
 	{
-		private ISet _addresses;
+		private ISet<EmployeeAddress> _addresses;
 
 		public virtual int NationalId { get; set; }
 		public virtual int EmployeeId { get; set; }
 
-		public virtual ISet Addresses
+		public virtual ISet<EmployeeAddress> Addresses
 		{
 			get
 			{
-				return _addresses ?? (_addresses = new HashedSet());
+				return _addresses ?? (_addresses = new HashedSet<EmployeeAddress>());
 			}
 			set 
 			{

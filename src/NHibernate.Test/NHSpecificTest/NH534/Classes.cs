@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH534
 {
@@ -23,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 
 	public class Parent : Base
 	{
-		private ISet children;
+		private ISet<Child> children;
 
-		public virtual ISet Children
+		public virtual ISet<Child> Children
 		{
 			get { return children; }
 			set { children = value; }
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 		{
 			if (children == null)
 			{
-				children = new HashedSet();
+				children = new HashedSet<Child>();
 			}
 			children.Add(child);
 		}

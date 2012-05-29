@@ -1,4 +1,4 @@
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest.Query
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.SqlTest.Query
 		private int id;
 		private int alternativeItemId;
 
-		private ISet alternativeItems;
+		private ISet<Item> alternativeItems;
 
 		protected Item()
 		{
@@ -31,7 +31,7 @@ namespace NHibernate.Test.SqlTest.Query
 			set { alternativeItemId = value; }
 		}
 
-		public virtual ISet AlternativeItems
+		public virtual ISet<Item> AlternativeItems
 		{
 			get { return alternativeItems; }
 			set { alternativeItems = value; }

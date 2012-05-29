@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -7,12 +7,12 @@ namespace NHibernate.Test.SqlTest
 	{
 		private long id;
 		private string name;
-		private ISet employments;
+		private ISet<Employment> employments;
 
 		public Organization(String name)
 		{
 			this.name = name;
-			employments = new HashedSet();
+			employments = new HashedSet<Employment>();
 		}
 
 		public Organization()
@@ -31,7 +31,7 @@ namespace NHibernate.Test.SqlTest
 			set { name = value; }
 		}
 
-		public virtual ISet Employments
+		public virtual ISet<Employment> Employments
 		{
 			get { return employments; }
 			set { employments = value; }

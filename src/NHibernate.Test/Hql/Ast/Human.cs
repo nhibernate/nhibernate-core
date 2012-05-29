@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -17,7 +17,7 @@ namespace NHibernate.Test.Hql.Ast
 		private int intValue;
 		private float floatValue;
 
-		private ISet nickNames;
+		private ISet<string> nickNames;
 		private IDictionary addresses;
 
 		public virtual Name Name
@@ -80,7 +80,7 @@ namespace NHibernate.Test.Hql.Ast
 			set { floatValue = value; }
 		}
 
-		public virtual ISet NickNames
+		public virtual ISet<string> NickNames
 		{
 			get { return nickNames; }
 			set { nickNames = value; }

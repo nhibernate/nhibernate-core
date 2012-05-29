@@ -1,12 +1,12 @@
 using System;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
 	public class Parent
 	{
 		private long _id;
-		private ISet _children;
+		private ISet<Child> _children;
 
 		public Parent()
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			set { _id = value; }
 		}
 
-		public ISet Children
+		public ISet<Child> Children
 		{
 			get { return _children; }
 			set { _children = value; }
@@ -26,11 +26,11 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 
 		public void AddChild(Child c)
 		{
-			if (this.Children == null)
+			if (Children == null)
 			{
-				this.Children = new HashedSet();
+				Children = new HashedSet<Child>();
 			}
-			this.Children.Add(c);
+			Children.Add(c);
 			c.Parent = this;
 		}
 	}

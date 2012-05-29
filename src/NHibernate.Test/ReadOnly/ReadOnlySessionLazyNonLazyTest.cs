@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -58,9 +58,9 @@ namespace NHibernate.Test.ReadOnly
 		public void ExistingModifiableAfterSetSessionReadOnly()
 		{
 			Container cOrig = CreateContainer();
-			
-			ISet expectedInitializedObjects =
-					new HashedSet(
+
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -74,8 +74,8 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazyJoinDataPoints.First(),
 							cOrig.NonLazySelectDataPoints.First()
 						});
-			
-			ISet expectedReadOnlyObjects = new HashedSet();
+
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -114,7 +114,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 		
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -127,7 +127,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 			
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -178,9 +178,9 @@ namespace NHibernate.Test.ReadOnly
 		public void ExistingReadOnlyAfterSetSessionModifiable()
 		{
 			Container cOrig = CreateContainer();
-			
-			ISet expectedInitializedObjects =
-					new HashedSet(
+
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -194,8 +194,8 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazyJoinDataPoints.First(),
 							cOrig.NonLazySelectDataPoints.First()
 						});
-			
-			ISet expectedReadOnlyObjects = new HashedSet();
+
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 			
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -215,7 +215,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -228,7 +228,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -276,8 +276,8 @@ namespace NHibernate.Test.ReadOnly
 		{
 	
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -292,7 +292,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 			DataPoint lazyDataPointOrig = cOrig.LazyDataPoints.First();
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -312,7 +312,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c, c.NonLazyInfo,
@@ -324,7 +324,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -374,8 +374,8 @@ namespace NHibernate.Test.ReadOnly
 		{
 	
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -390,7 +390,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 			DataPoint lazyDataPointOrig = cOrig.LazyDataPoints.First();
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -410,7 +410,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -423,7 +423,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -475,8 +475,8 @@ namespace NHibernate.Test.ReadOnly
 		{
 	
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -490,8 +490,8 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazyJoinDataPoints.First(),
 							cOrig.NonLazySelectDataPoints.First()
 						});
-			
-			ISet expectedReadOnlyObjects = new HashedSet();
+
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 			DataPoint lazyDataPointOrig = cOrig.LazyDataPoints.First();
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -511,7 +511,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -524,7 +524,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -573,8 +573,8 @@ namespace NHibernate.Test.ReadOnly
 		public void ExistingReadOnlyAfterSetSessionModifiableExistingProxyReadOnly()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -589,7 +589,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 			DataPoint lazyDataPointOrig = cOrig.LazyDataPoints.First();
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -609,7 +609,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -622,7 +622,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -673,8 +673,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultModifiableWithReadOnlyQueryForEntity()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -689,7 +689,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -708,7 +708,7 @@ namespace NHibernate.Test.ReadOnly
 			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(true).UniqueResult<Container>();
 			
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -721,7 +721,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -766,8 +766,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultReadOnlyWithModifiableQueryForEntity()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -782,7 +782,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -801,7 +801,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.True);
 			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(false).UniqueResult<Container>();
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -813,7 +813,7 @@ namespace NHibernate.Test.ReadOnly
 							c.NonLazySelectDataPoints.First()
 						});
 
-			expectedReadOnlyObjects = new HashedSet();
+			expectedReadOnlyObjects = new HashedSet<object>();
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 //			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 //			NHibernateUtil.Initialize(c.NoProxyInfo);
@@ -844,8 +844,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultReadOnlyWithQueryForEntity()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -860,7 +860,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -880,7 +880,7 @@ namespace NHibernate.Test.ReadOnly
 			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResult<Container>();
 
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -893,7 +893,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -938,8 +938,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultModifiableWithQueryForEntity()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -954,7 +954,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -972,7 +972,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResult<Container>();
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -984,7 +984,7 @@ namespace NHibernate.Test.ReadOnly
 							c.NonLazySelectDataPoints.First()
 						});
 
-			expectedReadOnlyObjects = new HashedSet();
+			expectedReadOnlyObjects = new HashedSet<object>();
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 //			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 //			NHibernateUtil.Initialize(c.NoProxyInfo);
@@ -1015,8 +1015,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultModifiableWithReadOnlyQueryForCollectionEntities()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -1031,7 +1031,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1067,8 +1067,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultReadOnlyWithModifiableFilterCollectionEntities()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -1083,7 +1083,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1104,7 +1104,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(cOrig, Is.Not.SameAs(c));
 
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -1117,7 +1117,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -1157,8 +1157,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultModifiableWithReadOnlyFilterCollectionEntities()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -1173,7 +1173,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1192,7 +1192,7 @@ namespace NHibernate.Test.ReadOnly
 			Container c = s.Get<Container>(cOrig.Id);
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -1204,7 +1204,7 @@ namespace NHibernate.Test.ReadOnly
 							c.NonLazySelectDataPoints.First()
 						});
 
-			expectedReadOnlyObjects = new HashedSet();
+			expectedReadOnlyObjects = new HashedSet<object>();
 			IList list = s.CreateFilter(c.LazyDataPoints, "").SetMaxResults(1).SetReadOnly(true).List();
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
@@ -1230,8 +1230,8 @@ namespace NHibernate.Test.ReadOnly
 		public void DefaultReadOnlyWithFilterCollectionEntities()
 		{
 			Container cOrig = CreateContainer();
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -1246,7 +1246,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1266,7 +1266,7 @@ namespace NHibernate.Test.ReadOnly
 			Container c = s.Get<Container>(cOrig.Id);
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -1279,7 +1279,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c,
@@ -1321,8 +1321,8 @@ namespace NHibernate.Test.ReadOnly
 		{
 			Container cOrig = CreateContainer();
 			
-			ISet expectedInitializedObjects =
-					new HashedSet(
+			ISet<object> expectedInitializedObjects =
+					new HashedSet<object>(
 						new object[]
 						{
 							cOrig,
@@ -1337,7 +1337,7 @@ namespace NHibernate.Test.ReadOnly
 							cOrig.NonLazySelectDataPoints.First()
 						});
 
-			ISet expectedReadOnlyObjects = new HashedSet();
+			ISet<object> expectedReadOnlyObjects = new HashedSet<object>();
 	
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1356,7 +1356,7 @@ namespace NHibernate.Test.ReadOnly
 			Container c = s.Get<Container>(cOrig.Id);
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			expectedInitializedObjects =
-					new HashedSet(
+					new HashedSet<object>(
 						new object[]
 						{
 							c, c.NonLazyInfo,
@@ -1367,7 +1367,7 @@ namespace NHibernate.Test.ReadOnly
 							c.NonLazySelectDataPoints.First()
 						});
 
-			expectedReadOnlyObjects = new HashedSet();
+			expectedReadOnlyObjects = new HashedSet<object>();
 			IList list = s.CreateFilter(c.LazyDataPoints, "" ).SetMaxResults(1).List();
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
@@ -1408,7 +1408,7 @@ namespace NHibernate.Test.ReadOnly
 			return c;
 		}
 	
-		private void CheckContainer(Container c, ISet expectedInitializedObjects, ISet expectedReadOnlyObjects, ISession s)
+		private void CheckContainer(Container c, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
 		{
 			CheckObject(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			
@@ -1437,7 +1437,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 		}
 	
-		private void CheckObject(object entityOrProxy, ISet expectedInitializedObjects, ISet expectedReadOnlyObjects, ISession s)
+		private void CheckObject(object entityOrProxy, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
 		{
 			bool isExpectedToBeInitialized = expectedInitializedObjects.Contains(entityOrProxy);
 			bool isExpectedToBeReadOnly = expectedReadOnlyObjects.Contains(entityOrProxy);

@@ -1,7 +1,5 @@
 using System;
-
-using Iesi.Collections;
-
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH962
@@ -19,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH962
 			child.Name = "Test Child";
 
 			child.Parent = parent;
-			parent.Children = new HashedSet();
+			parent.Children = new HashedSet<Child>();
 			parent.Children.Add(child);
 
 			using (ISession session = OpenSession())

@@ -1,6 +1,5 @@
 using System;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH962
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH962
 	{
 		private Guid id;
 		private string name;
-		private ISet children;
+		private ISet<Child> children;
 
 		public virtual Guid Id
 		{
@@ -22,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH962
 			set { name = value; }
 		}
 
-		public virtual ISet Children
+		public virtual ISet<Child> Children
 		{
 			get { return children; }
 			set { children = value; }
