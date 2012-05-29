@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;

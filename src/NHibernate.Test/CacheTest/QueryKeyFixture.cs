@@ -5,7 +5,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using Iesi.Collections;
 
 namespace NHibernate.Test.CacheTest
 {

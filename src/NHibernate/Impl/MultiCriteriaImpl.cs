@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Criterion;

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;

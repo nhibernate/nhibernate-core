@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;

@@ -5,9 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
