@@ -71,11 +71,14 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Issues\NH2966\Client.vb" />
+    <Compile Include="Issues\NH2966\Fixture.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
     <Compile Include="Issues\IssueTestCase.vb" />
     <Compile Include="Issues\NH2545\Fixture.vb" />
     <Compile Include="Issues\NH2545\Entity.vb" />
+    <Compile Include="Issues\NH2966\Order.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -131,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Issues\NH0000\Issues.NH0000.Mappings.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Issues\NH2966\Issues.NH2966.Mappings.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
