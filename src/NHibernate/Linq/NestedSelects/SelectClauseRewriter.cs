@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -44,11 +45,19 @@ namespace NHibernate.Linq.NestedSelects
 			var visitExpression = VisitExpression(selector);
 			tuple--;
 
-			var selectMethod = EnumerableHelper.GetMethod("Select",
-														  new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-														  new[] {Tuple.Type, selector.Type});
+			var select = EnumerableHelper.GetMethod("Select",
+													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
+													new[] {Tuple.Type, selector.Type});
 
-			return Expression.Call(selectMethod, values, Expression.Lambda(visitExpression, value));
+			var toList = EnumerableHelper.GetMethod("ToList",
+													new[] {typeof (IEnumerable<>)},
+													new[] {selector.Type});
+
+			return Expression.Call(Expression.Call(toList,
+												   Expression.Call(select,
+																   values,
+																   Expression.Lambda(visitExpression, value))),
+								   "AsReadOnly", System.Type.EmptyTypes);
 		}
 	}
 }

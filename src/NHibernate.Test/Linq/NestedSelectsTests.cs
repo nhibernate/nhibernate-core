@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -18,6 +19,21 @@ namespace NHibernate.Test.Linq
 				.ToList();
 
 			Assert.That(orders.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void OrdersIdWithOrderLinesIdShouldBeNotLazy()
+		{
+			var orders = db.Orders
+				.Select(o => new
+								 {
+									 o.OrderId,
+									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id)
+								 })
+				.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(830));
+			Assert.That(orders[0].OrderLinesIds, Is.InstanceOf<ReadOnlyCollection<long>>());
 		}
 
 		[Test]
