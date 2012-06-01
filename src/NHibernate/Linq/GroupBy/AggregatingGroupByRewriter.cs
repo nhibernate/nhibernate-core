@@ -73,8 +73,8 @@ namespace NHibernate.Linq.GroupBy
 				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
 
 			// Point all query source references to the outer from clause
-			queryModel.TransformExpressions(s =>
-				new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap(s));
+			var visitor = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause);
+			queryModel.TransformExpressions(visitor.Swap);
 
 			// Replace the outer query source
 			queryModel.MainFromClause = subQueryExpression.QueryModel.MainFromClause;

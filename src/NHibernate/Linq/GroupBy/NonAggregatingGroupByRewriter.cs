@@ -105,4 +105,14 @@ namespace NHibernate.Linq.GroupBy
 			SelectClause = selectClause;
 		}
 	}
+
+	public class ClientSideSelect2 : ClientSideTransformOperator
+	{
+		public LambdaExpression SelectClause { get; private set; }
+
+		public ClientSideSelect2(LambdaExpression selectClause)
+		{
+			SelectClause = selectClause;
+		}
+	}
 }
