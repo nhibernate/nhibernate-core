@@ -38,11 +38,11 @@ namespace NHibernate.Linq.NestedSelects
 
 			var values = Expression.Parameter(typeof (IEnumerable<Tuple>), "values");
 
-			var rewriter = new SelectClauseRewriter(key, values);
+			var expressions = new List<ExpressionHolder>();
+
+			var rewriter = new SelectClauseRewriter(key, values, expressions);
 
 			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
-
-			var expressions = rewriter.expressions.ToList();
 
 			var field = Tuple.Type.GetField("Items");
 

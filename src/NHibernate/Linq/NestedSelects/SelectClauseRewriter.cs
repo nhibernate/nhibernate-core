@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -9,41 +8,46 @@ namespace NHibernate.Linq.NestedSelects
 {
 	class SelectClauseRewriter : NhExpressionTreeVisitor
 	{
-		public readonly ICollection<ExpressionHolder> expressions = new List<ExpressionHolder>();
-		readonly ParameterExpression keyTuple;
-		readonly ParameterExpression value = Expression.Parameter(typeof (Tuple), "value");
+		readonly ICollection<ExpressionHolder> expressions;
+		readonly ParameterExpression parameter;
 		readonly ParameterExpression values;
-		readonly IDictionary<int, int> positions = new Dictionary<int, int>();
-		int tuple;
+		readonly int tuple;
+		int position;
 
-		public SelectClauseRewriter(ParameterExpression keyTuple, ParameterExpression values)
+		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions) 
+			: this(parameter, values, expressions, 0)
 		{
-			this.keyTuple = keyTuple;
+		}
+
+		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, int tuple)
+		{
+			this.expressions = expressions;
+			this.parameter = parameter;
 			this.values = values;
+			this.tuple = tuple;
 		}
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			int position;
-			positions.TryGetValue(tuple, out position);
-			positions[tuple] = position + 1;
-
 			expressions.Add(new ExpressionHolder {Expression = expression, Tuple = tuple});
 
 			return Expression.Convert(
 				Expression.ArrayIndex(
-					Expression.MakeMemberAccess(tuple == 0 ? keyTuple : value,
+					Expression.MakeMemberAccess(parameter,
 												Tuple.Type.GetField("Items")),
-					Expression.Constant(position)),
+					Expression.Constant(position++)),
 				expression.Type);
 		}
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
 			var selector = expression.QueryModel.SelectClause.Selector;
-			tuple++;
-			var visitExpression = VisitExpression(selector);
-			tuple--;
+
+			var value = Expression.Parameter(typeof (Tuple), "value");
+
+			var rewriter = new SelectClauseRewriter(value, values, expressions, tuple + 1);
+
+			var resultSelector = rewriter.VisitExpression(selector);
 
 			var select = EnumerableHelper.GetMethod("Select",
 													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
@@ -56,7 +60,7 @@ namespace NHibernate.Linq.NestedSelects
 			return Expression.Call(Expression.Call(toList,
 												   Expression.Call(select,
 																   values,
-																   Expression.Lambda(visitExpression, value))),
+																   Expression.Lambda(resultSelector, value))),
 								   "AsReadOnly", System.Type.EmptyTypes);
 		}
 	}
