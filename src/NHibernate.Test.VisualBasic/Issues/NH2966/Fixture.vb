@@ -2,7 +2,7 @@
 Imports NUnit.Framework
 
 Namespace Issues.NH2966
-    <TestFixture()>
+    <TestFixture()> _
     Public Class Fixture
         Inherits IssueTestCase
 
@@ -37,13 +37,13 @@ Namespace Issues.NH2966
             End Using
         End Sub
 
-        <Test()>
+        <Test()> _
         Public Sub FetchMany()
 
             Using session = OpenSession()
                 Using transaction = session.BeginTransaction()
 
-                    Dim list = session.Query (Of Client)() _
+                    Dim list = session.Query(Of Client)() _
                             .Where(Function(c) c.Name = "Bob") _
                             .FetchMany(Function(c) c.Orders) _
                             .ToList()
