@@ -20,7 +20,7 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
-			NestedSelectRewriter.ReWrite(queryModel);
+			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
 			RemoveUnnecessaryBodyOperators.ReWrite(queryModel);

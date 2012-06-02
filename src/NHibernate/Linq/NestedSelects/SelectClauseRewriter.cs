@@ -27,6 +27,7 @@ namespace NHibernate.Linq.NestedSelects
 			this.parameter = parameter;
 			this.values = values;
 			this.tuple = tuple;
+			this.expressions.Add(new ExpressionHolder {Tuple = tuple}); //ID placeholder
 		}
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
@@ -37,7 +38,7 @@ namespace NHibernate.Linq.NestedSelects
 				Expression.ArrayIndex(
 					Expression.MakeMemberAccess(parameter,
 												Tuple.Type.GetField("Items")),
-					Expression.Constant(position++)),
+					Expression.Constant(++position)),
 				expression.Type);
 		}
 

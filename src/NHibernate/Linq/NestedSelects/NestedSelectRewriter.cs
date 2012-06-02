@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
@@ -13,7 +14,7 @@ namespace NHibernate.Linq.NestedSelects
 {
 	static class NestedSelectRewriter
 	{
-		public static void ReWrite(QueryModel queryModel)
+		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
 			var nsqmv = new NestedSelectDetector();
 			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
@@ -71,7 +72,32 @@ namespace NHibernate.Linq.NestedSelects
 
 			queryModel.ResultOperators.Add(new ClientSideSelect2(lambda));
 
-			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), expressions.Select(e => ConvertToObject(e.Expression)));
+			var initializers = expressions.Select(e => e.Expression == null
+														   ? GetIdentifier(sessionFactory, expressions, e)
+														   : ConvertToObject(e.Expression));
+
+			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
+		}
+
+		static Expression GetIdentifier(ISessionFactory sessionFactory, IEnumerable<ExpressionHolder> expressions, ExpressionHolder e)
+		{
+			foreach (var holders in expressions)
+			{
+				if (holders.Tuple == e.Tuple)
+				{
+					var memberExpression = holders.Expression as MemberExpression;
+					if (memberExpression != null)
+					{
+						var expression = memberExpression.Expression;
+						var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
+						if (classMetadata != null)
+						{
+							return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
+						}
+					}
+				}
+			}
+			return Expression.Constant(null);
 		}
 
 		static LambdaExpression CreateSelector(ConstructorInfo ctor, MemberInfo field, IEnumerable<ExpressionHolder> expressions, int tuple)

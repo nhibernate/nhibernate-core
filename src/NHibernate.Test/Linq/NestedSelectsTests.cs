@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using NUnit.Framework;
 
@@ -92,9 +93,25 @@ namespace NHibernate.Test.Linq
 		}
 		
 		[Test]
+		public void CategoriesIdAndDateWithOrderLinesIdAndDiscount()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Id,
+								LastLoginDates = o.Users.Select(x => x.LastLoginDate).ToArray()
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].LastLoginDates, Is.Not.Empty);
+		}
+
+		[Test]
 		public void EmployeesIdAndWithSubordinatesId()
 		{
-			var orders = db.Employees
+			var emplyees = db.Employees
 				.Select(o =>
 						new
 							{
@@ -103,7 +120,7 @@ namespace NHibernate.Test.Linq
 							})
 				.ToList();
 
-			Assert.That(orders.Count, Is.EqualTo(9));
+			Assert.That(emplyees.Count, Is.EqualTo(9));
 		}
 	}
 }
