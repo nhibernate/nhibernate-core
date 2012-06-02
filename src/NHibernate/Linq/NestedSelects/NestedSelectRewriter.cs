@@ -24,7 +24,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var mainFromClause = subQueryModel.MainFromClause;
 
-			var item = new AdditionalFromClause(mainFromClause.ItemName, mainFromClause.ItemType, mainFromClause.FromExpression);
+			var item = new NhJoinClause(mainFromClause.ItemName, mainFromClause.ItemType, mainFromClause.FromExpression);
 
 			queryModel.BodyClauses.Add(item);
 
