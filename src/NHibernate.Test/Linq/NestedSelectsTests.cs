@@ -90,5 +90,20 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
+		
+		[Test]
+		public void EmployeesIdAndWithSubordinatesId()
+		{
+			var orders = db.Employees
+				.Select(o =>
+						new
+							{
+								o.EmployeeId,
+								SubordinatesIds = o.Subordinates.Select(so => so.EmployeeId).ToArray()
+							})
+				.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(9));
+		}
 	}
 }

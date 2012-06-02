@@ -8,6 +8,8 @@ namespace NHibernate.Linq.NestedSelects
 {
 	class SelectClauseRewriter : NhExpressionTreeVisitor
 	{
+		static readonly Expression<Func<Tuple, bool>> WherePredicate = t => !ReferenceEquals(null, t.Items[0]);
+
 		readonly ICollection<ExpressionHolder> expressions;
 		readonly ParameterExpression parameter;
 		readonly ParameterExpression values;
@@ -49,6 +51,10 @@ namespace NHibernate.Linq.NestedSelects
 
 			var resultSelector = rewriter.VisitExpression(selector);
 
+			var where = EnumerableHelper.GetMethod("Where",
+												   new[] {typeof (IEnumerable<>), typeof (Func<,>)},
+												   new[] {Tuple.Type});
+
 			var select = EnumerableHelper.GetMethod("Select",
 													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
 													new[] {Tuple.Type, selector.Type});
@@ -59,7 +65,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			return Expression.Call(Expression.Call(toList,
 												   Expression.Call(select,
-																   values,
+																   Expression.Call(where, values, WherePredicate),
 																   Expression.Lambda(resultSelector, value))),
 								   "AsReadOnly", System.Type.EmptyTypes);
 		}
