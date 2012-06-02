@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3171" >
+  <class name="Artist">
+    <composite-id>
+      <key-many-to-one class="Song" name="Song"/>
+      <key-many-to-one class="Country" name="Country"/>
+    </composite-id>
+    <property name="Name"/>
+  </class>
+  
+  <class name="Song">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+  </class>
+  
+  <class name="Country">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>
