@@ -6,8 +6,6 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public class DefaultProxyAssemblyBuilder : IProxyAssemblyBuilder
 	{
-		private AssemblyBuilder assemblyBuilder;
-
 		public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 		{
 #if DEBUG
@@ -15,11 +13,10 @@ namespace NHibernate.Proxy.DynamicProxy
 #else
 			AssemblyBuilderAccess access = AssemblyBuilderAccess.Run;
 #endif
-			assemblyBuilder = appDomain.DefineDynamicAssembly(name, access);
-			return assemblyBuilder;
+			return appDomain.DefineDynamicAssembly(name, access);
 		}
 
-		public ModuleBuilder DefineDynamicModule(string moduleName)
+		public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
 		{
 #if DEBUG
 			ModuleBuilder moduleBuilder =
@@ -30,7 +27,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			return moduleBuilder;
 		}
 
-		public void Save()
+		public void Save(AssemblyBuilder assemblyBuilder)
 		{
 #if DEBUG_PROXY_OUTPUT
 			assemblyBuilder.Save("generatedAssembly.dll");

@@ -14,6 +14,9 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		bool Contains(System.Type baseType, params System.Type[] baseInterfaces);
 		System.Type GetProxyType(System.Type baseType, params System.Type[] baseInterfaces);
+
+		bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out System.Type proxyType);
+
 		void StoreProxyType(System.Type result, System.Type baseType, params System.Type[] baseInterfaces);
 	}
 }

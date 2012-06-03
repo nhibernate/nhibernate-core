@@ -34,6 +34,17 @@ namespace NHibernate.Proxy.DynamicProxy
 			return cache[entry];
 		}
 
+		public bool TryGetProxyType(System.Type baseType, System.Type[] baseInterfaces, out System.Type proxyType)
+		{
+			proxyType = null;
+
+			if (baseType == null)
+				return false;
+
+			var entry = new ProxyCacheEntry(baseType, baseInterfaces);
+			return cache.TryGetValue(entry, out proxyType);
+		}
+
 		public void StoreProxyType(System.Type result, System.Type baseType, params System.Type[] baseInterfaces)
 		{
 			var entry = new ProxyCacheEntry(baseType, baseInterfaces);

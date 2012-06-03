@@ -115,7 +115,6 @@ namespace NHibernate.Test.DynamicProxyTests
 		public class SavingProxyAssemblyBuilder : IProxyAssemblyBuilder
 		{
 			private string assemblyName;
-			private AssemblyBuilder assemblyBuilder;
 
 			public SavingProxyAssemblyBuilder(string assemblyName)
 			{
@@ -125,16 +124,15 @@ namespace NHibernate.Test.DynamicProxyTests
 			public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 			{
 				AssemblyBuilderAccess access = AssemblyBuilderAccess.RunAndSave;
-				assemblyBuilder = appDomain.DefineDynamicAssembly(new AssemblyName(assemblyName), access);
-				return assemblyBuilder;
+				return appDomain.DefineDynamicAssembly(new AssemblyName(assemblyName), access);
 			}
 
-			public ModuleBuilder DefineDynamicModule(string moduleName)
+			public ModuleBuilder DefineDynamicModule(AssemblyBuilder assemblyBuilder, string moduleName)
 			{
 				return assemblyBuilder.DefineDynamicModule(moduleName, string.Format("{0}.mod", assemblyName), true);
 			}
 
-			public void Save()
+			public void Save(AssemblyBuilder assemblyBuilder)
 			{
 				assemblyBuilder.Save(assemblyName + ".dll");
 			}
