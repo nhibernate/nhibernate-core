@@ -138,7 +138,7 @@ set /p FOLDER=<folder.tmp
 del folder.tmp
 mkdir "%CURRENT_CONFIGURATION%" 2> nul
 del /q "%CURRENT_CONFIGURATION%\*"
-copy %FOLDER%\* "%CURRENT_CONFIGURATION%"
+copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
