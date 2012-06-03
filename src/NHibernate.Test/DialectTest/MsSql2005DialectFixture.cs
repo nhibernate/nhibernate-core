@@ -103,6 +103,9 @@ namespace NHibernate.Test.DialectTest
 			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary - 1, 0, 0);
 			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", SqlClientDriver.MaxSizeForLengthLimitedBinary - 1)));
 
+			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary, 0, 0);
+			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", SqlClientDriver.MaxSizeForLengthLimitedBinary)));
+
 			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary + 1, 0, 0);
 			Assert.That(t, Is.EqualTo("VARBINARY(MAX)"));
 		}

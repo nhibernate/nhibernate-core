@@ -76,7 +76,15 @@ namespace NHibernate.Type
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
 			byte[] internalValue = ToInternalFormat(value);
-			((IDataParameter)cmd.Parameters[index]).Value = internalValue;
+
+			var parameter = (IDbDataParameter)cmd.Parameters[index];
+
+			// set the parameter value before the size check, since ODBC changes the size automatically
+			parameter.Value = internalValue;
+
+			// Avoid silent truncation which happens in ADO.NET if the parameter size is set.
+			if (parameter.Size > 0 && internalValue.Length > parameter.Size)
+				throw new HibernateException("The length of the byte[] value exceeds the length configured in the mapping/parameter.");
 		}
 
 		public override object Get(IDataReader rs, int index)
