@@ -123,5 +123,170 @@ namespace NHibernate.Test.Linq
 			 where s.SupplierId == 1
 			 select s).ToList();
 		}
+
+		[Test]
+		public void WhereBeforeFetchAndOrderBy()
+		{
+			//NH-2915
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.Fetch(x => x.Customer)
+				.OrderBy(x => x.OrderId)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyAndOrderBy()
+		{
+			//NH-2915
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.OrderBy(x => x.OrderId)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyThenFetchAndOrderBy()
+		{
+			//NH-2915
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.ThenFetch(x => x.Product)
+				.OrderBy(x => x.OrderId)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines.First().Product));
+		}
+
+		[Test]
+		public void WhereBeforeFetchAndSelect()
+		{
+			//NH-3056
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.Fetch(x => x.Customer)
+				.Select(x => x)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyAndSelect()
+		{
+			//NH-3056
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.Select(x => x)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyThenFetchAndSelect()
+		{
+			//NH-3056
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.ThenFetch(x => x.Product)
+				.Select(x => x)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines.First().Product));
+		}
+
+		[Test]
+		public void WhereBeforeFetchAndWhere()
+		{
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.Fetch(x => x.Customer)
+				.Where(x => true)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyAndWhere()
+		{
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.Where(x => true)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+		}
+		
+		[Test]
+		public void WhereBeforeFetchManyThenFetchAndWhere()
+		{
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var orders = db.Orders
+				.Where(x => x.OrderId != firstOrderId)
+				.FetchMany(x => x.OrderLines)
+				.ThenFetch(x => x.Product)
+				.Where(x => true)
+				.ToList();
+
+			Assert.AreEqual(829, orders.Count);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
+			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines.First().Product));
+		}
 	}
 }
