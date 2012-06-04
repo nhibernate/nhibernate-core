@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	namespace="NHibernate.Test.NHSpecificTest.NH2852"
+	assembly="NHibernate.Test">
+
+	<class name="Person" table="People">
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+    <property name="Name"/>
+    <many-to-one name="Address" column="AddressId" class="Address"/>
+    <many-to-one name="Parent" column="ParentId" class="Person"/>
+	</class>
+
+  <class name="Address" table="Addresses">
+    <id name="Id">
+      <generator class="identity"/>
+    </id>
+    <property name="Name"/>
+    <many-to-one name="City" column="CityId" class="City"/>
+  </class>
+
+  <class name="City" table="Cities">
+    <id name="Id">
+      <generator class="identity"/>
+    </id>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>
