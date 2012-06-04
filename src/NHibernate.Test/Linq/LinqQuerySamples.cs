@@ -347,7 +347,6 @@ namespace NHibernate.Test.Linq
 							"all orders containing their OrderId, a subsequence of the " +
 							"items in the order where there is a discount, and the money " +
 							"saved if shipping is not included.")]
-		[Ignore("TODO - nested select")]
 		public void DLinq17b()
 		{
 			var q =
@@ -357,7 +356,6 @@ namespace NHibernate.Test.Linq
 							   o.OrderId,
 							   DiscountedProducts =
 					from od in o.OrderLines
-//                    from od in o.OrderLines.Cast<OrderLine>()
 					where od.Discount > 0.0m
 					select new {od.Quantity, od.UnitPrice},
 							   FreeShippingDiscount = o.Freight
