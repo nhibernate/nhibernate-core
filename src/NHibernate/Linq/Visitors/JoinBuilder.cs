@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;

@@ -8,7 +8,6 @@ using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
-using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.NestedSelects
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var mainFromClause = subQueryModel.MainFromClause;
 
-			var item = new NhJoinClause(mainFromClause.ItemName, mainFromClause.ItemType, mainFromClause.FromExpression);
+			var item = NhJoinClause.Create(mainFromClause);
 
 			queryModel.BodyClauses.Add(item);
 

@@ -56,7 +56,7 @@ namespace NHibernate.Linq.Visitors
 
 			// rewrite any operators that should be applied on the outer query
 			// by flattening out the sub-queries that they are located in
-			ResultOperatorRewriterResult result = ResultOperatorRewriter.Rewrite(queryModel);
+			var result = ResultOperatorRewriter.Rewrite(queryModel);
 
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
@@ -142,22 +142,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
 
-			if (fromClause is NhJoinClause)
+			var joinClause = fromClause as NhJoinClause;
+			if (joinClause != null)
 			{
-				if (((NhJoinClause)fromClause).IsInner)
-				{
-					_hqlTree.AddFromClause(
-						_hqlTree.TreeBuilder.Join(
-							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(querySourceName)));
-				}
-				else
-				{
-					_hqlTree.AddFromClause(
-						_hqlTree.TreeBuilder.LeftJoin(
-							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(querySourceName)));
-				}
+				VisitNhJoinClause(querySourceName, joinClause);
 			}
 			else if (fromClause.FromExpression is MemberExpression)
 			{
@@ -178,6 +166,24 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
+		}
+
+		private void VisitNhJoinClause(string querySourceName, NhJoinClause joinClause)
+		{
+			var expression = HqlGeneratorExpressionTreeVisitor.Visit(joinClause.FromExpression, VisitorParameters).AsExpression();
+			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
+
+			HqlTreeNode hqlJoin;
+			if (joinClause.IsInner)
+			{
+				hqlJoin = _hqlTree.TreeBuilder.Join(expression, @alias);
+			}
+			else
+			{
+				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, @alias);
+			}
+
+			_hqlTree.AddFromClause(hqlJoin);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
