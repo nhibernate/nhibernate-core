@@ -237,19 +237,19 @@ namespace NHibernate.Mapping.ByCode
 
 		public static System.Type DetermineCollectionElementType(this System.Type genericCollection)
 		{
+			List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.IsGenericType).ToList();
+
 			if (genericCollection.IsGenericType)
 			{
-				List<System.Type> interfaces = genericCollection.GetInterfaces().Where(t => t.IsGenericType).ToList();
-				if (genericCollection.IsInterface)
-				{
-					interfaces.Add(genericCollection);
-				}
-				System.Type enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IEnumerable<>));
-				if (enumerableInterface != null)
-				{
-					return enumerableInterface.GetGenericArguments()[0];
-				}
+				interfaces.Add(genericCollection);
 			}
+
+			System.Type enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+			if (enumerableInterface != null)
+			{
+				return enumerableInterface.GetGenericArguments()[0];
+			}
+
 			return null;
 		}
 
