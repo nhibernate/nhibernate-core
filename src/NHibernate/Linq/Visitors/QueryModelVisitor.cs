@@ -185,6 +185,12 @@ namespace NHibernate.Linq.Visitors
 				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, @alias);
 			}
 
+			foreach (var withClause in joinClause.Restrictions)
+			{
+				var booleanExpression = HqlGeneratorExpressionTreeVisitor.Visit(withClause.Predicate, VisitorParameters).AsBooleanExpression();
+				hqlJoin.AddChild(_hqlTree.TreeBuilder.With(booleanExpression));
+			}
+
 			_hqlTree.AddFromClause(hqlJoin);
 		}
 

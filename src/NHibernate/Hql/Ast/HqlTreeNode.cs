@@ -356,6 +356,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlWith : HqlStatement
+	{
+		public HqlWith(IASTFactory factory, HqlExpression expression)
+			: base(HqlSqlWalker.WITH, "with", factory, expression)
+		{
+		}
+	}
+
 	public class HqlHaving : HqlStatement
 	{
 		public HqlHaving(IASTFactory factory, HqlExpression expression)

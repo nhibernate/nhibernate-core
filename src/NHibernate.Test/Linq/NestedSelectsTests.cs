@@ -122,5 +122,23 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(emplyees.Count, Is.EqualTo(9));
 		}
+
+		[Test]
+		public void OrdersIdWithOrderLinesNestedWhereId()
+		{
+			var orders = db.Orders
+				.Select(o => new
+								 {
+									 o.OrderId,
+									 OrderLinesIds = o.OrderLines
+										.Where(ol => ol.Discount > 1)
+										.Select(ol => ol.Id)
+										.ToArray()
+								 })
+				.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(830));
+			Assert.That(orders[0].OrderLinesIds, Is.Empty);
+		}
 	}
 }

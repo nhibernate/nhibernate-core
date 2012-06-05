@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -26,7 +27,15 @@ namespace NHibernate.Linq.Visitors
 				return;
 
 			var mainFromClause = subQueryModel.MainFromClause;
-			var join = NhJoinClause.Create(mainFromClause);
+
+			var restrictions = subQueryModel.BodyClauses
+				.OfType<WhereClause>()
+				.Select(w => new NhWithClause(w.Predicate));
+
+			var join = new NhJoinClause(mainFromClause.ItemName,
+										mainFromClause.ItemType,
+										mainFromClause.FromExpression,
+										restrictions);
 
 			var innerSelectorMapping = new QuerySourceMapping();
 			innerSelectorMapping.AddMapping(fromClause, subQueryModel.SelectClause.Selector);
@@ -35,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 
 			queryModel.BodyClauses.RemoveAt(index);
 			queryModel.BodyClauses.Insert(index, @join);
-			InsertBodyClauses(subQueryModel.BodyClauses, queryModel, index + 1);
+			InsertBodyClauses(subQueryModel.BodyClauses.Where(b => !(b is WhereClause)), queryModel, index + 1);
 
 			var innerBodyClauseMapping = new QuerySourceMapping();
 			innerBodyClauseMapping.AddMapping(mainFromClause, new QuerySourceReferenceExpression(@join));

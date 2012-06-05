@@ -5,7 +5,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH2379
+namespace NHibernate.Test.NHSpecificTest.NH3175
 {
 	[TestFixture]
 	public class Fixture : TestCaseMappingByCode
@@ -84,56 +84,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 		}
 
 		[Test]
-		public void InnerJoin()
-		{
-			// 
-			// select
-			//     order0_.Id as col_0_0_,
-			//     orderlines1_.Id as col_1_0_ 
-			// from
-			//     Orders order0_ 
-			// inner join
-			//     OrderLines orderlines1_ 
-			//         on order0_.Id=orderlines1_.OrderId
-			// 
-
-			using (var session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = (from o in session.Query<Order>()
-							  from ol in o.OrderLines
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
-
-				Assert.AreEqual(6, result.Count);
-			}
-		}
-
-		[Test]
-		public void LeftOuterJoin()
-		{
-			// 
-			// select
-			//     order0_.Id as col_0_0_,
-			//     orderlines1_.Id as col_1_0_ 
-			// from
-			//     Orders order0_ 
-			// left outer join
-			//     OrderLines orderlines1_ 
-			//         on order0_.Id=orderlines1_.OrderId
-			// 
-
-			using (var session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = (from o in session.Query<Order>()
-							  from ol in o.OrderLines.DefaultIfEmpty()
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
-
-				Assert.AreEqual(7, result.Count);
-			}
-		}
-
-		[Test]
 		public void LeftOuterJoinWithInnerRestriction()
 		{
 			// 
@@ -183,6 +133,31 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
 
 				Assert.AreEqual(2, result.Count);
+			}
+		}
+
+		[Test]
+		public void NestedSelectWithInnerRestriction()
+		{   			
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var orders = session.Query<Order>()
+					.OrderBy(o => o.Name)
+					.Select(o => new
+						{
+							OrderId = o.Id,
+							OrderLinesIds = o.OrderLines
+									 .Where(x => x.Name.StartsWith("Order Line 3"))
+									 .Select(ol => ol.Id)
+						})
+					.ToList();
+
+				Assert.That(orders.Count, Is.EqualTo(4));
+				Assert.That(orders[0].OrderLinesIds, Is.Empty);
+				Assert.That(orders[1].OrderLinesIds, Is.Empty);
+				Assert.That(orders[2].OrderLinesIds.Count(), Is.EqualTo(2));
+				Assert.That(orders[3].OrderLinesIds, Is.Empty);
 			}
 		}
 	}
