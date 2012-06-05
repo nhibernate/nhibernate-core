@@ -240,5 +240,32 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			foundMember.DeclaringType.Should().Be(typeof(MyAbstract));
 			foundMember.ReflectedType.Should().Be(typeof(MyAbstract));
 		}
+
+        private class MyEntities : List<MyEntity>
+        {}
+
+        [Test]
+        public void DetermineCollectionElementTypeShouldDetermineElementTypeWhenCollectionTypeIsGeneric()
+        {
+            var elementType = typeof(List<MyEntity>).DetermineCollectionElementType();
+
+            elementType.Should().Be(typeof(MyEntity));
+        }
+
+        [Test]
+        public void DetermineCollectionElementTypeShouldDetermineElementTypeWhenCollectionTypeIsNonGeneric()
+        {
+            var elementType = typeof (MyEntities).DetermineCollectionElementType();
+
+            elementType.Should().Be(typeof (MyEntity));
+        }
+
+        [Test]
+        public void DetermineCollectionElementTypeShouldNotDetermineElementTypeWhenTypeIsNotACollection()
+        {
+            var elementType = typeof(MyEntity).DetermineCollectionElementType();
+
+            elementType.Should().Be.Null();
+        }
 	}
 }
