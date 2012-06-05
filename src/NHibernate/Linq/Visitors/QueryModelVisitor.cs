@@ -22,6 +22,8 @@ namespace NHibernate.Linq.Visitors
 		{
 			SubQueryFromClauseFlattener.ReWrite(queryModel);
 
+			LeftJoinRewriter.ReWrite(queryModel);
+
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
