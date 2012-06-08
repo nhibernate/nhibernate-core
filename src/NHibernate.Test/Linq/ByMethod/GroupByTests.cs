@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -12,11 +11,6 @@ namespace NHibernate.Test.Linq.ByMethod
 	[TestFixture]
 	public class GroupByTests : LinqTestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-		}
-
 		[Test]
 		public void SingleKeyGroupAndCount()
 		{
@@ -244,6 +238,65 @@ namespace NHibernate.Test.Linq.ByMethod
 									}).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void SelectFirstElementFromProductsGroupedByUnitPrice()
+		{
+			//NH-3180
+			var result = db.Products
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.OrderByDescending(x => x.Key)
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo(263.5M));
+			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void SelectFirstOrDefaultElementFromProductsGroupedByUnitPrice()
+		{
+			//NH-3180
+			var result = db.Products
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.OrderByDescending(x => x.Key)
+				.FirstOrDefault();
+
+			Assert.That(result.Key, Is.EqualTo(263.5M));
+			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+
+		[Test]
+		public void SelectSingleElementFromProductsGroupedByUnitPrice()
+		{
+			//NH-3180
+			var result = db.Products
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.Where(x => x.Key == 263.5M)
+				.OrderByDescending(x => x.Key)
+				.Single();
+
+			Assert.That(result.Key, Is.EqualTo(263.5M));
+			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void SelectSingleOrDefaultElementFromProductsGroupedByUnitPrice()
+		{
+			//NH-3180
+			var result = db.Products
+				.GroupBy(x => x.UnitPrice)
+				.Select(x => new {x.Key, Count = x.Count()})
+				.Where(x => x.Key == 263.5M)
+				.OrderByDescending(x => x.Key)
+				.SingleOrDefault();
+
+			Assert.That(result.Key, Is.EqualTo(263.5M));
+			Assert.That(result.Count, Is.EqualTo(1));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
