@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NHibernate.Engine;
 using NHibernate.Impl;
 using Remotion.Linq;
 
@@ -65,7 +64,7 @@ namespace NHibernate.Linq
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
 			var future = ((INhQueryProvider) nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
-			if (future is DelayedEnumerator<T>)
+			if (future is IEnumerable<T>)
 			{
 				return new FutureValue<T>(() => ((IEnumerable<T>) future));
 			}
