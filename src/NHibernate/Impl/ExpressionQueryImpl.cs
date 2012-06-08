@@ -79,15 +79,15 @@ namespace NHibernate.Impl
 			}
 
 			// Build a map from single parameters to lists
-			var map = new Dictionary<string, List<string>>();
+			var map = new Dictionary<string, IList<string>>();
 
 			foreach (var me in namedParameterLists)
 			{
 				var name = me.Key;
-				var values = (IEnumerable) me.Value.Value;
+				var vals = (IEnumerable) me.Value.Value;
 				var type = me.Value.Type;
 
-				var typedValues = (from object value in values
+				var typedValues = (from object value in vals
 								   select new TypedValue(type, value, Session.EntityMode))
 					.ToList();
 
@@ -97,15 +97,14 @@ namespace NHibernate.Impl
 					continue;
 				}
 
-				var i = 0;
-				var aliases = new List<string>();
+				var aliases = new string[typedValues.Count];
 				var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
-
-				foreach (var value in typedValues)
+				for (var index = 0; index < typedValues.Count; index++)
 				{
-					var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
+					var value = typedValues[index];
+					var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
 					namedParamsCopy[alias] = value;
-					aliases.Add(alias);
+					aliases[index] = alias;
 				}
 
 				map.Add(name, aliases);
