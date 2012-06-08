@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -82,44 +83,45 @@ namespace NHibernate.Impl
 
 			foreach (var me in namedParameterLists)
 			{
-				string name = me.Key;
-				var vals = (ICollection) me.Value.Value;
-				IType type = me.Value.Type;
+				var name = me.Key;
+				var values = (IEnumerable) me.Value.Value;
+				var type = me.Value.Type;
 
-				if (vals.Count == 1)
+				var typedValues = (from object value in values
+								   select new TypedValue(type, value, Session.EntityMode))
+					.ToList();
+
+				if (typedValues.Count == 1)
 				{
-					// No expansion needed here
-					IEnumerator iter = vals.GetEnumerator();
-					iter.MoveNext();
-					namedParamsCopy[name] = new TypedValue(type, iter.Current, Session.EntityMode);
+					namedParamsCopy[name] = typedValues[0];
 					continue;
 				}
 
+				var i = 0;
 				var aliases = new List<string>();
-				int i = 0;
-				bool isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
+				var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
 
-				foreach (object obj in vals)
+				foreach (var value in typedValues)
 				{
-					string alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
-					namedParamsCopy[alias] = new TypedValue(type, obj, Session.EntityMode);
+					var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
+					namedParamsCopy[alias] = value;
 					aliases.Add(alias);
 				}
 
 				map.Add(name, aliases);
 			}
 
-			IASTNode newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
-			map.Aggregate(key, (sb, kvp) =>
-			                   {
-			                   	sb.Append(' ');
-			                   	sb.Append(kvp.Key);
-			                   	sb.Append(':');
-			                   	kvp.Value.Aggregate(sb, (sb2, str) => sb2.Append(str));
-			                   	return sb;
-			                   });
+			foreach (var pair in map)
+			{
+				key.Append(' ');
+				key.Append(pair.Key);
+				key.Append(':');
+				foreach (var s in pair.Value)
+					key.Append(s);
+			}
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
 		}

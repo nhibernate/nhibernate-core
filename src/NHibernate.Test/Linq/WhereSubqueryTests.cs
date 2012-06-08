@@ -477,7 +477,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.AreEqual(5, query.Count);
 		}
 
-        [Test]
+		[Test]
 		public void OrdersWithSubqueryWithJoin()
 		{
 			//NH-3147
@@ -502,6 +502,40 @@ where c.Order.Customer.CustomerId = 'VINET'
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
 								 select c).Contains(p.Category)
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test]
+		public void ProductsWithSubqueryAsIEnumerable()
+		{
+			//NH-2762
+// ReSharper disable RedundantEnumerableCastCall
+			var categories = (from c in db.Categories
+							  where c.Name == "Confections"
+							  select c).ToList().OfType<ProductCategory>();
+// ReSharper restore RedundantEnumerableCastCall
+
+			var result = (from p in db.Products
+						  where categories.Contains(p.Category)
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test]
+		public void ProductsWithSubqueryAsIGrouping()
+		{
+			//NH-2762
+			var categories = (from c in db.Categories
+							  where c.Name == "Confections"
+							  select c).ToLookup(c => c.Name).Single();
+
+			var result = (from p in db.Products
+						  where categories.Contains(p.Category)
 						  select p)
 				.ToList();
 
