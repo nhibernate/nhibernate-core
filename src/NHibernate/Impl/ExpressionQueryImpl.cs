@@ -134,6 +134,16 @@ namespace NHibernate.Impl
 		{
 			throw new NotImplementedException();
 		}
+
+		internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryString = ExpandParameters(queryParameters.NamedParameters);
+
+			return sessionImplementor.GetQueries(queryString, false)
+				.Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator))
+				.Cast<ITranslator>();
+		}
 	}
 
 	internal class ExpandedQueryExpression : IQueryExpression

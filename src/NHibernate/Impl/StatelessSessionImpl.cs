@@ -423,6 +423,16 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				// take the union of the query spaces (ie the queried tables)
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
+				return plan.Translators;
+			}
+		}
+
 		public override IInterceptor Interceptor
 		{
 			get { return new EmptyInterceptor(); }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Classic;
@@ -1048,5 +1047,7 @@ namespace NHibernate.Impl
 		{
 			return queryString;
 		}
+
+		internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 	}
 }

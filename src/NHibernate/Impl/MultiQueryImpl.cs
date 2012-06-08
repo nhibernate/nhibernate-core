@@ -635,7 +635,7 @@ namespace NHibernate.Impl
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
 				query.VerifyParameters();
-				foreach (var translator in GetTranslators(query, queryParameters))
+				foreach (var translator in query.GetTranslators(session, queryParameters))
 				{
 					translators.Add(translator);
 					translatorQueryMap.Add(queryIndex);
@@ -644,24 +644,6 @@ namespace NHibernate.Impl
 					resultSetsCommand.Append(singleCommand);
 				}
 				queryIndex++;
-			}
-		}
-
-		private IEnumerable<ITranslator> GetTranslators(AbstractQueryImpl query, QueryParameters queryParameters)
-		{
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			var queryString = query.ExpandParameterLists(queryParameters.NamedParameters);
-
-			var sqlQuery = query as ISQLQuery;
-			if (sqlQuery != null)
-			{
-				yield return new SqlTranslator(sqlQuery, session.Factory);
-				yield break;
-			}
-
-			foreach (var queryTranslator in session.GetQueries(queryString, false))
-			{
-				yield return new HqlTranslatorWrapper(queryTranslator);
 			}
 		}
 
@@ -796,76 +778,76 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+	}
 
-		private interface ITranslator
+	internal interface ITranslator
+	{
+		Loader.Loader Loader { get; }
+		IType[] ReturnTypes { get; }
+		string[] ReturnAliases { get; }
+		ICollection<string> QuerySpaces { get; }
+	}
+
+	internal class HqlTranslatorWrapper : ITranslator
+	{
+		private readonly IQueryTranslator innerTranslator;
+
+		public HqlTranslatorWrapper(IQueryTranslator translator)
 		{
-			Loader.Loader Loader { get; }
-			IType[] ReturnTypes { get; }
-			string[] ReturnAliases { get; }
-			ICollection<string> QuerySpaces { get; }
+			innerTranslator = translator;
 		}
 
-		private class HqlTranslatorWrapper : ITranslator
+		public Loader.Loader Loader
 		{
-			private readonly IQueryTranslator innerTranslator;
-
-			public HqlTranslatorWrapper(IQueryTranslator translator)
-			{
-				innerTranslator = translator;
-			}
-
-			public Loader.Loader Loader
-			{
-				get { return innerTranslator.Loader; }
-			}
-
-			public IType[] ReturnTypes
-			{
-				get { return innerTranslator.ActualReturnTypes; }
-			}
-
-			public ICollection<string> QuerySpaces
-			{
-				get { return innerTranslator.QuerySpaces; }
-			}
-
-			public string[] ReturnAliases
-			{
-				get { return innerTranslator.ReturnAliases; }
-			}
+			get { return innerTranslator.Loader; }
 		}
 
-		private class SqlTranslator : ITranslator
+		public IType[] ReturnTypes
 		{
-			private readonly CustomLoader loader;
+			get { return innerTranslator.ActualReturnTypes; }
+		}
 
-			public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
-			{
-				var sqlQueryImpl = (SqlQueryImpl)sqlQuery;
-				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
-				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
-				loader = new CustomLoader(sqlCustomQuery, sessionFactory);
-			}
+		public ICollection<string> QuerySpaces
+		{
+			get { return innerTranslator.QuerySpaces; }
+		}
 
-			public IType[] ReturnTypes
-			{
-				get { return loader.ResultTypes; }
-			}
+		public string[] ReturnAliases
+		{
+			get { return innerTranslator.ReturnAliases; }
+		}
+	}
 
-			public Loader.Loader Loader
-			{
-				get { return loader; }
-			}
+	internal class SqlTranslator : ITranslator
+	{
+		private readonly CustomLoader loader;
 
-			public ICollection<string> QuerySpaces
-			{
-				get { return loader.QuerySpaces; }
-			}
+		public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
+		{
+			var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
+			NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
+			var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
+			loader = new CustomLoader(sqlCustomQuery, sessionFactory);
+		}
 
-			public string[] ReturnAliases
-			{
-				get { return loader.ReturnAliases; }
-			}
+		public IType[] ReturnTypes
+		{
+			get { return loader.ResultTypes; }
+		}
+
+		public Loader.Loader Loader
+		{
+			get { return loader; }
+		}
+
+		public ICollection<string> QuerySpaces
+		{
+			get { return loader.QuerySpaces; }
+		}
+
+		public string[] ReturnAliases
+		{
+			get { return loader.ReturnAliases; }
 		}
 	}
 }

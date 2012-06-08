@@ -154,6 +154,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
+		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract IInterceptor Interceptor { get; }
 		public abstract EventListeners Listeners { get; }
 		public abstract int DontFlushFromFind { get; }

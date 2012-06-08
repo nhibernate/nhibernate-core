@@ -702,6 +702,16 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
+				AutoFlushIfRequired(plan.QuerySpaces);
+				return plan.Translators;
+			}
+		}
+
 		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
