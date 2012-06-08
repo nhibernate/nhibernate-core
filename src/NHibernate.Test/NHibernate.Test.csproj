@@ -668,6 +668,7 @@
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
     <Compile Include="NHSpecificTest\NH3050\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3050\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="NHSpecificTest\NH3332\Culture.cs" />
     <Compile Include="NHSpecificTest\NH3332\DataType.cs" />
     <Compile Include="NHSpecificTest\NH3332\DataTypeDescription.cs" />
