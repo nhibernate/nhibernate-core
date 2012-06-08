@@ -166,16 +166,16 @@ namespace NHibernate.Impl
 
 	internal class ParameterExpander
 	{
-		private readonly Dictionary<string, List<string>> _map;
+		private readonly Dictionary<string, IList<string>> _map;
 		private readonly IASTNode _tree;
 
-		private ParameterExpander(IASTNode tree, Dictionary<string, List<string>> map)
+		private ParameterExpander(IASTNode tree, Dictionary<string, IList<string>> map)
 		{
 			_tree = tree;
 			_map = map;
 		}
 
-		public static IASTNode Expand(IASTNode tree, Dictionary<string, List<string>> map)
+		public static IASTNode Expand(IASTNode tree, Dictionary<string, IList<string>> map)
 		{
 			var expander = new ParameterExpander(tree, map);
 
@@ -184,13 +184,13 @@ namespace NHibernate.Impl
 
 		private IASTNode Expand()
 		{
-			IList<IASTNode> parameters = ParameterDetector.LocateParameters(_tree, new HashSet<string>(_map.Keys));
+			var parameters = ParameterDetector.LocateParameters(_tree, new HashSet<string>(_map.Keys));
 			var nodeMapping = new Dictionary<IASTNode, IEnumerable<IASTNode>>();
 
 			foreach (IASTNode param in parameters)
 			{
-				IASTNode paramName = param.GetChild(0);
-				List<string> aliases = _map[paramName.Text];
+				var paramName = param.GetChild(0);
+				var aliases = _map[paramName.Text];
 				var astAliases = new List<IASTNode>();
 
 				foreach (string alias in aliases)
