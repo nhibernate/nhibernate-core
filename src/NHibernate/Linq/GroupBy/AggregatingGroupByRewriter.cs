@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
@@ -26,11 +27,17 @@ namespace NHibernate.Linq.GroupBy
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
 	/// </para>
 	/// </summary>
-	public class AggregatingGroupByRewriter
+	public static class AggregatingGroupByRewriter
 	{
-		private AggregatingGroupByRewriter() { }
+        private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
+	        {
+	            typeof (SkipResultOperator),
+	            typeof (TakeResultOperator),
+	            typeof (FirstResultOperator),
+	            typeof (SingleResultOperator)
+	        };
 
-		public static void ReWrite(QueryModel queryModel)
+	    public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
@@ -38,35 +45,26 @@ namespace NHibernate.Linq.GroupBy
 				(subQueryExpression.QueryModel.ResultOperators.Count == 1) &&
 				(subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator))
 			{
-				FlattenSubQuery(subQueryExpression, queryModel);
+				FlattenSubQuery(queryModel, subQueryExpression.QueryModel);
 			}
 		}
 
-
-		private static readonly System.Type[] AcceptableOuterResultOperators = new[]
-			{
-				typeof (SkipResultOperator),
-				typeof (TakeResultOperator),
-			};
-
-
-		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
+        private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel)
 		{
-			foreach (var resultOperator in queryModel.ResultOperators)
+			foreach (var resultOperator in queryModel.ResultOperators.Where(resultOperator => !AcceptableOuterResultOperators.Contains(resultOperator.GetType())))
 			{
-				if (!AcceptableOuterResultOperators.Contains(resultOperator.GetType()))
-					throw new NotImplementedException("Cannot use group by with the "
-					                                  + resultOperator.GetType().Name + " result operator.");
+			    throw new NotImplementedException("Cannot use group by with the " + resultOperator.GetType().Name + " result operator.");
 			}
 
 			// Move the result operator up.
-			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
-			queryModel.ResultOperators.Insert(0, groupBy);
+			var groupBy = (GroupResultOperator) subQueryModel.ResultOperators[0];
+
+            queryModel.ResultOperators.Insert(0, groupBy);
 
 			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
 				var clause = queryModel.BodyClauses[i];
-				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
+				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
 
 				//all outer where clauses actually are having clauses
 				var whereClause = clause as WhereClause;
@@ -77,21 +75,19 @@ namespace NHibernate.Linq.GroupBy
 				}
 			}
 
-			foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
-			{
+			foreach (var bodyClause in subQueryModel.BodyClauses)
 				queryModel.BodyClauses.Add(bodyClause);
-			}
 
 			// Replace the outer select clause...
 			queryModel.SelectClause.TransformExpressions(s => 
-				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryExpression.QueryModel));
+				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
 
 			// Point all query source references to the outer from clause
-			queryModel.TransformExpressions(s =>
-				new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryExpression.QueryModel.MainFromClause).Swap(s));
+            var visitor = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryModel.MainFromClause);
+            queryModel.TransformExpressions(visitor.Swap);
 
 			// Replace the outer query source
-			queryModel.MainFromClause = subQueryExpression.QueryModel.MainFromClause;
+			queryModel.MainFromClause = subQueryModel.MainFromClause;
 		}
 	}
 }
