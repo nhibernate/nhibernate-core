@@ -2,11 +2,10 @@ using System;
 using System.Linq.Expressions;
 using NHibernate.Impl;
 using NHibernate.Type;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Criterion
 {
-	using NHibernate.Dialect.Function;
-
 	/// <summary>
 	/// The <tt>criterion</tt> package may be used by applications as a framework for building
 	/// new kinds of <tt>Projection</tt>. However, it is intended that most applications will
@@ -15,13 +14,8 @@ namespace NHibernate.Criterion
 	/// The factory methods that take an alias allow the projected value to be referred to by 
 	/// criterion and order instances.
 	/// </summary>
-	public class Projections
+	public static class Projections
 	{
-		private Projections()
-		{
-			// Private Constructor, never called.
-		}
-
 		/// <summary>
 		/// Create a distinct projection from a projection
 		/// </summary>
@@ -315,7 +309,7 @@ namespace NHibernate.Criterion
 
 		public static IProjection SubQuery(DetachedCriteria detachedCriteria)
 		{
-			SelectSubqueryExpression expr = new SelectSubqueryExpression(detachedCriteria);
+			var expr = new SelectSubqueryExpression(detachedCriteria);
 			return new SubqueryProjection(expr);
 		}
 
@@ -324,7 +318,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Avg<T>(Expression<Func<T, object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Avg, Projections.Avg);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Avg, Avg);
 		}
 
 		/// <summary>
@@ -332,7 +326,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Avg(Expression<Func<object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Avg, Projections.Avg);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Avg, Avg);
 		}
 
 		/// <summary>
@@ -340,7 +334,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection Count<T>(Expression<Func<T, object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<CountProjection>(Projections.Count, Projections.Count);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Count, Count);
 		}
 
 		/// <summary>
@@ -348,7 +342,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection Count(Expression<Func<object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<CountProjection>(Projections.Count, Projections.Count);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Count, Count);
 		}
 
 		/// <summary>
@@ -356,7 +350,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection CountDistinct<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		/// <summary>
@@ -364,7 +358,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static CountProjection CountDistinct(Expression<Func<object>> expression)
 		{
-			return Projections.CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return CountDistinct(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		/// <summary>
@@ -372,7 +366,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static PropertyProjection Group<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		/// <summary>
@@ -380,7 +374,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static PropertyProjection Group(Expression<Func<object>> expression)
 		{
-			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		/// <summary>
@@ -388,7 +382,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Max<T>(Expression<Func<T, object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Max, Projections.Max);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Max, Max);
 		}
 
 		/// <summary>
@@ -396,7 +390,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Max(Expression<Func<object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Max, Projections.Max);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Max, Max);
 		}
 
 		/// <summary>
@@ -404,7 +398,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Min<T>(Expression<Func<T, object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Min, Projections.Min);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Min, Min);
 		}
 
 		/// <summary>
@@ -412,7 +406,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Min(Expression<Func<object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Min, Projections.Min);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Min, Min);
 		}
 
 		/// <summary>
@@ -420,7 +414,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static PropertyProjection Property<T>(Expression<Func<T, object>> expression)
 		{
-			return Projections.Property(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Property(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		/// <summary>
@@ -428,12 +422,12 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static PropertyProjection Property(Expression<Func<object>> expression)
 		{
-			return Projections.Property(ExpressionProcessor.FindMemberExpression(expression.Body));
+			return Property(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
 
 		public static IProjection SubQuery<T>(QueryOver<T> detachedQueryOver)
 		{
-			return Projections.SubQuery(detachedQueryOver.DetachedCriteria);
+			return SubQuery(detachedQueryOver.DetachedCriteria);
 		}
 
 		/// <summary>
@@ -441,7 +435,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Sum<T>(Expression<Func<T, object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Sum, Projections.Sum);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Sum, Sum);
 		}
 
 		/// <summary>
@@ -449,7 +443,7 @@ namespace NHibernate.Criterion
 		/// </summary>
 		public static AggregateProjection Sum(Expression<Func<object>> expression)
 		{
-			return ExpressionProcessor.FindMemberProjection(expression.Body).Create<AggregateProjection>(Projections.Sum, Projections.Sum);
+			return ExpressionProcessor.FindMemberProjection(expression.Body).Create(Sum, Sum);
 		}
 
 		/// <summary>
@@ -463,13 +457,13 @@ namespace NHibernate.Criterion
 
 		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)
 		{
-			NewArrayExpression args = (NewArrayExpression)methodCallExpression.Arguments[0];
-			IProjection[] projections = new IProjection[args.Expressions.Count];
+			var args = (NewArrayExpression)methodCallExpression.Arguments[0];
+			var projections = new IProjection[args.Expressions.Count];
 
 			for (var i=0; i<args.Expressions.Count; i++)
 				projections[i] = ExpressionProcessor.FindMemberProjection(args.Expressions[i]).AsProjection();
 
-			return Projections.SqlFunction("concat", NHibernateUtil.String, projections);
+			return SqlFunction("concat", NHibernateUtil.String, projections);
 		}
 	}
 }
