@@ -55,7 +55,7 @@ namespace NHibernate.Impl
 		public override IList List()
 		{
 			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
+			var namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -132,7 +132,17 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			throw new NotImplementedException();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 
 		internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)

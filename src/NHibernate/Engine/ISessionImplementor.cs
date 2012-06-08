@@ -105,6 +105,11 @@ namespace NHibernate.Engine
 		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
+		/// </summary>
+		IList<T> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
+
+		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
 		/// </summary>
 		IList<T> List<T>(CriteriaImpl criteria);

@@ -101,16 +101,21 @@ namespace NHibernate.Impl
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
-			IList results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
-																			.GetConstructor(System.Type.EmptyTypes)
-																			.Invoke(null);
-
+			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
+									  .GetConstructor(System.Type.EmptyTypes)
+									  .Invoke(null);
 			List(queryExpression, parameters, results);
 			return results;
 		}
 
 		public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 		public abstract IList<T> List<T>(string query, QueryParameters queryParameters);
+		public virtual IList<T> List<T>(IQueryExpression query, QueryParameters parameters)
+		{
+			var results = new List<T>();
+			List(query, parameters, results);
+			return results;
+		}
 		public abstract IList<T> List<T>(CriteriaImpl criteria);
 		public abstract void List(CriteriaImpl criteria, IList results);
 		public abstract IList List(CriteriaImpl criteria);
