@@ -219,8 +219,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				}
 			}
 
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				s.Delete("from Person");
 				tx.Commit();
@@ -315,5 +315,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 
 		}
+
 	}
 }
