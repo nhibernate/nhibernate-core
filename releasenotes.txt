@@ -1,3 +1,32 @@
+Build 3.3.1.GA
+=============================
+
+** Sub-task
+    * [NH-3167] - Support for Microsoft Sql Server 2012 sequences
+    * [NH-3170] - Add native "iif" function to MsSql2012Dialect
+
+** Bug
+    * [NH-2789] - LINQ query on byte? simple property fails on MSSQL 2005 (tinyint)
+    * [NH-2812] - Performing a Linq query on a non-null byte property throws an InvalidCastException
+    * [NH-3121] - Silent truncation of binary data
+    * [NH-3124] - invalid cast to int in generated sql with a char property
+    * [NH-3125] - Invalid SQL when querying via LINQ with grouping (regression from 3.2)
+    * [NH-3126] - InvalidCastException when cascading saves to transient dictionary values
+    * [NH-3138] - Distinct Bug on MSSQL with OrderBy/Limit and functions in Projection/Order
+    * [NH-3142] - Batch-loading of lazy children failing when key is composite
+    * [NH-3145] - HQL query using base class entity with lazy properties throws "No Persister For" error
+    * [NH-3147] - Calling Contains on a subquery that contains a join throws an Exception
+    * [NH-3153] - Duplicated id generator tables if schema is specified using different methods for different classes.
+    * [NH-3162] - Byte.Equals in LINQ Where clauses throws NotSupportedException
+    * [NH-3172] - "Duplicate dynamic module name within an assembly"
+
+** Improvement
+    * [NH-3104] - Typo in Warning Messages
+    * [NH-3149] - MsSql2005Dialect should use nowait in LockMode.UPGRADE_NOWAIT 
+    * [NH-3156] - ShowBuildMenu.bat does not work with spaces in repository folder name
+    * [NH-3168] - Add support for bit_length function for MsSql2000Dialect and above
+    * [NH-3169] - Add supprot for extract function for MsSql2000Dialect and above
+
 Build 3.3.0.GA
 =============================
 
