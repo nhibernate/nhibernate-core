@@ -60,12 +60,6 @@ namespace NHibernate.Linq.Visitors
 			destination.ItemType = source.ItemType;
 		}
 
-		private static void CopyResultOperators(IEnumerable<ResultOperatorBase> resultOperators, QueryModel queryModel)
-		{
-			foreach (var bodyClause in resultOperators)
-				queryModel.ResultOperators.Add(bodyClause);
-		}
-
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, FromClauseBase fromClause, QueryModel queryModel, int destinationIndex)
 		{
 			if (!CheckFlattenable(subQueryExpression.QueryModel))
@@ -76,14 +70,24 @@ namespace NHibernate.Linq.Visitors
 
 			var innerSelectorMapping = new QuerySourceMapping();
 			innerSelectorMapping.AddMapping(fromClause, subQueryExpression.QueryModel.SelectClause.Selector);
-			queryModel.TransformExpressions((ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false)));
+			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false));
 
 			InsertBodyClauses(subQueryExpression.QueryModel.BodyClauses, queryModel, destinationIndex);
-			CopyResultOperators(subQueryExpression.QueryModel.ResultOperators, queryModel);
+			InsertResultOperators(subQueryExpression.QueryModel.ResultOperators, queryModel);
 
 			var innerBodyClauseMapping = new QuerySourceMapping();
 			innerBodyClauseMapping.AddMapping(mainFromClause, new QuerySourceReferenceExpression(fromClause));
-			queryModel.TransformExpressions((ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false)));
+			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(ex, innerBodyClauseMapping, false));
+		}
+
+		private static void InsertResultOperators(IEnumerable<ResultOperatorBase> resultOperators, QueryModel queryModel)
+		{
+			var index = 0;
+			foreach (var bodyClause in resultOperators)
+			{
+				queryModel.ResultOperators.Insert(index, bodyClause);
+				++index;
+			}
 		}
 
 		private static void InsertBodyClauses(IEnumerable<IBodyClause> bodyClauses, QueryModel queryModel, int destinationIndex)

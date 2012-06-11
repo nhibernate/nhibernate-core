@@ -288,5 +288,20 @@ namespace NHibernate.Test.Linq
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines.First().Product));
 		}
+
+		[Test]
+		public void WhereAfterFetchAndSingleOrDefault()
+		{
+			//NH-3186
+			var firstOrderId = db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.First();
+
+			var order = db.Orders
+				.Fetch(x => x.Shipper)
+				.SingleOrDefault(x => x.OrderId == firstOrderId);
+
+			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
+		}
 	}
 }
