@@ -675,6 +675,9 @@
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2789\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3160\DialectNotSupportingUniqueKeyword.cs" />
+    <Compile Include="NHSpecificTest\NH3160\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3160\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2347\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2347\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2664\Product.cs" />
