@@ -4,14 +4,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3160
 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// </remarks>
-	public class MappingWithUniqueTests : TestCaseMappingByCode
+	public class MappingWithUniqueTests
 	{
-		protected override HbmMapping GetMappings()
+		protected HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Entity>(rc =>
@@ -27,11 +22,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3160
 		public void TestThatScriptGenerationForDialectWithoutUniqueSucceeds()
 		{
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
-		    configuration.AddMapping(GetMappings());
-			
-            var script = configuration.GenerateSchemaCreationScript(new DialectNotSupportingUniqueKeyword());
+			configuration.AddMapping(GetMappings());
 
-            Assert.That(script.Length > 0);
+			var script = configuration.GenerateSchemaCreationScript(new DialectNotSupportingUniqueKeyword());
+
+			Assert.That(script.Length, Is.GreaterThan(0));
 		}
 	}
 }
