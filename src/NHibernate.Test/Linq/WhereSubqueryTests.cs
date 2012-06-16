@@ -608,5 +608,48 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
+
+		[Test]
+		public void ProductsWithSubqueryReturningBoolFirstOrDefaultEq()
+		{
+			var result = (from p in db.Products
+						  where (from c in db.Categories
+								 where c.Name == "Confections"
+								 && c == p.Category
+								 select p.Discontinued).FirstOrDefault() == false
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test]
+		public void ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEq()
+		{
+			var result = (from p in db.Products
+						  where (from c in db.Categories
+								 where c.Name == "Confections"
+								 && c == p.Category
+								 select new{R=p.Discontinued}).FirstOrDefault().R == false
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test]
+		public void ProductsWithSubqueryReturningStringFirstOrDefaultEq()
+		{
+			var result = (from p in db.Products
+						  where (from c in db.Categories
+								 where c.Name == "Confections"
+								 && c == p.Category
+								 select p.Name).FirstOrDefault() == p.Name
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
 	}
 }
