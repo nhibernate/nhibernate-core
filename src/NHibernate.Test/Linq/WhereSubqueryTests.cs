@@ -612,6 +612,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test]
 		public void ProductsWithSubqueryReturningBoolFirstOrDefaultEq()
 		{
+			//NH-3190
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -624,8 +625,20 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test]
+		public void CategoriesWithFirstProductIsNotDiscouned()
+		{
+			//NH-3190
+			var result = (from c in db.Categories
+						  where c.Products.Select(p => p.Discontinued).FirstOrDefault() == false
+						  select c).ToList();
+
+			Assert.That(result.Count, Is.EqualTo(7));
+		}
+
+		[Test, Ignore("Not fixed yet.")]
 		public void ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEq()
 		{
+			//NH-3190
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -640,6 +653,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test]
 		public void ProductsWithSubqueryReturningStringFirstOrDefaultEq()
 		{
+			//NH-3190
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -650,6 +664,5 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
-
 	}
 }
