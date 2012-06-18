@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.NHSpecificTest.NH2806" assembly="NHibernate.Test">
+  <class name="Animal" table ="t_animal">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <discriminator column="ANIMAL_TYPE" type="string"/>
+    <property name="Description"/>
+    <property name="BodyWeight" column="body_weight"/>
+    <many-to-one name="Mother" column="mother_id"/>
+    <many-to-one name="Father" column="father_id"/>
+    <property name="SerialNumber"/>
+    <bag name="Children" lazy="true">
+      <key column="ParentId" />
+      <one-to-many class="Animal" />
+    </bag>
+    <subclass name="Reptile" discriminator-value="REPTILE" extends = "Animal">
+      <join table="t_reptile" fetch="select">
+        <key column="Id"/>
+        <property name="BodyTemperature"/>
+      </join>
+      <subclass name="Lizard" discriminator-value="LIZARD" extends = "Reptile">
+        <join table="t_lizard" fetch="select">
+          <key column="Id"/>
+        </join>
+      </subclass>
+    </subclass>
+    <subclass name="Mammal" discriminator-value="MAMMAL" extends = "Animal">
+      <join table="t_mammal" fetch="select">
+        <key column="Id"/>
+        <property name="Pregnant"/>
+        <property name="BirthDate" type="DateTime"/>
+      </join>
+      <subclass name="Dog" discriminator-value="DOG" extends = "Mammal">
+        <join table="t_dog" fetch="select">
+          <key column="Id"/>
+        </join>
+      </subclass>
+      <subclass name="Cat" discriminator-value="CAT" extends = "Mammal">
+        <join table="t_cat" fetch="select">
+          <key column="Id"/>
+        </join>
+      </subclass>
+    </subclass>
+  </class>
+</hibernate-mapping>
