@@ -348,9 +348,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					Log.Debug("createEntityAssociation() : One to many - path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
 				}
 
-				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType);
+				var joinSequence = CreateJoinSequence(roleAlias, joinType);
 
-				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, (EntityType)_queryableCollection.ElementType, false);
+				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, (EntityType) _queryableCollection.ElementType, false);
+				elem.UseFromFragment |= elem.IsImplied && elem.Walker.IsSubQuery;
 			}
 			else
 			{
@@ -359,8 +360,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					Log.Debug("createManyToMany() : path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
 				}
 
-				elem = CreateManyToMany(role, associatedEntityName,
-								roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType);
+				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType);
 				_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
 			}
 			elem.CollectionTableAlias = roleAlias;
