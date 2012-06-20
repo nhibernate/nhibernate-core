@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
-using NHibernate.Cfg;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -89,12 +90,11 @@ namespace NHibernate.Driver
 
 		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
+			var command = base.GenerateCommand(type, sqlString, parameterTypes);
 			if (prepareSql)
 			{
 				SqlClientDriver.SetParameterSizes(command.Parameters, parameterTypes);
 			}
-
 			return command;
 		}
 
@@ -110,9 +110,24 @@ namespace NHibernate.Driver
 
 		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
-			base.InitializeParameter(dbParam, name, sqlType);
+			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
+		}
+
+		private static SqlType AdjustSqlType(SqlType sqlType)
+		{
+			switch (sqlType.DbType)
+			{
+				case DbType.AnsiString:
+					return new StringSqlType(sqlType.Length);
+				case DbType.AnsiStringFixedLength:
+					return new StringFixedLengthSqlType(sqlType.Length);
+				case DbType.Date:
+					return SqlTypeFactory.DateTime;
+				default:
+					return sqlType;
+			}
 		}
 
 		private void AdjustDbParamTypeForLargeObjects(IDbDataParameter dbParam, SqlType sqlType)
