@@ -9,11 +9,6 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override bool SupportsVariableLimit
-		{
-			get { return true; }
-		}
-
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			var builder = new SqlStringBuilder(queryString);

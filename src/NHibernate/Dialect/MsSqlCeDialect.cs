@@ -106,11 +106,6 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override bool SupportsVariableLimit
-		{
-			get { return false; }
-		}
-
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlCeDataBaseSchema(connection);
