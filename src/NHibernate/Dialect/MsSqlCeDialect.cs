@@ -53,6 +53,8 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
 
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
