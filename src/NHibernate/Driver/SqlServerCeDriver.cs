@@ -103,11 +103,6 @@ namespace NHibernate.Driver
 			return new BasicResultSetsCommand(session);
 		}
 
-		public override bool SupportsMultipleQueries
-		{
-			get { return true; }
-		}
-
 		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
