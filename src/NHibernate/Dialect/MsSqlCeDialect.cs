@@ -51,6 +51,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
 
+			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
