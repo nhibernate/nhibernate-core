@@ -106,6 +106,11 @@ namespace NHibernate.Dialect
 			get { return "IDENTITY NOT NULL"; }
 		}
 
+		public override string SelectGUIDString
+		{
+			get { return "select newid()"; }
+		}
+
 		public override bool SupportsLimit
 		{
 			get { return true; }
