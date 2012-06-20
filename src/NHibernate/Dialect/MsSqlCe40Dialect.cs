@@ -20,27 +20,32 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool SupportsVariableLimit
+		{
+			get { return true; }
+		}
+
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-            SqlStringBuilder builder = new SqlStringBuilder(queryString);
+			var builder = new SqlStringBuilder(queryString);
 			if (queryString.IndexOfCaseInsensitive(" ORDER BY ") < 0)
-                builder.Add(" ORDER BY GETDATE()");
+				builder.Add(" ORDER BY GETDATE()");
 
-		    builder.Add(" OFFSET ");
-            if (offset == null)
-                builder.Add("0");
-            else
-		        builder.Add(offset);
-		    builder.Add(" ROWS");
+			builder.Add(" OFFSET ");
+			if (offset == null)
+				builder.Add("0");
+			else
+				builder.Add(offset);
+			builder.Add(" ROWS");
 
-            if (limit != null)
-            {
-                builder.Add(" FETCH NEXT ");
-                builder.Add(limit);
-                builder.Add(" ROWS ONLY");
-            }
+			if (limit != null)
+			{
+				builder.Add(" FETCH NEXT ");
+				builder.Add(limit);
+				builder.Add(" ROWS ONLY");
+			}
 
-		    return builder.ToSqlString();
+			return builder.ToSqlString();
 		}
 	}
 }
