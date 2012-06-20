@@ -44,6 +44,13 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
@@ -103,50 +110,50 @@ namespace NHibernate.Dialect
 			return new MsSqlCeDataBaseSchema(connection);
 		}
 
-        public override string Qualify(string catalog, string schema, string table)
-        {
-            // SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
-            // similar to the SQLLite dialect.
-            
-            var qualifiedName = new StringBuilder();
-            bool quoted = false;
+		public override string Qualify(string catalog, string schema, string table)
+		{
+			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
+			// similar to the SQLLite dialect.
+			
+			var qualifiedName = new StringBuilder();
+			bool quoted = false;
 
-            if (!string.IsNullOrEmpty(catalog))
-            {
-                qualifiedName.Append(catalog).Append(StringHelper.Dot);
-            }
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				qualifiedName.Append(catalog).Append(StringHelper.Dot);
+			}
 
-            var tableName = new StringBuilder();
-            if (!string.IsNullOrEmpty(schema))
-            {
-                if (schema.StartsWith(OpenQuote.ToString()))
-                {
-                    schema = schema.Substring(1, schema.Length - 1);
-                    quoted = true;
-                }
-                if (schema.EndsWith(CloseQuote.ToString()))
-                {
-                    schema = schema.Substring(0, schema.Length - 1);
-                    quoted = true;
-                }
-                tableName.Append(schema).Append(StringHelper.Underscore);
-            }
+			var tableName = new StringBuilder();
+			if (!string.IsNullOrEmpty(schema))
+			{
+				if (schema.StartsWith(OpenQuote.ToString()))
+				{
+					schema = schema.Substring(1, schema.Length - 1);
+					quoted = true;
+				}
+				if (schema.EndsWith(CloseQuote.ToString()))
+				{
+					schema = schema.Substring(0, schema.Length - 1);
+					quoted = true;
+				}
+				tableName.Append(schema).Append(StringHelper.Underscore);
+			}
 
-            if (table.StartsWith(OpenQuote.ToString()))
-            {
-                table = table.Substring(1, table.Length - 1);
-                quoted = true;
-            }
-            if (table.EndsWith(CloseQuote.ToString()))
-            {
-                table = table.Substring(0, table.Length - 1);
-                quoted = true;
-            }
+			if (table.StartsWith(OpenQuote.ToString()))
+			{
+				table = table.Substring(1, table.Length - 1);
+				quoted = true;
+			}
+			if (table.EndsWith(CloseQuote.ToString()))
+			{
+				table = table.Substring(0, table.Length - 1);
+				quoted = true;
+			}
 
-            string name = tableName.Append(table).ToString();
-            if (quoted)
-                name = OpenQuote + name + CloseQuote;
-            return qualifiedName.Append(name).ToString();
-        }
-    }
+			string name = tableName.Append(table).ToString();
+			if (quoted)
+				name = OpenQuote + name + CloseQuote;
+			return qualifiedName.Append(name).ToString();
+		}
+	}
 }
