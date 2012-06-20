@@ -54,6 +54,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
 
 			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
+			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 
