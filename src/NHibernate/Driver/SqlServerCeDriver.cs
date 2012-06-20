@@ -125,6 +125,8 @@ namespace NHibernate.Driver
 					return new StringFixedLengthSqlType(sqlType.Length);
 				case DbType.Date:
 					return SqlTypeFactory.DateTime;
+				case DbType.Time:
+					return SqlTypeFactory.DateTime;
 				default:
 					return sqlType;
 			}
