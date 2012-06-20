@@ -4,11 +4,6 @@ namespace NHibernate.Dialect
 {
 	public class MsSqlCe40Dialect : MsSqlCeDialect
 	{
-		public override bool SupportsLimit
-		{
-			get { return true; }
-		}
-
 		public override bool SupportsLimitOffset
 		{
 			get { return true; }

@@ -1,8 +1,10 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -96,7 +98,7 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsLimit
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override bool SupportsLimitOffset
@@ -112,6 +114,17 @@ namespace NHibernate.Dialect
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new MsSqlCeDataBaseSchema(connection);
+		}
+
+		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		{
+			var top = new SqlStringBuilder()
+				.Add(" top (")
+				.Add(limit)
+				.Add(")")
+				.ToSqlString();
+
+			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
 		}
 
 		public override string Qualify(string catalog, string schema, string table)
@@ -158,6 +171,19 @@ namespace NHibernate.Dialect
 			if (quoted)
 				name = OpenQuote + name + CloseQuote;
 			return qualifiedName.Append(name).ToString();
+		}
+
+		private static int GetAfterSelectInsertPoint(SqlString sql)
+		{
+			if (sql.StartsWithCaseInsensitive("select distinct"))
+			{
+				return 15;
+			}
+			if (sql.StartsWithCaseInsensitive("select"))
+			{
+				return 6;
+			}
+			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
 	}
 }
