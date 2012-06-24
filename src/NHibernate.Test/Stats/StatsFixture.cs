@@ -104,7 +104,7 @@ namespace NHibernate.Test.Stats
 			europe2 = s.Get<Continent>(europe.Id);
 			Assert.AreEqual(1, stats.CollectionLoadCount);
 			Assert.AreEqual(0, stats.CollectionFetchCount,
-			                "Should do direct load, not indirect second load when lazy false and JOIN");
+							"Should do direct load, not indirect second load when lazy false and JOIN");
 			tx.Commit();
 			s.Close();
 			sf.Close();
@@ -237,18 +237,23 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(1, stats.QueryExecutionCount);
 
 			stats.Clear();
-			using (ISession s = OpenSession())
-			{
-				var r = s.CreateMultiQuery().Add("from Country").Add("from Continent").List();
-			}
-			Assert.AreEqual(1, stats.QueryExecutionCount);
 
-			stats.Clear();
-			using (ISession s = OpenSession())
+			var driver = sessions.ConnectionProvider.Driver;
+			if (driver.SupportsMultipleQueries)
 			{
-				var r = s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).List();
+				using (var s = OpenSession())
+				{
+					var r = s.CreateMultiQuery().Add("from Country").Add("from Continent").List();
+				}
+				Assert.AreEqual(1, stats.QueryExecutionCount);
+
+				stats.Clear();
+				using (var s = OpenSession())
+				{
+					var r = s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).List();
+				}
+				Assert.AreEqual(1, stats.QueryExecutionCount);
 			}
-			Assert.AreEqual(1, stats.QueryExecutionCount);
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -257,6 +262,5 @@ namespace NHibernate.Test.Stats
 				tx.Commit();
 			}
 		}
-
 	}
 }
