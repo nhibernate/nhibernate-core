@@ -3,22 +3,26 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2341
 {
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
-		[Test]
-		public void WhenSaveInstanceOfConcreteInheritedThenNotThrows()
+		protected override void OnTearDown()
 		{
-			using(var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = new ConcreteB();
-				session.Executing(s=> s.Save(entity)).NotThrows();
-				tx.Commit();
-			}
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				s.CreateQuery("delete from AbstractBA").ExecuteUpdate();
+				s.Delete("from System.Object");
+				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void WhenSaveInstanceOfConcreteInheritedThenNotThrows()
+		{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = new ConcreteB();
+				session.Executing(s => s.Save(entity)).NotThrows();
 				tx.Commit();
 			}
 		}

@@ -24,21 +24,31 @@ namespace NHibernate.Test.NHSpecificTest.NH2491
 
 	public class Fixture : BugTestCase
 	{
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from System.Object");
+				tx.Commit();
+			}
+		}
+
 		[Test]
 		public void InheritanceSameColumnName()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var transaction = session.BeginTransaction())
 			{
 				var subClass = new SubClass();
 				var referencing = new ReferencingClass() { SubClass = subClass };
 				session.Save(subClass);
 				session.Save(referencing);
 
-				session.Transaction.Commit();
+				transaction.Commit();
 			}
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var transaction = session.BeginTransaction())
 			{
 				var referencing = session.CreateQuery("from ReferencingClass")
 					.UniqueResult<ReferencingClass>();
@@ -49,16 +59,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2491
 				BaseClass another;
 				Executing.This(() => another = referencing.SubClass.Another).Should().NotThrow();
 
-				session.Transaction.Commit();
+				transaction.Commit();
 			}
-			using (var session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				session.CreateQuery("delete from ReferencingClass").ExecuteUpdate();
-				session.CreateQuery("delete from BaseClass").ExecuteUpdate();
-				session.Transaction.Commit();
-			}
-
 		}
 	}
 }

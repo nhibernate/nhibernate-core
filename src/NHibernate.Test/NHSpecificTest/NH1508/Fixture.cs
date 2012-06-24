@@ -1,6 +1,4 @@
-﻿using System;
-using NHibernate.Driver;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
@@ -8,30 +6,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		[TestFixtureSetUp]
-		public void CheckMultiQuerySupport()
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			TestFixtureSetUp();
-			IDriver driver = sessions.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-			{
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-			}			
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
 		}
 
 		protected override void OnSetUp()
 		{
-			Person john = new Person();
+			var john = new Person();
 			john.Name = "John";
 
-			Document doc1 = new Document();
+			var doc1 = new Document();
 			doc1.Person = john;
 			doc1.Title = "John's Doc";
 
-			Document doc2 = new Document();
+			var doc2 = new Document();
 			doc2.Title = "Spec";
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
 				session.Save(john);
 				session.Save(doc1);
@@ -43,8 +35,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
 				session.Delete("from Person");
 				session.Delete("from Document");
@@ -55,11 +47,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 		[Test]
 		public void DoesntThrowExceptionWhenHqlQueryIsGiven()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				IQuery sqlQuery = session.CreateQuery("from Document");
-				IMultiQuery q = session
+				var sqlQuery = session.CreateQuery("from Document");
+				var q = session
 					.CreateMultiQuery()
 					.Add(sqlQuery);
 				q.List();
@@ -69,10 +61,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 		[Test]
 		public void DoesntThrowsExceptionWhenSqlQueryIsGiven()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				ISQLQuery sqlQuery = session.CreateSQLQuery("select * from Document");
+				var sqlQuery = session.CreateSQLQuery("select * from Document");
 				var multiquery = session.CreateMultiQuery();
 				multiquery.Executing(x => x.Add(sqlQuery)).NotThrows();
 			}
@@ -81,8 +73,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 		[Test]
 		public void DoesntThrowsExceptionWhenNamedSqlQueryIsGiven()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 
 				var multiquery = session.CreateMultiQuery();
