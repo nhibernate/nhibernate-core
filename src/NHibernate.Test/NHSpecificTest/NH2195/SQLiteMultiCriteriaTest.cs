@@ -94,6 +94,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		[Test]
 		public void MultiCriteriaQueriesWithIntsShouldExecuteCorrectly()
 		{
+			var driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
 			// Test querying IntData
 			using (ISession session = this.OpenSession())
 			{
@@ -119,6 +123,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		[Test]
 		public void MultiCriteriaQueriesWithStringsShouldExecuteCorrectly()
 		{
+			var driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
 			// Test querying StringData
 			using (ISession session = this.OpenSession())
 			{

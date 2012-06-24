@@ -12,34 +12,30 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		[Test]
 		public void TestParametersWithTrailingNumbersSingleInList()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IQuery q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
-					q.SetParameterList("param11", new string[] { "Model1", "Model2" });
-					q.SetParameterList("param1", new string[] { "Make1", "Make2" });
-					IList<Car> cars = q.List<Car>();
+				var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
+				q.SetParameterList("param11", new string[] {"Model1", "Model2"});
+				q.SetParameterList("param1", new string[] {"Make1", "Make2"});
+				var cars = q.List<Car>();
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
 
 		[Test]
 		public void TestParametersWithTrailingNumbersSingleInListReverse()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IQuery q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
-					q.SetParameterList("param1", new string[] { "Model1", "Model2" });
-					q.SetParameterList("param11", new string[] { "Make1", "Make2" });
-					IList<Car> cars = q.List<Car>();
+				var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
+				q.SetParameterList("param1", new string[] {"Model1", "Model2"});
+				q.SetParameterList("param11", new string[] {"Make1", "Make2"});
+				var cars = q.List<Car>();
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
 
@@ -47,61 +43,52 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 		public void TestSamePartialName()
 		{
 			// Demonstration of NH-1422
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IQuery q = s.CreateQuery("from Car c where c.Id in (:foo) or c.Id = :foobar");
-					q.SetParameterList("foo", new long[] {1, 2});
-					q.SetInt64("foobar", 3);
-					IList<Car> cars = q.List<Car>();
+				var q = s.CreateQuery("from Car c where c.Id in (:foo) or c.Id = :foobar");
+				q.SetParameterList("foo", new long[] {1, 2});
+				q.SetInt64("foobar", 3);
+				var cars = q.List<Car>();
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
 
 		[Test]
 		public void TestParametersWithTrailingNumbersMultipleInList()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IQuery q = s.CreateQuery("from Car c where c.Make in (:param11) or c.Model in (:param1)");
-					q.SetParameterList("param11", new string[] { "One", "Two" });
-					q.SetParameterList("param1", new string[] { "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve" });
-					IList cars = q.List();
+				var q = s.CreateQuery("from Car c where c.Make in (:param11) or c.Model in (:param1)");
+				q.SetParameterList("param11", new string[] {"One", "Two"});
+				q.SetParameterList("param1", new string[] {"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"});
+				var cars = q.List();
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
 
 		[Test]
 		public void MultiQuerySingleInList()
 		{
-			IDriver driver = sessions.ConnectionProvider.Driver;
+			var driver = sessions.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
-			{
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IList results = s.CreateMultiQuery()
-						.Add("from Car c where c.Make in (:param1) or c.Model in (:param11)")
-						.Add("from Car c where c.Make in (:param1) or c.Model in (:param11)")
-						.SetParameterList("param11",new string[]{"Model1", "Model2"})
-						.SetParameterList("param1", new string[] {"Make1", "Make2"})
-						.List();
+				var results = s.CreateMultiQuery()
+					.Add("from Car c where c.Make in (:param1) or c.Model in (:param11)")
+					.Add("from Car c where c.Make in (:param1) or c.Model in (:param11)")
+					.SetParameterList("param11", new string[] {"Model1", "Model2"})
+					.SetParameterList("param1", new string[] {"Make1", "Make2"})
+					.List();
 
-					tx.Commit();
-				}
+				tx.Commit();
 			}
 		}
-
 	}
 }
