@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
+using NHibernate.Collection.Generic;
 using NHibernate.Event;
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
@@ -209,12 +210,12 @@ namespace NHibernate.Test.Events.Collections
 				}
 			}
 
-			if (!(parent.Children is PersistentSet))
+			if (!(parent.Children is PersistentGenericSet<IChild>))
 			{
 				CheckResult(listeners, listeners.PreCollectionUpdate, parent, index++);
 				CheckResult(listeners, listeners.PostCollectionUpdate, parent, index++);
 			}
-			if (childWithManyToMany != null && !(childWithManyToMany.Parents is PersistentSet))
+			if (childWithManyToMany != null && !(childWithManyToMany.Parents is PersistentGenericSet<ParentWithBidirectionalManyToMany>))
 			{
 				CheckResult(listeners, listeners.PreCollectionUpdate, childWithManyToMany, index++);
 				CheckResult(listeners, listeners.PostCollectionUpdate, childWithManyToMany, index++);
