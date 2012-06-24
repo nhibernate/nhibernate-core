@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericSetType<T> : SetType
+	public class GenericSetType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericSetType{T}"/> class for
@@ -61,6 +61,16 @@ namespace NHibernate.Type
 				set = new HashedSet<T>(stronglyTypedCollection);
 			}
 			return new PersistentGenericSet<T>(session, set);
+		}
+
+		protected override void Add(object collection, object element)
+		{
+			((ISet<T>)collection).Add((T)element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((ISet<T>)collection).Clear();
 		}
 
 		public override object Instantiate(int anticipatedSize)
