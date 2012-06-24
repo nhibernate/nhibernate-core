@@ -568,7 +568,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			//NH-3190
 			var result = (from c in db.Categories
-						  where c.Products.Select(p => p.Discontinued).FirstOrDefault() == false
+						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
 						  select c).ToList();
 
 			Assert.That(result.Count, Is.EqualTo(7));
