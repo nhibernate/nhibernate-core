@@ -797,11 +797,6 @@ namespace NHibernate.Type
 			return Instance.CollectionTypeFactory.Map(role, propertyRef, embedded);
 		}
 
-		public static CollectionType Set(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.Set(role, propertyRef, embedded);
-		}
-
 		public static CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
 			return Instance.CollectionTypeFactory.SortedMap(role, propertyRef, embedded, comparer);
@@ -810,16 +805,6 @@ namespace NHibernate.Type
 		public static CollectionType OrderedMap(string role, string propertyRef, bool embedded)
 		{
 			return Instance.CollectionTypeFactory.OrderedMap(role, propertyRef, embedded);
-		}
-
-		public static CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return Instance.CollectionTypeFactory.SortedSet(role, propertyRef, embedded, comparer);
-		}
-
-		public static CollectionType OrderedSet(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.OrderedSet(role, propertyRef, embedded);
 		}
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)

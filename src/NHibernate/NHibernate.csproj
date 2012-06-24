@@ -684,10 +684,8 @@
     <Compile Include="Type\SByteType.cs" />
     <Compile Include="Type\SerializableType.cs" />
     <Compile Include="Type\SerializationException.cs" />
-    <Compile Include="Type\SetType.cs" />
     <Compile Include="Type\SingleType.cs" />
     <Compile Include="Type\SortedMapType.cs" />
-    <Compile Include="Type\SortedSetType.cs" />
     <Compile Include="Type\StringClobType.cs" />
     <Compile Include="Type\StringType.cs" />
     <Compile Include="Type\TicksType.cs" />
@@ -1258,7 +1256,6 @@
     <Compile Include="Collection\PersistentIdentifierBag.cs" />
     <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
-    <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />
     <Compile Include="Context\CurrentSessionContext.cs" />
@@ -1774,7 +1771,6 @@
     <Compile Include="Type\EnumCharType.cs" />
     <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
-    <Compile Include="Type\OrderedSetType.cs" />
     <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />
     <Compile Include="Type\GenericIdentifierBagType.cs" />

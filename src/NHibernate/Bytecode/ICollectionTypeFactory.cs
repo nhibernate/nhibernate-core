@@ -117,36 +117,6 @@ namespace NHibernate.Bytecode
 		CollectionType IdBag<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="SetType"/> for the specified role.
-		/// </returns>
-		CollectionType Set(string role, string propertyRef, bool embedded);
-
-		CollectionType OrderedSet(string role, string propertyRef, bool embedded);
-
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.ISet"/>
-		/// that is sorted by an <see cref="IComparer"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="SortedSetType"/> for the specified role.
-		/// </returns>
-		CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="ISet{T}" />.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the collection.</typeparam>
