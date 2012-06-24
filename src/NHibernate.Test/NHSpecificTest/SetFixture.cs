@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Data;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Metadata;
@@ -134,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-		private CollectionType collectionType = new SetType(null, null, false);
+		private CollectionType collectionType = new GenericSetType<int>(null, null);
 
 		public CollectionType CollectionType
 		{
@@ -405,7 +406,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 			{
 				ISessionImplementor si = (ISessionImplementor) s;
-				PersistentSet set = new PersistentSet(si, new ListSet());
+				var set = new PersistentGenericSet<int>(si, new HashedSet<int>());
 
 				set.Add(10);
 				set.Add(20);
@@ -415,7 +416,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 				object disassembled = set.Disassemble(collectionPersister);
 
-				PersistentSet assembledSet = new PersistentSet(si);
+				var assembledSet = new PersistentGenericSet<int>(si);
 				assembledSet.InitializeFromCache(collectionPersister, disassembled, null);
 
 				Assert.AreEqual(2, assembledSet.Count);
