@@ -131,6 +131,8 @@
     <Compile Include="Cfg\Settings.cs" />
     <Compile Include="Cfg\SettingsFactory.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
+    <Compile Include="Collection\Generic\SetHelpers\ISetSnapshot.cs" />
+    <Compile Include="Collection\Generic\SetHelpers\SetSnapShot.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />
