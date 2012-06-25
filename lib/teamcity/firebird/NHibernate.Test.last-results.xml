@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.4.0.Alpha1-debug/bin/net-3.5/NHibernate.Test.dll" errors="111" failures="42" not-run="459" inconclusive="0" ignored="459" skipped="0" invalid="0">
+<test-results name="../../build/NHibernate-3.4.0.Alpha1-debug/bin/net-3.5/NHibernate.Test.dll" errors="97" failures="41" not-run="464" inconclusive="0" ignored="464" skipped="0" invalid="0">
   <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3634" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
   <test-suite type="Assembly" name="../../build/NHibernate-3.4.0.Alpha1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
@@ -835,10 +835,10 @@ Data type unknown]]></message>
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.FunctionsProperty" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.ICriteriaOfT_SimpleCriterion" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.IsType" executed="True" result="Success" success="True" asserts="8" />
-                          <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.MultiCriteria" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.MultiCriteria" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.OnClause" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.OverrideEagerJoin" executed="True" result="Success" success="True" asserts="3" />
@@ -1276,11 +1276,11 @@ Data type unknown]]></message>
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
                         </results>
@@ -6782,8 +6782,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestListCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2012-06-24 01:19:38.531
-  But was:  2012-06-24 01:19:37.968
+  Expected: 2012-06-24 18:04:15.593
+  But was:  2012-06-24 18:04:15.031
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -6791,8 +6791,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestMapCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2012-06-24 01:19:39.093
-  But was:  2012-06-24 01:19:38.531
+  Expected: 2012-06-24 18:04:16.062
+  But was:  2012-06-24 18:04:15.593
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -6800,8 +6800,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.NHSpecificTest.BasicClassFixture.TestPrimitiveArrayCRUD" executed="True" result="Error" success="False" asserts="11">
                         <failure>
                           <message><![CDATA[  TicksProperty
-  Expected: 2012-06-24 01:19:39.593
-  But was:  2012-06-24 01:19:39.093
+  Expected: 2012-06-24 18:04:16.578
+  But was:  2012-06-24 18:04:16.062
 
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -6870,14 +6870,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="DataReaderWrapperTest" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="DataReaderWrapperTest" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture.CanUseDatareadersGetValue" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture.CanUseDatareadersGetValue" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -8411,22 +8414,22 @@ Data type unknown]]></message>
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowExceptionWhenHqlQueryIsGiven" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
                             </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenNamedSqlQueryIsGiven" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
                             </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenSqlQueryIsGiven" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
                             </reason>
                           </test-case>
                         </results>
@@ -8664,11 +8667,14 @@ Data type unknown]]></message>
                   </test-suite>
                   <test-suite type="Namespace" name="NH1609" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Inconclusive" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1609.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1609.Fixture.Test" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1609.Fixture does not apply with the current session-factory configuration]]></message>
                             </reason>
                           </test-case>
                         </results>
@@ -8803,16 +8809,11 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1642" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1642" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="TrafficRuleSetDAOTest" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="TrafficRuleSetDAOTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1642.TrafficRuleSetDAOTest.addRuleSet" executed="True" result="Error" success="False" asserts="3">
-                            <failure>
-                              <message><![CDATA[NHibernate.HibernateException : cannot perform multi-table deletes using dialect not supporting temp tables
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1642.TrafficRuleSetDAOTest.AddRuleSet" executed="True" result="Success" success="True" asserts="3" />
                         </results>
                       </test-suite>
                     </results>
@@ -9357,9 +9358,9 @@ Token unknown - line 1, column 131
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1831.Fixture.CorrectPrecedenceForBitwiseOperators" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select documentty0_.oid as oid2682_, documentty0_.systemAction as systemAc2_2682_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0 ]
+[ select documentty0_.oid as oid2680_, documentty0_.systemAction as systemAc2_2680_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0 ]
   Name:sysAct - Value:Denunciation
-[SQL: select documentty0_.oid as oid2682_, documentty0_.systemAction as systemAc2_2682_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0]
+[SQL: select documentty0_.oid as oid2680_, documentty0_.systemAction as systemAc2_2680_ from documents_documenttype documentty0_ where documentty0_.systemAction&@p0=@p0]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -104
 Token unknown - line 1, column 155
@@ -9533,11 +9534,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                   <test-suite type="Namespace" name="NH1869" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Inconclusive" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1869.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1869.Fixture.Test" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1869.Fixture does not apply with the current session-factory configuration]]></message>
                             </reason>
                           </test-case>
                         </results>
@@ -10057,8 +10061,7 @@ Invalid expression in the select list (not contained in either an aggregate func
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2056.Fixture.CanUpdateInheritedClass" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.HibernateException : cannot perform multi-table updates using dialect not supporting temp tables
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
+                              <message><![CDATA[NHibernate.HibernateException : cannot perform multi-table updates using dialect not supporting temp tables]]></message>
                             </failure>
                           </test-case>
                         </results>
@@ -10317,14 +10320,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2201" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2201" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2201.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2201.Fixture.CanUseMutliCriteriaAndFetchSelect" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2201.Fixture.CanUseMutliCriteriaAndFetchSelect" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2201.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -10763,16 +10769,11 @@ Blob]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2341" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2341" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2341.Fixture.WhenSaveInstanceOfConcreteInheritedThenNotThrows" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.HibernateException : cannot perform multi-table deletes using dialect not supporting temp tables
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2341.Fixture.WhenSaveInstanceOfConcreteInheritedThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -11085,16 +11086,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2491" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2491" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2491.Fixture.InheritanceSameColumnName" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.HibernateException : cannot perform multi-table deletes using dialect not supporting temp tables
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2491.Fixture.InheritanceSameColumnName" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -11254,7 +11250,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2583" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2583" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="InnerJoinFixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
@@ -11383,65 +11379,13 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.MassTestingTwoOrTreesSideBySideFixture.Test_xyP_in_C_D____xy_IJ" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="SelfJoinTestFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="SelfJoinTestFixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares" executed="True" result="Error" success="False" asserts="2">
-                            <failure>
-                              <message><![CDATA[TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record
-  ----> FirebirdSql.Data.Common.IscException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares2" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record
-  ----> FirebirdSql.Data.Common.IscException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfBothSidesJoin" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record
-  ----> FirebirdSql.Data.Common.IscException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfNothingJoins" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record
-  ----> FirebirdSql.Data.Common.IscException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfOneSideJoins" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-  ----> FirebirdSql.Data.Common.IscException : violation of PRIMARY or UNIQUE KEY constraint "INTEG_6906" on table "MYBO"
-TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
-  ----> FirebirdSql.Data.FirebirdClient.FbException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record
-  ----> FirebirdSql.Data.Common.IscException : violation of FOREIGN KEY constraint "FK8D29D043FED1656E" on table "MYBO"
-Foreign key references are present for the record]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares2" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfBothSidesJoin" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfNothingJoins" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfOneSideJoins" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                     </results>
@@ -11481,9 +11425,9 @@ Foreign key references are present for the record]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2651.Fixture.TestConditionalProjectionWithConstantAndLikeExpression" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2995_0_, this_.SampleData as SampleData2995_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4 ]
+[ SELECT this_.Id as Id2993_0_, this_.SampleData as SampleData2993_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4 ]
   Name:cp0 - Value:1  Name:cp1 - Value:1  Name:cp2 - Value:Foo  Name:cp3 - Value:Bar  Name:cp4 - Value:B%
-[SQL: SELECT this_.Id as Id2995_0_, this_.SampleData as SampleData2995_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4]
+[SQL: SELECT this_.Id as Id2993_0_, this_.SampleData as SampleData2993_0_ FROM Model this_ WHERE this_.Id = @p0 and (case when this_.SampleData = @p1 then @p2 else @p3 end) like @p4]
   ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
 SQL error code = -804
 Data type unknown
@@ -12584,26 +12528,11 @@ Data type unknown]]></message>
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH401" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH401" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.HibernateException : Dynamic SQL Error
-SQL error code = -842
-Precision must be from 1 to 18
-  ----> FirebirdSql.Data.FirebirdClient.FbException : Dynamic SQL Error
-SQL error code = -842
-Precision must be from 1 to 18
-  ----> FirebirdSql.Data.Common.IscException : Dynamic SQL Error
-SQL error code = -842
-Precision must be from 1 to 18]]></message>
-                        </failure>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH401.Fixture.SaveOrUpdateCopy" executed="True" result="Failure" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH401.Fixture.SaveOrUpdateCopy" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -13294,19 +13223,19 @@ Precision must be from 1 to 18]]></message>
                       <test-case name="NHibernate.Test.NHSpecificTest.SimpleComponentFixture.TestLoad" executed="True" result="Success" success="True" asserts="3" />
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="SqlConverterAndMultiQuery" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="SqlConverterAndMultiQuery" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiCriteriaShouldThrowUserException" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiCriteriaShouldThrowUserException" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiHqlShouldThrowUserException" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiHqlShouldThrowUserException" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.NormalCriteriaShouldThrowUserException" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.NormalHqlShouldThrowUserException" executed="True" result="Success" success="True" asserts="1" />
@@ -13699,261 +13628,261 @@ Precision must be from 1 to 18]]></message>
                   </test-suite>
                   <test-suite type="TestFixture" name="MultiCriteriaFixture" executed="False" result="Ignored">
                     <reason>
-                      <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                     </reason>
                     <results>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddCriteriaWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddDetachedCriteriaWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip_InTransaction" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetResultInAGenericList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddDetachedCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveDetachedCriteriaResultWithUnknownKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSetParameterList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="MultipleMixedQueriesFixture" executed="False" result="Ignored">
                     <reason>
-                      <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                     </reason>
                     <results>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetResultsInAGenericList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotAddQueryWithKeyThatAlreadyExists" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotRetrieveQueryResultWithUnknownKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSetParameterList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="MultipleQueriesFixture" executed="False" result="Ignored">
                     <reason>
-                      <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                     </reason>
                     <results>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericListClass" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSetParameterList" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiCriteriaTransformsResults" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
                         <reason>
-                          <message><![CDATA[Driver NHibernate.Driver.FirebirdClientDriver does not support multi-queries]]></message>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
                     </results>
@@ -14550,7 +14479,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="Stats" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="Stats" executed="True" result="Success" success="True" asserts="0">
                 <results>
                   <test-suite type="TestFixture" name="SessionStatsFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
@@ -14558,15 +14487,10 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Stats.SessionStatsFixture.SessionStatistics" executed="True" result="Success" success="True" asserts="8" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="StatsFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="StatsFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Stats.StatsFixture.CollectionFetchVsLoad" executed="True" result="Success" success="True" asserts="18" />
-                      <test-case name="NHibernate.Test.Stats.StatsFixture.IncrementQueryExecutionCount_WhenExplicitQueryIsExecuted" executed="True" result="Error" success="False" asserts="2">
-                        <failure>
-                          <message><![CDATA[System.NotSupportedException : The driver NHibernate.Driver.FirebirdClientDriver does not support multiple queries.
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Stats.StatsFixture.IncrementQueryExecutionCount_WhenExplicitQueryIsExecuted" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Stats.StatsFixture.QueryStatGathering" executed="True" result="Success" success="True" asserts="18" />
                     </results>
                   </test-suite>
@@ -15355,6 +15279,18 @@ Precision must be from 1 to 18]]></message>
                       <test-case name="NHibernate.Test.UtilityTest.IdentityMapSequencedFixture.IdentityMapFixture.Keys" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.UtilityTest.IdentityMapSequencedFixture.IdentityMapFixture.SetItemChangedHashCodeTwice" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.UtilityTest.IdentityMapSequencedFixture.IdentityMapFixture.SetItemsEqualHashCodeDiffIdentity" executed="True" result="Success" success="True" asserts="4" />
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="IdentitySetFixture" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.AddNoHashCode" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.AddValueTypeException" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.ContainsDiffObjectWithEquals" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.ContainsSameObjectByRef" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.ContainsSameObjectWithDiffEquals" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.Count" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.SetItemChangedHashCodeTwice" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.UtilityTest.IdentitySetFixture.SetItemsEqualHashCodeDiffIdentity" executed="True" result="Success" success="True" asserts="4" />
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="JoinedEnumerableFixture" executed="True" result="Success" success="True" asserts="0">
