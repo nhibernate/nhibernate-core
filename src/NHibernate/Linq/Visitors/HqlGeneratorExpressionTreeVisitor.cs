@@ -341,8 +341,11 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					if (expression.Operand.Type.IsPrimitive && expression.Type.IsPrimitive)
+					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
+						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
+					{
 						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
+					}
 
 					return VisitExpression(expression.Operand);
 			}
