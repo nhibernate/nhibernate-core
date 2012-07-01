@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 					Assert.AreEqual (shipName, loadedShip.Name);	
 				}
 
-				Assert.IsTrue (loadedItem.Containers.IsEmpty);
+				Assert.That(loadedItem.Containers, Is.Empty);
 			}
 			using (ISession s = OpenSession())
 			{

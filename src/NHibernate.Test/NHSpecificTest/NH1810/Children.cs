@@ -53,10 +53,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 			behaviour = new ChildrenBehaviour(this);
 		}
 
-		public Children(ICollection initialValues) : base(initialValues)
-		{
-			behaviour = new ChildrenBehaviour(this);
-		}
 
 		public Children(ICollection<Child> initialValues, IComparer<Child> comparer) : base(initialValues, comparer)
 		{

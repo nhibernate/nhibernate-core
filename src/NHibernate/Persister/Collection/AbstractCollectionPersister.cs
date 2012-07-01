@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -621,15 +622,11 @@ namespace NHibernate.Persister.Collection
 			{
 				// Take care of any entities that might have
 				// been evicted!
-				List<EntityKey> keysToRemove = new List<EntityKey>(subselect.Result.Count);
-				foreach (EntityKey entityKey in subselect.Result)
-				{
-					if (!persistenceContext.ContainsEntity(entityKey))
-					{
-						keysToRemove.Add(entityKey);
-					}
-				}
-				subselect.Result.RemoveAll(keysToRemove);
+				List<EntityKey> keysToRemove = subselect.Result
+					.Where(entityKey => !persistenceContext.ContainsEntity(entityKey)).ToList();
+
+				foreach (var entityKey in keysToRemove)
+					subselect.Result.Remove(entityKey);
 
 				// Run a subquery loader
 				return CreateSubselectInitializer(subselect, session);
