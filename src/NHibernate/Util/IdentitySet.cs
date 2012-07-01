@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
 	/// <summary> 
-	/// Set implementation that use == instead of equals() as its comparison mechanism
-	/// that base its implementation of IdentityMap
+	/// Set implementation that use reference equals instead of Equals() as its comparison mechanism.
 	/// </summary>
-	public class IdentitySet : Set<object>
+	public class IdentitySet : ISet<object>
 	{
 		private IDictionary map;
 		private static readonly object DumpValue = new object();
@@ -19,14 +19,34 @@ namespace NHibernate.Util
 			map = IdentityMap.Instantiate(10);
 		}
 
-		public override bool Add(object o)
+		public IdentitySet(IEnumerable<object> members)
+		{
+			map = IdentityMap.Instantiate(10);
+			foreach (var member in members)
+				Add(member);
+		}
+
+
+		#region Implementation of ICollection<object>
+
+		void ICollection<object>.Add(object item)
+		{
+			Add(item);
+		}
+
+		#endregion
+
+
+		public bool Add(object o)
 		{
 			object tempObject = map[o];
 			map[o] = DumpValue;
 			return tempObject == null;
 		}
 
-		public override bool AddAll(ICollection<object> c)
+
+#if !NET_4_0   // Only in Iesi's ISet<>.
+		public bool AddAll(ICollection<object> c)
 		{
 			bool changed = false;
 
@@ -36,34 +56,17 @@ namespace NHibernate.Util
 			return changed;
 		}
 
-		public override void Clear()
-		{
-			map.Clear();
-		}
-
-		public override bool Contains(object o)
-		{
-			return map[o] == DumpValue;
-		}
-
-		public override bool ContainsAll(ICollection<object> c)
+		public bool ContainsAll(ICollection<object> c)
 		{
 			foreach (object o in c)
 			{
-				if(!map.Contains(o))
+				if (!map.Contains(o))
 					return false;
 			}
 			return true;
 		}
 
-		public override bool Remove(object o)
-		{
-			object tempObject = map[o];
-			map.Remove(o);
-			return tempObject == DumpValue;
-		}
-
-		public override bool RemoveAll(ICollection<object> c)
+		public bool RemoveAll(ICollection<object> c)
 		{
 			bool changed = false;
 			foreach (object o in c)
@@ -74,45 +77,185 @@ namespace NHibernate.Util
 			return changed;
 		}
 
-		public override bool RetainAll(ICollection<object> c)
+		public bool RetainAll(ICollection<object> c)
 		{
 			//doable if needed
 			throw new NotSupportedException();
 		}
 
-		public override void CopyTo(object[] array, int index)
+		protected void NonGenericCopyTo(Array array, int index)
 		{
 			map.CopyTo(array, index);
 		}
 
-		protected override void NonGenericCopyTo(Array array, int index)
-		{
-			map.CopyTo(array, index);
-		}
-
-		public override IEnumerator<object> GetEnumerator()
-		{
-			return new EnumeratorAdapter<object>(map.GetEnumerator());
-		}
-
-		public override bool IsEmpty
+		public bool IsEmpty
 		{
 			get { return map.Count == 0; }
 		}
 
-		public override int Count
-		{
-			get { return map.Count; }
-		}
-
-		public override bool IsSynchronized
+		public bool IsSynchronized
 		{
 			get { return false; }
 		}
 
-		public override object SyncRoot
+		public object SyncRoot
 		{
 			get { return this; }
 		}
+
+		#region Implementation of ICloneable
+
+		public object Clone()
+		{
+			return new IdentitySet(this);
+		}
+
+		#endregion
+
+		#region Implementation of ISet<object>
+
+		public ISet<object> Union(ISet<object> a)
+		{
+			return new IdentitySet(this.Concat(a));
+		}
+
+		public ISet<object> Intersect(ISet<object> a)
+		{
+			// Be careful to use the Contains() implementation of the IdentitySet,
+			// not the one from the other set.
+			var elems = a.Where(e => Contains(a));
+			return new IdentitySet(elems);
+		}
+
+		public ISet<object> Minus(ISet<object> a)
+		{
+			var set = new IdentitySet(this);
+			set.RemoveAll(a);
+			return set;
+		}
+
+		public ISet<object> ExclusiveOr(ISet<object> a)
+		{
+			return Union(a).Minus(Intersect(a));
+		}
+
+		#endregion
+
+#endif
+
+		public void Clear()
+		{
+			map.Clear();
+		}
+
+		public bool Contains(object o)
+		{
+			return map[o] == DumpValue;
+		}
+
+		public bool Remove(object o)
+		{
+			object tempObject = map[o];
+			map.Remove(o);
+			return tempObject == DumpValue;
+		}
+
+		public void CopyTo(object[] array, int index)
+		{
+			map.CopyTo(array, index);
+		}
+
+		public IEnumerator<object> GetEnumerator()
+		{
+			return new EnumeratorAdapter<object>(map.GetEnumerator());
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public int Count
+		{
+			get { return map.Count; }
+		}
+
+		public bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+#if NET_4_0
+
+		#region Implementation of ISet<object>
+
+		public void UnionWith(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+
+			//foreach (var o in other)
+			//    Add(o);
+		}
+
+		public void IntersectWith(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+
+			// Potential crude implementation.
+			//var otherSet = new HashSet<object>(other, new IdentityEqualityComparer());
+			//var ours = map.Keys.Cast<object>().ToList();
+
+			//foreach (var key in ours)
+			//    if (!otherSet.Contains(key))
+			//        map.Remove(key);
+
+			//foreach (var obj in otherSet)
+			//    Add(obj);
+		}
+
+		public void ExceptWith(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SymmetricExceptWith(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsSubsetOf(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsSupersetOf(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsProperSupersetOf(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsProperSubsetOf(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool Overlaps(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool SetEquals(IEnumerable<object> other)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+#endif
+
 	}
 }
