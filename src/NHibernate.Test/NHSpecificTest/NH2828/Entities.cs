@@ -11,12 +11,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 		/// <summary>
 		/// 	The addresses.
 		/// </summary>
-		private readonly Iesi.Collections.Generic.ISet<Address> addresses;
+		private readonly ISet<Address> addresses;
 
 		/// <summary>
 		/// The bank accounts.
 		/// </summary>
-		private readonly Iesi.Collections.Generic.ISet<BankAccount> bankAccounts;
+		private readonly ISet<BankAccount> bankAccounts;
 
 		/// <summary>
 		/// 	Gets or sets Name.

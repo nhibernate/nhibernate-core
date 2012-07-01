@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Test.ProjectionFixtures;
 
