@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Type;
 
 namespace NHibernate.Bytecode
@@ -146,7 +147,7 @@ namespace NHibernate.Bytecode
 		CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="Iesi.Collections.Generic.ISet{T}" />.
+		/// Creates a new <see cref="CollectionType"/> for an <see cref="ISet{T}" />.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the collection.</typeparam>
 		/// <param name="role">The role the collection is in.</param>
@@ -158,7 +159,7 @@ namespace NHibernate.Bytecode
 		CollectionType Set<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="Iesi.Collections.Generic.ISet{T}" />.
+		/// Creates a new <see cref="CollectionType"/> for a sorted <see cref="ISet{T}" />.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the collection.</typeparam>
 		/// <param name="role">The role the collection is in.</param>
@@ -171,7 +172,7 @@ namespace NHibernate.Bytecode
 		CollectionType SortedSet<T>(string role, string propertyRef, bool embedded, IComparer<T> comparer);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an ordered <see cref="Iesi.Collections.Generic.ISet{T}" />.
+		/// Creates a new <see cref="CollectionType"/> for an ordered <see cref="ISet{T}" />.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the collection.</typeparam>
 		/// <param name="role">The role the collection is in.</param>
