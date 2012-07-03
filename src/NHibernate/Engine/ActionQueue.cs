@@ -532,25 +532,7 @@ namespace NHibernate.Engine
 					// the entity associated with the current action.
 					var currentEntity = action.Instance;
 
-					int batchNumber;
-					if (_latestBatches.ContainsKey(entityName))
-					{
-						// There is already an existing batch for this type of entity.
-						// Check to see if the latest batch is acceptable.
-						batchNumber = FindBatchNumber(action, entityName);
-					}
-					else
-					{
-						// add an entry for this type of entity.
-						// we can be assured that all referenced entities have already
-						// been processed,
-						// so specify that this entity is with the latest batch.
-						// doing the batch number before adding the name to the list is
-						// a faster way to get an accurate number.
-
-						batchNumber = _actionBatches.Count;
-						_latestBatches[entityName] = batchNumber;
-					}
+					var batchNumber = GetBatchNumber(action, entityName);
 					_entityBatchNumber[currentEntity] = batchNumber;
 					AddToBatch(batchNumber, action);
 				}
@@ -567,23 +549,31 @@ namespace NHibernate.Engine
 				}
 			}
 
-			/// <summary>
-			/// Finds an acceptable batch for this entity to be a member as part of the <see cref="InsertActionSorter" />
-			/// </summary>
-			/// <param name="action">The action being sorted</param>
-			/// <param name="entityName">The name of the entity affected by the action</param>
-			/// <returns>An appropriate batch number; todo document this process better</returns>
-			private int FindBatchNumber(EntityInsertAction action, string entityName)
+			private int GetBatchNumber(EntityInsertAction action, string entityName)
 			{
-				// loop through all the associated entities and make sure they have been
-				// processed before the latest
-				// batch associated with this entity type.
+				int batchNumber;
+				if (_latestBatches.TryGetValue(entityName, out batchNumber))
+				{
+					// There is already an existing batch for this type of entity.
+					// Check to see if the latest batch is acceptable.
+					if (IsProcessedAfterAllAssociatedEntities(action, batchNumber))
+						return batchNumber;
+				}
+				
+				// add an entry for this type of entity.
+				// we can be assured that all referenced entities have already
+				// been processed,
+				// so specify that this entity is with the latest batch.
+				// doing the batch number before adding the name to the list is
+				// a faster way to get an accurate number.
 
-				// the current batch number is the latest batch for this entity type.
-				var latestBatchNumberForType = _latestBatches[entityName];
+				batchNumber = _actionBatches.Count;
+				_latestBatches[entityName] = batchNumber;
+				return batchNumber;
+			}
 
-				// loop through all the associations of the current entity and make sure that they are processed
-				// before the current batch number
+			private bool IsProcessedAfterAllAssociatedEntities(EntityInsertAction action, int latestBatchNumberForType)
+			{
 				var propertyValues = action.State;
 				var propertyTypes = action.Persister.ClassMetadata.PropertyTypes;
 
@@ -592,23 +582,20 @@ namespace NHibernate.Engine
 					var value = propertyValues[i];
 					var type = propertyTypes[i];
 
-					if (type.IsEntityType && value != null)
+					if (type.IsEntityType &&
+						value != null)
 					{
 						// find the batch number associated with the current association, if any.
 						int associationBatchNumber;
-						if (_entityBatchNumber.TryGetValue(value, out associationBatchNumber) && associationBatchNumber > latestBatchNumberForType)
+						if (_entityBatchNumber.TryGetValue(value, out associationBatchNumber) &&
+							associationBatchNumber > latestBatchNumberForType)
 						{
-							// create a new batch for this type. The batch number is the number of current batches.
-							latestBatchNumberForType = _actionBatches.Count;
-							_latestBatches[entityName] = latestBatchNumberForType;
-							// since this entity will now be processed in the latest possible batch,
-							// we can be assured that it will come after all other associations,
-							// there's not need to continue checking.
-							break;
+							return false;
 						}
 					}
 				}
-				return latestBatchNumberForType;
+
+				return true;
 			}
 
 			private void AddToBatch(int batchNumber, EntityInsertAction action)
