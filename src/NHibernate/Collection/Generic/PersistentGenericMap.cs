@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 			gmap = map;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(map.Count);

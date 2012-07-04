@@ -797,7 +797,7 @@ namespace NHibernate.Collection
 
 		public abstract IEnumerable Entries(ICollectionPersister persister);
 
-		public abstract ICollection GetSnapshot(ICollectionPersister persister);
+		public abstract object GetSnapshot(ICollectionPersister persister);
 
 		public abstract bool EqualsSnapshot(ICollectionPersister persister);
 

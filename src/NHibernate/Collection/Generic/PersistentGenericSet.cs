@@ -87,7 +87,7 @@ namespace NHibernate.Collection.Generic
 			get { return false; }
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			var entityMode = Session.EntityMode;
 			var clonedSet = new SetSnapShot<T>(set.Count);

@@ -67,7 +67,7 @@ namespace NHibernate.Collection
 			return array;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 

@@ -251,7 +251,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Return a new snapshot of the current state of the collection
 		/// </summary>
-		ICollection GetSnapshot(ICollectionPersister persister);
+		object GetSnapshot(ICollectionPersister persister);
 
 		/// <summary>
 		/// To be called internally by the session, forcing
