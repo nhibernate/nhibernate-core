@@ -15,25 +15,12 @@ using NHibernate.Util;
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// .NET has no design equivalent for Java's Set so we are going to use the
-	/// Iesi.Collections library. This class is internal to NHibernate and shouldn't
-	/// be used by user code.
+	/// A persistent wrapper for an <see cref="ISet{T}"/>.
 	/// </summary>
-	/// <remarks>
-	/// The code for the Iesi.Collections library was taken from the article
-	/// <a href="http://www.codeproject.com/csharp/sets.asp">Add Support for "Set" Collections
-	/// to .NET</a> that was written by JasonSmith.
-	/// </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
 	{
-		// TODO NH: find a way to writeonce (no duplicated code from PersistentSet)
-
-		/* NH considerations:
-		 * The implementation of Set<T> in Iesi collections don't have any particular behavior
-		 * for strongly typed. BTW we use the same technique used for other collection.
-		 */
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
 		/// </summary>
@@ -49,7 +36,7 @@ namespace NHibernate.Collection.Generic
 		/// process.
 		/// </remarks>
 		[NonSerialized]
-		private IList<T> tempList;
+		private IList<T> _tempList;
 
 		// needed for serialization
 		public PersistentGenericSet()
@@ -76,6 +63,10 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericSet(ISessionImplementor session, ISet<T> original)
 			: base(session)
 		{
+			// Sets can be just a view of a part of another collection.
+			// do we need to copy it to be sure it won't be changing
+			// underneath us?
+			// ie. this.set.addAll(set);
 			set = original;
 			SetInitialized();
 			IsDirectlyAccessible = true;
@@ -172,7 +163,7 @@ namespace NHibernate.Collection.Generic
 			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			if (element != null)
 			{
-				tempList.Add(element);
+				_tempList.Add(element);
 			}
 			return element;
 		}
@@ -184,7 +175,7 @@ namespace NHibernate.Collection.Generic
 		public override void BeginRead()
 		{
 			base.BeginRead();
-			tempList = new List<T>();
+			_tempList = new List<T>();
 		}
 
 		/// <summary>
@@ -194,11 +185,11 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			foreach (T item in tempList)
+			foreach (T item in _tempList)
 			{
 				set.Add(item);
 			}
-			tempList = null;
+			_tempList = null;
 			SetInitialized();
 			return true;
 		}
@@ -295,29 +286,6 @@ namespace NHibernate.Collection.Generic
 
 		#region ISet<T> Members
 
-		public ISet<T> Union(ISet<T> a)
-		{
-			Read();
-			return set.Union(a);
-		}
-
-		public ISet<T> Intersect(ISet<T> a)
-		{
-			Read();
-			return set.Intersect(a);
-		}
-
-		public ISet<T> Minus(ISet<T> a)
-		{
-			Read();
-			return set.Minus(a);
-		}
-
-		public ISet<T> ExclusiveOr(ISet<T> a)
-		{
-			Read();
-			return set.ExclusiveOr(a);
-		}
 
 		public bool Contains(T item)
 		{
@@ -325,11 +293,6 @@ namespace NHibernate.Collection.Generic
 			return exists == null ? set.Contains(item) : exists.Value;
 		}
 
-		public bool ContainsAll(ICollection<T> c)
-		{
-			Read();
-			return set.ContainsAll(c);
-		}
 
 		public bool Add(T o)
 		{
@@ -353,25 +316,102 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		public bool AddAll(ICollection<T> c)
+		public void UnionWith(IEnumerable<T> other)
 		{
-			if (c.Count > 0)
-			{
-				Initialize(true);
-				if (set.AddAll(c))
-				{
-					Dirty();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
+			var collection = other as ICollection<T> ?? other.ToList();
+			if (collection.Count == 0)
+				return;
+
+			Initialize(true);
+
+			var oldCount = set.Count;
+			set.UnionWith(collection);
+			var newCount = set.Count;
+
+			// Union can only add, so if the set was modified the count must increase.
+			if (oldCount != newCount)
+				Dirty();
+		}
+
+		public void IntersectWith(IEnumerable<T> other)
+		{
+			Initialize(true);
+
+			var oldCount = set.Count;
+			set.IntersectWith(other);
+			var newCount = set.Count;
+
+			// Intersect can only remove, so if the set was modified the count must decrease.
+			if (oldCount != newCount)
+				Dirty();
+		}
+
+		public void ExceptWith(IEnumerable<T> other)
+		{
+			var collection = other as ICollection<T> ?? other.ToList();
+			if (collection.Count == 0)
+				return;
+
+			Initialize(true);
+
+			var oldCount = set.Count;
+			set.ExceptWith(collection);
+			var newCount = set.Count;
+
+			// Except can only remove, so if the set was modified the count must decrease.
+			if (oldCount != newCount)
+				Dirty();
+		}
+
+		public void SymmetricExceptWith(IEnumerable<T> other)
+		{
+			var collection = other as ICollection<T> ?? other.ToList();
+			if (collection.Count == 0)
+				return;
+
+			Initialize(true);
+
+			set.SymmetricExceptWith(collection);
+
+			// If the other collection is non-empty, we are guaranteed to 
+			// remove or add at least one element.
+			Dirty();
+		}
+
+		public bool IsSubsetOf(IEnumerable<T> other)
+		{
+			Read();
+			return set.IsProperSupersetOf(other);
+		}
+
+		public bool IsSupersetOf(IEnumerable<T> other)
+		{
+			Read();
+			return set.IsSupersetOf(other);
+		}
+
+		public bool IsProperSupersetOf(IEnumerable<T> other)
+		{
+			Read();
+			return set.IsProperSupersetOf(other);
+		}
+
+		public bool IsProperSubsetOf(IEnumerable<T> other)
+		{
+			Read();
+			return set.IsProperSubsetOf(other);
+		}
+
+		public bool Overlaps(IEnumerable<T> other)
+		{
+			Read();
+			return set.Overlaps(other);
+		}
+
+		public bool SetEquals(IEnumerable<T> other)
+		{
+			Read();
+			return set.SetEquals(other);
 		}
 
 		public bool Remove(T o)
@@ -396,41 +436,6 @@ namespace NHibernate.Collection.Generic
 			return false;
 		}
 
-		public bool RemoveAll(ICollection<T> c)
-		{
-			if (c.Count > 0)
-			{
-				Initialize(true);
-				if (set.RemoveAll(c))
-				{
-					Dirty();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		public bool RetainAll(ICollection<T> c)
-		{
-			Initialize(true);
-			if (set.RetainAll(c))
-			{
-				Dirty();
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
 		public void Clear()
 		{
 			if (ClearQueueEnabled)
@@ -446,11 +451,6 @@ namespace NHibernate.Collection.Generic
 					Dirty();
 				}
 			}
-		}
-
-		public bool IsEmpty
-		{
-			get { return ReadSize() ? CachedSize == 0 : (set.Count == 0); }
 		}
 
 		#endregion
@@ -469,7 +469,7 @@ namespace NHibernate.Collection.Generic
 			get { return ReadSize() ? CachedSize : set.Count; }
 		}
 
-		bool ICollection<T>.IsReadOnly
+		public bool IsReadOnly
 		{
 			get { return false; }
 		}
@@ -512,15 +512,6 @@ namespace NHibernate.Collection.Generic
 
 		#endregion
 
-		#region ICloneable Members
-
-		public object Clone()
-		{
-			Read();
-			return set.Clone();
-		}
-
-		#endregion
 
 		#region DelayedOperations
 
