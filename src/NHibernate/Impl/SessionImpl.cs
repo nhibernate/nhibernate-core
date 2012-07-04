@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
@@ -135,6 +136,9 @@ namespace NHibernate.Impl
 		/// </remarks>
 		[SecurityPermission(SecurityAction.LinkDemand,
 			Flags = SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("writting session to serializer");

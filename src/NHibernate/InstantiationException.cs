@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 
 namespace NHibernate
@@ -91,6 +92,9 @@ namespace NHibernate
 		/// </param>
 		[SecurityPermission(SecurityAction.LinkDemand,
 			Flags=SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

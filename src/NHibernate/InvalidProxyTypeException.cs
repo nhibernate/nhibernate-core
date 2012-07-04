@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Collections.Generic;
@@ -43,6 +44,9 @@ namespace NHibernate
 
 		[SecurityPermission(SecurityAction.LinkDemand,
 			Flags=SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

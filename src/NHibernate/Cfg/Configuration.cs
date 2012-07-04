@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -123,6 +124,9 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
