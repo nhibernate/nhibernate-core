@@ -197,5 +197,12 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			AssertOrderedBy.Descending(result.Take(5).ToList(), x => x.ShippingDate);
 		}
+
+        [Test]
+        public void OrderByNullCompareAndSkipAndTake()
+        {
+            var result = db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId)
+                .Skip(3).Take(4).ToList();
+        }
 	}
 }
