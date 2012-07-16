@@ -68,13 +68,17 @@ namespace NHibernate.Mapping
 				}
 
 				bool nullable = false;
-				foreach (Column col in Element.ColumnIterator)
-				{
-					if (col.IsNullable)
-					{
-						nullable = true;
+				foreach (ISelectable selectable in Element.ColumnIterator)
+                {
+                    if (!selectable.IsFormula)
+                    {
+                        Column col = (Column) selectable;
+						if (col.IsNullable)
+						{
+							nullable = true;
+						}
+						pk.AddColumn(col);
 					}
-					pk.AddColumn(col);
 				}
 
 				// some databases (Postgres) will tolerate nullable
