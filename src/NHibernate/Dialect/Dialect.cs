@@ -84,7 +84,7 @@ namespace NHibernate.Dialect
 			_sqlFunctions = CollectionHelper.CreateCaseInsensitiveHashtable(StandardAggregateFunctions);
 			
 			// standard sql92 functions (can be overridden by subclasses)
-			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
+			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
 			RegisterFunction("trim", new AnsiTrimFunction());
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));

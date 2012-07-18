@@ -772,29 +772,29 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				Parameter[] columnParameters = Parameter.GenerateParameters(columnNames.Length);
-				ConditionalFragment byId = new ConditionalFragment()
-					.SetTableAlias(alias)
-					.SetCondition(columnNames, columnParameters);
+				var fragments = new ConditionalFragment[batchSize];
+				for (int i = 0; i < batchSize; i++)
+				{
+					fragments[i] = new ConditionalFragment()
+						.SetTableAlias(alias)
+						.SetCondition(columnNames, Parameter.GenerateParameters(columnNames.Length));
+				}
 
-				SqlStringBuilder whereString = new SqlStringBuilder();
+				var whereString = new SqlStringBuilder();
 
-				if (batchSize == 1)
+				if (fragments.Length == 1)
 				{
 					// if no batch, use "foo = ? and bar = ?"
-					whereString.Add(byId.ToSqlStringFragment());
+					whereString.Add(fragments[0].ToSqlStringFragment());
 				}
 				else
 				{
-					// if a composite key, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )" for batching
-					whereString.Add(StringHelper.OpenParen); // TODO: unnecessary for databases with ANSI-style joins
-					DisjunctionFragment df = new DisjunctionFragment();
-					for (int i = 0; i < batchSize; i++)
-					{
-						df.AddCondition(byId);
-					}
+					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
+					var df = new DisjunctionFragment(fragments);
+
+					whereString.Add(StringHelper.OpenParen);
 					whereString.Add(df.ToFragmentString());
-					whereString.Add(StringHelper.ClosedParen); // TODO: unnecessary for databases with ANSI-style joins
+					whereString.Add(StringHelper.ClosedParen);
 				}
 
 				return whereString;

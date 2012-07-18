@@ -37,7 +37,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
 						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
 						itemExpression));
-					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
+					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
 				}
 				else
 				{
@@ -48,7 +48,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		private static HqlRange GetFromRangeClause(HqlTreeNode node)
 		{
-			return node.NodesPreOrder.OfType<HqlRange>().Single();
+			return node.NodesPreOrder.OfType<HqlRange>().First();
 		}
 
 		private static HqlAlias GetFromAlias(HqlTreeNode node)

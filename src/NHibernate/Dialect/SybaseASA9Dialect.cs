@@ -38,7 +38,7 @@ namespace NHibernate.Dialect
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseAsaClientDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
-			
+
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
@@ -73,12 +73,11 @@ namespace NHibernate.Dialect
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp"));
 			RegisterFunction("length", new StandardSafeSQLFunction("length", NHibernateUtil.String, 1));
-			RegisterFunction("substring", new AnsiSubstringFunction());
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
 			RegisterFunction("now", new StandardSQLFunction("now"));
-			
+
 			RegisterKeyword("top");
 		}
 
@@ -92,36 +91,36 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        public override bool OffsetStartsAtOne
-        {
-	        get { return true; }
-        }
-
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		public override bool OffsetStartsAtOne
 		{
-            int intSelectInsertPoint = GetAfterSelectInsertPoint(queryString);
+			get { return true; }
+		}
 
-            SqlStringBuilder limitFragment = new SqlStringBuilder();
-            limitFragment.Add(" top ");
-            if (limit != null)
-                limitFragment.Add(limit);
-            else
-                limitFragment.Add(int.MaxValue.ToString());
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		{
+			int intSelectInsertPoint = GetAfterSelectInsertPoint(queryString);
 
-            if (offset != null)
-            {
-                limitFragment.Add(" start at ");
-                limitFragment.Add(offset);
-            }
+			SqlStringBuilder limitFragment = new SqlStringBuilder();
+			limitFragment.Add(" top ");
+			if (limit != null)
+				limitFragment.Add(limit);
+			else
+				limitFragment.Add(int.MaxValue.ToString());
 
-            return queryString.Insert(intSelectInsertPoint, limitFragment.ToSqlString());
+			if (offset != null)
+			{
+				limitFragment.Add(" start at ");
+				limitFragment.Add(offset);
+			}
+
+			return queryString.Insert(intSelectInsertPoint, limitFragment.ToSqlString());
 		}
 
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
-		
+
 		public override string AddColumnString
 		{
 			get { return "add"; }
@@ -174,7 +173,7 @@ namespace NHibernate.Dialect
 
 		private static int GetAfterSelectInsertPoint(SqlString sql)
 		{
-			string[] arrSelectStrings = {"select distinct", "select all", "select"};
+			string[] arrSelectStrings = { "select distinct", "select all", "select" };
 			for (int i = 0; i != arrSelectStrings.Length; ++i)
 			{
 				string strSelect = arrSelectStrings[i];

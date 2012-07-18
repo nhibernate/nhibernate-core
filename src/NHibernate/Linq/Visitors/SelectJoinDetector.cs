@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -17,6 +18,11 @@ namespace NHibernate.Linq.Visitors
 			_joiner = joiner;
 		}
 
+		public void Transform(SelectClause selectClause)
+		{
+			selectClause.TransformExpressions(VisitExpression);
+		}
+
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
 			if (_isEntityDecider.IsIdentifier(expression.Expression.Type, expression.Member.Name))
@@ -25,9 +31,12 @@ namespace NHibernate.Linq.Visitors
 				_identifierMemberExpressionDepth++;
 			
 			var result = base.VisitMemberExpression(expression);
-			_identifierMemberExpressionDepth--;
+			if (_hasIdentifier)
+				_identifierMemberExpressionDepth--;
 
-			if (_isEntityDecider.IsEntity(expression.Type) && (!_hasIdentifier || _identifierMemberExpressionDepth > 0))
+			if (_isEntityDecider.IsEntity(expression.Type) &&
+				(!_hasIdentifier || _identifierMemberExpressionDepth > 0) &&
+				_joiner.CanAddJoin(expression))
 			{
 				var key = ExpressionKeyVisitor.Visit(expression, null);
 				return _joiner.AddJoin(result, key);
@@ -38,10 +47,10 @@ namespace NHibernate.Linq.Visitors
 			return result;
 		}
 
-		public void Transform(SelectClause selectClause)
+		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			selectClause.TransformExpressions(VisitExpression);
+			expression.QueryModel.TransformExpressions(VisitExpression);
+			return expression;
 		}
-
 	}
 }

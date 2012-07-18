@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -40,6 +41,8 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
+
+			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";

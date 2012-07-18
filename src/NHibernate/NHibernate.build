@@ -96,12 +96,7 @@
   <target name="nuspec" depends="init nuget.set-properties" description="Create nuspec for NHibernate">
     <property name="nuspec.destination.file" value="${nuget.workingdir}/${nuspec.destination.filename}" />
     <copy file="NHibernate.nuspec.template" tofile="${nuspec.destination.file}"/>
-    <xmlpoke file="${nuspec.destination.file}"
-             xpath="/package/metadata/dependencies/dependency[@id = 'Iesi.Collections']/@version"
-             value="${project.version.numeric}" />
-    <xmlpoke file="${nuspec.destination.file}"
-             xpath="/package/metadata/version"
-             value="${project.version.numeric}" />
+    <xmlpoke file="${nuspec.destination.file}" xpath="/package/metadata/version" value="${project.version.nuget}" />
   </target>
 
   <target name="nuget" depends="init nuget.set-properties nuspec">

@@ -407,6 +407,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool OffsetStartsAtOne
+		{
+			get { return true; }
+		}
+
 		private static int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			// Assume no common table expressions with the statement.

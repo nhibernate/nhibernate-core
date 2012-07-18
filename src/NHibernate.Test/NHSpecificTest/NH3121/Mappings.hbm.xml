@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3121">
+
+	<class name="Report">
+		
+		<id name="Id">
+			<generator class="guid" />
+		</id>
+
+		<property name="UnsizedArray" />
+			
+		<property name="Image" type="System.Drawing.Image, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+			<column name="Image" length="7000" not-null="false" />
+		</property>
+
+		<property name="SerializableImage" type="Serializable(7000)">
+			<column name="SerializableImage" not-null="false" />
+		</property>
+		
+	</class>
+
+</hibernate-mapping>

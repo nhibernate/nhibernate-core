@@ -256,7 +256,7 @@ namespace NHibernate.Tuple.Entity
 
 			if(hadLazyProperties && !hasLazy)
 			{
-				log.WarnFormat("Disabled lazy properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+				log.WarnFormat("Disabled lazy property fetching for {0} because it does not support lazy at the entity level", name);
 			}
 			if (hasLazy)
 			{
@@ -265,7 +265,7 @@ namespace NHibernate.Tuple.Entity
 
 			if(hadNoProxyRelations && !hasUnwrapProxyForProperties)
 			{
-				log.WarnFormat("Disabled ghost properies fetching for {0} beacuse it does not support lazy at the entity level", name);
+				log.WarnFormat("Disabled ghost property fetching for {0} because it does not support lazy at the entity level", name);
 			}
 			if (hasUnwrapProxyForProperties)
 			{

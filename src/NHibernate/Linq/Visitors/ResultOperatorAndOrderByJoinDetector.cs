@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -27,13 +28,21 @@ namespace NHibernate.Linq.Visitors
 			if (!isIdentifier)
 				_memberExpressionDepth--;
 
-			if (_isEntityDecider.IsEntity(expression.Type) && _memberExpressionDepth > 0)
+			if (_isEntityDecider.IsEntity(expression.Type) &&
+				_memberExpressionDepth > 0 &&
+				_joiner.CanAddJoin(expression))
 			{
 				var key = ExpressionKeyVisitor.Visit(expression, null);
 				return _joiner.AddJoin(result, key);
 			}
 
 			return result;
+		}
+
+		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		{
+			expression.QueryModel.TransformExpressions(VisitExpression);
+			return expression;
 		}
 
 		public void Transform(ResultOperatorBase resultOperator)

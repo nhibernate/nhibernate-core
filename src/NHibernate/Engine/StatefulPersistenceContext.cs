@@ -533,7 +533,7 @@ namespace NHibernate.Engine
 		{
 			EntityEntry e =
 				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
-				                disableVersionIncrement, lazyPropertiesAreUnfetched);
+								disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
 			SetHasNonReadOnlyEnties(status);
@@ -592,9 +592,9 @@ namespace NHibernate.Engine
 			//}
 			if (value.IsProxy())
 			{
-                var proxy = value as INHibernateProxy; 
-                
-                if (log.IsDebugEnabled)
+				var proxy = value as INHibernateProxy; 
+				
+				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
@@ -640,9 +640,9 @@ namespace NHibernate.Engine
 
 			if (maybeProxy.IsProxy())
 			{
-                INHibernateProxy proxy = maybeProxy as INHibernateProxy; 
-                
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
+				INHibernateProxy proxy = maybeProxy as INHibernateProxy; 
+				
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				if (li.IsUninitialized)
 					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
 
@@ -669,9 +669,9 @@ namespace NHibernate.Engine
 			//}
 			if (maybeProxy.IsProxy())
 			{
-                var proxy = maybeProxy as INHibernateProxy; 
-                
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
+				var proxy = maybeProxy as INHibernateProxy; 
+				
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object
 			}
@@ -1354,8 +1354,8 @@ namespace NHibernate.Engine
 			var newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
-			         oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
-			         oldEntry.LoadedWithLazyPropertiesUnfetched);
+					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
+					 oldEntry.LoadedWithLazyPropertiesUnfetched);
 		}
 
 		public bool IsLoadFinished

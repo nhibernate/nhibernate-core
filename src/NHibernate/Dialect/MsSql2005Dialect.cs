@@ -87,5 +87,20 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		public override string AppendLockHint(LockMode lockMode, string tableName)
+		{
+			if (NeedsLockHint(lockMode))
+			{
+				if (lockMode == LockMode.UpgradeNoWait)
+				{
+					return tableName + " with (updlock, rowlock, nowait)";
+				}
+
+				return tableName + " with (updlock, rowlock)";
+			}
+
+			return tableName;
+		}
 	}
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using NHibernate.Dialect;
-using NHibernate.Dialect.Function;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql
@@ -11,25 +10,24 @@ namespace NHibernate.Test.Hql
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]
-	//, Ignore("HQLFunctions not yet completely implemented (HQL parser don't parse HQLFunction)")]
 	public class HQLFunctions : TestCase
 	{
-		static Hashtable notSupportedStandardFunction = new Hashtable();
+		static readonly Hashtable notSupportedStandardFunction;
 		static HQLFunctions()
 		{
-			notSupportedStandardFunction.Add("locate",
-				new[] { typeof(FirebirdDialect), typeof(PostgreSQLDialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("bit_length",
-				new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(Oracle8iDialect), typeof(Oracle9iDialect), typeof(Oracle10gDialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("extract",
-                new[] { typeof(MsSql2000Dialect), typeof(MsSql2005Dialect), typeof(MsSql2008Dialect), typeof(SQLiteDialect) });
-			notSupportedStandardFunction.Add("nullif",
-				new[] { typeof(Oracle8iDialect)});
+			notSupportedStandardFunction =
+				new Hashtable
+					{
+						{"locate", new[] {typeof (FirebirdDialect), typeof (PostgreSQLDialect), typeof (SQLiteDialect)}},
+						{"bit_length", new[] {typeof (SQLiteDialect)}},
+						{"extract", new[] {typeof (SQLiteDialect)}},
+						{"nullif", new[] {typeof (Oracle8iDialect)}}
+					};
 		}
 
 		private bool IsOracleDialect()
 		{
-			return typeof (Oracle8iDialect).IsInstanceOfType(Dialect);
+			return Dialect is Oracle8iDialect;
 		}
 
 		private void IgnoreIfNotSupported(string functionName)
@@ -226,6 +224,52 @@ namespace NHibernate.Test.Hql
 			}			
 		}
 
+
+		[Test]
+		public void SubStringTwoParameters()
+		{
+			// All dialects that support the substring function should support
+			// the two-parameter overload - emulating it by generating the 
+			// third parameter (length) if the database requires three parameters.
+
+			IgnoreIfNotSupported("substring");
+
+			using (ISession s = OpenSession())
+			{
+				Animal a1 = new Animal("abcdef", 20);
+				s.Save(a1);
+				s.Flush();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				string hql;
+
+				// In the select clause.
+				hql = "select substring(a.Description, 3) from Animal a";
+				IList lresult = s.CreateQuery(hql).List();
+				Assert.AreEqual(1, lresult.Count);
+				Assert.AreEqual("cdef", lresult[0]);
+
+				// In the where clause.
+				hql = "from Animal a where substring(a.Description, 4) = 'def'";
+				var result = (Animal)s.CreateQuery(hql).UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+				// With parameters and nested function calls.
+				if (!(Dialect is FirebirdDialect))  // Firebird only supports integer literals for start (and length).
+				{
+					hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
+					result = (Animal) s.CreateQuery(hql)
+					                  	.SetParameter(0, "foo")
+					                  	.SetParameter("start", 4)
+					                  	.UniqueResult();
+					Assert.AreEqual("abcdef", result.Description);
+				}
+			}
+		}
+
+
 		[Test]
 		public void SubString()
 		{
@@ -240,16 +284,6 @@ namespace NHibernate.Test.Hql
 			{
 				string hql;
 
-				bool twoArgSubstringSupported = Dialect.Functions["substring"] is AnsiSubstringFunction;
-
-				if (twoArgSubstringSupported)
-				{
-					hql = "select substring(a.Description, 3) from Animal a";
-					IList lresult = s.CreateQuery(hql).List();
-					Assert.AreEqual(1, lresult.Count);
-					Assert.AreEqual("cdef", lresult[0]);
-				}
-
 				hql = "from Animal a where substring(a.Description, 2, 3) = 'bcd'";
 				Animal result = (Animal) s.CreateQuery(hql).UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
@@ -260,6 +294,14 @@ namespace NHibernate.Test.Hql
 					.UniqueResult();
 				Assert.AreEqual("abcdef", result.Description);
 
+
+				if (Dialect is FirebirdDialect)
+				{
+					// Firebird only supports integer literals for start (and length).
+					return;
+				}
+
+				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
 				result = (Animal)s.CreateQuery(hql)
@@ -283,13 +325,6 @@ namespace NHibernate.Test.Hql
 					.List();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual("bcd", results[0]);
-
-				if (twoArgSubstringSupported)
-				{
-					hql = "from Animal a where substring(a.Description, 4) = 'def'";
-					result = (Animal) s.CreateQuery(hql).UniqueResult();
-					Assert.AreEqual("abcdef", result.Description);
-				}
 			}
 		}
 

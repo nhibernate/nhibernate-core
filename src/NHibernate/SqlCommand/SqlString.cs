@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using System.Text.RegularExpressions;
 using NHibernate.SqlCommand.Parser;
 
 namespace NHibernate.SqlCommand
@@ -567,6 +568,11 @@ namespace NHibernate.SqlCommand
 		public SqlString[] Split(string splitter)
 		{
 			return SplitParts(splitter).ToArray();
+		}
+
+		internal SqlString[] SplitWithRegex(string pattern)
+		{
+			return Regex.Split(ToString(), pattern).Select(s => SqlString.Parse(s)).ToArray();
 		}
 
 		private IEnumerable<SqlString> SplitParts(string splitter)

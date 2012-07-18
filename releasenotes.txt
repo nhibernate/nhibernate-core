@@ -1,7 +1,36 @@
-Build 3.3.0.CR1
+Build 3.3.1.GA
 =============================
 
-** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.CR1
+** Sub-task
+    * [NH-3167] - Support for Microsoft Sql Server 2012 sequences
+    * [NH-3170] - Add native "iif" function to MsSql2012Dialect
+
+** Bug
+    * [NH-2789] - LINQ query on byte? simple property fails on MSSQL 2005 (tinyint)
+    * [NH-2812] - Performing a Linq query on a non-null byte property throws an InvalidCastException
+    * [NH-3121] - Silent truncation of binary data
+    * [NH-3124] - invalid cast to int in generated sql with a char property
+    * [NH-3125] - Invalid SQL when querying via LINQ with grouping (regression from 3.2)
+    * [NH-3126] - InvalidCastException when cascading saves to transient dictionary values
+    * [NH-3138] - Distinct Bug on MSSQL with OrderBy/Limit and functions in Projection/Order
+    * [NH-3142] - Batch-loading of lazy children failing when key is composite
+    * [NH-3145] - HQL query using base class entity with lazy properties throws "No Persister For" error
+    * [NH-3147] - Calling Contains on a subquery that contains a join throws an Exception
+    * [NH-3153] - Duplicated id generator tables if schema is specified using different methods for different classes.
+    * [NH-3162] - Byte.Equals in LINQ Where clauses throws NotSupportedException
+    * [NH-3172] - "Duplicate dynamic module name within an assembly"
+
+** Improvement
+    * [NH-3104] - Typo in Warning Messages
+    * [NH-3149] - MsSql2005Dialect should use nowait in LockMode.UPGRADE_NOWAIT 
+    * [NH-3156] - ShowBuildMenu.bat does not work with spaces in repository folder name
+    * [NH-3168] - Add support for bit_length function for MsSql2000Dialect and above
+    * [NH-3169] - Add supprot for extract function for MsSql2000Dialect and above
+
+Build 3.3.0.GA
+=============================
+
+** Known BREAKING CHANGES from NH3.2.0.GA to NH3.3.0.GA
 
     ##### Possible Breaking Changes #####
         * [NH-2214] - SQL Server 2005/2008: Exception is now thrown when paging a statement that requires distinct results, and is ordered by a column that is not included in the result set of the query
@@ -12,6 +41,17 @@ Build 3.3.0.CR1
         * [NH-2664] - IHqlExpressionVisitor has new property ISessionFactory SessionFactory { get; }
         * [NH-3067] - The use of Substring() in Linq queries have been corrected so the zero-based index parameter in C# is converted to one-based index in SQL.
         * [NH-2528] - Throw exception instead of silently truncate string and blob data
+        * [NH-3086] - The base dialect now defaults to ANSI syntax for substring. A custom dialect may need to adjust for this.
+
+** Bug
+    * [NH-2956] - SybaseSQLAnywhere10Dialect doesn't override OffsetStartsAtOne
+    * [NH-3111] - Wrong SQL generated when subquery uses objects from parent query
+
+** Improvement
+    * [NH-3086] - All dialects should support substring() with two arguments
+
+Build 3.3.0.CR1
+=============================
 
 ** Bug
     * [NH-1477] - Saving a collection (thats been Cleared) with all-delete-orphan using Oracle with ODP drivers
