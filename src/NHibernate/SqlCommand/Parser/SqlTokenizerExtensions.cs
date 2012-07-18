@@ -63,7 +63,7 @@ namespace NHibernate.SqlCommand.Parser
 				// [ TOP { integer | ( expression ) } [PERCENT] [ WITH TIES ] ] 
 				if (tokenEnum.Current.Equals("top", StringComparison.InvariantCultureIgnoreCase))
 				{
-					if (tokenEnum.MoveNext()) return false;
+					if (!tokenEnum.MoveNext()) return false;
 					if (tokenEnum.Current.TokenType == SqlTokenType.BracketOpen)
 					{
 						do
@@ -71,8 +71,7 @@ namespace NHibernate.SqlCommand.Parser
 							if (!tokenEnum.MoveNext()) return false;
 						} while (tokenEnum.Current.TokenType != SqlTokenType.BracketClose);
 					}
-					if (tokenEnum.MoveNext()) return false;
-
+					if (!tokenEnum.MoveNext()) return false;
 
 					if (tokenEnum.Current.Equals("percent", StringComparison.InvariantCultureIgnoreCase))
 					{
