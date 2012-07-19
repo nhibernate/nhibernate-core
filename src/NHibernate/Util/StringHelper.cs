@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.SqlCommand;
 
@@ -192,13 +194,8 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static string[] Split(string separators, string list, bool include)
 		{
-			StringTokenizer tokens = new StringTokenizer(list, separators, include);
-			ArrayList results = new ArrayList();
-			foreach (string token in tokens)
-			{
-				results.Add(token);
-			}
-			return (string[])results.ToArray(typeof(string));
+			var tokens = new StringTokenizer(list, separators, include);
+			return tokens.ToArray();
 		}
 
 		/// <summary>

@@ -293,7 +293,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 		public IList GenerateCustomReturns(bool queryHadAliases)
 		{
-			IList customReturns = new ArrayList();
+			IList customReturns = new List<object>();
 			IDictionary<string, object> customReturnsByAlias = new Dictionary<string, object>();
 			for (int i = 0; i < queryReturns.Length; i++)
 			{

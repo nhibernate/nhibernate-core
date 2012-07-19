@@ -21,12 +21,12 @@ namespace NHibernate.Impl
 		public object Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList) value;
-			ArrayList cacheable = new ArrayList();
+			var cacheable = new List<object>();
 			for (int i = 0; i < srcList.Count; i++)
 			{
 				ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
 				IList itemList = (IList) srcList[i];
-				ArrayList singleQueryCached = new ArrayList();
+				var singleQueryCached = new List<object>();
 				foreach (object objToCache in itemList)
 				{
 					if (assemblers.Length == 1)
@@ -46,12 +46,12 @@ namespace NHibernate.Impl
 		public object Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList) cached;
-			ArrayList result = new ArrayList();
+			var result = new List<object>();
 			for (int i = 0; i < assemblersList.Count; i++)
 			{
 				ICacheAssembler[] assemblers = (ICacheAssembler[]) assemblersList[i];
 				IList queryFromCache = (IList) srcList[i];
-				ArrayList queryResults = new ArrayList();
+				var queryResults = new List<object>();
 				foreach (object fromCache in queryFromCache)
 				{
 					if (assemblers.Length == 1)

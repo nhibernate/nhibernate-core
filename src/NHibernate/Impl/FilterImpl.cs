@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
 		public IFilter SetParameterList(string name, object[] values)
 		{
-			return SetParameterList(name, new ArrayList(values));
+			return SetParameterList(name, new List<object>(values));
 		}
 
 		public object GetParameter(string name)

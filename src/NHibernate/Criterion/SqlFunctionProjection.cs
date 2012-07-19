@@ -74,7 +74,7 @@ namespace NHibernate.Criterion
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
 
-			var arguments = new ArrayList();
+			var arguments = new List<object>();
 			for (int i = 0; i < args.Length; i++)
 			{
 				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0, enabledFilters); // The loc parameter is unused.

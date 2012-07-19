@@ -278,7 +278,7 @@ namespace NHibernate.Criterion
 			{
 				return persister.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
 			}
-			ArrayList list = new ArrayList();
+			var list = new List<object>();
 			for(int i = 0; i < persister.PropertyNames.Length; i++)
 			{
 				PropertyInfo pInfo = type.GetProperty(persister.PropertyNames[i]);
@@ -356,7 +356,7 @@ namespace NHibernate.Criterion
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] values = GetPropertyValues(meta, criteria, criteriaQuery);
 
-			ArrayList list = new ArrayList();
+			var list = new List<TypedValue>();
 			for (int i = 0; i < propertyNames.Length; i++)
 			{
 				object value = values[i];
@@ -378,7 +378,7 @@ namespace NHibernate.Criterion
 				}
 			}
 
-			return (TypedValue[]) list.ToArray(typeof(TypedValue));
+			return list.ToArray();
 		}
 
 		public override IProjection[] GetProjections()

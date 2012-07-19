@@ -33,7 +33,7 @@ namespace NHibernate.Impl
 
 		// Optional parameters are used for parameters values from bean.
 		// The IQuery implementation use the actualNamedParameters to know which property it need.
-		protected readonly IList optionalUntypeParams = new ArrayList(2);
+		protected readonly IList optionalUntypeParams = new List<object>(2);
 
 		// Typed Parameters
 		protected readonly Dictionary<int, TypedValue> posParams = new Dictionary<int, TypedValue>(4);

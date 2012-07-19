@@ -102,7 +102,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				var results = new ArrayList();
+				var results = new List<object>();
 				List(query, parameters, results);
 				return results;
 			}
@@ -154,7 +154,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				var results = new ArrayList();
+				var results = new List<object>();
 				List(criteria, results);
 				return results;
 			}
@@ -177,7 +177,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				var results = new ArrayList();
+				var results = new List<object>();
 				List(spec, queryParameters, results);
 				return results;
 			}

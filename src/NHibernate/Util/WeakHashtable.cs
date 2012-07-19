@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using NHibernate.DebugHelpers;
 
@@ -147,7 +148,7 @@ namespace NHibernate.Util
 
 		public void Scavenge()
 		{
-			ArrayList deadKeys = new ArrayList();
+			var deadKeys = new List<object>();
 
 			foreach (DictionaryEntry de in innerHashtable)
 			{

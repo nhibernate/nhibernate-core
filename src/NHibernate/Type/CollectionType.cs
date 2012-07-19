@@ -637,7 +637,7 @@ namespace NHibernate.Type
 
 		protected internal virtual string RenderLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			IList list = new ArrayList();
+			IList list = new List<object>();
 			IType elemType = GetElementType(factory);
 			IEnumerable iter = GetElementsIterator(value);
 			foreach (object o in iter)

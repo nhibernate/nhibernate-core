@@ -1785,7 +1785,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				IList results = new ArrayList();
+				var results = new List<object>();
 				Filter(collection, filter, queryParameters, results);
 				return results;
 			}

@@ -44,7 +44,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		public NDataReader(IDataReader reader, bool isMidstream)
 		{
-			ArrayList resultList = new ArrayList(2);
+			var resultList = new List<NResult>(2);
 
 			try
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Driver
 					resultList.Add(new NResult(reader, false));
 				}
 
-				results = (NResult[]) resultList.ToArray(typeof(NResult));
+				results = resultList.ToArray();
 			}
 			catch (Exception e)
 			{

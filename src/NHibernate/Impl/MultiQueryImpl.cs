@@ -446,12 +446,12 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			var resultCollections = new ArrayList(resultCollectionGenericType.Count);
+			var resultCollections = new List<object>(resultCollectionGenericType.Count);
 			for (int i = 0; i < queries.Count; i++)
 			{
 				if (resultCollectionGenericType[i] == typeof(object))
 				{
-					resultCollections.Add(new ArrayList());
+					resultCollections.Add(new List<object>());
 				}
 				else
 				{
@@ -500,7 +500,7 @@ namespace NHibernate.Impl
 			return resultTransformer != null;
 		}
 
-		protected ArrayList DoList()
+		protected List<object> DoList()
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -510,9 +510,9 @@ namespace NHibernate.Impl
 			}
 			int rowCount = 0;
 
-			ArrayList results = new ArrayList();
+			var results = new List<object>();
 
-			ArrayList[] hydratedObjects = new ArrayList[Translators.Count];
+			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
 
@@ -530,7 +530,7 @@ namespace NHibernate.Impl
 						QueryParameters parameter = Parameters[i];
 
 						int entitySpan = translator.Loader.EntityPersisters.Length;
-						hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
+						hydratedObjects[i] = entitySpan > 0 ? new List<object>() : null;
 						RowSelection selection = parameter.RowSelection;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
@@ -552,7 +552,7 @@ namespace NHibernate.Impl
 							log.Debug("processing result set");
 						}
 
-						IList tempResults = new ArrayList();
+						IList tempResults = new List<object>();
 						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
@@ -708,7 +708,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				ArrayList list = DoList();
+				var list = DoList();
 				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}
@@ -733,8 +733,8 @@ namespace NHibernate.Impl
 			QueryParameters combinedQueryParameters = new QueryParameters();
 			combinedQueryParameters.ForceCacheRefresh = forceCacheRefresh;
 			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
-			ArrayList positionalParameterTypes = new ArrayList();
-			ArrayList positionalParameterValues = new ArrayList();
+			var positionalParameterTypes = new List<IType>();
+			var positionalParameterValues = new List<object>();
 			int index = 0;
 			foreach (QueryParameters queryParameters in Parameters)
 			{
@@ -746,8 +746,8 @@ namespace NHibernate.Impl
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}
-			combinedQueryParameters.PositionalParameterTypes = (IType[])positionalParameterTypes.ToArray(typeof(IType));
-			combinedQueryParameters.PositionalParameterValues = (object[])positionalParameterValues.ToArray(typeof(object));
+			combinedQueryParameters.PositionalParameterTypes = positionalParameterTypes.ToArray();
+			combinedQueryParameters.PositionalParameterValues = positionalParameterValues.ToArray();
 			return combinedQueryParameters;
 		}
 

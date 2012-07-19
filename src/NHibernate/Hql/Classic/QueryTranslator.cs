@@ -1401,8 +1401,8 @@ namespace NHibernate.Hql.Classic
 				return new String[] {query};
 			} // just especially for the trivial collection filter 
 
-			ArrayList placeholders = new ArrayList();
-			ArrayList replacements = new ArrayList();
+			var placeholders = new List<object>();
+			var replacements = new List<object>();
 			StringBuilder templateQuery = new StringBuilder(40);
 			int count = 0;
 			string last = null;

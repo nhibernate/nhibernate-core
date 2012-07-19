@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -152,7 +153,7 @@ namespace NHibernate.Type
 			}
 			Array array = (Array) value;
 			int length = array.Length;
-			IList list = new ArrayList(length);
+			IList list = new List<object>(length);
 			IType elemType = GetElementType(factory);
 			for (int i = 0; i < length; i++)
 			{

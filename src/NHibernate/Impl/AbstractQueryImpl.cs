@@ -23,7 +23,7 @@ namespace NHibernate.Impl
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
-		private readonly ArrayList values = new ArrayList(4);
+		private readonly List<object> values = new List<object>(4);
 		private readonly List<IType> types = new List<IType>(4);
 		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
 		protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
@@ -985,7 +985,7 @@ namespace NHibernate.Impl
 
 		public virtual object[] ValueArray()
 		{
-			return (object[])values.ToArray(typeof(object));
+			return values.ToArray();
 		}
 
 		public virtual QueryParameters GetQueryParameters()
