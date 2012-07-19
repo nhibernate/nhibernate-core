@@ -267,8 +267,8 @@ namespace NHibernate.Criterion
 		private bool IsPropertyIncluded(object value, String name, IType type)
 		{
 			return !_excludedProperties.Contains(name) &&
-			       !type.IsAssociationType &&
-			       _selector.Include(value, name, type);
+				   !type.IsAssociationType &&
+				   _selector.Include(value, name, type);
 		}
 
 		private object[] GetPropertyValues(IEntityPersister persister, ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -310,7 +310,7 @@ namespace NHibernate.Criterion
 				String propertyName = propertyNames[i];
 
 				bool isPropertyIncluded = i != meta.VersionProperty &&
-				                          IsPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
+										  IsPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
 				if (isPropertyIncluded)
 				{
 					if (propertyTypes[i].IsComponentType)
@@ -476,8 +476,8 @@ namespace NHibernate.Criterion
 			}
 
 			ICriterion crit = propertyValue != null
-			                  	? GetNotNullPropertyCriterion(propertyValue, propertyName)
-			                  	: new NullExpression(propertyName);
+								? GetNotNullPropertyCriterion(propertyValue, propertyName)
+								: new NullExpression(propertyName);
 			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
 		}
 
@@ -485,10 +485,10 @@ namespace NHibernate.Criterion
 		{
 			bool isString = propertyValue is string;
 			return (_isLikeEnabled && isString)
-			       	? (ICriterion)
-			       	  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
-			       	                     _isIgnoreCaseEnabled)
-			       	: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
+					? (ICriterion)
+					  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
+										 _isIgnoreCaseEnabled)
+					: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 		}
 
 		protected void AppendComponentCondition(

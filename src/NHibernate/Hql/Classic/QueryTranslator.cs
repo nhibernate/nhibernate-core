@@ -104,7 +104,7 @@ namespace NHibernate.Hql.Classic
 			private static bool IsUnsafe(ICollectionPersister collectionPersister)
 			{
 				return collectionPersister.CollectionType is BagType
-				       || collectionPersister.CollectionType is IdentifierBagType;
+					   || collectionPersister.CollectionType is IdentifierBagType;
 			}
 
 			public void Add(string name, ICollectionPersister collectionPersister, string ownerName)
@@ -532,9 +532,9 @@ namespace NHibernate.Hql.Classic
 		internal bool IsName(string name)
 		{
 			return aliasNames.ContainsKey(name) ||
-			       typeMap.ContainsKey(name) ||
-			       collections.ContainsKey(name) ||
-			       (superQuery != null && superQuery.IsName(name));
+				   typeMap.ContainsKey(name) ||
+				   collections.ContainsKey(name) ||
+				   (superQuery != null && superQuery.IsName(name));
 		}
 
 		public IPropertyMapping GetPropertyMapping(string name)
@@ -1499,7 +1499,7 @@ namespace NHibernate.Hql.Classic
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			IType[] _returnTypes = ReturnTypes;
 			row = ToResultRow(row);

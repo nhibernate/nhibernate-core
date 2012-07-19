@@ -42,7 +42,7 @@ namespace NHibernate.Util
 			}
 
 			return hashCode == that.hashCode &&
-			       Equals(target, that.Target);
+				   Equals(target, that.Target);
 		}
 
 		public override int GetHashCode()

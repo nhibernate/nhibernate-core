@@ -73,7 +73,7 @@ namespace NHibernate.Impl
 		#endregion
 
 		public IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
-		                                     ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
+											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
 		{
 			if (!queryParameters.ForceCacheRefresh)
 			{

@@ -629,7 +629,7 @@ namespace NHibernate.Util
 			{
 				return result;
 			}
-		    return "alias_" + result;
+			return "alias_" + result;
 		}
 
 		public static string MoveAndToBeginning(string filter)

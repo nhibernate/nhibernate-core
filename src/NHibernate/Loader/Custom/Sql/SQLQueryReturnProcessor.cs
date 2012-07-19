@@ -333,7 +333,7 @@ namespace NHibernate.Loader.Custom.Sql
 					{
 						collectionAliases =
 							new GeneratedCollectionAliases(collectionPropertyResultMaps[alias], alias2CollectionPersister[alias],
-							                               alias2CollectionSuffix[alias]);
+														   alias2CollectionSuffix[alias]);
 						if (isEntityElements)
 						{
 							elementEntityAliases =
@@ -352,7 +352,7 @@ namespace NHibernate.Loader.Custom.Sql
 					}
 					CollectionReturn customReturn =
 						new CollectionReturn(alias, rtn.OwnerEntityName, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
-						                     rtn.LockMode);
+											 rtn.LockMode);
 					customReturns.Add(customReturn);
 					customReturnsByAlias[rtn.Alias] = customReturn;
 				}
@@ -389,7 +389,7 @@ namespace NHibernate.Loader.Custom.Sql
 						}
 						customReturn =
 							new CollectionFetchReturn(alias, ownerCustomReturn, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
-							                          rtn.LockMode);
+													  rtn.LockMode);
 					}
 					else
 					{
