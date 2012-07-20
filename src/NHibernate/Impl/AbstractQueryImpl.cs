@@ -640,24 +640,19 @@ namespace NHibernate.Impl
 			string[] @params = NamedParameters;
 			for (int i = 0; i < @params.Length; i++)
 			{
-				string namedParam = @params[i];
-				object obj = map[namedParam];
+				var namedParam = @params[i];
+				var obj = map[namedParam];
 				if (obj == null)
 				{
 					continue;
 				}
-				System.Type retType = obj.GetType();
-				if (typeof(ICollection).IsAssignableFrom(retType))
+				if (obj is IEnumerable && !(obj is string))
 				{
-					SetParameterList(namedParam, (ICollection)obj);
-				}
-				else if (retType.IsArray)
-				{
-					SetParameterList(namedParam, (object[])obj);
+					SetParameterList(namedParam, (IEnumerable) obj);
 				}
 				else
 				{
-					SetParameter(namedParam, obj, DetermineType(namedParam, retType));
+					SetParameter(namedParam, obj, DetermineType(namedParam, obj.GetType()));
 				}
 			}
 			return this;
@@ -672,16 +667,12 @@ namespace NHibernate.Impl
 				string namedParam = @params[i];
 				try
 				{
-					IGetter getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
-					System.Type retType = getter.ReturnType;
-					object obj = getter.Get(bean);
-					if (typeof(ICollection).IsAssignableFrom(retType))
+					var getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
+					var retType = getter.ReturnType;
+					var obj = getter.Get(bean);
+					if (typeof(IEnumerable).IsAssignableFrom(retType) && retType != typeof(string))
 					{
-						SetParameterList(namedParam, (ICollection)obj);
-					}
-					else if (retType.IsArray)
-					{
-						SetParameterList(namedParam, (Object[])obj);
+						SetParameterList(namedParam, (IEnumerable) obj);
 					}
 					else
 					{

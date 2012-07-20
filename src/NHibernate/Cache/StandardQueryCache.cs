@@ -99,7 +99,7 @@ namespace NHibernate.Cache
 			var timestamp = (long)cacheable[0];
 
 			if (Log.IsDebugEnabled)
-				Log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString((ICollection)spaces));
+				Log.DebugFormat("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
 
 			if (!isNaturalKeyLookup && !IsUpToDate(spaces, timestamp))
 			{

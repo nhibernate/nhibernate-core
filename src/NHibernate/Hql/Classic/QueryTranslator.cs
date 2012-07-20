@@ -854,16 +854,16 @@ namespace NHibernate.Hql.Classic
 
 			// HQL functions in whereTokens, groupByTokens, havingTokens and orderByTokens aren't rendered
 			RenderFunctions(whereTokens);
-			sql.SetWhereTokens((ICollection)whereTokens);
+			sql.SetWhereTokens(whereTokens);
 
 			RenderFunctions(groupByTokens);
-			sql.SetGroupByTokens((ICollection)groupByTokens);
+			sql.SetGroupByTokens(groupByTokens);
 
 			RenderFunctions(havingTokens);
-			sql.SetHavingTokens((ICollection)havingTokens);
+			sql.SetHavingTokens(havingTokens);
 
 			RenderFunctions(orderByTokens);
-			sql.SetOrderByTokens((ICollection)orderByTokens);
+			sql.SetOrderByTokens(orderByTokens);
 
 			fetchedCollections.AddOrderBy(sql);
 

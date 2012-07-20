@@ -87,7 +87,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IMultiQuery SetParameterList(string name, ICollection vals, IType type)
+		public IMultiQuery SetParameterList(string name, IEnumerable vals, IType type)
 		{
 			foreach (IQuery query in queries)
 			{
@@ -96,7 +96,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IMultiQuery SetParameterList(string name, ICollection vals)
+		public IMultiQuery SetParameterList(string name, IEnumerable vals)
 		{
 			foreach (IQuery query in queries)
 			{

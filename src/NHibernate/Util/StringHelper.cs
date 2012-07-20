@@ -700,9 +700,9 @@ namespace NHibernate.Util
 			return str;
 		}
 
-		public static string CollectionToString(ICollection keys)
+		public static string CollectionToString(IEnumerable keys)
 		{
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			foreach (object o in keys)
 			{
 				sb.Append(o);
@@ -711,7 +711,6 @@ namespace NHibernate.Util
 			if (sb.Length != 0)//remove last ", "
 				sb.Remove(sb.Length - 2, 2);
 			return sb.ToString();
-
 		}
 
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)

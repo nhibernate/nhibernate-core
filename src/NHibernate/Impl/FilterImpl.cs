@@ -83,16 +83,18 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException("Collection must be not null!", "values");
 			}
-			IType type = definition.GetParameterType(name);
+
+			var type = definition.GetParameterType(name);
 			if (type == null)
 			{
 				throw new HibernateException("Undefined filter parameter [" + name + "]");
 			}
+
 			if (values.Count > 0)
 			{
-				IEnumerator e = values.GetEnumerator();
+				var e = values.GetEnumerator();
 				e.MoveNext();
-				if (!type.ReturnedClass.IsAssignableFrom(e.Current.GetType()))
+				if (!type.ReturnedClass.IsInstanceOfType(e.Current))
 				{
 					throw new HibernateException("Incorrect type for parameter [" + name + "]");
 				}

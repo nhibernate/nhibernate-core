@@ -160,11 +160,9 @@ namespace NHibernate.Mapping
 			return true;
 		}
 
-		public override System.String ToString()
+		public override String ToString()
 		{
-			return
-				string.Format("{0}({1}{2}) as {3}", GetType().FullName, Table.Name,
-				              StringHelper.CollectionToString((ICollection) Columns), name);
+			return string.Format("{0}({1}{2}) as {3}", GetType().FullName, Table.Name, StringHelper.CollectionToString(Columns), name);
 		}
 	}
 }

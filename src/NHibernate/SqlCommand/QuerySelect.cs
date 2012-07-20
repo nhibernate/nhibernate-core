@@ -152,7 +152,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="tokens"></param>
-		public void SetWhereTokens(ICollection tokens)
+		public void SetWhereTokens(IEnumerable tokens)
 		{
 			//if ( conjunctiveWhere.length()>0 ) conjunctiveWhere.append(" and ");
 			AppendTokens(whereBuilder, tokens);
@@ -163,7 +163,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="tokens"></param>
-		public void SetGroupByTokens(ICollection tokens)
+		public void SetGroupByTokens(IEnumerable tokens)
 		{
 			//if ( groupBy.length()>0 ) groupBy.append(" and ");
 			AppendTokens(groupBy, tokens);
@@ -173,7 +173,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="tokens"></param>
-		public void SetOrderByTokens(ICollection tokens)
+		public void SetOrderByTokens(IEnumerable tokens)
 		{
 			//if ( orderBy.length()>0 ) orderBy.append(" and ");
 			AppendTokens(orderBy, tokens);
@@ -183,7 +183,7 @@ namespace NHibernate.SqlCommand
 		/// 
 		/// </summary>
 		/// <param name="tokens"></param>
-		public void SetHavingTokens(ICollection tokens)
+		public void SetHavingTokens(IEnumerable tokens)
 		{
 			//if ( having.length()>0 ) having.append(" and ");
 			AppendTokens(having, tokens);
@@ -205,7 +205,7 @@ namespace NHibernate.SqlCommand
 
 		public SqlString ToQuerySqlString()
 		{
-			SqlStringBuilder builder = new SqlStringBuilder();
+			var builder = new SqlStringBuilder();
 
 			builder.Add("select ");
 
@@ -273,15 +273,15 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="builder"></param>
 		/// <param name="iter"></param>
-		private void AppendTokens(SqlStringBuilder builder, ICollection iter)
+		private static void AppendTokens(SqlStringBuilder builder, IEnumerable iter)
 		{
 			bool lastSpaceable = true;
 			bool lastQuoted = false;
 
 			foreach (object token in iter)
 			{
-				string tokenString = token as string;
-				SqlString tokenSqlString = token as SqlString;
+				var tokenString = token as string;
+				var tokenSqlString = token as SqlString;
 
 				bool spaceable = !dontSpace.Contains(token);
 				bool quoted;

@@ -225,7 +225,7 @@ namespace NHibernate.Collection
 
 		public override bool Equals(object obj)
 		{
-			ICollection that = obj as ICollection;
+			var that = obj as ICollection;
 			if (that == null)
 			{
 				return false;

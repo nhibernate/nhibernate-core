@@ -6,7 +6,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public sealed class CollectionHelper
+	public static class CollectionHelper
 	{
 		[Serializable]
 		private class EmptyEnumerator : IDictionaryEnumerator
@@ -381,10 +381,6 @@ namespace NHibernate.Util
 		public static IDictionary<string, T> CreateCaseInsensitiveHashtable<T>(IDictionary<string, T> dictionary)
 		{
 			return new Dictionary<string, T>(dictionary, StringComparer.InvariantCultureIgnoreCase);
-		}
-
-		private CollectionHelper()
-		{
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~
