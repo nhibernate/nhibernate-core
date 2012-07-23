@@ -40,6 +40,8 @@ namespace NHibernate.AdoNet
 		private readonly IDictionary<IDataReader, Stopwatch> _readersDuration = new Dictionary<IDataReader, Stopwatch>();
 		private IDbCommand _lastQuery;
 		private bool _releasing;
+		
+		private object lockObject = new object();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AbstractBatcher"/> class.
@@ -68,7 +70,7 @@ namespace NHibernate.AdoNet
 		}
 
 		public IDbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
-		{
+		{					
 			SqlString sql = GetSQL(sqlString);
 
 			IDbCommand cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
@@ -77,8 +79,13 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Building an IDbCommand object for the SqlString: " + sql);
 			}
-			_commandsToClose.Add(cmd);
-			return cmd;
+			
+			lock (lockObject)
+			{	
+				_commandsToClose.Add(cmd);
+			}
+			
+			return cmd;			
 		}
 
 		/// <summary>
@@ -242,7 +249,11 @@ namespace NHibernate.AdoNet
 				reader = new NHybridDataReader(reader);
 			}
 
-			_readersToClose.Add(reader);
+			lock (lockObject)
+            {
+				_readersToClose.Add(reader);
+			}
+			
 			LogOpenReader();
 			return reader;
 		}
@@ -259,46 +270,52 @@ namespace NHibernate.AdoNet
 				return;
 			}
 
-			foreach (NHybridDataReader reader in _readersToClose)
-			{
-				reader.ReadIntoMemory();
+			lock (lockObject)
+            {
+				foreach (NHybridDataReader reader in _readersToClose)
+				{
+					reader.ReadIntoMemory();
+				}
 			}
 		}
 
 		public void CloseCommands()
 		{
-			_releasing = true;
-			try
-			{
-				foreach (IDataReader reader in new HashedSet<IDataReader>(_readersToClose))
+			lock (lockObject)
+            {
+				_releasing = true;
+				try
 				{
-					try
+					foreach (IDataReader reader in new HashedSet<IDataReader>(_readersToClose))
 					{
-						CloseReader(reader);
+						try
+						{
+							CloseReader(reader);
+						}
+						catch (Exception e)
+						{
+							Log.Warn("Could not close IDataReader", e);
+						}
 					}
-					catch (Exception e)
-					{
-						Log.Warn("Could not close IDataReader", e);
-					}
-				}
 
-				foreach (IDbCommand cmd in _commandsToClose)
-				{
-					try
+					foreach (IDbCommand cmd in _commandsToClose)
 					{
-						CloseCommand(cmd);
+						try
+						{
+							CloseCommand(cmd);
+						}
+						catch (Exception e)
+						{
+							// no big deal
+							Log.Warn("Could not close ADO.NET Command", e);
+						}
 					}
-					catch (Exception e)
-					{
-						// no big deal
-						Log.Warn("Could not close ADO.NET Command", e);
-					}
+					_commandsToClose.Clear();
 				}
-				_commandsToClose.Clear();
-			}
-			finally
-			{
-				_releasing = false;
+				finally
+				{
+					_releasing = false;
+				}
 			}
 		}
 
@@ -331,57 +348,63 @@ namespace NHibernate.AdoNet
 
 		public void CloseCommand(IDbCommand st, IDataReader reader)
 		{
-			_commandsToClose.Remove(st);
-			try
-			{
-				CloseReader(reader);
-			}
-			finally
-			{
-				CloseCommand(st);
+			lock (lockObject)
+            {
+				_commandsToClose.Remove(st);
+				try
+				{
+					CloseReader(reader);
+				}
+				finally
+				{
+					CloseCommand(st);
+				}
 			}
 		}
 
 		public void CloseReader(IDataReader reader)
 		{
-			/* This method was added because PrepareCommand don't really prepare the command
-			 * with its connection. 
-			 * In some case we need to manage a reader outsite the command scope. 
-			 * To do it we need to use the Batcher.ExecuteReader and then we need something
-			 * to close the opened reader.
-			 */
-			// TODO NH: Study a way to use directly IDbCommand.ExecuteReader() outsite the batcher
-			// An example of it's use is the management of generated ID.
-			if (reader == null)
-				return;
+			lock (lockObject)
+            {			
+				/* This method was added because PrepareCommand don't really prepare the command
+				 * with its connection. 
+				 * In some case we need to manage a reader outsite the command scope. 
+				 * To do it we need to use the Batcher.ExecuteReader and then we need something
+				 * to close the opened reader.
+				 */
+				// TODO NH: Study a way to use directly IDbCommand.ExecuteReader() outsite the batcher
+				// An example of it's use is the management of generated ID.
+				if (reader == null)
+					return;
 
-			ResultSetWrapper rsw = reader as ResultSetWrapper;
-			var actualReader = rsw == null ? reader : rsw.Target;
-			_readersToClose.Remove(actualReader);
+				ResultSetWrapper rsw = reader as ResultSetWrapper;
+				var actualReader = rsw == null ? reader : rsw.Target;
+				_readersToClose.Remove(actualReader);
 
-			try
-			{
-				reader.Dispose();
+				try
+				{
+					reader.Dispose();
+				}
+				catch (Exception e)
+				{
+					// NH2205 - prevent exceptions when closing the reader from hiding any original exception
+					Log.Warn("exception closing reader", e);
+				}
+
+				LogCloseReader();
+
+				if (!Log.IsDebugEnabled)
+					return;
+
+				var nhReader = actualReader as NHybridDataReader;
+				actualReader = nhReader == null ? actualReader : nhReader.Target;
+
+				Stopwatch duration;
+				if (_readersDuration.TryGetValue(actualReader, out duration) == false)
+					return;
+				_readersDuration.Remove(actualReader);
+				Log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);			
 			}
-			catch (Exception e)
-			{
-				// NH2205 - prevent exceptions when closing the reader from hiding any original exception
-				Log.Warn("exception closing reader", e);
-			}
-
-			LogCloseReader();
-
-			if (!Log.IsDebugEnabled)
-				return;
-
-			var nhReader = actualReader as NHybridDataReader;
-			actualReader = nhReader == null ? actualReader : nhReader.Target;
-
-			Stopwatch duration;
-			if (_readersDuration.TryGetValue(actualReader, out duration) == false)
-				return;
-			_readersDuration.Remove(actualReader);
-			Log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
 		}
 
 		public void ExecuteBatch()
