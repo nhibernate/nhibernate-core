@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 
@@ -59,7 +60,12 @@ namespace NHibernate.Intercept
 				}
 			}
 
-			return info.TargetMethod.Invoke(TargetInstance, info.Arguments);
+			MethodInfo targetMethod = info.TargetMethod;
+			if (info.TypeArguments != null && info.TypeArguments.Length != 0)
+			{
+				targetMethod = targetMethod.MakeGenericMethod(info.TypeArguments);
+			}
+			return targetMethod.Invoke(TargetInstance, info.Arguments);
 		}
 	}
 }
