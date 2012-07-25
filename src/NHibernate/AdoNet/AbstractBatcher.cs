@@ -40,6 +40,7 @@ namespace NHibernate.AdoNet
 		private readonly IDictionary<IDataReader, Stopwatch> _readersDuration = new Dictionary<IDataReader, Stopwatch>();
 		private IDbCommand _lastQuery;
 		private bool _releasing;
+		private readonly object collectionLock = new object();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AbstractBatcher"/> class.
@@ -77,7 +78,12 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Building an IDbCommand object for the SqlString: " + sql);
 			}
-			_commandsToClose.Add(cmd);
+
+			lock (collectionLock)
+			{
+				_commandsToClose.Add(cmd);
+			}
+
 			return cmd;
 		}
 
@@ -282,19 +288,22 @@ namespace NHibernate.AdoNet
 					}
 				}
 
-				foreach (IDbCommand cmd in _commandsToClose)
+				lock (collectionLock)
 				{
-					try
+					foreach (IDbCommand cmd in _commandsToClose)
 					{
-						CloseCommand(cmd);
+						try
+						{
+							CloseCommand(cmd);
+						}
+						catch (Exception e)
+						{
+							// no big deal
+							Log.Warn("Could not close ADO.NET Command", e);
+						}
 					}
-					catch (Exception e)
-					{
-						// no big deal
-						Log.Warn("Could not close ADO.NET Command", e);
-					}
+					_commandsToClose.Clear();
 				}
-				_commandsToClose.Clear();
 			}
 			finally
 			{
@@ -331,7 +340,11 @@ namespace NHibernate.AdoNet
 
 		public void CloseCommand(IDbCommand st, IDataReader reader)
 		{
-			_commandsToClose.Remove(st);
+			lock (collectionLock) 
+			{ 
+				_commandsToClose.Remove(st);
+			}
+
 			try
 			{
 				CloseReader(reader);
