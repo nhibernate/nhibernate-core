@@ -63,8 +63,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3227
 													{
 														while (true)
 														{
-															((SessionImpl) session).Batcher.CloseCommands();
+															((SessionImpl)session).Batcher.CloseCommands();
 														}
+													}
+													catch (ThreadAbortException)
+													{
 													}
 													catch (Exception ex)
 													{
