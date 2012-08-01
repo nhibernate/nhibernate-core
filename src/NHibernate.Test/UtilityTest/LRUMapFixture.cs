@@ -80,6 +80,17 @@ namespace NHibernate.Test.UtilityTest
 			{
 				Assert.AreNotEqual(-1, entry.Value.ToString().IndexOf("data:"));
 			}
-		}    
+		}
+
+		[Test]
+		public void PutWithSizeLimitOfZero()
+		{
+			IDictionary cache = new LRUMap(0);
+
+			cache.Add("key", "data");
+
+			string data = (string)cache["key"];
+			Assert.IsNull(data, "Data is wrong.");
+		}
 	}
 }
