@@ -75,7 +75,7 @@ namespace NHibernate.Loader.Criteria
 		{
 			IType type = persister.IdentifierType;
 			string propertyName = persister.IdentifierPropertyName;
-			if (type != null && type.IsComponentType && !(type is EmbeddedComponentType))
+			if (type != null && type.IsComponentType)
 			{
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
 				WalkComponentTree((IAbstractComponentType)type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
