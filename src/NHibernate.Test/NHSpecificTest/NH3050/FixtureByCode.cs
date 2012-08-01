@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
     /// if you prefer.
     /// </remarks>
     [TestFixture]
-    public class ByCodeFixture : TestCaseMappingByCode
+    public class FixtureByCode : TestCaseMappingByCode
     {
         protected override HbmMapping GetMappings()
         {
@@ -95,10 +95,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
             }
         }
 
-
         /// <summary>
-        /// Uses reflection to create a new SoftLimitMRUCache with a specified size and sets it on the session factory.
-        /// This is done like this as NHibernate does not offer any way to specify the query plan cache size through configuration.
+        /// Uses reflection to create a new SoftLimitMRUCache with a specified size and sets session factory query plan chache to it.
+        /// This is done like this as NHibernate does not currently provide any way to specify the query plan cache size through configuration.
         /// </summary>
         /// <param name="factory"></param>
         /// <param name="size"></param>
