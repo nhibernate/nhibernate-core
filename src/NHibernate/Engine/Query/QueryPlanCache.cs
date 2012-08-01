@@ -74,7 +74,7 @@ namespace NHibernate.Engine.Query
 		{
 			string expressionStr = queryExpression.Key;
 
-			var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
+			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
 			var plan = (IQueryExpressionPlan)planCache[key];
 
 			if (plan == null)
@@ -173,15 +173,27 @@ namespace NHibernate.Engine.Query
 		}
 
 		[Serializable]
-		private class HQLQueryPlanKey
+		private class HQLQueryPlanKey : IEquatable<HQLQueryPlanKey>
 		{
 			private readonly string query;
 			private readonly bool shallow;
 			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
+			private readonly System.Type queryTypeDiscriminator;
 
 			public HQLQueryPlanKey(string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
+				: this(typeof(object), query, shallow, enabledFilters)
 			{
+			}
+
+			public HQLQueryPlanKey(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
+				: this(queryExpression.GetType(), queryExpression.Key, shallow, enabledFilters)
+			{
+			}
+
+			protected HQLQueryPlanKey(System.Type queryTypeDiscriminator, string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
+			{
+				this.queryTypeDiscriminator = queryTypeDiscriminator;
 				this.query = query;
 				this.shallow = shallow;
 
@@ -194,10 +206,14 @@ namespace NHibernate.Engine.Query
 					filterNames = new HashSet<string>(enabledFilters.Keys);
 				}
 
-				int hash = query.GetHashCode();
-				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
-				hashCode = hash;
+				unchecked
+				{
+					var hash = query.GetHashCode();
+					hash = 29*hash + (shallow ? 1 : 0);
+					hash = 29*hash + CollectionHelper.GetHashCode(filterNames);
+					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
+					hashCode = hash;
+				}
 			}
 
 			public override bool Equals(object obj)
@@ -223,6 +239,11 @@ namespace NHibernate.Engine.Query
 				}
 
 				if (!query.Equals(that.query))
+				{
+					return false;
+				}
+
+				if (queryTypeDiscriminator != that.queryTypeDiscriminator)
 				{
 					return false;
 				}
