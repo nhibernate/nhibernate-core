@@ -413,6 +413,8 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected static string SubPath(string path, string property)
 		{
+			if (string.IsNullOrEmpty(property))
+				return path;
 			return string.IsNullOrEmpty(path) ? property : StringHelper.Qualify(path, property);
 		}
 
