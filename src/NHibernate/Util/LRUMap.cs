@@ -56,6 +56,10 @@ namespace NHibernate.Util
 
 		public override void Add(object key, object value)
 		{
+			if (maximumSize == 0)
+			{
+				return;
+			}
 			int mapSize = Count;
 			if (mapSize >= maximumSize)
 			{
@@ -74,6 +78,10 @@ namespace NHibernate.Util
 		private void RemoveLRU()
 		{
 			object key = FirstKey;
+			if (ReferenceEquals(null, key))
+			{
+				return;
+			}
 			// be sure to call super.get(key), or you're likely to 
 			// get infinite promotion recursion
 			object value = base[key];
