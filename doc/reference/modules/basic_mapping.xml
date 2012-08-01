@@ -2420,10 +2420,28 @@
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>
+                            <entry><literal>Date</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Date</literal></entry>
+                            <entry><literal>type="Date"</literal> must be specified.</entry>
+                        </row>
+                        <row>
                             <entry><literal>DateTime</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>DateTime2</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.DateTime2</literal></entry>
+                            <entry><literal>type="DateTime2"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>DbTimestamp</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
+                            <entry><literal>type="DbTimestamp"</literal> must be specified.  When used as a <literal>version</literal> field, uses the database's current time rather than the client's current time.</entry>
                         </row>
                       <row>
                         <entry><literal>LocalDateTime</literal></entry>
@@ -2492,6 +2510,18 @@
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.Int64</literal></entry>
                             <entry><literal>type="Ticks"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>Time</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Time</literal></entry>
+                            <entry><literal>type="Time"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>TimeAsTimeSpan</literal></entry>
+                            <entry><literal>System.TimeSpan</literal></entry>
+                            <entry><literal>DbType.Time</literal></entry>
+                            <entry><literal>type="TimeAsTimeSpan"</literal> must be specified.</entry>
                         </row>
                         <row>
                             <entry><literal>TimeSpan</literal></entry>
