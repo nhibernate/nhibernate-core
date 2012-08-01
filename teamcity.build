@@ -104,7 +104,7 @@
 	</target>
 
 	<target name="setup-teamcity-oracle32">
-		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OracleDataClientDriver" />
+		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.OracleClientDriver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=XE" />
 		<copy todir="${bin.dir}">
