@@ -5,16 +5,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2033
 {
-	/// <summary>
-	/// Tests to reproduce https://nhibernate.jira.com/browse/NH-2033
-	/// </summary>
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				var john = new Customer
 				{
@@ -39,24 +36,27 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 				session.Save(other);
 				session.Save(johnBusiness);
 				session.Flush();
+				transaction.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from CustomerAddress");
 				session.Delete("from Customer");
 				session.Flush();
+				transaction.Commit();
 			}
 		}
 
 		[Test]
 		public void QueryOverJoinAliasOnKeyManyToOneShouldGenerateInnerJoin()
 		{
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				Customer customerAlias = null;
 				var query = session.QueryOver<CustomerAddress>()
@@ -74,7 +74,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 		[Test]
 		public void QueryOverJoinAliasOnManyToOneShouldGenerateInnerJoin()
 		{
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				Customer customerAlias = null;
 				var query = session.QueryOver<CustomerAddress>()
@@ -92,7 +93,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 		[Test]
 		public void LinqJoinOnKeyManyToOneShouldGenerateInnerJoin()
 		{
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				var query = session.Query<CustomerAddress>()
 					.Where(x => x.City == "New York")
@@ -108,7 +110,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 		[Test]
 		public void CreateCriteriaOnKeyManyToOneShouldGenerateInnerJoin()
 		{
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				var query = session.CreateCriteria<CustomerAddress>()
 					.Add(Restrictions.Eq("City", "New York"))
@@ -125,7 +128,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 		[Test]
 		public void HqlJoinOnKeyManyToOneShouldGenerateInnerJoin()
 		{
-			using (var session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				var query = session.CreateQuery(@"
 						select a

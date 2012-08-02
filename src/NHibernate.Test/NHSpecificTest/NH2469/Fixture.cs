@@ -10,8 +10,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2469
 		public void ShouldNotThrowSqlException()
 		{
 			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				ICriteria criteria = session.CreateCriteria(typeof(Entity2), "e2")
+				var criteria = session.CreateCriteria(typeof(Entity2), "e2")
 					.CreateAlias("e2.Entity1", "e1")
 					.Add(Restrictions.Eq("e1.Foo", 0));
 
