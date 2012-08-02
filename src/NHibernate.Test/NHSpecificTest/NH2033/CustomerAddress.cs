@@ -8,13 +8,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 		public virtual string Type { get; set; }
 		public virtual string Address { get; set; }
 		public virtual string City { get; set; }
-	    public virtual Customer OtherCustomer { get; set; }
+		public virtual Customer OtherCustomer { get; set; }
 
 		public virtual bool Equals(CustomerAddress other)
 		{
 			return ReferenceEquals(this, other)
 				   || (other != null
-					   && Equals(Customer, other.Customer)
+					   && Equals(Customer.AssignedId, other.Customer.AssignedId)
 					   && Type == other.Type);
 		}
 
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 
 		public override int GetHashCode()
 		{
-			return (Customer != null ? Customer.GetHashCode() : 0)
+			return (Customer != null ? Customer.AssignedId.GetHashCode() : 0)
 				^ Type.GetHashCode();
 		}
 	}

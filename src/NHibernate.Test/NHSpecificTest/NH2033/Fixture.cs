@@ -45,9 +45,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Delete("from CustomerAddress");
-				session.Delete("from Customer");
-				session.Flush();
+				session.CreateQuery("delete from CustomerAddress").ExecuteUpdate();
+				session.CreateQuery("delete from Customer").ExecuteUpdate();
 				transaction.Commit();
 			}
 		}
@@ -87,6 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
+				session.Clear();
 			}
 		}
 
