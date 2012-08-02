@@ -665,6 +665,8 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH2469\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH2469\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3093\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2806\Domain.cs" />
@@ -2889,6 +2891,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2969\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml">
