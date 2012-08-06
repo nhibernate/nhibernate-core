@@ -143,7 +143,7 @@ echo Configuration activated.
 goto main-menu
 
 :test-run
-start %NUNIT% NHibernate.nunit
+start "" %NUNIT% NHibernate.nunit
 goto main-menu
 
 rem :build-test
