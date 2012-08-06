@@ -90,6 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADOException.cs" />
+    <Compile Include="AdoNet\MySqlClientBatchingBatcher.cs" />
+    <Compile Include="AdoNet\MySqlClientBatchingBatcherFactory.cs" />
+    <Compile Include="AdoNet\MySqlClientSqlCommandSet.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
