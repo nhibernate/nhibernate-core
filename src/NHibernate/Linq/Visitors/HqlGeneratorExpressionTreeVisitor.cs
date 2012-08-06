@@ -172,12 +172,12 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitNhMin(NhMinExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			return _hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression());
 		}
 
 		protected HqlTreeNode VisitNhMax(NhMaxExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			return _hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression());
 		}
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
