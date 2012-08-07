@@ -31,14 +31,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 
 		public object NullSafeGet(IDataReader dr, string[] names, object owner)
 		{
-			object r = dr[names[0]];
-			if (r == DBNull.Value)
+			var name = names[0];
+			int index = dr.GetOrdinal(name);
+
+			if (dr.IsDBNull(index))
 			{
 				return null;
 			}
+			try
+			{                
+				DateTime storedTime;
+				try
+				{
+					DateTime dbValue = Convert.ToDateTime(dr[index]);
+					storedTime = new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
+				}
+				catch (Exception ex)
+				{
+					throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", dr[index]), ex);
+				}
 
-			DateTime storedTime = (DateTime)r;
-			return new DateTimeOffset(storedTime, Offset);
+				return new DateTimeOffset(storedTime, Offset);
+			}
+			catch (InvalidCastException ice)
+			{
+				throw new ADOException(
+					string.Format(
+						"Could not cast the value in field {0} of type {1} to the Type {2}.  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
+						names[0], dr[index].GetType().Name, GetType().Name), ice);
+			}		
 		}
 
 		public void NullSafeSet(IDbCommand cmd, object value, int index)
