@@ -688,6 +688,10 @@
     <Compile Include="NHSpecificTest\NH3187\Fixture.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2955\Employee.cs" />
