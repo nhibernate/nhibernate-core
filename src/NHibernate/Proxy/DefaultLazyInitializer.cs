@@ -34,8 +34,8 @@ namespace NHibernate.Proxy
 					return returnValue;
 				}
 
-				MethodInfo targetMethod = info.TargetMethod;
-				if (info.TypeArguments != null && info.TypeArguments.Length != 0)
+				var targetMethod = info.TargetMethod;
+				if (targetMethod.IsGenericMethodDefinition && info.TypeArguments != null && info.TypeArguments.Length > 0)
 				{
 					targetMethod = targetMethod.MakeGenericMethod(info.TypeArguments);
 				}
