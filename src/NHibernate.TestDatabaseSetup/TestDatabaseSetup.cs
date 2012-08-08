@@ -16,6 +16,7 @@ namespace NHibernate.TestDatabaseSetup
 		private static readonly IDictionary<string, Action<Cfg.Configuration>> SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>
 			{
 				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
 				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
