@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2819"
+				   assembly="NHibernate.Test">
+	
+	<class name="Address" table="address_nh2819" lazy="true">
+		<id name="Id" type="Guid">
+			<generator class="guid" />
+		</id>		
+	</class>
+
+</hibernate-mapping>
