@@ -72,32 +72,32 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
-        public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
-        {
-            string expressionStr = queryExpression.Key;
+		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		{
+			string expressionStr = queryExpression.Key;
 
-            var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
-            var plan = (IQueryExpressionPlan)planCache[key];
+			var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
+			var plan = (IQueryExpressionPlan)planCache[key];
 
-            if (plan == null)
-            {
-                if (log.IsDebugEnabled)
-                {
-                    log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
-                }
-                plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
-                planCache.Put(key, plan);
-            }
-            else
-            {
-                if (log.IsDebugEnabled)
-                {
-                    log.Debug("located HQL query plan in cache (" + expressionStr + ")");
-                }
-            }
+			if (plan == null)
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+				}
+				plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+				planCache.Put(key, plan);
+			}
+			else
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+				}
+			}
 
-            return plan;
-        }
+			return plan;
+		}
 
 
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -110,7 +110,7 @@ namespace NHibernate.Engine.Query
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
-					          + filterString + ")");
+							  + filterString + ")");
 				}
 				plan = new FilterQueryPlan(filterString, collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
