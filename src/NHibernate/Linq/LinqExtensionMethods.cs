@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
 using Remotion.Linq;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq
 {
@@ -52,8 +53,8 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-
-			var future = ((INhQueryProvider) nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var future = provider.ExecuteFuture(nhQueryable.Expression);
 			return (IEnumerable<T>) future;
 		}
 
@@ -63,12 +64,29 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var future = ((INhQueryProvider) nhQueryable.Provider).ExecuteFuture(nhQueryable.Expression);
+			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var future = provider.ExecuteFuture(nhQueryable.Expression);
 			if (future is IEnumerable<T>)
 			{
 				return new FutureValue<T>(() => ((IEnumerable<T>) future));
 			}
+
 			return (IFutureValue<T>) future;
+		}
+
+		public static IFutureValue<TResult> ToFutureValue<T, TResult>(this IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
+		{
+			var nhQueryable = query as QueryableBase<T>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
+
+			var provider = (INhQueryProvider) query.Provider;
+
+			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
+																	query.Expression,
+																	selector.Body);
+
+			return (IFutureValue<TResult>) provider.ExecuteFuture(expression);
 		}
 	}
 }
