@@ -667,6 +667,8 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\NH3050\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3050\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3050\Person.cs" />
     <Compile Include="NHSpecificTest\NH2469\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2469\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2033\Customer.cs" />
@@ -674,6 +676,8 @@
     <Compile Include="NHSpecificTest\NH2033\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2819\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2819\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3050\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3050\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3093\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2806\Domain.cs" />
@@ -2907,6 +2911,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2819\Mappings.hbm.xml" />
