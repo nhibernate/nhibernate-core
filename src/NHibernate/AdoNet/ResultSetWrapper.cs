@@ -115,7 +115,7 @@ namespace NHibernate.AdoNet
 
 		public object GetValue(int i)
 		{
-			return rs.GetDecimal(i);
+			return rs.GetValue(i);
 		}
 
 		public int GetValues(object[] values)
