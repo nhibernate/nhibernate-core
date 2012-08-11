@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
@@ -34,6 +35,13 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = test.Where(o => o.Employee.Territories.Any(t => t.Description == "test")).ToList();
 
 			Assert.AreEqual(0, result.Count);
+		}
+
+		[Test]
+		public void AnyWithFetch()
+		{
+			//NH-3241
+			var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
 		}
 	}
 }
