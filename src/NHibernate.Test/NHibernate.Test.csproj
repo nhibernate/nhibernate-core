@@ -1233,6 +1233,7 @@
     <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
+    <Compile Include="Stateless\FetchingLazyCollections\TreeFetchTests.cs" />
     <Compile Include="Stateless\FetchingLazyCollections\LazyCollectionFetchTests.cs" />
     <Compile Include="Stateless\Fetching\Resource.cs" />
     <Compile Include="Stateless\Fetching\StatelessSessionFetchingTest.cs" />
@@ -1240,6 +1241,7 @@
     <Compile Include="Stateless\Fetching\User.cs" />
     <Compile Include="Stateless\Org.cs" />
     <Compile Include="Stateless\StatelessSessionQueryFixture.cs" />
+    <Compile Include="Stateless\TreeNode.cs" />
     <Compile Include="Subselect\ClassSubselectFixture.cs" />
     <Compile Include="Subselect\Domain.cs" />
     <Compile Include="TestCaseMappingByCode.cs" />
