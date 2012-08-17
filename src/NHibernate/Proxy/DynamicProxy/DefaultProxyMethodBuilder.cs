@@ -17,7 +17,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	internal class DefaultyProxyMethodBuilder : IProxyMethodBuilder
 	{
-		public DefaultyProxyMethodBuilder() : this(new DefaultMethodEmitter()) {}
+		public DefaultyProxyMethodBuilder() : this(new DefaultMethodEmitter()) { }
 
 		public DefaultyProxyMethodBuilder(IMethodBodyEmitter emitter)
 		{
@@ -39,8 +39,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			ParameterInfo[] parameters = method.GetParameters();
 
 			MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes,
-			                                                       CallingConventions.HasThis, method.ReturnType,
-			                                                       parameters.Select(param => param.ParameterType).ToArray());
+																   CallingConventions.HasThis, method.ReturnType,
+																   parameters.Select(param => param.ParameterType).ToArray());
 
 			System.Type[] typeArgs = method.GetGenericArguments();
 
@@ -57,7 +57,28 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				for (int index = 0; index < typeArgs.Length; index++)
 				{
-					typeArgsBuilder[index].SetInterfaceConstraints(typeArgs[index].GetGenericParameterConstraints());
+					// Copy generic parameter attributes (Covariant, Contravariant, ReferenceTypeConstraint,
+					// NotNullableValueTypeConstraint, DefaultConstructorConstraint).
+					typeArgsBuilder[index].SetGenericParameterAttributes(typeArgs[index].GenericParameterAttributes);
+
+					System.Type[] typeConstraints = typeArgs[index].GetGenericParameterConstraints();
+
+					if (typeConstraints.Length > 0)
+					{
+						// Copy generic parameter constraints (class and interfaces).
+						System.Type baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.IsClass);
+						System.Type[] interfaceTypeConstraints = typeConstraints.Where(x => !x.IsClass).ToArray();
+
+						if (baseTypeConstraint != null)
+						{
+							typeArgsBuilder[index].SetBaseTypeConstraint(baseTypeConstraint);
+						}
+
+						if (interfaceTypeConstraints.Length > 0)
+						{
+							typeArgsBuilder[index].SetInterfaceConstraints(interfaceTypeConstraints);
+						}
+					}
 				}
 			}
 
