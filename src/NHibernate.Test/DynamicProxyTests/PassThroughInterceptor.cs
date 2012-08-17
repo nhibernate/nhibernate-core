@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicProxyTests
@@ -14,7 +13,12 @@ namespace NHibernate.Test.DynamicProxyTests
 
 		public object Intercept(InvocationInfo info)
 		{
-			return info.TargetMethod.Invoke(targetInstance, info.Arguments);
+			var targetMethod = info.TargetMethod;
+			if (targetMethod.IsGenericMethodDefinition && info.TypeArguments != null && info.TypeArguments.Length > 0)
+			{
+				targetMethod = targetMethod.MakeGenericMethod(info.TypeArguments);
+			}
+			return targetMethod.Invoke(targetInstance, info.Arguments);
 		}
 	}
 }
