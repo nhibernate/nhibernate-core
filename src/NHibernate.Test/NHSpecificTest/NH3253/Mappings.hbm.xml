@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3253"
+                   default-lazy="true" default-cascade="none">
+  <class name="ParentCategoryEnt" mutable="true">
+    <id name="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Description"/>
+  </class>
+  <class name="T1ParentEnt">
+    <composite-id name="CpId" class="T1ParentCpId">
+      <key-property name="IdA"/>
+      <key-property name="IdB"/>
+    </composite-id>
+    <property name="Description"/>
+    <set name="ChildList" inverse="true" cascade="all-delete-orphan" fetch="select">
+      <key>
+        <column name="ParentIdA"/>
+        <column name="ParentIdB"/>
+      </key>
+      <one-to-many class="T1ChildEnt"/>
+    </set>
+    <many-to-one name="ParentCategory" fetch="select">
+      <column name="ParentCategoryId"/>
+    </many-to-one>
+  </class>
+  <class name="T1ChildEnt">
+    <composite-id name="CpId" class="T1ChildCpId">
+      <key-many-to-one name="Parent">
+        <column name="ParentIdA"/>
+        <column name="ParentIdB"/>
+      </key-many-to-one>
+      <key-property name="SubId"/>
+    </composite-id>
+    <property name="Description"/>
+  </class>
+
+  <class name="T2ParentEnt">
+    <composite-id name="CpId" class="T2ParentCpId">
+      <key-property name="IdA"/>
+      <key-property name="IdB"/>
+    </composite-id>
+    <property name="Description"/>
+    <set name="ChildList" inverse="true" cascade="all-delete-orphan" fetch="select">
+      <key>
+        <column name="ParentIdA"/>
+        <column name="ParentIdB"/>
+      </key>
+      <one-to-many class="T2ChildEnt"/>
+    </set>
+    <many-to-one name="ParentCategory" fetch="select">
+      <column name="ParentCategoryId"/>
+    </many-to-one>
+  </class>
+  <class name="T2ChildEnt">
+    <id name="Id">
+      <generator class="assigned"></generator>
+    </id>
+    <property name="Description"/>
+    <many-to-one name="Parent" fetch="select">
+      <column name="ParentIdA"/>
+      <column name="ParentIdB"/>
+    </many-to-one>
+  </class>
+
+  <class name="T3ParentEnt">
+    <composite-id name="CpId" class="T3ParentCpId">
+      <key-property name="IdA"/>
+      <key-property name="IdB"/>
+    </composite-id>
+    <property name="Description"/>
+    <set name="ChildList" inverse="true" cascade="all-delete-orphan" fetch="join">
+      <key>
+        <column name="ParentIdA"/>
+        <column name="ParentIdB"/>
+      </key>
+      <one-to-many class="T3ChildEnt"/>
+    </set>
+    <many-to-one name="ParentCategory" fetch="select">
+      <column name="ParentCategoryId"/>
+    </many-to-one>
+  </class>
+  <class name="T3ChildEnt">
+    <composite-id name="CpId" class="T3ChildCpId">
+      <key-many-to-one name="Parent">
+        <column name="ParentIdA"/>
+        <column name="ParentIdB"/>
+      </key-many-to-one>
+      <key-property name="SubId"/>
+    </composite-id>
+    <property name="Description"/>
+  </class>
+</hibernate-mapping>
