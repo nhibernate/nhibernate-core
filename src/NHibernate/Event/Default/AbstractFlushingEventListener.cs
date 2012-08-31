@@ -234,6 +234,7 @@ namespace NHibernate.Event.Default
 			try
 			{
 				session.ConnectionManager.FlushBeginning();
+				session.PersistenceContext.Flushing = true;
 				// we need to lock the collection caches before
 				// executing entity inserts/updates in order to
 				// account for bidi associations
@@ -250,6 +251,7 @@ namespace NHibernate.Event.Default
 			}
 			finally
 			{
+				session.PersistenceContext.Flushing = false;
 				session.ConnectionManager.FlushEnding();
 			}
 		}
