@@ -37,3 +37,4 @@ hibernate.cfg.xml
 available-test-configurations
 current-test-configuration
 NHibernate.VisualState.xml
+/.project
