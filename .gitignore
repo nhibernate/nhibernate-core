@@ -1,0 +1,9 @@
+/build/**/*
+/src/*.suo
+/src/**/bin
+/src/**/obj
+/src/**/*.csproj.user
+/src/**/AssemblyInfo.cs
+/.project
+hibernate.cfg.xml
+NHibernate.dll
