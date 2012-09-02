@@ -60,11 +60,10 @@ namespace NHibernate.Proxy.DynamicProxy
 					typeArgsBuilder[index].SetInterfaceConstraints(typeArgs[index].GetGenericParameterConstraints());
 				}
 			}
-
-			ILGenerator IL = methodBuilder.GetILGenerator();
+			
 
 			Debug.Assert(MethodBodyEmitter != null);
-			MethodBodyEmitter.EmitMethodBody(IL, method, field);
+			MethodBodyEmitter.EmitMethodBody(methodBuilder, method, field);
 		}
 
 		#endregion

@@ -53,8 +53,10 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		#region IMethodBodyEmitter Members
 
-		public void EmitMethodBody(ILGenerator IL, MethodInfo method, FieldInfo field)
+		public void EmitMethodBody(MethodBuilder generatedMethod, MethodInfo method, FieldInfo field)
 		{
+			var IL = generatedMethod.GetILGenerator();
+
 			ParameterInfo[] parameters = method.GetParameters();
 			IL.DeclareLocal(typeof (object[]));
 			IL.DeclareLocal(typeof (InvocationInfo));
@@ -73,7 +75,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			IL.Emit(OpCodes.Ldarg_0);
 
-			for(int i=0; i<method.GetParameters().Length; i++)
+			for (int i = 0; i < method.GetParameters().Length; i++)
 				IL.Emit(OpCodes.Ldarg_S, (sbyte)(i + 1));
 
 			IL.Emit(OpCodes.Call, method);
@@ -81,25 +83,9 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			IL.MarkLabel(skipBaseCall);
 
-			// Push the 'this' pointer onto the stack
-			IL.Emit(OpCodes.Ldarg_0);
-
-			// Push the MethodInfo onto the stack            
-			System.Type declaringType = method.DeclaringType;
-
-			IL.Emit(OpCodes.Ldtoken, method);
-			if (declaringType.IsGenericType)
-			{
-				IL.Emit(OpCodes.Ldtoken, declaringType);
-				IL.Emit(OpCodes.Call, getGenericMethodFromHandle);
-			}
-			else
-			{
-				IL.Emit(OpCodes.Call, getMethodFromHandle);
-			}
-
-			IL.Emit(OpCodes.Castclass, typeof (MethodInfo));
-
+			// Push arguments for InvocationInfo constructor.
+			IL.Emit(OpCodes.Ldarg_0);  // 'this' pointer
+			PushTargetMethodInfo(IL, generatedMethod, method);
 			PushStackTrace(IL);
 			PushGenericArguments(method, IL);
 			_argumentHandler.PushArguments(parameters, IL, false);
@@ -170,6 +156,44 @@ namespace NHibernate.Proxy.DynamicProxy
 			}
 
 			return OpCodes.Stind_Ref;
+		}
+
+		private static void PushTargetMethodInfo(ILGenerator IL, MethodBuilder generatedMethod, MethodInfo method)
+		{
+			if (method.IsGenericMethodDefinition)
+			{
+				// We want the generated code to load a MethodInfo instantiated with the
+				// current generic type parameters. I.e.:
+				// MethodInfo methodInfo = methodof(TheClass.TheMethod<T>(...)
+				//
+				// We need to instantiate the open generic method definition with the type
+				// arguments from the generated method. Using the open method definition
+				// directly works on .Net 2.0, which might be FW bug, but fails on 4.0.
+				//
+				// Equivalent pseudo-code:
+				// MethodInfo mi = methodof(TheClass.TheMethod<>)
+				// versus
+				// MethodInfo mi = methodof(TheClass.TheMethod<T0>)
+				var instantiatedMethod = method.MakeGenericMethod(generatedMethod.GetGenericArguments());
+				IL.Emit(OpCodes.Ldtoken, instantiatedMethod);
+			}
+			else
+			{
+				IL.Emit(OpCodes.Ldtoken, method);
+			}
+
+			System.Type declaringType = method.DeclaringType;
+			if (declaringType.IsGenericType)
+			{
+				IL.Emit(OpCodes.Ldtoken, declaringType);
+				IL.Emit(OpCodes.Call, getGenericMethodFromHandle);
+			}
+			else
+			{
+				IL.Emit(OpCodes.Call, getMethodFromHandle);
+			}
+
+			IL.Emit(OpCodes.Castclass, typeof(MethodInfo));
 		}
 
 		private void PushStackTrace(ILGenerator IL)
