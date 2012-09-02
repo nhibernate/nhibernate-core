@@ -34,12 +34,7 @@ namespace NHibernate.Proxy
 					return returnValue;
 				}
 
-				var targetMethod = info.TargetMethod;
-				if (targetMethod.IsGenericMethodDefinition && info.TypeArguments != null && info.TypeArguments.Length > 0)
-				{
-					targetMethod = targetMethod.MakeGenericMethod(info.TypeArguments);
-				}
-				returnValue = targetMethod.Invoke(GetImplementation(), info.Arguments);
+				returnValue = info.TargetMethod.Invoke(GetImplementation(), info.Arguments);
 			}
 			catch (TargetInvocationException ex)
 			{
