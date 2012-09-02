@@ -85,7 +85,12 @@ namespace NHibernate.Linq.GroupBy
 				var i = 0;
 				foreach (var member in newExpression.Members)
 				{
-					if (member.Name == "get_" + memberName)
+					// .Net 2.0: The member will be a MethodInfo named in the get_XXX pattern.
+					// .Net 4.0: The member will be a PropertyInfo (i.e. without name prefix).
+					// re-linq seem to have a more advanced matching implemented in
+					// its TransparentIdentifierRemovingExpressionTreeVisitor.
+					var altMemberName = "get_" + memberName;
+					if (member.Name == memberName || member.Name == altMemberName)
 					{
 						result = newExpression.Arguments[i];
 						return true;
