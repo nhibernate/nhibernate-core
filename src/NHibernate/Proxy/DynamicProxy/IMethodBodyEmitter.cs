@@ -13,6 +13,6 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	public interface IMethodBodyEmitter
 	{
-		void EmitMethodBody(ILGenerator IL, MethodInfo method, FieldInfo field);
+		void EmitMethodBody(MethodBuilder generatedMethod, MethodInfo method, FieldInfo field);
 	}
 }
