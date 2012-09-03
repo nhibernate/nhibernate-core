@@ -5,6 +5,7 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.GroupBy
 {
@@ -13,7 +14,7 @@ namespace NHibernate.Linq.GroupBy
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{
 			var visitor = new GroupBySelectClauseRewriter(groupBy, model);
-			return visitor.VisitExpression(expression);
+			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(visitor.VisitExpression(expression));
 		}
 
 		private readonly GroupResultOperator _groupBy;
@@ -37,17 +38,6 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			var parent = expression.Expression as MemberExpression;
-
-			Expression result;
-			if (parent != null &&
-				parent.Member.Name == "Key" &&
-				IsMemberOfModel(parent) &&
-				TryFindTransparentPropertyOfAnonymousObject(_groupBy.KeySelector, expression.Member.Name, out result))
-			{
-				return result;
-			}
-
 			if (!IsMemberOfModel(expression))
 			{
 				return base.VisitMemberExpression(expression);
@@ -66,6 +56,7 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
+			Expression result;
 			// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
 			if (TryFindTransparentPropertyOfAnonymousObject(elementSelector, expression.Member.Name, out result))
 				return result;
