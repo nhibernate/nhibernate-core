@@ -18,7 +18,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 			return typeof(T);
 		}
 
-		public virtual object MethodWithInterfaceConstraint<T>() where T : IMyInterface
+		public virtual object MethodWithInterfaceConstraint<T>(T arg) where T : IMyInterface
 		{
 			return typeof(T);
 		}

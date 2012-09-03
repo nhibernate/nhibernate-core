@@ -45,7 +45,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.MethodWithInterfaceConstraint<IMyInterface>().Should().Be(typeof(IMyInterface));
+			c.MethodWithInterfaceConstraint<IMyInterface>(new MyDerivedClass()).Should().Be(typeof(IMyInterface));
 		}
 
 		[Test]
