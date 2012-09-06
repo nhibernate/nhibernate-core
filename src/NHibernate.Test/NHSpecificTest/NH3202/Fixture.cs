@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 		protected override void Configure(Configuration configuration)
 		{
 			if (!(Dialect is MsSql2008Dialect))
-				Assert.Ignore("Test is for SQL dialect only");
+				Assert.Ignore("Test is for MS SQL Server dialect only (custom dialect).");
 
 			cfg.SetProperty(Environment.Dialect, typeof(OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
 			cfg.SetProperty(Environment.ConnectionDriver, typeof(OffsetTestDriver).AssemblyQualifiedName);
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			CustomDriver.OffsetStartsAtOneTestDialect = OffsetStartsAtOneTestDialect;
 
 			base.OnSetUp();
-			
+
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
@@ -49,7 +49,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 		protected override void OnTearDown()
 		{
-
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -61,9 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 
 		[Test]
-		public void Offset_not_starting_at_one_sets_parameter_to_skip_value()
+		public void OffsetNotStartingAtOneSetsParameterToSkipValue()
 		{
-
 			OffsetStartsAtOneTestDialect.ForceOffsetStartsAtOne = false;
 
 			using (var session = OpenSession())
@@ -75,13 +73,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 					.SingleOrDefault<SequencedItem>();
 
 				Assert.That(CustomDriver.OffsetParameterValueFromCommand, Is.EqualTo(2));
-			}		
+			}
 		}
 
 		[Test]
-		public void Offset_starting_at_one_sets_parameter_to_skip_value_plus_one()
+		public void OffsetStartingAtOneSetsParameterToSkipValuePlusOne()
 		{
-
 			OffsetStartsAtOneTestDialect.ForceOffsetStartsAtOne = true;
 
 			using (var session = OpenSession())
@@ -93,10 +90,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 					.SingleOrDefault<SequencedItem>();
 
 				Assert.That(CustomDriver.OffsetParameterValueFromCommand, Is.EqualTo(3));
-			}		
+			}
 		}
-
-
 	}
 
 	public class OffsetStartsAtOneTestDialect : MsSql2008Dialect
@@ -122,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!hasLimit)
 				return;
 
-			OffsetParameterValueFromCommand = (int) ((IDataParameter) command.Parameters[_offsetParameterIndex]).Value;
+			OffsetParameterValueFromCommand = (int)((IDataParameter)command.Parameters[_offsetParameterIndex]).Value;
 		}
 	}
 }
