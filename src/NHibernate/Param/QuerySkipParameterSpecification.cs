@@ -37,7 +37,7 @@ namespace NHibernate.Param
 			if (effectiveParameterLocations.Length > 0)
 			{
 				// if the dialect does not support variable limits the parameter may was removed
-				int value = queryParameters.RowSelection.FirstRow;
+				int value = Loader.Loader.GetOffsetUsingDialect(queryParameters.RowSelection, session.Factory.Dialect) ?? queryParameters.RowSelection.FirstRow;
 				int position = effectiveParameterLocations[0];
 				type.NullSafeSet(command, value, position, session);
 			}
