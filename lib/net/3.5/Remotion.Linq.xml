@@ -491,15 +491,6 @@
             <param name="method">The method to be invoked.</param>
             <returns>The result of the invocation</returns>
         </member>
-        <member name="M:Remotion.Linq.Clauses.ResultOperatorBase.CheckSequenceItemType(Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo,System.Type)">
-            <summary>
-            Checks the type of the items retrieved by the sequence, throwing an <see cref="T:Remotion.Linq.Utilities.ArgumentTypeException"/> if the items don't match the
-            expected type.
-            </summary>
-            <param name="sequenceInfo">The <see cref="T:Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo"/> object describing the sequence.</param>
-            <param name="expectedItemType">The expected item type.</param>
-            <exception cref="T:Remotion.Linq.Utilities.ArgumentTypeException">The items don't match the expected type.</exception>
-        </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperatorBase.GetConstantValueFromExpression``1(System.String,System.Linq.Expressions.Expression)">
             <summary>
             Gets the constant value of the given expression, assuming it is a <see cref="T:System.Linq.Expressions.ConstantExpression"/>. If it is
@@ -530,7 +521,7 @@
             </example>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AnyResultOperator.ExecuteInMemory``1(Remotion.Linq.Clauses.StreamedData.StreamedSequence)">
-            <inheritdoc />
+            <inheritdoc cref="M:Remotion.Linq.Clauses.ResultOperatorBase.ExecuteInMemory(Remotion.Linq.Clauses.StreamedData.IStreamedData)"/>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AnyResultOperator.Clone(Remotion.Linq.Clauses.CloneContext)">
             <inheritdoc />
@@ -565,7 +556,7 @@
             passed to <see cref="M:System.Linq.Queryable.All``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})"/>.</param>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AllResultOperator.ExecuteInMemory``1(Remotion.Linq.Clauses.StreamedData.StreamedSequence)">
-            <inheritdoc />
+            <inheritdoc cref="M:Remotion.Linq.Clauses.ResultOperatorBase.ExecuteInMemory(Remotion.Linq.Clauses.StreamedData.IStreamedData)"/>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AllResultOperator.Clone(Remotion.Linq.Clauses.CloneContext)">
             <inheritdoc />
@@ -610,7 +601,7 @@
             are represented as expressions containing <see cref="T:Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression"/> nodes.</param>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AggregateResultOperator.ExecuteInMemory``1(Remotion.Linq.Clauses.StreamedData.StreamedSequence)">
-            <inheritdoc />
+            <inheritdoc cref="M:Remotion.Linq.Clauses.ResultOperatorBase.ExecuteInMemory(Remotion.Linq.Clauses.StreamedData.IStreamedData)"/>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AggregateResultOperator.Clone(Remotion.Linq.Clauses.CloneContext)">
             <inheritdoc />
@@ -661,7 +652,7 @@
             <returns>The constant value of the <see cref="P:Remotion.Linq.Clauses.ResultOperators.AggregateFromSeedResultOperator.Seed"/> property.</returns>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AggregateFromSeedResultOperator.ExecuteInMemory``1(Remotion.Linq.Clauses.StreamedData.StreamedSequence)">
-            <inheritdoc />
+            <inheritdoc cref="M:Remotion.Linq.Clauses.ResultOperatorBase.ExecuteInMemory(Remotion.Linq.Clauses.StreamedData.IStreamedData)"/>
         </member>
         <member name="M:Remotion.Linq.Clauses.ResultOperators.AggregateFromSeedResultOperator.ExecuteAggregateInMemory``3(Remotion.Linq.Clauses.StreamedData.StreamedSequence)">
             <summary>
@@ -877,6 +868,13 @@
             A closed generic instantiation of <paramref name="genericMethodDefinition"/> with this object's item type substituted for
             the generic parameter.
             </returns>
+        </member>
+        <member name="P:Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo.ResultItemType">
+            <summary>
+            Gets the type of the items returned by the sequence described by this object, as defined by <see cref="P:Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo.DataType"/>. Note that because 
+            <see cref="T:System.Collections.Generic.IEnumerable`1"/> is covariant starting from .NET 4.0, this may be a more abstract type than what's returned by 
+            <see cref="P:Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo.ItemExpression"/>'s <see cref="P:System.Linq.Expressions.Expression.Type"/> property.
+            </summary>
         </member>
         <member name="P:Remotion.Linq.Clauses.StreamedData.StreamedSequenceInfo.ItemExpression">
             <summary>
