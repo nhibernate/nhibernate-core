@@ -30,7 +30,6 @@ namespace NHibernate.Linq
 		public NhLinqExpression(Expression expression, ISessionFactory sessionFactory)
 		{
 			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
-			_expression = NameUnNamedParameters.Visit(_expression);
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
 
