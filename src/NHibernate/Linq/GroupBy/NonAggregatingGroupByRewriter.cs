@@ -6,6 +6,7 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupBy
 {
@@ -72,7 +73,7 @@ namespace NHibernate.Linq.GroupBy
 		}
 	}
 
-	internal class NonAggregatingGroupBySelectRewriter : NhExpressionTreeVisitor
+	internal class NonAggregatingGroupBySelectRewriter : ExpressionTreeVisitor
 	{
 		private ParameterExpression _inputParameter;
 		private IQuerySource _querySource;

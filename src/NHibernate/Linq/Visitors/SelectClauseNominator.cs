@@ -2,10 +2,11 @@
 using System.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	class SelectClauseHqlNominator : NhExpressionTreeVisitor
+	class SelectClauseHqlNominator : ExpressionTreeVisitor
 	{
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 

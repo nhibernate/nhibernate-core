@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using NHibernate.Param;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -15,7 +16,7 @@ namespace NHibernate.Linq.Visitors
 	/// generate the same key as 
 	///		from c in Customers where c.City = "Madrid"
 	/// </summary>
-	public class ExpressionKeyVisitor : NhExpressionTreeVisitor
+	public class ExpressionKeyVisitor : ExpressionTreeVisitor
 	{
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 		readonly StringBuilder _string = new StringBuilder();
@@ -99,49 +100,24 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitConstantExpression(expression);
 		}
 
-		protected override ElementInit VisitElementInit(ElementInit elementInit)
+		private T AppendCommas<T>(T expression) where T : Expression
 		{
-			return base.VisitElementInit(elementInit);
-		}
+			VisitExpression(expression);
+			_string.Append(", ");
 
-        private T AppendCommas<T>(T expression) where T : Expression
-        {
-            VisitExpression(expression);
-            _string.Append(", ");
-
-            return expression;
-        }
-
-		protected override Expression VisitInvocationExpression(InvocationExpression expression)
-		{
-			return base.VisitInvocationExpression(expression);
+			return expression;
 		}
 
 		protected override Expression VisitLambdaExpression(LambdaExpression expression)
 		{
 			_string.Append('(');
 
-		    VisitList(expression.Parameters, AppendCommas);
+			VisitList(expression.Parameters, AppendCommas);
 			_string.Append(") => (");
 			VisitExpression(expression.Body);
 			_string.Append(')');
 
 			return expression;
-		}
-
-		protected override Expression VisitListInitExpression(ListInitExpression expression)
-		{
-			return base.VisitListInitExpression(expression);
-		}
-
-		protected override MemberBinding VisitMemberAssignment(MemberAssignment memberAssigment)
-		{
-			return base.VisitMemberAssignment(memberAssigment);
-		}
-
-		protected override MemberBinding VisitMemberBinding(MemberBinding memberBinding)
-		{
-			return base.VisitMemberBinding(memberBinding);
 		}
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
@@ -152,21 +128,6 @@ namespace NHibernate.Linq.Visitors
 			_string.Append(expression.Member.Name);
 
 			return expression;
-		}
-
-		protected override Expression VisitMemberInitExpression(MemberInitExpression expression)
-		{
-			return base.VisitMemberInitExpression(expression);
-		}
-
-		protected override MemberBinding VisitMemberListBinding(MemberListBinding listBinding)
-		{
-			return base.VisitMemberListBinding(listBinding);
-		}
-
-		protected override MemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
-		{
-			return base.VisitMemberMemberBinding(binding);
 		}
 
 		private bool insideSelectClause;
@@ -197,11 +158,6 @@ namespace NHibernate.Linq.Visitors
 
 			insideSelectClause = old;
 			return expression;
-		}
-
-		protected override Expression VisitNewArrayExpression(NewArrayExpression expression)
-		{
-			return base.VisitNewArrayExpression(expression);
 		}
 
 		protected override Expression VisitNewExpression(NewExpression expression)
@@ -243,15 +199,15 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-        private void VisitMethod(MethodInfo methodInfo)
-        {
-            _string.Append(methodInfo.Name);
-            if (methodInfo.IsGenericMethod)
-            {
-                _string.Append('[');
-                _string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
-                _string.Append(']');
-            }
-        }
+		private void VisitMethod(MethodInfo methodInfo)
+		{
+			_string.Append(methodInfo.Name);
+			if (methodInfo.IsGenericMethod)
+			{
+				_string.Append('[');
+				_string.Append(string.Join(",", methodInfo.GetGenericArguments().Select(a => a.FullName).ToArray()));
+				_string.Append(']');
+			}
+		}
 	}
 }

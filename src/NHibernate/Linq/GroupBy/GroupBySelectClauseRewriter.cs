@@ -1,15 +1,15 @@
 using System;
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.GroupBy
 {
-	internal class GroupBySelectClauseRewriter : NhExpressionTreeVisitor
+	internal class GroupBySelectClauseRewriter : ExpressionTreeVisitor
 	{
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{

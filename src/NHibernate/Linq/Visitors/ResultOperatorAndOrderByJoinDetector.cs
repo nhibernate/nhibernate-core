@@ -2,10 +2,11 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	internal class ResultOperatorAndOrderByJoinDetector : NhExpressionTreeVisitor
+	internal class ResultOperatorAndOrderByJoinDetector : ExpressionTreeVisitor
 	{
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;
