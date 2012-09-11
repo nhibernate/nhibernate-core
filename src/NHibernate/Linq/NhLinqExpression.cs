@@ -7,6 +7,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq.Visitors;
 using NHibernate.Param;
 using NHibernate.Type;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq
 {
@@ -29,7 +30,7 @@ namespace NHibernate.Linq
 
 		public NhLinqExpression(Expression expression, ISessionFactory sessionFactory)
 		{
-			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			_expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 			_expression = NameUnNamedParameters.Visit(_expression);
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
