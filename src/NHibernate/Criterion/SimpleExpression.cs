@@ -179,7 +179,7 @@ namespace NHibernate.Criterion
 			{
 				return value.ToString();
 			}
-			return ObjectUtils.IdentityToString(value);
+			return ObjectHelpers.IdentityToString(value);
 		}
 	}
 }

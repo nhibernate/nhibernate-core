@@ -709,7 +709,7 @@
     <Compile Include="Util\EnumeratorAdapter.cs" />
     <Compile Include="Util\IdentityMap.cs" />
     <Compile Include="Util\JoinedEnumerable.cs" />
-    <Compile Include="Util\ObjectUtils.cs" />
+    <Compile Include="Util\ObjectHelpers.cs" />
     <Compile Include="Util\PropertiesHelper.cs" />
     <Compile Include="Util\ReflectHelper.cs" />
     <Compile Include="Util\SequencedHashMap.cs" />
