@@ -1742,14 +1742,14 @@ namespace NHibernate.Loader
 				{
 					var skipParameter = new QuerySkipParameterSpecification();
 					skipSqlParameter = Parameter.Placeholder;
-					skipSqlParameter.BackTrack = EnumerableExtensions.First(skipParameter.GetIdsForBackTrack(sessionFactory));
+					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
 					parameterSpecs.Add(skipParameter);
 				}
 				if (take.HasValue)
 				{
 					var takeParameter = new QueryTakeParameterSpecification();
 					takeSqlParameter = Parameter.Placeholder;
-					takeSqlParameter.BackTrack = EnumerableExtensions.First(takeParameter.GetIdsForBackTrack(sessionFactory));
+					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
 					parameterSpecs.Add(takeParameter);
 				}
 				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.
