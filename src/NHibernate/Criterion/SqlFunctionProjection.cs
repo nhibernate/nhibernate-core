@@ -108,7 +108,7 @@ namespace NHibernate.Criterion
 													   IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters);
-			return StringHelper.RemoveAsAliasesFromSql(sql);
+			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

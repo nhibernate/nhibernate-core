@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 			{
 				SqlString sb = SqlString.Empty;
 				SqlString produced = this.projection.ToSqlString(criteria, 0, criteriaQuery, new Dictionary<string, IFilter>());
-				SqlString truncated = NHibernate.Util.StringHelper.RemoveAsAliasesFromSql(produced);
+				SqlString truncated = SqlStringHelper.RemoveAsAliasesFromSql(produced);
 				sb = sb.Append(truncated);
 				sb = sb.Append(ascending ? " asc" : " desc");
 				return sb;

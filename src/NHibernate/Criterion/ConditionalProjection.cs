@@ -46,9 +46,9 @@ namespace NHibernate.Criterion
 		{
 			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery, enabledFilters);
 			SqlString ifTrue = whenTrue.ToSqlString(criteria, position + GetHashCode() + 1, criteriaQuery, enabledFilters);
-			ifTrue = StringHelper.RemoveAsAliasesFromSql(ifTrue);
+			ifTrue = SqlStringHelper.RemoveAsAliasesFromSql(ifTrue);
 			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery, enabledFilters);
-			ifFalse = StringHelper.RemoveAsAliasesFromSql(ifFalse);
+			ifFalse = SqlStringHelper.RemoveAsAliasesFromSql(ifFalse);
 			return new SqlStringBuilder()
 				.Add("(")
 				.Add("case when ")

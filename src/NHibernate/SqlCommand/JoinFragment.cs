@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 
 		protected bool AddCondition(SqlStringBuilder buffer, SqlString on)
 		{
-			if (StringHelper.IsNotEmpty(on))
+			if (SqlStringHelper.IsNotEmpty(on))
 			{
 				if (!on.StartsWithCaseInsensitive(" and"))
 				{

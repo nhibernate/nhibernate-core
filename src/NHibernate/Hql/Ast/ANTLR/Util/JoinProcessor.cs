@@ -115,7 +115,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			// a theta-style join, convert its type from JOIN_FRAGMENT
 			// to FROM_FRAGMENT
 			if ( fromElement.Type == HqlSqlWalker.JOIN_FRAGMENT &&
-					( join.IsThetaStyle || StringHelper.IsNotEmpty( whereFrag ) ) ) 
+					( join.IsThetaStyle || SqlStringHelper.IsNotEmpty( whereFrag ) ) ) 
 			{
 				fromElement.Type = HqlSqlWalker.FROM_FRAGMENT;
 				fromElement.JoinSequence.SetUseThetaStyle( true ); // this is used during SqlGenerator processing

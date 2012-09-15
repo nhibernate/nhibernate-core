@@ -618,6 +618,7 @@
     <Compile Include="SqlCommand\SqlString.cs" />
     <Compile Include="SqlCommand\SqlStringBuilder.cs" />
     <Compile Include="SqlCommand\SqlUpdateBuilder.cs" />
+    <Compile Include="SqlCommand\SqlStringHelper.cs" />
     <Compile Include="SqlCommand\Template.cs" />
     <Compile Include="SqlCommand\WhereBuilder.cs" />
     <Compile Include="SqlTypes\AnsiStringFixedLengthSqlType.cs" />
