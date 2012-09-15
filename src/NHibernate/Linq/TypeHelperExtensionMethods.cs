@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NHibernate.Linq
+namespace NHibernate.Linq.Internal
 {
     public static class TypeHelperExtensionMethods
     {

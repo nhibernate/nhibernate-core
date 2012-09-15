@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Linq.Internal;
 using NHibernate.Transform;
 using NHibernate.Type;
 

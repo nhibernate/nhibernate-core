@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Linq.Internal;
 using NHibernate.Type;
 
 namespace NHibernate.Linq
