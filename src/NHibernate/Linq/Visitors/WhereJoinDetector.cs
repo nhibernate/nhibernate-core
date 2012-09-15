@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -55,7 +56,7 @@ namespace NHibernate.Linq.Visitors
 	/// 
 	/// The code here is based on the excellent work started by Harald Mueller.
 	/// </summary>
-	internal class WhereJoinDetector : NhExpressionTreeVisitor
+	internal class WhereJoinDetector : ExpressionTreeVisitor
 	{
 		// TODO: There are a number of types of expressions that we didn't handle here due to time constraints.  For example, the ?: operator could be checked easily.
 		private readonly IIsEntityDecider _isEntityDecider;

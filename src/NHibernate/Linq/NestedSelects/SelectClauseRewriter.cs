@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class SelectClauseRewriter : NhExpressionTreeVisitor
+	class SelectClauseRewriter : ExpressionTreeVisitor
 	{
 		static readonly Expression<Func<Tuple, bool>> WherePredicate = t => !ReferenceEquals(null, t.Items[0]);
 

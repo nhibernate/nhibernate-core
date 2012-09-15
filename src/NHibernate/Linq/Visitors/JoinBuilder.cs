@@ -4,6 +4,7 @@ using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -70,7 +71,7 @@ namespace NHibernate.Linq.Visitors
 			return resultOperatorBase != null && _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}
 
-		private class QuerySourceExtractor : NhExpressionTreeVisitor
+		private class QuerySourceExtractor : ExpressionTreeVisitor
 		{
 			private IQuerySource _querySource;
 

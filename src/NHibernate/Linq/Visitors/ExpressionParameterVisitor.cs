@@ -4,13 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Param;
 using NHibernate.Type;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
 	/// Locates constants in the expression tree and generates parameters for each one
 	/// </summary>
-	public class ExpressionParameterVisitor : NhExpressionTreeVisitor
+	public class ExpressionParameterVisitor : ExpressionTreeVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactory _sessionFactory;

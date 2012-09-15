@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class QueryReferenceExpressionFlattener : NhExpressionTreeVisitor
+	public class QueryReferenceExpressionFlattener : ExpressionTreeVisitor
 	{
 		private readonly QueryModel _model;
 

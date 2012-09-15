@@ -1,10 +1,11 @@
 ﻿using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class SwapQuerySourceVisitor : NhExpressionTreeVisitor
+	public class SwapQuerySourceVisitor : ExpressionTreeVisitor
 	{
 		private readonly IQuerySource _oldClause;
 		private readonly IQuerySource _newClause;

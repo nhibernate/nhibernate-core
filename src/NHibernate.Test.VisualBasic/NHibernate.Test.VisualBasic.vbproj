@@ -117,7 +117,9 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="NHibernate.Test.VisualBasic.build" />
+    <None Include="NHibernate.Test.VisualBasic.build">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">

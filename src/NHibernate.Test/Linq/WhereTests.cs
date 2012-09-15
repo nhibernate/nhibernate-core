@@ -303,6 +303,26 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsersWithStringContainsAndNotNullName()
+		{
+			//NH-3261
+			var query = (from u in db.Users
+						 where u.Name == null ? false : u.Name.Contains("yend")
+						 select u).ToList();
+
+			Assert.AreEqual(1, query.Count);
+		}
+
+		[Test]
+		public void UsersWithStringContainsAndNotNullNameHQL()
+		{
+			//NH-3261
+			var users = session.CreateQuery("from User u where (case when u.Name is null then 'false' else (case when u.Name LIKE '%yend%' then 'true' else 'false' end) end) = 'true'").List<User>();
+
+			Assert.AreEqual(1, users.Count);
+		}
+
+		[Test]
 		public void UsersWithArrayContains()
 		{
 			var names = new[] { "ayende", "rahien" };

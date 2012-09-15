@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	public class LocateGroupJoinQuerySource : NhExpressionTreeVisitor
+	public class LocateGroupJoinQuerySource : ExpressionTreeVisitor
 	{
 		private readonly IsAggregatingResults _results;
 		private GroupJoinClause _groupJoin;

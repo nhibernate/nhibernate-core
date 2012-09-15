@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class NestedSelectDetector : NhExpressionTreeVisitor
+	class NestedSelectDetector : ExpressionTreeVisitor
 	{
 		public bool HasSubquery { get; set; }
 		public SubQueryExpression Expression { get; private set; }
