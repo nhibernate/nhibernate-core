@@ -68,7 +68,7 @@ namespace NHibernate.Linq
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
+			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);

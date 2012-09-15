@@ -6,6 +6,8 @@ using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
+using NHibernate.Util;
+
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -75,6 +76,14 @@ namespace NHibernate.Util
 			return null;
 		}
 
+		public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
+		{
+			foreach (T item in query)
+			{
+				method(item);
+			}
+		}
+
 		private static DisposableEnumerator GetDisposableEnumerator(this IEnumerable source)
 		{
 			return new DisposableEnumerator(source);
@@ -88,14 +97,14 @@ namespace NHibernate.Util
 
 			public DisposableEnumerator(IEnumerable source)
 			{
-				wrapped = source.GetEnumerator();
+				this.wrapped = source.GetEnumerator();
 			}
 
 			#region IDisposable Members
 
 			public void Dispose()
 			{
-				var disposable = wrapped as IDisposable;
+				var disposable = this.wrapped as IDisposable;
 				if (disposable != null)
 				{
 					disposable.Dispose();
@@ -108,17 +117,17 @@ namespace NHibernate.Util
 
 			public bool MoveNext()
 			{
-				return wrapped.MoveNext();
+				return this.wrapped.MoveNext();
 			}
 
 			public void Reset()
 			{
-				wrapped.Reset();
+				this.wrapped.Reset();
 			}
 
 			public object Current
 			{
-				get { return wrapped.Current; }
+				get { return this.wrapped.Current; }
 			}
 
 			#endregion

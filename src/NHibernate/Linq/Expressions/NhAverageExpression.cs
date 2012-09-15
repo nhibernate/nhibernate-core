@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
 
+using NHibernate.Util;
+
 namespace NHibernate.Linq.Expressions
 {
 	public class NhAverageExpression : NhAggregatedExpression
