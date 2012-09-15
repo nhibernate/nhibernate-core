@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
-using NHibernate.Linq.Internal;
 using NHibernate.Type;
 
 namespace NHibernate.Linq
@@ -69,7 +68,7 @@ namespace NHibernate.Linq
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
+			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);

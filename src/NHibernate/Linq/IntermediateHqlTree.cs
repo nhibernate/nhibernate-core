@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
-using NHibernate.Linq.Internal;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -95,7 +94,7 @@ namespace NHibernate.Linq
 
 		public void AddGroupByClause(HqlGroupBy groupBy)
 		{
-			_root.As<HqlQuery>().AddChild(groupBy);
+			this._root.AddChild(groupBy);
 		}
 
 		public void AddOrderByClause(HqlExpression orderBy, HqlDirectionStatement direction)
@@ -123,7 +122,7 @@ namespace NHibernate.Linq
 				return;
 
 			if (!_root.NodesPreOrder.Any(x => x == orderBy))
-				_root.As<HqlQuery>().AddChild(orderBy);
+				_root.AddChild(orderBy);
 		}
 
 		private void ExecuteAddTakeClause(HqlExpression toTake)
@@ -167,7 +166,7 @@ namespace NHibernate.Linq
 				return;
 
 			if (!_root.NodesPreOrder.OfType<HqlHaving>().Any())
-				_root.As<HqlQuery>().AddChild(hqlHaving);
+				_root.AddChild(hqlHaving);
 		}
 
 		public void AddWhereClause(HqlBooleanExpression where)
@@ -176,7 +175,7 @@ namespace NHibernate.Linq
 			if (currentWhere == null)
 			{
 				currentWhere = TreeBuilder.Where(where);
-				_root.As<HqlQuery>().AddChild(currentWhere);
+				_root.AddChild(currentWhere);
 			}
 			else
 			{

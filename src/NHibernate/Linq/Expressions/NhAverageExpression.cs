@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-using NHibernate.Linq.Internal;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Expressions
 {
