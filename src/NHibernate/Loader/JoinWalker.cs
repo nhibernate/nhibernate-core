@@ -816,7 +816,7 @@ namespace NHibernate.Loader
 			aliases = new String[joins];
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
-			lockModeArray = ArrayHelper.FillArray(lockMode, joins);
+			lockModeArray = ArrayHelper.Fill(lockMode, joins);
 
 			int i = 0;
 			int j = 0;

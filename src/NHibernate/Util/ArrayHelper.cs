@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Text;
-using NHibernate.SqlTypes;
-using NHibernate.Type;
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -16,7 +14,6 @@ namespace NHibernate.Util
 	public static class ArrayHelper
 	{
 		public static readonly object[] EmptyObjectArray = new object[0];
-		public static readonly IType[] EmptyTypeArray = new IType[0];
 		public static readonly int[] EmptyIntArray = new int[0];
 		public static readonly bool[] EmptyBoolArray = new bool[0];
 
@@ -37,33 +34,10 @@ namespace NHibernate.Util
 		}
 
 
-		public static string[] FillArray(string str, int length)
+		public static T[] Fill<T>(T value, int length)
 		{
-			string[] result = new string[length];
-			for (int i = 0; i < length; i++)
-			{
-				result[i] = str;
-			}
-			return result;
-		}
-
-		public static LockMode[] FillArray(LockMode lockMode, int length)
-		{
-			LockMode[] result = new LockMode[length];
-			for (int i = 0; i < length; i++)
-			{
-				result[i] = lockMode;
-			}
-			return result;
-		}
-
-		public static IType[] FillArray(IType type, int length)
-		{
-			IType[] result = new IType[length];
-			for (int i = 0; i < length; i++)
-			{
-				result[i] = type;
-			}
+			var result = new T[length];
+			Fill(result, value);
 			return result;
 		}
 
@@ -76,23 +50,16 @@ namespace NHibernate.Util
 		}
 
 
-		public static string[] Slice(string[] strings, int begin, int length)
+		public static T[] Slice<T>(T[] strings, int begin, int length)
 		{
-			string[] result = new string[length];
+			var result = new T[length];
 			Array.Copy(strings, begin, result, 0, length);
-			return result;
-		}
-
-		public static object[] Slice(object[] objects, int begin, int length)
-		{
-			object[] result = new object[length];
-			Array.Copy(objects, begin, result, 0, length);
 			return result;
 		}
 
 		public static T[] Join<T>(T[] x, T[] y, bool[] use)
 		{
-			List<T> l = new List<T>(x);
+			var l = new List<T>(x);
 			for (int i = 0; i < y.Length; i++)
 			{
 				if (use[i])
@@ -101,33 +68,9 @@ namespace NHibernate.Util
 			return l.ToArray();
 		}
 
-		public static string[] Join(string[] x, string[] y)
+		public static T[] Join<T>(T[] x, T[] y)
 		{
-			string[] result = new string[x.Length + y.Length];
-			Array.Copy(x, 0, result, 0, x.Length);
-			Array.Copy(y, 0, result, x.Length, y.Length);
-			return result;
-		}
-
-		public static DbType[] Join(DbType[] x, DbType[] y)
-		{
-			DbType[] result = new DbType[x.Length + y.Length];
-			Array.Copy(x, 0, result, 0, x.Length);
-			Array.Copy(y, 0, result, x.Length, y.Length);
-			return result;
-		}
-
-		public static SqlType[] Join(SqlType[] x, SqlType[] y)
-		{
-			SqlType[] result = new SqlType[x.Length + y.Length];
-			Array.Copy(x, 0, result, 0, x.Length);
-			Array.Copy(y, 0, result, x.Length, y.Length);
-			return result;
-		}
-
-		public static object[] Join(object[] x, object[] y)
-		{
-			object[] result = new object[x.Length + y.Length];
+			var result = new T[x.Length + y.Length];
 			Array.Copy(x, 0, result, 0, x.Length);
 			Array.Copy(y, 0, result, x.Length, y.Length);
 			return result;
@@ -140,7 +83,7 @@ namespace NHibernate.Util
 
 		public static string[][] To2DStringArray(ICollection coll)
 		{
-			var result = new string[ coll.Count ][];
+			var result = new string[coll.Count][];
 			int i = 0;
 			foreach (object row in coll)
 			{
@@ -151,13 +94,13 @@ namespace NHibernate.Util
 					int j = 0;
 					foreach (object cell in rowAsCollection)
 					{
-						result[i][j++] = cell == null ? null : (string) cell;
+						result[i][j++] = cell == null ? null : (string)cell;
 					}
 				}
 				else
 				{
 					result[i] = new string[1];
-					result[i][0] = row == null ? null : (string) row;
+					result[i][0] = row == null ? null : (string)row;
 				}
 				i++;
 			}
@@ -206,7 +149,7 @@ namespace NHibernate.Util
 							System.Linq.Expressions.LambdaExpression addLambda =
 								System.Linq.Expressions.Expression.Lambda(addMethodCall);
 
-							addNull = (System.Action) addLambda.Compile();
+							addNull = (System.Action)addLambda.Compile();
 						}
 						else
 						{
@@ -291,12 +234,6 @@ namespace NHibernate.Util
 			}
 		}
 
-		public static IType[] ToTypeArray(IList list)
-		{
-			IType[] result = new IType[list.Count];
-			list.CopyTo(result, 0);
-			return result;
-		}
 
 		private static void ExpandWithNulls(IList list, int requiredLength)
 		{
@@ -318,14 +255,9 @@ namespace NHibernate.Util
 
 		public static string[] ToStringArray(ICollection coll)
 		{
-			return (string[]) ToArray(coll, typeof(string));
+			return (string[])ToArray(coll, typeof(string));
 		}
 
-
-		public static SqlType[] ToSqlTypeArray(ICollection coll)
-		{
-			return (SqlType[]) ToArray(coll, typeof(SqlType));
-		}
 
 		public static Array ToArray(ICollection coll, System.Type elementType)
 		{
@@ -336,22 +268,17 @@ namespace NHibernate.Util
 
 		public static int CountTrue(bool[] array)
 		{
-			int result = 0;
-			for (int i = 0; i < array.Length; i++)
-			{
-				if (array[i]) result++;
-			}
-			return result;
+			return array.Count(t => t);
 		}
 
-		public static bool ArrayEquals(SqlType[] a, SqlType[] b)
+		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
 			if (a.Length != b.Length)
 			{
 				return false;
 			}
-
-			for(int i = 0; i < a.Length; i++)
+			
+			for (int i = 0; i < a.Length; i++)
 			{
 				if (!Equals(a[i], b[i]))
 				{
@@ -371,7 +298,7 @@ namespace NHibernate.Util
 
 			int i = 0;
 			int len = a.Length;
-			while(i < len)
+			while (i < len)
 			{
 				if (a[i] != b[i])
 				{

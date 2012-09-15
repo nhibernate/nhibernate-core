@@ -21,7 +21,7 @@ namespace NHibernate.Engine
 
 		private bool readOnly;
 
-		public QueryParameters() : this(ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
+		public QueryParameters() : this(TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject, string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
@@ -50,7 +50,7 @@ namespace NHibernate.Engine
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
 		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(
-				ArrayHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
+				TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer)
 		{
 			// used by CriteriaTranslator

@@ -279,7 +279,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 			}
 
 			//NONE, because its the requested lock mode, not the actual! 
-			_defaultLockModes = ArrayHelper.FillArray(LockMode.None, size);
+			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)

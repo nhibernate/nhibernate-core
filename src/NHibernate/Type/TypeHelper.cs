@@ -12,6 +12,8 @@ namespace NHibernate.Type
 	/// </summary>
 	public static class TypeHelper
 	{
+		public static readonly IType[] EmptyTypeArray = new IType[0];
+
 		/// <summary>Deep copy a series of values from one array to another</summary>
 		/// <param name="values">The values to copy (the source)</param>
 		/// <param name="types">The value types</param>
@@ -259,7 +261,7 @@ namespace NHibernate.Type
 			else
 			{
 				int[] trimmed = new int[count];
-				System.Array.Copy(results, 0, trimmed, 0, count);
+				Array.Copy(results, 0, trimmed, 0, count);
 				return trimmed;
 			}
 		}
@@ -310,7 +312,7 @@ namespace NHibernate.Type
 			else
 			{
 				int[] trimmed = new int[count];
-				System.Array.Copy(results, 0, trimmed, 0, count);
+				Array.Copy(results, 0, trimmed, 0, count);
 				return trimmed;
 			}
 		}
