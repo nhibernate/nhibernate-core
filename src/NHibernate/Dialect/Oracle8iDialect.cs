@@ -270,7 +270,7 @@ namespace NHibernate.Dialect
 
 			string selectColumns = ExtractColumnOrAliasNames(sql);
 
-			var pagingSelect = new SqlStringBuilder(sql.Parts.Count + 10);
+			var pagingSelect = new SqlStringBuilder(sql.Count + 10);
 			if (offset != null)
 			{
 				pagingSelect.Add("select " + selectColumns + " from ( select row_.*, rownum rownum_ from ( ");

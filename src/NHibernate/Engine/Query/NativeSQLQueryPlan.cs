@@ -129,7 +129,7 @@ namespace NHibernate.Engine.Query
 
 			var originSql = sqlString.Compact();
 			var result = new SqlStringBuilder();
-			foreach (var sqlPart in originSql.Parts)
+			foreach (var sqlPart in originSql)
 			{
 				var parameter = sqlPart as Parameter;
 				if (parameter != null)

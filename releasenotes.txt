@@ -1,10 +1,11 @@
 Build vNext
 =============================
 
-** Known BREAKING CHANGES from NH3.3.0.GA to vNext
+** Known BREAKING CHANGES from NH3.3.1.GA to vNext
 
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
 
 Build 3.3.1.GA
 =============================

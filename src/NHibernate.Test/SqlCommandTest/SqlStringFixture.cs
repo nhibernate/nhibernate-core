@@ -427,14 +427,11 @@ namespace NHibernate.Test.SqlCommandTest
 		[Test]
 		public void ParameterPropertyShouldReturnNewInstances()
 		{
-			Parameter[] parameters1 = new Parameter[1];
-			Parameter[] parameters2 = new Parameter[1];
-
 			SqlString parameterString1 = new SqlString(Parameter.Placeholder);
-			parameterString1.Parts.CopyTo(parameters1, 0);
+			Parameter[] parameters1 = parameterString1.OfType<Parameter>().ToArray();
 
 			SqlString parameterString2 = new SqlString(Parameter.Placeholder);
-			parameterString2.Parts.CopyTo(parameters2, 0);
+			Parameter[] parameters2 = parameterString2.OfType<Parameter>().ToArray();
 
 			Assert.AreEqual(parameterString1, parameterString2);
 			Assert.AreNotSame(parameterString1, parameterString2);

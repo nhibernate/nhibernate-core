@@ -1024,7 +1024,7 @@ namespace NHibernate.Hql.Classic
 					{
 						nolast = true;
 						int i = 0;
-						foreach (object token in next.Parts)
+						foreach (object token in next)
 						{
 							buf.AddObject(token);
 							if (!isSubselect)
@@ -1096,7 +1096,7 @@ namespace NHibernate.Hql.Classic
 			int parenCount = 1;
 			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
 			{
-				if (tokens[tokenIdx].Parts.Count == 1 && (tokens[tokenIdx].Parts.First() is Parameter))
+				if (tokens[tokenIdx].Count == 1 && (tokens[tokenIdx].First() is Parameter))
 				{
 					// the parameter was processed
 					functionTokens.Add(tokens[tokenIdx]);
