@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2030
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public class Fixture
 	{
 
 		[Test]

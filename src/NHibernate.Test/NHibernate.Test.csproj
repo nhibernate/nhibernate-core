@@ -3144,7 +3144,6 @@
     <EmbeddedResource Include="NHSpecificTest\NH1989\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1978\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2044\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\NH2030\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2055\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2011\Mappings.hbm.xml" />
