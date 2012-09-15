@@ -209,7 +209,7 @@ namespace NHibernate.Type
 			
 			RegisterType(typeof (Uri), NHibernateUtil.Uri, new[] {"uri", "url"});
 
-      RegisterType(typeof(XDocument), NHibernateUtil.XDoc, new[] { "xdoc", "xdocument" });
+			RegisterType(typeof(XDocument), NHibernateUtil.XDoc, new[] { "xdoc", "xdocument" });
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
@@ -612,6 +612,7 @@ namespace NHibernate.Type
 			return (NullableType)returnType;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, int length, GetNullableTypeWithLength ctorDelegate)
 		{
 			string key = GetKeyForLengthBased(defaultUnqualifiedType.Name, length);
@@ -625,6 +626,7 @@ namespace NHibernate.Type
 			return (NullableType)returnType;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, byte precision, byte scale, NullableTypeCreatorDelegate ctor)
 		{
 			string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
