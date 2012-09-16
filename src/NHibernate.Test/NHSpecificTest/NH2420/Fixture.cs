@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Transactions;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 
@@ -36,12 +38,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					new DummyEnlistment(),
 					EnlistmentOptions.None);
 
-				using (IDbConnection connection = new SqlConnection(connectionString))
+				IDbConnection connection;
+				if (sessions.ConnectionProvider.Driver.GetType() == typeof(OdbcDriver))
+					connection = new OdbcConnection(connectionString);
+				else
+					connection = new SqlConnection(connectionString);
+
+				using (connection)
 				{
 					connection.Open();
 					using (s = Sfi.OpenSession(connection))
 					{
-						s.Save(new MyTable() { String = "hello!" });
+						s.Save(new MyTable { String = "hello!" });
 					}
 					connection.Close();
 				}
