@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 		}
 
 		[Test]
-		public void Bug()
+		public void ShouldBeAbleToReleaseSuppliedConnectionAfterDistributedTransaction()
 		{
 			string connectionString = cfg.GetProperty("connection.connection_string");
 			ISession s;
