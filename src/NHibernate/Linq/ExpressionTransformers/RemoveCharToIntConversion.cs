@@ -46,12 +46,12 @@ namespace NHibernate.Linq.ExpressionTransformers
 			return expression;
 		}
 
-		private bool IsConvertExpression(Expression expression)
+		private static bool IsConvertExpression(Expression expression)
 		{
 			return (expression.NodeType == ExpressionType.Convert);
 		}
 
-		private bool IsConstantExpression(Expression expression)
+		private static bool IsConstantExpression(Expression expression)
 		{
 			return (expression.NodeType == ExpressionType.Constant);
 		}

@@ -77,7 +77,7 @@ namespace NHibernate.Linq.ReWriters
 			/// </summary>
 			public IEnumerable<ResultOperatorBase> ResultOperators
 			{
-				get { return this.resultOperators; }
+				get { return resultOperators; }
 			}
 
 			/// <summary>
@@ -85,24 +85,22 @@ namespace NHibernate.Linq.ReWriters
 			/// </summary>
 			public IStreamedDataInfo EvaluationType
 			{
-				get { return this.evaluationType; }
+				get { return evaluationType; }
 			}
 
 			public Expression Rewrite(Expression expression)
 			{
-				Expression rewrittenExpression = this.VisitExpression(expression);
-
-				return rewrittenExpression;
+				return VisitExpression(expression);
 			}
 
 			protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 			{
-				this.resultOperators.AddRange(
+				resultOperators.AddRange(
 					expression.QueryModel.ResultOperators
-						.Where(r => rewrittenTypes.Any(t => t.IsAssignableFrom(r.GetType()))));
+						.Where(r => rewrittenTypes.Any(t => t.IsInstanceOfType(r))));
 
-				this.resultOperators.ForEach(f => expression.QueryModel.ResultOperators.Remove(f));
-				this.evaluationType = expression.QueryModel.SelectClause.GetOutputDataInfo();
+				resultOperators.ForEach(f => expression.QueryModel.ResultOperators.Remove(f));
+				evaluationType = expression.QueryModel.SelectClause.GetOutputDataInfo();
 
 				if (expression.QueryModel.ResultOperators.Count == 0)
 				{
