@@ -306,6 +306,19 @@ namespace NHibernate.Test.Linq
 			Assert.IsTrue(query.ToArray().Length > 0);
 		}
 
+		[Test]
+		public void CanDoProjectionWithCast()
+		{
+			// NH-2463
+			var lst1 = db.Users.Select(p => new { p1 = p.Name }).ToList();
+
+			Assert.AreEqual(3, lst1.Count());
+
+			var lst2 = db.Users.Select(p => new { p1 = (p as User).Name }).ToList();
+
+			Assert.AreEqual(3, lst2.Count());
+		}
+
 		public class Wrapper<T>
 		{
 			public T item;
