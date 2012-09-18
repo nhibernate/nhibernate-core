@@ -159,6 +159,7 @@
     <Compile Include="Dialect\SybaseSQLAnywhere12Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
+    <Compile Include="Driver\DotConnectMySqlDriver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
     <Compile Include="Driver\FirebirdDriver.cs" />
     <Compile Include="Driver\IDriver.cs" />
