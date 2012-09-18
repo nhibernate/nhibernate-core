@@ -349,12 +349,11 @@ namespace NHibernate.Linq.Visitors
 					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
-				{
+				case ExpressionType.TypeAs:
 					if (expression.Operand.Type.IsPrimitive && expression.Type.IsPrimitive)
 						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
 
 					return VisitExpression(expression.Operand);
-				}
 			}
 
 			throw new NotSupportedException(expression.ToString());
