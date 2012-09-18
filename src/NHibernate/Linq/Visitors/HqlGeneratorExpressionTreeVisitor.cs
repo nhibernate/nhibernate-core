@@ -366,7 +366,7 @@ namespace NHibernate.Linq.Visitors
 					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
-				{
+				case ExpressionType.TypeAs:
 					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
 						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
 					{
@@ -374,7 +374,6 @@ namespace NHibernate.Linq.Visitors
 					}
 
 					return VisitExpression(expression.Operand);
-				}
 			}
 
 			throw new NotSupportedException(expression.ToString());
