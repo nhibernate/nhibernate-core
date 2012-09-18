@@ -294,5 +294,18 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(2, timesheets[1].EntryCount);
 			Assert.AreEqual(4, timesheets[2].EntryCount);
 		}
+
+		[Test]
+		public void CanDoProjectionWithCast()
+		{
+			// NH-2463
+			var lst1 = db.Users.Select(p => new { p1 = p.Name }).ToList();
+
+			Assert.AreEqual(3, lst1.Count());
+
+			var lst2 = db.Users.Select(p => new { p1 = (p as User).Name }).ToList();
+
+			Assert.AreEqual(3, lst2.Count());
+		}
 	}
 }
