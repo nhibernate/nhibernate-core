@@ -12,7 +12,7 @@ namespace NHibernate.Util
 
 		public static bool IsNullable(this System.Type type)
 		{
-			return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 		}
 
 		public static bool IsNullableOrReference(this System.Type type)

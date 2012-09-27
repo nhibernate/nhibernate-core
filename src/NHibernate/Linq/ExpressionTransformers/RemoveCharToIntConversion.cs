@@ -15,18 +15,28 @@ namespace NHibernate.Linq.ExpressionTransformers
 	/// </remarks> 
 	public class RemoveCharToIntConversion : IExpressionTransformer<BinaryExpression>
 	{
+		private static readonly ExpressionType[] _supportedExpressionTypes = new[]
+			{
+				ExpressionType.Equal,
+				ExpressionType.NotEqual,
+				ExpressionType.GreaterThan,
+				ExpressionType.GreaterThanOrEqual,
+				ExpressionType.LessThan,
+				ExpressionType.LessThanOrEqual
+			};
+
 		public Expression Transform(BinaryExpression expression)
 		{
 			var lhs = expression.Left;
 			var rhs = expression.Right;
 
-			bool lhsIsConvertExpression = IsConvertExpression(lhs);
-			bool rhsIsConvertExpression = IsConvertExpression(rhs);
+			var lhsIsConvertExpression = IsConvertExpression(lhs);
+			var rhsIsConvertExpression = IsConvertExpression(rhs);
 
 			if (!lhsIsConvertExpression && !rhsIsConvertExpression) return expression;
 
-			bool lhsIsConstantExpression = IsConstantExpression(lhs);
-			bool rhsIsConstantExpression = IsConstantExpression(rhs);
+			var lhsIsConstantExpression = IsConstantExpression(lhs);
+			var rhsIsConstantExpression = IsConstantExpression(rhs);
 
 			if (!lhsIsConstantExpression && !rhsIsConstantExpression) return expression;
 
@@ -58,18 +68,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 		public ExpressionType[] SupportedExpressionTypes
 		{
-			get
-			{
-				return new[]
-				{
-					ExpressionType.Equal,
-					ExpressionType.NotEqual,
-					ExpressionType.GreaterThan,
-					ExpressionType.GreaterThanOrEqual,
-					ExpressionType.LessThan,
-					ExpressionType.LessThanOrEqual
-				};
-			}
+			get { return _supportedExpressionTypes; }
 		}
 	}
 }

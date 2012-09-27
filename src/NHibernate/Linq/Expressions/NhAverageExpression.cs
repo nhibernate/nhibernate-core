@@ -12,7 +12,7 @@ namespace NHibernate.Linq.Expressions
 
 		private static System.Type CalculateAverageType(System.Type inputType)
 		{
-			bool isNullable = false;
+			var isNullable = false;
 
 			if (inputType.IsNullable())
 			{
