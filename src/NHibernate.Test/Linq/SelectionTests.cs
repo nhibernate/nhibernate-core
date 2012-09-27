@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Iesi.Collections.Generic;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -307,16 +309,52 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void CanDoProjectionWithCast()
+		public void CanProjectWithCast()
 		{
 			// NH-2463
-			var lst1 = db.Users.Select(p => new { p1 = p.Name }).ToList();
+			// ReSharper disable RedundantCast
 
-			Assert.AreEqual(3, lst1.Count());
+			var names1 = db.Users.Select(p => new { p1 = p.Name }).ToList();
+			Assert.AreEqual(3, names1.Count);
 
-			var lst2 = db.Users.Select(p => new { p1 = (p as User).Name }).ToList();
+			var names2 = db.Users.Select(p => new { p1 = ((User) p).Name }).ToList();
+			Assert.AreEqual(3, names2.Count);
 
-			Assert.AreEqual(3, lst2.Count());
+			var names3 = db.Users.Select(p => new { p1 = (p as User).Name }).ToList();
+			Assert.AreEqual(3, names3.Count);
+
+			var names4 = db.Users.Select(p => new { p1 = ((IUser) p).Name }).ToList();
+			Assert.AreEqual(3, names4.Count);
+
+			var names5 = db.Users.Select(p => new { p1 = (p as IUser).Name }).ToList();
+			Assert.AreEqual(3, names5.Count);
+			// ReSharper restore RedundantCast
+		}
+
+		[Test]
+		public void CanSelectManyWithCast()
+		{
+			// NH-2688
+			// ReSharper disable RedundantCast
+			var orders1 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => o.Orders).ToList();
+			Assert.AreEqual(5, orders1.Count);
+
+			//$exception	{"c.Orders is not mapped [.SelectMany[NHibernate.DomainModel.Northwind.Entities.Customer,NHibernate.DomainModel.Northwind.Entities.Order](.Where[NHibernate.DomainModel.Northwind.Entities.Customer](NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Customer], Quote((c, ) => (String.op_Equality(c.CustomerId, p1))), ), Quote((o, ) => (Convert(o.Orders))), )]"}	System.Exception {NHibernate.Hql.Ast.ANTLR.QuerySyntaxException} 
+			// Block OData navigation to detail request requests like 
+			// http://localhost:2711/TestWcfDataService.svc/TestEntities(guid&#39;0dd52f6c-1943-4013-a88e-3b63a1fbe11b&#39;)/Details1 
+			var orders2 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (ISet<Order>) o.Orders).ToList();
+			Assert.AreEqual(5, orders2.Count);
+
+			//$exception	{"([100001].Orders As ISet`1)"}	System.Exception {System.NotSupportedException} 
+			var orders3 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as ISet<Order>)).ToList();
+			Assert.AreEqual(5, orders3.Count);
+
+			var orders4 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (IEnumerable<Order>) o.Orders).ToList();
+			Assert.AreEqual(5, orders4.Count);
+
+			var orders5 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as IEnumerable<Order>)).ToList();
+			Assert.AreEqual(5, orders5.Count);
+			// ReSharper restore RedundantCast
 		}
 
 		public class Wrapper<T>
