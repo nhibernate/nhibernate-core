@@ -20,7 +20,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		{
 			if (expression.Type != typeof(object) &&
 				expression.Type.IsAssignableFrom(expression.Operand.Type) &&
-				expression.Method != null &&
+				expression.Method == null &&
 				!expression.IsLiftedToNull)
 			{
 				return expression.Operand;
