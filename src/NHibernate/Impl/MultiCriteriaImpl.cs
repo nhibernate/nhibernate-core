@@ -414,12 +414,11 @@ namespace NHibernate.Impl
 		{
 			if (criteriaResults == null) List();
 
-			if (!criteriaResultPositions.ContainsKey(key))
-			{
+			int criteriaResultPosition;
+			if (!criteriaResultPositions.TryGetValue(key, out criteriaResultPosition))
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			}
 
-			return criteriaResults[criteriaResultPositions[key]];
+			return criteriaResults[criteriaResultPosition];
 		}
 
 		#endregion
@@ -456,9 +455,7 @@ namespace NHibernate.Impl
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
 			if (criteriaResultPositions.ContainsKey(key))
-			{
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
-			}
 		}
 	}
 }

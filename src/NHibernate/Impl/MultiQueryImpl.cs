@@ -654,12 +654,11 @@ namespace NHibernate.Impl
 				queryResults = List();
 			}
 
-			if (!queryResultPositions.ContainsKey(key))
-			{
+			int queryResultPosition;
+			if (!queryResultPositions.TryGetValue(key, out queryResultPosition))
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			}
 
-			return queryResults[queryResultPositions[key]];
+			return queryResults[queryResultPosition];
 		}
 
 		public override string ToString()
@@ -764,9 +763,7 @@ namespace NHibernate.Impl
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
 			if (queryResultPositions.ContainsKey(key))
-			{
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
-			}
 		}
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)

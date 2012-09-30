@@ -131,9 +131,7 @@ namespace NHibernate.Impl
 			foreach (string parameterName in definition.ParameterNames)
 			{
 				if (!parameters.ContainsKey(parameterName))
-				{
-					throw new HibernateException("Filter [" + Name + "] parameter [" + parameterName + "] value not set");
-				}
+					throw new HibernateException(string.Format("Filter [{0}] parameter [{1}] value not set", Name, parameterName));
 			}
 		}
 	}

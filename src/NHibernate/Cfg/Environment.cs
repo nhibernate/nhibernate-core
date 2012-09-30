@@ -231,7 +231,7 @@ namespace NHibernate.Cfg
 			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
 			if (nhConfig.SessionFactory != null)
 			{
-				foreach (KeyValuePair<string, string> kvp in nhConfig.SessionFactory.Properties)
+				foreach (var kvp in nhConfig.SessionFactory.Properties)
 				{
 					GlobalProperties[kvp.Key] = kvp.Value;
 				}
@@ -240,18 +240,12 @@ namespace NHibernate.Cfg
 
 		internal static void ResetSessionFactoryProperties()
 		{
-			string savedBytecodeProvider = null;
-			string savedUseReflectionOptimizer = null;
-
+			string savedBytecodeProvider;
+			GlobalProperties.TryGetValue(PropertyBytecodeProvider, out savedBytecodeProvider);
 			// Save values loaded and used in static constructor
-			if (GlobalProperties.ContainsKey(PropertyBytecodeProvider))
-			{
-				savedBytecodeProvider = GlobalProperties[PropertyBytecodeProvider];
-			}
-			if (GlobalProperties.ContainsKey(PropertyUseReflectionOptimizer))
-			{
-				savedUseReflectionOptimizer = GlobalProperties[PropertyUseReflectionOptimizer];
-			}
+
+			string savedUseReflectionOptimizer;
+			GlobalProperties.TryGetValue(PropertyUseReflectionOptimizer, out savedUseReflectionOptimizer);
 			// Clean all property loaded from app.config
 			GlobalProperties.Clear();
 

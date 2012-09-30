@@ -50,9 +50,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			// key is not joined if it occurs only at tails of expressions, e.g.
 			// a.B == null, a.B != null, a.B == c.D etc.
-			if (_joins.ContainsKey(key))
+			NhJoinClause nhJoinClause;
+			if (_joins.TryGetValue(key, out nhJoinClause))
 			{
-				_joins[key].MakeInner();
+				nhJoinClause.MakeInner();
 			}
 		}
 

@@ -156,11 +156,12 @@ namespace NHibernate.Dialect
 				}
 
 				SqlString sortExpression = RemoveSortOrderDirection(sortExpressions[i]);
-				if (aliasToColumn.ContainsKey(sortExpression))
+				SqlString s;
+				if (aliasToColumn.TryGetValue(sortExpression, out s))
 				{
-					result.Add(aliasToColumn[sortExpression]);
+					result.Add(s);
 				}
-				else
+				else 
 				{
 					result.Add(sortExpression);
 				}
@@ -196,16 +197,20 @@ namespace NHibernate.Dialect
 				if (sortExpression.StartsWithCaseInsensitive("CURRENT_TIMESTAMP"))
 					result.Add(sortExpression);
 
-				else if (columnToAlias.ContainsKey(sortExpression))
-				{
-					result.Add("q_.");
-					result.Add(columnToAlias[sortExpression]);
-				}
 				else
 				{
-					throw new HibernateException(
-						"The dialect was unable to perform paging of a statement that requires distinct results, and "
-						+ "is ordered by a column that is not included in the result set of the query.");
+					SqlString value;
+					if (columnToAlias.TryGetValue(sortExpression, out value))
+					{
+						result.Add("q_.");
+						result.Add(value);
+					}
+					else 
+					{
+						throw new HibernateException(
+							"The dialect was unable to perform paging of a statement that requires distinct results, and "
+							+ "is ordered by a column that is not included in the result set of the query.");
+					}
 				}
 
 				if (sortExpressions[i].Trim().EndsWithCaseInsensitive("desc"))

@@ -312,7 +312,9 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			return collections.ContainsKey(role) ? collections[role] : null;
+			NHibernate.Mapping.Collection result;
+			collections.TryGetValue(role, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -1291,12 +1293,12 @@ namespace NHibernate.Cfg
 
 			if (Properties.ContainsKey(Environment.Dialect))
 			{
-				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(Properties);
-				foreach (KeyValuePair<string, string> pair in dialect.DefaultProperties)
+				var dialect = Dialect.Dialect.GetDialect(Properties);
+				foreach (var pair in dialect.DefaultProperties)
 					derivedProperties[pair.Key] = pair.Value;
 			}
 
-			foreach (KeyValuePair<string, string> pair in Properties)
+			foreach (var pair in Properties)
 				derivedProperties[pair.Key] = pair.Value;
 
 			return derivedProperties;

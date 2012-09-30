@@ -104,12 +104,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>true if the from node contains the class alias name.</returns>
 		public bool ContainsClassAlias(string alias)
 		{
-			bool isAlias = _fromElementByClassAlias.ContainsKey(alias);
-			if (!isAlias && SessionFactoryHelper.IsStrictJPAQLComplianceEnabled)
+			if (_fromElementByClassAlias.ContainsKey(alias))
 			{
-				isAlias = FindIntendedAliasedFromElementBasedOnCrazyJPARequirements(alias) != null;
+				return true;
 			}
-			return isAlias;
+			if (SessionFactoryHelper.IsStrictJPAQLComplianceEnabled)
+			{
+				return FindIntendedAliasedFromElementBasedOnCrazyJPARequirements(alias) != null;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -270,7 +273,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool ProjectionListPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{

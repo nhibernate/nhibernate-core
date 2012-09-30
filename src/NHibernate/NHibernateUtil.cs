@@ -55,10 +55,9 @@ namespace NHibernate
 			{
 				type = type.GetGenericArguments()[0];
 			}
-			if (clrTypeToNHibernateType.ContainsKey(type))
-			{
-				return clrTypeToNHibernateType[type];
-			}
+			IType value;
+			if (clrTypeToNHibernateType.TryGetValue(type, out value))
+				return value;
 			if (type.IsEnum)
 			{
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));

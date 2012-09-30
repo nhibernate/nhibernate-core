@@ -375,8 +375,9 @@ namespace NHibernate.Linq.Visitors
 
 			public PossibleValueSet GetValues(string memberExpression)
 			{
-				if (MemberExpressionValuesIfEmptyOuterJoined.ContainsKey(memberExpression))
-					return MemberExpressionValuesIfEmptyOuterJoined[memberExpression];
+				PossibleValueSet value;
+				if (MemberExpressionValuesIfEmptyOuterJoined.TryGetValue(memberExpression, out value))
+					return value;
 				return Values;
 			}
 

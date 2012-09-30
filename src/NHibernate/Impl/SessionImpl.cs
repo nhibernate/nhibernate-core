@@ -2315,8 +2315,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					if (childSessionsByEntityMode.ContainsKey(entityMode))
-						rtn = childSessionsByEntityMode[entityMode];
+					childSessionsByEntityMode.TryGetValue(entityMode, out rtn);
 				}
 
 				if (rtn == null)

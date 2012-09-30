@@ -236,23 +236,24 @@ namespace NHibernate.Impl
 			if (!IsMemberExpression(expression))
 				return ProjectionInfo.ForProjection(Projections.Constant(FindValue(expression)));
 
-			if (expression is UnaryExpression)
+			var unaryExpression = expression as UnaryExpression;
+			if (unaryExpression != null)
 			{
-				UnaryExpression unaryExpression = (UnaryExpression)expression;
-
 				if (!IsConversion(unaryExpression.NodeType))
-					throw new Exception("Cannot interpret member from " + expression.ToString());
+					throw new Exception("Cannot interpret member from " + expression);
 
 				return FindMemberProjection(unaryExpression.Operand);
 			}
 
-			if (expression is MethodCallExpression)
+			var methodCallExpression = expression as MethodCallExpression;
+			if (methodCallExpression != null)
 			{
-				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
-
-				string signature = Signature(methodCallExpression.Method);
-				if (_customProjectionProcessors.ContainsKey(signature))
-					return ProjectionInfo.ForProjection(_customProjectionProcessors[signature](methodCallExpression));
+				var signature = Signature(methodCallExpression.Method);
+				Func<MethodCallExpression, IProjection> processor;
+				if (_customProjectionProcessors.TryGetValue(signature, out processor))
+				{
+					return ProjectionInfo.ForProjection(processor(methodCallExpression));
+				}
 			}
 
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
@@ -416,10 +417,9 @@ namespace NHibernate.Impl
 				return IsMemberExpression(unaryExpression.Operand);
 			}
 
-			if (expression is MethodCallExpression)
+			var methodCallExpression = expression as MethodCallExpression;
+			if (methodCallExpression != null)
 			{
-				MethodCallExpression methodCallExpression = (MethodCallExpression)expression;
-
 				string signature = Signature(methodCallExpression.Method);
 				if (_customProjectionProcessors.ContainsKey(signature))
 					return true;
@@ -495,12 +495,11 @@ namespace NHibernate.Impl
 			if (value == null)
 				return ProcessSimpleNullExpression(property, nodeType);
 
-			if (!_simpleExpressionCreators.ContainsKey(nodeType))
+			Func<ProjectionInfo, object, ICriterion> simpleExpressionCreator;
+			if (!_simpleExpressionCreators.TryGetValue(nodeType, out simpleExpressionCreator))
 				throw new Exception("Unhandled simple expression type: " + nodeType);
 
-			Func<ProjectionInfo, object, ICriterion> simpleExpressionCreator = _simpleExpressionCreators[nodeType];
-			ICriterion criterion = simpleExpressionCreator(property, value);
-			return criterion;
+			return simpleExpressionCreator(property, value);
 		}
 
 		private static ICriterion ProcessVisualBasicStringComparison(BinaryExpression be)
@@ -535,12 +534,11 @@ namespace NHibernate.Impl
 			ProjectionInfo leftProperty = FindMemberProjection(left);
 			ProjectionInfo rightProperty = FindMemberProjection(right);
 
-			if (!_propertyExpressionCreators.ContainsKey(nodeType))
+			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator;
+			if (!_propertyExpressionCreators.TryGetValue(nodeType, out propertyExpressionCreator))
 				throw new Exception("Unhandled property expression type: " + nodeType);
 
-			Func<ProjectionInfo, ProjectionInfo, ICriterion> propertyExpressionCreator = _propertyExpressionCreators[nodeType];
-			ICriterion criterion = propertyExpressionCreator(leftProperty, rightProperty);
-			return criterion;
+			return propertyExpressionCreator(leftProperty, rightProperty);
 		}
 
 		private static ICriterion ProcessAndExpression(BinaryExpression expression)
@@ -641,20 +639,20 @@ namespace NHibernate.Impl
 		{
 			string signature = Signature(methodCallExpression.Method);
 
-			if (!_customMethodCallProcessors.ContainsKey(signature))
+			Func<MethodCallExpression, ICriterion> customMethodCallProcessor;
+			if (!_customMethodCallProcessors.TryGetValue(signature, out customMethodCallProcessor))
 				throw new Exception("Unrecognised method call: " + signature);
 
-			Func<MethodCallExpression, ICriterion> customMethodCallProcessor = _customMethodCallProcessors[signature];
-			ICriterion criterion = customMethodCallProcessor(methodCallExpression);
-			return criterion;
+			return customMethodCallProcessor(methodCallExpression);
 		}
 
 		private static ICriterion ProcessExpression(Expression expression)
 		{
-			if (expression is BinaryExpression)
-				return ProcessBinaryExpression((BinaryExpression)expression);
-			else
-				return ProcessBooleanExpression((Expression)expression);
+			var binaryExpression = expression as BinaryExpression;
+			if (binaryExpression != null)
+				return ProcessBinaryExpression(binaryExpression);
+			
+			return ProcessBooleanExpression(expression);
 		}
 
 		private static ICriterion ProcessLambdaExpression(LambdaExpression expression)
@@ -750,10 +748,10 @@ namespace NHibernate.Impl
 
 			var subqueryExpressionCreators = _subqueryExpressionCreatorTypes[subqueryType];
 
-			if (!subqueryExpressionCreators.ContainsKey(be.NodeType))
+			Func<string, DetachedCriteria, AbstractCriterion> subqueryExpressionCreator;
+			if (!subqueryExpressionCreators.TryGetValue(be.NodeType, out subqueryExpressionCreator))
 				throw new Exception("Unhandled subquery expression type: " + subqueryType + "," + be.NodeType);
 
-			Func<string, DetachedCriteria, AbstractCriterion> subqueryExpressionCreator = subqueryExpressionCreators[be.NodeType];
 			return subqueryExpressionCreator(property, detachedCriteria);
 		}
 

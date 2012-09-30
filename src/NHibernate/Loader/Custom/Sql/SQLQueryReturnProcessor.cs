@@ -265,7 +265,7 @@ namespace NHibernate.Loader.Custom.Sql
 			// Make sure the owner alias is known...
 			if (!alias2Return.ContainsKey(ownerAlias))
 			{
-				throw new HibernateException("Owner alias [" + ownerAlias + "] is unknown for alias [" + alias + "]");
+				throw new HibernateException(string.Format("Owner alias [{0}] is unknown for alias [{1}]", ownerAlias, alias));
 			}
 
 			// If this return's alias has not been processed yet, do so b4 further processing of this return
@@ -362,9 +362,9 @@ namespace NHibernate.Loader.Custom.Sql
 					string alias = rtn.Alias;
 					FetchReturn customReturn;
 					NonScalarReturn ownerCustomReturn = (NonScalarReturn) customReturnsByAlias[rtn.OwnerAlias];
-					if (alias2CollectionPersister.ContainsKey(alias))
+					ISqlLoadableCollection persister;
+					if (alias2CollectionPersister.TryGetValue(alias, out persister))
 					{
-						ISqlLoadableCollection persister = alias2CollectionPersister[alias];
 						bool isEntityElements = persister.ElementType.IsEntityType;
 						ICollectionAliases collectionAliases;
 						IEntityAliases elementEntityAliases = null;
@@ -391,7 +391,7 @@ namespace NHibernate.Loader.Custom.Sql
 							new CollectionFetchReturn(alias, ownerCustomReturn, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
 													  rtn.LockMode);
 					}
-					else
+					else 
 					{
 						IEntityAliases entityAliases;
 						if (queryHadAliases || HasPropertyResultMap(alias))
