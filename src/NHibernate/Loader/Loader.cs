@@ -427,7 +427,7 @@ namespace NHibernate.Loader
 				IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
 
 				IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection,
-				                              session);
+											  session);
 
 				// would be great to move all this below here into another method that could also be used
 				// from the new scrolling stuff.
@@ -460,8 +460,8 @@ namespace NHibernate.Loader
 						}
 
 						object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey,
-						                                    hydratedObjects,
-						                                    keys, returnProxies);
+															hydratedObjects,
+															keys, returnProxies);
 						results.Add(result);
 
 						if (createSubselects)

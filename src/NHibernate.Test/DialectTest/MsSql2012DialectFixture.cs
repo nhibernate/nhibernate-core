@@ -64,6 +64,17 @@ namespace NHibernate.Test.DialectTest
 		}
 
 		[Test]
+		public void GetLimitStringWithInnerOrder()
+		{
+			var d = new MsSql2012Dialect();
+
+			var str = d.GetLimitString(new SqlString("SELECT * FROM A LEFT JOIN (SELECT top 7 * FROM B ORDER BY name) AS B on A.Name = B.Name"), new SqlString("111"), new SqlString("222"));
+			Assert.AreEqual(
+				"SELECT * FROM A LEFT JOIN (SELECT top 7 * FROM B ORDER BY name) AS B on A.Name = B.Name ORDER BY CURRENT_TIMESTAMP OFFSET 111 ROWS FETCH FIRST 222 ROWS ONLY",
+				str.ToString());
+		}
+
+		[Test]
 		public void OnlyOffsetLimit()
 		{
 			var d = new MsSql2012Dialect();
