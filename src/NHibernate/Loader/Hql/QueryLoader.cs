@@ -5,9 +5,10 @@ using System.Data;
 using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
+using NHibernate.Hql;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Impl;
-using NHibernate.Loader;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -17,7 +18,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
-namespace NHibernate.Hql.Ast.ANTLR.Loader
+namespace NHibernate.Loader.Hql
 {
 	[CLSCompliant(false)]
 	public class QueryLoader : BasicLoader
@@ -59,7 +60,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 		}
 
 		protected override SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes,
-		                                        Dialect.Dialect dialect)
+												Dialect.Dialect dialect)
 		{
 			if (lockModes == null || lockModes.Count == 0)
 			{
@@ -292,8 +293,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 		{
 			// meant to handle dynamic instantiation queries...
 			HolderInstantiator holderInstantiator = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer,
-			                                                                                 resultTransformer,
-			                                                                                 _queryReturnAliases);
+																							 resultTransformer,
+																							 _queryReturnAliases);
 			if (holderInstantiator.IsRequired)
 			{
 				for (int i = 0; i < results.Count; i++)
@@ -319,7 +320,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Loader
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			row = ToResultRow(row);
 			bool hasTransform = HasSelectNew || resultTransformer != null;

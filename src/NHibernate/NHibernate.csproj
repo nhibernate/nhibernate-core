@@ -935,7 +935,7 @@
     <Compile Include="Hql\Ast\ANTLR\InvalidPathException.cs" />
     <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Loader\Hql\QueryLoader.cs" />
     <Compile Include="Hql\Ast\ANTLR\PolymorphicQuerySourceDetector.cs" />
     <Compile Include="Hql\Ast\ANTLR\QuerySourceDetector.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
