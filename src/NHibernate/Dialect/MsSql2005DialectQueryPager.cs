@@ -90,7 +90,7 @@ namespace NHibernate.Dialect
 				.Add(sqlQuery.SelectClause)
 				.Add(", ROW_NUMBER() OVER(ORDER BY ");
 
-			int orderIndex = 0;
+			var orderIndex = 0;
 			foreach (var order in sqlQuery.Orders)
 			{
 				if (orderIndex++ > 0) result.Add(", ");
@@ -104,11 +104,11 @@ namespace NHibernate.Dialect
 				}
 				if (order.IsDescending) result.Add(" DESC");
 			}
+
 			if (orderIndex == 0)
 			{
 				result.Add("CURRENT_TIMESTAMP");
 			}
-
 
 			result.Add(") as __hibernate_sort_row ")
 				.Add(sqlQuery.FromAndWhereClause)
