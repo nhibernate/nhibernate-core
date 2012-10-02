@@ -42,10 +42,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
 			var hbmProperty = new HbmProperty
-			                  {
-			                  	name = property.Name, 
+							  {
+								name = property.Name, 
 													type1 = property.GetPropertyOrFieldType().GetNhTypeName()
-			                  };
+							  };
 
 			mapping(new PropertyMapper(property, hbmProperty, new NoMemberPropertyMapper()));
 			AddProperty(hbmProperty);
@@ -82,7 +82,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping)
 		{
 			var hbm = new HbmOneToOne { name = property.Name };
-			mapping(new OneToOneMapper(property, new NoMemberPropertyMapper(), hbm));
+
+			var type = typeof (OneToOneMapper<>).MakeGenericType(property.GetPropertyOrFieldType());
+			var mapper = (IOneToOneMapper) Activator.CreateInstance(type, property, new NoMemberPropertyMapper(), hbm);
+			mapping(mapper);
 			AddProperty(hbm);
 		}
 

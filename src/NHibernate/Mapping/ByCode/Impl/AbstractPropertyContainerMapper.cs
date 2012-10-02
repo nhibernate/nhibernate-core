@@ -13,7 +13,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping)
 		{
 			var hbm = new HbmOneToOne {name = property.Name};
-			mapping(new OneToOneMapper(property, hbm));
+			var type = typeof(OneToOneMapper<>).MakeGenericType(property.GetPropertyOrFieldType());
+			var mapper = (IOneToOneMapper)Activator.CreateInstance(type, property, hbm);
+			mapping(mapper);
 			AddProperty(hbm);
 		}
 
@@ -48,7 +50,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		public virtual void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping,
-		                        Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
+								Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmMap {name = property.Name};
 			System.Type propertyType = property.GetPropertyOrFieldType();

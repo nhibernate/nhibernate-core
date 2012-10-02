@@ -70,7 +70,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property,
-		                                  Action<IComponentMapper<TComponent>> mapping) where TComponent : class
+										  Action<IComponentMapper<TComponent>> mapping) where TComponent : class
 		{
 			RegisterComponentMapping(property, mapping);
 		}
@@ -148,20 +148,33 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			ManyToOne(property, x => { });
 		}
 
-		public void OneToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IOneToOneMapper> mapping)
+		public void OneToOne<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IOneToOneMapper<TProperty>> mapping)
 			where TProperty : class
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterOneToOneMapping<TProperty>(mapping, member, memberOf);
+			var member = TypeExtensions.DecodeMemberAccessExpression(property);
+			var memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
+			RegisterOneToOneMapping(mapping, member, memberOf);
 		}
 
-		protected void RegisterOneToOneMapping<TProperty>(Action<IOneToOneMapper> mapping, params MemberInfo[] members)
+		public void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class
+		{
+			var member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			var propertyOrFieldType = member.GetPropertyOrFieldType();
+			if (typeof(TProperty) != propertyOrFieldType)
+			{
+				throw new MappingException(string.Format("Wrong relation type. For the property/field '{0}' of {1} was expected a one-to-one with {2} but was {3}",
+														 notVisiblePropertyOrFieldName, typeof (TEntity).FullName, typeof (TProperty).Name, propertyOrFieldType.Name));
+			}
+			var memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
+			RegisterOneToOneMapping(mapping, member, memberOf);
+		}
+
+		protected void RegisterOneToOneMapping<TProperty>(Action<IOneToOneMapper<TProperty>> mapping, params MemberInfo[] members)
 			where TProperty : class
 		{
 			foreach (var member in members)
 			{
-				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), mapping);
+				CustomizersHolder.AddCustomizer(new PropertyPath(PropertyPath, member), (IOneToOneMapper x) => mapping((IOneToOneMapper<TProperty>) x));
 				explicitDeclarationsHolder.AddAsOneToOneRelation(member);
 			}
 		}
@@ -193,8 +206,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                          Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                          Action<ICollectionElementRelation<TElement>> mapping)
+								  Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
+								  Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterSetMapping(property, collectionMapping, mapping);
 		}
@@ -222,8 +235,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                          Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                          Action<ICollectionElementRelation<TElement>> mapping)
+								  Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+								  Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterBagMapping(property, collectionMapping, mapping);
 		}
@@ -250,8 +263,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                           Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                           Action<ICollectionElementRelation<TElement>> mapping)
+								   Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
+								   Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterListMapping(property, collectionMapping, mapping);
 		}
@@ -278,9 +291,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		public void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
-		                                Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
-		                                Action<IMapKeyRelation<TKey>> keyMapping,
-		                                Action<ICollectionElementRelation<TElement>> mapping)
+										Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+										Action<IMapKeyRelation<TKey>> keyMapping,
+										Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			RegisterMapMapping(property, collectionMapping, keyMapping, mapping);
 		}
@@ -351,7 +364,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			if(!typeof(TElement).Equals(collectionElementType))
 			{
 				throw new MappingException(string.Format("Wrong collection element type. For the property/field '{0}' of {1} was expected a collection of {2} but was {3}",
-				                                         notVisiblePropertyOrFieldName, typeof (TEntity).FullName, typeof (TElement).Name, collectionElementType.Name));
+														 notVisiblePropertyOrFieldName, typeof (TEntity).FullName, typeof (TElement).Name, collectionElementType.Name));
 			}
 			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
 			RegisterSetMapping<TElement>(collectionMapping, mapping, member, memberOf);
@@ -490,19 +503,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
 			RegisterAnyMapping<TProperty>(mapping, idTypeOfMetaType, member, memberOf);
-		}
-
-		public void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper> mapping) where TProperty : class
-		{
-			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
-			var propertyOrFieldType = member.GetPropertyOrFieldType();
-			if (!typeof(TProperty).Equals(propertyOrFieldType))
-			{
-				throw new MappingException(string.Format("Wrong relation type. For the property/field '{0}' of {1} was expected a one-to-one with {2} but was {3}",
-																								 notVisiblePropertyOrFieldName, typeof(TEntity).FullName, typeof(TProperty).Name, propertyOrFieldType.Name));
-			}
-			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
-			RegisterOneToOneMapping<TProperty>(mapping, member, memberOf);
 		}
 
 		public static MemberInfo GetPropertyOrFieldMatchingNameOrThrow(string memberName)
