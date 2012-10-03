@@ -14,6 +14,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			VisitorParameters parameters = queryModelVisitor.VisitorParameters;
 			NamedParameter namedParameter;
 
+			if (parameters.SessionFactory.Dialect.SupportsLimit && !parameters.SessionFactory.Dialect.SupportsVariableLimit)
+			{
+				tree.AddSkipClause(tree.TreeBuilder.Constant(resultOperator.GetConstantCount()));
+				return;
+			}
+
 			if (parameters.ConstantToParameterMap.TryGetValue(resultOperator.Count as ConstantExpression, out namedParameter))
 			{
 				parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
