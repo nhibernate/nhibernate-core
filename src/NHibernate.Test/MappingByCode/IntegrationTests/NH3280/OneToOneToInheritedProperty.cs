@@ -81,6 +81,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 		public void ShouldConfigureSessionCorrectly()
 		{
 			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 				var person1 = session.Get<Person>(1);
 				var person2 = session.Get<Person>(2);
