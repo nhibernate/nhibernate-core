@@ -59,7 +59,7 @@ namespace NHibernate.Dialect
 				pagingBuilder.Add(" fetch ");
 				pagingBuilder.Add(offset != null ? "next " : "first ");
 				pagingBuilder.Add(limit);
-				pagingBuilder.Add(" rows only ");
+				pagingBuilder.Add(" rows only");
 			}
 
 			return pagingBuilder.ToSqlString();
