@@ -7,19 +7,23 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 	[TestFixture]
 	public class OneToOneToInheritedProperty : TestCaseMappingByCode
 	{
+		private int _person1Id;
+		private int _person2Id;
+		private int _personDetailId;
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				var person1 = new Person { FirstName = "Jack" };
-				session.Save(person1);
+				_person1Id = (int)session.Save(person1);
 
 				var person2 = new Person { FirstName = "Robert" };
-				session.Save(person2);
+				_person2Id = (int)session.Save(person2);
 
 				var personDetail = new PersonDetail { LastName = "Smith", Person = person1 };
-				session.Save(personDetail);
+				_personDetailId = (int)session.Save(personDetail);
 
 				tx.Commit();
 			}
@@ -83,9 +87,9 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var person1 = session.Get<Person>(1);
-				var person2 = session.Get<Person>(2);
-				var personDetail = session.Get<PersonDetail>(1);
+				var person1 = session.Get<Person>(_person1Id);
+				var person2 = session.Get<Person>(_person2Id);
+				var personDetail = session.Get<PersonDetail>(_personDetailId);
 
 				Assert.IsNull(person2.PersonDetail);
 				Assert.IsNotNull(person1.PersonDetail);
