@@ -26,6 +26,28 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void Customers11to20And21to30ShouldNoCacheQuery()
+		{
+			var query = (from c in db.Customers
+							orderby c.CustomerId
+							select c.CustomerId).Skip(10).Take(10).ToList();
+			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual(10, query.Count);
+
+			query = (from c in db.Customers
+						orderby c.CustomerId
+						select c.CustomerId).Skip(20).Take(10).ToList();
+			Assert.AreNotEqual(query[0], "BSBEV");
+			Assert.AreEqual(10, query.Count);
+
+			query = (from c in db.Customers
+						orderby c.CustomerId
+						select c.CustomerId).Skip(10).Take(20).ToList();
+			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual(20, query.Count);
+		}
+
+		[Test]
 		[Ignore("Multiple Takes (or Skips) not handled correctly")]
 		public void CustomersChainedTake()
 		{
