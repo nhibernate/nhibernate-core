@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	{
 		private readonly IASTNode _eq;
 		private readonly ISessionFactoryImplementor _factory;
-		private readonly ISet<string> _tableNames;
+		private readonly HashSet<string> _tableNames;
 		private readonly IParameterSpecification[] _hqlParameters;
 		private SqlString _sqlAssignmentString;
 
@@ -56,7 +56,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var temp = new HashedSet<string>();
 			// yuck!
 			var usep = persister as UnionSubclassEntityPersister;
-			if (usep!=null)
+			if (usep != null)
 			{
 				temp.AddAll(persister.ConstraintOrderedTableNameClosure);
 			}
@@ -64,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				temp.Add(persister.GetSubclassTableName(persister.GetSubclassPropertyTableNumber(propertyPath)));
 			}
-			_tableNames = new ImmutableSet<string>(temp);
+			_tableNames = new HashSet<string>(temp);
 
 			if (rhs == null)
 			{
@@ -85,6 +85,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 			}
 		}
+
 		public bool AffectsTable(string tableName)
 		{
 			return _tableNames.Contains(tableName);
@@ -125,7 +126,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IParameterSpecification[] Parameters
 		{
-			get{return _hqlParameters;}
+			get { return _hqlParameters; }
 		}
 
 		public SqlString SqlAssignmentFragment
