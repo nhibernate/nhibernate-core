@@ -81,7 +81,7 @@ namespace NHibernate
 		/// </summary>
 		/// <remarks>
 		/// Must be called at the end of a unit of work, before commiting the transaction and closing
-		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> if the process
+		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
 		/// of synchronising the underlying persistent store with persistable state held in memory.
 		/// </remarks>
 		void Flush();

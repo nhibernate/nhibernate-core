@@ -265,7 +265,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Suclasses register a typename for the given type code. <c>$l</c> in the 
+		/// Subclasses register a typename for the given type code. <c>$l</c> in the 
 		/// typename will be replaced by the column length (if appropriate).
 		/// </summary>
 		/// <param name="code">The typecode</param>
