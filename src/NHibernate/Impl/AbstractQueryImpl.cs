@@ -1039,6 +1039,6 @@ namespace NHibernate.Impl
 			return queryString;
 		}
 
-		internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 	}
 }

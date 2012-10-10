@@ -126,7 +126,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
 		{
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			var queryString = ExpandParameterLists(queryParameters.NamedParameters);
