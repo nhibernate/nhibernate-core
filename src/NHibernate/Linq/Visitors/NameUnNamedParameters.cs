@@ -5,6 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
+	//TODO: Remove this visitor when https://www.re-motion.org/jira/browse/RM-5107 will be fixed
 	public class NameUnNamedParameters : ExpressionTreeVisitor
 	{
 		public static Expression Visit(Expression expression)
