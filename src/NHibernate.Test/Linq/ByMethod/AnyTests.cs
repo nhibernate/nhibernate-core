@@ -10,21 +10,22 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void AnySublist()
 		{
 			var orders = db.Orders.Where(o => o.OrderLines.Any(ol => ol.Quantity == 5)).ToList();
-			Assert.AreEqual(61, orders.Count);
+			Assert.That(orders.Count, Is.EqualTo(61));
 
 			orders = db.Orders.Where(o => o.OrderLines.Any(ol => ol.Order == null)).ToList();
-			Assert.AreEqual(0, orders.Count);
+			Assert.That(orders.Count, Is.EqualTo(0));
 		}
 
 		[Test]
 		public void NestedAny()
 		{
 			var test = (from c in db.Customers
-									where c.ContactName == "Bob" &&
-														(c.CompanyName == "NormalooCorp" ||
-														 c.Orders.Any(o => o.OrderLines.Any(ol => ol.Discount < 20 && ol.Discount >= 10)))
-									select c).ToList();
-			Assert.AreEqual(0, test.Count);
+						where c.ContactName == "Bob" &&
+							  (c.CompanyName == "NormalooCorp" ||
+							   c.Orders.Any(o => o.OrderLines.Any(ol => ol.Discount < 20 && ol.Discount >= 10)))
+						select c).ToList();
+
+			Assert.That(test.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -33,17 +34,16 @@ namespace NHibernate.Test.Linq.ByMethod
 			var test = db.Orders.Where(o => o.Employee.FirstName == "test");
 			var result = test.Where(o => o.Employee.Territories.Any(t => t.Description == "test")).ToList();
 
-			Assert.AreEqual(0, result.Count);
+			Assert.That(result.Count, Is.EqualTo(0));
 		}
 
-		[Test]
+		[Test(Description = "NH-2654")]
 		public void AnyWithCount()
 		{
-			//NH-2654
 			var result = db.Orders
 				.Any(p => p.OrderLines.Count == 0);
 
-			Assert.IsFalse(result);
+			Assert.That(result, Is.False);
 		}
 	}
 }
