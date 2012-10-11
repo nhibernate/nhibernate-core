@@ -70,7 +70,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.Throws<InvalidOperationException>(() =>
 				{
-					users.ToList();
+					users.First();
 				});
 		}
 
