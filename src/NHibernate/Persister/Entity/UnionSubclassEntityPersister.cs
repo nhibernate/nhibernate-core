@@ -35,7 +35,10 @@ namespace NHibernate.Persister.Entity
 
 			// TABLE
 
-			tableName = persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+			var dialect = factory.Dialect;
+			var defaultCatalogName = factory.Settings.DefaultCatalogName;
+			var defaultSchemaName = factory.Settings.DefaultSchemaName;
+			tableName = persistentClass.Table.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName);
 
 			#region Custom SQL
 
@@ -116,7 +119,7 @@ namespace NHibernate.Persister.Entity
 
 			subclassSpaces = persistentClass.SubclassTableClosureIterator
 				.Select(table =>
-					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName))
+					table.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName))
 				.Distinct().ToArray();
 
 			subquery = GenerateSubquery(persistentClass, mapping);
@@ -135,11 +138,11 @@ namespace NHibernate.Persister.Entity
 					if (!tab.IsAbstractUnionTable)
 					{
 						string _tableName =
-							tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+							tab.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName);
 						tableNames.Add(_tableName);
 
 						var names = tab.PrimaryKey.ColumnIterator
-									   .Select(column => column.GetQuotedName(factory.Dialect))
+									   .Select(column => column.GetQuotedName(dialect))
 									   .ToArray();
 
 						keyColumns.Add(names);
@@ -301,23 +304,17 @@ namespace NHibernate.Persister.Entity
 
 		protected string GenerateSubquery(PersistentClass model, IMapping mapping)
 		{
-			Dialect.Dialect dialect = Factory.Dialect;
-			Settings settings = Factory.Settings;
+			var dialect = Factory.Dialect;
+			var settings = Factory.Settings;
 
 			if (!model.HasSubclasses)
 			{
 				return model.Table.GetQualifiedName(dialect, settings.DefaultCatalogName, settings.DefaultSchemaName);
 			}
 
-			var columns = new HashSet<Column>();
-			foreach (Table table in model.SubclassTableClosureIterator)
-			{
-				if (!table.IsAbstractUnionTable)
-				{
-					foreach (Column column in table.ColumnIterator)
-						columns.Add(column);
-				}
-			}
+			var columns = new HashSet<Column>(model.SubclassTableClosureIterator
+												   .Where(table => !table.IsAbstractUnionTable)
+												   .SelectMany(table => table.ColumnIterator));
 
 			var buf = new StringBuilder("( ");
 
