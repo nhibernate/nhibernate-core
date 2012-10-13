@@ -35,9 +35,7 @@ namespace NHibernate.Persister.Entity
 
 			// TABLE
 
-			tableName =
-				persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
-													   factory.Settings.DefaultSchemaName);
+			tableName = persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 
 			#region Custom SQL
 
@@ -125,15 +123,14 @@ namespace NHibernate.Persister.Entity
 
 			if (IsMultiTable)
 			{
-				int idColumnSpan = IdentifierColumnSpan;
-				List<string> tableNames = new List<string>();
-				List<string[]> keyColumns = new List<string[]>();
+				var tableNames = new List<string>();
+				var keyColumns = new List<string[]>();
 				if (!IsAbstract)
 				{
 					tableNames.Add(tableName);
 					keyColumns.Add(IdentifierColumnNames);
 				}
-				foreach (Table tab in persistentClass.SubclassTableClosureIterator)
+				foreach (var tab in persistentClass.SubclassTableClosureIterator)
 				{
 					if (!tab.IsAbstractUnionTable)
 					{
@@ -141,12 +138,12 @@ namespace NHibernate.Persister.Entity
 							tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 						tableNames.Add(_tableName);
 
-						List<string> key = new List<string>(idColumnSpan);
-						foreach (Column column in tab.PrimaryKey.ColumnIterator)
-							key.Add(column.GetQuotedName(factory.Dialect));
+						var names = tab.PrimaryKey.ColumnIterator
+									   .Select(column => column.GetQuotedName(factory.Dialect))
+									   .ToArray();
 
-						keyColumns.Add(key.ToArray());
-					}					
+						keyColumns.Add(names);
+					}
 				}
 
 				constraintOrderedTableNames = tableNames.ToArray();
@@ -322,22 +319,20 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			StringBuilder buf = new StringBuilder().Append("( ");
-			IEnumerable<PersistentClass> siter =
-				new JoinedEnumerable<PersistentClass>(new SingletonEnumerable<PersistentClass>(model),
-													  new SafetyEnumerable<PersistentClass>(model.SubclassIterator));
+			var buf = new StringBuilder("( ");
 
-			foreach (PersistentClass clazz in siter)
+			var persistentClasses = PersistentClasses(model);
+			foreach (var clazz in persistentClasses)
 			{
-				Table table = clazz.Table;
+				var table = clazz.Table;
 				if (!table.IsAbstractUnionTable)
 				{
 					buf.Append("select ");
-					foreach (Column col in columns)
+					foreach (var col in columns)
 					{
 						if (!table.ContainsColumn(col))
 						{
-							SqlType sqlType = col.GetSqlTypeCode(mapping);
+							var sqlType = col.GetSqlTypeCode(mapping);
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
 						buf.Append(col.Name);
@@ -358,6 +353,13 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return buf.Append(" )").ToString();
+		}
+
+		private static IEnumerable<PersistentClass> PersistentClasses(PersistentClass model)
+		{
+			yield return model;
+			foreach (var subclass in model.SubclassIterator)
+				yield return subclass;
 		}
 
 		protected override string[] GetSubclassTableKeyColumns(int j)
