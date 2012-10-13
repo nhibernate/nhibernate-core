@@ -37,7 +37,7 @@ namespace NHibernate.Persister.Entity
 
 			tableName =
 				persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
-				                                       factory.Settings.DefaultSchemaName);
+													   factory.Settings.DefaultSchemaName);
 
 			#region Custom SQL
 
@@ -48,9 +48,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLInsert;
 			callable = sql != null && persistentClass.IsCustomInsertCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLInsertCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLInsertCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLInsert = new SqlString[] { sql };
 			insertCallable = new bool[] { callable };
 			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -58,9 +58,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLUpdate;
 			callable = sql != null && persistentClass.IsCustomUpdateCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLUpdateCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLUpdateCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLUpdate = new SqlString[] { sql };
 			updateCallable = new bool[] { callable };
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -68,9 +68,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLDelete;
 			callable = sql != null && persistentClass.IsCustomDeleteCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLDeleteCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLDeleteCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLDelete = new SqlString[] { sql };
 			deleteCallable = new bool[] { callable };
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -247,44 +247,6 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		protected internal virtual bool IsDiscriminatorFormula
-		{
-			get { return false; }
-		}
-
-		/// <summary> Generate the SQL that selects a row by id</summary>
-		protected internal virtual SqlString GenerateSelectString(LockMode lockMode)
-		{
-			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
-				.SetLockMode(lockMode)
-				.SetTableName(TableName)
-				.AddColumns(IdentifierColumnNames)
-				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure, SubclassColumnLaziness)
-				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure, SubclassFormulaLaziness);
-			//TODO: include the rowids!!!!
-			if (HasSubclasses)
-			{
-				if (IsDiscriminatorFormula)
-				{
-					select.AddColumn(DiscriminatorFormula, DiscriminatorAlias);
-				}
-				else
-				{
-					select.AddColumn(DiscriminatorColumnName, DiscriminatorAlias);
-				}
-			}
-			if (Factory.Settings.IsCommentsEnabled)
-			{
-				select.SetComment("load " + EntityName);
-			}
-			return select.AddWhereFragment(IdentifierColumnNames, IdentifierType, "=").ToSqlString();
-		}
-
-		protected internal string DiscriminatorFormula
-		{
-			get { return null; } // NH : what this mean ? (see GenerateSelectString) 
-		}
-
 		protected override string GetTableName(int table)
 		{
 			return tableName;
@@ -363,7 +325,7 @@ namespace NHibernate.Persister.Entity
 			StringBuilder buf = new StringBuilder().Append("( ");
 			IEnumerable<PersistentClass> siter =
 				new JoinedEnumerable<PersistentClass>(new SingletonEnumerable<PersistentClass>(model),
-				                                      new SafetyEnumerable<PersistentClass>(model.SubclassIterator));
+													  new SafetyEnumerable<PersistentClass>(model.SubclassIterator));
 
 			foreach (PersistentClass clazz in siter)
 			{
