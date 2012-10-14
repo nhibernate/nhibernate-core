@@ -62,7 +62,7 @@ namespace NHibernate.Transform
 				                            	});
 
 			// Get and store the public and non-public type for the instance properties
-			var properties = resultClass.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			var properties = resultClass.GetProperties(flags);
 			propertyTypes = new Dictionary<string, System.Type>(properties.Length);
 
 			foreach (var property in properties)
@@ -71,7 +71,7 @@ namespace NHibernate.Transform
 			}
 
 			// Get and store the public and non-public type for the instance fields
-			var fields = resultClass.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			var fields = resultClass.GetFields(flags);
 			fieldTypes = new Dictionary<string, System.Type>(fields.Length);
 
 			foreach (var field in fields)
