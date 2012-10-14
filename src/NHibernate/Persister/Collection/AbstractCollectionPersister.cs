@@ -1080,50 +1080,49 @@ namespace NHibernate.Persister.Collection
 
 				try
 				{
+					IExpectation expectation = null;
+					bool useBatch = false;
+					int i = 0;
+					int count = 0;
+
 					// create all the new entries
 					IEnumerator entries = collection.Entries(this).GetEnumerator();
-					if (entries.MoveNext())
+					while (entries.MoveNext())
 					{
-						entries.Reset();
-						IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
-						collection.PreInsert(this);
-						//bool callable = InsertCallable;
-						bool useBatch = expectation.CanBeBatched;
-						int i = 0;
-						int count = 0;
-
-						while (entries.MoveNext())
+						// Init, if we're on the first element.
+						if (count == 0)
 						{
-							object entry = entries.Current;
-							if (collection.EntryExists(entry, i))
+							expectation = Expectations.AppropriateExpectation(insertCheckStyle);
+							collection.PreInsert(this);
+							//bool callable = InsertCallable;
+							useBatch = expectation.CanBeBatched;
+						}
+
+						object entry = entries.Current;
+						if (collection.EntryExists(entry, i))
+						{
+							object entryId;
+							if (!IsIdentifierAssignedByInsert)
 							{
-								object entryId;
-								if (!IsIdentifierAssignedByInsert)
-								{
-									// NH Different implementation: write once
-									entryId = PerformInsert(id, collection, expectation, entry, i, useBatch, false, session);
-								}
-								else
-								{
-									entryId = PerformInsert(id, collection, entry, i, session);
-								}
-								collection.AfterRowInsert(this, entry, i, entryId);
-								count++;
+								// NH Different implementation: write once
+								entryId = PerformInsert(id, collection, expectation, entry, i, useBatch, false, session);
 							}
-							i++;
+							else
+							{
+								entryId = PerformInsert(id, collection, entry, i, session);
+							}
+							collection.AfterRowInsert(this, entry, i, entryId);
+							count++;
 						}
-
-						if (log.IsDebugEnabled)
-						{
-							log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
-						}
+						i++;
 					}
-					else
+
+					if (log.IsDebugEnabled)
 					{
-						if (log.IsDebugEnabled)
-						{
+						if (count > 0)
+							log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
+						else
 							log.Debug("collection was empty");
-						}
 					}
 				}
 				catch (DbException sqle)
