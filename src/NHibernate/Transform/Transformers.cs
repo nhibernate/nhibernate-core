@@ -1,9 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Transform
 {
 	public sealed class Transformers
 	{
+		private static readonly Dictionary<System.Type, AliasToBeanResultTransformer> aliasToBeanInstances = new Dictionary<System.Type, AliasToBeanResultTransformer>();
+
 		private Transformers()
 		{
 		}
@@ -22,7 +25,16 @@ namespace NHibernate.Transform
 		/// </summary>
 		public static IResultTransformer AliasToBean(System.Type target)
 		{
-			return new AliasToBeanResultTransformer(target);
+			if (aliasToBeanInstances.ContainsKey(target))
+			{
+				return aliasToBeanInstances[target];
+			}
+
+			var transformer = new AliasToBeanResultTransformer(target);
+
+			aliasToBeanInstances.Add(target, transformer);
+
+			return transformer;
 		}
 
 		public static IResultTransformer AliasToBean<T>()
