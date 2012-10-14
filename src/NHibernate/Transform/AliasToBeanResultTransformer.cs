@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Properties;
 
@@ -32,6 +33,8 @@ namespace NHibernate.Transform
 		private ISetter[] setters;
 		private readonly IPropertyAccessor propertyAccessor;
 		private readonly ConstructorInfo constructor;
+		private Dictionary<string, System.Type> propertyTypes;
+		private Dictionary<string, System.Type> fieldTypes;
 
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
@@ -57,6 +60,24 @@ namespace NHibernate.Transform
 				                            		PropertyAccessorFactory.GetPropertyAccessor(null),
 				                            		PropertyAccessorFactory.GetPropertyAccessor("field")
 				                            	});
+
+			// Get and store the public and non-public type for the instance properties
+			var properties = resultClass.GetProperties(flags);
+			propertyTypes = new Dictionary<string, System.Type>(properties.Length);
+
+			foreach (var property in properties)
+			{
+				propertyTypes.Add(property.Name, property.PropertyType);
+			}
+
+			// Get and store the public and non-public type for the instance fields
+			var fields = resultClass.GetFields(flags);
+			fieldTypes = new Dictionary<string, System.Type>(fields.Length);
+
+			foreach (var field in fields)
+			{
+				fieldTypes.Add(field.Name, field.FieldType);
+			}
 		}
 
 		public object TransformTuple(object[] tuple, String[] aliases)
@@ -91,7 +112,35 @@ namespace NHibernate.Transform
 				{
 					if (setters[i] != null)
 					{
-						setters[i].Set(result, tuple[i]);
+						System.Type type = null;
+						var value = tuple[i];
+
+						if (propertyTypes.ContainsKey(aliases[i]))
+						{
+							type = propertyTypes[aliases[i]];
+						}
+						else if (fieldTypes.ContainsKey(aliases[i]))
+						{
+							type = fieldTypes[aliases[i]];
+						}
+
+						var valueType = value.GetType();
+
+						// NH-3290 fix works for convertible types
+						if (type != null && typeof(IConvertible).IsAssignableFrom(valueType))
+						{
+							if (type.IsEnum)
+							{
+								type = Enum.GetUnderlyingType(type);
+							}
+
+							if (type != valueType)
+							{
+								value = Convert.ChangeType(value, type);
+							}
+						}
+
+						setters[i].Set(result, value);
 					}
 				}
 			}
