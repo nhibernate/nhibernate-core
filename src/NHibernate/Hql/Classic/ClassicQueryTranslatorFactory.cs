@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Hql.Classic

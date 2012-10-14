@@ -24,7 +24,6 @@ using NHibernate.Proxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -1927,7 +1926,7 @@ namespace NHibernate.Impl
 				int size = implementors.Length;
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
-				ISet<string> spaces = new HashedSet<string>();
+				ISet<string> spaces = new HashSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{
@@ -1939,7 +1938,7 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.AddAll(loaders[i].QuerySpaces);
+					spaces.UnionWith(loaders[i].QuerySpaces);
 				}
 
 				AutoFlushIfRequired(spaces);

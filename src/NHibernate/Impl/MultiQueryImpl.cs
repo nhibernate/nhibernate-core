@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -679,12 +678,12 @@ namespace NHibernate.Impl
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
-			ISet<string> querySpaces = new HashedSet<string>();
+			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.AddAll(queryTranslator.QuerySpaces);
+				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];

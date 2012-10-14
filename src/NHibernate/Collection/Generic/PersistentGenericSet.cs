@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.Collection.Generic.SetHelpers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;

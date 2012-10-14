@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Linq;
-using Iesi.Collections.Generic;
 
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -282,7 +281,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);
@@ -294,7 +293,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);

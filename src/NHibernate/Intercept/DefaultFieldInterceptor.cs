@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Intercept

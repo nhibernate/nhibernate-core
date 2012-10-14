@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -12,7 +11,7 @@ namespace NHibernate.DomainModel
 		private long id;
 		private string name;
 		private Jay jay;
-		private ISet<Jay> jays = new HashedSet<Jay>();
+		private ISet<Jay> jays = new HashSet<Jay>();
 
 		public Eye()
 		{

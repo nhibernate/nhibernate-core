@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2761
 	{
 		public B()
 		{
-			this.As = new HashedSet<A>();
+			this.As = new HashSet<A>();
 		}
 
 		public Int32 Id

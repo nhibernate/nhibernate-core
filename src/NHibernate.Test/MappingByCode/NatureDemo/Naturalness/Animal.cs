@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 		{
 			if (Offspring == null)
 			{
-				Offspring = new HashedSet<Animal>();
+				Offspring = new HashSet<Animal>();
 			}
 
 			Offspring.Add(offSpring);

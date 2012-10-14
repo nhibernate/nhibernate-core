@@ -4,13 +4,12 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
-	using Iesi.Collections.Generic;
-
+	
 	public class Employee
 	{
 		private int id;
-		private ISet<PrimaryProfession> primaries = new HashedSet<PrimaryProfession>();
-		private ISet<SecondaryProfession> secondaries = new HashedSet<SecondaryProfession>();
+		private ISet<PrimaryProfession> primaries = new HashSet<PrimaryProfession>();
+		private ISet<SecondaryProfession> secondaries = new HashSet<SecondaryProfession>();
 
 		public ISet<PrimaryProfession> Primaries
 		{

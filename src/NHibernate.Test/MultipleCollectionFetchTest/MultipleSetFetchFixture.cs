@@ -23,7 +23,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 		protected override ICollection CreateCollection()
 		{
 			throw new NotImplementedException();
-			//return new HashedSet();
+			//return new HashSet();
 		}
 	}
 }

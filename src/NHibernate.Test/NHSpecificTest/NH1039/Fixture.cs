@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 
@@ -33,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039
 			{
 				Person person = new Person("1");
 				person.Name = "John Doe";
-				var set = new HashedSet<object>();
+				var set = new HashSet<object>();
 				set.Add("555-1234");
 				set.Add("555-4321");
 				person.Properties.Add("Phones", set);

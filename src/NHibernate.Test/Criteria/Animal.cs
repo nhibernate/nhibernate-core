@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Criteria
 {
@@ -84,7 +83,7 @@ namespace NHibernate.Test.Criteria
 		{
 			if (this.Offspring == null)
 			{
-				this.Offspring = new HashedSet<Animal>();
+				this.Offspring = new HashSet<Animal>();
 			}
 			this.Offspring.Add(offspring);
 		}

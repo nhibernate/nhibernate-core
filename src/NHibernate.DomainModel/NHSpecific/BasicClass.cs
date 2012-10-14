@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -185,7 +184,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			if (StringSet == null)
 			{
-				StringSet = new HashedSet<string>();
+				StringSet = new HashSet<string>();
 			}
 			StringSet.Add(stringValue);
 		}

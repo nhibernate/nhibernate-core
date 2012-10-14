@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Many2One
 {
 	[Serializable]
 	public class Car
 	{
-		private ISet<CarPart> carParts = new HashedSet<CarPart>();
+		private ISet<CarPart> carParts = new HashSet<CarPart>();
 
 		public virtual long Id { get; set; }
 		public virtual string Model { get; set; }

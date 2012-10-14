@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections.Generic;
 
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -347,7 +346,7 @@ namespace NHibernate.Persister.Entity
 			propertyColumnInsertable = new bool[hydrateSpan][];
 			var thisClassProperties = new HashSet<Property>();
 
-			lazyProperties = new HashedSet<string>();
+			lazyProperties = new HashSet<string>();
 			List<string> lazyNames = new List<string>();
 			List<int> lazyNumbers = new List<int>();
 			List<IType> lazyTypes = new List<IType>();
@@ -1150,7 +1149,7 @@ namespace NHibernate.Persister.Entity
 			if (!entityMetamodel.HasLazyProperties)
 				return null;
 
-			HashedSet<int> tableNumbers = new HashedSet<int>();
+			HashSet<int> tableNumbers = new HashSet<int>();
 			List<int> columnNumbers = new List<int>();
 			List<int> formulaNumbers = new List<int>();
 			for (int i = 0; i < lazyPropertyNames.Length; i++)

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection
 {
@@ -9,7 +8,7 @@ namespace NHibernate.Test.UserCollection
 	{
 		private string userName;
 		private IList emailAddresses = new MyList();
-		private ISet<object> sessionData = new HashedSet<object>();
+		private ISet<object> sessionData = new HashSet<object>();
 
 		public string UserName
 		{

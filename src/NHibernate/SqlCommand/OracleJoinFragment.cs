@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand

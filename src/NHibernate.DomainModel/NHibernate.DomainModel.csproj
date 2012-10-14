@@ -63,9 +63,8 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

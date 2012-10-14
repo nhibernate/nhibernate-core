@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -66,7 +65,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			if (offspring == null)
 			{
-				offspring = new HashedSet<Animal>();
+				offspring = new HashSet<Animal>();
 			}
 
 			offspring.Add(offSpring);
