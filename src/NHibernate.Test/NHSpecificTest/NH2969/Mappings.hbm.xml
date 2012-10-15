@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2969" >
+
+  <class name="Person" table="Person">
+    <id name="ID" column="PersonID">
+      <generator class="assigned" />
+    </id>
+    <property name="Name" />
+  </class>
+  
+  <!--cats - subclass-join.select, join-->
+  <class name="Cat" table="Cat" discriminator-value="cat">
+    <id name="ID" column="CatID">
+      <generator class="assigned" />
+    </id>
+    <discriminator column="CatType" type="string" />
+    <property name="Name"/>
+  </class>
+  <subclass name="DomesticCat" extends="Cat" discriminator-value="domestic">
+    <join table="DomesticCat" fetch="select">
+      <key column="DomesticCatID"/>
+      <many-to-one name="Owner" column="OwnerId" fetch="join" />
+    </join>
+  </subclass>
+
+  <!--fish - subclass-join.join, join-->
+  <class name="Fish" table="Fish" discriminator-value="fish">
+    <id name="ID" column="CatID">
+      <generator class="assigned" />
+    </id>
+    <discriminator column="FishType" type="string" />
+    <property name="Name"/>
+  </class>
+  <subclass name="Goldfish" extends="Fish" discriminator-value="goldfish">
+    <join table="Goldfish" fetch="join">
+      <key column="GoldfishID"/>
+      <many-to-one name="Owner" column="OwnerId" fetch="join" />
+    </join>
+  </subclass>
+
+  <!--birds - subclass-join.select, select-->
+  <class name="Bird" table="Bird" discriminator-value="bird">
+    <id name="ID" column="BirdID">
+      <generator class="assigned" />
+    </id>
+    <discriminator column="BirdType" type="string" />
+    <property name="Name"/>
+  </class>
+  <subclass name="Parrot" extends="Bird" discriminator-value="parrot">
+    <join table="Parrot" fetch="select">
+      <key column="ParrotID"/>
+      <many-to-one name="Pirate" column="PirateId" fetch="select" />
+    </join>
+  </subclass>
+
+</hibernate-mapping>

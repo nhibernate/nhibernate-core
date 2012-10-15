@@ -18,11 +18,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			var mapper = new ConventionModelMapper();
 			mapper.BeforeMapClass += (inspector, type, map) => map.Id(x => x.Generator(Generators.HighLow));
 			mapper.BeforeMapClass += (inspector, type, map) => map.Cache(x => x.Usage(CacheUsage.ReadWrite));
+			mapper.BeforeMapClass += (inspector, type, map) => map.Table(type.Name + "s");
 			mapper.BeforeMapSet += (inspector, property, map) =>
-			                       {
-			                       	map.Cascade(Mapping.ByCode.Cascade.All);
-			                       	map.Cache(x => x.Usage(CacheUsage.ReadWrite));
-			                       };
+								   {
+									map.Cascade(Mapping.ByCode.Cascade.All);
+									map.Cache(x => x.Usage(CacheUsage.ReadWrite));
+								   };
 			var mapping = mapper.CompileMappingFor(new[] { typeof(Blog), typeof(Post), typeof(Comment) });
 			return mapping;
 		}
@@ -30,10 +31,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			configuration.Cache(x =>
-			                    {
-			                    	x.Provider<HashtableCacheProvider>();
-			                    	x.UseQueryCache = true;
-			                    });
+								{
+									x.Provider<HashtableCacheProvider>();
+									x.UseQueryCache = true;
+								});
 		}
 
 		private class Scenario: IDisposable

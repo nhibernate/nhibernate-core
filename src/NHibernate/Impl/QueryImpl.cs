@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 
@@ -61,7 +62,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-                return Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 			}
 			finally
 			{
@@ -123,6 +124,16 @@ namespace NHibernate.Impl
 			{
 				After();
 			}
+		}
+
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryString = ExpandParameterLists(queryParameters.NamedParameters);
+
+			return sessionImplementor.GetQueries(queryString, false)
+				.Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator))
+				.Cast<ITranslator>();
 		}
 	}
 }

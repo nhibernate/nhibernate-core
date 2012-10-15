@@ -1,8 +1,10 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -16,9 +18,9 @@ namespace NHibernate.Dialect
 		public MsSqlCeDialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 4000, "NCHAR");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 4000, "NCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "NVARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, 4000, "NVARCHAR");
+			RegisterColumnType(DbType.AnsiString, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
 			RegisterColumnType(DbType.Binary, 8000, "VARBINARY($l)");
@@ -26,6 +28,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "BIT");
 			RegisterColumnType(DbType.Byte, "TINYINT");
 			RegisterColumnType(DbType.Currency, "MONEY");
+			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
@@ -43,6 +46,26 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
+
+			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
+			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
@@ -83,17 +106,17 @@ namespace NHibernate.Dialect
 			get { return "IDENTITY NOT NULL"; }
 		}
 
+		public override string SelectGUIDString
+		{
+			get { return "select newid()"; }
+		}
+
 		public override bool SupportsLimit
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public override bool SupportsLimitOffset
-		{
-			get { return false; }
-		}
-
-		public override bool SupportsVariableLimit
 		{
 			get { return false; }
 		}
@@ -103,50 +126,74 @@ namespace NHibernate.Dialect
 			return new MsSqlCeDataBaseSchema(connection);
 		}
 
-        public override string Qualify(string catalog, string schema, string table)
-        {
-            // SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
-            // similar to the SQLLite dialect.
-            
-            var qualifiedName = new StringBuilder();
-            bool quoted = false;
+		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		{
+			var top = new SqlStringBuilder()
+				.Add(" top (")
+				.Add(limit)
+				.Add(")")
+				.ToSqlString();
 
-            if (!string.IsNullOrEmpty(catalog))
-            {
-                qualifiedName.Append(catalog).Append(StringHelper.Dot);
-            }
+			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
+		}
 
-            var tableName = new StringBuilder();
-            if (!string.IsNullOrEmpty(schema))
-            {
-                if (schema.StartsWith(OpenQuote.ToString()))
-                {
-                    schema = schema.Substring(1, schema.Length - 1);
-                    quoted = true;
-                }
-                if (schema.EndsWith(CloseQuote.ToString()))
-                {
-                    schema = schema.Substring(0, schema.Length - 1);
-                    quoted = true;
-                }
-                tableName.Append(schema).Append(StringHelper.Underscore);
-            }
+		public override string Qualify(string catalog, string schema, string table)
+		{
+			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
+			// similar to the SQLLite dialect.
+			
+			var qualifiedName = new StringBuilder();
+			bool quoted = false;
 
-            if (table.StartsWith(OpenQuote.ToString()))
-            {
-                table = table.Substring(1, table.Length - 1);
-                quoted = true;
-            }
-            if (table.EndsWith(CloseQuote.ToString()))
-            {
-                table = table.Substring(0, table.Length - 1);
-                quoted = true;
-            }
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				qualifiedName.Append(catalog).Append(StringHelper.Dot);
+			}
 
-            string name = tableName.Append(table).ToString();
-            if (quoted)
-                name = OpenQuote + name + CloseQuote;
-            return qualifiedName.Append(name).ToString();
-        }
-    }
+			var tableName = new StringBuilder();
+			if (!string.IsNullOrEmpty(schema))
+			{
+				if (schema.StartsWith(OpenQuote.ToString()))
+				{
+					schema = schema.Substring(1, schema.Length - 1);
+					quoted = true;
+				}
+				if (schema.EndsWith(CloseQuote.ToString()))
+				{
+					schema = schema.Substring(0, schema.Length - 1);
+					quoted = true;
+				}
+				tableName.Append(schema).Append(StringHelper.Underscore);
+			}
+
+			if (table.StartsWith(OpenQuote.ToString()))
+			{
+				table = table.Substring(1, table.Length - 1);
+				quoted = true;
+			}
+			if (table.EndsWith(CloseQuote.ToString()))
+			{
+				table = table.Substring(0, table.Length - 1);
+				quoted = true;
+			}
+
+			string name = tableName.Append(table).ToString();
+			if (quoted)
+				name = OpenQuote + name + CloseQuote;
+			return qualifiedName.Append(name).ToString();
+		}
+
+		private static int GetAfterSelectInsertPoint(SqlString sql)
+		{
+			if (sql.StartsWithCaseInsensitive("select distinct"))
+			{
+				return 15;
+			}
+			if (sql.StartsWithCaseInsensitive("select"))
+			{
+				return 6;
+			}
+			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
+		}
+	}
 }

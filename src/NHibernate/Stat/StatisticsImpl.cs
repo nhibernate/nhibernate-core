@@ -7,6 +7,7 @@ using System.Threading;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Stat
 {
@@ -237,7 +238,7 @@ namespace NHibernate.Stat
 				}
 				else
 				{
-					return ArrayHelper.ToStringArray(sessionFactory.GetAllClassMetadata().Keys);
+					return sessionFactory.GetAllClassMetadata().Keys.ToArray();
 				}
 			}
 		}
@@ -274,7 +275,7 @@ namespace NHibernate.Stat
 				}
 				else
 				{
-					return ArrayHelper.ToStringArray(sessionFactory.GetAllSecondLevelCacheRegions().Keys);
+					return sessionFactory.GetAllSecondLevelCacheRegions().Keys.ToArray();
 				}
 			}
 		}

@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericSetType<T> : SetType
+	public class GenericSetType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericSetType{T}"/> class for
@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		/// owner object containing the collection ID, or <see langword="null" /> if it is
 		/// the primary key.</param>
 		public GenericSetType(string role, string propertyRef)
-			: base(role, propertyRef, false) {}
+			: base(role, propertyRef, false) { }
 
 		/// <summary>
 		/// Instantiates a new <see cref="IPersistentCollection"/> for the set.
@@ -52,18 +52,28 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-		    var set = collection as ISet<T>;
-            if(set==null)
-            {
-                var stronglyTypedCollection = collection as ICollection<T>;
-                if(stronglyTypedCollection==null)
-                    throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
-                set = new HashedSet<T>(stronglyTypedCollection);
-            }
-		    return new PersistentGenericSet<T>(session, set);
+			var set = collection as ISet<T>;
+			if (set == null)
+			{
+				var stronglyTypedCollection = collection as ICollection<T>;
+				if (stronglyTypedCollection == null)
+					throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
+				set = new HashedSet<T>(stronglyTypedCollection);
+			}
+			return new PersistentGenericSet<T>(session, set);
 		}
 
-	    public override object Instantiate(int anticipatedSize)
+		protected override void Add(object collection, object element)
+		{
+			((ISet<T>)collection).Add((T)element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((ISet<T>)collection).Clear();
+		}
+
+		public override object Instantiate(int anticipatedSize)
 		{
 			return new HashedSet<T>();
 		}

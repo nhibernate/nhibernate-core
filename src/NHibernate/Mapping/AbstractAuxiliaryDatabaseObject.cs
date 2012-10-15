@@ -47,7 +47,7 @@ namespace NHibernate.Mapping
 		public bool AppliesToDialect(Dialect.Dialect dialect)
 		{
 			// empty means no scoping
-			return dialectScopes.IsEmpty || dialectScopes.Contains(dialect.GetType().FullName);
+			return dialectScopes.Count == 0 || dialectScopes.Contains(dialect.GetType().FullName);
 		}
 
 		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);

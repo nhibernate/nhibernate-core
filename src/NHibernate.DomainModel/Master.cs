@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -14,10 +14,10 @@ namespace NHibernate.DomainModel
 		private static object _emptyObject = new object();
 
 		private Master _otherMaster;
-		private ISet _details = new HashedSet();
-		private ISet _moreDetails = new HashedSet();
-		private ISet _incoming = new HashedSet();
-		private ISet _outgoing = new HashedSet();
+		private ISet<Detail> _details = new HashedSet<Detail>();
+		private ISet<Detail> _moreDetails = new HashedSet<Detail>();
+		private ISet<Master> _incoming = new HashedSet<Master>();
+		private ISet<Master> _outgoing = new HashedSet<Master>();
 		private string _name = "master";
 #pragma warning disable 169
 		private DateTime version;
@@ -41,7 +41,7 @@ namespace NHibernate.DomainModel
 			_details.Remove(d);
 		}
 
-		public ISet Details
+		public ISet<Detail> Details
 		{
 			get { return _details; }
 			set
@@ -51,7 +51,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public ISet MoreDetails
+		public ISet<Detail> MoreDetails
 		{
 			get { return _moreDetails; }
 			set { _moreDetails = value; }
@@ -67,7 +67,7 @@ namespace NHibernate.DomainModel
 			_incoming.Remove(m);
 		}
 
-		public ISet Incoming
+		public ISet<Master> Incoming
 		{
 			get { return _incoming; }
 			set { _incoming = value; }
@@ -83,7 +83,7 @@ namespace NHibernate.DomainModel
 			_outgoing.Remove(m);
 		}
 
-		public ISet Outgoing
+		public ISet<Master> Outgoing
 		{
 			get { return _outgoing; }
 			set { _outgoing = value; }

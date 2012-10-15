@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
-
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -155,7 +155,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to delete: " + entityName);
 				}
-				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet)anything);
+				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
 			}
 
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)

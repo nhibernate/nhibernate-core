@@ -323,7 +323,7 @@ namespace NHibernate.Engine.Loading
 			}
 
 			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
-			CacheKey cacheKey = new CacheKey(lce.Key, persister.KeyType, persister.Role, session.EntityMode, factory);
+			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
 			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
 			                    session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Iesi.Collections;
+
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -294,13 +295,10 @@ namespace NHibernate.Mapping.ByCode
 		protected bool MatchSetMember(MemberInfo subject)
 		{
 			var memberType = subject.GetPropertyOrFieldType();
-			if (typeof(ISet).IsAssignableFrom(memberType))
-			{
-				return true;
-			}
+
 			if (memberType.IsGenericType)
 			{
-				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(Iesi.Collections.Generic.ISet<>));
+				return memberType.GetGenericInterfaceTypeDefinitions().Contains(typeof(ISet<>));
 			}
 			return false;
 		}

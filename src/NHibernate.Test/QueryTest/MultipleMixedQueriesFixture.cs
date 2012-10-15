@@ -19,23 +19,28 @@ namespace NHibernate.Test.QueryTest
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
 
-		[TestFixtureSetUp]
-		public void CheckMultiQuerySupport()
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
-			TestFixtureSetUp();
-			IDriver driver = sessions.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+				session.Delete("from System.Object");
+				session.Flush();
+				transaction.Commit();
 			}
 		}
 
 		[Test]
 		public void NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (var s = sessions.OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids)").AddEntity(typeof (Item)))
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids2)").AddEntity(typeof (Item)))
 					.SetParameterList("ids", new[] {50})
@@ -47,9 +52,9 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void NH_1085_WillGiveReasonableErrorIfBadParameterName()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (var s = sessions.OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids)").AddEntity(typeof(Item)))
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids2)").AddEntity(typeof(Item)));
 				var e = Assert.Throws<QueryException>(() => multiQuery.List());
@@ -64,41 +69,39 @@ namespace NHibernate.Test.QueryTest
 			//set the query in the cache
 			DoMutiQueryAndAssert();
 
-			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
-			IList cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
-			IList cachedQuery = (IList)cachedListEntry[1];
+			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
+			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
+			var cachedQuery = (IList)cachedListEntry[1];
 
-			IList firstQueryResults = (IList)cachedQuery[0];
+			var firstQueryResults = (IList)cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			IList secondQueryResults = (IList)cachedQuery[1];
+			var secondQueryResults = (IList)cachedQuery[1];
 			secondQueryResults[0] = 2L;
 
-			using (ISession s = sessions.OpenSession())
+			using (var s = sessions.OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id > ?").AddEntity(typeof(Item))
 							 .SetInt32(0, 50)
 							 .SetFirstResult(10))
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				IList results = multiQuery.List();
-				IList items = (IList)results[0];
+				var results = multiQuery.List();
+				var items = (IList)results[0];
 				Assert.AreEqual(2, items.Count);
-				long count = (long)((IList)results[1])[0];
+				var count = (long)((IList)results[1])[0];
 				Assert.AreEqual(2L, count);
 			}
-
-			RemoveAllItems();
 		}
 
 		[Test]
 		public void CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
 				s.CreateMultiQuery()
 					.Add("from Item")
@@ -111,7 +114,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
 				s.CreateMultiQuery()
 					.Add("from Item")
@@ -127,9 +130,9 @@ namespace NHibernate.Test.QueryTest
 		public void TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries()
 		{
 			CreateItems();
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateQuery("from Item i where i.Id > ?")
 							 .SetInt32(0, 50)
 							 .SetFirstResult(10))
@@ -137,37 +140,35 @@ namespace NHibernate.Test.QueryTest
 							.SetInt32(0, 50));
 
 				multiQuery.SetCacheable(true);
-				IList results = multiQuery.List();
-				IList items = (IList)results[0];
+				var results = multiQuery.List();
+				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
-				long count = (long)((IList)results[1])[0];
+				var count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id > ?").AddEntity(typeof(Item))
 							 .SetInt32(0, 50)
 							 .SetFirstResult(20))
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				IList results = multiQuery.List();
-				IList items = (IList)results[0];
+				var results = multiQuery.List();
+				var items = (IList)results[0];
 				Assert.AreEqual(79, items.Count,
 								"Should have gotten different result here, because the paging is different");
-				long count = (long)((IList)results[1])[0];
+				var count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
-
-			RemoveAllItems();
 		}
 
 		[Test]
 		public void CanUseSecondLevelCacheWithPositionalParameters()
 		{
-			Hashtable cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
+			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(sessions);
 			cacheHashtable.Clear();
 
 			CreateItems();
@@ -175,37 +176,35 @@ namespace NHibernate.Test.QueryTest
 			DoMutiQueryAndAssert();
 
 			Assert.AreEqual(1, cacheHashtable.Count);
-
-			RemoveAllItems();
 		}
 
 		private void DoMutiQueryAndAssert()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IMultiQuery multiQuery = s.CreateMultiQuery()
+				var multiQuery = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id > ?").AddEntity(typeof(Item))
 							 .SetInt32(0, 50)
 							 .SetFirstResult(10))
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				IList results = multiQuery.List();
-				IList items = (IList)results[0];
+				var results = multiQuery.List();
+				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
-				long count = (long)((IList)results[1])[0];
+				var count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
 
 		private void CreateItems()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				for (int i = 0; i < 150; i++)
+				for (var i = 0; i < 150; i++)
 				{
-					Item item = new Item();
+					var item = new Item();
 					item.Id = i;
 					s.Save(item);
 				}
@@ -216,113 +215,90 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanUseWithParameterizedQueriesAndLimit()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				for (int i = 0; i < 150; i++)
+				for (var i = 0; i < 150; i++)
 				{
-					Item item = new Item();
+					var item = new Item();
 					item.Id = i;
 					s.Save(item);
 				}
 				s.Flush();
 			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IQuery getItems = s.CreateSQLQuery("select * from ITEM where Id > :id").AddEntity(typeof(Item)).SetFirstResult(10);
-				IQuery countItems = s.CreateQuery("select count(*) from Item i where i.Id > :id");
+				var getItems = s.CreateSQLQuery("select * from ITEM where Id > :id").AddEntity(typeof(Item)).SetFirstResult(10);
+				var countItems = s.CreateQuery("select count(*) from Item i where i.Id > :id");
 
-				IList results = s.CreateMultiQuery()
+				var results = s.CreateMultiQuery()
 					.Add(getItems)
 					.Add(countItems)
 					.SetInt32("id", 50)
 					.List();
-				IList items = (IList)results[0];
+				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
-				long count = (long)((IList)results[1])[0];
+				var count = (long)((IList)results[1])[0];
 				Assert.AreEqual(99L, count);
-			}
-
-			RemoveAllItems();
-		}
-
-		private void RemoveAllItems()
-		{
-			using (ISession s = OpenSession())
-			{
-				s.Delete("from Item");
-				s.Flush();
 			}
 		}
 
 		[Test]
 		public void CanUseSetParameterList()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				Item item = new Item();
+				var item = new Item();
 				item.Id = 1;
 				s.Save(item);
 				s.Flush();
 			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IList results = s.CreateMultiQuery()
+				var results = s.CreateMultiQuery()
 					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:items)").AddEntity(typeof(Item)))
 					.Add("select count(*) from Item i where i.id in (:items)")
 					.SetParameterList("items", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
 					.List();
 
-				IList items = (IList)results[0];
-				Item fromDb = (Item)items[0];
+				var items = (IList)results[0];
+				var fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				IList counts = (IList)results[1];
-				long count = (long)counts[0];
+				var counts = (IList)results[1];
+				var count = (long)counts[0];
 				Assert.AreEqual(1L, count);
-			}
-
-			using (ISession s = OpenSession())
-			{
-				s.Delete("from Item");
-				s.Flush();
 			}
 		}
 
 		[Test]
 		public void CanExecuteMultiplyQueriesInSingleRoundTrip()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				Item item = new Item();
+				var item = new Item();
 				item.Id = 1;
 				s.Save(item);
 				s.Flush();
 			}
 
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IQuery getItems = s.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item));
-				IQuery countItems = s.CreateQuery("select count(*) from Item");
+				var getItems = s.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item));
+				var countItems = s.CreateQuery("select count(*) from Item");
 
-				IList results = s.CreateMultiQuery()
+				var results = s.CreateMultiQuery()
 					.Add(getItems)
 					.Add(countItems)
 					.List();
-				IList items = (IList)results[0];
-				Item fromDb = (Item)items[0];
+				var items = (IList)results[0];
+				var fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				IList counts = (IList)results[1];
-				long count = (long)counts[0];
+				var counts = (IList)results[1];
+				var count = (long)counts[0];
 				Assert.AreEqual(1L, count);
-			}
-
-			using (ISession s = OpenSession())
-			{
-				s.Delete("from Item");
-				s.Flush();
 			}
 		}
 
@@ -331,34 +307,32 @@ namespace NHibernate.Test.QueryTest
 		{
 			CreateItems();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				IMultiQuery multiQuery = session.CreateMultiQuery();
+				var multiQuery = session.CreateMultiQuery();
 
-				IQuery firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id").AddEntity(typeof(Item))
+				var firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id").AddEntity(typeof(Item))
 					.SetInt32("id", 50);
 
-				IQuery secondQuery = session.CreateQuery("from Item");
+				var secondQuery = session.CreateQuery("from Item");
 
 				multiQuery.Add("first", firstQuery).Add("second", secondQuery);
 
-				IList secondResult = (IList)multiQuery.GetResult("second");
-				IList firstResult = (IList)multiQuery.GetResult("first");
+				var secondResult = (IList)multiQuery.GetResult("second");
+				var firstResult = (IList)multiQuery.GetResult("first");
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}
-
-			RemoveAllItems();
 		}
 
 		[Test]
 		public void CanNotAddQueryWithKeyThatAlreadyExists()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				IMultiQuery multiQuery = session.CreateMultiQuery();
+				var multiQuery = session.CreateMultiQuery();
 
-				IQuery firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id").AddEntity(typeof(Item))
+				var firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id").AddEntity(typeof(Item))
 					.SetInt32("id", 50);
 
 				try
@@ -379,9 +353,9 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public void CanNotRetrieveQueryResultWithUnknownKey()
 		{
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				IMultiQuery multiQuery = session.CreateMultiQuery();
+				var multiQuery = session.CreateMultiQuery();
 
 				multiQuery.Add("firstQuery", session.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item)));
 
@@ -405,10 +379,10 @@ namespace NHibernate.Test.QueryTest
 		{
 			CreateItems();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				ResultTransformerStub transformer = new ResultTransformerStub();
-				IQuery query = session.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item))
+				var transformer = new ResultTransformerStub();
+				var query = session.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item))
 					.SetResultTransformer(transformer);
 				session.CreateMultiQuery()
 					.Add(query)
@@ -417,8 +391,6 @@ namespace NHibernate.Test.QueryTest
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
 				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
 			}
-
-			RemoveAllItems();
 		}
 
 		[Test]
@@ -426,9 +398,9 @@ namespace NHibernate.Test.QueryTest
 		{
 			CreateItems();
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
 			{
-				ResultTransformerStub transformer = new ResultTransformerStub();
+				var transformer = new ResultTransformerStub();
 				IQuery query = session.CreateSQLQuery("select * from ITEM").AddEntity(typeof(Item));
 				session.CreateMultiQuery()
 					.Add(query)
@@ -438,24 +410,22 @@ namespace NHibernate.Test.QueryTest
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
 				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
 			}
-
-			RemoveAllItems();
 		}
 
 		[Test]
 		public void CanGetResultsInAGenericList()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				IQuery getItems = s.CreateQuery("from Item");
-				IQuery countItems = s.CreateSQLQuery("select count(*) as count from ITEM").AddScalar("count", NHibernateUtil.Int64);
+				var getItems = s.CreateQuery("from Item");
+				var countItems = s.CreateSQLQuery("select count(*) as count from ITEM").AddScalar("count", NHibernateUtil.Int64);
 
-				IList results = s.CreateMultiQuery()
+				var results = s.CreateMultiQuery()
 					.Add(getItems)
 					.Add<long>(countItems)
 					.List();
 
-				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<long>>());
 			}
 		}

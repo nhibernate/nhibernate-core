@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.NotNull(ids);
 			AssertOrderedBy.Ascending(ids, arg => arg.Country);
 		}
-		
+
 		[Test]
 		public void AscendingOrderByClause()
 		{
@@ -158,12 +158,12 @@ namespace NHibernate.Test.Linq.ByMethod
 			// Check join result.
 			var allAnimals = db.Animals;
 			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
-// ReSharper disable RemoveToList.2
+			// ReSharper disable RemoveToList.2
 			// We to ToList() first or it skips the generation of the joins.
 			Assert.AreEqual(allAnimals.ToList().Count(), orderedAnimals.ToList().Count());
-// ReSharper restore RemoveToList.2
+			// ReSharper restore RemoveToList.2
 		}
-		
+
 		[Test]
 		public void OrderByWithSelfReferencedSubquery1()
 		{
@@ -173,12 +173,12 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3044
 			var result = (from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
-						  orderby order.Customer.CustomerId 
+						  orderby order.Customer.CustomerId
 						  select order).ToList();
 
 			AssertOrderedBy.Ascending(result.Take(5).ToList(), x => x.Customer.CustomerId);
 		}
-		
+
 		[Test]
 		public void OrderByWithSelfReferencedSubquery2()
 		{
@@ -188,7 +188,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3044
 			var result = (from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
-						  orderby order.ShippingDate descending 
+						  orderby order.ShippingDate descending
 						  select order).ToList();
 
 			// Different databases may sort null either first or last.
@@ -196,6 +196,12 @@ namespace NHibernate.Test.Linq.ByMethod
 			result = result.Where(x => x.ShippingDate != null).ToList();
 
 			AssertOrderedBy.Descending(result.Take(5).ToList(), x => x.ShippingDate);
+		}
+
+		[Test(Description = "NH-3217")]
+		public void OrderByNullCompareAndSkipAndTake()
+		{
+			db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToList();
 		}
 	}
 }

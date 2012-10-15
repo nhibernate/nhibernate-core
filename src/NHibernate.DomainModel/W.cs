@@ -1,6 +1,6 @@
 using System;
-
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -11,7 +11,6 @@ namespace NHibernate.DomainModel
 	{
 		private long _id;
 		// <set> mapping
-		private ISet _zeds;
 
 		public virtual long Id
 		{
@@ -19,10 +18,6 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public virtual ISet Zeds
-		{
-			get { return _zeds; }
-			set { _zeds = value; }
-		}
+		public virtual ISet<Z> Zeds { get; set; }
 	}
 }

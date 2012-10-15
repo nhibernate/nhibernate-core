@@ -1,4 +1,5 @@
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1706
 {
@@ -6,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1706
 	{
 		public A()
 		{
-			Items = new HashedSet();
+			Items = new HashedSet<B>();
 		}
 		public int Id { get; set; }
 
@@ -14,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1706
 
 		public string Name { get; set; }
 
-		public virtual ISet Items { get; set; }
+		public virtual ISet<B> Items { get; set; }
 	}
 
 	public class B

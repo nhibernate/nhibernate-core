@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Iesi.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH2736
 {

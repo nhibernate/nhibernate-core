@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 		public ConditionalFragment SetCondition(string[] lhs, string rhs)
 		{
 			this.lhs = lhs;
-			this.rhs = ArrayHelper.FillArray(rhs, lhs.Length);
+			this.rhs = ArrayHelper.Fill(rhs, lhs.Length);
 			return this;
 		}
 

@@ -52,7 +52,7 @@ namespace NHibernate.Criterion
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery,
-		                                           IDictionary<string, IFilter> enabledFilters)
+												   IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder buf = new SqlStringBuilder();
 			foreach (IProjection projection in args)
@@ -70,19 +70,19 @@ namespace NHibernate.Criterion
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery,
-		                                      IDictionary<string, IFilter> enabledFilters)
+											  IDictionary<string, IFilter> enabledFilters)
 		{
 			ISQLFunction sqlFunction = GetFunction(criteriaQuery);
 
-			var arguments = new ArrayList();
-            for (int i = 0; i < args.Length; i++)
-            {
-                SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0, enabledFilters); // The loc parameter is unused.
-                arguments.Add(projectArg);
-            }
+			var arguments = new List<object>();
+			for (int i = 0; i < args.Length; i++)
+			{
+				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0, enabledFilters); // The loc parameter is unused.
+				arguments.Add(projectArg);
+			}
 
-            SqlStringBuilder sb = new SqlStringBuilder();
-            sb.Add(sqlFunction.Render(arguments, criteriaQuery.Factory));
+			SqlStringBuilder sb = new SqlStringBuilder();
+			sb.Add(sqlFunction.Render(arguments, criteriaQuery.Factory));
 			sb.Add(" as ");
 			sb.Add(GetColumnAliases(position)[0]);
 			return sb.ToSqlString();
@@ -98,17 +98,17 @@ namespace NHibernate.Criterion
 			if (dialectFunction == null)
 			{
 				throw new HibernateException("Current dialect " + criteriaQuery.Factory.Dialect + " doesn't support the function: "
-				                             + functionName);
+											 + functionName);
 			}
 			return dialectFunction;
 		}
 
 		private static SqlString GetProjectionArgument(ICriteriaQuery criteriaQuery, ICriteria criteria,
-		                                               IProjection projection, int loc,
-		                                               IDictionary<string, IFilter> enabledFilters)
+													   IProjection projection, int loc,
+													   IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters);
-			return StringHelper.RemoveAsAliasesFromSql(sql);
+			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

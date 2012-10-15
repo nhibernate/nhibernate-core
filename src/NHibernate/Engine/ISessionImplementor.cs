@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
@@ -81,13 +82,13 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		IList List(string query, QueryParameters parameters);
 
-        /// <summary>
-        /// Execute a <c>List()</c> expression query
-        /// </summary>
-        /// <param name="queryExpression"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        IList List(IQueryExpression queryExpression, QueryParameters parameters);
+		/// <summary>
+		/// Execute a <c>List()</c> expression query
+		/// </summary>
+		/// <param name="queryExpression"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		IList List(IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query expression
@@ -102,6 +103,11 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
 		IList<T> List<T>(string query, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
+		/// </summary>
+		IList<T> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
@@ -221,6 +227,8 @@ namespace NHibernate.Engine
 		IQuery GetNamedSQLQuery(string name);
 
 		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
+		
+		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
 
@@ -303,5 +311,9 @@ namespace NHibernate.Engine
 		ITransactionContext TransactionContext { get; set; }
 
 		void CloseSessionFromDistributedTransaction();
+
+		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
+
+		CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName);
 	}
 }

@@ -1,9 +1,10 @@
+using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-
+using NHibernate.Linq;
 using NUnit.Framework;
 
 using Environment=NHibernate.Cfg.Environment;
@@ -28,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	[TestFixture]
 	public class FallbackFixture : FutureFixture
 	{
-		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
 			return !cp.Driver.SupportsMultipleQueries;
@@ -66,16 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		}
 
 		[Test]
-		public void FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
-		{
-			using (var session = sessions.OpenSession())
-			{
-				var results = session.CreateQuery("from Person").Future<Person>();
-				results.GetEnumerator().MoveNext();
-			}
-		}
-
-		[Test]
 		public void FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupported()
 		{
 			int personId = CreatePerson();
@@ -104,6 +95,16 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		}
 
 		[Test]
+		public void FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.CreateQuery("from Person").Future<Person>();
+				results.GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
 		public void FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupported()
 		{
 			int personId = CreatePerson();
@@ -127,6 +128,30 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
 				Assert.That(futureCount.Value, Is.EqualTo(1L));
+			}
+		}
+
+		[Test]
+		public void FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.Query<Person>().ToFuture();
+				results.GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
+		public void FutureValueOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupported()
+		{
+			var personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.Query<Person>()
+					.Where(x => x.Id == personId)
+					.ToFutureValue();
+				Assert.IsNotNull(futurePerson.Value);
 			}
 		}
 

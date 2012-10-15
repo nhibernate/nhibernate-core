@@ -21,7 +21,7 @@ namespace NHibernate.Engine
 		{
 			this.type = type;
 			this.value = value;
-			ICollection values = value as ICollection;
+			var values = value as ICollection;
 			if (!type.IsCollectionType && values != null && !type.ReturnedClass.IsArray)
 				comparer = new ParameterListComparer(entityMode);
 			else
@@ -71,7 +71,7 @@ namespace NHibernate.Engine
 			public bool Equals(TypedValue x, TypedValue y)
 			{
 				if (y == null) return false;
-				if (!x.type.ReturnedClass.Equals(y.type.ReturnedClass))
+				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
 				return IsEquals(x.type, x.value as ICollection, y.value as ICollection);
 			}
@@ -135,7 +135,7 @@ namespace NHibernate.Engine
 			public bool Equals(TypedValue x, TypedValue y)
 			{
 				if (y == null) return false;
-				if (!x.type.ReturnedClass.Equals(y.type.ReturnedClass))
+				if (x.type.ReturnedClass != y.type.ReturnedClass)
 					return false;
 				return x.type.IsEqual(y.value, x.value, entityMode);
 			}

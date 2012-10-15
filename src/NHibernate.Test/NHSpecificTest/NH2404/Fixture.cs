@@ -1,5 +1,4 @@
 using System.Linq;
-using NHibernate.Impl;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
@@ -11,56 +10,48 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 	{
 		protected override void OnSetUp()
 		{
-			base.OnSetUp();
-			using (var session = this.OpenSession())
-			using (var tx = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				var entity = new TestEntity();
-				entity.Id = 1;
-				entity.Name = "Test Entity";
-				session.Save(entity);
-				
-				var entity1 = new TestEntity();
-				entity1.Id = 2;
-				entity1.Name = "Test Entity";
-				session.Save(entity1);
+				session.Save(new TestEntity
+					{
+						Id = 1,
+						Name = "Test Entity"
+					});
 
-				tx.Commit();
+				session.Save(new TestEntity
+					{
+						Id = 2,
+						Name = "Test Entity"
+					});
+
+				transaction.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
-				string hql = "from System.Object";
-				session.Delete(hql);
-				session.Flush();
+				session.Delete("from System.Object");
+				transaction.Commit();
 			}
 		}
 	
 		[Test]
 		public void ProjectionsShouldWorkWithLinqProviderAndFutures()
 		{
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				if (((SessionFactoryImpl)sessions).ConnectionProvider.Driver.SupportsMultipleQueries == false)
-				{
-					Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-				}
-
-				var query1 = (
-				             	from entity in session.Query<TestEntity>()
-				             	select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}
-				             ).ToList();
+				var query1 = (from entity in session.Query<TestEntity>()
+							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToList();
 
 				Assert.AreEqual(2, query1.Count());
 
-				var query2 = (
-							from entity in session.Query<TestEntity>()
-							select new TestEntityDto { EntityId = entity.Id, EntityName = entity.Name }
-						).ToFuture();
+				var query2 = (from entity in session.Query<TestEntity>()
+							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToFuture();
 
 				Assert.AreEqual(2, query2.Count());
 			}
@@ -69,13 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 		[Test]
 		public void ProjectionsShouldWorkWithHqlAndFutures()
 		{
-			using (ISession session = this.OpenSession())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				if (((SessionFactoryImpl)sessions).ConnectionProvider.Driver.SupportsMultipleQueries == false)
-				{
-					Assert.Ignore("Not applicable for dialects that do not support multiple queries");
-				}
-
 				var query1 =
 					session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(
 						Transformers.AliasToBean(typeof (TestEntityDto)))

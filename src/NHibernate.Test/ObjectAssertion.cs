@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test
@@ -15,14 +16,15 @@ namespace NHibernate.Test
 		{
 		}
 
-		internal static void AreEqual(ISet expected, ISet actual)
+		internal static void AreEqual<T>(ISet<T> expected, ISet<T> actual)
 		{
 			Assert.AreEqual(expected.Count, actual.Count, "two sets are diff size");
-			foreach (object obj in expected)
+			foreach (T obj in expected)
 			{
 				Assert.IsTrue(actual.Contains(obj), obj.ToString() + " is not contained in actual");
 			}
 		}
+
 
 		/// <summary>
 		/// Compares one dimensional arrays for equality.

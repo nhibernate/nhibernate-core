@@ -6,8 +6,6 @@ namespace NHibernate.Linq.Expressions
 	{
 		protected NhCountExpression(Expression expression, System.Type type)
 			: base(expression, type, NhExpressionType.Count) {}
-
-		public abstract NhCountExpression CreateNew(Expression expression);
 	}
 
 	public class NhShortCountExpression : NhCountExpression
@@ -15,7 +13,7 @@ namespace NHibernate.Linq.Expressions
 		public NhShortCountExpression(Expression expression)
 			: base(expression, typeof (int)) {}
 
-		public override NhCountExpression CreateNew(Expression expression)
+		public override Expression CreateNew(Expression expression)
 		{
 			return new NhShortCountExpression(expression);
 		}
@@ -26,7 +24,7 @@ namespace NHibernate.Linq.Expressions
 		public NhLongCountExpression(Expression expression)
 			: base(expression, typeof (long)) {}
 
-		public override NhCountExpression CreateNew(Expression expression)
+		public override Expression CreateNew(Expression expression)
 		{
 			return new NhLongCountExpression(expression);
 		}

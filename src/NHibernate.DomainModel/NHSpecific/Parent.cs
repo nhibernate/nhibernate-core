@@ -1,6 +1,6 @@
 using System;
-
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -11,13 +11,13 @@ namespace NHibernate.DomainModel.NHSpecific
 	{
 		private int _id;
 		private string _adultName;
-		private ISet _children;
-		private ISet _adultFriends;
+		private ISet<object> _children;
+		private ISet<Parent> _adultFriends;
 
 
 		public Parent()
 		{
-			_adultFriends = new SortedSet(new ParentComparer());
+			_adultFriends = new SortedSet<Parent>(new ParentComparer());
 		}
 
 		public int Id
@@ -32,13 +32,13 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _adultName = value; }
 		}
 
-		public ISet Children
+		public ISet<object> Children
 		{
 			get { return _children; }
 			set { _children = value; }
 		}
 
-		public ISet AdultFriends
+		public ISet<Parent> AdultFriends
 		{
 			get { return _adultFriends; }
 			set { _adultFriends = value; }

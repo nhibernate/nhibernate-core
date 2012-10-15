@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -138,7 +138,7 @@ namespace NHibernate.Event.Default
 						object id = persister.GetIdentifier(entity, source.EntityMode);
 						if (id != null)
 						{
-							EntityKey key = new EntityKey(id, persister, source.EntityMode);
+							EntityKey key = source.GenerateEntityKey(id, persister);
 							object managedEntity = source.PersistenceContext.GetEntity(key);
 							entry = source.PersistenceContext.GetEntry(managedEntity);
 							if (entry != null)
@@ -437,7 +437,7 @@ namespace NHibernate.Event.Default
 				object id = persister.GetIdentifier(entity, source.EntityMode);
 				if (id != null)
 				{
-					EntityKey key = new EntityKey(id, persister, source.EntityMode);
+					EntityKey key = source.GenerateEntityKey(id, persister);
 					object managedEntity = source.PersistenceContext.GetEntity(key);
 					entry = source.PersistenceContext.GetEntry(managedEntity);
 				}

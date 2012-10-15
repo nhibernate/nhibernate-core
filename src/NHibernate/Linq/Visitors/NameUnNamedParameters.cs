@@ -1,39 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-    public class NameUnNamedParameters : NhExpressionTreeVisitor
-    {
-        public static Expression Visit(Expression expression)
-        {
-            var visitor = new NameUnNamedParameters();
+	//TODO: Remove this visitor when https://www.re-motion.org/jira/browse/RM-5107 will be fixed
+	public class NameUnNamedParameters : ExpressionTreeVisitor
+	{
+		public static Expression Visit(Expression expression)
+		{
+			var visitor = new NameUnNamedParameters();
 
-            return visitor.VisitExpression(expression);
-        }
+			return visitor.VisitExpression(expression);
+		}
 
-        private readonly Dictionary<ParameterExpression, ParameterExpression> _renamedParameters = new Dictionary<ParameterExpression, ParameterExpression>();
+		private readonly Dictionary<ParameterExpression, ParameterExpression> _renamedParameters = new Dictionary<ParameterExpression, ParameterExpression>();
 
-        protected override Expression VisitParameterExpression(ParameterExpression expression)
-        {
-            if (string.IsNullOrEmpty(expression.Name))
-            {
-                ParameterExpression renamed;
-                
-                if (_renamedParameters.TryGetValue(expression, out renamed))
-                {
-                    return renamed;
-                }
+		protected override Expression VisitParameterExpression(ParameterExpression expression)
+		{
+			if (string.IsNullOrEmpty(expression.Name))
+			{
+				ParameterExpression renamed;
+				
+				if (_renamedParameters.TryGetValue(expression, out renamed))
+				{
+					return renamed;
+				}
 
-                renamed = Expression.Parameter(expression.Type, Guid.NewGuid().ToString());
+				renamed = Expression.Parameter(expression.Type, Guid.NewGuid().ToString());
 
-                _renamedParameters.Add(expression, renamed);
+				_renamedParameters.Add(expression, renamed);
 
-                return renamed;
-            }
+				return renamed;
+			}
 
-            return base.VisitParameterExpression(expression);
-        }
-    }
+			return base.VisitParameterExpression(expression);
+		}
+	}
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Persister.Entity;
@@ -26,16 +25,16 @@ namespace NHibernate.Hql.Classic
 	{
 		private readonly PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-		private static readonly ISet<string> expressionTerminators = new HashedSet<string>(); //tokens that close a sub expression
-		private static readonly ISet<string> expressionOpeners = new HashedSet<string>(); //tokens that open a sub expression
+		private static readonly HashSet<string> expressionTerminators = new HashSet<string>(); //tokens that close a sub expression
+		private static readonly HashSet<string> expressionOpeners = new HashSet<string>(); //tokens that open a sub expression
 
-		private static readonly ISet<string> booleanOperators = new HashedSet<string>();
+		private static readonly HashSet<string> booleanOperators = new HashSet<string>();
 		                    //tokens that would indicate a sub expression is a boolean expression
 
 		private static readonly Dictionary<string, string> negations = new Dictionary<string, string>();
 
 		// To parse correctly the functions TRIM and EXTRACT (Note subselect inside TRIM is not supported)
-		private static readonly ISet<string> specialFunctions = new HashedSet<string>();
+		private static readonly HashSet<string> specialFunctions = new HashSet<string>();
 
 		public WhereParser()
 		{

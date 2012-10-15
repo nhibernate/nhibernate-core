@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
-using System.Text.RegularExpressions;
 using NHibernate.SqlCommand.Parser;
+using System.Text.RegularExpressions;
 
 namespace NHibernate.SqlCommand
 {
@@ -235,7 +235,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		private static IEnumerable<object> ParseParts(string text)
-		{
+			{
 			if (string.IsNullOrEmpty(text)) yield break;
 
 			int offset = 0;
@@ -269,15 +269,15 @@ namespace NHibernate.SqlCommand
 						break;
 					case '-':
 						if (offset + 1 < maxOffset && text[offset + 1] == '-')
-						{
+							{
 							offset += SqlParserUtils.ReadLineComment(text, maxOffset, offset);
 							continue;
-						}
+							}
 						break;
-				}
+						}
 
 				offset++;
-			}
+				}
 
 			if (maxOffset > partOffset)
 			{
@@ -572,7 +572,14 @@ namespace NHibernate.SqlCommand
 
 		internal SqlString[] SplitWithRegex(string pattern)
 		{
-			return Regex.Split(ToString(), pattern).Select(s => SqlString.Parse(s)).ToArray();
+			var sql = Regex.Split(ToString(), pattern).Select(s => SqlString.Parse(s)).ToArray();
+			int i = 0;
+			foreach (var p in sql.SelectMany(s => s.GetParameters()))
+			{
+				p.BackTrack = GetParameters().ElementAt(i).BackTrack;
+				i++;
+			}
+			return sql;
 		}
 
 		private IEnumerable<SqlString> SplitParts(string splitter)

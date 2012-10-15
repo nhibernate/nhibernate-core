@@ -34,16 +34,12 @@ namespace NHibernate.Linq.Visitors
 
 		protected virtual Expression VisitNhStar(NhStarExpression expression)
 		{
-			var newExpression = VisitExpression(expression.Expression);
-
-			return newExpression != expression.Expression ? new NhStarExpression(newExpression) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhNew(NhNewExpression expression)
 		{
-			var arguments = VisitAndConvert(expression.Arguments, "VisitNhNew");
-
-			return arguments != expression.Arguments ? new NhNewExpression(expression.Members, arguments) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhAggregate(NhAggregatedExpression expression)
@@ -69,44 +65,32 @@ namespace NHibernate.Linq.Visitors
 
 		protected virtual Expression VisitNhDistinct(NhDistinctExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? new NhDistinctExpression(nx) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhCount(NhCountExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? expression.CreateNew(nx) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhSum(NhSumExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? new NhSumExpression(nx) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhMax(NhMaxExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? new NhMaxExpression(nx) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhMin(NhMinExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? new NhMinExpression(nx) : expression;
+			return expression.Accept(this);
 		}
 
 		protected virtual Expression VisitNhAverage(NhAverageExpression expression)
 		{
-			Expression nx = VisitExpression(expression.Expression);
-
-			return nx != expression.Expression ? new NhAverageExpression(nx) : expression;
+			return expression.Accept(this);
 		}
 	}
 }

@@ -74,7 +74,7 @@ namespace NHibernate.Type
 				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
 				object id = session.GetContextEntityIdentifier(owner);
 
-				EntityKey entityKey = new EntityKey(id, ownerPersister, session.EntityMode);
+				EntityKey entityKey = session.GenerateEntityKey(id, ownerPersister);
 
 				return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
 			}
@@ -104,7 +104,7 @@ namespace NHibernate.Type
 					object[] values = ownerIdType.GetPropertyValues(identifier, session);
 					object id = componentType.ResolveIdentifier(values, session, null);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
-					var key = new EntityKey(id, persister, session.EntityMode);
+					var key = session.GenerateEntityKey(id, persister);
 					return session.PersistenceContext.GetEntity(key);
 				}
 			}

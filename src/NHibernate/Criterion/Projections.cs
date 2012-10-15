@@ -2,11 +2,10 @@ using System;
 using System.Linq.Expressions;
 using NHibernate.Impl;
 using NHibernate.Type;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Criterion
 {
-	using NHibernate.Dialect.Function;
-
 	/// <summary>
 	/// The <tt>criterion</tt> package may be used by applications as a framework for building
 	/// new kinds of <tt>Projection</tt>. However, it is intended that most applications will
@@ -15,13 +14,8 @@ namespace NHibernate.Criterion
 	/// The factory methods that take an alias allow the projected value to be referred to by 
 	/// criterion and order instances.
 	/// </summary>
-	public class Projections
+	public static class Projections
 	{
-		private Projections()
-		{
-			// Private Constructor, never called.
-		}
-
 		/// <summary>
 		/// Create a distinct projection from a projection
 		/// </summary>

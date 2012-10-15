@@ -136,7 +136,7 @@ namespace NHibernate.Criterion
 		public static ICriterion ProcessIsInCollection(MethodCallExpression methodCallExpression)
 		{
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			ICollection values = (ICollection)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			var values = (ICollection)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			return projection.Create<ICriterion>(s => Restrictions.In(s, values), p => Restrictions.In(p, values));
 		}
 

@@ -4,8 +4,6 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	using System.Linq;
-
 	/// <summary>
 	/// Transforms a T-SQL SELECT statement into a statement that will - when executed - return a 'page' of results. The page is defined
 	/// by a page size ('limit'), and/or a starting page number ('offset').
@@ -61,20 +59,6 @@ namespace NHibernate.Dialect
 			return result.ToSqlString();
 		}
 
-		protected static bool TryFindLimitInsertPoint(SqlString sql, out int result)
-		{
-			var tokenEnum = new SqlTokenizer(sql).GetEnumerator();
-
-			if (tokenEnum.TryParseUntilFirstMsSqlSelectColumn())
-			{
-				result = tokenEnum.Current.SqlIndex;
-				return true;
-			}
-
-			result = -1;
-			return false;
-		}
-
 		private static void BuildSelectClauseForPagingQuery(MsSqlSelectParser sqlQuery, SqlString limit, SqlStringBuilder result)
 		{
 			result.Add(sqlQuery.Sql.Substring(0, sqlQuery.SelectIndex));
@@ -106,7 +90,7 @@ namespace NHibernate.Dialect
 				.Add(sqlQuery.SelectClause)
 				.Add(", ROW_NUMBER() OVER(ORDER BY ");
 
-			int orderIndex = 0;
+			var orderIndex = 0;
 			foreach (var order in sqlQuery.Orders)
 			{
 				if (orderIndex++ > 0) result.Add(", ");
@@ -120,6 +104,7 @@ namespace NHibernate.Dialect
 				}
 				if (order.IsDescending) result.Add(" DESC");
 			}
+
 			if (orderIndex == 0)
 			{
 				result.Add("CURRENT_TIMESTAMP");

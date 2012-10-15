@@ -25,18 +25,14 @@ namespace NHibernate.Linq.GroupJoin
 	///    };
 	/// 
 	/// </summary>
-	public class AggregatingGroupJoinRewriter
+	public static class AggregatingGroupJoinRewriter
 	{
-		private AggregatingGroupJoinRewriter()
-		{
-		}
-
 		public static void ReWrite(QueryModel model)
 		{
 			// firstly, get the group join clauses
-			var groupJoin = model.BodyClauses.Where(bc => bc is GroupJoinClause).Cast<GroupJoinClause>();
+			var groupJoin = model.BodyClauses.OfType<GroupJoinClause>();
 
-			if (groupJoin.Count() == 0)
+			if (!groupJoin.Any())
 			{
 				// No group join here..
 				return;
@@ -51,7 +47,7 @@ namespace NHibernate.Linq.GroupJoin
 				model.SelectClause.TransformExpressions(s => GroupJoinSelectClauseRewriter.ReWrite(s, aggregateDetectorResults));
 
 				// Remove the aggregating group joins
-				foreach (GroupJoinClause aggregatingGroupJoin in aggregateDetectorResults.AggregatingClauses)
+				foreach (var aggregatingGroupJoin in aggregateDetectorResults.AggregatingClauses)
 				{
 					model.BodyClauses.Remove(aggregatingGroupJoin);
 				}

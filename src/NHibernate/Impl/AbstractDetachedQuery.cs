@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using NHibernate.Transform;
+using NHibernate.Type;
 
 namespace NHibernate.Impl
 {
@@ -29,11 +30,11 @@ namespace NHibernate.Impl
 		// Untyped Parameters
 		protected readonly Dictionary<int, object> posUntypeParams = new Dictionary<int, object>(4);
 		protected readonly Dictionary<string, object> namedUntypeParams = new Dictionary<string, object>();
-		protected readonly Dictionary<string, ICollection> namedUntypeListParams = new Dictionary<string, ICollection>(2);
+		protected readonly Dictionary<string, IEnumerable> namedUntypeListParams = new Dictionary<string, IEnumerable>(2);
 
 		// Optional parameters are used for parameters values from bean.
 		// The IQuery implementation use the actualNamedParameters to know which property it need.
-		protected readonly IList optionalUntypeParams = new ArrayList(2);
+		protected readonly IList optionalUntypeParams = new List<object>(2);
 
 		// Typed Parameters
 		protected readonly Dictionary<int, TypedValue> posParams = new Dictionary<int, TypedValue>(4);
@@ -112,13 +113,13 @@ namespace NHibernate.Impl
 			lockModes[alias] = lockMode;
 		}
 
-		public IDetachedQuery SetParameter(int position, object val, Type.IType type)
+		public IDetachedQuery SetParameter(int position, object val, IType type)
 		{
 			posParams[position] = new TypedValue(type, val, EntityMode.Poco);
 			return this;
 		}
 
-		public IDetachedQuery SetParameter(string name, object val, Type.IType type)
+		public IDetachedQuery SetParameter(string name, object val, IType type)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -140,7 +141,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, ICollection vals, Type.IType type)
+		public IDetachedQuery SetParameterList(string name, IEnumerable vals, IType type)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -148,7 +149,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, ICollection vals)
+		public IDetachedQuery SetParameterList(string name, IEnumerable vals)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -437,7 +438,7 @@ namespace NHibernate.Impl
 				q.SetLockMode(mode.Key, mode.Value);
 
 			// Set AbstractQueryImpl property before set parameters
-			AbstractQueryImpl aqi = q as AbstractQueryImpl;
+			var aqi = q as AbstractQueryImpl;
 			if (aqi != null)
 				aqi.SetIgnoreUknownNamedParameters(shouldIgnoredUnknownNamedParameters);
 
@@ -446,32 +447,32 @@ namespace NHibernate.Impl
 			// difference between IQuery and DetachedQuery behaviour.
 			// In IQuery we don't know who override a param value; in DetachedQuery the direct use of 
 			// a named parameter setter override the param value set by SetProperties(POCO)
-			foreach (object obj in optionalUntypeParams)
+			foreach (var obj in optionalUntypeParams)
 				q.SetProperties(obj);
 
 			// Set untyped positional parameters
-			foreach (KeyValuePair<int, object> pup in posUntypeParams)
+			foreach (var pup in posUntypeParams)
 				q.SetParameter(pup.Key, pup.Value);
 
 			// Set untyped named parameters
-			foreach (KeyValuePair<string, object> nup in namedUntypeParams)
+			foreach (var nup in namedUntypeParams)
 				q.SetParameter(nup.Key, nup.Value);
 
 			// Set untyped named parameters list
-			foreach (KeyValuePair<string, ICollection> nulp in namedUntypeListParams)
+			foreach (var nulp in namedUntypeListParams)
 				q.SetParameterList(nulp.Key, nulp.Value);
 
 			// Set typed positional parameters
-			foreach (KeyValuePair<int, TypedValue> pp in posParams)
+			foreach (var pp in posParams)
 				q.SetParameter(pp.Key, pp.Value.Value, pp.Value.Type);
 
 			// Set typed named parameters
-			foreach (KeyValuePair<string, TypedValue> np in namedParams)
+			foreach (var np in namedParams)
 				q.SetParameter(np.Key, np.Value.Value, np.Value.Type);
 
 			// Set typed named parameters List
-			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
-				q.SetParameterList(nlp.Key, (ICollection)nlp.Value.Value, nlp.Value.Type);
+			foreach (var nlp in namedListParams)
+				q.SetParameterList(nlp.Key, (IEnumerable) nlp.Value.Value, nlp.Value.Type);
 		}
 
 		private void Reset()
@@ -545,32 +546,32 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public void SetParametersTo(IDetachedQuery destination)
 		{
-			foreach (object obj in optionalUntypeParams)
+			foreach (var obj in optionalUntypeParams)
 				destination.SetProperties(obj);
 
 			// Set untyped positional parameters
-			foreach (KeyValuePair<int, object> pup in posUntypeParams)
+			foreach (var pup in posUntypeParams)
 				destination.SetParameter(pup.Key, pup.Value);
 
 			// Set untyped named parameters
-			foreach (KeyValuePair<string, object> nup in namedUntypeParams)
+			foreach (var nup in namedUntypeParams)
 				destination.SetParameter(nup.Key, nup.Value);
 
 			// Set untyped named parameters list
-			foreach (KeyValuePair<string, ICollection> nulp in namedUntypeListParams)
+			foreach (var nulp in namedUntypeListParams)
 				destination.SetParameterList(nulp.Key, nulp.Value);
 
 			// Set typed positional parameters
-			foreach (KeyValuePair<int, TypedValue> pp in posParams)
+			foreach (var pp in posParams)
 				destination.SetParameter(pp.Key, pp.Value.Value, pp.Value.Type);
 
 			// Set typed named parameters
-			foreach (KeyValuePair<string, TypedValue> np in namedParams)
+			foreach (var np in namedParams)
 				destination.SetParameter(np.Key, np.Value.Value, np.Value.Type);
 
 			// Set typed named parameters List
-			foreach (KeyValuePair<string, TypedValue> nlp in namedListParams)
-				destination.SetParameterList(nlp.Key, (ICollection)nlp.Value.Value, nlp.Value.Type);
+			foreach (var nlp in namedListParams)
+				destination.SetParameterList(nlp.Key, (IEnumerable) nlp.Value.Value, nlp.Value.Type);
 		}
 
 		void IDetachedQueryImplementor.OverrideInfoFrom(IDetachedQueryImplementor origin)

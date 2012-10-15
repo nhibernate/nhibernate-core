@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
@@ -88,7 +87,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IMultiQuery SetParameterList(string name, ICollection vals, IType type)
+		public IMultiQuery SetParameterList(string name, IEnumerable vals, IType type)
 		{
 			foreach (IQuery query in queries)
 			{
@@ -97,7 +96,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IMultiQuery SetParameterList(string name, ICollection vals)
+		public IMultiQuery SetParameterList(string name, IEnumerable vals)
 		{
 			foreach (IQuery query in queries)
 			{
@@ -447,12 +446,12 @@ namespace NHibernate.Impl
 
 		protected virtual IList GetResultList(IList results)
 		{
-			var resultCollections = new ArrayList(resultCollectionGenericType.Count);
+			var resultCollections = new List<object>(resultCollectionGenericType.Count);
 			for (int i = 0; i < queries.Count; i++)
 			{
 				if (resultCollectionGenericType[i] == typeof(object))
 				{
-					resultCollections.Add(new ArrayList());
+					resultCollections.Add(new List<object>());
 				}
 				else
 				{
@@ -501,7 +500,7 @@ namespace NHibernate.Impl
 			return resultTransformer != null;
 		}
 
-		protected ArrayList DoList()
+		protected List<object> DoList()
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -511,9 +510,9 @@ namespace NHibernate.Impl
 			}
 			int rowCount = 0;
 
-			ArrayList results = new ArrayList();
+			var results = new List<object>();
 
-			ArrayList[] hydratedObjects = new ArrayList[Translators.Count];
+			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
 
@@ -531,7 +530,7 @@ namespace NHibernate.Impl
 						QueryParameters parameter = Parameters[i];
 
 						int entitySpan = translator.Loader.EntityPersisters.Length;
-						hydratedObjects[i] = entitySpan > 0 ? new ArrayList() : null;
+						hydratedObjects[i] = entitySpan > 0 ? new List<object>() : null;
 						RowSelection selection = parameter.RowSelection;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
@@ -553,7 +552,7 @@ namespace NHibernate.Impl
 							log.Debug("processing result set");
 						}
 
-						IList tempResults = new ArrayList();
+						IList tempResults = new List<object>();
 						int count;
 						for (count = 0; count < maxRows && reader.Read(); count++)
 						{
@@ -636,7 +635,7 @@ namespace NHibernate.Impl
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
 				query.VerifyParameters();
-				foreach (var translator in GetTranslators(query, queryParameters))
+				foreach (var translator in query.GetTranslators(session, queryParameters))
 				{
 					translators.Add(translator);
 					translatorQueryMap.Add(queryIndex);
@@ -648,24 +647,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private IEnumerable<ITranslator> GetTranslators(AbstractQueryImpl query, QueryParameters queryParameters)
-		{
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			var queryString = query.ExpandParameterLists(queryParameters.NamedParameters);
-
-			var sqlQuery = query as ISQLQuery;
-			if (sqlQuery != null)
-			{
-				yield return new SqlTranslator(sqlQuery, session.Factory);
-				yield break;
-			}
-
-			foreach (var queryTranslator in session.GetQueries(queryString, false))
-			{
-				yield return new HqlTranslatorWrapper(queryTranslator);
-			}
-		}
-
 		public object GetResult(string key)
 		{
 			if (queryResults == null)
@@ -673,12 +654,11 @@ namespace NHibernate.Impl
 				queryResults = List();
 			}
 
-			if (!queryResultPositions.ContainsKey(key))
-			{
+			int queryResultPosition;
+			if (!queryResultPositions.TryGetValue(key, out queryResultPosition))
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			}
 
-			return queryResults[queryResultPositions[key]];
+			return queryResults[queryResultPosition];
 		}
 
 		public override string ToString()
@@ -697,7 +677,7 @@ namespace NHibernate.Impl
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
-			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
 			ISet<string> querySpaces = new HashedSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
@@ -727,7 +707,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				ArrayList list = DoList();
+				var list = DoList();
 				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}
@@ -752,8 +732,8 @@ namespace NHibernate.Impl
 			QueryParameters combinedQueryParameters = new QueryParameters();
 			combinedQueryParameters.ForceCacheRefresh = forceCacheRefresh;
 			combinedQueryParameters.NamedParameters = new Dictionary<string, TypedValue>();
-			ArrayList positionalParameterTypes = new ArrayList();
-			ArrayList positionalParameterValues = new ArrayList();
+			var positionalParameterTypes = new List<IType>();
+			var positionalParameterValues = new List<object>();
 			int index = 0;
 			foreach (QueryParameters queryParameters in Parameters)
 			{
@@ -765,8 +745,8 @@ namespace NHibernate.Impl
 				positionalParameterTypes.AddRange(queryParameters.PositionalParameterTypes);
 				positionalParameterValues.AddRange(queryParameters.PositionalParameterValues);
 			}
-			combinedQueryParameters.PositionalParameterTypes = (IType[])positionalParameterTypes.ToArray(typeof(IType));
-			combinedQueryParameters.PositionalParameterValues = (object[])positionalParameterValues.ToArray(typeof(object));
+			combinedQueryParameters.PositionalParameterTypes = positionalParameterTypes.ToArray();
+			combinedQueryParameters.PositionalParameterValues = positionalParameterValues.ToArray();
 			return combinedQueryParameters;
 		}
 
@@ -783,9 +763,7 @@ namespace NHibernate.Impl
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
 			if (queryResultPositions.ContainsKey(key))
-			{
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
-			}
 		}
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)
@@ -797,76 +775,76 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+	}
 
-		private interface ITranslator
+	public interface ITranslator
+	{
+		Loader.Loader Loader { get; }
+		IType[] ReturnTypes { get; }
+		string[] ReturnAliases { get; }
+		ICollection<string> QuerySpaces { get; }
+	}
+
+	internal class HqlTranslatorWrapper : ITranslator
+	{
+		private readonly IQueryTranslator innerTranslator;
+
+		public HqlTranslatorWrapper(IQueryTranslator translator)
 		{
-			Loader.Loader Loader { get; }
-			IType[] ReturnTypes { get; }
-			string[] ReturnAliases { get; }
-			ICollection<string> QuerySpaces { get; }
+			innerTranslator = translator;
 		}
 
-		private class HqlTranslatorWrapper : ITranslator
+		public Loader.Loader Loader
 		{
-			private readonly IQueryTranslator innerTranslator;
-
-			public HqlTranslatorWrapper(IQueryTranslator translator)
-			{
-				innerTranslator = translator;
-			}
-
-			public Loader.Loader Loader
-			{
-				get { return innerTranslator.Loader; }
-			}
-
-			public IType[] ReturnTypes
-			{
-				get { return innerTranslator.ActualReturnTypes; }
-			}
-
-			public ICollection<string> QuerySpaces
-			{
-				get { return innerTranslator.QuerySpaces; }
-			}
-
-			public string[] ReturnAliases
-			{
-				get { return innerTranslator.ReturnAliases; }
-			}
+			get { return innerTranslator.Loader; }
 		}
 
-		private class SqlTranslator : ITranslator
+		public IType[] ReturnTypes
 		{
-			private readonly CustomLoader loader;
+			get { return innerTranslator.ActualReturnTypes; }
+		}
 
-			public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
-			{
-				var sqlQueryImpl = (SqlQueryImpl)sqlQuery;
-				NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
-				var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
-				loader = new CustomLoader(sqlCustomQuery, sessionFactory);
-			}
+		public ICollection<string> QuerySpaces
+		{
+			get { return innerTranslator.QuerySpaces; }
+		}
 
-			public IType[] ReturnTypes
-			{
-				get { return loader.ResultTypes; }
-			}
+		public string[] ReturnAliases
+		{
+			get { return innerTranslator.ReturnAliases; }
+		}
+	}
 
-			public Loader.Loader Loader
-			{
-				get { return loader; }
-			}
+	internal class SqlTranslator : ITranslator
+	{
+		private readonly CustomLoader loader;
 
-			public ICollection<string> QuerySpaces
-			{
-				get { return loader.QuerySpaces; }
-			}
+		public SqlTranslator(ISQLQuery sqlQuery, ISessionFactoryImplementor sessionFactory)
+		{
+			var sqlQueryImpl = (SqlQueryImpl) sqlQuery;
+			NativeSQLQuerySpecification sqlQuerySpec = sqlQueryImpl.GenerateQuerySpecification(sqlQueryImpl.NamedParams);
+			var sqlCustomQuery = new SQLCustomQuery(sqlQuerySpec.SqlQueryReturns, sqlQuerySpec.QueryString, sqlQuerySpec.QuerySpaces, sessionFactory);
+			loader = new CustomLoader(sqlCustomQuery, sessionFactory);
+		}
 
-			public string[] ReturnAliases
-			{
-				get { return loader.ReturnAliases; }
-			}
+		public IType[] ReturnTypes
+		{
+			get { return loader.ResultTypes; }
+		}
+
+		public Loader.Loader Loader
+		{
+			get { return loader; }
+		}
+
+		public ICollection<string> QuerySpaces
+		{
+			get { return loader.QuerySpaces; }
+		}
+
+		public string[] ReturnAliases
+		{
+			get { return loader.ReturnAliases; }
 		}
 	}
 }

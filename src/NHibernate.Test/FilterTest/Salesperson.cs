@@ -1,5 +1,6 @@
 using System;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -10,7 +11,7 @@ namespace NHibernate.Test.FilterTest
 		private String region;
 		private DateTime hireDate;
 		private Department department;
-		private ISet orders = new HashedSet();
+		private ISet<Order> orders = new HashedSet<Order>();
 
 		public virtual long Id
 		{
@@ -42,7 +43,7 @@ namespace NHibernate.Test.FilterTest
 			set { department = value; }
 		}
 
-		public virtual ISet Orders
+		public virtual ISet<Order> Orders
 		{
 			get { return orders; }
 			set { orders = value; }

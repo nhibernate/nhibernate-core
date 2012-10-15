@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new ArgumentException("null identifier");
 				}
-				EntityKey key = new EntityKey(id, persister, source.EntityMode);
+				EntityKey key = source.GenerateEntityKey(id, persister);
 				persistenceContext.RemoveProxy(key);
 				if (!li.IsUninitialized)
 				{

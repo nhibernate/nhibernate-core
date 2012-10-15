@@ -532,7 +532,7 @@ namespace NHibernate.Test.QueryTest
 				get { return shouldIgnoredUnknownNamedParameters; }
 			}
 
-			public Dictionary<string, ICollection> NamedUntypeListParams
+			public Dictionary<string, IEnumerable> NamedUntypeListParams
 			{
 				get { return namedUntypeListParams; }
 			}

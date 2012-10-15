@@ -40,7 +40,7 @@ namespace NHibernate.Criterion
 			string sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
 			int loc = position*GetHashCode();
 			SqlString val = projection.ToSqlString(criteria, loc, criteriaQuery,enabledFilters);
-			val = StringHelper.RemoveAsAliasesFromSql(val);
+			val = SqlStringHelper.RemoveAsAliasesFromSql(val);
 
 			return new SqlStringBuilder()
 				.Add("cast( ")

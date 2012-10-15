@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1289

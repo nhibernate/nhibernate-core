@@ -10,11 +10,10 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Exec;
-using NHibernate.Hql.Ast.ANTLR.Loader;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Loader.Hql;
 using NHibernate.Param;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -98,10 +97,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				log.Warn( "firstResult/maxResults specified with collection fetch; applying in memory!" );
 				var selection = new RowSelection
-										 	{
-										 		FetchSize = queryParameters.RowSelection.FetchSize,
-										 		Timeout = queryParameters.RowSelection.Timeout
-										 	};
+											{
+												FetchSize = queryParameters.RowSelection.FetchSize,
+												Timeout = queryParameters.RowSelection.Timeout
+											};
 				queryParametersToUse = queryParameters.CreateCopyUsing( selection );
 			}
 			else 

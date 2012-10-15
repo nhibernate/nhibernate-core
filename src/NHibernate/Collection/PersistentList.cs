@@ -51,7 +51,7 @@ namespace NHibernate.Collection
 			IsDirectlyAccessible = true;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 
@@ -225,7 +225,7 @@ namespace NHibernate.Collection
 
 		public override bool Equals(object obj)
 		{
-			ICollection that = obj as ICollection;
+			var that = obj as ICollection;
 			if (that == null)
 			{
 				return false;

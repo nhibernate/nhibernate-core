@@ -82,7 +82,7 @@ namespace NHibernate.Criterion
 				sb.Add(StringHelper.OpenParen);
 			}
 			bool first = true;
-			foreach (SqlString sqlString in StringHelper.Add(columnNames, Op, otherColumnNames))
+			foreach (SqlString sqlString in SqlStringHelper.Add(columnNames, Op, otherColumnNames))
 			{
 				if (first == false)
 				{

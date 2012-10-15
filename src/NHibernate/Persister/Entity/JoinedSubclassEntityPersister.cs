@@ -6,6 +6,7 @@ using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -182,7 +183,7 @@ namespace NHibernate.Persister.Entity
 			Reverse(subclassTableNameClosure, tableSpan);
 			Reverse(subclassTableKeyColumnClosure, tableSpan);
 
-			spaces = ArrayHelper.Join(tableNames, ArrayHelper.ToStringArray(persistentClass.SynchronizedTables));
+			spaces = ArrayHelper.Join(tableNames, persistentClass.SynchronizedTables.ToArray());
 
 			// Custom sql
 			customSQLInsert = new SqlString[tableSpan];

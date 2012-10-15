@@ -17,7 +17,7 @@ namespace NHibernate.Proxy.DynamicProxy
 {
 	internal class DefaultyProxyMethodBuilder : IProxyMethodBuilder
 	{
-		public DefaultyProxyMethodBuilder() : this(new DefaultMethodEmitter()) {}
+		public DefaultyProxyMethodBuilder() : this(new DefaultMethodEmitter()) { }
 
 		public DefaultyProxyMethodBuilder(IMethodBodyEmitter emitter)
 		{
@@ -35,12 +35,12 @@ namespace NHibernate.Proxy.DynamicProxy
 		public void CreateProxiedMethod(FieldInfo field, MethodInfo method, TypeBuilder typeBuilder)
 		{
 			const MethodAttributes methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
-																								MethodAttributes.Virtual;
+			                                          MethodAttributes.Virtual;
 			ParameterInfo[] parameters = method.GetParameters();
 
 			MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes,
-			                                                       CallingConventions.HasThis, method.ReturnType,
-			                                                       parameters.Select(param => param.ParameterType).ToArray());
+																   CallingConventions.HasThis, method.ReturnType,
+																   parameters.Select(param => param.ParameterType).ToArray());
 
 			System.Type[] typeArgs = method.GetGenericArguments();
 
@@ -57,14 +57,24 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				for (int index = 0; index < typeArgs.Length; index++)
 				{
-					typeArgsBuilder[index].SetInterfaceConstraints(typeArgs[index].GetGenericParameterConstraints());
+					// Copy generic parameter attributes (Covariant, Contravariant, ReferenceTypeConstraint,
+					// NotNullableValueTypeConstraint, DefaultConstructorConstraint).
+					typeArgsBuilder[index].SetGenericParameterAttributes(typeArgs[index].GenericParameterAttributes);
+
+					// Copy generic parameter constraints (class and interfaces).
+					var typeConstraints = typeArgs[index].GetGenericParameterConstraints();
+
+					var baseTypeConstraint = typeConstraints.SingleOrDefault(x => x.IsClass);
+					typeArgsBuilder[index].SetBaseTypeConstraint(baseTypeConstraint);
+
+					var interfaceTypeConstraints = typeConstraints.Where(x => !x.IsClass).ToArray();
+					typeArgsBuilder[index].SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
 
-			ILGenerator IL = methodBuilder.GetILGenerator();
 
 			Debug.Assert(MethodBodyEmitter != null);
-			MethodBodyEmitter.EmitMethodBody(IL, method, field);
+			MethodBodyEmitter.EmitMethodBody(methodBuilder, method, field);
 		}
 
 		#endregion

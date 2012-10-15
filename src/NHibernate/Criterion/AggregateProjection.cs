@@ -56,7 +56,7 @@ namespace NHibernate.Criterion
 					new SqlString(new object[]
 								  	{
 								  		aggregate, "(",
-								  		StringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery,
+								  		SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery,
 								  																   enabledFilters)), ") as y",
 								  		loc.ToString(), "_"
 								  	});

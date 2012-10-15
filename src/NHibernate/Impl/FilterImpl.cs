@@ -83,16 +83,18 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException("Collection must be not null!", "values");
 			}
-			IType type = definition.GetParameterType(name);
+
+			var type = definition.GetParameterType(name);
 			if (type == null)
 			{
 				throw new HibernateException("Undefined filter parameter [" + name + "]");
 			}
+
 			if (values.Count > 0)
 			{
-				IEnumerator e = values.GetEnumerator();
+				var e = values.GetEnumerator();
 				e.MoveNext();
-				if (!type.ReturnedClass.IsAssignableFrom(e.Current.GetType()))
+				if (!type.ReturnedClass.IsInstanceOfType(e.Current))
 				{
 					throw new HibernateException("Incorrect type for parameter [" + name + "]");
 				}
@@ -110,7 +112,7 @@ namespace NHibernate.Impl
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
 		public IFilter SetParameterList(string name, object[] values)
 		{
-			return SetParameterList(name, new ArrayList(values));
+			return SetParameterList(name, new List<object>(values));
 		}
 
 		public object GetParameter(string name)
@@ -129,9 +131,7 @@ namespace NHibernate.Impl
 			foreach (string parameterName in definition.ParameterNames)
 			{
 				if (!parameters.ContainsKey(parameterName))
-				{
-					throw new HibernateException("Filter [" + Name + "] parameter [" + parameterName + "] value not set");
-				}
+					throw new HibernateException(string.Format("Filter [{0}] parameter [{1}] value not set", Name, parameterName));
 			}
 		}
 	}

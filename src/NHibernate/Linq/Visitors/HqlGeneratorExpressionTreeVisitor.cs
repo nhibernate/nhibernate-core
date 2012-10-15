@@ -6,7 +6,9 @@ using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -105,14 +107,17 @@ namespace NHibernate.Linq.Visitors
 					return VisitTypeBinaryExpression((TypeBinaryExpression) expression);
 
 				default:
-					if (expression is SubQueryExpression)
-						return VisitSubQueryExpression((SubQueryExpression) expression);
+					var subQueryExpression = expression as SubQueryExpression;
+					if (subQueryExpression != null)
+						return VisitSubQueryExpression(subQueryExpression);
 
-					if (expression is QuerySourceReferenceExpression)
-						return VisitQuerySourceReferenceExpression((QuerySourceReferenceExpression) expression);
+					var querySourceReferenceExpression = expression as QuerySourceReferenceExpression;
+					if (querySourceReferenceExpression != null)
+						return VisitQuerySourceReferenceExpression(querySourceReferenceExpression);
 
-					if (expression is VBStringComparisonExpression)
-						return VisitVBStringComparisonExpression((VBStringComparisonExpression) expression);
+					var vbStringComparisonExpression = expression as VBStringComparisonExpression;
+					if (vbStringComparisonExpression != null)
+						return VisitVBStringComparisonExpression(vbStringComparisonExpression);
 
 					switch ((NhExpressionType) expression.NodeType)
 					{
@@ -171,12 +176,12 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitNhMin(NhMinExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			return _hqlTreeBuilder.Min(VisitExpression(expression.Expression).AsExpression());
 		}
 
 		protected HqlTreeNode VisitNhMax(NhMaxExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			return _hqlTreeBuilder.Max(VisitExpression(expression.Expression).AsExpression());
 		}
 
 		protected HqlTreeNode VisitNhSum(NhSumExpression expression)
@@ -307,8 +312,8 @@ namespace NHibernate.Linq.Visitors
 				throw new InvalidOperationException("Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
 			}
 
-			HqlExpression leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
-			HqlExpression rightHqlExpression = GetExpressionForBooleanEquality(expression.Right, rhs);
+			var leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
+			var rightHqlExpression = GetExpressionForBooleanEquality(expression.Right, rhs);
 			return applyResultExpressions(leftHqlExpression, rightHqlExpression);
 		}
 
@@ -330,15 +335,27 @@ namespace NHibernate.Linq.Visitors
 
 			//When the expression is a member-access not nullable then use the HbmDot
 			var memberAccessExpression = @operator as MemberExpression;
-			if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof (bool).Equals(memberAccessExpression.Type))
+			if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof (bool) == memberAccessExpression.Type)
 			{
 				// this case make the difference when the property "Value" of a nullable type is used (ignore the null since the user is explicity checking the Value)
 				return original;
 			}
 
+			var subQueryExpression = @operator as SubQueryExpression;
+			if (subQueryExpression != null)
+			{
+				var resultOperators = subQueryExpression.QueryModel.ResultOperators;
+				if (resultOperators.Count == 1 &&
+					(resultOperators[0] is FirstResultOperator ||
+					 resultOperators[0] is SingleResultOperator))
+				{
+					return original;
+				}
+			}
+
 			//When the expression is a member-access nullable then use the "case" clause to transform it to boolean (to use always .NET meaning instead leave the DB the behavior for null)
 			//When the expression is a complex-expression then use the "case" clause to transform it to boolean
-			return _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(original, _hqlTreeBuilder.Constant(true))}, _hqlTreeBuilder.Constant(false));
+			return _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(original, _hqlTreeBuilder.True()) }, _hqlTreeBuilder.False());
 		}
 
 		protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
@@ -349,12 +366,14 @@ namespace NHibernate.Linq.Visitors
 					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
-				{
-					if (expression.Operand.Type.IsPrimitive && expression.Type.IsPrimitive)
+				case ExpressionType.TypeAs:
+					if ((expression.Operand.Type.IsPrimitive || expression.Operand.Type == typeof(Decimal)) &&
+						(expression.Type.IsPrimitive || expression.Type == typeof(Decimal)))
+					{
 						return _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type);
+					}
 
 					return VisitExpression(expression.Operand);
-				}
 			}
 
 			throw new NotSupportedException(expression.ToString());
@@ -434,16 +453,17 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitConditionalExpression(ConditionalExpression expression)
 		{
-			var when = _hqlTreeBuilder.When(VisitExpression(expression.Test).AsExpression(), VisitExpression(expression.IfTrue).AsExpression());
-			
-			HqlExpression ifFalse = null;
+			var test = VisitExpression(expression.Test).AsExpression();
+			var ifTrue = BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfTrue).AsExpression());
+			var ifFalse = (expression.IfFalse != null
+							   ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
+							   : null);
 
-			if (expression.IfFalse != null)
-			{
-				ifFalse = VisitExpression(expression.IfFalse).AsExpression();
-			}
+			var @case = _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(test, ifTrue) }, ifFalse);
 
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Case(new[] {when}, ifFalse), expression.Type);
+			return expression.Type == typeof (bool)
+					   ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
+					   : _hqlTreeBuilder.Cast(@case, expression.Type);
 		}
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)

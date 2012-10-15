@@ -84,7 +84,7 @@ namespace NHibernate.Action
 				CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), version, session, instance);
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
-				CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, Session.EntityMode, Session.Factory);
+				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 				bool put = persister.Cache.Insert(ck, cacheEntry, version);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
@@ -108,7 +108,7 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			if (success && IsCachePutEnabled(persister))
 			{
-				CacheKey ck = new CacheKey(Id, persister.IdentifierType, persister.RootEntityName, Session.EntityMode, Session.Factory);
+				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
 				bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
 
 				if (put && Session.Factory.Statistics.IsStatisticsEnabled)

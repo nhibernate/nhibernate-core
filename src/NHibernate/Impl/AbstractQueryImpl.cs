@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Classic;
@@ -11,6 +9,7 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Linq;
 
 namespace NHibernate.Impl
 {
@@ -24,7 +23,7 @@ namespace NHibernate.Impl
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
-		private readonly ArrayList values = new ArrayList(4);
+		private readonly List<object> values = new List<object>(4);
 		private readonly List<IType> types = new List<IType>(4);
 		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
 		protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
@@ -87,9 +86,9 @@ namespace NHibernate.Impl
 		{
 			if (parameterMetadata.NamedParameterNames.Count != namedParameters.Count + namedParameterLists.Count)
 			{
-				var missingParams = new HashedSet<string>(parameterMetadata.NamedParameterNames);
-				missingParams.RemoveAll(namedParameterLists.Keys);
-				missingParams.RemoveAll(namedParameters.Keys);
+				var missingParams = new HashSet<string>(parameterMetadata.NamedParameterNames);
+				missingParams.ExceptWith(namedParameterLists.Keys);
+				missingParams.ExceptWith(namedParameters.Keys);
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
@@ -228,7 +227,7 @@ namespace NHibernate.Impl
 		protected internal virtual string ExpandParameterLists(IDictionary<string, TypedValue> namedParamsCopy)
 		{
 			string query = queryString;
-			foreach (KeyValuePair<string, TypedValue> me in namedParameterLists)
+			foreach (var me in namedParameterLists)
 				query = ExpandParameterList(query, me.Key, me.Value, namedParamsCopy);
 
 			return query;
@@ -239,31 +238,32 @@ namespace NHibernate.Impl
 		/// </summary>
 		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
 		{
-			var vals = (ICollection)typedList.Value;
-			IType type = typedList.Type;
-			if (vals.Count == 1)
+			var vals = (IEnumerable) typedList.Value;
+			var type = typedList.Type;
+
+			var typedValues = (from object value in vals
+							   select new TypedValue(type, value, session.EntityMode))
+				.ToList();
+
+			if (typedValues.Count == 1)
 			{
-				// short-circuit for performance...
-				IEnumerator iter = vals.GetEnumerator();
-				iter.MoveNext();
-				namedParamsCopy[name] = new TypedValue(type, iter.Current, session.EntityMode);
+				namedParamsCopy[name] = typedValues[0];
 				return query;
 			}
-
-			var list = new StringBuilder(16);
-			int i = 0;
-			bool isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
-			foreach (object obj in vals)
+			
+			var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
+			var aliases = new string[typedValues.Count];
+			for (var index = 0; index < typedValues.Count; index++)
 			{
-				if (i > 0)
-					list.Append(StringHelper.CommaSpace);
-
-				string alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
-				namedParamsCopy[alias] = new TypedValue(type, obj, session.EntityMode);
-				list.Append(ParserHelper.HqlVariablePrefix).Append(alias);
+				var value = typedValues[index];
+				var alias =  (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
+				namedParamsCopy[alias] = value;
+				aliases[index] = ParserHelper.HqlVariablePrefix + alias;
 			}
-			string paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
-			return StringHelper.Replace(query, paramPrefix + name, list.ToString(), true);
+
+			var paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
+
+			return StringHelper.Replace(query, paramPrefix + name, string.Join(StringHelper.CommaSpace, aliases), true);
 		}
 
 		#region Parameters
@@ -640,24 +640,19 @@ namespace NHibernate.Impl
 			string[] @params = NamedParameters;
 			for (int i = 0; i < @params.Length; i++)
 			{
-				string namedParam = @params[i];
-				object obj = map[namedParam];
+				var namedParam = @params[i];
+				var obj = map[namedParam];
 				if (obj == null)
 				{
 					continue;
 				}
-				System.Type retType = obj.GetType();
-				if (typeof(ICollection).IsAssignableFrom(retType))
+				if (obj is IEnumerable && !(obj is string))
 				{
-					SetParameterList(namedParam, (ICollection)obj);
-				}
-				else if (retType.IsArray)
-				{
-					SetParameterList(namedParam, (object[])obj);
+					SetParameterList(namedParam, (IEnumerable) obj);
 				}
 				else
 				{
-					SetParameter(namedParam, obj, DetermineType(namedParam, retType));
+					SetParameter(namedParam, obj, DetermineType(namedParam, obj.GetType()));
 				}
 			}
 			return this;
@@ -672,16 +667,12 @@ namespace NHibernate.Impl
 				string namedParam = @params[i];
 				try
 				{
-					IGetter getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
-					System.Type retType = getter.ReturnType;
-					object obj = getter.Get(bean);
-					if (typeof(ICollection).IsAssignableFrom(retType))
+					var getter = ReflectHelper.GetGetter(clazz, namedParam, "property");
+					var retType = getter.ReturnType;
+					var obj = getter.Get(bean);
+					if (typeof(IEnumerable).IsAssignableFrom(retType) && retType != typeof(string))
 					{
-						SetParameterList(namedParam, (ICollection)obj);
-					}
-					else if (retType.IsArray)
-					{
-						SetParameterList(namedParam, (Object[])obj);
+						SetParameterList(namedParam, (IEnumerable) obj);
 					}
 					else
 					{
@@ -810,7 +801,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				return ArrayHelper.ToStringArray(parameterMetadata.NamedParameterNames);
+				return parameterMetadata.NamedParameterNames.ToArray();
 			}
 		}
 
@@ -985,7 +976,7 @@ namespace NHibernate.Impl
 
 		public virtual object[] ValueArray()
 		{
-			return (object[])values.ToArray(typeof(object));
+			return values.ToArray();
 		}
 
 		public virtual QueryParameters GetQueryParameters()
@@ -1047,5 +1038,7 @@ namespace NHibernate.Impl
 		{
 			return queryString;
 		}
+
+		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 	}
 }

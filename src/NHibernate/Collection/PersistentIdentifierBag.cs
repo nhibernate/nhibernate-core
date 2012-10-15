@@ -196,7 +196,7 @@ namespace NHibernate.Collection
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((ICollection) snapshot).Count == 0;
+			return ((ISet<SnapshotElement>) snapshot).Count == 0;
 		}
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
@@ -271,7 +271,7 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 

@@ -10,26 +10,25 @@ using NUnit.Framework;
 
 namespace NHibernate.TestDatabaseSetup
 {
-    [TestFixture]
-    public class DatabaseSetup
-    {
-		private static IDictionary<string, Action<Cfg.Configuration>> SetupMethods;
-
-		static DatabaseSetup()
-		{
-			SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>();
-			SetupMethods.Add("NHibernate.Driver.SqlClientDriver", SetupSqlServer);
-			SetupMethods.Add("NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc);
-			SetupMethods.Add("NHibernate.Driver.FirebirdClientDriver", SetupFirebird);
-			SetupMethods.Add("NHibernate.Driver.SQLite20Driver", SetupSQLite);
-			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
-			SetupMethods.Add("NHibernate.Driver.OracleDataClientDriver", SetupOracle);
-		}
+	[TestFixture]
+	public class DatabaseSetup
+	{
+		private static readonly IDictionary<string, Action<Cfg.Configuration>> SetupMethods = new Dictionary<string, Action<Cfg.Configuration>>
+			{
+				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
+				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
+				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
+				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
+				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
+				{"NHibernate.Driver.OracleClientDriver", SetupOracle}
+			};
 
 		[Test]
 		public void SetupDatabase()
 		{
-            var cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			var driver = cfg.Properties[Cfg.Environment.ConnectionDriver];
 
 			Assert.That(SetupMethods.ContainsKey(driver), "No setup method found for " + driver);
@@ -38,59 +37,59 @@ namespace NHibernate.TestDatabaseSetup
 			setupMethod(cfg);
 		}
 
-        private static void SetupSqlServer(Cfg.Configuration cfg)
-        {
-            var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+		private static void SetupSqlServer(Cfg.Configuration cfg)
+		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
 
-            using (var conn = new SqlConnection(connStr.Replace("initial catalog=nhibernate", "initial catalog=master")))
-            {
-                conn.Open();
+			using (var conn = new SqlConnection(connStr.Replace("initial catalog=nhibernate", "initial catalog=master")))
+			{
+				conn.Open();
 
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "drop database nhibernate";
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = "drop database nhibernate";
 
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch(Exception e)
-                    {
+					try
+					{
+						cmd.ExecuteNonQuery();
+					}
+					catch(Exception e)
+					{
 						Console.WriteLine(e);
-                    }
+					}
 
-                    cmd.CommandText = "create database nhibernate";
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
+					cmd.CommandText = "create database nhibernate";
+					cmd.ExecuteNonQuery();
+				}
+			}
+		}
 
-        private static void SetupSqlServerOdbc(Cfg.Configuration cfg)
-        {
-            var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
+		private static void SetupSqlServerOdbc(Cfg.Configuration cfg)
+		{
+			var connStr = cfg.Properties[Cfg.Environment.ConnectionString];
 
-            using (var conn = new OdbcConnection(connStr.Replace("Database=nhibernateOdbc", "Database=master")))
-            {
-                conn.Open();
+			using (var conn = new OdbcConnection(connStr.Replace("Database=nhibernateOdbc", "Database=master")))
+			{
+				conn.Open();
 
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "drop database nhibernateOdbc";
+				using (var cmd = conn.CreateCommand())
+				{
+					cmd.CommandText = "drop database nhibernateOdbc";
 
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch(Exception e)
-                    {
+					try
+					{
+						cmd.ExecuteNonQuery();
+					}
+					catch(Exception e)
+					{
 						Console.WriteLine(e);
-                    }
+					}
 
-                    cmd.CommandText = "create database nhibernateOdbc";
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
+					cmd.CommandText = "create database nhibernateOdbc";
+					cmd.ExecuteNonQuery();
+				}
+			}
+		}
 
 		private static void SetupFirebird(Cfg.Configuration cfg)
 		{
@@ -133,22 +132,22 @@ namespace NHibernate.TestDatabaseSetup
 				}
 			}
 
-            // Install the GUID generator function that uses the most common "random" algorithm.
-            using (var conn = new NpgsqlConnection(connStr))
-            {
-                conn.Open();
+			// Install the GUID generator function that uses the most common "random" algorithm.
+			using (var conn = new NpgsqlConnection(connStr))
+			{
+				conn.Open();
 
 				using (var cmd = conn.CreateCommand())
 				{
-                    cmd.CommandText =
-                        @"CREATE OR REPLACE FUNCTION uuid_generate_v4()
-                        RETURNS uuid
-                        AS '$libdir/uuid-ossp', 'uuid_generate_v4'
-                        VOLATILE STRICT LANGUAGE C;";
+					cmd.CommandText =
+						@"CREATE OR REPLACE FUNCTION uuid_generate_v4()
+						RETURNS uuid
+						AS '$libdir/uuid-ossp', 'uuid_generate_v4'
+						VOLATILE STRICT LANGUAGE C;";
 
 					cmd.ExecuteNonQuery();
 				}
-            }
+			}
 		}
 
 		private static void SetupSQLite(Cfg.Configuration cfg)

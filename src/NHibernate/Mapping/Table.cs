@@ -394,7 +394,7 @@ namespace NHibernate.Mapping
 					}
 					else
 					{
-						UniqueKey uk = GetUniqueKey(col.GetQuotedName(dialect) + "_");
+						UniqueKey uk = GetOrCreateUniqueKey(col.GetQuotedName(dialect) + "_");
 						uk.AddColumn(col);
 					}
 				}
@@ -650,14 +650,6 @@ namespace NHibernate.Mapping
 			return results.ToArray();
 		}
 
-		/// <summary>
-		/// Gets the <see cref="Index"/> identified by the name.
-		/// </summary>
-		/// <param name="indexName">The name of the <see cref="Index"/> to get.</param>
-		/// <returns>
-		/// The <see cref="Index"/> identified by the name.  If the <see cref="Index"/>
-		/// identified by the name does not exist then it is created.
-		/// </returns>
 		public Index GetIndex(string indexName)
 		{
 			Index result;
@@ -676,6 +668,14 @@ namespace NHibernate.Mapping
 			return index;
 		}
 
+		/// <summary>
+		/// Gets the <see cref="Index"/> identified by the name.
+		/// </summary>
+		/// <param name="indexName">The name of the <see cref="Index"/> to get.</param>
+		/// <returns>
+		/// The <see cref="Index"/> identified by the name.  If the <see cref="Index"/>
+		/// identified by the name does not exist then it is created.
+		/// </returns>
 		public Index GetOrCreateIndex(string indexName)
 		{
 			Index index = GetIndex(indexName);
@@ -689,14 +689,6 @@ namespace NHibernate.Mapping
 			return index;
 		}
 
-		/// <summary>
-		/// Gets the <see cref="UniqueKey"/> identified by the name.
-		/// </summary>
-		/// <param name="keyName">The name of the <see cref="UniqueKey"/> to get.</param>
-		/// <returns>
-		/// The <see cref="UniqueKey"/> identified by the name.  If the <see cref="UniqueKey"/>
-		/// identified by the name does not exist then it is created.
-		/// </returns>
 		public UniqueKey GetUniqueKey(string keyName)
 		{
 			UniqueKey result;
@@ -715,6 +707,14 @@ namespace NHibernate.Mapping
 			return uniqueKey;
 		}
 
+		/// <summary>
+		/// Gets the <see cref="UniqueKey"/> identified by the name.
+		/// </summary>
+		/// <param name="keyName">The name of the <see cref="UniqueKey"/> to get.</param>
+		/// <returns>
+		/// The <see cref="UniqueKey"/> identified by the name.  If the <see cref="UniqueKey"/>
+		/// identified by the name does not exist then it is created.
+		/// </returns>
 		public UniqueKey GetOrCreateUniqueKey(string keyName)
 		{
 			UniqueKey uk = GetUniqueKey(keyName);

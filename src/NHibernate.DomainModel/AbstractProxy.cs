@@ -1,12 +1,12 @@
 using System;
-
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
 	public interface AbstractProxy : FooProxy
 	{
-		ISet Abstracts { get; set; }
+		ISet<object> Abstracts { get; set; }
 		DateTime Time { get; set; }
 	}
 }

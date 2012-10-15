@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
@@ -586,15 +586,12 @@ namespace NHibernate.Test.Legacy
 			ccic.Simple = y;
 			comps.Add(ccic);
 
-			ISet compos = new HashedSet();
-			compos.Add(ccic);
+			var compos = new HashedSet<Container.ContainerInnerClass> { ccic };
 			c.Composites = compos;
 			c.Components = comps;
 			One one = new One();
 			Many many = new Many();
-			ISet manies = new HashedSet();
-			manies.Add(many);
-			one.Manies = manies;
+			one.Manies = new HashedSet<Many> {many};
 			many.One = one;
 			ccic.Many = many;
 			ccic.One = one;
@@ -628,7 +625,7 @@ namespace NHibernate.Test.Legacy
 			c.Components.RemoveAt(2);
 			c.Components[0] = o1;
 			c.ManyToMany[0] = c.ManyToMany[2];
-			c.Composites.Add(o1);
+			c.Composites.Add((Container.ContainerInnerClass)o1);
 			t.Commit();
 			s.Close();
 

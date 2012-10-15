@@ -1,19 +1,16 @@
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
 {
-	public class NonAggregatingGroupByRewriter
+	public static class NonAggregatingGroupByRewriter
 	{
-		private NonAggregatingGroupByRewriter() { }
-
 		public static void ReWrite(QueryModel queryModel)
 		{
 			if (queryModel.ResultOperators.Count == 1 
@@ -29,30 +26,28 @@ namespace NHibernate.Linq.GroupBy
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
 			if ((subQueryExpression != null) 
-				&& (subQueryExpression.QueryModel.ResultOperators.Count() == 1) 
+				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
 				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
 				&& (IsNonAggregatingGroupBy(queryModel)))
 			{
-				var rewriter = new NonAggregatingGroupByRewriter();
-				rewriter.FlattenSubQuery(subQueryExpression, queryModel);
+				FlattenSubQuery(subQueryExpression, queryModel);
 			}
 		}
 
-		private void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
+		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
 			// Create a new client-side select for the outer
-			// TODO - don't like calling GetGenericArguments here...
-			var clientSideSelect = new ClientSideSelect(
-				new NonAggregatingGroupBySelectRewriter()
-					.Visit(queryModel.SelectClause.Selector, subQueryExpression.Type.GetGenericArguments()[0], queryModel.MainFromClause));
+			var clientSideSelect = CreateClientSideSelect(subQueryExpression, queryModel);
+
+			var subQueryModel = subQueryExpression.QueryModel;
 
 			// Replace the outer select clause...
-			queryModel.SelectClause = subQueryExpression.QueryModel.SelectClause;
+			queryModel.SelectClause = subQueryModel.SelectClause;
 
 			// Replace the outer from clause...
-			queryModel.MainFromClause = subQueryExpression.QueryModel.MainFromClause;
+			queryModel.MainFromClause = subQueryModel.MainFromClause;
 
-			foreach (var bodyClause in subQueryExpression.QueryModel.BodyClauses)
+			foreach (var bodyClause in subQueryModel.BodyClauses)
 			{
 				queryModel.BodyClauses.Add(bodyClause);
 			}
@@ -63,8 +58,24 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator)subQueryExpression.QueryModel.ResultOperators[0]));
+			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
 			queryModel.ResultOperators.Add(clientSideSelect);
+		}
+
+		private static ClientSideSelect CreateClientSideSelect(Expression expression, QueryModel queryModel)
+		{
+			// TODO - don't like calling GetGenericArguments here...
+
+			var parameter = Expression.Parameter(expression.Type.GetGenericArguments()[0], "inputParameter");
+			
+			var mapping = new QuerySourceMapping();
+			mapping.AddMapping(queryModel.MainFromClause, parameter);
+			
+			var body = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
+			
+			var lambda = Expression.Lambda(body, parameter);
+			
+			return new ClientSideSelect(lambda);
 		}
 
 		private static bool IsNonAggregatingGroupBy(QueryModel queryModel)
@@ -73,35 +84,21 @@ namespace NHibernate.Linq.GroupBy
 		}
 	}
 
-	internal class NonAggregatingGroupBySelectRewriter : NhExpressionTreeVisitor
-	{
-		private ParameterExpression _inputParameter;
-		private IQuerySource _querySource;
-
-		public LambdaExpression Visit(Expression clause, System.Type resultType, IQuerySource querySource)
-		{
-			_inputParameter = Expression.Parameter(resultType, "inputParameter");
-			_querySource = querySource;
-
-			return Expression.Lambda(VisitExpression(clause), _inputParameter);
-		}
-
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
-		{
-			if (expression.ReferencedQuerySource == _querySource)
-			{
-				return _inputParameter;
-			}
-
-			return expression;
-		}
-	}
-
 	public class ClientSideSelect : ClientSideTransformOperator
 	{
 		public LambdaExpression SelectClause { get; private set; }
 
 		public ClientSideSelect(LambdaExpression selectClause)
+		{
+			SelectClause = selectClause;
+		}
+	}
+
+	public class ClientSideSelect2 : ClientSideTransformOperator
+	{
+		public LambdaExpression SelectClause { get; private set; }
+
+		public ClientSideSelect2(LambdaExpression selectClause)
 		{
 			SelectClause = selectClause;
 		}

@@ -741,6 +741,10 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void MultiCriteria()
 		{
+			var driver = sessions.ConnectionProvider.Driver;
+			if (!driver.SupportsMultipleQueries)
+				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+
 			SetupPagingData();
 
 			using (ISession s = OpenSession())

@@ -1,3 +1,14 @@
+Build vNext
+=============================
+
+** Known BREAKING CHANGES from NH3.3.1.GA to vNext
+
+    ##### Possible Breaking Changes #####
+        * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
+        * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
+	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+
 Build 3.3.1.GA
 =============================
 

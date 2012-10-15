@@ -51,28 +51,24 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType GuessType(System.Type type)
 		{
-			if(type.IsGenericType && typeof(Nullable<>).Equals(type.GetGenericTypeDefinition()))
+			if(type.IsGenericType && typeof(Nullable<>) == type.GetGenericTypeDefinition())
 			{
 				type = type.GetGenericArguments()[0];
 			}
-			if (clrTypeToNHibernateType.ContainsKey(type))
-			{
-				return clrTypeToNHibernateType[type];
-			}
-			else if (type.IsEnum)
+			IType value;
+			if (clrTypeToNHibernateType.TryGetValue(type, out value))
+				return value;
+			if (type.IsEnum)
 			{
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
 			}
-			else if (
-				typeof(IUserType).IsAssignableFrom(type) ||
+			if (typeof(IUserType).IsAssignableFrom(type) ||
 				typeof(ICompositeUserType).IsAssignableFrom(type))
 			{
 				return Custom(type);
 			}
-			else
-			{
-				return Entity(type);
-			}
+			
+			return Entity(type);
 		}
 
 		/// <summary>
@@ -283,7 +279,7 @@ namespace NHibernate
 
 		public static readonly NullableType XmlDoc = new XmlDocType();
 
-    public static readonly NullableType XDoc = new XDocType();
+	public static readonly NullableType XDoc = new XDocType();
 
 		public static readonly NullableType Uri = new UriType();
 

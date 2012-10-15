@@ -42,7 +42,7 @@ namespace NHibernate.Collection.Generic
 		
 		public PersistentIdentifierBag(ISessionImplementor session) : base(session) {}
 
-		public PersistentIdentifierBag(ISessionImplementor session, ICollection<T> coll) : base(session, coll as ICollection)
+		public PersistentIdentifierBag(ISessionImplementor session, IEnumerable<T> coll) : base(session, coll as ICollection)
 		{
 			gvalues = coll as IList<T>;
 			if (gvalues == null)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 
@@ -227,7 +228,7 @@ namespace NHibernate.Util
 		{
 			get
 			{
-				IList list = new ArrayList(map.Count);
+				IList list = new List<object>(map.Count);
 				foreach (DictionaryEntry de in map)
 				{
 					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.AdoNet;
@@ -29,6 +28,7 @@ using NHibernate.Util;
 using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
+using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -345,7 +345,7 @@ namespace NHibernate.Persister.Entity
 			propertySelectable = new bool[hydrateSpan];
 			propertyColumnUpdateable = new bool[hydrateSpan][];
 			propertyColumnInsertable = new bool[hydrateSpan][];
-			ISet thisClassProperties = new HashedSet();
+			var thisClassProperties = new HashSet<Property>();
 
 			lazyProperties = new HashedSet<string>();
 			List<string> lazyNames = new List<string>();
@@ -1188,7 +1188,7 @@ namespace NHibernate.Persister.Entity
 				return null;
 			}
 
-			return RenderSelect(ArrayHelper.ToIntArray(tableNumbers), columnNumbers.ToArray(), formulaNumbers.ToArray());
+			return RenderSelect(tableNumbers.ToArray(), columnNumbers.ToArray(), formulaNumbers.ToArray());
 		}
 
 		public virtual object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session)
@@ -1208,7 +1208,7 @@ namespace NHibernate.Persister.Entity
 
 			if (HasCache)
 			{
-				CacheKey cacheKey = new CacheKey(id, IdentifierType, EntityName, session.EntityMode, Factory);
+				CacheKey cacheKey = session.GenerateCacheKey(id, IdentifierType, EntityName);
 				object ce = Cache.Get(cacheKey, session.Timestamp);
 				if (ce != null)
 				{
@@ -1507,7 +1507,7 @@ namespace NHibernate.Persister.Entity
 			string fromClause = FromTableFragment(RootAlias) + FromJoinFragment(RootAlias, true, false);
 
 			SqlString whereClause = new SqlStringBuilder()
-				.Add(StringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
+				.Add(SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
 				.Add("=").AddParameter()
 				.Add(WhereJoinFragment(RootAlias, true, false))
 				.ToSqlString();
@@ -1566,7 +1566,7 @@ namespace NHibernate.Persister.Entity
 
 			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");
 			SqlStringBuilder whereClauseBuilder = new SqlStringBuilder()
-				.Add(StringHelper.Join(joiner, aliasedIdColumns))
+				.Add(SqlStringHelper.Join(joiner, aliasedIdColumns))
 				.Add("=")
 				.AddParameter()
 				.Add(WhereJoinFragment(RootAlias, true, false));
@@ -3076,7 +3076,7 @@ namespace NHibernate.Persister.Entity
 				// first we need to locate the "loaded" state
 				//
 				// Note, it potentially could be a proxy, so perform the location the safe way...
-				EntityKey key = new EntityKey(id, this, session.EntityMode);
+				EntityKey key = session.GenerateEntityKey(id, this);
 				object entity = session.PersistenceContext.GetEntity(key);
 				if (entity != null)
 				{
@@ -3719,7 +3719,7 @@ namespace NHibernate.Persister.Entity
 			// check to see if it is in the second-level cache
 			if (HasCache)
 			{
-				CacheKey ck = new CacheKey(id, IdentifierType, RootEntityName, session.EntityMode, session.Factory);
+				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
 				if (Cache.Get(ck, session.Timestamp) != null)
 					return false;
 			}
@@ -4066,7 +4066,7 @@ namespace NHibernate.Persister.Entity
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
 			SqlString whereClause = new SqlStringBuilder()
-				.Add(StringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
+				.Add(SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
 				.Add("=").AddParameter()
 				.Add(WhereJoinFragment(RootAlias, true, false))
 				.ToSqlString();

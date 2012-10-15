@@ -249,13 +249,8 @@ namespace NHibernate.Loader.Criteria
 		{
 			JoinType result;
 			if (associationPathJoinTypesMap.TryGetValue(path, out result))
-			{
 				return result;
-			}
-			else
-			{
-				return JoinType.InnerJoin;
-			}
+			return JoinType.InnerJoin;
 		}
 
 		public ICriteria GetCriteria(string path)
@@ -524,8 +519,8 @@ namespace NHibernate.Loader.Criteria
 		public string GetEntityName(ICriteria criteria)
 		{
 			ICriteriaInfoProvider result;
-            if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
-                return null;
+			if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
+				return null;
 			return result.Name;
 		}
 
@@ -706,9 +701,9 @@ namespace NHibernate.Loader.Criteria
 
 		public SqlString GetWithClause(string path, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (withClauseMap.ContainsKey(path))
+			ICriterion crit;
+			if (withClauseMap.TryGetValue(path, out crit))
 			{
-				ICriterion crit = (ICriterion)withClauseMap[path];
 				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this, enabledFilters);
 			}
 			return null;
@@ -735,11 +730,11 @@ namespace NHibernate.Loader.Criteria
 			collectedParameterSpecifications.Add(specification);
 			namedParameters.Add(new NamedParameter(parameterName, parameter.Value, parameter.Type));
 			return specification.GetIdsForBackTrack(Factory).Select(x =>
-			                                                        {
-			                                                        	Parameter p = Parameter.Placeholder;
-			                                                        	p.BackTrack = x;
-			                                                        	return p;
-			                                                        });
+																	{
+																		Parameter p = Parameter.Placeholder;
+																		p.BackTrack = x;
+																		return p;
+																	});
 		}
 
 		public ICollection<IParameterSpecification> CollectedParameterSpecifications

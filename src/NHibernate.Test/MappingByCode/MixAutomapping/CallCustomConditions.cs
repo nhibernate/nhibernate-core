@@ -41,7 +41,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			System.Type baseEntityType = typeof(Entity);
 			var inspector = new SimpleModelInspector();
 			inspector.IsEntity((t, declared) => baseEntityType.IsAssignableFrom(t) && baseEntityType != t && !t.IsInterface);
-			inspector.IsRootEntity((t, declared) => baseEntityType.Equals(t.BaseType));
+			inspector.IsRootEntity((t, declared) => baseEntityType == t.BaseType);
 
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<Entity>(map => map.Id(x => x.Id,

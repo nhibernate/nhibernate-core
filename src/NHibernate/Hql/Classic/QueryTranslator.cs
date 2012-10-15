@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
@@ -105,7 +104,7 @@ namespace NHibernate.Hql.Classic
 			private static bool IsUnsafe(ICollectionPersister collectionPersister)
 			{
 				return collectionPersister.CollectionType is BagType
-				       || collectionPersister.CollectionType is IdentifierBagType;
+					   || collectionPersister.CollectionType is IdentifierBagType;
 			}
 
 			public void Add(string name, ICollectionPersister collectionPersister, string ownerName)
@@ -533,9 +532,9 @@ namespace NHibernate.Hql.Classic
 		internal bool IsName(string name)
 		{
 			return aliasNames.ContainsKey(name) ||
-			       typeMap.ContainsKey(name) ||
-			       collections.ContainsKey(name) ||
-			       (superQuery != null && superQuery.IsName(name));
+				   typeMap.ContainsKey(name) ||
+				   collections.ContainsKey(name) ||
+				   (superQuery != null && superQuery.IsName(name));
 		}
 
 		public IPropertyMapping GetPropertyMapping(string name)
@@ -855,16 +854,16 @@ namespace NHibernate.Hql.Classic
 
 			// HQL functions in whereTokens, groupByTokens, havingTokens and orderByTokens aren't rendered
 			RenderFunctions(whereTokens);
-			sql.SetWhereTokens((ICollection)whereTokens);
+			sql.SetWhereTokens(whereTokens);
 
 			RenderFunctions(groupByTokens);
-			sql.SetGroupByTokens((ICollection)groupByTokens);
+			sql.SetGroupByTokens(groupByTokens);
 
 			RenderFunctions(havingTokens);
-			sql.SetHavingTokens((ICollection)havingTokens);
+			sql.SetHavingTokens(havingTokens);
 
 			RenderFunctions(orderByTokens);
-			sql.SetOrderByTokens((ICollection)orderByTokens);
+			sql.SetOrderByTokens(orderByTokens);
 
 			fetchedCollections.AddOrderBy(sql);
 
@@ -1025,7 +1024,7 @@ namespace NHibernate.Hql.Classic
 					{
 						nolast = true;
 						int i = 0;
-						foreach (object token in next.Parts)
+						foreach (object token in next)
 						{
 							buf.AddObject(token);
 							if (!isSubselect)
@@ -1097,7 +1096,7 @@ namespace NHibernate.Hql.Classic
 			int parenCount = 1;
 			for (; tokenIdx < tokens.Count && parenCount > 0; tokenIdx++)
 			{
-				if (tokens[tokenIdx].Parts.Count == 1 && (tokens[tokenIdx].Parts.First() is Parameter))
+				if (tokens[tokenIdx].Count == 1 && (tokens[tokenIdx].First() is Parameter))
 				{
 					// the parameter was processed
 					functionTokens.Add(tokens[tokenIdx]);
@@ -1402,8 +1401,8 @@ namespace NHibernate.Hql.Classic
 				return new String[] {query};
 			} // just especially for the trivial collection filter 
 
-			ArrayList placeholders = new ArrayList();
-			ArrayList replacements = new ArrayList();
+			var placeholders = new List<object>();
+			var replacements = new List<object>();
 			StringBuilder templateQuery = new StringBuilder(40);
 			int count = 0;
 			string last = null;
@@ -1468,8 +1467,8 @@ namespace NHibernate.Hql.Classic
 		}
 
 
-		private static readonly ISet beforeClassTokens = new HashedSet();
-		private static readonly ISet notAfterClassTokens = new HashedSet();
+		private static readonly ISet<string> beforeClassTokens = new HashedSet<string>();
+		private static readonly ISet<string> notAfterClassTokens = new HashedSet<string>();
 
 		/// <summary></summary>
 		static QueryTranslator()
@@ -1500,7 +1499,7 @@ namespace NHibernate.Hql.Classic
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			IType[] _returnTypes = ReturnTypes;
 			row = ToResultRow(row);

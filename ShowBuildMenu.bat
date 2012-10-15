@@ -138,12 +138,12 @@ set /p FOLDER=<folder.tmp
 del folder.tmp
 mkdir "%CURRENT_CONFIGURATION%" 2> nul
 del /q "%CURRENT_CONFIGURATION%\*"
-copy %FOLDER%\* "%CURRENT_CONFIGURATION%"
+copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
 :test-run
-start %NUNIT% NHibernate.nunit
+start "" %NUNIT% NHibernate.nunit
 goto main-menu
 
 rem :build-test

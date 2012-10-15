@@ -30,7 +30,6 @@ namespace NHibernate.Linq
 		public NhLinqExpression(Expression expression, ISessionFactory sessionFactory)
 		{
 			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
-			_expression = NameUnNamedParameters.Visit(_expression);
 
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
 
@@ -56,7 +55,7 @@ namespace NHibernate.Linq
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();
-			var queryModel = NhRelinqQueryParser.Parse(_expression);
+			var queryModel = NhRelinqQueryParser.Parse(NameUnNamedParameters.Visit(_expression));
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
 
 			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);

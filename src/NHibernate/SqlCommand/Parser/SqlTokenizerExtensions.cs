@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand.Parser
@@ -37,7 +37,6 @@ namespace NHibernate.SqlCommand.Parser
 			bool isDistinct;
 			return TryParseUntilFirstMsSqlSelectColumn(tokenEnum, out selectToken, out isDistinct);
 		}
-
 
 		public static bool TryParseUntilFirstMsSqlSelectColumn(this IEnumerator<SqlToken> tokenEnum, out SqlToken selectToken, out bool isDistinct)
 		{

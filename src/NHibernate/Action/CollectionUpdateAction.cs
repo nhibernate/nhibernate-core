@@ -130,7 +130,7 @@ namespace NHibernate.Action
 					// NH Different behavior: to support unlocking collections from the cache.(r3260)
 					if (Persister.HasCache)
 					{
-						CacheKey ck = new CacheKey(Key, Persister.KeyType, Persister.Role, Session.EntityMode, Session.Factory);
+						CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
 						if (success)
 						{

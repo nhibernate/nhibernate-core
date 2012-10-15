@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -36,7 +35,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		private IList _stringList;
 		private IDictionary _stringMap;
 		private IDictionary<string, string> _stringMapGeneric;
-		private ISet _stringSet;
+		private ISet<string> _stringSet;
 
 		public BasicClass()
 		{
@@ -176,7 +175,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { _stringMapGeneric = value; }
 		}
 
-		public ISet StringSet
+		public ISet<string> StringSet
 		{
 			get { return _stringSet; }
 			set { _stringSet = value; }
@@ -186,7 +185,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			if (StringSet == null)
 			{
-				StringSet = new HashedSet();
+				StringSet = new HashedSet<string>();
 			}
 			StringSet.Add(stringValue);
 		}

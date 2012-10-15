@@ -1,5 +1,6 @@
 using System;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.PersistentClasses
 {
@@ -9,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.PersistentClasses
 		private string _name;
 		private DateTime _birthdate;
 		private Cat _mate;
-		private Set _kittens;
+		private ISet<Cat> _kittens;
 		private Color _color;
 		private char _sex;
 		private float _weight;
@@ -38,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.PersistentClasses
 			set { _mate = value; }
 		}
 
-		public Set Kittens
+		public ISet<Cat> Kittens
 		{
 			get { return _kittens; }
 			set { _kittens = value; }

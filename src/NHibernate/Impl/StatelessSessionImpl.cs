@@ -70,7 +70,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
 				if (loaded != null)
 				{
 					return loaded;
@@ -106,17 +106,6 @@ namespace NHibernate.Impl
 		public override void CloseSessionFromDistributedTransaction()
 		{
 			Dispose(true);
-		}
-
-		public override IList List(string query, QueryParameters parameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				IList results = new ArrayList();
-				List(query, parameters, results);
-				return results;
-			}
 		}
 
 		public override void List(string query, QueryParameters queryParameters, IList results)
@@ -180,28 +169,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList<T> List<T>(string query, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(query, queryParameters, results);
-				return results;
-			}
-		}
-
-		public override IList<T> List<T>(CriteriaImpl criteria)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(criteria, results);
-				return results;
-			}
-		}
-
 		public override void List(CriteriaImpl criteria, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -240,31 +207,6 @@ namespace NHibernate.Impl
 					AfterOperation(success);
 				}
 				temporaryPersistenceContext.Clear();
-			}
-		}
-
-		private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				if (!(persister is IOuterJoinLoadable))
-				{
-					throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
-				}
-				return (IOuterJoinLoadable)persister;
-			}
-		}
-
-		public override IList List(CriteriaImpl criteria)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				ArrayList results = new ArrayList();
-				List(criteria, results);
-				return results;
 			}
 		}
 
@@ -329,51 +271,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				ArrayList results = new ArrayList();
-				List(spec, queryParameters, results);
-				return results;
-			}
-		}
-
-		public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				SQLCustomQuery query = new SQLCustomQuery(
-					spec.SqlQueryReturns,
-					spec.QueryString,
-					spec.QuerySpaces,
-					Factory);
-				ListCustomQuery(query, queryParameters, results);
-			}
-		}
-
-		public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(spec, queryParameters, results);
-				return results;
-			}
-		}
-
 		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 
-				CustomLoader loader = new CustomLoader(customQuery, Factory);
+				var loader = new CustomLoader(customQuery, Factory);
 
-				bool success = false;
+				var success = false;
 				try
 				{
 					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
@@ -384,17 +290,6 @@ namespace NHibernate.Impl
 					AfterOperation(success);
 				}
 				temporaryPersistenceContext.Clear();
-			}
-		}
-
-		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				ListCustomQuery(customQuery, queryParameters, results);
-				return results;
 			}
 		}
 
@@ -414,6 +309,16 @@ namespace NHibernate.Impl
 		}
 
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				// take the union of the query spaces (ie the queried tables)
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
+				return plan.Translators;
+			}
+		}
+
+		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -481,7 +386,7 @@ namespace NHibernate.Impl
 			{
 				if (entity.IsProxy())
 				{
-					INHibernateProxy proxy = entity as INHibernateProxy;
+					var proxy = entity as INHibernateProxy;
 					entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);
@@ -827,7 +732,7 @@ namespace NHibernate.Impl
 
 				if (persister.HasCache)
 				{
-					CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
+					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 					persister.Cache.Remove(ck);
 				}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand.Parser
@@ -198,7 +198,7 @@ namespace NHibernate.SqlCommand.Parser
 				: alias;
 
 			var sqlIndex = beginToken.SqlIndex;
-			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : this.Sql.Length) - beginToken.SqlIndex;
+			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : Sql.Length) - beginToken.SqlIndex;
 
 			return new ColumnDefinition(sqlIndex, sqlLength, name, alias, true);
 		}
@@ -206,7 +206,7 @@ namespace NHibernate.SqlCommand.Parser
 		private ColumnDefinition ParseOrderColumnDefinition(SqlToken beginToken, SqlToken endToken, string alias)
 		{
 			var sqlIndex = beginToken.SqlIndex;
-			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : this.Sql.Length) - beginToken.SqlIndex;
+			var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : Sql.Length) - beginToken.SqlIndex;
 
 			return new ColumnDefinition(sqlIndex, sqlLength, null, alias, false);
 		}
@@ -271,30 +271,24 @@ namespace NHibernate.SqlCommand.Parser
 
 		private OrderDefinition ParseOrderDefinition(SqlToken beginToken, SqlToken endToken, SqlToken directionToken)
 		{
-			ColumnDefinition column;
-			bool? isDescending = directionToken != null
-				? directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase)
-				: default(bool?);
+			var isDescending = directionToken != null &&
+							   directionToken.Equals("desc", StringComparison.InvariantCultureIgnoreCase);
 
-			if (beginToken == endToken)
-			{
-				string columnNameOrIndex = beginToken.Value;
-				if (!TryGetColumnDefinition(columnNameOrIndex, out column))
-				{
-					// Column appears in order by clause, but not in select clause
-					column = ParseOrderColumnDefinition(beginToken, endToken, "__c" + _nextOrderAliasIndex++);
-				}
-			}
-			else
-			{
-				// Calculated sort order
+			var columnNameOrIndex = beginToken == endToken
+				? beginToken.Value
+				: null;
+
+			ColumnDefinition column;
+			if (!TryGetColumnDefinition(columnNameOrIndex, out column, beginToken, endToken))
+			{   
+				// Column appears in order by clause, but not in select clause
 				column = ParseOrderColumnDefinition(beginToken, endToken, "__c" + _nextOrderAliasIndex++);
 			}
 
-			return new OrderDefinition(column, isDescending ?? false);
+			return new OrderDefinition(column, isDescending);
 		}
 
-		private bool TryGetColumnDefinition(string columnNameOrIndex, out ColumnDefinition result)
+		private bool TryGetColumnDefinition(string columnNameOrIndex, out ColumnDefinition result, SqlToken beginToken, SqlToken endToken)
 		{
 			if (!string.IsNullOrEmpty(columnNameOrIndex))
 			{
@@ -309,6 +303,22 @@ namespace NHibernate.SqlCommand.Parser
 				{
 					if (columnNameOrIndex.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase)
 						|| columnNameOrIndex.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase))
+					{
+						result = column;
+						return true;
+					}
+				}
+			}
+			else
+			{
+				var sqlIndex = beginToken.SqlIndex;
+				var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : Sql.Length) - beginToken.SqlIndex;
+				var text = Sql.Substring(sqlIndex, sqlLength).ToString();
+				foreach (var column in _columns)
+				{
+					if (text.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase) ||
+						text.Equals(column.Alias, StringComparison.InvariantCultureIgnoreCase) ||
+						text.Equals(Sql.Substring(column.SqlIndex, column.SqlLength).ToString(), StringComparison.InvariantCultureIgnoreCase))
 					{
 						result = column;
 						return true;

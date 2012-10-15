@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 
 namespace NHibernate.Cache.Entry
@@ -7,14 +9,17 @@ namespace NHibernate.Cache.Entry
 	{
 		public virtual object Structure(object item)
 		{
-			CollectionCacheEntry entry = (CollectionCacheEntry)item;
-			return new ArrayList(entry.State);
+			var entry = (CollectionCacheEntry)item;
+			return new List<object>(entry.State);
 		}
 
 		public virtual object Destructure(object item, ISessionFactoryImplementor factory)
 		{
-			ArrayList list = new ArrayList((IList)item);
-			return new CollectionCacheEntry(list.ToArray());
+			var collection = item as IEnumerable;
+			var objects = collection != null
+							  ? collection.Cast<object>().ToArray()
+							  : new object[0];
+			return new CollectionCacheEntry(objects);
 		}
 	}
 }

@@ -222,26 +222,26 @@ namespace NHibernate.SqlCommand
 				.Add(" FROM ")
 				.Add(fromClause);
 
-			if (StringHelper.IsNotEmpty(outerJoinsAfterFrom))
+			if (SqlStringHelper.IsNotEmpty(outerJoinsAfterFrom))
 			{
 				sqlBuilder.Add(outerJoinsAfterFrom);
 			}
 
-			if (StringHelper.IsNotEmpty(whereClause) || StringHelper.IsNotEmpty(outerJoinsAfterWhere))
+			if (SqlStringHelper.IsNotEmpty(whereClause) || SqlStringHelper.IsNotEmpty(outerJoinsAfterWhere))
 			{
 				sqlBuilder.Add(" WHERE ");
 				// the outerJoinsAfterWhere needs to come before where clause to properly
 				// handle dynamic filters
-				if (StringHelper.IsNotEmpty(outerJoinsAfterWhere))
+				if (SqlStringHelper.IsNotEmpty(outerJoinsAfterWhere))
 				{
 					sqlBuilder.Add(outerJoinsAfterWhere);
-					if (StringHelper.IsNotEmpty(whereClause))
+					if (SqlStringHelper.IsNotEmpty(whereClause))
 					{
 						sqlBuilder.Add(" AND ");
 					}
 				}
 
-				if (StringHelper.IsNotEmpty(whereClause))
+				if (SqlStringHelper.IsNotEmpty(whereClause))
 				{
 					sqlBuilder.Add(whereClause);
 				}
@@ -253,13 +253,13 @@ namespace NHibernate.SqlCommand
 					.Add(groupByClause);
 			}
 
-			if(StringHelper.IsNotEmpty(havingClause))
+			if(SqlStringHelper.IsNotEmpty(havingClause))
 			{
 				sqlBuilder.Add(" HAVING ")
 					.Add(havingClause);
 			}
 
-			if (StringHelper.IsNotEmpty(orderByClause))
+			if (SqlStringHelper.IsNotEmpty(orderByClause))
 			{
 				sqlBuilder.Add(" ORDER BY ")
 					.Add(orderByClause);

@@ -1,7 +1,6 @@
-using System;
 using System.Linq;
-//using System.Linq.Dynamic;
-using NHibernate.DomainModel.Northwind.Entities;
+using System.Linq.Dynamic;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -10,26 +9,33 @@ namespace NHibernate.Test.Linq
 	public class DynamicQueryTests : LinqTestCase
 	{
 		[Test]
-        [Ignore("TODO - works locally, but gives compile errors on teamcity")]
 		public void CanQueryWithDynamicOrderBy()
 		{
-            /*
-			var query = from user in db.Users
-						select user;
-
 			//dynamic orderby clause
-			query = query.OrderBy("RegisteredAt");
+			var list = db.Users
+				.OrderBy("RegisteredAt")
+				.ToList();
 
-			var list = query.ToList();
+			Assert.That(list, Is.Ordered.By("RegisteredAt"));
+		}
 
-			//assert list was returned in order
-			DateTime previousDate = DateTime.MinValue;
-			list.Each(delegate(User user)
+		[Test(Description = "NH-3239")]
+		public void CanCahceDynamicLinq()
+		{
+			//dynamic orderby clause
+			var users = db.Users
+						  .Cacheable()
+						  .Fetch(x => x.Role)
+						  .OrderBy("RegisteredAt");
+
+			users
+			  .ToList();
+
+			using (var log = new SqlLogSpy())
 			{
-				Assert.IsTrue(previousDate <= user.RegisteredAt);
-				previousDate = user.RegisteredAt;
-			});
-             */
+				users.ToList();
+				Assert.IsNullOrEmpty(log.GetWholeLog());
+			}
 		}
 	}
 }

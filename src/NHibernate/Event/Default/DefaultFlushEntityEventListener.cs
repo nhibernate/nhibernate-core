@@ -522,7 +522,7 @@ namespace NHibernate.Event.Default
 			else
 			{
 				//TODO: optimize away this lookup for entities w/o unsaved-value="undefined"
-				EntityKey entityKey = new EntityKey(id, persister, session.EntityMode);
+				EntityKey entityKey = session.GenerateEntityKey(id, persister);
 				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}

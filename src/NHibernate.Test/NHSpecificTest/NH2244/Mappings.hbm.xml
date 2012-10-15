@@ -6,7 +6,7 @@
     </id>
     <component name="Phone" class="PhoneNumber">
       <property name="CountryCode"/>
-      <property name="Number"/>
+      <property name="Number" column="`Number`"/>
     </component>
   </class>
 </hibernate-mapping>

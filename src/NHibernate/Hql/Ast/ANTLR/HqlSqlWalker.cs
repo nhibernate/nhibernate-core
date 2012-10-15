@@ -45,7 +45,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
 
-		private readonly Set<string> _querySpaces = new HashedSet<string>();
+		private readonly ISet<string> _querySpaces = new HashedSet<string>();
 
 		private readonly LiteralProcessor _literalProcessor;
 
@@ -110,7 +110,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _aliasGenerator; }
 		}
 
-		public Set<string> QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return _querySpaces; }
 		}

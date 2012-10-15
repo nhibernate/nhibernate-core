@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,11 +8,10 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
-using NHibernate.Engine;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
 using NHibernate.Type;
@@ -63,7 +63,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				One one = new One();
-				one.Manies = new HashedSet();
+				one.Manies = new HashedSet<Many>();
 				s.Save(one);
 				s.Flush();
 
@@ -240,7 +240,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				baz.FooSet = new HashedSet();
+				baz.FooSet = new HashedSet<FooProxy>();
 				Foo foo = new Foo();
 				baz.FooSet.Add(foo);
 				s.Save(foo);
@@ -298,7 +298,7 @@ namespace NHibernate.Test.Legacy
 			{
 				Baz baz = new Baz();
 				Baz baz2 = new Baz();
-				baz.FooSet = new HashedSet();
+				baz.FooSet = new HashedSet<FooProxy>();
 				Foo foo = new Foo();
 				baz.FooSet.Add(foo);
 				s.Save(foo);
@@ -1011,7 +1011,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Glarch glarch1 = new Glarch();
-				glarch1.ProxySet = new ListSet();
+				glarch1.ProxySet = new OrderedSet<GlarchProxy>();
 
 				Glarch glarch2 = new Glarch();
 				glarch1.ProxySet.Add(glarch1);
@@ -1177,10 +1177,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				baz = new Baz();
-				SortedSet stringSet = new SortedSet();
-				stringSet.Add("foo");
-				stringSet.Add("bar");
-				ISet fooSet = new HashedSet();
+				var stringSet = new SortedSet<string> { "foo", "bar" };
+				var fooSet = new HashedSet<FooProxy>();
 
 				for (int i = 0; i < 3; i++)
 				{
@@ -1194,7 +1192,7 @@ namespace NHibernate.Test.Legacy
 				s.Save(baz);
 
 				baz2 = new Baz();
-				fooSet = new HashedSet();
+				fooSet = new HashedSet<FooProxy>();
 				for (int i = 0; i < 2; i++)
 				{
 					Foo foo = new Foo();
@@ -1205,7 +1203,7 @@ namespace NHibernate.Test.Legacy
 				s.Save(baz2);
 
 				baz3 = new Baz();
-				stringSet = new SortedSet();
+				stringSet = new SortedSet<string>();
 				stringSet.Add("foo");
 				stringSet.Add("baz");
 				baz3.StringSet = stringSet;
@@ -1435,10 +1433,10 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz b = new Baz();
-			ISet ss = new HashedSet();
-			ss.Add(new Sortable("foo"));
-			ss.Add(new Sortable("bar"));
-			ss.Add(new Sortable("baz"));
+			var ss = new HashedSet<Sortable>
+				{
+					new Sortable("foo"), new Sortable("bar"), new Sortable("baz")
+				};
 			b.Sortablez = ss;
 			s.Save(b);
 			s.Flush();
@@ -1759,10 +1757,9 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			Baz baz = (Baz) s.Load(typeof(Baz), id);
-			ISet foos = baz.FooSet;
-			Assert.IsTrue(foos.Count == 0);
+			Assert.IsTrue(baz.FooSet.Count == 0);
 			Foo foo = new Foo();
-			foos.Add(foo);
+			baz.FooSet.Add(foo);
 			s.Save(foo);
 			s.Flush();
 			s.Delete(foo);
@@ -1909,8 +1906,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			ISet bars = new HashedSet();
-			baz.CascadingBars = bars;
+			baz.CascadingBars = new HashedSet<BarProxy>();
 			s.Save(baz);
 			s.Flush();
 
@@ -1929,8 +1925,7 @@ namespace NHibernate.Test.Legacy
 			bar.Name = "Bar";
 			bar2.Name = "Bar Two";
 			Baz baz = new Baz();
-			baz.CascadingBars = new HashedSet();
-			baz.CascadingBars.Add(bar);
+			baz.CascadingBars = new HashedSet<BarProxy> {bar};
 			bar.Baz = baz;
 
 			ISession s = OpenSession();
@@ -2706,9 +2701,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(baz);
 			baz.SetDefaults();
 			baz.StringArray = new string[] {"stuff"};
-			ISet bars = new HashedSet();
-			bars.Add(new Bar());
-			baz.CascadingBars = bars;
+			baz.CascadingBars = new HashedSet<BarProxy> {new Bar()};
 			IDictionary sgm = new Hashtable();
 			sgm["a"] = new Glarch();
 			sgm["b"] = new Glarch();
@@ -2729,7 +2722,7 @@ namespace NHibernate.Test.Legacy
 			baz.Customs.Add(new string[] {"new", "custom"});
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
-			baz.StringSet = new HashedSet();
+			baz.StringSet = new HashedSet<string>();
 
 			// NOTE: We put two items in the map, but expect only one to come back, because
 			// of where="..." specified in the mapping for StringGlarchMap
@@ -2840,9 +2833,7 @@ namespace NHibernate.Test.Legacy
 			Bar bar2 = new Bar();
 			s.Save(bar);
 			s.Save(bar2);
-			baz.TopFoos = new HashedSet();
-			baz.TopFoos.Add(bar);
-			baz.TopFoos.Add(bar2);
+			baz.TopFoos = new HashedSet<Bar> { bar, bar2 };
 			baz.TopGlarchez = new Hashtable();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
@@ -3047,8 +3038,7 @@ namespace NHibernate.Test.Legacy
 			Foo[] foos = new Foo[] {f1, null, f2};
 			baz.FooArray = foos;
 			// in h2.0.3 this is a Set
-			baz.Foos = new HashedSet();
-			baz.Foos.Add(f1);
+			baz.Foos = new HashedSet<Foo> { f1 };
 			s.Save(f1);
 			s.Save(f2);
 			s.Save(f3);
@@ -3238,7 +3228,7 @@ namespace NHibernate.Test.Legacy
 			Bar bar = new Bar();
 			s.Save(bar);
 			// h2.0.3 was a set
-			bar.Abstracts = new HashedSet();
+			bar.Abstracts = new HashedSet<object>();
 			bar.Abstracts.Add(bar);
 			Bar bar2 = new Bar();
 			bar.Abstracts.Add(bar2);
@@ -3376,7 +3366,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz2 = new Baz();
 			s.Save(baz2);
 			baz1.IntArray = new int[] {1, 2, 3, 4};
-			baz1.FooSet = new HashedSet();
+			baz1.FooSet = new HashedSet<FooProxy>();
 			Foo foo = new Foo();
 			s.Save(foo);
 			baz1.FooSet.Add(foo);
@@ -3796,9 +3786,7 @@ namespace NHibernate.Test.Legacy
 			list.Add("foo");
 			g.Strings = list;
 			// <sets> in h2.0.3
-			ISet hashset = new HashedSet();
-			hashset.Add(g);
-			g.ProxySet = hashset;
+			g.ProxySet = new HashedSet<GlarchProxy> { g };
 			s.Flush();
 			s.Close();
 
@@ -4143,7 +4131,7 @@ namespace NHibernate.Test.Legacy
 				fee2 = new Fee();
 				fee1.TheFee = fee2;
 				fee2.TheFee = fee1;
-				fee2.Fees = new HashedSet();
+				fee2.Fees = new HashedSet<string>();
 
 				fee3 = new Fee();
 				fee3.TheFee = fee1;
@@ -4188,7 +4176,7 @@ namespace NHibernate.Test.Legacy
 			Fee fee2 = new Fee();
 			fee1.TheFee = fee2;
 			fee2.TheFee = fee1;
-			fee2.Fees = new HashedSet();
+			fee2.Fees = new HashedSet<string>();
 			Fee fee3 = new Fee();
 			fee3.TheFee = fee1;
 			fee3.AnotherFee = fee2;
@@ -4745,10 +4733,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(g3);
 			g2.ProxyArray = new GlarchProxy[] {null, g3, g};
 
-			ISet hashset = new HashedSet();
-			hashset.Add(g1);
-			hashset.Add(g2);
-			g.ProxySet = hashset;
+			g.ProxySet = new HashedSet<GlarchProxy> { g1, g2 };
 			s.Save(g);
 			s.Save(g1);
 			s.Save(g2);
@@ -5388,8 +5373,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			ISet bars = new HashedSet();
-			baz.CascadingBars = bars;
+			baz.CascadingBars = new HashedSet<BarProxy>();
 			s.Save(baz);
 			t.Commit();
 			s.Close();
@@ -5454,11 +5438,8 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			ISet bars = new HashedSet();
+			var bars = new HashedSet<BarProxy> { new Bar(), new Bar(), new Bar() };
 			baz.CascadingBars = bars;
-			bars.Add(new Bar());
-			bars.Add(new Bar());
-			bars.Add(new Bar());
 			IList foos = new ArrayList();
 			foos.Add(new Foo());
 			foos.Add(new Foo());
@@ -5476,9 +5457,9 @@ namespace NHibernate.Test.Legacy
 			t.Commit();
 			s.Close();
 
-			enumer = bars.GetEnumerator();
-			enumer.MoveNext();
-			bars.Remove(enumer.Current);
+			var enumerBar = bars.GetEnumerator();
+			enumerBar.MoveNext();
+			bars.Remove(enumerBar.Current);
 			foos.RemoveAt(1);
 			s = OpenSession();
 			t = s.BeginTransaction();
@@ -5492,9 +5473,9 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(baz);
-			enumer = bars.GetEnumerator();
-			enumer.MoveNext();
-			bars.Remove(enumer.Current);
+			enumerBar = bars.GetEnumerator();
+			enumerBar.MoveNext();
+			bars.Remove(enumerBar.Current);
 			s.Delete(baz);
 			s.Flush();
 			Assert.AreEqual(0, s.CreateQuery("from Foo foo").List().Count);
@@ -5513,15 +5494,10 @@ namespace NHibernate.Test.Legacy
 			object bar2id = s.Save(bar2);
 			baz.FooArray = new Foo[] {bar, bar2};
 
-			ISet hashset = new HashedSet();
 			bar = new Bar();
 			s.Save(bar);
-			hashset.Add(bar);
-			baz.FooSet = hashset;
-			hashset = new HashedSet();
-			hashset.Add(new Bar());
-			hashset.Add(new Bar());
-			baz.CascadingBars = hashset;
+			baz.FooSet = new HashedSet<FooProxy> { bar };
+			baz.CascadingBars = new HashedSet<BarProxy> { new Bar(), new Bar() };
 			ArrayList list = new ArrayList();
 			list.Add(new Foo());
 			baz.FooBag = list;
@@ -5648,14 +5624,11 @@ namespace NHibernate.Test.Legacy
 				Foo foo3 = new Foo();
 				s.Save(foo3);
 				Baz baz = new Baz();
-				baz.FooSet = new HashedSet();
-				baz.FooSet.Add(foo1);
+				baz.FooSet = new HashedSet<FooProxy> { foo1 };
 				s.Save(baz);
 				Assert.AreEqual(1, baz.FooSet.Count);
 
-				IList foos = new ArrayList();
-				foos.Add(foo2);
-				foos.Add(foo3);
+				var foos = new List<FooProxy> { foo2, foo3 };
 				baz.FooSet.AddAll(foos);
 				Assert.AreEqual(3, baz.FooSet.Count);
 

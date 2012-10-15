@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using NHibernate.SqlCommand;
+
 
 namespace NHibernate.Util
 {
@@ -53,39 +55,6 @@ namespace NHibernate.Util
 			}
 
 			return buf.ToString();
-		}
-
-		public static SqlString Join(SqlString separator, IEnumerable objects)
-		{
-			SqlStringBuilder buf = new SqlStringBuilder();
-			bool first = true;
-
-			foreach (object obj in objects)
-			{
-				if (!first)
-				{
-					buf.Add(separator);
-				}
-
-				first = false;
-				buf.AddObject(obj);
-			}
-
-			return buf.ToSqlString();
-		}
-
-		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
-		{
-			SqlString[] result = new SqlString[x.Length];
-			for (int i = 0; i < x.Length; i++)
-			{
-				result[i] = new SqlStringBuilder(3)
-					.Add(x[i])
-					.Add(sep)
-					.Add(y[i])
-					.ToSqlString();
-			}
-			return result;
 		}
 
 		/// <summary>
@@ -192,13 +161,8 @@ namespace NHibernate.Util
 		/// </remarks>
 		public static string[] Split(string separators, string list, bool include)
 		{
-			StringTokenizer tokens = new StringTokenizer(list, separators, include);
-			ArrayList results = new ArrayList();
-			foreach (string token in tokens)
-			{
-				results.Add(token);
-			}
-			return (string[])results.ToArray(typeof(string));
+			var tokens = new StringTokenizer(list, separators, include);
+			return tokens.ToArray();
 		}
 
 		/// <summary>
@@ -494,15 +458,6 @@ namespace NHibernate.Util
 			return !IsEmpty(str);
 		}
 
-		public static bool IsNotEmpty(SqlString str)
-		{
-			return !IsEmpty(str);
-		}
-
-		public static bool IsEmpty(SqlString str)
-		{
-			return str == null || str.Count == 0;
-		}
 
 		/// <summary>
 		/// 
@@ -629,7 +584,7 @@ namespace NHibernate.Util
 			{
 				return result;
 			}
-		    return "alias_" + result;
+			return "alias_" + result;
 		}
 
 		public static string MoveAndToBeginning(string filter)
@@ -703,9 +658,9 @@ namespace NHibernate.Util
 			return str;
 		}
 
-		public static string CollectionToString(ICollection keys)
+		public static string CollectionToString(IEnumerable keys)
 		{
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			foreach (object o in keys)
 			{
 				sb.Append(o);
@@ -714,14 +669,7 @@ namespace NHibernate.Util
 			if (sb.Length != 0)//remove last ", "
 				sb.Remove(sb.Length - 2, 2);
 			return sb.ToString();
-
 		}
-
-		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
-		{
-			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
-		}
-
 
 		public static string ToUpperCase(string str)
 		{

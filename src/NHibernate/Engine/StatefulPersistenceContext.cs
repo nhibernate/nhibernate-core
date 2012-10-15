@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
-
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
@@ -66,7 +65,7 @@ namespace NHibernate.Engine
 		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
 
 		// Set of EntityKeys of deleted objects
-		private readonly HashedSet<EntityKey> nullifiableEntityKeys;
+		private readonly ISet<EntityKey> nullifiableEntityKeys;
 
 		// properties that we have tried to load, and not found in the database
 		private ISet<AssociationKey> nullAssociations;
@@ -177,7 +176,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		public ISet NullifiableEntityKeys
+		public ISet<EntityKey> NullifiableEntityKeys
 		{
 			get { return nullifiableEntityKeys; }
 		}
@@ -257,7 +256,7 @@ namespace NHibernate.Engine
 				li.UnsetSession();
 			}
 
-			ICollection collectionEntryArray = IdentityMap.ConcurrentEntries(collectionEntries);
+			var collectionEntryArray = IdentityMap.ConcurrentEntries(collectionEntries);
 			foreach (DictionaryEntry entry in collectionEntryArray)
 			{
 				((IPersistentCollection)entry.Key).UnsetSession(Session);
@@ -330,7 +329,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object[] GetDatabaseSnapshot(object id, IEntityPersister persister)
 		{
-			EntityKey key = new EntityKey(id, persister, session.EntityMode);
+			EntityKey key = session.GenerateEntityKey(id, persister);
 			object cached;
 			if (entitySnapshotsByKey.TryGetValue(key, out cached))
 			{
@@ -614,7 +613,7 @@ namespace NHibernate.Engine
 			if (li.Session != Session)
 			{
 				IEntityPersister persister = session.Factory.GetEntityPersister(li.EntityName);
-				EntityKey key = new EntityKey(li.Identifier, persister, session.EntityMode);
+				EntityKey key = session.GenerateEntityKey(li.Identifier, persister);
 				// any earlier proxy takes precedence
 				if (!proxiesByKey.ContainsKey(key))
 				{
@@ -777,13 +776,13 @@ namespace NHibernate.Engine
 		{
 			EntityEntry e = GetEntry(impl);
 			IEntityPersister p = e.Persister;
-			return ProxyFor(p, new EntityKey(e.Id, p, session.EntityMode), impl);
+			return ProxyFor(p, session.GenerateEntityKey(e.Id, p), impl);
 		}
 
 		/// <summary> Get the entity that owns this persistent collection</summary>
 		public object GetCollectionOwner(object key, ICollectionPersister collectionPersister)
 		{
-			return GetEntity(new EntityKey(key, collectionPersister.OwnerEntityPersister, session.EntityMode));
+			return GetEntity(session.GenerateEntityKey(key, collectionPersister.OwnerEntityPersister));
 		}
 
 		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
@@ -1351,7 +1350,7 @@ namespace NHibernate.Engine
 			var oldEntry = (EntityEntry) tempObject2;
 			parentsByChild.Clear();
 
-			var newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
+			var newKey = Session.GenerateEntityKey(generatedId, oldEntry.Persister);
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
 					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
@@ -1380,12 +1379,11 @@ namespace NHibernate.Engine
 
 		public override string ToString()
 		{
-			// TODO persistent context (verify behavior)
 			return new StringBuilder()
 				.Append("PersistenceContext[entityKeys=")
-				.Append(new HashedSet(entitiesByKey.Keys))
+				.Append(CollectionPrinter.ToString(entitiesByKey.Keys))
 				.Append(",collectionKeys=")
-				.Append(new HashedSet(collectionsByKey.Keys))
+				.Append(CollectionPrinter.ToString(collectionsByKey.Keys))
 				.Append("]")
 				.ToString();
 		}
@@ -1499,6 +1497,9 @@ namespace NHibernate.Engine
 		}
 
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("serializing persistent-context");

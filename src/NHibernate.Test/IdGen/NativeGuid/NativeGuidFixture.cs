@@ -20,8 +20,8 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		public void Crd()
 		{
 			object savedId;
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				var nativeGuidPoid = new NativeGuidPoid();
 				savedId = s.Save(nativeGuidPoid);

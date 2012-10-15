@@ -1,9 +1,8 @@
-using Iesi.Collections;
-
+using System;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NUnit.Framework;
 
-using System;
-using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH1039
 {
@@ -34,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039
 			{
 				Person person = new Person("1");
 				person.Name = "John Doe";
-				HashedSet set = new HashedSet();
+				var set = new HashedSet<object>();
 				set.Add("555-1234");
 				set.Add("555-4321");
 				person.Properties.Add("Phones", set);
@@ -50,9 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1039
 				Assert.AreEqual("1", person.ID);
 				Assert.AreEqual("John Doe", person.Name);
 				Assert.AreEqual(1, person.Properties.Count);
-				Assert.That(person.Properties["Phones"], Is.InstanceOf<ISet>());
-				Assert.IsTrue((person.Properties["Phones"] as ISet).Contains("555-1234"));
-				Assert.IsTrue((person.Properties["Phones"] as ISet).Contains("555-4321"));
+				Assert.That(person.Properties["Phones"], Is.InstanceOf<ISet<object>>());
+				Assert.IsTrue(((ISet<object>) person.Properties["Phones"]).Contains("555-1234"));
+				Assert.IsTrue(((ISet<object>) person.Properties["Phones"]).Contains("555-4321"));
 			}
 		}
 	}

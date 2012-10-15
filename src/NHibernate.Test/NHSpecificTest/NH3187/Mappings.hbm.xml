@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3187">
+
+  <class name="Person">
+    <id name="Id" generator="guid.comb" />
+    <property name="Name"/>
+    <property name="IsDeleted"/>
+    <joined-subclass name="Policeman">
+      <key column="PersonId" />
+      <many-to-one name="Station" column="StationId" />
+    </joined-subclass>
+  </class>
+
+  <class name="Station">
+    <id name="Id" generator="guid.comb" />
+    <bag name="Policemen" where="IsDeleted = 0">
+      <key column="StationId" />
+      <one-to-many class="Policeman"/>
+    </bag>
+  </class>
+</hibernate-mapping>

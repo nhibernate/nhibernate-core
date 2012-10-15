@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -13,8 +14,8 @@ namespace NHibernate.Cache
 	/// </summary>
 	public interface IQueryCache
 	{
-		ICache Cache { get;}
-		string RegionName { get;}
+		ICache Cache { get; }
+		string RegionName { get; }
 
 		void Clear();
 		bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session);

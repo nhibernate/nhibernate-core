@@ -1,6 +1,6 @@
 using System;
-
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -10,11 +10,11 @@ namespace NHibernate.DomainModel
 	public class M
 	{
 		private long uniqueSequence;
-		protected ISet children;
+		protected ISet<N> children;
 
 		public M()
 		{
-			children = new HashedSet();
+			children = new HashedSet<N>();
 		}
 
 		public long UniqueSequence
@@ -23,7 +23,7 @@ namespace NHibernate.DomainModel
 			set { uniqueSequence = value; }
 		}
 
-		public ISet Children
+		public ISet<N> Children
 		{
 			get { return children; }
 			set { children = value; }

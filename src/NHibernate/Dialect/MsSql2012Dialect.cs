@@ -75,10 +75,10 @@ namespace NHibernate.Dialect
 				result.Add("0 ROWS");
 			}
 
-            if (limit != null) 
-            {
-                result.Add(" FETCH FIRST ").Add(limit).Add(" ROWS ONLY");
-            }
+			if (limit != null)
+			{
+				result.Add(" FETCH FIRST ").Add(limit).Add(" ROWS ONLY");
+			}
 
 			return result.ToSqlString();
 		}

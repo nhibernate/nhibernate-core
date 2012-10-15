@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+ namespace="NHibernate.Test.NHSpecificTest.NH2033"
+ assembly="NHibernate.Test">
+	<class name="Customer">
+		<id name="AssignedId">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" />
+	</class>
+	<class name="CustomerAddress">
+		<composite-id>
+			<key-many-to-one name="Customer" />
+			<key-property name="Type" />
+		</composite-id>
+		<property name="Address" />
+		<property name="City" />
+		<many-to-one name="OtherCustomer" />
+	</class>
+</hibernate-mapping>

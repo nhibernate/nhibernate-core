@@ -120,10 +120,10 @@ namespace NHibernate.Criterion
 		
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			IList result = new ArrayList(this.Length);
-			for (int i = 0; i < this.Length; i++)
+			var result = new List<object>(Length);
+			for (var i = 0; i < Length; i++)
 			{
-				string[] colAliases = ProjectionList.GetColumnAliases(position, criteria, criteriaQuery, this[i]);
+				var colAliases = GetColumnAliases(position, criteria, criteriaQuery, this[i]);
 				ArrayHelper.AddAll(result, colAliases);
 				position += colAliases.Length;
 			}
@@ -132,7 +132,7 @@ namespace NHibernate.Criterion
 		
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			for (int i = 0; i < this.Length; i++)
+			for (int i = 0; i < Length; i++)
 			{
 				string[] result = GetColumnAliases(alias, position, criteria, criteriaQuery, this[i]);
 				if (result != null) return result;

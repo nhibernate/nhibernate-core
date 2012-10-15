@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.MappingTest
 {
@@ -9,7 +10,7 @@ namespace NHibernate.Test.MappingTest
 		public int Id { get; set; }
 		public int VersionProp { get; set; }
 		public MonetaryAmount Component { get; set; }
-		public ISet SortedEmployee { get; set; }
+		public ISet<Employee> SortedEmployee { get; set; }
 		public IList AnotherSet { get; set; }
 	}
 

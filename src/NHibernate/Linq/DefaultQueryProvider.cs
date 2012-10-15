@@ -68,7 +68,7 @@ namespace NHibernate.Linq
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = query.As<ExpressionQueryImpl>().QueryExpression.As<NhLinqExpression>();
+			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
@@ -124,13 +124,14 @@ namespace NHibernate.Linq
 
 		private static void SetParameters(IQuery query, IDictionary<string, Tuple<object, IType>> parameters)
 		{
-			foreach (string parameterName in query.NamedParameters)
+			foreach (var parameterName in query.NamedParameters)
 			{
-				Tuple<object, IType> param = parameters[parameterName];
+				var param = parameters[parameterName];
 
 				if (param.First == null)
 				{
-					if (typeof (ICollection).IsAssignableFrom(param.Second.ReturnedClass))
+					if (typeof(IEnumerable).IsAssignableFrom(param.Second.ReturnedClass) &&
+						param.Second.ReturnedClass != typeof(string))
 					{
 						query.SetParameterList(parameterName, null, param.Second);
 					}
@@ -141,9 +142,9 @@ namespace NHibernate.Linq
 				}
 				else
 				{
-					if (param.First is ICollection)
+					if (param.First is IEnumerable && !(param.First is string))
 					{
-						query.SetParameterList(parameterName, (ICollection) param.First);
+						query.SetParameterList(parameterName, (IEnumerable)param.First);
 					}
 					else if (param.Second != null)
 					{

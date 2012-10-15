@@ -1,11 +1,12 @@
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Any
 {
 	public class Address
 	{
 		private long id;
-		private ISet lines = new HashedSet();
+		private ISet<string> lines = new HashedSet<string>();
 
 		public virtual long Id
 		{
@@ -13,7 +14,7 @@ namespace NHibernate.Test.Any
 			set { id = value; }
 		}
 
-		public virtual ISet Lines
+		public virtual ISet<string> Lines
 		{
 			get { return lines; }
 			set { lines = value; }

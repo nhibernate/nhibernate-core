@@ -1,11 +1,12 @@
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH552
 {
 	public class Question
 	{
 		private long id;
-		private ISet answers;
+		private ISet<Answer> answers;
 
 		public virtual long Id
 		{
@@ -13,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH552
 			set { id = value; }
 		}
 
-		public virtual ISet Answers
+		public virtual ISet<Answer> Answers
 		{
 			get { return answers; }
 			set { answers = value; }

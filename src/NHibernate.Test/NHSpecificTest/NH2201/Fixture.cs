@@ -7,20 +7,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				s.Delete("from Parent");
+				s.Delete("from System.Object");
 				tx.Commit();
 			}
-
-			base.OnTearDown();
 		}
 
-		[Test]
-		public void CanUseMutliCriteriaAndFetchSelect()
+		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
@@ -30,8 +32,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 
 				tx.Commit();
 			}
+		}
 
-			using (ISession s = OpenSession())
+		[Test]
+		public void CanUseMutliCriteriaAndFetchSelect()
+		{
+			using (var s = OpenSession())
 			{
 				Console.WriteLine("*** start");
 				var results =

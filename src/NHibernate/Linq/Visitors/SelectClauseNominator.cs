@@ -2,10 +2,11 @@
 using System.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	class SelectClauseHqlNominator : NhExpressionTreeVisitor
+	class SelectClauseHqlNominator : ExpressionTreeVisitor
 	{
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
@@ -34,12 +35,8 @@ namespace NHibernate.Linq.Visitors
 		{
 			try
 			{
-				bool projectConstantsInHql = _stateStack.Peek();
-
-				if (!projectConstantsInHql && expression != null && IsRegisteredFunction(expression))
-				{
-					projectConstantsInHql = true;
-				}
+				var projectConstantsInHql = _stateStack.Peek() ||
+											expression != null && IsRegisteredFunction(expression);
 
 				_stateStack.Push(projectConstantsInHql);
 

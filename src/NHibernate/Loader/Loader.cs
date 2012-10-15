@@ -5,9 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
-
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -148,8 +146,8 @@ namespace NHibernate.Loader
 		/// value using the Property instead of directly to the field.
 		/// </para>
 		/// <para>
-		/// The scope is <c>protected internal</c> because the <see cref="Hql.Classic.WhereParser"/> needs to
-		/// be able to <c>get</c> the SqlString of the <see cref="Hql.Classic.QueryTranslator"/> when
+		/// The scope is <c>protected internal</c> because the <see cref="WhereParser"/> needs to
+		/// be able to <c>get</c> the SqlString of the <see cref="QueryTranslator"/> when
 		/// it is parsing a subquery.
 		/// </para>
 		/// </remarks>
@@ -321,7 +319,7 @@ namespace NHibernate.Loader
 
 			if (optionalObject != null && !string.IsNullOrEmpty(optionalEntityName))
 			{
-				return new EntityKey(optionalId, session.GetEntityPersister(optionalEntityName, optionalObject), session.EntityMode);
+				return session.GenerateEntityKey(optionalId, session.GetEntityPersister(optionalEntityName, optionalObject));
 			}
 			else
 			{
@@ -417,82 +415,86 @@ namespace NHibernate.Loader
 
 		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
 		{
-			RowSelection selection = queryParameters.RowSelection;
-			int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-
-			int entitySpan = EntityPersisters.Length;
-
-			List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
-
-			IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
-
-			IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection,
-										  session);
-
-			// would be great to move all this below here into another method that could also be used
-			// from the new scrolling stuff.
-			//
-			// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
-			// that I could do the control breaking at the means to know when to stop
-			LockMode[] lockModeArray = GetLockModes(queryParameters.LockModes);
-			EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
-
-			bool createSubselects = IsSubselectLoadingEnabled;
-			List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
-			IList results = new List<object>();
-
-			try
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				HandleEmptyCollections(queryParameters.CollectionKeys, rs, session);
-				EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
+				RowSelection selection = queryParameters.RowSelection;
+				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 
-				if (Log.IsDebugEnabled)
-				{
-					Log.Debug("processing result set");
-				}
+				int entitySpan = EntityPersisters.Length;
 
-				int count;
-				for (count = 0; count < maxRows && rs.Read(); count++)
+				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan*10);
+
+				IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
+
+				IDataReader rs = GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection,
+											  session);
+
+				// would be great to move all this below here into another method that could also be used
+				// from the new scrolling stuff.
+				//
+				// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
+				// that I could do the control breaking at the means to know when to stop
+				LockMode[] lockModeArray = GetLockModes(queryParameters.LockModes);
+				EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
+
+				bool createSubselects = IsSubselectLoadingEnabled;
+				List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
+				IList results = new List<object>();
+
+				try
 				{
+					HandleEmptyCollections(queryParameters.CollectionKeys, rs, session);
+					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
+
 					if (Log.IsDebugEnabled)
 					{
-						Log.Debug("result set row: " + count);
+						Log.Debug("processing result set");
 					}
 
-					object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
-														keys, returnProxies);
-					results.Add(result);
-
-					if (createSubselects)
+					int count;
+					for (count = 0; count < maxRows && rs.Read(); count++)
 					{
-						subselectResultKeys.Add(keys);
-						keys = new EntityKey[entitySpan]; //can't reuse in this case
+						if (Log.IsDebugEnabled)
+						{
+							Log.Debug("result set row: " + count);
+						}
+
+						object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey,
+															hydratedObjects,
+															keys, returnProxies);
+						results.Add(result);
+
+						if (createSubselects)
+						{
+							subselectResultKeys.Add(keys);
+							keys = new EntityKey[entitySpan]; //can't reuse in this case
+						}
+					}
+
+					if (Log.IsDebugEnabled)
+					{
+						Log.Debug(string.Format("done processing result set ({0} rows)", count));
 					}
 				}
-
-				if (Log.IsDebugEnabled)
+				catch (Exception e)
 				{
-					Log.Debug(string.Format("done processing result set ({0} rows)", count));
+					e.Data["actual-sql-query"] = st.CommandText;
+					throw;
 				}
-			}
-			catch (Exception e)
-			{
-				e.Data["actual-sql-query"] = st.CommandText;
-				throw;
-			}
-			finally
-			{
-				session.Batcher.CloseCommand(st, rs);
-			}
+				finally
+				{
+					session.Batcher.CloseCommand(st, rs);
+				}
 
-			InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
+				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
 
-			if (createSubselects)
-			{
-				CreateSubselects(subselectResultKeys, queryParameters, session);
+				if (createSubselects)
+				{
+					CreateSubselects(subselectResultKeys, queryParameters, session);
+				}
+
+				return results;
 			}
-
-			return results;
 		}
 
 		protected bool HasSubselectLoadableCollections()
@@ -807,7 +809,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return resultId == null ? null : new EntityKey(resultId, persister, session.EntityMode);
+			return resultId == null ? null : session.GenerateEntityKey(resultId, persister);
 		}
 
 		/// <summary>
@@ -1486,7 +1488,7 @@ namespace NHibernate.Loader
 		{
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
-			ISet filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 			QueryKey key = new QueryKey(Factory, SqlString, queryParameters, filterKeys);
 
 			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, resultTypes, queryCache, key);
@@ -1665,7 +1667,7 @@ namespace NHibernate.Loader
 
 			var originSql = sqlString.Compact();
 			var result = new SqlStringBuilder();
-			foreach (var sqlPart in originSql.Parts)
+			foreach (var sqlPart in originSql)
 			{
 				var parameter = sqlPart as Parameter;
 				if (parameter != null)
@@ -1749,14 +1751,14 @@ namespace NHibernate.Loader
 				{
 					var skipParameter = new QuerySkipParameterSpecification();
 					skipSqlParameter = Parameter.Placeholder;
-					skipSqlParameter.BackTrack = EnumerableExtensions.First(skipParameter.GetIdsForBackTrack(sessionFactory));
+					skipSqlParameter.BackTrack = skipParameter.GetIdsForBackTrack(sessionFactory).First();
 					parameterSpecs.Add(skipParameter);
 				}
 				if (take.HasValue)
 				{
 					var takeParameter = new QueryTakeParameterSpecification();
 					takeSqlParameter = Parameter.Placeholder;
-					takeSqlParameter.BackTrack = EnumerableExtensions.First(takeParameter.GetIdsForBackTrack(sessionFactory));
+					takeSqlParameter.BackTrack = takeParameter.GetIdsForBackTrack(sessionFactory).First();
 					parameterSpecs.Add(takeParameter);
 				}
 				// The dialect can move the given parameters where he need, what it can't do is generates new parameters loosing the BackTrack.

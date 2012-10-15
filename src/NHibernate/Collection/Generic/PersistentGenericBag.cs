@@ -37,7 +37,7 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericBag() {}
 		public PersistentGenericBag(ISessionImplementor session) : base(session) {}
 
-		public PersistentGenericBag(ISessionImplementor session, ICollection<T> coll) : base(session, coll as ICollection)
+		public PersistentGenericBag(ISessionImplementor session, IEnumerable<T> coll) : base(session, coll as ICollection)
 		{
 			gbag = coll as IList<T>;
 			if (gbag == null)

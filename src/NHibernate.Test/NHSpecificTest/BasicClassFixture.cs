@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NHibernate.Linq;
@@ -583,9 +583,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringSet = new HashedSet();
-			bc[index].StringSet.Add("zero");
-			bc[index].StringSet.Add("one");
+			bc[index].StringSet = new HashedSet<string> { "zero", "one" };
 			s[index].Update(bc[index]);
 
 			t[index].Commit();

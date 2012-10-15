@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
 using System.Collections;
-using NHibernate.Metadata;
-using NHibernate.Type;
 using System.Reflection;
-using System.Collections.ObjectModel;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class VisitorUtil
+	public static class VisitorUtil
 	{
-		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
+		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
 			memberName = null;
 

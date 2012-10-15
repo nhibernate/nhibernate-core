@@ -209,7 +209,7 @@ namespace NHibernate.Type
 			
 			RegisterType(typeof (Uri), NHibernateUtil.Uri, new[] {"uri", "url"});
 
-      RegisterType(typeof(XDocument), NHibernateUtil.XDoc, new[] { "xdoc", "xdocument" });
+			RegisterType(typeof(XDocument), NHibernateUtil.XDoc, new[] { "xdoc", "xdocument" });
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
@@ -612,6 +612,7 @@ namespace NHibernate.Type
 			return (NullableType)returnType;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, int length, GetNullableTypeWithLength ctorDelegate)
 		{
 			string key = GetKeyForLengthBased(defaultUnqualifiedType.Name, length);
@@ -625,6 +626,7 @@ namespace NHibernate.Type
 			return (NullableType)returnType;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private static NullableType GetType(NullableType defaultUnqualifiedType, byte precision, byte scale, NullableTypeCreatorDelegate ctor)
 		{
 			string key = GetKeyForPrecisionScaleBased(defaultUnqualifiedType.Name, precision, scale);
@@ -797,11 +799,6 @@ namespace NHibernate.Type
 			return Instance.CollectionTypeFactory.Map(role, propertyRef, embedded);
 		}
 
-		public static CollectionType Set(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.Set(role, propertyRef, embedded);
-		}
-
 		public static CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
 		{
 			return Instance.CollectionTypeFactory.SortedMap(role, propertyRef, embedded, comparer);
@@ -810,16 +807,6 @@ namespace NHibernate.Type
 		public static CollectionType OrderedMap(string role, string propertyRef, bool embedded)
 		{
 			return Instance.CollectionTypeFactory.OrderedMap(role, propertyRef, embedded);
-		}
-
-		public static CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return Instance.CollectionTypeFactory.SortedSet(role, propertyRef, embedded, comparer);
-		}
-
-		public static CollectionType OrderedSet(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.OrderedSet(role, propertyRef, embedded);
 		}
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)

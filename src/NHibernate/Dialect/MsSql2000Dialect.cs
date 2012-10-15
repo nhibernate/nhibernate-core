@@ -458,15 +458,13 @@ namespace NHibernate.Dialect
 			SqlStringBuilder result = new SqlStringBuilder();
 			MatchEvaluator evaluator = new LockHintAppender(this, aliasedLockModes).ReplaceMatch;
 
-			foreach (object part in sql.Parts)
+			foreach (object part in sql)
 			{
-				if (part == Parameter.Placeholder)
-				{
-					result.Add((Parameter)part);
-					continue;
-				}
-
-				result.Add(matchRegex.Replace((string)part, evaluator));
+				var parameter = part as Parameter;
+				if (parameter != null)
+					result.Add(parameter);
+				else
+					result.Add(matchRegex.Replace((string)part, evaluator));
 			}
 
 			return result.ToSqlString();

@@ -7,7 +7,7 @@ using NHibernate.Transform;
 namespace NHibernate.Linq
 {
 	[Serializable]
-	public class ResultTransformer : IResultTransformer
+	public class ResultTransformer : IResultTransformer, IEquatable<ResultTransformer>
 	{
 		private readonly Delegate _itemTransformation;
 		private readonly Delegate _listTransformation;
@@ -32,25 +32,24 @@ namespace NHibernate.Linq
 				return collection;
 			}
 
-			IEnumerable<object> toTransform;
-			if (collection.Count > 0 && collection[0] is object[])
-			{
-				if (((object[])collection[0]).Length != 1)
-				{
-					// We only expect single items
-					throw new NotSupportedException();
-				}
-
-				toTransform = collection.Cast<object[]>().Select(o => o[0]);
-			}
-			else
-			{
-				toTransform = collection.Cast<object>();
-			}
-			object transformResult = _listTransformation.DynamicInvoke(toTransform);
+			var toTransform = GetToTransform(collection);
+			var transformResult = _listTransformation.DynamicInvoke(toTransform);
 
 			var resultList = transformResult as IList;
 			return resultList ?? new List<object> { transformResult };
+		}
+
+		static IEnumerable<object> GetToTransform(IList collection)
+		{
+			if (collection.Count > 0)
+			{
+				var objects = collection[0] as object[];
+				if (objects != null && objects.Length == 1)
+				{
+					return collection.Cast<object[]>().Select(o => o[0]);
+				}
+			}
+			return collection.Cast<object>();
 		}
 
 		#endregion

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -11,6 +12,7 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Loader.Custom;
+using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -71,6 +73,21 @@ namespace NHibernate.Impl
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }
 
+		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
+		{
+			return GenerateEntityKey(id, persister, EntityMode);
+		}
+
+		protected EntityKey GenerateEntityKey(object id, IEntityPersister persister, EntityMode entityMode)
+		{
+			return new EntityKey(id, persister, entityMode);
+		}
+
+		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
+		{
+			return new CacheKey(id, type, entityOrRoleName, EntityMode, Factory);
+		}
+
 		public ISessionFactoryImplementor Factory
 		{
 			get { return factory; }
@@ -80,24 +97,69 @@ namespace NHibernate.Impl
 
 		public abstract IBatcher Batcher { get; }
 		public abstract void CloseSessionFromDistributedTransaction();
-		public abstract IList List(string query, QueryParameters parameters);
+
+		public virtual IList List(string query, QueryParameters parameters)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<object>();
+				List(query, parameters, results);
+				return results;
+			}
+		}
+		
 		public abstract void List(string query, QueryParameters parameters, IList results);
+
+		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<T>();
+				List(query, queryParameters, results);
+				return results;
+			}
+		}
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
-			IList results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
-																			.GetConstructor(System.Type.EmptyTypes)
-																			.Invoke(null);
-
+			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
+									  .GetConstructor(System.Type.EmptyTypes)
+									  .Invoke(null);
 			List(queryExpression, parameters, results);
 			return results;
 		}
 
 		public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
-		public abstract IList<T> List<T>(string query, QueryParameters queryParameters);
-		public abstract IList<T> List<T>(CriteriaImpl criteria);
+
+		public virtual IList<T> List<T>(IQueryExpression query, QueryParameters parameters)
+		{
+			var results = new List<T>();
+			List(query, parameters, results);
+			return results;
+		}
+
+		public virtual IList<T> List<T>(CriteriaImpl criteria)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<T>();
+				List(criteria, results);
+				return results;
+			}
+		}
+
 		public abstract void List(CriteriaImpl criteria, IList results);
-		public abstract IList List(CriteriaImpl criteria);
+		
+		public virtual IList List(CriteriaImpl criteria)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<object>();
+				List(criteria, results);
+				return results;
+			}
+		}
+
 		public abstract IEnumerable Enumerable(string query, QueryParameters parameters);
 		public abstract IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
 		public abstract IList ListFilter(object collection, string filter, QueryParameters parameters);
@@ -110,11 +172,52 @@ namespace NHibernate.Impl
 		public abstract void AfterTransactionCompletion(bool successful, ITransaction tx);
 		public abstract object GetContextEntityIdentifier(object obj);
 		public abstract object Instantiate(string clazz, object id);
-		public abstract IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
-		public abstract void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
-		public abstract IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+
+		public virtual IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<object>();
+				List(spec, queryParameters, results);
+				return results;
+			}
+		}
+
+		public virtual void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var query = new SQLCustomQuery(
+					spec.SqlQueryReturns,
+					spec.QueryString,
+					spec.QuerySpaces,
+					Factory);
+				ListCustomQuery(query, queryParameters, results);
+			}
+		}
+
+		public virtual IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<T>();
+				List(spec, queryParameters, results);
+				return results;
+			}
+		}
+
 		public abstract void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
-		public abstract IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
+
+		public virtual IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<T>();
+				ListCustomQuery(customQuery, queryParameters, results);
+				return results;
+			}
+		}
+
 		public abstract object GetFilterParameterValue(string filterParameterName);
 		public abstract IType GetFilterParameterType(string filterParameterName);
 		public abstract IDictionary<string, IFilter> EnabledFilters { get; }
@@ -138,6 +241,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
+		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract IInterceptor Interceptor { get; }
 		public abstract EventListeners Listeners { get; }
 		public abstract int DontFlushFromFind { get; }
@@ -343,6 +447,19 @@ namespace NHibernate.Impl
 		protected void EnlistInAmbientTransactionIfNeeded()
 		{
 			factory.TransactionFactory.EnlistInDistributedTransactionIfNeeded(this);
+		}
+
+		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var persister = Factory.GetEntityPersister(entityName) as IOuterJoinLoadable;
+				if (persister == null)
+				{
+					throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
+				}
+				return persister;
+			}
 		}
 	}
 }

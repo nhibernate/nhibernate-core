@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
-using Iesi.Collections;
+using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
 {
@@ -8,8 +8,8 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 	{
 		private int _id;
 		private string _name;
-		private ISet _children;
-		private ISet _differentChildren;
+		private ISet<Child> _children;
+		private ISet<DifferentChild> _differentChildren;
 
 		public virtual int ID
 		{
@@ -23,13 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			set { this._name = value; }
 		}
 
-		public virtual ISet Children
+		public virtual ISet<Child> Children
 		{
 			get { return this._children; }
 			set { this._children = value; }
 		}
 
-		public virtual ISet DifferentChildren
+		public virtual ISet<DifferentChild> DifferentChildren
 		{
 			get { return this._differentChildren; }
 			set { this._differentChildren = value; }
@@ -37,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 
 		public Parent()
 		{
-			this._children = new HashedSet();
-			this._differentChildren = new HashedSet();
+			this._children = new HashedSet<Child>();
+			this._differentChildren = new HashedSet<DifferentChild>();
 		}
 	}
 
@@ -124,15 +124,14 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 		}
 	}
 
-	public class ChildComparer : IComparer
+	public class ChildComparer : IComparer<Child>
 	{
-		public int Compare(object x, object y)
+		public int Compare(Child x, Child y)
 		{
-			RelatedObject relX = ((Child) x).RelatedObject;
-			RelatedObject relY = ((Child) y).RelatedObject;
+			RelatedObject relX = x.RelatedObject;
+			RelatedObject relY = y.RelatedObject;
 
-			int result = relX.Name.CompareTo(relY.Name);
-			return result;
+			return relX.Name.CompareTo(relY.Name);
 		}
 	}
 }

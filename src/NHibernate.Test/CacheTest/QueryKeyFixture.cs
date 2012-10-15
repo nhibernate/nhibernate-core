@@ -1,11 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using Iesi.Collections;
 
 namespace NHibernate.Test.CacheTest
 {
@@ -43,13 +43,13 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pLike", "so%");
 			var fk =  new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			ISet<FilterKey> fks = new HashedSet<FilterKey> { fk };
-			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pLike", "%ing");
 			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			fks = new HashedSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 		}
 
 		private void QueryKeyFilterDescValueToCompare(out QueryKey qk, out QueryKey qk1)
@@ -60,13 +60,13 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			ISet<FilterKey> fks = new HashedSet<FilterKey> { fk };
-			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 
 			var f1 = new FilterImpl(sessions.GetFilterDefinition(filterName));
 			f1.SetParameter("pDesc", "something").SetParameter("pValue", 11);
 			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			fks = new HashedSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			qk1 = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pLike", "so%");
 			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			ISet<FilterKey> fks = new HashedSet<FilterKey> { fk };
-			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}']",fk)));
 
 			filterName = "DescriptionEqualAndValueGT";
@@ -122,7 +122,7 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 			fks = new HashedSet<FilterKey> { fk };
-			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}']", fk)));
 		}
 
@@ -140,7 +140,7 @@ namespace NHibernate.Test.CacheTest
 			var fvk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes, EntityMode.Poco);
 
 			ISet<FilterKey> fks = new HashedSet<FilterKey> { fk, fvk };
-			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), (ISet)fks);
+			var qk = new QueryKey(sessions, SqlAll, new QueryParameters(), fks);
 			Assert.That(qk.ToString(), Is.StringContaining(string.Format("filters: ['{0}', '{1}']", fk, fvk)));
 		}
 	}

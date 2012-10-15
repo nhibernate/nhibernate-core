@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Iesi.Collections;
+using Iesi.Collections.Generic;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Type;
@@ -98,9 +98,7 @@ namespace NHibernate.Test.Legacy
 				fr.FumString = "goo";
 				Fum fr2 = new Fum(FumKey("fr2"));
 				fr2.FumString = "soo";
-				fum.Friends = new HashedSet();
-				fum.Friends.Add(fr);
-				fum.Friends.Add(fr2);
+				fum.Friends = new HashedSet<Fum> { fr, fr2 };
 
 				s.Save(fr);
 				s.Save(fr2);
@@ -129,7 +127,7 @@ namespace NHibernate.Test.Legacy
 
 				Assert.AreSame(fum, map["this"]);
 				Assert.AreSame(fum.Fo, map["fo"]);
-				Assert.IsTrue(fum.Friends.Contains(map["fum"]));
+				Assert.IsTrue(fum.Friends.Contains((Fum)map["fum"]));
 				Assert.AreEqual(3, map.Count);
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
@@ -440,12 +438,9 @@ namespace NHibernate.Test.Legacy
 			s.Save(fum2);
 			Qux q = new Qux();
 			s.Save(q);
-			ISet dict = new HashedSet();
 			IList list = new ArrayList();
-			dict.Add(fum1);
-			dict.Add(fum2);
 			list.Add(fum1);
-			q.Fums = dict;
+			q.Fums = new HashedSet<Fum> {fum1, fum2};
 			q.MoreFums = list;
 			fum1.QuxArray = new Qux[] {q};
 			s.Flush();
@@ -474,15 +469,12 @@ namespace NHibernate.Test.Legacy
 			s.Save(q);
 			Fum f1 = new Fum(FumKey("f1"));
 			Fum f2 = new Fum(FumKey("f2"));
-			ISet dict = new HashedSet();
-			dict.Add(f1);
-			dict.Add(f2);
 			IList list = new ArrayList();
 			list.Add(f1);
 			list.Add(f2);
 			f1.FumString = "f1";
 			f2.FumString = "f2";
-			q.Fums = dict;
+			q.Fums = new HashedSet<Fum> {f1, f2};
 			q.MoreFums = list;
 			s.Save(f1);
 			s.Save(f2);

@@ -174,7 +174,7 @@ namespace NHibernate.Mapping
 		{
 			if (!IsReferenceToPrimaryKey)
 			{
-				StringBuilder result = new StringBuilder();
+				var result = new StringBuilder();
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
@@ -186,10 +186,8 @@ namespace NHibernate.Mapping
 					.Append(Name);
 				return result.ToString();
 			}
-			else
-			{
-				return base.ToString();
-			}
+
+			return base.ToString();
 		}
 
 		public bool HasPhysicalConstraint

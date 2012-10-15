@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping 	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH2898">
+	<class name="ItemWithLazyProperty">
+		<cache usage="read-write"/>
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+		<property name="Name"/>
+		<property name="Description" lazy="true"/>
+	</class>
+</hibernate-mapping>

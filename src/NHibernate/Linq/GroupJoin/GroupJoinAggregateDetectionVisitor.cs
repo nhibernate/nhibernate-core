@@ -63,19 +63,19 @@ namespace NHibernate.Linq.GroupJoin
 		{
 			var fromClause = (FromClauseBase) expression.ReferencedQuerySource;
 
-			if (fromClause.FromExpression is QuerySourceReferenceExpression)
+			var querySourceReference = fromClause.FromExpression as QuerySourceReferenceExpression;
+			if (querySourceReference != null)
 			{
-				var querySourceReference = (QuerySourceReferenceExpression) fromClause.FromExpression;
-
-				if (_groupJoinClauses.Contains(querySourceReference.ReferencedQuerySource as GroupJoinClause))
+				var groupJoinClause = querySourceReference.ReferencedQuerySource as GroupJoinClause;
+				if (groupJoinClause != null && _groupJoinClauses.Contains(groupJoinClause))
 				{
 					if (_inAggregate.FlagIsFalse)
 					{
-						_nonAggregatingGroupJoins.Add((GroupJoinClause) querySourceReference.ReferencedQuerySource);
+						_nonAggregatingGroupJoins.Add(groupJoinClause);
 					}
 					else
 					{
-						_aggregatingGroupJoins.Add((GroupJoinClause) querySourceReference.ReferencedQuerySource);
+						_aggregatingGroupJoins.Add(groupJoinClause);
 					}
 				}
 			}

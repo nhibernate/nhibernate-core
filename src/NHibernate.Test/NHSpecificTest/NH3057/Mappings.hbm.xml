@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3057">
+  
+  <class name="BaseClass" table="baseclass">
+    <id name="Id" column="id">
+      <generator class="assigned" />
+    </id>
+    <property name="InheritedProperty" column="inheritedproperty" />
+
+    <joined-subclass name="BClass" table="bclass">
+      <key column="id" />
+      <many-to-one name="A" column="aid" class="AClass" />
+    </joined-subclass>
+  </class>
+
+  <class name="AClass" table="aclass">
+    <id name="Id" column="id" generator="assigned" />
+    <set name="Bs" inverse="true" lazy="true">
+      <key column="aid" />
+      <one-to-many class="BClass" />
+    </set>
+  </class>
+</hibernate-mapping>

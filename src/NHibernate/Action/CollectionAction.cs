@@ -96,7 +96,7 @@ namespace NHibernate.Action
 			// second-level cache invalidation only)
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, session.EntityMode, session.Factory);
+				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 				softLock = persister.Cache.Lock(ck, null);
 			}
 		}
@@ -120,7 +120,7 @@ namespace NHibernate.Action
 				{
 					if (persister.HasCache)
 					{
-						CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, Session.EntityMode, Session.Factory);
+						CacheKey ck = Session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 						persister.Cache.Release(ck, softLock);
 					}
 				});
@@ -138,7 +138,7 @@ namespace NHibernate.Action
 		{
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(key, persister.KeyType, persister.Role, session.EntityMode, session.Factory);
+				CacheKey ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 				persister.Cache.Evict(ck);
 			}
 		}

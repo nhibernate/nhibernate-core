@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -54,7 +55,7 @@ namespace NHibernate.Impl
 		public override IList List()
 		{
 			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
+			var namedParams = NamedParams;
 			Before();
 			try
 			{
@@ -78,48 +79,48 @@ namespace NHibernate.Impl
 			}
 
 			// Build a map from single parameters to lists
-			var map = new Dictionary<string, List<string>>();
+			var map = new Dictionary<string, IList<string>>();
 
 			foreach (var me in namedParameterLists)
 			{
-				string name = me.Key;
-				var vals = (ICollection) me.Value.Value;
-				IType type = me.Value.Type;
+				var name = me.Key;
+				var vals = (IEnumerable) me.Value.Value;
+				var type = me.Value.Type;
 
-				if (vals.Count == 1)
+				var typedValues = (from object value in vals
+								   select new TypedValue(type, value, Session.EntityMode))
+					.ToList();
+
+				if (typedValues.Count == 1)
 				{
-					// No expansion needed here
-					IEnumerator iter = vals.GetEnumerator();
-					iter.MoveNext();
-					namedParamsCopy[name] = new TypedValue(type, iter.Current, Session.EntityMode);
+					namedParamsCopy[name] = typedValues[0];
 					continue;
 				}
 
-				var aliases = new List<string>();
-				int i = 0;
-				bool isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
-
-				foreach (object obj in vals)
+				var aliases = new string[typedValues.Count];
+				var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
+				for (var index = 0; index < typedValues.Count; index++)
 				{
-					string alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + i++ + StringHelper.Underscore;
-					namedParamsCopy[alias] = new TypedValue(type, obj, Session.EntityMode);
-					aliases.Add(alias);
+					var value = typedValues[index];
+					var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
+					namedParamsCopy[alias] = value;
+					aliases[index] = alias;
 				}
 
 				map.Add(name, aliases);
 			}
 
-			IASTNode newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
-			map.Aggregate(key, (sb, kvp) =>
-			                   {
-			                   	sb.Append(' ');
-			                   	sb.Append(kvp.Key);
-			                   	sb.Append(':');
-			                   	kvp.Value.Aggregate(sb, (sb2, str) => sb2.Append(str));
-			                   	return sb;
-			                   });
+			foreach (var pair in map)
+			{
+				key.Append(' ');
+				key.Append(pair.Key);
+				key.Append(':');
+				foreach (var s in pair.Value)
+					key.Append(s);
+			}
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
 		}
@@ -131,7 +132,27 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			throw new NotImplementedException();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				return Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryString = ExpandParameters(queryParameters.NamedParameters);
+
+			return sessionImplementor.GetQueries(queryString, false)
+				.Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator))
+				.Cast<ITranslator>();
 		}
 	}
 
@@ -165,16 +186,16 @@ namespace NHibernate.Impl
 
 	internal class ParameterExpander
 	{
-		private readonly Dictionary<string, List<string>> _map;
+		private readonly Dictionary<string, IList<string>> _map;
 		private readonly IASTNode _tree;
 
-		private ParameterExpander(IASTNode tree, Dictionary<string, List<string>> map)
+		private ParameterExpander(IASTNode tree, Dictionary<string, IList<string>> map)
 		{
 			_tree = tree;
 			_map = map;
 		}
 
-		public static IASTNode Expand(IASTNode tree, Dictionary<string, List<string>> map)
+		public static IASTNode Expand(IASTNode tree, Dictionary<string, IList<string>> map)
 		{
 			var expander = new ParameterExpander(tree, map);
 
@@ -183,13 +204,13 @@ namespace NHibernate.Impl
 
 		private IASTNode Expand()
 		{
-			IList<IASTNode> parameters = ParameterDetector.LocateParameters(_tree, new HashSet<string>(_map.Keys));
+			var parameters = ParameterDetector.LocateParameters(_tree, new HashSet<string>(_map.Keys));
 			var nodeMapping = new Dictionary<IASTNode, IEnumerable<IASTNode>>();
 
 			foreach (IASTNode param in parameters)
 			{
-				IASTNode paramName = param.GetChild(0);
-				List<string> aliases = _map[paramName.Text];
+				var paramName = param.GetChild(0);
+				var aliases = _map[paramName.Text];
 				var astAliases = new List<IASTNode>();
 
 				foreach (string alias in aliases)

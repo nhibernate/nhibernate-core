@@ -1,15 +1,13 @@
 using System;
 
+// This test is explicitly to ensure varius aliases beginning with underscore
+// can be handled properly, since some dialect had problems with it.
+// ReSharper disable InconsistentNaming
 namespace NHibernate.Test.NHSpecificTest.NH386
 {
 	public class _Child
 	{
-		private int _id;
-
-		public int _Id
-		{
-			get { return _id; }
-			set { _id = value; }
-		}
+		public int _Id { get; set; }
 	}
 }
+// ReSharper restore InconsistentNaming

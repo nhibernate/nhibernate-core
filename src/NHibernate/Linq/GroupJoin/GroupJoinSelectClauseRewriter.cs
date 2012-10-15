@@ -3,10 +3,11 @@ using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	public class GroupJoinSelectClauseRewriter : NhExpressionTreeVisitor
+	public class GroupJoinSelectClauseRewriter : ExpressionTreeVisitor
 	{
 		private readonly IsAggregatingResults _results;
 

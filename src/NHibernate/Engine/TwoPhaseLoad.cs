@@ -74,7 +74,7 @@ namespace NHibernate.Engine
 			for (int i = 0; i < hydratedState.Length; i++)
 			{
 				object value = hydratedState[i];
-				if (value != LazyPropertyInitializer.UnfetchedProperty && value != BackrefPropertyAccessor.Unknown)
+				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
 					hydratedState[i] = types[i].ResolveIdentifier(value, session, entity);
 				}
@@ -106,7 +106,7 @@ namespace NHibernate.Engine
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
 					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
-				CacheKey cacheKey = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, session.Factory);
+				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 				bool put =
 					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
 										persister.IsVersioned ? persister.VersionType.Comparator : null,

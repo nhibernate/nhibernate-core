@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 			IsDirectlyAccessible = true;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			Hashtable clonedMap = new Hashtable(map.Count);
