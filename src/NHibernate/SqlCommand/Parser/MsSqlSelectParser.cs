@@ -313,7 +313,7 @@ namespace NHibernate.SqlCommand.Parser
 			{
 				var sqlIndex = beginToken.SqlIndex;
 				var sqlLength = (endToken != null ? endToken.SqlIndex + endToken.Length : Sql.Length) - beginToken.SqlIndex;
-				var text = Sql.Substring(sqlIndex, sqlLength).ToString();
+				var text = Sql.ToString(sqlIndex, sqlLength);
 				foreach (var column in _columns)
 				{
 					if (text.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase) ||
