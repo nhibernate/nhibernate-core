@@ -36,11 +36,7 @@ namespace NHibernate.SqlCommand
 			SqlString[] result = new SqlString[x.Length];
 			for (int i = 0; i < x.Length; i++)
 			{
-				result[i] = new SqlStringBuilder(3)
-					.Add(x[i])
-					.Add(sep)
-					.Add(y[i])
-					.ToSqlString();
+				result[i] = new SqlString(x[i], sep, y[i]);
 			}
 			return result;
 		}
