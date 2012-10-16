@@ -34,22 +34,21 @@ namespace NHibernate.Id.Enhanced
 			_initialValue = initialValue;
 			_incrementSize = incrementSize;
 
-			var b = new SqlStringBuilder();
-			b.Add("select ").Add(valueColumnName).Add(" as id_val").Add(" from ").Add(dialect.AppendLockHint(LockMode.Upgrade, tableName))
-				.Add(dialect.ForUpdateString);
+			_selectQuery = new SqlString(
+				"select ", valueColumnName, " as id_val from ",
+				dialect.AppendLockHint(LockMode.Upgrade, tableName),
+				dialect.ForUpdateString);
 
-			_selectQuery = b.ToSqlString();
+			_updateQuery = new SqlString(
+				"update ", tableName,
+				" set ", valueColumnName, " = ", Parameter.Placeholder,
+				" where ", valueColumnName, " = ", Parameter.Placeholder);
 
-			b = new SqlStringBuilder();
-			b.Add("update ").Add(tableName).Add(" set ").Add(valueColumnName).Add(" = ").Add(Parameter.Placeholder).Add(" where ")
-				.Add(valueColumnName).Add(" = ").Add(Parameter.Placeholder);
-			_updateQuery = b.ToSqlString();
 			_updateParameterTypes = new[]
 			{
 				SqlTypeFactory.Int64,
 				SqlTypeFactory.Int64,
 			};
-
 		}
 
 		#region Implementation of IDatabaseStructure

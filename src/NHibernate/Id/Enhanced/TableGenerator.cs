@@ -354,11 +354,11 @@ namespace NHibernate.Id.Enhanced
 		protected void BuildSelectQuery(Dialect.Dialect dialect)
 		{
 			const string alias = "tbl";
-			SqlStringBuilder selectBuilder = new SqlStringBuilder(100);
-			selectBuilder.Add("select ").Add(StringHelper.Qualify(alias, ValueColumnName))
-				.Add(" from " + TableName + " " + alias + " where ")
-				.Add(StringHelper.Qualify(alias, SegmentColumnName) + " = ")
-				.AddParameter().Add("  ");
+			SqlString select = new SqlString(
+				"select ", StringHelper.Qualify(alias, ValueColumnName), 
+				" from ", TableName, " ", alias,
+				" where ", StringHelper.Qualify(alias, SegmentColumnName), " = ", Parameter.Placeholder, 
+				"  ");
 
 			Dictionary<string, LockMode> lockOptions = new Dictionary<string, LockMode>();
 			lockOptions[alias] = LockMode.Upgrade;
@@ -366,7 +366,7 @@ namespace NHibernate.Id.Enhanced
 			Dictionary<string, string[]> updateTargetColumnsMap = new Dictionary<string, string[]>();
 			updateTargetColumnsMap[alias] = new[] { ValueColumnName };
 
-			selectQuery = dialect.ApplyLocksToSql(selectBuilder.ToSqlString(), lockOptions, updateTargetColumnsMap);
+			selectQuery = dialect.ApplyLocksToSql(select, lockOptions, updateTargetColumnsMap);
 
 			selectParameterTypes = new[] { SqlTypes.SqlTypeFactory.GetAnsiString(SegmentValueLength) };
 		}
@@ -374,13 +374,11 @@ namespace NHibernate.Id.Enhanced
 
 		protected void BuildUpdateQuery()
 		{
-			SqlStringBuilder builder = new SqlStringBuilder(100);
-			builder.Add("update " + TableName)
-				.Add(" set ").Add(ValueColumnName).Add(" = ").AddParameter()
-				.Add(" where ").Add(ValueColumnName).Add(" = ").AddParameter()
-				.Add(" and ").Add(SegmentColumnName).Add(" = ").AddParameter();
-
-			updateQuery = builder.ToSqlString();
+			updateQuery = new SqlString(
+				"update ", TableName,
+				" set ", ValueColumnName, " = ", Parameter.Placeholder,
+				" where ", ValueColumnName, " = ", Parameter.Placeholder,
+				" and ", SegmentColumnName, " = ", Parameter.Placeholder);
 			updateParameterTypes = new[]
 			{
 				SqlTypes.SqlTypeFactory.Int64,
@@ -392,12 +390,10 @@ namespace NHibernate.Id.Enhanced
 
 		protected void BuildInsertQuery()
 		{
-			SqlStringBuilder builder = new SqlStringBuilder(100);
-			builder.Add("insert into " + TableName)
-				.Add(" (" + SegmentColumnName + ", " + ValueColumnName + ") ")
-				.Add(" values (").AddParameter().Add(", ").AddParameter().Add(")");
-
-			insertQuery = builder.ToSqlString();
+			insertQuery = new SqlString(
+				"insert into ", TableName,
+				" (", SegmentColumnName, ", ", ValueColumnName, ") ",
+				" values (", Parameter.Placeholder, ", ", Parameter.Placeholder, ")");
 			insertParameterTypes = new[] {
 				SqlTypes.SqlTypeFactory.GetAnsiString(SegmentValueLength),
 				SqlTypes.SqlTypeFactory.Int64

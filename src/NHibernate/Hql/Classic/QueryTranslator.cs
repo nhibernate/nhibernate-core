@@ -1104,7 +1104,7 @@ namespace NHibernate.Hql.Classic
 				}
 				if (tokens[tokenIdx].StartsWithCaseInsensitive(ParserHelper.HqlVariablePrefix))
 				{
-					string name = tokens[tokenIdx].Substring(1).ToString();
+					string name = tokens[tokenIdx].ToString(1);
 					functionTokens.Add(GetNamedParameter(name));
 				}
 				else if (StringHelper.SqlParameter.Equals(tokens[tokenIdx].ToString()))

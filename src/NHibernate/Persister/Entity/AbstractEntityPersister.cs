@@ -1506,11 +1506,10 @@ namespace NHibernate.Persister.Entity
 
 			string fromClause = FromTableFragment(RootAlias) + FromJoinFragment(RootAlias, true, false);
 
-			SqlString whereClause = new SqlStringBuilder()
-				.Add(SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
-				.Add("=").AddParameter()
-				.Add(WhereJoinFragment(RootAlias, true, false))
-				.ToSqlString();
+			SqlString whereClause = new SqlString(
+				SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
+				"=", Parameter.Placeholder,
+				WhereJoinFragment(RootAlias, true, false));
 
 			return select.SetSelectClause(selectClause)
 				.SetFromClause(fromClause)
@@ -1561,15 +1560,15 @@ namespace NHibernate.Persister.Entity
 			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
 														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
-			SqlString fromClause = new SqlString(FromTableFragment(RootAlias)) +
-														 FromJoinFragment(RootAlias, true, false);
+			SqlString fromClause = new SqlString(
+				FromTableFragment(RootAlias), 
+				FromJoinFragment(RootAlias, true, false));
 
 			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");
-			SqlStringBuilder whereClauseBuilder = new SqlStringBuilder()
-				.Add(SqlStringHelper.Join(joiner, aliasedIdColumns))
-				.Add("=")
-				.AddParameter()
-				.Add(WhereJoinFragment(RootAlias, true, false));
+			SqlString whereClause = new SqlString(
+				SqlStringHelper.Join(joiner, aliasedIdColumns),
+				"=", Parameter.Placeholder,
+				WhereJoinFragment(RootAlias, true, false));
 
 			// H3.2 the Snapshot is what we found in DB without take care on version
 			//if (IsVersioned)
@@ -1583,7 +1582,7 @@ namespace NHibernate.Persister.Entity
 			return select.SetSelectClause(selectClause)
 				.SetFromClause(fromClause)
 				.SetOuterJoins(SqlString.Empty, SqlString.Empty)
-				.SetWhereClause(whereClauseBuilder.ToSqlString())
+				.SetWhereClause(whereClause)
 				.ToSqlString();
 		}
 
@@ -4065,11 +4064,10 @@ namespace NHibernate.Persister.Entity
 			select.SetFromClause(FromTableFragment(RootAlias) + FromJoinFragment(RootAlias, true, false));
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-			SqlString whereClause = new SqlStringBuilder()
-				.Add(SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns))
-				.Add("=").AddParameter()
-				.Add(WhereJoinFragment(RootAlias, true, false))
-				.ToSqlString();
+			SqlString whereClause = new SqlString(
+				SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
+				"=", Parameter.Placeholder,
+				WhereJoinFragment(RootAlias, true, false));
 
 			SqlString sql = select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
 			///////////////////////////////////////////////////////////////////////
