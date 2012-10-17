@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -26,18 +27,14 @@ namespace NHibernate.Loader
 		/// </summary>
 		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
+			ValidateUserProvidedAliases(userProvidedAliases, persister);
+
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
 
 			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName, null);
-			if (keyColumnsCandidates == null)
-			{
-				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
-			}
-			else
-			{
-				suffixedKeyColumns = keyColumnsCandidates;
-			}
+			suffixedKeyColumns = keyColumnsCandidates ??
+				GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
 			Intern(suffixedKeyColumns);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
@@ -52,6 +49,21 @@ namespace NHibernate.Loader
 				suffixedVersionColumn = null;
 			}
 			rowIdAlias = Loadable.RowIdAlias + suffix; // TODO: not visible to the user!
+		}
+
+		private static void ValidateUserProvidedAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister)
+		{
+			if (userProvidedAliases != null && userProvidedAliases.Count > 0) 
+			{
+				var missingPropertyNames = persister.PropertyNames.Except(userProvidedAliases.Keys).ToArray();
+				if (missingPropertyNames.Length > 0)
+				{
+					throw new MappingException(
+						string.Format(
+							"User provided resulset mapping for entity '{0}' misses mappings for the following properties: {1}.",
+							persister.EntityName, string.Join(", ", missingPropertyNames)));
+				}
+			}
 		}
 
 		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
