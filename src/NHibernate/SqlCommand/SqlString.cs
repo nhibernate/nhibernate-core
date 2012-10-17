@@ -937,6 +937,11 @@ namespace NHibernate.SqlCommand
 			return ToString(0, _length);
 		}
 
+		public string ToString(int startIndex)
+		{
+			return ToString(startIndex, _length - startIndex);
+		}
+
 		public string ToString(int startIndex, int length)
 		{
 			var sqlStartIndex = _sqlStartIndex + startIndex;

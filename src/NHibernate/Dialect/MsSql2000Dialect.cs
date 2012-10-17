@@ -497,7 +497,7 @@ namespace NHibernate.Dialect
 			string selectExistingObject = GetSelectExistingObject(name, table);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
-		
+
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{

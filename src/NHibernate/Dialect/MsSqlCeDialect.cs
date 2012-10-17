@@ -128,12 +128,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			var top = new SqlStringBuilder()
-				.Add(" top (")
-				.Add(limit)
-				.Add(")")
-				.ToSqlString();
-
+			var top = new SqlString(" top (", limit, ")");
 			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
 		}
 

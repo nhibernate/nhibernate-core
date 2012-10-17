@@ -74,21 +74,11 @@ namespace NHibernate.Dialect.Function
 
 			if (CastingIsRequired(sqlType))
 			{
-				return new SqlStringBuilder()
-					.Add("cast(")
-					.AddObject(args[0])
-					.Add(" as ")
-					.Add(sqlType)
-					.Add(")")
-					.ToSqlString();
+				return new SqlString("cast(", args[0], " as ", sqlType, ")");
 			}
 			else
 			{
-				return new SqlStringBuilder()
-					.Add("(")
-					.AddObject(args[0])
-					.Add(")")
-					.ToSqlString();
+				return new SqlString("(", args[0], ")");
 			}
 		}
 

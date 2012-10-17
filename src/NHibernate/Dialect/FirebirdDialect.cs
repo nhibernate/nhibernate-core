@@ -227,13 +227,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlStringBuilder()
-					.Add("cast('")
-					.Add(Name)
-					.Add("' as ")
-					.Add(FunctionReturnType.SqlTypes(factory)[0].ToString())
-					.Add(")")
-					.ToSqlString();
+				return new SqlString("cast('", Name, "' as ", FunctionReturnType.SqlTypes(factory)[0].ToString(), ")");
 			}
 		}
 
