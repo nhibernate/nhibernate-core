@@ -216,7 +216,6 @@
     <Compile Include="Criteria\MaterialResource.cs" />
     <Compile Include="Criteria\ProjectionsTest.cs" />
     <Compile Include="Criteria\Reptile.cs" />
-    <Compile Include="DialectTest\FunctionTests\SubstringSupportFixture.cs" />
     <Compile Include="DialectTest\FunctionTests\SequenceSupportFixture.cs" />
     <Compile Include="DialectTest\Ingres9DialectFixture.cs" />
     <Compile Include="DialectTest\MsSql2012DialectFixture.cs" />
@@ -508,6 +507,7 @@
     <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
+    <Compile Include="Linq\CollectionAssert.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\JoinTests.cs" />
@@ -1033,20 +1033,6 @@
     <Compile Include="NHSpecificTest\NH3004\TestSqlClientDriver.cs" />
     <Compile Include="NHSpecificTest\NH3074\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3074\Model.cs" />
-    <Compile Include="NHSpecificTest\NH3121\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3121\Report.cs" />
-    <Compile Include="NHSpecificTest\NH3126\InvalidCastTestCase.cs" />
-    <Compile Include="NHSpecificTest\NH3126\Item.cs" />
-    <Compile Include="NHSpecificTest\NH3126\Property.cs" />
-    <Compile Include="NHSpecificTest\NH3126\PropertyValue.cs" />
-    <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
-    <Compile Include="NHSpecificTest\NH3142\ChildrenTest.cs" />
-    <Compile Include="NHSpecificTest\NH3142\DomainClass.cs" />
-    <Compile Include="NHSpecificTest\NH3149\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3149\Model.cs" />
-    <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
-    <Compile Include="NHSpecificTest\NH3153\Model.cs" />
-    <Compile Include="NHSpecificTest\NH3153\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -3069,12 +3055,6 @@
     <EmbeddedResource Include="DriverTest\SqlServerCeEntity.hbm.xml" />
     <EmbeddedResource Include="CollectionTest\NullableValueTypeElementMapFixture.hbm.xml" />
     <EmbeddedResource Include="DriverTest\EntityForMs2008.hbm.xml" />
-    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="DbScripts\PostgreSQL82DialectLinqReadonlyCreateScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2960
 {
@@ -34,55 +34,55 @@ namespace NHibernate.Test.NHSpecificTest.NH2960
 		}
 
 		[Test]
-		public void QueryWithExplicitEntityNameOnlyReturnsEntitiesOfSameTypeWithMatchingEntityName()
+        public void QueryWithExplicitEntityNameOnlyReturnsEntitiesOfSameTypeWithMatchingEntityName()
 		{
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var result = session
-					.CreateQuery("from BarCode")
-					.List();
+			    var result = session
+			        .CreateQuery("from BarCode")
+			        .List();
 				Assert.AreEqual(1, result.Count);
 			}
 		}
 
-		[Test]
-		public void CriteriaQueryWithExplicitEntityNameOnlyReturnsEntitiesOfSameTypeWithMatchingEntityName()
-		{
-			using (ISession session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = session
-					.CreateCriteria("BarCode")
-					.List();
-				Assert.AreEqual(1, result.Count);
-			}
-		}
+        [Test]
+        public void CriteriaQueryWithExplicitEntityNameOnlyReturnsEntitiesOfSameTypeWithMatchingEntityName()
+        {
+            using (ISession session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                var result = session
+                    .CreateCriteria("BarCode")
+                    .List();
+                Assert.AreEqual(1, result.Count);
+            }
+        }
 
-		[Test]
-		public void QueryWithImplicitEntityNameReturnsAllEntitiesOfSameType()
-		{
-			using (ISession session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = session
-					.CreateQuery("from " + typeof(Entity).FullName)
-					.List();
-				Assert.AreEqual(2, result.Count);
-			}
-		}
+        [Test]
+        public void QueryWithImplicitEntityNameReturnsAllEntitiesOfSameType()
+        {
+            using (ISession session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                var result = session
+                    .CreateQuery("from " + typeof(Entity).FullName)
+                    .List();
+                Assert.AreEqual(2, result.Count);
+            }
+        }
 
-		[Test]
-		public void CriteriaQueryWithImplicitEntityNameReturnsAllEntitiesOfSameType()
-		{
-			using (ISession session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = session
-					.CreateCriteria(typeof(Entity))
-					.List();
-				Assert.AreEqual(2, result.Count);
-			}
-		}
-	}
+        [Test]
+        public void CriteriaQueryWithImplicitEntityNameReturnsAllEntitiesOfSameType()
+        {
+            using (ISession session = OpenSession())
+            using (session.BeginTransaction())
+            {
+                var result = session
+                    .CreateCriteria(typeof(Entity))
+                    .List();
+                Assert.AreEqual(2, result.Count);
+            }
+        }
+    }
 }
