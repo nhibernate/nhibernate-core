@@ -103,14 +103,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private IDictionary<string, string[]> InternalGetPropertyResultsMap(string alias)
 		{
 			NativeSQLQueryNonScalarReturn rtn = alias2Return[alias] as NativeSQLQueryNonScalarReturn;
-			if (rtn != null)
-			{
-				return rtn.PropertyResultsMap;
-			}
-			else
-			{
-				return null;
-			}
+			return rtn != null ? rtn.PropertyResultsMap : null;
 		}
 
 		private bool HasPropertyResultMap(string alias)
@@ -125,13 +118,13 @@ namespace NHibernate.Loader.Custom.Sql
 			// so that role returns can be more easily resolved to their owners
 			for (int i = 0; i < queryReturns.Length; i++)
 			{
-				if (queryReturns[i] is NativeSQLQueryNonScalarReturn)
+				var rtn = queryReturns[i] as NativeSQLQueryNonScalarReturn;
+				if (rtn != null)
 				{
-					NativeSQLQueryNonScalarReturn rtn = (NativeSQLQueryNonScalarReturn) queryReturns[i];
 					alias2Return[rtn.Alias] = rtn;
-					if (rtn is NativeSQLQueryJoinReturn)
+					var roleReturn = queryReturns[i] as NativeSQLQueryJoinReturn;
+					if (roleReturn != null)
 					{
-						NativeSQLQueryJoinReturn roleReturn = (NativeSQLQueryJoinReturn) queryReturns[i];
 						alias2OwnerAlias[roleReturn.Alias] = roleReturn.OwnerAlias;
 					}
 				}
