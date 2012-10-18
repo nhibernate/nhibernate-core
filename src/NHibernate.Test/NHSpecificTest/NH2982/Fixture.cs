@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH2982
@@ -64,6 +65,30 @@ namespace NHibernate.Test.NHSpecificTest.NH2982
 		{
 			var restriction = Restrictions.Eq("A", 5);
 			Assert.AreEqual("A = 5", restriction.ToString());
+		}
+
+		[Test]
+		public void SimpleExpressionWithNullablePrimitive()
+		{
+			int? value = null;
+			value = 5;
+			var restriction = Restrictions.Eq("A", value);
+			Assert.AreEqual("A = 5", restriction.ToString());
+		}
+
+		[Test]
+		public void SimpleExpressionWithString()
+		{
+			var restriction = Restrictions.Like("A", "Test");
+			Assert.AreEqual("A like Test", restriction.ToString());
+		}
+
+		[Test]
+		public void SimpleExpressionWithNullableDate()
+		{
+			DateTime? date = new DateTime(2012, 1, 1);
+			var restriction = Restrictions.Eq("A", date);
+			Assert.AreEqual("A = " + date, restriction.ToString());
 		}
 	}
 }
