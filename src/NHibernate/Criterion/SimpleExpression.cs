@@ -173,12 +173,24 @@ namespace NHibernate.Criterion
 			get { return op; }
 		}
 
-		string ValueToStrings()
+		private static readonly System.Type[] CallToStringTypes = new[]
 		{
-			if(value!=null && value.GetType().IsPrimitive)
+			typeof(DateTime),
+			typeof(string),
+		};
+
+		private string ValueToStrings()
+		{
+			if (value == null)
+			{
+				return "null";
+			}
+			var type = value.GetType();
+			if (type.IsPrimitive || CallToStringTypes.Any(t => t.IsAssignableFrom(type)))
 			{
 				return value.ToString();
 			}
+
 			return ObjectHelpers.IdentityToString(value);
 		}
 	}
