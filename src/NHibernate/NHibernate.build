@@ -64,6 +64,7 @@
 			<exec program="../../Tools/ILMerge/ILMerge.exe">
 				<arg value="/t:library" />
 				<arg value="/internalize" />
+				<arg value="/targetplatform:&quot;v4,${referenceassemblies.dir}&quot;" />
 				<arg value="/keyfile:../NHibernate.snk" />
 				<arg value="/out:${bin.dir}/merged/NHibernate.dll" />
 				<arg value="${bin.dir}/NHibernate.dll" />
@@ -78,6 +79,7 @@
 
       <exec program="../../Tools/ILMerge/ILMerge.exe">
         <arg value="/t:library" />
+        <arg value="/targetplatform:&quot;v4,${referenceassemblies.dir}&quot;" />
         <arg value="/keyfile:../NHibernate.snk" />
         <arg value="/out:${bin.dir}/merged/NHibernate.dll" />
         <arg value="${bin.dir}/NHibernate.dll" />
