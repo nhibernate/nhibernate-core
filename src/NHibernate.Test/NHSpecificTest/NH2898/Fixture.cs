@@ -1,6 +1,8 @@
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NHibernate.Intercept;
+using NHibernate.Properties;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2898
@@ -39,6 +41,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				session.Delete("from ItemWithLazyProperty");
 				session.Flush();
 			}
+		}
+
+		[Test]
+		public void UnfetchedLazyPropertyEquality()
+		{
+			var first = new UnfetchedLazyProperty();
+			var second = new UnfetchedLazyProperty();
+
+			Assert.True(Equals(first, second));
+		}
+
+		[Test]
+		public void UnfetchedLazyPropertyIsNotEqualToUnknownBackrefProperty()
+		{
+			var first = new UnfetchedLazyProperty();
+			var second = new UnknownBackrefProperty();
+
+			Assert.False(Equals(first, second));
 		}
 
 		[Test]
