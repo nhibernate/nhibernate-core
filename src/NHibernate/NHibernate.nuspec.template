@@ -19,6 +19,8 @@
 	<projectUrl>
 		http://www.nhforge.org
 	</projectUrl>
+	<iconUrl>https://raw.github.com/nhibernate/nhibernate-core/3.3.x/logo/NHibernate-NuGet.png</iconUrl>
+	<licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/3.3.x/lgpl.txt</licenseUrl>
   </metadata>
   <files>
     <file src="NHibernate.dll" target="lib\Net35" />
