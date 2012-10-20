@@ -13,7 +13,8 @@
     <language>en-US</language>
     <tags>ORM, DataBase, DAL, ObjectRelationalMapping</tags>
     <dependencies>
-      <dependency id="Iesi.Collections" version="3.2.0.4000" />
+	  <!-- Iesi.Collections 4.0 is expected to be a big breaking change, so forbid it. -->
+      <dependency id="Iesi.Collections" version="[3.2,4)" />
     </dependencies>
 	<projectUrl>
 		http://www.nhforge.org
