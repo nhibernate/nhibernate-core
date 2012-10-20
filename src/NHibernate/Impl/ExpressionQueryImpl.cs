@@ -69,8 +69,8 @@ namespace NHibernate.Impl
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
 		/// </summary>
-		protected IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParamsCopy)
-		{
+		protected internal IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParamsCopy)
+		{	// TODO: On master, we can make this method protected non-internal again.
 			if (namedParameterLists.Count == 0)
 			{
 				// Short circuit straight out

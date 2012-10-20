@@ -138,6 +138,12 @@ namespace NHibernate.Impl
 		}
 
 		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
+		public virtual IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
+		{
+			// TODO: On master, this method should be abstract and declared in ISessionImplementor
+			throw new NotImplementedException();
+		}
+
 		public abstract IInterceptor Interceptor { get; }
 		public abstract EventListeners Listeners { get; }
 		public abstract int DontFlushFromFind { get; }

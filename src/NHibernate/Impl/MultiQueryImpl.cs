@@ -650,6 +650,25 @@ namespace NHibernate.Impl
 
 		private IEnumerable<ITranslator> GetTranslators(AbstractQueryImpl query, QueryParameters queryParameters)
 		{
+			// This first part is an ugly hack to work around the fix for NH-3050 breaking
+			// MultiQuery over LINQ. On master a nicer solution is present as the fix for NH-2897.
+			var expressionQuery = query as ExpressionQueryImpl;
+			if (expressionQuery != null)
+			{
+				var abstractSessionImpl = session as AbstractSessionImpl;
+				if (abstractSessionImpl == null)
+					throw new HibernateException(
+						"To use LINQ queries with MultiQuery, the session must inherit from AbstractSessionImpl.");
+
+				// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+				var queryExpression = expressionQuery.ExpandParameters(queryParameters.NamedParameters);
+				
+				foreach (var queryTranslator in abstractSessionImpl.GetQueries(queryExpression, false))
+					yield return new HqlTranslatorWrapper(queryTranslator);
+				yield break;
+			}
+
+
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			var queryString = query.ExpandParameterLists(queryParameters.NamedParameters);
 
