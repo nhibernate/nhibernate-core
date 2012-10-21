@@ -23,6 +23,7 @@ namespace NHibernate.Linq
 		{
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
 			transformerRegistry.Register(new RemoveCharToIntConversion());
+			transformerRegistry.Register(new RemoveRedundantCast());
 
 			var processor = ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry);
 			// Add custom processors here:
