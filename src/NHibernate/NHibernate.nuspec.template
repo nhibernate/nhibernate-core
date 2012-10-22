@@ -13,8 +13,8 @@
     <language>en-US</language>
     <tags>ORM, DataBase, DAL, ObjectRelationalMapping</tags>
     <dependencies>
-	  <!-- Iesi.Collections 4.0 is expected to be a big breaking change, so forbid it. -->
-      <dependency id="Iesi.Collections" version="[3.2,4)" />
+	  <!-- Bet that if there is ever an Iesi.Collections 5.0, it would be incompatible. -->
+      <dependency id="Iesi.Collections" version="[4,5)" />
     </dependencies>
 	<projectUrl>
 		http://www.nhforge.org
@@ -23,9 +23,9 @@
 	<licenseUrl>https://raw.github.com/nhibernate/nhibernate-core/master/lgpl.txt</licenseUrl>
   </metadata>
   <files>
-    <file src="NHibernate.dll" target="lib\Net35" />
-	<file src="NHibernate.pdb" target="lib\Net35" />
-    <file src="NHibernate.xml" target="lib\Net35" />
+    <file src="NHibernate.dll" target="lib\net40" />
+	<file src="NHibernate.pdb" target="lib\net40" />
+    <file src="NHibernate.xml" target="lib\net40" />
     <file src="*.xsd" />
     <file src="NHibernate.releasenotes.txt" />
     <file src="NHibernate.readme.html" />
