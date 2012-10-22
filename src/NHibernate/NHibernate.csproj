@@ -961,7 +961,6 @@
     <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs" />
     <Compile Include="Linq\Functions\StandardLinqExtensionMethodGenerator.cs" />
     <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
-    <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
     <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
     <Compile Include="Linq\Expressions\NhAverageExpression.cs" />

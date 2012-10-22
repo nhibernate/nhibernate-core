@@ -267,6 +267,11 @@
             </para>
             </remarks>
         </member>
+        <member name="T:Remotion.Linq.Clauses.Expressions.IPartialEvaluationExceptionExpressionVisitor">
+            <summary>
+            This interface should be implemented by visitors that handle the <see cref="T:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression"/> instances.
+            </summary>
+        </member>
         <member name="T:Remotion.Linq.Clauses.Expressions.IVBSpecificExpressionVisitor">
             <summary>
             This interface should be implemented by visitors that handle VB-specific expressions.
@@ -274,10 +279,13 @@
         </member>
         <member name="T:Remotion.Linq.Clauses.Expressions.VBStringComparisonExpression">
             <summary>
-            Represents a VB-specific comparison expression. To explicitly support this expression type, implement <see cref="T:Remotion.Linq.Clauses.Expressions.IVBSpecificExpressionVisitor"/>.
-            To treat this expression as if it were an ordinary <see cref="T:System.Linq.Expressions.BinaryExpression"/>, call its <see cref="M:Remotion.Linq.Clauses.Expressions.VBStringComparisonExpression.Reduce"/> method and visit the result.
+            Represents a VB-specific comparison expression.
             </summary>
             <remarks>
+            <para>
+            To explicitly support this expression type, implement <see cref="T:Remotion.Linq.Clauses.Expressions.IVBSpecificExpressionVisitor"/>.
+            To treat this expression as if it were an ordinary <see cref="T:System.Linq.Expressions.BinaryExpression"/>, call its <see cref="M:Remotion.Linq.Clauses.Expressions.VBStringComparisonExpression.Reduce"/> method and visit the result.
+            </para>
             <para>
             Subclasses of <see cref="T:Remotion.Linq.Parsing.ThrowingExpressionTreeVisitor"/> that do not implement <see cref="T:Remotion.Linq.Clauses.Expressions.IVBSpecificExpressionVisitor"/> will, by default, 
             automatically reduce this expression type to <see cref="T:System.Linq.Expressions.BinaryExpression"/> in the 
@@ -2007,6 +2015,32 @@
             <see cref="T:Remotion.Linq.QueryModel"/> is changed by the replacement operations, it is not copied. The replacement node is not recursively searched for 
             occurrences of <see cref="T:System.Linq.Expressions.Expression"/> nodes to be replaced.
             </summary>
+        </member>
+        <member name="T:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression">
+            <summary>
+            Wraps an exception whose partial evaluation caused an exception.
+            </summary>
+            <remarks>
+            <para>
+            When <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.PartialEvaluatingExpressionTreeVisitor"/> encounters an exception while evaluating an independent expression subtree, it
+            will wrap the subtree within a <see cref="T:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression"/>. The wrapper contains both the <see cref="P:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.Exception"/> 
+            instance and the <see cref="P:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.EvaluatedExpression"/> that caused the exception.
+            </para>
+            <para>
+            To explicitly support this expression type, implement  <see cref="T:Remotion.Linq.Clauses.Expressions.IPartialEvaluationExceptionExpressionVisitor"/>.
+            To ignore this wrapper and only handle the inner <see cref="P:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.EvaluatedExpression"/>, call the <see cref="M:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.Reduce"/> method and visit the result.
+            </para>
+            <para>
+            Subclasses of <see cref="T:Remotion.Linq.Parsing.ThrowingExpressionTreeVisitor"/> that do not implement <see cref="T:Remotion.Linq.Clauses.Expressions.IPartialEvaluationExceptionExpressionVisitor"/> will, 
+            by default, automatically reduce this expression type to the <see cref="P:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.EvaluatedExpression"/> in the 
+            <see cref="M:Remotion.Linq.Parsing.ThrowingExpressionTreeVisitor.VisitExtensionExpression(Remotion.Linq.Clauses.Expressions.ExtensionExpression)"/> method.
+            </para>
+            <para>
+            Subclasses of <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitor"/> that do not implement <see cref="T:Remotion.Linq.Clauses.Expressions.IPartialEvaluationExceptionExpressionVisitor"/> will, 
+            by default, ignore this expression and visit its child expressions via the <see cref="M:Remotion.Linq.Parsing.ExpressionTreeVisitor.VisitExtensionExpression(Remotion.Linq.Clauses.Expressions.ExtensionExpression)"/> and 
+            <see cref="M:Remotion.Linq.Clauses.Expressions.PartialEvaluationExceptionExpression.VisitChildren(Remotion.Linq.Parsing.ExpressionTreeVisitor)"/> methods.
+            </para>
+            </remarks>
         </member>
         <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.ExpressionTransformation">
             <summary>
@@ -4040,62 +4074,68 @@
             <see cref="T:Remotion.Linq.Utilities.RegistryBase`3"/> provides code which is common in all registry classes.
             </summary>
         </member>
-        <member name="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionAttribute">
+        <member name="T:JetBrains.Annotations.AssertionConditionAttribute">
             <summary>
             Indicates the condition parameter of the assertion method. 
-            The method itself should be marked by <see cref="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionMethodAttribute"/> attribute.
+            The method itself should be marked by <see cref="T:JetBrains.Annotations.AssertionMethodAttribute"/> attribute.
             The mandatory argument of the attribute is the assertion type.
             </summary>
-            <seealso cref="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType"/>
+            <seealso cref="T:JetBrains.Annotations.AssertionConditionType"/>
         </member>
-        <member name="M:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionAttribute.#ctor(Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType)">
+        <member name="M:JetBrains.Annotations.AssertionConditionAttribute.#ctor(JetBrains.Annotations.AssertionConditionType)">
             <summary>
             Initializes new instance of AssertionConditionAttribute
             </summary>
             <param name="conditionType">Specifies condition type</param>
         </member>
-        <member name="P:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionAttribute.ConditionType">
+        <member name="P:JetBrains.Annotations.AssertionConditionAttribute.ConditionType">
             <summary>
             Gets condition type
             </summary>
         </member>
-        <member name="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType">
+        <member name="T:JetBrains.Annotations.AssertionConditionType">
             <summary>
             Specifies assertion type. If the assertion method argument satisifes the condition, then the execution continues. 
             Otherwise, execution is assumed to be halted
             </summary>
         </member>
-        <member name="F:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType.IS_TRUE">
+        <member name="F:JetBrains.Annotations.AssertionConditionType.IS_TRUE">
             <summary>
             Indicates that the marked parameter should be evaluated to true
             </summary>
         </member>
-        <member name="F:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType.IS_FALSE">
+        <member name="F:JetBrains.Annotations.AssertionConditionType.IS_FALSE">
             <summary>
             Indicates that the marked parameter should be evaluated to false
             </summary>
         </member>
-        <member name="F:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType.IS_NULL">
+        <member name="F:JetBrains.Annotations.AssertionConditionType.IS_NULL">
             <summary>
             Indicates that the marked parameter should be evaluated to null value
             </summary>
         </member>
-        <member name="F:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionType.IS_NOT_NULL">
+        <member name="F:JetBrains.Annotations.AssertionConditionType.IS_NOT_NULL">
             <summary>
             Indicates that the marked parameter should be evaluated to not null value
             </summary>
         </member>
-        <member name="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionMethodAttribute">
+        <member name="T:JetBrains.Annotations.AssertionMethodAttribute">
             <summary>
             Indicates that the marked method is assertion method, i.e. it halts control flow if one of the conditions is satisfied. 
-            To set the condition, mark one of the parameters with <see cref="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionAttribute"/> attribute
+            To set the condition, mark one of the parameters with <see cref="T:JetBrains.Annotations.AssertionConditionAttribute"/> attribute
             </summary>
-            <seealso cref="T:Remotion.Linq.Utilities.ReSharperAnnotations.AssertionConditionAttribute"/>
+            <seealso cref="T:JetBrains.Annotations.AssertionConditionAttribute"/>
         </member>
-        <member name="T:Remotion.Linq.Utilities.ReSharperAnnotations.InvokerParameterNameAttribute">
+        <member name="T:JetBrains.Annotations.InvokerParameterNameAttribute">
             <summary>
             Indicates that the function argument should be string literal and match one  of the parameters of the caller function.
             For example, <see cref="T:System.ArgumentNullException"/> has such parameter.
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.NoEnumerationAttribute">
+            <summary>
+            Indicates that IEnumarable, passed as parameter, is not enumerated.
+            
             </summary>
         </member>
         <member name="T:Remotion.Linq.Utilities.SeparatedStringBuilder">
