@@ -1,13 +1,33 @@
 Build vNext
 =============================
 
-** Known BREAKING CHANGES from NH3.3.1.GA to vNext
+** Known BREAKING CHANGES from NH3.3.2.GA to vNext
 
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
 	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+
+Build 3.3.2.GA
+=============================
+
+** Bug
+    * [NH-2463] - Exception in LINQ projection with redundant type cast - block using WCF Data Services projection's
+    * [NH-2688] - SelectMany with cast throws QuerySyntaxException
+    * [NH-2898] - Retrieving object from 2nd cache with lazy property fails
+    * [NH-3050] - Contributed patch as solution to Unable to cast object of type 'NHibernate.Impl.ExpandedQueryExpression' to type 'NHibernate.Linq.NhLinqExpression' at NHibernate.Linq.NhQueryProvider.PrepareQuery
+    * [NH-3123] - Nuget package should contain the NHibernate logo
+    * [NH-3217] - OrderBy with a parameter then Skip and Take produces sql error
+    * [NH-3239] - Linq to NHibernate and Dynamic LINQ - query caching not working
+    * [NH-3271] - Threading problem in TypeFactory
+
+** Improvement
+    * [NH-3296] - Tweak build system to allow keeping a constant assembly version between compatible releases
+    * [NH-3297] - NHibernate 3.x NuGet package should forbid Iesi.Collections 4.0 or higher
+
+** Patch
+    * [NH-3293] - SimpleExpression.ToString() returns hashes for strings and dates
 
 Build 3.3.1.GA
 =============================

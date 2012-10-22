@@ -1,0 +1,12 @@
+The NHibernate logo seems to have been choosen in a logo contest that took
+place sometime before 2008. Though there seems to have been some amount of
+confusion, this thread from 2008-04-03 seems to agree on this:
+https://groups.google.com/forum/?fromgroups=#!topic/nhibernate-development/iG72nfvI_g4
+
+According to this, the choosen logo was contributed by Andrew Mayorov. The file
+he posted in that thread is the one archived in the "old" folder.
+
+In the same thread, we also learn that the animal is a "dormouse", which is
+known for its habit of long hibernation periods.
+
+/ As understood by Oskar Berggren, 2012-10-20

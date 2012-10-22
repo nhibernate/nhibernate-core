@@ -208,8 +208,8 @@
 		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.company" value="${project.company}" />
 		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
-		<property overwrite="false" name="assembly.version" value="${project.version.numeric}" />
-		<property overwrite="false" name="assembly.version.informational" value="${project.version.numeric}" />
+		<property overwrite="false" name="assembly.version" value="${project.default-assembly-version}" />
+		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
 		<property overwrite="false" name="assembly.sign" value="${sign}" />
