@@ -21,13 +21,36 @@ namespace NHibernate.Loader.Custom
 		{
 			this.userProvidedAliases = userProvidedAliases;
 
-			keyAliases = GetUserProvidedAliases("key", persister.KeyColumnNames);
+			this.keyAliases = GetUserProvidedAliases("key", persister.KeyColumnNames);
+			this.indexAliases = GetUserProvidedAliases("index", persister.IndexColumnNames);
+			this.elementAliases = GetUserProvidedAliases("element", persister.ElementColumnNames);
 
-			indexAliases = GetUserProvidedAliases("index", persister.IndexColumnNames);
+			// NH-1612: Add aliases for all composite element properties to support access
+			// to individual composite element properties in <return-property> elements.
+			this.elementAliases = persister.ElementType.IsComponentType
+				? GetUserProvidedCompositeElementAliases(persister.ElementColumnNames)
+				: GetUserProvidedAliases("element", persister.ElementColumnNames);
 
-			elementAliases = GetUserProvidedAliases("element", persister.ElementColumnNames);
+			this.identifierAlias = GetUserProvidedAlias("id", persister.IdentifierColumnName);
+		}
 
-			identifierAlias = GetUserProvidedAlias("id", persister.IdentifierColumnName);
+		private string[] GetUserProvidedCompositeElementAliases(string[] defaultAliases)
+		{
+			if (userProvidedAliases != null)
+			{
+				var aliases = new List<string>();
+				foreach (var userProvidedAlias in userProvidedAliases)
+				{
+					if (userProvidedAlias.Key.StartsWith("element."))
+					{
+						aliases.AddRange(userProvidedAlias.Value);
+					}
+				}
+
+				if (aliases.Count > 0) return aliases.ToArray();
+			}
+
+			return defaultAliases;
 		}
 
 		/// <summary>
@@ -96,27 +119,17 @@ namespace NHibernate.Loader.Custom
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
 			string[] result;
-			if (!userProvidedAliases.TryGetValue(propertyPath, out result))
-			{
-				return defaultAliases;
-			}
-			else
-			{
-				return result;
-			}
+			return userProvidedAliases == null || !userProvidedAliases.TryGetValue(propertyPath, out result) 
+				? defaultAliases 
+				: result;
 		}
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
 			string[] columns;
-			if (!userProvidedAliases.TryGetValue(propertyPath, out columns))
-			{
-				return defaultAlias;
-			}
-			else
-			{
-				return columns[0];
-			}
+			return userProvidedAliases == null || !userProvidedAliases.TryGetValue(propertyPath, out columns) 
+				? defaultAlias 
+				: columns[0];
 		}
 	}
 }

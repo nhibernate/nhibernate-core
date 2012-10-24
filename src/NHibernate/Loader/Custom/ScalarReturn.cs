@@ -3,7 +3,7 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Custom
 {
 	/// <summary> Represent a scalar (AKA simple value) return within a query result. </summary>
-	public class ScalarReturn : IReturn
+	internal class ScalarReturn : IReturn
 	{
 		private readonly IType type;
 		private readonly string columnAlias;
@@ -19,7 +19,7 @@ namespace NHibernate.Loader.Custom
 			get { return type; }
 		}
 
-		public string ColumnAlias
+		public string Alias
 		{
 			get { return columnAlias; }
 		}
