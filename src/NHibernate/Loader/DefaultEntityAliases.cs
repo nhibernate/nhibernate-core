@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -30,14 +31,8 @@ namespace NHibernate.Loader
 			this.userProvidedAliases = userProvidedAliases;
 
 			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName, null);
-			if (keyColumnsCandidates == null)
-			{
-				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
-			}
-			else
-			{
-				suffixedKeyColumns = keyColumnsCandidates;
-			}
+			suffixedKeyColumns = keyColumnsCandidates ??
+				GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
 			Intern(suffixedKeyColumns);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
