@@ -22,8 +22,6 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class NativeSQLQueryPlan
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NativeSQLQueryPlan));
-
 		private readonly string sourceQuery;
 		private readonly SQLCustomQuery customQuery;
 
@@ -119,7 +117,7 @@ namespace NHibernate.Engine.Query
 		private SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
 		{
 			var enabledFilters = session.EnabledFilters;
-			if (enabledFilters.Count == 0 || sqlString.ToString().IndexOf(ParserHelper.HqlVariablePrefix) < 0)
+			if (enabledFilters.Count == 0 || sqlString.IndexOf(ParserHelper.HqlVariablePrefix, 0, sqlString.Length, StringComparison.Ordinal) < 0)
 			{
 				return sqlString;
 			}

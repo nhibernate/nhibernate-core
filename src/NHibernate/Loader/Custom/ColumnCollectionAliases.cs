@@ -23,7 +23,6 @@ namespace NHibernate.Loader.Custom
 
 			this.keyAliases = GetUserProvidedAliases("key", persister.KeyColumnNames);
 			this.indexAliases = GetUserProvidedAliases("index", persister.IndexColumnNames);
-			this.elementAliases = GetUserProvidedAliases("element", persister.ElementColumnNames);
 
 			// NH-1612: Add aliases for all composite element properties to support access
 			// to individual composite element properties in <return-property> elements.
