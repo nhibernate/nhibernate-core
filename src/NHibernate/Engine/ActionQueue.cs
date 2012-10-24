@@ -488,7 +488,7 @@ namespace NHibernate.Engine
 					}
 					catch (Exception e)
 					{
-						throw new AssertionFailure("Exception releasing cache locks", e);
+						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
 					}
 				}
 				processes.Clear();
