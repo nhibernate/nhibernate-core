@@ -192,7 +192,7 @@ namespace NHibernate.Loader.Custom.Sql
 			alias2EntitySuffix[alias] = suffix;
 			if (propertyResultMap != null && propertyResultMap.Count > 0)
 			{
-				entityPropertyResultMaps[alias] = propertyResultMap;
+				entityPropertyResultMaps[alias] = GroupComponentAliases(propertyResultMap, persister);
 			}
 		}
 
@@ -203,11 +203,11 @@ namespace NHibernate.Loader.Custom.Sql
 			string suffix = GenerateCollectionSuffix();
 			log.Debug("mapping alias [" + alias + "] to collection-suffix [" + suffix + "]");
 			alias2CollectionSuffix[alias] = suffix;
+
 			if (propertyResultMap != null && propertyResultMap.Count > 0)
 			{
-				collectionPropertyResultMaps[alias] = propertyResultMap;
+				collectionPropertyResultMaps[alias] = FilterCollectionProperties(propertyResultMap);
 			}
-
 			if (collectionPersister.IsOneToMany)
 			{
 				var persister = (ISqlLoadable)collectionPersister.ElementPersister;
@@ -215,9 +215,26 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
+		private IDictionary<string, string[]> FilterCollectionProperties(IDictionary<string, string[]> propertyResults)
+		{
+			if (propertyResults.Count == 0) return propertyResults;
+
+			var result = new Dictionary<string, string[]>(propertyResults.Count);
+			foreach (KeyValuePair<string, string[]> element in propertyResults)
+			{
+				if (element.Key.IndexOf('.') < 0)
+				{
+					result.Add(element.Key, element.Value);
+				}
+			}
+			return result;
+		}
+
 		private IDictionary<string, string[]> FilterElementProperties(IDictionary<string, string[]> propertyResults)
 		{
 			const string PREFIX = "element.";
+
+			if (propertyResults.Count == 0) return propertyResults;
 
 			var result = new Dictionary<string, string[]>(propertyResults.Count);
 			foreach (KeyValuePair<string, string[]> element in propertyResults)
@@ -225,11 +242,66 @@ namespace NHibernate.Loader.Custom.Sql
 				string path = element.Key;
 				if (path.StartsWith(PREFIX))
 				{
-					result[path.Substring(PREFIX.Length)] = element.Value;
+					result.Add(path.Substring(PREFIX.Length), element.Value);
 				}
 			}
-
 			return result;
+		}
+
+		private IDictionary<string, string[]> GroupComponentAliases(IDictionary<string, string[]> propertyResults, ILoadable persister)
+		{
+			if (propertyResults.Count == 0) return propertyResults;
+
+			var result = new Dictionary<string, string[]>(propertyResults.Count);
+
+			foreach (var propertyResult in propertyResults)
+			{
+				var path = propertyResult.Key;
+				var dotIndex = path.IndexOf('.');
+				if (dotIndex >= 0)
+				{
+					var propertyPath = path.Substring(0, dotIndex);
+					if (!result.ContainsKey(propertyPath))
+					{
+						var aliases = GetUserProvidedAliases(propertyResults, propertyPath, persister.GetPropertyType(propertyPath));
+						if (aliases != null) result.Add(propertyPath, aliases);
+					}
+					continue;
+				}
+				result.Add(propertyResult.Key, propertyResult.Value);
+			}
+			return result;
+		}
+
+		private string[] GetUserProvidedAliases(IDictionary<string, string[]> propertyResults, string propertyPath, IType propertyType)
+		{
+			string[] result;
+			if (propertyResults.TryGetValue(propertyPath, out result)) return result;
+
+			var aliases = new List<string>();
+			AppendUserProvidedAliases(propertyResults, propertyPath, propertyType, aliases);
+			return aliases.Count > 0 
+				? aliases.ToArray() 
+				: null;
+		}
+
+		private void AppendUserProvidedAliases(IDictionary<string, string[]> propertyResults, string propertyPath, IType propertyType, List<string> result)
+		{
+			string[] aliases;
+			if (propertyResults.TryGetValue(propertyPath, out aliases))
+			{
+				result.AddRange(aliases);
+				return;
+			}
+
+			var componentType = propertyType as IAbstractComponentType;
+			// TODO: throw exception when no mapping is found for property name
+			if (componentType == null) return;
+
+			for (int i = 0; i < componentType.PropertyNames.Length; i++)
+			{
+				AppendUserProvidedAliases(propertyResults, propertyPath + '.' + componentType.PropertyNames[i], componentType.Subtypes[i], result);
+			}
 		}
 
 		private void ProcessCollectionReturn(NativeSQLQueryCollectionReturn collectionReturn)

@@ -8,34 +8,20 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Linq;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.SqlTest.Query
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class GeneralTestAsync : TestCase
 	{
-		protected const string OrganizationFetchJoinEmploymentSQL =
-			"SELECT org.ORGID as {org.id}, " +
-			"        org.NAME as {org.name}, " +
-			"        emp.EMPLOYER as {emp.key}, " +
-			"        emp.EMPID as {emp.element}, " +
-			"        {emp.element.*}  " +
-			"FROM ORGANIZATION org " +
-			"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
-
-		protected const string OrganizationJoinEmploymentSQL =
-			"SELECT org.ORGID as {org.id}, " +
-			"        org.NAME as {org.name}, " +
-			"        {emp.*}  " +
-			"FROM ORGANIZATION org " +
-			"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
-
 		protected const string EmploymentSQL = "SELECT * FROM EMPLOYMENT";
 
 		protected string EmploymentSQLMixedScalarEntity =
@@ -306,24 +292,6 @@ namespace NHibernate.Test.SqlTest.Query
 			await (t.CommitAsync());
 			s.Close();
 
-			if (TestDialect.SupportsDuplicatedColumnAliases)
-			{
-				s = OpenSession();
-				t = s.BeginTransaction();
-				sqlQuery = s.GetNamedQuery("organizationreturnproperty");
-				sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-				list = await (sqlQuery.ListAsync());
-				Assert.AreEqual(2, list.Count);
-				m = (IDictionary) list[0];
-				Assert.IsTrue(m.Contains("org"));
-				AssertClassAssignability(m["org"].GetType(), typeof(Organization));
-				Assert.IsTrue(m.Contains("emp"));
-				AssertClassAssignability(m["emp"].GetType(), typeof(Employment));
-				Assert.AreEqual(2, m.Count);
-				await (t.CommitAsync());
-				s.Close();
-			}
-
 			s = OpenSession();
 			t = s.BeginTransaction();
 			namedQuery = s.GetNamedQuery("EmploymentAndPerson");
@@ -469,9 +437,9 @@ namespace NHibernate.Test.SqlTest.Query
 
 			// TODO H3: H3.2 can guess the return column type so they can use just addScalar("employerid"),
 			// but NHibernate currently can't do it.
-			list =
-				await (s.CreateSQLQuery(EmploymentSQLMixedScalarEntity).AddScalar("employerid", NHibernateUtil.Int64).AddEntity(
-					typeof(Employment)).ListAsync());
+			list = await (s.CreateSQLQuery(EmploymentSQLMixedScalarEntity)
+				.AddScalar("employerid", NHibernateUtil.Int64)
+				.AddEntity(typeof(Employment)).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			o = (object[]) list[0];
 			Assert.AreEqual(2, o.Length);
@@ -483,37 +451,6 @@ namespace NHibernate.Test.SqlTest.Query
 			queryWithCollection.SetInt64("id", jboss.Id);
 			list = await (queryWithCollection.ListAsync());
 			Assert.AreEqual(list.Count, 1);
-
-			s.Clear();
-
-			list = await (s.CreateSQLQuery(OrganizationJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .ListAsync());
-			Assert.AreEqual(2, list.Count);
-
-			s.Clear();
-
-			list = await (s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .ListAsync());
-			Assert.AreEqual(2, list.Count);
-
-			s.Clear();
-
-			if (TestDialect.SupportsDuplicatedColumnAliases)
-			{
-				// TODO : why twice?
-				await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
-				list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
-				Assert.AreEqual(2, list.Count);
-
-				s.Clear();
-
-				list = await (s.GetNamedQuery("organizationautodetect").ListAsync());
-				Assert.AreEqual(2, list.Count);
-			}
 
 			await (t.CommitAsync());
 			s.Close();
@@ -556,6 +493,106 @@ namespace NHibernate.Test.SqlTest.Query
 			await (s.DeleteAsync(enterprise));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		public Task CanQueryWithGeneratedAliasesOnly_UsingWildcardAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			try
+			{
+				const string SQL =
+				"SELECT org.ORGID as {org.id}, " +
+				"        org.NAME as {org.name}, " +
+				"        {emp.*}  " +
+				"FROM ORGANIZATION org " +
+				"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+
+				return VerifyOrganisationQueryAsync(session => session.CreateSQLQuery(SQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments"), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		[Test]
+		public async Task CanQueryWithGeneratedAliasesOnly_UsingCollectionElementWildcardAsync()
+		{
+			const string SQL =
+				"SELECT org.ORGID as {org.id}, " +
+				"        org.NAME as {org.name}, " +
+				"        emp.EMPLOYER as {emp.key}, " +
+				"        emp.EMPID as {emp.element}, " +
+				"        {emp.element.*}  " +
+				"FROM ORGANIZATION org " +
+				"    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+
+			await (VerifyOrganisationQueryAsync(session => session.CreateSQLQuery(SQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments")));
+		}
+
+		[Test]
+		public async Task CanQueryWithColumnNamesOnlyAsync()
+		{
+			await (VerifyOrganisationQueryAsync(session => session.GetNamedQuery("organization-using-manual-aliases")));
+		}
+
+		[Test]
+		public async Task CanQueryWithManualAliasesOnlyAsync()
+		{
+			await (VerifyOrganisationQueryAsync(session => session.GetNamedQuery("organization-using-column-names")));
+		}
+
+		[Test]
+		public async Task CanQueryWithMixOfColumnNamesAndManualAliasesAsync()
+		{
+			await (VerifyOrganisationQueryAsync(session => session.GetNamedQuery("organization-using-column-names-and-manual-aliases")));
+		}
+
+		private async Task VerifyOrganisationQueryAsync(Func<ISession, IQuery> queryFactory, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var ifa = new Organization("IFA");
+				var jboss = new Organization("JBoss");
+				var gavin = new Person("Gavin");
+				var emp = new Employment(gavin, jboss, "AU");
+				await (s.SaveAsync(jboss, cancellationToken));
+				await (s.SaveAsync(ifa, cancellationToken));
+				await (s.SaveAsync(gavin, cancellationToken));
+				await (s.SaveAsync(emp, cancellationToken));
+
+				var list = await (queryFactory(s).ListAsync(cancellationToken));
+				Assert.AreEqual(2, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task CanQueryWithManualComponentPropertyAliasesAsync()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				SpaceShip enterprise = new SpaceShip();
+				enterprise.Model = "USS";
+				enterprise.Name = "Entreprise";
+				enterprise.Speed = 50d;
+				Dimension d = new Dimension(45, 10);
+				enterprise.Dimensions = d;
+				await (s.SaveAsync(enterprise));
+
+				await (s.FlushAsync());
+				s.Clear();
+
+				object[] result = (object[])await (s.GetNamedQuery("spaceship").UniqueResultAsync());
+				enterprise = (SpaceShip)result[0];
+				Assert.AreEqual(50d, enterprise.Speed, "Speed");
+				Assert.AreEqual(45, enterprise.Dimensions.Length, "Dimensions.Length");
+				Assert.AreEqual(10, enterprise.Dimensions.Width, "Dimensions.Width");
+			}
 		}
 
 		[Test]
