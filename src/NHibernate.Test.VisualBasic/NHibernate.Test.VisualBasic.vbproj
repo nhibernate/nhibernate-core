@@ -73,6 +73,8 @@
   <ItemGroup>
     <Compile Include="Issues\NH2966\Client.vb" />
     <Compile Include="Issues\NH2966\Fixture.vb" />
+    <Compile Include="Issues\NH3302\Entity.vb" />
+    <Compile Include="Issues\NH3302\Fixture.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
     <Compile Include="Issues\IssueTestCase.vb" />
@@ -139,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Issues\NH2966\Issues.NH2966.Mappings.hbm.xml" />
+    <EmbeddedResource Include="Issues\NH3302\Issues.NH3302.Mappings.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,9 +4,9 @@ Imports NHibernate.Linq
 
 Namespace Issues
 
-    Namespace NH2545
-
-        <TestFixture()> _
+    Namespace NH3302
+        'http://msdn.microsoft.com/en-us/library/swf8kaxw.aspx
+        <TestFixture(), Ignore()> _
         Public Class Fixture
             Inherits IssueTestCase
 
@@ -40,12 +40,42 @@ Namespace Issues
             End Sub
 
             <Test()> _
-            Public Sub LinqStringEquality()
+            Public Sub LinqStringLike()
 
                 Using session As ISession = OpenSession()
 
                     Dim result = (From e In session.Query(Of Entity)() _
-                                 Where e.Name = "Bob" _
+                                 Where e.Name Like "Bob" _
+                                 Select e).ToList()
+
+                    Assert.AreEqual(1, result.Count)
+
+                End Using
+
+            End Sub
+
+            <Test()> _
+            Public Sub LinqStringLikeAsterix()
+
+                Using session As ISession = OpenSession()
+
+                    Dim result = (From e In session.Query(Of Entity)() _
+                                 Where e.Name Like "Bo*" _
+                                 Select e).ToList()
+
+                    Assert.AreEqual(1, result.Count)
+
+                End Using
+
+            End Sub
+
+            <Test()> _
+            Public Sub LinqStringLikeQuestion()
+
+                Using session As ISession = OpenSession()
+
+                    Dim result = (From e In session.Query(Of Entity)() _
+                                 Where e.Name Like "B?b" _
                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
