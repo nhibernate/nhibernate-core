@@ -25,13 +25,13 @@ namespace NHibernate.Loader.Custom
 
 		private readonly SqlString sql;
 		private readonly ISet<string> querySpaces = new HashSet<string>();
-		private List<IParameterSpecification> parametersSpecifications;
+		private readonly List<IParameterSpecification> parametersSpecifications;
 
-		private readonly IQueryable[] entityPersisters;
+		private readonly ILoadable[] entityPersisters;
 		private readonly int[] entityOwners;
 		private readonly IEntityAliases[] entityAliases;
 
-		private readonly IQueryableCollection[] collectionPersisters;
+		private readonly ICollectionPersister[] collectionPersisters;
 		private readonly int[] collectionOwners;
 		private readonly ICollectionAliases[] collectionAliases;
 
@@ -48,19 +48,18 @@ namespace NHibernate.Loader.Custom
 			querySpaces.UnionWith(customQuery.QuerySpaces);
 			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
-			List<IQueryable> entitypersisters = new List<IQueryable>();
+			List<IEntityPersister> entitypersisters = new List<IEntityPersister>();
 			List<int> entityowners = new List<int>();
 			List<IEntityAliases> entityaliases = new List<IEntityAliases>();
 
-			List<IQueryableCollection> collectionpersisters = new List<IQueryableCollection>();
+			List<ICollectionPersister> collectionpersisters = new List<ICollectionPersister>();
 			List<int> collectionowners = new List<int>();
 			List<ICollectionAliases> collectionaliases = new List<ICollectionAliases>();
 
 			List<LockMode> lockmodes = new List<LockMode>();
 			List<IResultColumnProcessor> resultColumnProcessors = new List<IResultColumnProcessor>();
-			List<IReturn> nonScalarReturnList = new List<IReturn>();
 			List<IType> resulttypes = new List<IType>();
-			List<string> specifiedAliases = new List<string>();
+			List<string> transformeraliases = new List<string>();
 
 			List<bool> includeInResultRowList = new List<bool>();
 
@@ -69,106 +68,56 @@ namespace NHibernate.Loader.Custom
 
 			foreach (IReturn rtn in customQuery.CustomQueryReturns)
 			{
+				transformeraliases.Add(rtn.Alias);
+
 				if (rtn is ScalarReturn)
 				{
-					ScalarReturn scalarRtn = (ScalarReturn) rtn;
-					resulttypes.Add(scalarRtn.Type);
-					specifiedAliases.Add(scalarRtn.ColumnAlias);
-					resultColumnProcessors.Add(new ScalarResultColumnProcessor(scalarRtn.ColumnAlias, scalarRtn.Type));
+					resulttypes.Add(rtn.Type);
+					resultColumnProcessors.Add(new ScalarResultColumnProcessor(rtn.Alias, rtn.Type));
 					includeInResultRowList.Add(true);
 					hasScalars = true;
+					continue;
 				}
-				else if (rtn is RootReturn)
+
+				var nonScalarRtn = rtn as NonScalarReturn;
+				if (nonScalarRtn != null)
 				{
-					RootReturn rootRtn = (RootReturn) rtn;
-					IQueryable persister = (IQueryable) factory.GetEntityPersister(rootRtn.EntityName);
-					entitypersisters.Add(persister);
-					lockmodes.Add(rootRtn.LockMode);
-					resultColumnProcessors.Add(new NonScalarResultColumnProcessor(returnableCounter++));
-					nonScalarReturnList.Add(rtn);
-					entityowners.Add(-1);
-					resulttypes.Add(persister.Type);
-					specifiedAliases.Add(rootRtn.Alias);
-					entityaliases.Add(rootRtn.EntityAliases);
-					querySpaces.UnionWith(persister.QuerySpaces);
-					includeInResultRowList.Add(true);
-				}
-				else if (rtn is CollectionReturn)
-				{
-					CollectionReturn collRtn = (CollectionReturn) rtn;
-					string role = collRtn.OwnerEntityName + "." + collRtn.OwnerProperty;
-					IQueryableCollection persister = (IQueryableCollection) factory.GetCollectionPersister(role);
-					collectionpersisters.Add(persister);
-					lockmodes.Add(collRtn.LockMode);
-					resultColumnProcessors.Add(new NonScalarResultColumnProcessor(returnableCounter++));
-					nonScalarReturnList.Add(rtn);
-					collectionowners.Add(-1);
-					resulttypes.Add(persister.Type);
-					specifiedAliases.Add(collRtn.Alias);
-					collectionaliases.Add(collRtn.CollectionAliases);
-					// determine if the collection elements are entities...
-					IType elementType = persister.ElementType;
-					if (elementType.IsEntityType)
+					lockmodes.Add(nonScalarRtn.LockMode);
+
+					var ownerIndex = nonScalarRtn.Owner != null
+						? entitypersisters.IndexOf(nonScalarRtn.Owner.EntityPersister)
+						: -1;
+					if (nonScalarRtn.EntityPersister != null)
 					{
-						IQueryable elementPersister = (IQueryable) ((EntityType) elementType).GetAssociatedJoinable(factory);
-						entitypersisters.Add(elementPersister);
-						entityowners.Add(-1);
-						entityaliases.Add(collRtn.ElementEntityAliases);
-						querySpaces.UnionWith(elementPersister.QuerySpaces);
-					}
-					includeInResultRowList.Add(true);
-				}
-				else if (rtn is EntityFetchReturn)
-				{
-					EntityFetchReturn fetchRtn = (EntityFetchReturn) rtn;
-					NonScalarReturn ownerDescriptor = fetchRtn.Owner;
-					int ownerIndex = nonScalarReturnList.IndexOf(ownerDescriptor);
-					entityowners.Add(ownerIndex);
-					lockmodes.Add(fetchRtn.LockMode);
-					IQueryable ownerPersister = DetermineAppropriateOwnerPersister(ownerDescriptor);
-					EntityType fetchedType = (EntityType) ownerPersister.GetPropertyType(fetchRtn.OwnerProperty);
-					string entityName = fetchedType.GetAssociatedEntityName(Factory);
-					IQueryable persister = (IQueryable) factory.GetEntityPersister(entityName);
-					entitypersisters.Add(persister);
-					nonScalarReturnList.Add(rtn);
-					specifiedAliases.Add(fetchRtn.Alias);
-					entityaliases.Add(fetchRtn.EntityAliases);
-					querySpaces.UnionWith(persister.QuerySpaces);
-					includeInResultRowList.Add(false);
-				}
-				else if (rtn is CollectionFetchReturn)
-				{
-					CollectionFetchReturn fetchRtn = (CollectionFetchReturn) rtn;
-					NonScalarReturn ownerDescriptor = fetchRtn.Owner;
-					int ownerIndex = nonScalarReturnList.IndexOf(ownerDescriptor);
-					collectionowners.Add(ownerIndex);
-					lockmodes.Add(fetchRtn.LockMode);
-					IQueryable ownerPersister = DetermineAppropriateOwnerPersister(ownerDescriptor);
-					string role = ownerPersister.EntityName + '.' + fetchRtn.OwnerProperty;
-					IQueryableCollection persister = (IQueryableCollection) factory.GetCollectionPersister(role);
-					collectionpersisters.Add(persister);
-					nonScalarReturnList.Add(rtn);
-					specifiedAliases.Add(fetchRtn.Alias);
-					collectionaliases.Add(fetchRtn.CollectionAliases);
-					// determine if the collection elements are entities...
-					IType elementType = persister.ElementType;
-					if (elementType.IsEntityType)
-					{
-						IQueryable elementPersister = (IQueryable) ((EntityType) elementType).GetAssociatedJoinable(factory);
-						entitypersisters.Add(elementPersister);
+						entitypersisters.Add(nonScalarRtn.EntityPersister);
+						entityaliases.Add(nonScalarRtn.EntityAliases);
 						entityowners.Add(ownerIndex);
-						entityaliases.Add(fetchRtn.ElementEntityAliases);
-						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						querySpaces.UnionWith(nonScalarRtn.EntityPersister.QuerySpaces);
 					}
-					includeInResultRowList.Add(false);
+					if (nonScalarRtn.CollectionPersister != null)
+					{
+						collectionpersisters.Add(nonScalarRtn.CollectionPersister);
+						collectionaliases.Add(nonScalarRtn.CollectionAliases);
+						collectionowners.Add(ownerIndex);
+					}
+					if (nonScalarRtn.Owner == null)
+					{
+						resulttypes.Add(nonScalarRtn.Type);
+						resultColumnProcessors.Add(new NonScalarResultColumnProcessor(returnableCounter++));
+						includeInResultRowList.Add(true);
+					}
+					else
+					{
+						includeInResultRowList.Add(false);
+					}
+
+					continue;
 				}
-				else
-				{
-					throw new HibernateException("unexpected custom query return type : " + rtn.GetType().FullName);
-				}
+					
+				throw new HibernateException("unexpected custom query return type : " + rtn.GetType().FullName);
 			}
 
-			entityPersisters = entitypersisters.ToArray();
+			entityPersisters = entitypersisters.Cast<ILoadable>().ToArray();
 			entityOwners = entityowners.ToArray();
 			entityAliases = entityaliases.ToArray();
 			collectionPersisters = collectionpersisters.ToArray();
@@ -176,7 +125,7 @@ namespace NHibernate.Loader.Custom
 			collectionAliases = collectionaliases.ToArray();
 			lockModes = lockmodes.ToArray();
 			ResultTypes = resulttypes.ToArray();
-			transformerAliases = specifiedAliases.ToArray();
+			transformerAliases = transformeraliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
 			includeInResultRow = includeInResultRowList.ToArray();
 		}
@@ -191,6 +140,10 @@ namespace NHibernate.Loader.Custom
 			get { return collectionOwners; }
 		}
 
+		/// <summary>
+		/// An array of indexes of the entity that owns a one-to-one association
+		/// to the entity at the given index (-1 if there is no "owner")
+		/// </summary>
 		protected override int[] Owners
 		{
 			get { return entityOwners; }
@@ -209,49 +162,6 @@ namespace NHibernate.Loader.Custom
 		protected override ICollectionAliases[] CollectionAliases
 		{
 			get { return collectionAliases; }
-		}
-
-		private IQueryable DetermineAppropriateOwnerPersister(NonScalarReturn ownerDescriptor)
-		{
-			string entityName = null;
-			RootReturn odrr = ownerDescriptor as RootReturn;
-			if (odrr != null)
-			{
-				entityName = odrr.EntityName;
-			}
-			else if (ownerDescriptor is CollectionReturn)
-			{
-				CollectionReturn collRtn = (CollectionReturn) ownerDescriptor;
-				string role = collRtn.OwnerEntityName + "." + collRtn.OwnerProperty;
-				ICollectionPersister persister = Factory.GetCollectionPersister(role);
-				EntityType ownerType = (EntityType) persister.ElementType;
-				entityName = ownerType.GetAssociatedEntityName(Factory);
-			}
-			else if (ownerDescriptor is FetchReturn)
-			{
-				FetchReturn fetchRtn = (FetchReturn) ownerDescriptor;
-				IQueryable persister = DetermineAppropriateOwnerPersister(fetchRtn.Owner);
-				IType ownerType = persister.GetPropertyType(fetchRtn.OwnerProperty);
-				if (ownerType.IsEntityType)
-				{
-					entityName = ((EntityType) ownerType).GetAssociatedEntityName(Factory);
-				}
-				else if (ownerType.IsCollectionType)
-				{
-					IType ownerCollectionElementType = ((CollectionType) ownerType).GetElementType(Factory);
-					if (ownerCollectionElementType.IsEntityType)
-					{
-						entityName = ((EntityType) ownerCollectionElementType).GetAssociatedEntityName(Factory);
-					}
-				}
-			}
-
-			if (entityName == null)
-			{
-				throw new HibernateException("Could not determine fetch owner : " + ownerDescriptor);
-			}
-
-			return (IQueryable) Factory.GetEntityPersister(entityName);
 		}
 
 		public override string QueryIdentifier
