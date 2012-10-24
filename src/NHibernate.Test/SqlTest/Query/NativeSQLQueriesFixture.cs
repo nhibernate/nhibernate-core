@@ -544,7 +544,7 @@ namespace NHibernate.Test.SqlTest.Query
 			VerifyOrganisationQuery(session => session.GetNamedQuery("organization-using-column-names-and-manual-aliases"));
 		}
 
-		private void VerifyOrganisationQuery(Func<ISession, IQuery> queryFactory, string message = null)
+		private void VerifyOrganisationQuery(Func<ISession, IQuery> queryFactory)
 		{
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
@@ -559,7 +559,7 @@ namespace NHibernate.Test.SqlTest.Query
 				s.Save(emp);
 
 				var list = queryFactory(s).List();
-				Assert.AreEqual(2, list.Count, message);
+				Assert.AreEqual(2, list.Count);
 			}
 		}
 
