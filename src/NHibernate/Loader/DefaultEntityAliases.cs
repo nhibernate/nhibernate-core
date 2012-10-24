@@ -20,15 +20,13 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, suffix) {}
+			: this(null, persister, suffix) {}
 
 		/// <summary>
 		/// Calculate and cache select-clause suffixes.
 		/// </summary>
 		public DefaultEntityAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister, string suffix)
 		{
-			ValidateUserProvidedAliases(userProvidedAliases, persister);
-
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
 
@@ -51,21 +49,6 @@ namespace NHibernate.Loader
 			rowIdAlias = Loadable.RowIdAlias + suffix; // TODO: not visible to the user!
 		}
 
-		private static void ValidateUserProvidedAliases(IDictionary<string, string[]> userProvidedAliases, ILoadable persister)
-		{
-			if (userProvidedAliases != null && userProvidedAliases.Count > 0) 
-			{
-				var missingPropertyNames = persister.PropertyNames.Except(userProvidedAliases.Keys).ToArray();
-				if (missingPropertyNames.Length > 0)
-				{
-					throw new MappingException(
-						string.Format(
-							"User provided resulset mapping for entity '{0}' misses mappings for the following properties: {1}.",
-							persister.EntityName, string.Join(", ", missingPropertyNames)));
-				}
-			}
-		}
-
 		protected virtual string GetDiscriminatorAlias(ILoadable persister, string suffix)
 		{
 			return persister.GetDiscriminatorAlias(suffix);
@@ -84,34 +67,21 @@ namespace NHibernate.Loader
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
 			string[] result = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (result == null)
-			{
-				return defaultAliases;
-			}
-			else
-			{
-				return result;
-			}
+			return result ?? defaultAliases;
 		}
 
 		private string[] GetUserProvidedAlias(string propertyPath)
 		{
 			string[] result;
-			userProvidedAliases.TryGetValue(propertyPath, out result);
-			return result;
+			return userProvidedAliases != null && userProvidedAliases.TryGetValue(propertyPath, out result)
+				? result
+				: null;
 		}
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
 			string[] columns = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (columns == null)
-			{
-				return defaultAlias;
-			}
-			else
-			{
-				return columns[0];
-			}
+			return columns == null ? defaultAlias : columns[0];
 		}
 
 		public string[][] GetSuffixedPropertyAliases(ILoadable persister)

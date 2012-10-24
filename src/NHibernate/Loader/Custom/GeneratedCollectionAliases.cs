@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
-namespace NHibernate.Loader
+namespace NHibernate.Loader.Custom
 {
 	/// <summary>
 	/// CollectionAliases which handles the logic of selecting user provided aliases (via return-property),
@@ -17,8 +17,7 @@ namespace NHibernate.Loader
 		private readonly string identifierAlias;
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
-		public GeneratedCollectionAliases(IDictionary<string, string[]> userProvidedAliases, ICollectionPersister persister,
-																			string suffix)
+		public GeneratedCollectionAliases(IDictionary<string, string[]> userProvidedAliases, ICollectionPersister persister, string suffix)
 		{
 			this.suffix = suffix;
 			this.userProvidedAliases = userProvidedAliases;
@@ -41,16 +40,21 @@ namespace NHibernate.Loader
 
 		private string[] GetUserProvidedCompositeElementAliases(string[] defaultAliases)
 		{
-			var aliases = new List<string>();
-			foreach (KeyValuePair<string, string[]> userProvidedAlias in userProvidedAliases)
+			if (userProvidedAliases != null)
 			{
-				if (userProvidedAlias.Key.StartsWith("element."))
+				var aliases = new List<string>();
+				foreach (var userProvidedAlias in userProvidedAliases)
 				{
-					aliases.AddRange(userProvidedAlias.Value);
+					if (userProvidedAlias.Key.StartsWith("element."))
+					{
+						aliases.AddRange(userProvidedAlias.Value);
+					}
 				}
+
+				if (aliases.Count > 0) return aliases.ToArray();
 			}
 
-			return aliases.Count > 0 ? aliases.ToArray() : defaultAliases;
+			return defaultAliases;
 		}
 
 		/// <summary>
@@ -104,38 +108,23 @@ namespace NHibernate.Loader
 
 		private static string Join(IEnumerable<string> aliases)
 		{
-			if (aliases == null)
-			{
-				return null;
-			}
-
-			return StringHelper.Join(", ", aliases);
+			return aliases == null ? null : StringHelper.Join(", ", aliases);
 		}
 
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
 			string[] result;
-			if (!userProvidedAliases.TryGetValue(propertyPath, out result))
-			{
-				return defaultAliases;
-			}
-			else
-			{
-				return result;
-			}
+			return userProvidedAliases == null || !userProvidedAliases.TryGetValue(propertyPath, out result)
+				? defaultAliases
+				: result;
 		}
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
 			string[] columns;
-			if (!userProvidedAliases.TryGetValue(propertyPath, out columns))
-			{
-				return defaultAlias;
-			}
-			else
-			{
-				return columns[0];
-			}
+			return userProvidedAliases == null || !userProvidedAliases.TryGetValue(propertyPath, out columns)
+				? defaultAlias
+				: columns[0];
 		}
 	}
 }
