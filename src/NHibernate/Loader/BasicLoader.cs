@@ -1,4 +1,5 @@
 using NHibernate.Engine;
+using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
@@ -19,7 +20,7 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, string[]> userProvidedAliases;
 
 		public DefaultEntityAliases(ILoadable persister, string suffix)
-			: this(new CollectionHelper.EmptyMapClass<string, string[]>(), persister, suffix) {}
+			: this(null, persister, suffix) {}
 
 		/// <summary>
 		/// Calculate and cache select-clause suffixes.
@@ -30,14 +31,8 @@ namespace NHibernate.Loader
 			this.userProvidedAliases = userProvidedAliases;
 
 			string[] keyColumnsCandidates = GetUserProvidedAliases(persister.IdentifierPropertyName, null);
-			if (keyColumnsCandidates == null)
-			{
-				suffixedKeyColumns = GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
-			}
-			else
-			{
-				suffixedKeyColumns = keyColumnsCandidates;
-			}
+			suffixedKeyColumns = keyColumnsCandidates ??
+				GetUserProvidedAliases(EntityPersister.EntityID, GetIdentifierAliases(persister, suffix));
 			Intern(suffixedKeyColumns);
 
 			suffixedPropertyColumns = GetSuffixedPropertyAliases(persister);
@@ -72,34 +67,21 @@ namespace NHibernate.Loader
 		private string[] GetUserProvidedAliases(string propertyPath, string[] defaultAliases)
 		{
 			string[] result = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (result == null)
-			{
-				return defaultAliases;
-			}
-			else
-			{
-				return result;
-			}
+			return result ?? defaultAliases;
 		}
 
 		private string[] GetUserProvidedAlias(string propertyPath)
 		{
 			string[] result;
-			userProvidedAliases.TryGetValue(propertyPath, out result);
-			return result;
+			return userProvidedAliases != null && userProvidedAliases.TryGetValue(propertyPath, out result)
+				? result
+				: null;
 		}
 
 		private string GetUserProvidedAlias(string propertyPath, string defaultAlias)
 		{
 			string[] columns = propertyPath == null ? null : GetUserProvidedAlias(propertyPath);
-			if (columns == null)
-			{
-				return defaultAlias;
-			}
-			else
-			{
-				return columns[0];
-			}
+			return columns == null ? defaultAlias : columns[0];
 		}
 
 		public string[][] GetSuffixedPropertyAliases(ILoadable persister)
