@@ -17,10 +17,14 @@
 		<property name="project.output" value="${bin.dir}/unmerged/NHibernate.dll" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="mscorlib.dll" />
 			<include name="System.dll" />
+			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
+			<include name="System.ServiceModel.dll" />
 			<include name="System.XML.dll" />
+			<include name="System.Xml.Linq.dll" />
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="Antlr3.Runtime.dll" />

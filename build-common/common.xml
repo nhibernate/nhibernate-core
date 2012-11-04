@@ -206,6 +206,7 @@
 		<property name="link.sdkdoc.version" value="SDK_v1_1" />
 		<!-- merge should work with 4.0 when compiling for 4.0 -->
 		<property name="merge.targetplatform" value="v4" />
+		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" />
 	</target>
 	
 	<target name="set-net-3.5-framework-configuration">
@@ -215,6 +216,7 @@
 		<property name="link.sdkdoc.version" value="SDK_v1_1" />
 		<!-- merge should work with 2.0 when compiling for 3.5 -->
 		<property name="merge.targetplatform" value="v2" />
+		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\v3.5" />
 	</target>
 
 	<target name="set-net-2.0-framework-configuration">

@@ -56,6 +56,8 @@
 			define="${current.build.defines}"
 			debug="${build.debug}"
 			keyfile="${key.file}"
+			nostdlib="true"
+			noconfig="true"
 			output="${bin.dir}/${project::get-name()}.dll"
 			if="${sign}"
 		>
@@ -68,6 +70,8 @@
 			target="library"
 			define="${current.build.defines}"
 			debug="${build.debug}"
+			nostdlib="true"
+			noconfig="true"
 			output="${bin.dir}/${project::get-name()}.dll"
 			unless="${sign}"
 		>
@@ -100,6 +104,7 @@
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 			<imports refid="project.imports" />
+			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
 		</vbc>
 
 		<vbc 
@@ -114,6 +119,7 @@
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 			<imports refid="project.imports" />
+			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
 		</vbc>
 		
 		<copy 
@@ -133,6 +139,8 @@
 			define="${current.build.defines}" 
 			debug="${build.debug}" 
 			keyfile="${key.file}"
+			nostdlib="true"
+			noconfig="true"
 			output="${project.output}" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			if="${sign}"
@@ -150,6 +158,8 @@
 			target="library" 
 			define="${current.build.defines}" 
 			debug="${build.debug}" 
+			nostdlib="true"
+			noconfig="true"
 			output="${project.output}" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			unless="${sign}"
