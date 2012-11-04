@@ -76,9 +76,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.5.0.9122, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
+      <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="SharpTestsEx.NUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8c60d8070630b1c1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

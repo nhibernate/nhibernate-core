@@ -249,7 +249,7 @@
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
 		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml " />
+			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml /framework:${framework::get-target-framework()}" />
 		</exec>
 
 		<!--<nunit2>
