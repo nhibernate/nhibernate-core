@@ -24,6 +24,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			public int Id { get; set; }
 		}
 
+		private class MyOtherSubclass : MyOther
+		{
+			public int SubId { get; set; }
+		}
+
 		[Test]
 		public void WhenPropertyUsedAsComposedIdThenRegister()
 		{
@@ -112,5 +117,24 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			hbmClass.naturalid.Should().Be.Null();
 			hbmClass.Properties.Should().Be.Empty();
 		}
+
+		[Test]
+		public void WhenSuperclassPropertyUsedAsComposedIdThenRegister()
+		{
+			var inspector = new ExplicitlyDeclaredModel();
+			var mapper = new ModelMapper(inspector);
+			mapper.Class<MyOtherSubclass>(map =>
+				map.ComposedId(cm =>
+				{
+					cm.Property(x => x.Id);
+					cm.Property(x => x.SubId);
+				})
+			);
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyOtherSubclass) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmCompositeId = hbmClass.CompositeId;
+			hbmCompositeId.Items.Should().Have.Count.EqualTo(2);
+		}
+
 	}
 }

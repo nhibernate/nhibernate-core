@@ -9,14 +9,14 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected override void RegisterPropertyMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IPropertyMapper> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsPartOfComposedId(member);
 			base.RegisterPropertyMapping(property, mapping);
 		}
 
 		protected override void RegisterManyToOneMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IManyToOneMapper> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			ExplicitDeclarationsHolder.AddAsPartOfComposedId(member);
 			base.RegisterManyToOneMapping(property, mapping);
 		}
