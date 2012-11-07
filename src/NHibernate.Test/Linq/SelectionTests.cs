@@ -321,6 +321,13 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanProjectWithPaging()
+		{
+			var names = db.Users.OrderBy(p => p.Id).Take(3).Select(p => new { p1 = p.Name }).ToList();
+			Assert.AreEqual(3, names.Count);
+		}
+
+		[Test]
 		public void CanSelectManyWithCast()
 		{
 			// NH-2688
