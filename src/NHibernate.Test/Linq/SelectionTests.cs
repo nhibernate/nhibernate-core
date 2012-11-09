@@ -321,8 +321,9 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void CanProjectWithPaging()
+		public void CanProjectWithOrderByAndTake()
 		{
+			// NH-3320
 			var names = db.Users.OrderBy(p => p.Id).Take(3).Select(p => new { p1 = p.Name }).ToList();
 			Assert.AreEqual(3, names.Count);
 		}
