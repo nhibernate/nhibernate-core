@@ -139,6 +139,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlWhere(_factory, expression);
 		}
 
+		public HqlWith With(HqlExpression expression)
+		{
+			return new HqlWith(_factory, expression);
+		}
+
 		public HqlHaving Having(HqlExpression expression)
 		{
 			return new HqlHaving(_factory, expression);
