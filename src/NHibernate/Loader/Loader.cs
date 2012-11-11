@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Iesi.Collections.Generic;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -515,7 +514,7 @@ namespace NHibernate.Loader
 			ISet<EntityKey>[] result = new ISet<EntityKey>[keys[0].Length];
 			for (int j = 0; j < result.Length; j++)
 			{
-				result[j] = new HashedSet<EntityKey>();
+				result[j] = new HashSet<EntityKey>();
 				for (int i = 0; i < keys.Count; i++)
 				{
 					EntityKey key = keys[i][j];

@@ -66,11 +66,11 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="3.4.0.Alpha1" overwrite="false" />
+	<property name="project.version" value="4.0.0.Alpha1" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
-	<property name="project.default-assembly-version" value="3.4.0.1000" overwrite="false" />
+	<property name="project.default-assembly-version" value="4.0.0.1000" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
@@ -199,6 +199,16 @@
 		<call target="set-${framework::get-target-framework()}-framework-configuration" />
 	</target>
 
+	<target name="set-net-4.0-framework-configuration">
+		<property name="nant.settings.currentframework" value="net-4.0" />
+		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5,NET_4_0" />
+		<!-- not using SDK_v2_0 because ndoc throws an exception -->
+		<property name="link.sdkdoc.version" value="SDK_v1_1" />
+		<!-- merge should work with 4.0 when compiling for 4.0 -->
+		<property name="merge.targetplatform" value="v4" />
+		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" />
+	</target>
+	
 	<target name="set-net-3.5-framework-configuration">
 		<property name="nant.settings.currentframework" value="net-3.5" />
 		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5" />
@@ -206,6 +216,7 @@
 		<property name="link.sdkdoc.version" value="SDK_v1_1" />
 		<!-- merge should work with 2.0 when compiling for 3.5 -->
 		<property name="merge.targetplatform" value="v2" />
+		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\v3.5" />
 	</target>
 
 	<target name="set-net-2.0-framework-configuration">

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {
@@ -10,8 +9,8 @@ namespace NHibernate.Test.Cascade.Circle
 		private long nodeId;
 		private long version;
 		private string name;
-		private ISet<Transport> deliveryTransports = new HashedSet<Transport>();
-		private ISet<Transport> pickupTransports = new HashedSet<Transport>();
+		private ISet<Transport> deliveryTransports = new HashSet<Transport>();
+		private ISet<Transport> pickupTransports = new HashSet<Transport>();
 		private Route route = null;
 		private Tour tour;
 		private string transientField = "node original value";

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -25,7 +24,7 @@ namespace NHibernate.Loader.Custom
 		// Currently *not* cachable if autodiscover types is in effect (e.g. "select * ...")
 
 		private readonly SqlString sql;
-		private readonly ISet<string> querySpaces = new HashedSet<string>();
+		private readonly ISet<string> querySpaces = new HashSet<string>();
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -45,7 +44,7 @@ namespace NHibernate.Loader.Custom
 		public CustomLoader(ICustomQuery customQuery, ISessionFactoryImplementor factory) : base(factory)
 		{
 			sql = customQuery.SQL;
-			querySpaces.AddAll(customQuery.QuerySpaces);
+			querySpaces.UnionWith(customQuery.QuerySpaces);
 			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
@@ -87,7 +86,7 @@ namespace NHibernate.Loader.Custom
 					resulttypes.Add(persister.Type);
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
-					querySpaces.AddAll(persister.QuerySpaces);
+					querySpaces.UnionWith(persister.QuerySpaces);
 				}
 				else if (rtn is CollectionReturn)
 				{
@@ -110,7 +109,7 @@ namespace NHibernate.Loader.Custom
 						entitypersisters.Add(elementPersister);
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
-						querySpaces.AddAll(elementPersister.QuerySpaces);
+						querySpaces.UnionWith(elementPersister.QuerySpaces);
 					}
 				}
 				else if (rtn is EntityFetchReturn)
@@ -128,7 +127,7 @@ namespace NHibernate.Loader.Custom
 					nonScalarReturnList.Add(rtn);
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
-					querySpaces.AddAll(persister.QuerySpaces);
+					querySpaces.UnionWith(persister.QuerySpaces);
 				}
 				else if (rtn is CollectionFetchReturn)
 				{
@@ -152,7 +151,7 @@ namespace NHibernate.Loader.Custom
 						entitypersisters.Add(elementPersister);
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
-						querySpaces.AddAll(elementPersister.QuerySpaces);
+						querySpaces.UnionWith(elementPersister.QuerySpaces);
 					}
 				}
 				else

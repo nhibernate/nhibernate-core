@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -42,7 +41,7 @@ namespace NHibernate.Mapping
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		private readonly ISet<string> synchronizedTables = new HashedSet<string>();
+		private readonly ISet<string> synchronizedTables = new HashSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -1105,7 +1104,7 @@ namespace NHibernate.Mapping
 
 		protected internal virtual void CheckColumnDuplication()
 		{
-			HashedSet<string> cols = new HashedSet<string>();
+			HashSet<string> cols = new HashSet<string>();
 			if (IdentifierMapper == null)
 			{
 				//an identifier mapper => Key will be included in the NonDuplicatedPropertyIterator

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -17,7 +16,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get
 			{
 				if (_children == null)
-					_children = new HashedSet<LLChild>();
+					_children = new HashSet<LLChild>();
 				return _children;
 			}
 			set { _children = value; }
@@ -28,7 +27,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get
 			{
 				if (_childrenNoAdd == null)
-					_childrenNoAdd = new HashedSet<LLChildNoAdd>();
+					_childrenNoAdd = new HashSet<LLChildNoAdd>();
 				return _childrenNoAdd;
 			}
 			set { _childrenNoAdd = value; }

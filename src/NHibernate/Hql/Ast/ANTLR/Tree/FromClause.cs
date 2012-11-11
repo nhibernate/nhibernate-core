@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
-using Iesi.Collections.Generic;
 
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Util;
@@ -149,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (_childFromClauses == null)
 			{
-				_childFromClauses = new HashedSet<FromClause>();
+				_childFromClauses = new HashSet<FromClause>();
 			}
 			_childFromClauses.Add(fromClause);
 		}
@@ -363,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// Make sure that all from elements registered with this FROM clause are actually in the AST.
 			var iter = (new ASTIterator(GetFirstChild())).GetEnumerator();
-			var childrenInTree = new HashedSet<IASTNode>();
+			var childrenInTree = new HashSet<IASTNode>();
 			while (iter.MoveNext())
 			{
 				childrenInTree.Add(iter.Current);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -59,7 +58,7 @@ namespace NHibernate.Event.Default
 				
 				if (transientCopyCache.Count > 0)
 				{
-					ISet<string> transientEntityNames = new HashedSet<string>();
+					ISet<string> transientEntityNames = new HashSet<string>();
 					
 					foreach (object transientEntity in transientCopyCache.Keys)
 					{

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Iesi.Collections.Generic;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Type;
@@ -98,7 +98,7 @@ namespace NHibernate.Test.Legacy
 				fr.FumString = "goo";
 				Fum fr2 = new Fum(FumKey("fr2"));
 				fr2.FumString = "soo";
-				fum.Friends = new HashedSet<Fum> { fr, fr2 };
+				fum.Friends = new HashSet<Fum> { fr, fr2 };
 
 				s.Save(fr);
 				s.Save(fr2);
@@ -440,7 +440,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(q);
 			IList list = new ArrayList();
 			list.Add(fum1);
-			q.Fums = new HashedSet<Fum> {fum1, fum2};
+			q.Fums = new HashSet<Fum> {fum1, fum2};
 			q.MoreFums = list;
 			fum1.QuxArray = new Qux[] {q};
 			s.Flush();
@@ -474,7 +474,7 @@ namespace NHibernate.Test.Legacy
 			list.Add(f2);
 			f1.FumString = "f1";
 			f2.FumString = "f2";
-			q.Fums = new HashedSet<Fum> {f1, f2};
+			q.Fums = new HashSet<Fum> {f1, f2};
 			q.MoreFums = list;
 			s.Save(f1);
 			s.Save(f2);

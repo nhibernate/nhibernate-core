@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Iesi.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
@@ -804,7 +804,7 @@ namespace NHibernate.Test.Legacy
 				m0.AddDetail(detail);
 				detail.Master = m0;
 				m.MoreDetails.Add(detail);
-				detail.SubDetails = new HashedSet<SubDetail> { subdetail };
+				detail.SubDetails = new HashSet<SubDetail> { subdetail };
 				mid = s.Save(m);
 				s.Flush();
 			}

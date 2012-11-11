@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using log4net;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -302,7 +302,7 @@ namespace NHibernate.Test.Join
 			p.Country = "Canada";
 			p.HomePhone = "555-1234";
 			p.BusinessPhone = "555-4321";
-			p.OthersPhones = new HashedSet<string> {"555-9876", "555-6789"};
+			p.OthersPhones = new HashSet<string> {"555-9876", "555-6789"};
 			return p;
 		}
 

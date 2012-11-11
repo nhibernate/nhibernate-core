@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.PropertyRef
 {
@@ -9,7 +8,7 @@ namespace NHibernate.Test.PropertyRef
         private int _id;
         private int _extraId;
         private string _name;
-        private ISet<B> _items = new HashedSet<B>();
+        private ISet<B> _items = new HashSet<B>();
 
         public int Id
         {

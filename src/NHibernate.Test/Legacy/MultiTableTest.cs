@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -512,7 +512,7 @@ namespace NHibernate.Test.Legacy
 			ls.Another = ls;
 			ls.YetAnother = ls;
 			ls.Name = "Less Simple";
-			ls.Set = new HashedSet<Top> { multi, simp };
+			ls.Set = new HashSet<Top> { multi, simp };
 
 			object id;
 			if (Dialect is MsSql2000Dialect)
@@ -642,7 +642,7 @@ namespace NHibernate.Test.Legacy
 			Po po = new Po();
 			multi1.Po = po;
 			multi2.Po = po;
-			po.Set = new HashedSet<Multi> {multi1, multi2};
+			po.Set = new HashSet<Multi> {multi1, multi2};
 			po.List = new ArrayList();
 			po.List.Add(new SubMulti());
 			object id = s.Save(po);

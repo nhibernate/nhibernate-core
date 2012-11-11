@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ReadOnly
 {
@@ -15,9 +14,9 @@ namespace NHibernate.Test.ReadOnly
 		//private Info noProxyInfo;
 		private Info proxyInfo;
 		private Info nonLazyInfo;
-		private ISet<DataPoint> lazyDataPoints = new HashedSet<DataPoint>();
-		private ISet<DataPoint> nonLazyJoinDataPoints = new HashedSet<DataPoint>();
-		private ISet<DataPoint> nonLazySelectDataPoints = new HashedSet<DataPoint>();
+		private ISet<DataPoint> lazyDataPoints = new HashSet<DataPoint>();
+		private ISet<DataPoint> nonLazyJoinDataPoints = new HashSet<DataPoint>();
+		private ISet<DataPoint> nonLazySelectDataPoints = new HashSet<DataPoint>();
 
 		public virtual long Id
 		{

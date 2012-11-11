@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.GenericTest.SetGeneric
@@ -35,7 +34,7 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 		{
 			A a = new A();
 			a.Name = "first generic type";
-			a.Items = new HashedSet<B>();
+			a.Items = new HashSet<B>();
 			B firstB = new B();
 			firstB.Name = "first b";
 			B secondB = new B();
@@ -72,7 +71,7 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 		{
 			A a = new A();
 			a.Name = "original A";
-			a.Items = new HashedSet<B>();
+			a.Items = new HashSet<B>();
 
 			B b1 = new B();
 			b1.Name = "b1";

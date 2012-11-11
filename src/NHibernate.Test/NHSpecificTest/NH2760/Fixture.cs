@@ -4,7 +4,6 @@ using System.Linq;
 using NUnit.Framework;
 using NHibernate;
 using NHibernate.Linq;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2760
 {

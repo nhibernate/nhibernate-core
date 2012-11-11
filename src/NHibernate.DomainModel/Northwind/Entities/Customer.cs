@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.Northwind.Entities
 {
@@ -15,7 +14,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
         public Customer()
         {
-            _orders = new HashedSet<Order>();
+            _orders = new HashSet<Order>();
         }
 
         public virtual string CustomerId

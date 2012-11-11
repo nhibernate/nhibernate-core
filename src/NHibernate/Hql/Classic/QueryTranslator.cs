@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -53,8 +52,8 @@ namespace NHibernate.Hql.Classic
 		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
 		private readonly IList<SqlString> orderByTokens = new List<SqlString>();
 		private readonly IList<SqlString> groupByTokens = new List<SqlString>();
-		private readonly ISet<string> querySpaces = new HashedSet<string>();
-		private readonly ISet<string> entitiesToFetch = new HashedSet<string>();
+		private readonly ISet<string> querySpaces = new HashSet<string>();
+		private readonly ISet<string> entitiesToFetch = new HashSet<string>();
 
 		private readonly IDictionary<string, string> pathAliases = new Dictionary<string, string>();
 		private readonly IDictionary<string, JoinSequence> pathJoins = new Dictionary<string, JoinSequence>();
@@ -1467,8 +1466,8 @@ namespace NHibernate.Hql.Classic
 		}
 
 
-		private static readonly ISet<string> beforeClassTokens = new HashedSet<string>();
-		private static readonly ISet<string> notAfterClassTokens = new HashedSet<string>();
+		private static readonly ISet<string> beforeClassTokens = new HashSet<string>();
+		private static readonly ISet<string> notAfterClassTokens = new HashSet<string>();
 
 		/// <summary></summary>
 		static QueryTranslator()

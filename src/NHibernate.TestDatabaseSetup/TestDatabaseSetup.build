@@ -11,6 +11,7 @@
     <copy file="${root.dir}/lib/teamcity/firebird/FirebirdSql.Data.FirebirdClient.dll" todir="${bin.dir}" />
 		<copy file="${root.dir}/lib/teamcity/postgresql/Npgsql.dll" todir="${bin.dir}" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="mscorlib.dll" />
 			<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Data.dll" />
