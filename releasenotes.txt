@@ -3,6 +3,10 @@ Build vNext
 
 ** Known BREAKING CHANGES from NH3.3.2.GA to vNext
 
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
