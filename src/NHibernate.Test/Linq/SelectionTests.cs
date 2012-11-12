@@ -321,6 +321,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectAfterOrderByAndTake()
+		{
+			// NH-3320
+			var names = db.Users.OrderBy(p => p.Name).Take(3).Select(p => p.Name).ToList();
+			Assert.AreEqual(3, names.Count);
+		}
+
+		[Test]
 		public void CanSelectManyWithCast()
 		{
 			// NH-2688
