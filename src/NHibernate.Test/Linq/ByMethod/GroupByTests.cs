@@ -246,6 +246,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
+		[Test]
+		public void GroupByAndTake()
+		{
+			//NH-2566
+			var names = db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToList();
+			Assert.That(names.Count, Is.EqualTo(3));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
