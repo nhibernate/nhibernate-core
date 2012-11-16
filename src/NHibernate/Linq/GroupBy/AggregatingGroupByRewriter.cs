@@ -44,15 +44,10 @@ namespace NHibernate.Linq.GroupBy
 
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
-			// Move the result operator up 
-			if (queryModel.ResultOperators.Count != 0)
-			{
-				throw new NotImplementedException();
-			}
-
 			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
 
-			queryModel.ResultOperators.Add(groupBy);
+			// Move the result operator up 
+			queryModel.ResultOperators.Insert(0, groupBy);
 
 			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
