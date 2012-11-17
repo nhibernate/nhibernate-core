@@ -42,11 +42,25 @@ namespace NHibernate.Linq.GroupBy
 			}
 		}
 
+
+		private static readonly System.Type[] AcceptableOuterResultOperators = new[]
+			{
+				typeof (SkipResultOperator),
+				typeof (TakeResultOperator),
+			};
+
+
 		private static void FlattenSubQuery(SubQueryExpression subQueryExpression, QueryModel queryModel)
 		{
-			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
+			foreach (var resultOperator in queryModel.ResultOperators)
+			{
+				if (!AcceptableOuterResultOperators.Contains(resultOperator.GetType()))
+					throw new NotImplementedException("Cannot use group by with the "
+					                                  + resultOperator.GetType().Name + " result operator.");
+			}
 
-			// Move the result operator up 
+			// Move the result operator up.
+			var groupBy = (GroupResultOperator) subQueryExpression.QueryModel.ResultOperators[0];
 			queryModel.ResultOperators.Insert(0, groupBy);
 
 			for (int i = 0; i < queryModel.BodyClauses.Count; i++)

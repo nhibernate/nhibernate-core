@@ -254,6 +254,24 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(names.Count, Is.EqualTo(3));
 		}
 
+
+		[Test]
+		public void GroupByAndTake2()
+		{
+			//NH-2566
+			var results = (from o in db.Orders
+			               group o by o.Customer
+			               into g
+			               select g.Key.CustomerId)
+				.OrderBy(customerId => customerId)
+				.Skip(10)
+				.Take(10)
+				.ToList();
+			
+			Assert.That(results.Count, Is.EqualTo(10));
+		}
+
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
