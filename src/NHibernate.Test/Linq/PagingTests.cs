@@ -34,7 +34,7 @@ namespace NHibernate.Test.Linq
                      select c.CustomerId).Take(5).Take(6);
             
             var query = q.ToList();
-
+			
             Assert.AreEqual(5, query.Count);
             Assert.AreEqual("ALFKI", query[0]);
             Assert.AreEqual("BLAUS", query[4]);
@@ -51,13 +51,170 @@ namespace NHibernate.Test.Linq
         }
 
 
+		[Test]
+		[Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
+		public void CountAfterTakeShouldReportTheCorrectNumber()
+		{
+			var users = db.Customers.Skip(3).Take(10);
+			Assert.AreEqual(10, users.Count());
+		}
 
-        [Test]
-        [Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
-        public void CountAfterTakeShouldReportTheCorrectNumber()
-        {
-            var users = db.Customers.Skip(3).Take(10);
-            Assert.AreEqual(10, users.Count());
-        }
-    }
+		[Test]
+		public void OrderedPagedProductsWithOuterProjection()
+		{
+			//NH-3108
+			var inMemoryIds = db.Products.ToList()
+				.OrderBy(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
+				.ToList();
+
+			var ids = db.Products 
+				.OrderBy(p => p.ProductId) 
+				.Skip(10).Take(20) 
+				.Select(p => p.ProductId) 
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void OrderedPagedProductsWithInnerProjection()
+		{
+			//NH-3108 (not failing)
+			var inMemoryIds = db.Products.ToList() 
+				.OrderBy(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			var ids = db.Products 
+				.OrderBy(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void DescendingOrderedPagedProductsWithOuterProjection()
+		{
+			//NH-3108
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(p => p.ProductId) 
+				.Skip(10).Take(20) 
+				.Select(p => p.ProductId) 
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void DescendingOrderedPagedProductsWithInnerProjection()
+		{
+			//NH-3108 (not failing)
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(p => p.ProductId) 
+				.Select(p => p.ProductId)
+				.Skip(10).Take(20)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithOuterWhereClause()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithOuterWhereClauseEquivalent()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.ToList();
+
+			var subquery = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20);
+
+			var ids = db.Products
+				.Where(x => subquery.Contains(x))
+				.Where(x => x.UnitsInStock > 0);
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithOuterWhereClauseAndProjection()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => x.ProductId)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => x.ProductId)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+		
+		[Test]
+		public void PagedProductsWithOuterWhereClauseAndComplexProjection()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => new { x.ProductId })
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.Select(x => new { x.ProductId })
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+	}
 }
