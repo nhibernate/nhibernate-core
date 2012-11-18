@@ -27,17 +27,17 @@ namespace NHibernate.Linq.GroupBy
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
 	/// </para>
 	/// </summary>
-	public static class AggregatingGroupByRewriter
+	public class AggregatingGroupByRewriter
 	{
-        private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
-	        {
-	            typeof (SkipResultOperator),
-	            typeof (TakeResultOperator),
-	            typeof (FirstResultOperator),
-	            typeof (SingleResultOperator)
-	        };
+		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
+			{
+				typeof (SkipResultOperator),
+				typeof (TakeResultOperator),
+				typeof (FirstResultOperator),
+				typeof (SingleResultOperator)
+			};
 
-	    public static void ReWrite(QueryModel queryModel)
+		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
@@ -49,17 +49,17 @@ namespace NHibernate.Linq.GroupBy
 			}
 		}
 
-        private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel)
+		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel)
 		{
 			foreach (var resultOperator in queryModel.ResultOperators.Where(resultOperator => !AcceptableOuterResultOperators.Contains(resultOperator.GetType())))
 			{
-			    throw new NotImplementedException("Cannot use group by with the " + resultOperator.GetType().Name + " result operator.");
+				throw new NotImplementedException("Cannot use group by with the " + resultOperator.GetType().Name + " result operator.");
 			}
 
 			// Move the result operator up.
 			var groupBy = (GroupResultOperator) subQueryModel.ResultOperators[0];
 
-            queryModel.ResultOperators.Insert(0, groupBy);
+			queryModel.ResultOperators.Insert(0, groupBy);
 
 			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
@@ -83,8 +83,8 @@ namespace NHibernate.Linq.GroupBy
 				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
 
 			// Point all query source references to the outer from clause
-            var visitor = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryModel.MainFromClause);
-            queryModel.TransformExpressions(visitor.Swap);
+			var visitor = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryModel.MainFromClause);
+			queryModel.TransformExpressions(visitor.Swap);
 
 			// Replace the outer query source
 			queryModel.MainFromClause = subQueryModel.MainFromClause;
