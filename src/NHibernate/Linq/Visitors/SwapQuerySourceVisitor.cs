@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -44,50 +42,6 @@ namespace NHibernate.Linq.Visitors
 		{
 			expression.QueryModel.TransformExpressions(VisitExpression);
 			return base.VisitSubQueryExpression(expression);
-		}
-
-		protected override Expression VisitMemberExpression(MemberExpression expression)
-		{
-			// If a subquery projects to e.g. anonymous type, and the outer
-			// query projects again to a different type, the property in the MemberExpression
-			// will refer to a property on the type returned by the subquery. When the from
-			// clauses are swapped, Relinq will attempt to apply the property to the type of the
-			// from clause in the subquery, which will be a different type and cause exception.
-
-			// So replace the MemberExpression so that it applies to the inner projection
-			// directly. Then optimize that with TransparentIdentifierRemovingExpressionTreeVisitor.
-
-			var querySource = expression.Expression as QuerySourceReferenceExpression;
-			if (querySource != null)
-			{
-				var innerSelector = GetSubQuerySelectorOrNull(querySource);
-
-				if (innerSelector != null)
-				{
-					var access = Expression.MakeMemberAccess(innerSelector, expression.Member);
-					return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(access);
-				}
-			}
-
-			return base.VisitMemberExpression(expression);
-		}
-
-
-		/// <summary>
-		/// If the querySource is a subquery, return the SelectClause's selector if it's
-		/// NewExpression. Otherwise, return null.
-		/// </summary>
-		private static NewExpression GetSubQuerySelectorOrNull(QuerySourceReferenceExpression querySource)
-		{
-			var fromClause = querySource.ReferencedQuerySource as MainFromClause;
-			if (fromClause == null)
-				return null;
-
-			var subQuery = fromClause.FromExpression as SubQueryExpression;
-			if (subQuery == null)
-				return null;
-
-			return subQuery.QueryModel.SelectClause.Selector as NewExpression;
 		}
 	}
 }
