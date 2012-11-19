@@ -241,6 +241,32 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void GroupByAndTake()
+		{
+			//NH-2566
+			var names = db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToList();
+			Assert.That(names.Count, Is.EqualTo(3));
+		}
+
+
+		[Test]
+		public void GroupByAndTake2()
+		{
+			//NH-2566
+			var results = (from o in db.Orders
+			               group o by o.Customer
+			               into g
+			               select g.Key.CustomerId)
+				.OrderBy(customerId => customerId)
+				.Skip(10)
+				.Take(10)
+				.ToList();
+			
+			Assert.That(results.Count, Is.EqualTo(10));
+		}
+
+
+		[Test]
 		public void SelectFirstElementFromProductsGroupedByUnitPrice()
 		{
 			//NH-3180

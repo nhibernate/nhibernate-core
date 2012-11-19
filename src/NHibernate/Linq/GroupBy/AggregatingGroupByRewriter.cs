@@ -29,11 +29,13 @@ namespace NHibernate.Linq.GroupBy
 	/// </summary>
 	public static class AggregatingGroupByRewriter
 	{
-		private static ICollection<System.Type> _resultOperators = new HashSet<System.Type>(new[]
+		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
 			{
+				typeof (SkipResultOperator),
+				typeof (TakeResultOperator),
 				typeof (FirstResultOperator),
 				typeof (SingleResultOperator)
-			});
+			};
 
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -49,13 +51,13 @@ namespace NHibernate.Linq.GroupBy
 
 		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel)
 		{
-			// Move the result operator up 
-			if (queryModel.ResultOperators.Count > 0 && queryModel.ResultOperators.Any(resultOperator => !_resultOperators.Contains(resultOperator.GetType())))
+			foreach (var resultOperator in queryModel.ResultOperators.Where(resultOperator => !AcceptableOuterResultOperators.Contains(resultOperator.GetType())))
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException("Cannot use group by with the " + resultOperator.GetType().Name + " result operator.");
 			}
 
-			var groupBy = (GroupResultOperator)subQueryModel.ResultOperators[0];
+			// Move the result operator up.
+			var groupBy = (GroupResultOperator) subQueryModel.ResultOperators[0];
 
 			queryModel.ResultOperators.Insert(0, groupBy);
 
