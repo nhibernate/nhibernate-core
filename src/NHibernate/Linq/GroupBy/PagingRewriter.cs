@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -61,8 +58,12 @@ namespace NHibernate.Linq.GroupBy
 				}
 			}
 
+			var visitor1 = new PagingRewriterSelectClauseVisitor();
+			queryModel.SelectClause.TransformExpressions(visitor1.Swap);
+
 			// Point all query source references to the outer from clause
-			queryModel.TransformExpressions(s => new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryMainFromClause).Swap(s));
+			var visitor2 = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryMainFromClause);
+			queryModel.TransformExpressions(visitor2.Swap);
 
 			// Replace the outer query source
 			queryModel.MainFromClause = subQueryMainFromClause;

@@ -78,7 +78,6 @@ namespace NHibernate.Linq.GroupBy
 			foreach (var bodyClause in subQueryModel.BodyClauses)
 				queryModel.BodyClauses.Add(bodyClause);
 
-
 			// Replace the outer select clause...
 			queryModel.SelectClause.TransformExpressions(s => 
 				GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));

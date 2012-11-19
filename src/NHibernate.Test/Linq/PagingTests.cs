@@ -7,27 +7,20 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class PagingTests : LinqTestCase
 	{
-        protected override void Configure(Cfg.Configuration configuration)
-        {
-            base.Configure(configuration);
-            configuration.SetProperty(Environment.ShowSql, "true");
-        }
+		[Test]
+		public void PageBetweenProjections()
+		{
+			// NH-3326
+			var list = db.Products
+						 .Select(p => new { p.ProductId, p.Name })
+						 .Skip(5).Take(10)
+						 .Select(a => new { a.Name, a.ProductId })
+						 .ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
 
 		[Test]
-        public void PageBetweenProjections()
-        {
-            // NH-3326
-            var list = db.Products
-                         .Select(p => new { p.ProductId, p.Name })
-                         .Skip(5).Take(10)
-                         .Select(a => new { a.Name, a.ProductId })
-                         .ToList();
-
-            Assert.That(list, Has.Count.EqualTo(10));
-        }
-
-
-        [Test]
 		public void Customers1to5()
 		{
 			var q = (from c in db.Customers select c.CustomerId).Take(5);
