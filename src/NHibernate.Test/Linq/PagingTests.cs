@@ -18,9 +18,9 @@ namespace NHibernate.Test.Linq
         {
             // NH-3326
             var list = db.Products
-                         .Select(p => new {p.ProductId, p.Name})
+                         .Select(p => new { p.ProductId, p.Name })
                          .Skip(5).Take(10)
-                         .Select(a => new {a.ProductId})
+                         .Select(a => new { a.Name, a.ProductId })
                          .ToList();
 
             Assert.That(list, Has.Count.EqualTo(10));

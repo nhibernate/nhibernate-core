@@ -19,15 +19,14 @@ namespace NHibernate.Linq.Visitors
 
 		public Expression Swap(Expression expression)
 		{
-			var transformed = VisitExpression(expression);
-			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(transformed);
+			return VisitExpression(expression);
 		}
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
 			if (expression.ReferencedQuerySource == _oldClause)
 			{
-				return new QuerySourceReferenceExpression(_newClause);
+			    return new QuerySourceReferenceExpression(_newClause);
 			}
 
 			// TODO - really don't like this drill down approach.  Feels fragile
@@ -46,7 +45,6 @@ namespace NHibernate.Linq.Visitors
 			expression.QueryModel.TransformExpressions(VisitExpression);
 			return base.VisitSubQueryExpression(expression);
 		}
-
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
@@ -71,12 +69,8 @@ namespace NHibernate.Linq.Visitors
 						var innerSelector = subQuery.QueryModel.SelectClause.Selector as NewExpression;
 						if (innerSelector != null)
 						{
-							return Expression.MakeMemberAccess(innerSelector, expression.Member);
-
-							//    var getMethod = (expression.Member as PropertyInfo).GetGetMethod();
-							//    var idx = innerSelector.Members.IndexOf(getMethod);
-							//    var sourceExpression = innerSelector.Arguments[idx];
-							//    return VisitExpression(sourceExpression);
+							var access = Expression.MakeMemberAccess(innerSelector, expression.Member);
+							return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(access);
 						}
 					}
 				}
