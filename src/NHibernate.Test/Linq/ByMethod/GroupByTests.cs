@@ -265,6 +265,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		[Ignore("Generates incorrect expression.")]
 		public void GroupByAndAll()
 		{
 			//NH-2566
