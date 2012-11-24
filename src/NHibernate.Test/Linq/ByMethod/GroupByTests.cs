@@ -248,7 +248,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(names.Count, Is.EqualTo(3));
 		}
 
-
 		[Test]
 		public void GroupByAndTake2()
 		{
@@ -265,6 +264,22 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
 
+		[Test]
+		[Ignore("Generates incorrect expression.")]
+		public void GroupByAndAll()
+		{
+			//NH-2566
+			var namesAreNotEmpty = db.Users.GroupBy(p => p.Name).Select(g => g.Key).All(name => name.Length > 0);
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
+		[Test]
+		public void GroupByAndAny()
+		{
+			//NH-2566
+			var namesAreNotEmpty = !db.Users.GroupBy(p => p.Name).Select(g => g.Key).Any(name => name.Length == 0);
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
 
 		[Test]
 		public void SelectFirstElementFromProductsGroupedByUnitPrice()
@@ -293,7 +308,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
 		}
-
 
 		[Test]
 		public void SelectSingleElementFromProductsGroupedByUnitPrice()
