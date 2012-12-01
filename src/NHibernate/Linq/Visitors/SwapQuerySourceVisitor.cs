@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -70,6 +71,45 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return base.VisitMemberExpression(expression);
+		}
+
+
+		protected override Expression VisitNewExpression(NewExpression expression)
+		{
+			var arguments = new List<Expression>();
+
+			foreach (var argument in expression.Arguments)
+			{
+				var newArg = VisitAndConvert(argument, "VisitNewExpression");
+
+				// Consider a query where the outer select grabs the entire element from
+				// the sub select (NH-3326):
+				//     var list = db.Products
+				//                  .Select(p => new { p.ProductId, p.Name })
+				//                  .Skip(5).Take(10)
+				//                  .Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				//                  .ToList();
+				// The QuerySourceReferenceExpression 'a' (of an anonymous
+				// type) will be replaced by a QuerySourceReferenceExpression typed as "Product")
+				// by VisitQuerySourceReferenceExpression(). This doesn't match the expected
+				// type in the outer select clause, causing InvalidOperationException "No coercion operator...".
+				// So we need to replace the QuerySourceReferenceExpression with the NewExpression from
+				// its select clause to get the correct type.
+
+				var querySource = argument as QuerySourceReferenceExpression;
+				if (querySource != null && newArg != argument && newArg.Type != argument.Type)
+				{
+					NewExpression innerSelector = GetSubQuerySelectorOrNull(querySource);
+
+					if (innerSelector != null)
+						newArg = innerSelector;
+				}
+
+				arguments.Add(newArg);
+			}
+
+			var expr = Expression.New(expression.Constructor, arguments, expression.Members);
+			return expr;
 		}
 
 
