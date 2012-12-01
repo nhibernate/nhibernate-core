@@ -26,7 +26,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (expression.ReferencedQuerySource == _oldClause)
 			{
-			    return new QuerySourceReferenceExpression(_newClause);
+				return new QuerySourceReferenceExpression(_newClause);
 			}
 
 			// TODO - really don't like this drill down approach.  Feels fragile
@@ -55,28 +55,39 @@ namespace NHibernate.Linq.Visitors
 			// from clause in the subquery, which will be a different type and cause exception.
 
 			// So replace the MemberExpression so that it applies to the inner projection
-			// directly. Then optimize that in Swap() with TransparentIdentifierRemovingExpressionTreeVisitor.
+			// directly. Then optimize that with TransparentIdentifierRemovingExpressionTreeVisitor.
 
 			var querySource = expression.Expression as QuerySourceReferenceExpression;
 			if (querySource != null)
 			{
-				var fromClause = querySource.ReferencedQuerySource as MainFromClause;
-				if (fromClause != null)
+				var innerSelector = GetSubQuerySelectorOrNull(querySource);
+
+				if (innerSelector != null)
 				{
-					var subQuery = fromClause.FromExpression as SubQueryExpression;
-					if (subQuery != null)
-					{
-						var innerSelector = subQuery.QueryModel.SelectClause.Selector as NewExpression;
-						if (innerSelector != null)
-						{
-							var access = Expression.MakeMemberAccess(innerSelector, expression.Member);
-							return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(access);
-						}
-					}
+					var access = Expression.MakeMemberAccess(innerSelector, expression.Member);
+					return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(access);
 				}
 			}
 
 			return base.VisitMemberExpression(expression);
+		}
+
+
+		/// <summary>
+		/// If the querySource is a subquery, return the SelectClause's selector if it's
+		/// NewExpression. Otherwise, return null.
+		/// </summary>
+		private static NewExpression GetSubQuerySelectorOrNull(QuerySourceReferenceExpression querySource)
+		{
+			var fromClause = querySource.ReferencedQuerySource as MainFromClause;
+			if (fromClause == null)
+				return null;
+
+			var subQuery = fromClause.FromExpression as SubQueryExpression;
+			if (subQuery == null)
+				return null;
+
+			return subQuery.QueryModel.SelectClause.Selector as NewExpression;
 		}
 	}
 }
