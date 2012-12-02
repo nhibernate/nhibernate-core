@@ -21,6 +21,22 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void PageBetweenProjectionsReturningNestedAnonymous()
+		{
+			// The important part in this query is that the outer select
+			// grabs the entire element from the inner select, plus more.
+
+			// NH-3326
+			var list = db.Products
+							.Select(p => new { p.ProductId, p.Name })
+							.Skip(5).Take(10)
+							.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+							.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
 		public void Customers1to5()
 		{
 			var q = (from c in db.Customers select c.CustomerId).Take(5);
