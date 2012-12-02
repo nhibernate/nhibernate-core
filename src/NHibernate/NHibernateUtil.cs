@@ -31,6 +31,10 @@ namespace NHibernate
 				IType type = (IType)info.GetValue(null);
 				clrTypeToNHibernateType[type.ReturnedClass] = type;
 			}
+
+			// There are multiple possibilites for boolean. Override so that we
+			// use the most natural mapping.
+			clrTypeToNHibernateType[Boolean.ReturnedClass] = Boolean;
 		}
 
 		/// <summary>
@@ -55,6 +59,7 @@ namespace NHibernate
 			{
 				type = type.GetGenericArguments()[0];
 			}
+
 			if (clrTypeToNHibernateType.ContainsKey(type))
 			{
 				return clrTypeToNHibernateType[type];
