@@ -38,6 +38,9 @@ namespace NHibernate.Linq.GroupBy
 
 				foreach (var bodyClause in subQueryModel.BodyClauses)
 					queryModel.BodyClauses.Add(bodyClause);
+
+				var visitor1 = new PagingRewriterSelectClauseVisitor(queryModel.MainFromClause);
+				queryModel.SelectClause.TransformExpressions(visitor1.Swap);
 			}
 			else
 			{
@@ -45,7 +48,7 @@ namespace NHibernate.Linq.GroupBy
 
 				var newSubQueryModel = subQueryModel.Clone();
 				newSubQueryModel.ResultOperators.Add(cro);
-				newSubQueryModel.ResultTypeOverride = typeof(bool);
+				newSubQueryModel.ResultTypeOverride = typeof (bool);
 
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);
@@ -57,9 +60,6 @@ namespace NHibernate.Linq.GroupBy
 						queryModel.BodyClauses.Add(orderByClause);
 				}
 			}
-
-			var visitor1 = new PagingRewriterSelectClauseVisitor();
-			queryModel.SelectClause.TransformExpressions(visitor1.Swap);
 
 			// Point all query source references to the outer from clause
 			var visitor2 = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryMainFromClause);
