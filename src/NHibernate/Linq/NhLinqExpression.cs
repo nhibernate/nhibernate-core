@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
@@ -34,8 +35,7 @@ namespace NHibernate.Linq
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
 
 			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-																				p =>
-																				new Tuple<object, IType> { First = p.Value, Second = p.Type });
+			                                                                    p => System.Tuple.Create(p.Value, p.Type));
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 
