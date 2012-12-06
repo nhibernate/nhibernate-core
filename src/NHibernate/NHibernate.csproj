@@ -890,7 +890,6 @@
     <Compile Include="Dialect\Schema\MySQLMetaData.cs" />
     <Compile Include="Dialect\Schema\SQLiteMetaData.cs" />
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
-    <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\CsharpSqliteDriver.cs" />
     <Compile Include="Driver\DbProviderFactoryDriveConnectionCommandProvider.cs" />
