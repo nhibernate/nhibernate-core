@@ -12,6 +12,10 @@ Build vNext
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
 	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+		* Mis-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+		* HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+		* DisableLogFormattedSql method removed: the default is disabled
+		* ISession.SaveOrUpdateCopy removed: Use Merge instead
 
 Build 3.3.2.GA
 =============================

@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 		}
 
 		[Test]
-		public void SaveOrUpdateCopyTest()
+        public void MergeTest()
 		{
 			Main main = new Main();
 			Aggregate aggregate = new Aggregate();
@@ -32,8 +32,8 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.SaveOrUpdateCopy(main);
-					s.SaveOrUpdateCopy(aggregate);
+                    s.Merge(main);
+                    s.Merge(aggregate);
 					t.Commit();
 				}
 

@@ -130,10 +130,7 @@ namespace NHibernate.Engine
 
 		/// <seealso cref="ISession.Merge(object)"/>
 		public static readonly CascadingAction Merge= new MergeCascadingAction();
-
-		/// <seealso cref="ISession.SaveOrUpdateCopy(object)"/>
-		public static readonly CascadingAction SaveUpdateCopy= new SaveUpdateCopyCascadingAction();
-
+        
 		/// <seealso cref="ISession.Persist(object)"/>
 		public static readonly CascadingAction Persist= new PersistCascadingAction();
 
@@ -285,31 +282,7 @@ namespace NHibernate.Engine
 				get { return false; }
 			}
 		}
-
-		[Obsolete("Replaced by MergeCascadingAction")]
-		private class SaveUpdateCopyCascadingAction : CascadingAction
-		{
-			// for deprecated saveOrUpdateCopy()
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("cascading to saveOrUpdateCopy: " + entityName);
-				}
-				session.SaveOrUpdateCopy(entityName, child, (IDictionary)anything);
-			}
-			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
-			{
-				// saves / updates don't cascade to uninitialized collections
-				return GetLoadedElementsIterator(session, collectionType, collection);
-			}
-			public override bool DeleteOrphans
-			{
-				// orphans should not be deleted during copy??
-				get { return false; }
-			}
-		}
-
+        
 		private class PersistCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)

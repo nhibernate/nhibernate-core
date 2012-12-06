@@ -73,7 +73,7 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				copiedA = (A) s.SaveOrUpdateCopy(a);
+                copiedA = s.Merge(a);
 				t.Commit();
 			}
 

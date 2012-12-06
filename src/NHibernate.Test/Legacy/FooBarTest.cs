@@ -5663,7 +5663,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz persistentBaz = s.Get(typeof(Baz), baz.Code) as Baz;
-				Baz copiedBaz = (Baz) s.SaveOrUpdateCopy(baz);
+                Baz copiedBaz = (Baz)s.Merge(baz);
 				Assert.AreSame(persistentBaz, copiedBaz);
 
 				s.Delete(persistentBaz);

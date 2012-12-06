@@ -376,11 +376,6 @@ namespace NHibernate.Hql.Ast
 			return new HqlBooleanMethodCall(_factory, methodName, parameters);
 		}
 
-		public HqlDistinctHolder DistinctHolder(params HqlTreeNode[] children)
-		{
-			return new HqlDistinctHolder(_factory, children);
-		}
-
 		public HqlExpressionSubTreeHolder ExpressionSubTreeHolder(params HqlTreeNode[] children)
 		{
 			return new HqlExpressionSubTreeHolder(_factory, children);
