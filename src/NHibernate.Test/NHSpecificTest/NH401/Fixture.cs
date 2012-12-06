@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 		}
 
 		[Test]
-		public void SaveOrUpdateCopy()
+        public void Merge()
 		{
 			object clubId;
 
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			mem.Expirydate = DateTime.Now.AddYears(1);
 			mem.Joindate = DateTime.Now;
 
-			sess.SaveOrUpdateCopy(mem);
+            sess.Merge(mem);
 			sess.Flush();
 
 			sess.Close();

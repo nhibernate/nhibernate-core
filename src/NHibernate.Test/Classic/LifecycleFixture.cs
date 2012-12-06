@@ -72,7 +72,7 @@ namespace NHibernate.Test.Classic
 		}
 
 		[Test]
-		public void SaveOrUpdateCopy()
+		public void Merge()
 		{
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
@@ -84,7 +84,7 @@ namespace NHibernate.Test.Classic
 			sessions.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdateCopy(v);
+                s.Merge(v);
 				s.Flush();
 			}
 			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Classic
 			var v1 = new EntityWithLifecycle("Shinobi", 0, 10);
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdateCopy(v1);
+                s.Merge(v1);
 				s.Flush();
 			}
 			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
