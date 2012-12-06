@@ -1229,8 +1229,6 @@ namespace NHibernate.Impl
 					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
-				case "managed_web":
-					return new ManagedWebSessionContext(this);
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
 			}

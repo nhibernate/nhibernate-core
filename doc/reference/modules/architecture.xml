@@ -286,7 +286,7 @@
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
             class to use (including the assembly name); for the out-of-the-box implementations, however,
-            there are corresponding short names: "managed_web", "call", "thread_static", "web" and "wcf_operation",
+            there are corresponding short names: "call", "thread_static", "web" and "wcf_operation",
             respectively.
         </para>
     </sect1>
