@@ -108,7 +108,7 @@ namespace NHibernate.Engine
 		{
 			public override bool DoCascade(CascadingAction action)
 			{
-				return action == CascadingAction.SaveUpdate || action == CascadingAction.SaveUpdateCopy;
+				return action == CascadingAction.SaveUpdate;
 			}
 		}
 
@@ -153,7 +153,7 @@ namespace NHibernate.Engine
 		{
 			public override bool DoCascade(CascadingAction action)
 			{
-				return action == CascadingAction.Merge || action == CascadingAction.SaveUpdateCopy;
+				return action == CascadingAction.Merge;
 			}
 		}
 

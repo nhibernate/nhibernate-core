@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
     public class NH958Fixture : BugTestCase
     {
 		[Test]
-		public void SaveOrUpdateCopyWithAny1()
+		public void MergeWithAny1()
 		{
 			Person person;
 
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				person = (Person) session.SaveOrUpdateCopy(person);
+				person = session.Merge(person);
 				transaction.Commit();
 			}
 
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 		}
 
 		[Test]
-		public void SaveOrUpdateCopyWithAny2()
+		public void MergeWithAny2()
 		{
 			Person person;
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             using (ITransaction transaction = session.BeginTransaction())
             {
                 // the transient hobby "test" is inserted and updated
-                person = (Person)session.SaveOrUpdateCopy(person);
+                person = session.Merge(person);
                 transaction.Commit();
             }
 

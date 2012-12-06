@@ -86,7 +86,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				copiedA = (A) s.SaveOrUpdateCopy( a );
+				copiedA = s.Merge(a);
 				t.Commit();
 			}
 
