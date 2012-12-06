@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
-				session.SaveOrUpdateCopy(contact);
+                session.Merge(contact);
 			}
 		}
 		[Test]
@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
-				session.SaveOrUpdateCopy(contact);
+                session.Merge(contact);
 			}
 		}
 		[Test]
@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(3));
 
-				session.SaveOrUpdateCopy(contact);
+                session.Merge(contact);
 			}
 		}
 	}
