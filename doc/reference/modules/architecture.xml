@@ -241,14 +241,6 @@
         <itemizedlist>
             <listitem>
                 <para>
-                    <literal>NHibernate.Context.ManagedWebSessionContext</literal> - current
-                    sessions are tracked by <literal>HttpContext</literal>. However, you are responsible to
-                    bind and unbind an <literal>ISession</literal> instance with static methods
-                    on this class, it never opens, flushes, or closes an <literal>ISession</literal> itself.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
                     <literal>NHibernate.Context.CallSessionContext</literal> - current sessions are tracked
                     by <literal>CallContext</literal>. You are responsible to bind and unbind an <literal>
                     ISession</literal> instance with static methods of class <literal>CurrentSessionContext
@@ -265,10 +257,10 @@
             </listitem>
             <listitem>
                 <para>
-                    <literal>NHibernate.Context.WebSessionContext</literal> - analogous to <literal>
-                    ManagedWebSessionContext</literal> above, stores the current session in <literal>
-                    HttpContext</literal>. You are responsible to bind and unbind an <literal>ISession
-                    </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
+                    <literal>NHibernate.Context.WebSessionContext</literal> - 
+					stores the current session in <literal>HttpContext</literal>. 
+					You are responsible to bind and unbind an <literal>ISession</literal> 
+					instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
             <listitem>
@@ -279,6 +271,15 @@
                     </literal> instance with static methods of class <literal>CurrentSessionContext</literal>.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+                    <literal>NHibernate.Context.ManagedWebSessionContext</literal> - current
+                    sessions are tracked by <literal>HttpContext</literal>. Removed in NHibernate 4.0 
+					- <literal>NHibernate.Context.WebSessionContext</literal> should be used instead.
+					You are responsible to bind and unbind an <literal>ISession</literal> instance with static methods
+                    on this class, it never opens, flushes, or closes an <literal>ISession</literal> itself.
+                </para>
+            </listitem>
         </itemizedlist>
 
         <para>
@@ -286,7 +287,7 @@
             defines which <literal>NHibernate.Context.ICurrentSessionContext</literal> implementation
             should be used. Typically, the value of this parameter would just name the implementation
             class to use (including the assembly name); for the out-of-the-box implementations, however,
-            there are corresponding short names: "managed_web", "call", "thread_static", "web" and "wcf_operation",
+            there are corresponding short names: "call", "thread_static", "web" and "wcf_operation",
             respectively.
         </para>
     </sect1>
