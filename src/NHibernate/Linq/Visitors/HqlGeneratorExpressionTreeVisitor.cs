@@ -341,7 +341,7 @@ namespace NHibernate.Linq.Visitors
 
 			//When the expression is a member-access nullable then use the "case" clause to transform it to boolean (to use always .NET meaning instead leave the DB the behavior for null)
 			//When the expression is a complex-expression then use the "case" clause to transform it to boolean
-			return _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(original, _hqlTreeBuilder.True()) }, _hqlTreeBuilder.False());
+			return _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(original, _hqlTreeBuilder.True())}, _hqlTreeBuilder.False());
 		}
 
 		protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
@@ -439,14 +439,14 @@ namespace NHibernate.Linq.Visitors
 			var test = VisitExpression(expression.Test).AsExpression();
 			var ifTrue = BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfTrue).AsExpression());
 			var ifFalse = (expression.IfFalse != null
-							   ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
-							   : null);
+				               ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
+				               : null);
 
-			var @case = _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(test, ifTrue) }, ifFalse);
+			var @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
 
-			return expression.Type == typeof (bool)
-					   ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
-					   : _hqlTreeBuilder.Cast(@case, expression.Type);
+			return (expression.Type == typeof (bool) || expression.Type == (typeof (bool?)))
+				       ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
+				       : _hqlTreeBuilder.Cast(@case, expression.Type);
 		}
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
