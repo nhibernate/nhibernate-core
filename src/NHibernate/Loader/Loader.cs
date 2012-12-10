@@ -1664,9 +1664,8 @@ namespace NHibernate.Loader
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
 
-			var originSql = sqlString.Compact();
 			var result = new SqlStringBuilder();
-			foreach (var sqlPart in originSql)
+			foreach (var sqlPart in sqlString)
 			{
 				var parameter = sqlPart as Parameter;
 				if (parameter != null)
@@ -1727,7 +1726,7 @@ namespace NHibernate.Loader
 					}
 				}
 			}
-			return result.ToSqlString().Compact();
+			return result.ToSqlString();
 		}
 
 		protected SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)

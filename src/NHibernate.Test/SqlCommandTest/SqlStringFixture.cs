@@ -92,7 +92,6 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.That(parts1, Is.EqualTo(expectedParts1));
 
 			SqlString sql2 = sql.Substring(6);
-			sql2.Compact();
 			var parts2 = sql2.Split(",").Select(s => s.ToString()).ToArray();
 			var expectedParts2 = new[] { " alfa", " beta", " gamma from table" };
 			Assert.That(parts2, Is.EqualTo(expectedParts2));
