@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Hql.Classic;
 using NHibernate.Util;
 
 namespace NHibernate.Test.Hql.Ast
@@ -9,12 +8,7 @@ namespace NHibernate.Test.Hql.Ast
 	public class BaseFixture: TestCase
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
-
-		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
-		{
-			return !(sessions.Settings.QueryTranslatorFactory is ClassicQueryTranslatorFactory);
-		}
-
+		
 		#region Overrides of TestCase
 
 		protected override IList Mappings
@@ -46,13 +40,6 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, sessions).Parse(), emptyfilters, sessions);
 			qt.Compile(replacements, false);
-			return qt.SQLString;
-		}
-
-		public string GetSqlWithClassicParser(string query)
-		{
-			var qt = new NHibernate.Hql.Classic.QueryTranslator(null, query, emptyfilters, sessions);
-			qt.Compile(new Dictionary<string, string>(), false);
 			return qt.SQLString;
 		}
 	}

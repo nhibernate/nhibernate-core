@@ -227,20 +227,7 @@
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
-    <Compile Include="Hql\Classic\ClauseParser.cs" />
-    <Compile Include="Hql\Classic\FromParser.cs" />
-    <Compile Include="Hql\Classic\FromPathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\GroupByParser.cs" />
-    <Compile Include="Hql\Classic\HavingParser.cs" />
-    <Compile Include="Hql\Classic\IParser.cs" />
-    <Compile Include="Hql\Classic\OrderByParser.cs" />
-    <Compile Include="Hql\Classic\ParserHelper.cs" />
-    <Compile Include="Hql\Classic\PathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\PreprocessingParser.cs" />
-    <Compile Include="Hql\Classic\QueryTranslator.cs" />
-    <Compile Include="Hql\Classic\SelectParser.cs" />
-    <Compile Include="Hql\Classic\SelectPathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\WhereParser.cs" />
+    <Compile Include="Hql\ParserHelper.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IDatabinder.cs" />
     <Compile Include="Id\Assigned.cs" />
@@ -1502,7 +1489,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
-    <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />
     <Compile Include="Impl\DetachedNamedQuery.cs" />
     <Compile Include="Impl\DetachedQuery.cs" />
@@ -1560,7 +1546,6 @@
     <Compile Include="Criterion\SimpleSubqueryExpression.cs" />
     <Compile Include="Criterion\Subqueries.cs" />
     <Compile Include="Criterion\SubqueryExpression.cs" />
-    <Compile Include="Hql\Classic\ClassicQueryTranslatorFactory.cs" />
     <Compile Include="Hql\CollectionSubqueryFactory.cs" />
     <Compile Include="Criterion\IsEmptyExpression.cs" />
     <Compile Include="Criterion\IsNotEmptyExpression.cs" />

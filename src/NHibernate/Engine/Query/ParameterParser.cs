@@ -1,5 +1,5 @@
 using System;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query

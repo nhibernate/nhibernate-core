@@ -514,20 +514,10 @@ namespace NHibernate.Test.Legacy
 			{
 				if (!(Dialect is FirebirdDialect))
 				{
-					if (IsClassicParser)
-					{
-						list =
-								s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements")
-										.SetDateTime(0, DateTime.Today).List();
-
-					}
-					else
-					{
-						list =
-							s.CreateQuery(
-								"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
-								SetDateTime(0, DateTime.Today).List();
-					}
+					list = s.CreateQuery(
+							"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
+							SetDateTime(0, DateTime.Today).List();
+					
 					Assert.AreEqual(2, list.Count, "component query");
 				}
 
@@ -602,19 +592,10 @@ namespace NHibernate.Test.Legacy
 				IsEmpty(s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").Enumerable()
 					));
 
-			if (IsClassicParser)
-			{
-				enumerable = s.CreateQuery(
-						"select foo.Component.Name, foo.Component.ImportantDates.elements from foo in class Foo where foo.TheFoo.id=?"
-						).SetString(0, foo.TheFoo.Key).Enumerable();
-			}
-			else
-			{
-				enumerable =
-					s.CreateQuery(
+			enumerable = s.CreateQuery(
 						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
 						SetString(0, foo.TheFoo.Key).Enumerable();
-			}
+			
 
 			int i = 0;
 			foreach (object[] row in enumerable)
@@ -625,18 +606,9 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.AreEqual(3, i); //WAS: 4
 
-			if (IsClassicParser)
-			{
-				enumerable = s.CreateQuery(
-						"select max(foo.Component.ImportantDates.elements) from foo in class Foo group by foo.id"
-						).Enumerable();
-			}
-			else
-			{
-				enumerable =
-					s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
+			enumerable = s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
 						Enumerable();
-			}
+			
 			IEnumerator enumerator = enumerable.GetEnumerator();
 
 			Assert.IsTrue(enumerator.MoveNext());
@@ -839,19 +811,9 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery(
 					"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
 					.List();
-
-				if (IsClassicParser)
-				{
-					s.CreateQuery(
-							"from Baz baz where 'b' in baz.CollectionComponent.Nested.Foos.elements and 1.0 in baz.CollectionComponent.Nested.Floats.elements")
-							.List();
-				}
-				else
-				{
-					s.CreateQuery(
-						"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-						.List();
-				}
+				s.CreateQuery(
+					"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+					.List();
 			}
 
 			s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
@@ -2435,7 +2397,7 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery(hql).List();
 			}
 
-			hql = IsClassicParser ? "select fum1.Friends.elements from fum1 in class Fum" : "select elements(fum1.Friends) from fum1 in class Fum";
+			hql = "select elements(fum1.Friends) from fum1 in class Fum";
 
 			s.CreateQuery(hql).List();
 
@@ -2567,14 +2529,7 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(1, s.CreateQuery("from Bar bar join bar.Baz.FooArray foo").List().Count);
 
-			if (IsClassicParser)
-			{
-				Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in bar.Baz.FooSet.elements").List().Count);
-			}
-			else
-			{
-				Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooSet)").List().Count);
-			}
+			Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooSet)").List().Count);
 
 			Assert.AreEqual(1, s.CreateQuery("from bar in class Bar, foo in elements( bar.Baz.FooArray )").List().Count);
 
@@ -2603,9 +2558,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(baz, enumer.Current);
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			bool found = false;
 			while (enumer.MoveNext())
@@ -2620,9 +2573,7 @@ namespace NHibernate.Test.Legacy
 			baz.StringArray = null;
 			s.CreateQuery("from baz in class Baz").Enumerable(); // no flush
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
@@ -2630,9 +2581,7 @@ namespace NHibernate.Test.Legacy
 			enumer = s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); // no flush
 			Assert.IsFalse(enumer.MoveNext());
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2645,18 +2594,9 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 
 			baz.StringList.Remove("1E1");
-			if (IsClassicParser)
-			{
-				s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable(); //no flush
-			}
-			else
-			{
-				s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable(); //no flush
-			}
+			s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable(); //no flush
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2676,9 +2616,7 @@ namespace NHibernate.Test.Legacy
 			
 			baz.StringList = null;
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
@@ -2732,20 +2670,10 @@ namespace NHibernate.Test.Legacy
 			// disable this for dbs with no subselects
 			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorAll)
 			{
-				if (IsClassicParser)
-				{
-					list =
-							s.CreateQuery(
-									"select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in baz.FooArray.elements and 3 = some baz.IntArray.elements and 4 > all baz.IntArray.indices")
-									.List();
-				}
-				else
-				{
-					list =
-						s.CreateQuery(
+				list = s.CreateQuery(
 							"select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in elements(baz.FooArray) and 3 = some elements(baz.IntArray) and 4 > all indices(baz.IntArray)")
 							.List();
-				}
+				
 
 				Assert.AreEqual(2, list.Count, "collection.elements find");
 			}
@@ -2753,24 +2681,13 @@ namespace NHibernate.Test.Legacy
 			// sapdb doesn't like distinct with binary type
 			//if( !(dialect is Dialect.SAPDBDialect) ) 
 			//{
-			if (IsClassicParser)
-			{
-				list =
-						s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements").List
-								();
-			}
-			else
-			{
-				list =
-					s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").
+			list = s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").
 						List();
-			}
+			
 			Assert.AreEqual(2, list.Count, "collection.elements find");
 			//}
 
-			list = IsClassicParser
-			       	? s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooSet.elements").List()
-			       	: s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooSet)").List();
+			list = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooSet)").List();
 
 			Assert.AreEqual(1, list.Count, "association.elements find");
 
@@ -4980,18 +4897,9 @@ namespace NHibernate.Test.Legacy
 
 			IEnumerator e;
 
-			if (IsClassicParser)
-			{
-				e =
-					s.CreateQuery("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
-						GetEnumerator();
-			}
+			
 
 			bool found = false;
 			while (e.MoveNext())
@@ -5004,33 +4912,15 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 			baz.StringArray = null;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select distinct baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable()
+			e = s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable()
 						.GetEnumerator();
-			}
+			
 			Assert.IsFalse(e.MoveNext());
 			baz.StringArray = new string[] {"foo", "bar"};
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
+			
 			Assert.IsTrue(e.MoveNext());
 
 			Foo foo = new Foo();
@@ -5038,18 +4928,9 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			baz.FooArray = new Foo[] {foo};
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
-			}
+			
 			found = false;
 			while (e.MoveNext())
 			{
@@ -5062,66 +4943,29 @@ namespace NHibernate.Test.Legacy
 
 			baz.FooArray[0] = null;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
-			}
+			
 			Assert.IsFalse(e.MoveNext());
 			baz.FooArray[0] = foo;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select baz.FooArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
+			
 			Assert.IsTrue(e.MoveNext());
 
 			if (Dialect.SupportsSubSelects && !(Dialect is FirebirdDialect))
 			{
 				baz.FooArray[0] = null;
-				if (IsClassicParser)
-				{
-					e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements")
-							 .SetEntity(0, foo).Enumerable().GetEnumerator();
-				}
-				else
-				{
-					e =
-						s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
+				e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
 							Enumerable().GetEnumerator();
-				}
 
 				Assert.IsFalse(e.MoveNext());
 				baz.FooArray[0] = foo;
-				if (IsClassicParser)
-				{
-					e =
-						s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
-						              + "(select elt from baz in class NHibernate.DomainModel.Baz, elt in baz.FooArray.elements)").
-							Enumerable().GetEnumerator();
-				}
-				else
-				{
-					e =
-						s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
+				e = s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
 													+ "(select elt from baz in class NHibernate.DomainModel.Baz, elt in elements(baz.FooArray))").
 							Enumerable().GetEnumerator();
-				}
+				
 				Assert.IsTrue(e.MoveNext());
 			}
 			s.Delete(foo);

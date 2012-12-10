@@ -176,9 +176,7 @@ namespace NHibernate.Collection
 		/// Reads the row from the <see cref="IDataReader"/>.
 		/// </summary>
 		/// <remarks>
-		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections,
-		/// or <see cref="NHibernate.Hql.Classic.QueryTranslator.FetchedCollections.IsUnsafe" /> should be updated
-		/// to return <see langword="true" /> for the collection type.
+		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections.
 		/// </remarks>
 		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
 		/// <param name="role">The persister for this Collection.</param>

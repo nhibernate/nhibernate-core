@@ -13,6 +13,7 @@ Build vNext
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
 	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
 	* Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * Removed Classic HQL Parser.
 
 Build 3.3.2.GA
 =============================
