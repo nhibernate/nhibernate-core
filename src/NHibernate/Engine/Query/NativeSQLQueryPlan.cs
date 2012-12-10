@@ -7,7 +7,7 @@ using NHibernate.Action;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Param;

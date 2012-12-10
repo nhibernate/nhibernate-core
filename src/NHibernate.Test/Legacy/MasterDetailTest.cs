@@ -366,7 +366,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			string path = IsClassicParser ? "m.Details.elements" : "m.Details";
+			const string path = "m.Details";
 
 			if (Dialect.SupportsSubSelects)
 			{

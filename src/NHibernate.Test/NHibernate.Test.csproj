@@ -2403,7 +2403,9 @@
     <EmbeddedResource Include="TypesTest\StringClobClass.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Cascade\Circle\CascadeMergeToChildBeforeParent.hbm.xml" />
     <EmbeddedResource Include="Cascade\Circle\MultiPathCircleCascade.hbm.xml" />
     <EmbeddedResource Include="Cascade\MultiPathCascade.hbm.xml" />

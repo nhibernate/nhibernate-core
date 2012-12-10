@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;

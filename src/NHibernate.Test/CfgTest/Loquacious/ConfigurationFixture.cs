@@ -7,7 +7,7 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -36,7 +36,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				.Proxy
 					.DisableValidation()
 					.Through<DefaultProxyFactoryFactory>()
-				.ParsingHqlThrough<ClassicQueryTranslatorFactory>()
+				.ParsingHqlThrough<ASTQueryTranslatorFactory>()
 				.Mapping
 					.UsingDefaultCatalog("MyCatalog")
 					.UsingDefaultSchema("MySche")
@@ -72,7 +72,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(cfg.Properties[Environment.CollectionTypeFactoryClass], Is.EqualTo(typeof(DefaultCollectionTypeFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.UseProxyValidator], Is.EqualTo("false"));
 			Assert.That(cfg.Properties[Environment.ProxyFactoryFactoryClass], Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
-			Assert.That(cfg.Properties[Environment.QueryTranslator], Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
+			Assert.That(cfg.Properties[Environment.QueryTranslator], Is.EqualTo(typeof(ASTQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(cfg.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
 			Assert.That(cfg.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
 			Assert.That(cfg.Properties[Environment.Dialect], Is.EqualTo(typeof(MsSql2000Dialect).AssemblyQualifiedName));

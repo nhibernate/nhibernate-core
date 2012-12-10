@@ -4,11 +4,10 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq.Functions;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Cfg.Loquacious;
 using System.Data;
 using NHibernate.Exceptions;
 using SharpTestsEx;
@@ -32,7 +31,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													c.QueryCache<StandardQueryCache>();
 												});
 			configure.CollectionTypeFactory<DefaultCollectionTypeFactory>();
-			configure.HqlQueryTranslator<ClassicQueryTranslatorFactory>();
+			configure.HqlQueryTranslator<ASTQueryTranslatorFactory>();
 			configure.LinqToHqlGeneratorsRegistry<DefaultLinqToHqlGeneratorsRegistry>();
 			configure.Proxy(p =>
 												{
@@ -78,7 +77,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.ProxyFactoryFactoryClass],
 						Is.EqualTo(typeof(DefaultProxyFactoryFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.QueryTranslator],
-						Is.EqualTo(typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName));
+						Is.EqualTo(typeof(ASTQueryTranslatorFactory).AssemblyQualifiedName));
 			Assert.That(configure.Properties[Environment.DefaultCatalog], Is.EqualTo("MyCatalog"));
 			Assert.That(configure.Properties[Environment.DefaultSchema], Is.EqualTo("MySche"));
 			Assert.That(configure.Properties[Environment.Dialect],
