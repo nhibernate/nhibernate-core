@@ -62,7 +62,7 @@ namespace NHibernate.Driver
 		{
 			for (int i = 0; i < parameters.Count; i++)
 			{
-				SetVariableLengthParameterSize((IDbDataParameter)parameters[i], parameterTypes[i]);
+				SetVariableLengthParameterSize((IDbDataParameter) parameters[i], parameterTypes[i]);
 			}
 		}
 
@@ -74,6 +74,5 @@ namespace NHibernate.Driver
 
 			return command;
 		}
-
 	}
 }
