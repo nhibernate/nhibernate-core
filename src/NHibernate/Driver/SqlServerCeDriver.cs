@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -88,16 +87,6 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
-		{
-			var command = base.GenerateCommand(type, sqlString, parameterTypes);
-			if (prepareSql)
-			{
-				SqlClientDriver.SetParameterSizes(command.Parameters, parameterTypes);
-			}
-			return command;
-		}
-
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
@@ -108,6 +97,10 @@ namespace NHibernate.Driver
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
+			if (prepareSql)
+			{
+				SqlClientDriver.SetVariableLengthParameterSize(dbParam, sqlType);
+			}
 		}
 
 		private static SqlType AdjustSqlType(SqlType sqlType)

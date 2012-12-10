@@ -3,7 +3,6 @@ using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
@@ -92,25 +91,14 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
-			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
-
-			SetParameterSizes(command.Parameters, parameterTypes);
-
-			return command;
+			base.InitializeParameter(dbParam, name, sqlType);
+			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
 
 		// Used from SqlServerCeDriver as well
-		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
-		{
-			for (int i = 0; i < parameters.Count; i++)
-			{
-				SetVariableLengthParameterSize((IDbDataParameter) parameters[i], parameterTypes[i]);
-			}
-		}
-
-		protected static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		public static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 
@@ -182,7 +170,7 @@ namespace NHibernate.Driver
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
-			get { return typeof (SqlClientBatchingBatcherFactory); }
+			get { return typeof(SqlClientBatchingBatcherFactory); }
 		}
 
 		#endregion
@@ -198,4 +186,3 @@ namespace NHibernate.Driver
 		}
 	}
 }
-
