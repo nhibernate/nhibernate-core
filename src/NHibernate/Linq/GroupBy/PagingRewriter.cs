@@ -7,7 +7,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
 {
-	public static class PagingRewriter
+	internal static class PagingRewriter
 	{
 		private static readonly System.Type[] PagingResultOperators = new[]
 																		  {
@@ -38,6 +38,9 @@ namespace NHibernate.Linq.GroupBy
 
 				foreach (var bodyClause in subQueryModel.BodyClauses)
 					queryModel.BodyClauses.Add(bodyClause);
+
+				var visitor1 = new PagingRewriterSelectClauseVisitor(queryModel.MainFromClause);
+				queryModel.SelectClause.TransformExpressions(visitor1.Swap);
 			}
 			else
 			{
@@ -57,9 +60,6 @@ namespace NHibernate.Linq.GroupBy
 						queryModel.BodyClauses.Add(orderByClause);
 				}
 			}
-
-			var visitor1 = new PagingRewriterSelectClauseVisitor();
-			queryModel.SelectClause.TransformExpressions(visitor1.Swap);
 
 			// Point all query source references to the outer from clause
 			var visitor2 = new SwapQuerySourceVisitor(queryModel.MainFromClause, subQueryMainFromClause);

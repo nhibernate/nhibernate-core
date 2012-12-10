@@ -8,9 +8,16 @@ namespace NHibernate.Linq.Visitors
 {
 	internal class PagingRewriterSelectClauseVisitor : ExpressionTreeVisitor
 	{
+		private readonly FromClauseBase querySource;
+
+		public PagingRewriterSelectClauseVisitor(FromClauseBase querySource)
+		{
+			this.querySource = querySource;
+		}
+
 		public Expression Swap(Expression expression)
 		{
-			return VisitExpression(expression);
+			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(VisitExpression(expression));
 		}
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
@@ -18,7 +25,7 @@ namespace NHibernate.Linq.Visitors
 			var innerSelector = GetSubQuerySelectorOrNull(expression);
 			if (innerSelector != null)
 			{
-				return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(VisitExpression(innerSelector));
+				return VisitExpression(innerSelector);
 			}
 
 			return base.VisitQuerySourceReferenceExpression(expression);
@@ -28,9 +35,12 @@ namespace NHibernate.Linq.Visitors
 		/// If the querySource is a subquery, return the SelectClause's selector if it's
 		/// NewExpression. Otherwise, return null.
 		/// </summary>
-		private static NewExpression GetSubQuerySelectorOrNull(QuerySourceReferenceExpression querySource)
+		private Expression GetSubQuerySelectorOrNull(QuerySourceReferenceExpression expression)
 		{
-			var fromClause = querySource.ReferencedQuerySource as MainFromClause;
+			if (expression.ReferencedQuerySource != querySource)
+				return null;
+
+			var fromClause = expression.ReferencedQuerySource as FromClauseBase;
 			if (fromClause == null)
 				return null;
 
@@ -38,7 +48,7 @@ namespace NHibernate.Linq.Visitors
 			if (subQuery == null)
 				return null;
 
-			return subQuery.QueryModel.SelectClause.Selector as NewExpression;
+			return subQuery.QueryModel.SelectClause.Selector;
 		}
 	}
 }
