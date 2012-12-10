@@ -180,7 +180,6 @@
     <Compile Include="Driver\Sql2008ClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
-    <Compile Include="Driver\SQLiteDriver.cs" />
     <Compile Include="Driver\SybaseAsaClientDriver.cs" />
     <Compile Include="Driver\SybaseAseClientDriver.cs" />
     <Compile Include="Driver\SybaseSQLAnywhereDotNet4Driver.cs" />
@@ -890,7 +889,6 @@
     <Compile Include="Dialect\Schema\MySQLMetaData.cs" />
     <Compile Include="Dialect\Schema\SQLiteMetaData.cs" />
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
-    <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\CsharpSqliteDriver.cs" />
     <Compile Include="Driver\DbProviderFactoryDriveConnectionCommandProvider.cs" />
@@ -1313,7 +1311,6 @@
     <Compile Include="Dialect\Schema\ITableMetadata.cs" />
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
-    <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Criterion\SubqueryProjection.cs" />
@@ -1576,7 +1573,6 @@
     <Compile Include="Dialect\IngresDialect.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
-    <Compile Include="Driver\ASAClientDriver.cs" />
     <Compile Include="Driver\DB2400Driver.cs" />
     <Compile Include="Driver\FirebirdClientDriver.cs" />
     <Compile Include="Driver\IngresDriver.cs" />
