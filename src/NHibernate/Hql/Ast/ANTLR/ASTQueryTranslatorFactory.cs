@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Author: Gavin King
 	/// Ported by: Steve Strong
 	/// </summary>
-	public class ASTQueryTranslatorFactory : IQueryTranslatorFactory2
+	public class ASTQueryTranslatorFactory : IQueryTranslatorFactory
 	{
 		public IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{

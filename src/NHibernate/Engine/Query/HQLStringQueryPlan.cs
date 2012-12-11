@@ -7,14 +7,12 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class HQLStringQueryPlan : HQLQueryPlan
 	{
-		public HQLStringQueryPlan(string hql, bool shallow, 
-								  IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
-			: this(hql, (string) null, shallow, enabledFilters, factory)
+		public HQLStringQueryPlan(string hql, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+			: this(hql, null, shallow, enabledFilters, factory)
 		{
 		}
 
-		protected internal HQLStringQueryPlan(string hql, string collectionRole, bool shallow,
-											  IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+		protected HQLStringQueryPlan(string hql, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 			: base(hql, CreateTranslators(hql, collectionRole, shallow, enabledFilters, factory))
 		{
 		}

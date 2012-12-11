@@ -16,6 +16,7 @@ Build vNext
         * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
         * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
         * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2 its methods were pulled up to IQueryTranslatorFactory 
 
 Build 3.3.2.GA
 =============================

@@ -21,14 +21,7 @@ namespace NHibernate.Hql
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
 		IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
-	}
 
-	/// <summary>
-	/// Facade for generation of <see cref="NHibernate.Hql.IQueryTranslator"/> 
-	/// and <see cref="NHibernate.Hql.IFilterTranslator"/> instances.
-	/// </summary>
-	public interface IQueryTranslatorFactory2 : IQueryTranslatorFactory
-	{
 		/// <summary>
 		/// Construct a <see cref="NHibernate.Hql.IQueryTranslator"/> instance 
 		/// capable of translating a Linq expression.
