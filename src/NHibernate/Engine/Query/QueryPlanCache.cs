@@ -72,8 +72,6 @@ namespace NHibernate.Engine.Query
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			string expressionStr = queryExpression.Key;
-
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
 			var plan = (IQueryExpressionPlan)planCache[key];
 
@@ -81,16 +79,16 @@ namespace NHibernate.Engine.Query
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
 				}
-				plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+				plan = new HQLExpressionQueryPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
 				}
 			}
 

@@ -26,17 +26,12 @@ namespace NHibernate.Hql
 		/// Construct a <see cref="NHibernate.Hql.IQueryTranslator"/> instance 
 		/// capable of translating a Linq expression.
 		/// </summary>
-		/// <param name="queryIdentifier">
-		/// The query-identifier (used in <see cref="NHibernate.Stat.QueryStatistics"/> collection). 
-		/// This is typically the same as the queryString parameter except for the case of
-		/// split polymorphic queries which result in multiple physical sql queries.
-		/// </param>
 		/// <param name="queryExpression">The query expression to be translated</param>
 		/// <param name="collectionRole"></param>
 		/// <param name="shallow"></param>
 		/// <param name="filters">Currently enabled filters</param>
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
-		IQueryTranslator[] CreateQueryTranslators(string queryIdentifier, IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
+		IQueryTranslator[] CreateQueryTranslators(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
 	}
 }
