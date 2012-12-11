@@ -846,15 +846,13 @@ namespace NHibernate.Impl
 					{
 						throw new QueryException("The collection was unreferenced");
 					}
-					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
-																	 EnabledFilters);
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 				}
 				else
 				{
 					// otherwise, we only need to flush if there are in-memory changes
 					// to the queried tables
-					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow,
-																	 EnabledFilters);
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
 					if (AutoFlushIfRequired(plan.QuerySpaces))
 					{
 						// might need to run a different filter entirely after the flush
@@ -867,8 +865,7 @@ namespace NHibernate.Impl
 							{
 								throw new QueryException("The collection was dereferenced");
 							}
-							plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
-																			 EnabledFilters);
+							plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 						}
 					}
 				}

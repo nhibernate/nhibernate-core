@@ -7,7 +7,7 @@ namespace NHibernate
 {
 	public interface IQueryExpression
 	{
-		IASTNode Translate(ISessionFactoryImplementor sessionFactory);
+		IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter);
 		string Key { get; }
 		System.Type Type { get; }
 		IList<NamedParameterDescriptor> ParameterDescriptors { get; }

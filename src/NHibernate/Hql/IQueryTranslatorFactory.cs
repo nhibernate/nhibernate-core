@@ -20,6 +20,7 @@ namespace NHibernate.Hql
 		/// <param name="filters">Currently enabled filters</param>
 		/// <param name="factory">The session factory</param>
 		/// <returns>An appropriate translator.</returns>
+		[Obsolete("Use overload with IQueryExpression")]
 		IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory);
 
 		/// <summary>

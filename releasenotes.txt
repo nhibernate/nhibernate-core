@@ -11,12 +11,13 @@ Build vNext
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
-	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
-	* Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
         * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
         * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
         * Removed Classic HQL Parser.
-        * Removed IQueryTranslatorFactory2 its methods were pulled up to IQueryTranslatorFactory 
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators assepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
 
 Build 3.3.2.GA
 =============================

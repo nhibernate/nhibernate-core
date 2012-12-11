@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
-			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
@@ -170,7 +170,7 @@ namespace NHibernate.Impl
 
 		#region IQueryExpression Members
 
-		public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			return _tree;
 		}

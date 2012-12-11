@@ -51,7 +51,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();

@@ -16,14 +16,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 	{
 		public IQueryTranslator[] CreateQueryTranslators(string queryString, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
-			var ast = new HqlParseEngine(queryString, collectionRole != null, factory).Parse();
-
-			return CreateQueryTranslators(ast, queryString, collectionRole, shallow, filters, factory);
+			var queryExpression = new StringQueryExpression(queryString);
+			return CreateQueryTranslators(queryExpression, collectionRole, shallow, filters, factory);
 		}
 
 		public IQueryTranslator[] CreateQueryTranslators(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
-			return CreateQueryTranslators(queryExpression.Translate(factory), queryExpression.Key, collectionRole, shallow, filters, factory);
+			return CreateQueryTranslators(queryExpression.Translate(factory, collectionRole != null), queryExpression.Key, collectionRole, shallow, filters, factory);
 		}
 
 		static IQueryTranslator[] CreateQueryTranslators(IASTNode ast, string queryIdentifier, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
