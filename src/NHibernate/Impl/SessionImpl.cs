@@ -600,7 +600,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return List(query, new QueryParameters(types, values));
+				return List(query.ToQueryExpression(), new QueryParameters(types, values));
 			}
 		}
 

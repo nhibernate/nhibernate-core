@@ -80,6 +80,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
+		[Obsolete("Use overload with IQueryExpression")]
 		IList List(string query, QueryParameters parameters);
 
 		/// <summary>
@@ -105,6 +106,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>

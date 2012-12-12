@@ -114,14 +114,10 @@ namespace NHibernate.Impl
 			List(query.ToQueryExpression(), queryParameters, results);
 		}
 
+		[Obsolete("Use overload with IQueryExpression")]
 		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				var results = new List<T>();
-				List(query.ToQueryExpression(), queryParameters, results);
-				return results;
-			}
+			return List<T>(query.ToQueryExpression(), queryParameters);
 		}
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
@@ -137,9 +133,12 @@ namespace NHibernate.Impl
 
 		public virtual IList<T> List<T>(IQueryExpression query, QueryParameters parameters)
 		{
-			var results = new List<T>();
-			List(query, parameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var results = new List<T>();
+				List(query, parameters, results);
+				return results;
+			}
 		}
 
 		public virtual IList<T> List<T>(CriteriaImpl criteria)

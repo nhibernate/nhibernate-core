@@ -63,7 +63,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.List(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams));
 			}
 			finally
 			{
@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return Session.List<T>(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.List<T>(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams));
 			}
 			finally
 			{
