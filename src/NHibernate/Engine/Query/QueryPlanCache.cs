@@ -46,29 +46,10 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
+		[Obsolete("Please use overload with IQueryExpression")]
 		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			var key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
-			var plan = (IQueryPlan)planCache[key];
-
-			if (plan == null)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
-				}
-				plan = new QueryExpressionPlan(new StringQueryExpression(queryString), shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
-			}
-			else
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("located HQL query plan in cache (" + queryString + ")");
-				}
-			}
-
-			return plan;
+			return GetHQLQueryPlan(new StringQueryExpression(queryString), shallow, enabledFilters);
 		}
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -95,7 +76,6 @@ namespace NHibernate.Engine.Query
 
 			return plan;
 		}
-
 
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
