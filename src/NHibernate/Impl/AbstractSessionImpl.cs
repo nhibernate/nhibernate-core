@@ -107,8 +107,12 @@ namespace NHibernate.Impl
 				return results;
 			}
 		}
-		
-		public abstract void List(string query, QueryParameters parameters, IList results);
+
+		[Obsolete("Use overload with IQueryExpression")]
+		public virtual void List(string query, QueryParameters queryParameters, IList results)
+		{
+			List(query.ToQueryExpression(), queryParameters, results);
+		}
 
 		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
 		{
@@ -240,7 +244,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract IQueryTranslator[] GetQueries(string query, bool scalar);
+		[Obsolete("Use overload with IQueryExpression")]
+		public virtual IQueryTranslator[] GetQueries(string query, bool scalar)
+		{
+			return GetQueries(query.ToQueryExpression(), scalar);
+		}
+		
 		public abstract IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar);
 		public abstract IInterceptor Interceptor { get; }
 		public abstract EventListeners Listeners { get; }

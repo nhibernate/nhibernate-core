@@ -97,6 +97,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
+		[Obsolete("Use overload with IQueryExpression")]
 		void List(string query, QueryParameters parameters, IList results);
 
 		/// <summary>
@@ -226,6 +227,7 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedSQLQuery(string name);
 
+		[Obsolete("Use overload with IQueryExpression")]
 		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
 		
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery

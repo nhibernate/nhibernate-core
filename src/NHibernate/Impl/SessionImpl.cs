@@ -609,39 +609,6 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override void List(string query, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query.ToQueryExpression(), false);
-				AutoFlushIfRequired(plan.QuerySpaces);
-
-				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
-				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
-				}
-			}
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -672,16 +639,6 @@ namespace NHibernate.Impl
 					dontFlushFromFind--;
 					AfterOperation(success);
 				}
-			}
-		}
-
-		public override IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query.ToQueryExpression(), scalar, enabledFilters);
-				AutoFlushIfRequired(plan.QuerySpaces);
-				return plan.Translators;
 			}
 		}
 
