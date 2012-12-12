@@ -18,6 +18,7 @@ Build vNext
         * Removed Classic HQL Parser.
         * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators assepting string as first argument marked as Obsolete. 
         * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
 
 Build 3.3.2.GA
 =============================

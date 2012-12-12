@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 
 namespace NHibernate.Impl
 {
@@ -77,7 +78,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				Session.List(ExpandParameterLists(namedParams), GetQueryParameters(namedParams), results);
+				Session.List(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams), results);
 			}
 			finally
 			{

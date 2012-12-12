@@ -100,6 +100,8 @@ namespace NHibernate.Engine
 		[Obsolete("Use overload with IQueryExpression")]
 		void List(string query, QueryParameters parameters, IList results);
 
+		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
