@@ -98,14 +98,10 @@ namespace NHibernate.Impl
 		public abstract IBatcher Batcher { get; }
 		public abstract void CloseSessionFromDistributedTransaction();
 
+		[Obsolete("Use overload with IQueryExpression")]
 		public virtual IList List(string query, QueryParameters parameters)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				var results = new List<object>();
-				List(query.ToQueryExpression(), parameters, results);
-				return results;
-			}
+			return List(query.ToQueryExpression(), parameters);
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
@@ -123,8 +119,8 @@ namespace NHibernate.Impl
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
 			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
-									  .GetConstructor(System.Type.EmptyTypes)
-									  .Invoke(null);
+												 .GetConstructor(System.Type.EmptyTypes)
+												 .Invoke(null);
 			List(queryExpression, parameters, results);
 			return results;
 		}
@@ -163,8 +159,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract IEnumerable Enumerable(string query, QueryParameters parameters);
-		public abstract IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
 		public abstract IList ListFilter(object collection, string filter, QueryParameters parameters);
 		public abstract IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 		public abstract IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
@@ -266,7 +260,6 @@ namespace NHibernate.Impl
 		public abstract string GuessEntityName(object entity);
 		public abstract IDbConnection Connection { get; }
 		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
-		public abstract int ExecuteUpdate(string query, QueryParameters queryParameters);
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; internal set; }
 
@@ -464,5 +457,29 @@ namespace NHibernate.Impl
 				return persister;
 			}
 		}
+
+		public abstract IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters);
+
+		[Obsolete("Use overload with IQueryExpression")]
+		public virtual IEnumerable Enumerable(string query, QueryParameters queryParameters)
+		{
+			return Enumerable(query.ToQueryExpression(), queryParameters);
+		}
+
+		[Obsolete("Use overload with IQueryExpression")]
+		public virtual IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
+		{
+			return Enumerable<T>(query.ToQueryExpression(), queryParameters);
+		}
+
+		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
+
+		[Obsolete("Use overload with IQueryExpression")]
+		public virtual int ExecuteUpdate(string query, QueryParameters queryParameters)
+		{
+			return ExecuteUpdate(query.ToQueryExpression(), queryParameters);
+		}
+
+		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
 	}
 }

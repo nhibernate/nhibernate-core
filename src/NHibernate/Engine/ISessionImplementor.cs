@@ -129,12 +129,27 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
+		[Obsolete("Use overload with IQueryExpression")]
 		IEnumerable Enumerable(string query, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute an <c>Iterate()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
 		/// </summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
+		/// </summary>
+		IEnumerable<T> Enumerable<T>(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Execute a filter
@@ -306,7 +321,11 @@ namespace NHibernate.Engine
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		int ExecuteUpdate(string query, QueryParameters queryParameters);
+
+		/// <summary> Execute a HQL update or delete query</summary>
+		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
 
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 

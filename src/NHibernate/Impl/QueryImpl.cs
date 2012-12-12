@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -12,10 +10,8 @@ namespace NHibernate.Impl
 	/// for "ordinary" HQL queries (not collection filters)
 	/// </summary>
 	/// <seealso cref="CollectionFilterImpl"/>
-	public class QueryImpl : AbstractQueryImpl
+	public class QueryImpl : AbstractQueryImpl2
 	{
-		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>(2);
-
 		public QueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryString, flushMode, session, parameterMetadata)
 		{
@@ -26,115 +22,9 @@ namespace NHibernate.Impl
 		{
 		}
 
-		public override IEnumerable Enumerable()
+		protected override IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParams)
 		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.Enumerable(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		public override IEnumerable<T> Enumerable<T>()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.Enumerable<T>(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		public override IList List()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.List(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		public override void List(IList results)
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				Session.List(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams), results);
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		public override IList<T> List<T>()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.List<T>(ExpandParameterLists(namedParams).ToQueryExpression(), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		public override IQuery SetLockMode(string alias, LockMode lockMode)
-		{
-			lockModes[alias] = lockMode;
-			return this;
-		}
-
-		protected internal override IDictionary<string, LockMode> LockModes
-		{
-			get { return lockModes; }
-		}
-
-		public override int ExecuteUpdate()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.ExecuteUpdate(ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
-		{
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			var queryString = ExpandParameterLists(queryParameters.NamedParameters);
-
-			return sessionImplementor.GetQueries(queryString, false)
-				.Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator))
-				.Cast<ITranslator>();
+			return ExpandParameterLists(namedParams).ToQueryExpression();
 		}
 	}
 }

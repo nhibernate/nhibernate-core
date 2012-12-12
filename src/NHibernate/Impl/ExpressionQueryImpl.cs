@@ -2,22 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	internal class ExpressionQueryImpl : AbstractQueryImpl
+	internal class ExpressionQueryImpl : AbstractQueryImpl2
 	{
-		private readonly Dictionary<string, LockMode> _lockModes = new Dictionary<string, LockMode>(2);
-
 		public ExpressionQueryImpl(IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryExpression.Key, FlushMode.Unspecified, session, parameterMetadata)
 		{
@@ -26,51 +22,10 @@ namespace NHibernate.Impl
 
 		public IQueryExpression QueryExpression { get; private set; }
 
-		protected internal override IDictionary<string, LockMode> LockModes
-		{
-			get { return _lockModes; }
-		}
-
-		public override IQuery SetLockMode(string alias, LockMode lockMode)
-		{
-			_lockModes[alias] = lockMode;
-			return this;
-		}
-
-		public override int ExecuteUpdate()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IEnumerable Enumerable()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IEnumerable<T> Enumerable<T>()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IList List()
-		{
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
 		/// </summary>
-		protected IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParamsCopy)
+		protected override IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParamsCopy)
 		{
 			if (namedParameterLists.Count == 0)
 			{
@@ -123,36 +78,6 @@ namespace NHibernate.Impl
 			}
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
-		}
-
-		public override void List(IList results)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IList<T> List<T>()
-		{
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
-			try
-			{
-				return Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
-			}
-			finally
-			{
-				After();
-			}
-		}
-
-		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
-		{
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			var queryString = ExpandParameters(queryParameters.NamedParameters);
-
-			return sessionImplementor.GetQueries(queryString, false)
-				.Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator))
-				.Cast<ITranslator>();
 		}
 	}
 

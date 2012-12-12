@@ -179,15 +179,15 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-
-		public override IEnumerable Enumerable(string query, QueryParameters parameters)
+		
+		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
+		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
@@ -916,13 +916,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query.ToQueryExpression(), false);
+				var plan = GetHQLQueryPlan(queryExpression, false);
 				bool success = false;
 				int result;
 				try

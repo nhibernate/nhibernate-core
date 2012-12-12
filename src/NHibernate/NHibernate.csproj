@@ -257,6 +257,7 @@
     <Compile Include="Cache\Entry\CacheEntry.cs" />
     <Compile Include="Engine\CollectionEntry.cs" />
     <Compile Include="Engine\CollectionKey.cs" />
+    <Compile Include="Impl\AbstractQueryImpl2.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />

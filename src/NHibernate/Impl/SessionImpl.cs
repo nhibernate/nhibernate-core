@@ -652,13 +652,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
+		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query.ToQueryExpression(), true);
+				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -673,13 +673,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IEnumerable Enumerable(string query, QueryParameters queryParameters)
+		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query.ToQueryExpression(), true);
+				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -2636,13 +2636,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query.ToQueryExpression(), false);
+				var plan = GetHQLQueryPlan(queryExpression, false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
@@ -2659,7 +2659,6 @@ namespace NHibernate.Impl
 				return result;
 			}
 		}
-
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
