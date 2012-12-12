@@ -13,7 +13,7 @@ namespace NHibernate.Engine.Query
 		private readonly string collectionRole;
 
 		public FilterQueryPlan(string hql, string collectionRole, bool shallow, 
-		                       IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
+							   IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 			: base(hql, collectionRole, shallow, enabledFilters, factory)
 		{
 			this.collectionRole = collectionRole;

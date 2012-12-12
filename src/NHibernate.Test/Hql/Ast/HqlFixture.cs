@@ -64,15 +64,15 @@ namespace NHibernate.Test.Hql.Ast
 			Check(plan.ReturnMetadata, true, false);
 		}
 
-        [Test]
-        public void OrderByPropertiesImplicitlySpecifiedInTheSelect()
-        {
-            // NH-2035 
-            using (ISession s = OpenSession())
-            {
-                s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
-            }
-        } 
+		[Test]
+		public void OrderByPropertiesImplicitlySpecifiedInTheSelect()
+		{
+			// NH-2035 
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
+			}
+		} 
 
 		[Test]
 		public void CaseClauseInSelect()
@@ -303,7 +303,7 @@ namespace NHibernate.Test.Hql.Ast
 
 					// assert
 					Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-					                   	.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
+										.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
 
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
 					s.Transaction.Commit();
