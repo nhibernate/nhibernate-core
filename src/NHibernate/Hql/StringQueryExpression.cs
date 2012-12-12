@@ -28,4 +28,12 @@ namespace NHibernate.Hql
 		public System.Type Type { get; private set; }
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 	}
+
+	internal static class StringQueryExpressionExtensions
+	{
+		public static StringQueryExpression ToQueryExpression(this string queryString)
+		{
+			return new StringQueryExpression(queryString);
+		}
+	}
 }

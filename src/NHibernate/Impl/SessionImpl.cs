@@ -615,7 +615,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query.ToQueryExpression(), false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
@@ -679,7 +679,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query.ToQueryExpression(), scalar, enabledFilters);
 				AutoFlushIfRequired(plan.QuerySpaces);
 				return plan.Translators;
 			}
@@ -701,7 +701,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(query.ToQueryExpression(), true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -722,7 +722,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(query.ToQueryExpression(), true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -2685,7 +2685,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(query.ToQueryExpression(), false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;

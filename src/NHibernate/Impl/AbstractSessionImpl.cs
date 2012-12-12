@@ -272,8 +272,7 @@ namespace NHibernate.Impl
 				if (nqd != null)
 				{
 					string queryString = nqd.QueryString;
-					query = new QueryImpl(queryString, nqd.FlushMode, this,
-										  GetHQLQueryPlan(queryString, false).ParameterMetadata);
+					query = new QueryImpl(queryString, nqd.FlushMode, this, GetHQLQueryPlan(queryString.ToQueryExpression(), false).ParameterMetadata);
 					query.SetComment("named HQL query " + queryName);
 				}
 				else
@@ -370,10 +369,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				var queryPlan = GetHQLQueryPlan(queryExpression, false);
-				var query = new ExpressionQueryImpl(queryPlan.QueryExpression, 
-												this,
-												queryPlan.ParameterMetadata
-												);
+				var query = new ExpressionQueryImpl(queryPlan.QueryExpression, this, queryPlan.ParameterMetadata);
 				query.SetComment("[expression]");
 				return query;
 			}
@@ -384,7 +380,8 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				QueryImpl query = new QueryImpl(queryString, this, GetHQLQueryPlan(queryString, false).ParameterMetadata);
+				var queryPlan = GetHQLQueryPlan(queryString.ToQueryExpression(), false);
+				var query = new QueryImpl(queryString, this, queryPlan.ParameterMetadata);
 				query.SetComment(queryString);
 				return query;
 			}
@@ -401,12 +398,10 @@ namespace NHibernate.Impl
 			}
 		}
 
+		[Obsolete("Please use overload with IQueryExpression")]
 		protected internal virtual IQueryPlan GetHQLQueryPlan(string query, bool shallow)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return factory.QueryPlanCache.GetHQLQueryPlan(query, shallow, EnabledFilters);
-			}
+			return GetHQLQueryPlan(query.ToQueryExpression(), shallow);
 		}
 
 		protected internal virtual IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow)

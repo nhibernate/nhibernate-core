@@ -16,6 +16,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -585,7 +586,7 @@ namespace NHibernate.Impl
 		public IType[] GetReturnTypes(String queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnTypes;
 		}
 
@@ -593,7 +594,7 @@ namespace NHibernate.Impl
 		public string[] GetReturnAliases(string queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnAliases;
 		}
 
@@ -1141,7 +1142,7 @@ namespace NHibernate.Impl
 
 			// Check named HQL queries
 			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
-			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
+			foreach (var entry in namedQueries)
 			{
 				string queryName = entry.Key;
 				NamedQueryDefinition qd = entry.Value;
@@ -1150,7 +1151,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("Checking named query: " + queryName);
 					//TODO: BUG! this currently fails for named queries for non-POJO entities
-					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>());
 				}
 				catch (QueryException e)
 				{
