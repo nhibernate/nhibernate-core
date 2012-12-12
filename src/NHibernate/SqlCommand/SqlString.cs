@@ -303,12 +303,6 @@ namespace NHibernate.SqlCommand
 			get { return _length; }
 		}
 
-		[Obsolete("Use SqlString.Count and SqlString.GetEnumerator properties")]
-		public ICollection Parts
-		{
-			get { return this; }
-		}
-
 		#endregion
 
 		#region Operators

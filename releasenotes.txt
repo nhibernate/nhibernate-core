@@ -19,6 +19,10 @@ Build vNext
         * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators assepting string as first argument marked as Obsolete. 
         * IQueryExpression.Translate now has second boolean argument 'filter'
         * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Mis-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
 
 Build 3.3.2.GA
 =============================

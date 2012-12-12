@@ -54,13 +54,6 @@ namespace NHibernate.Cfg.Loquacious
 			return this;
 		}
 
-		[Obsolete("This method will be removed in a future version as logged SQL formatting is disabled by default. To enable SQL formatting, use EnableLogFormattedSql.")]
-		public IDbIntegrationConfiguration DisableLogFormatedSql()
-		{
-			configuration.SetProperty(Environment.FormatSql, "false");
-			return this;
-		}
-
 		public IDbIntegrationConfiguration EnableLogFormattedSql()
 		{
 			configuration.SetProperty(Environment.FormatSql, "true");
