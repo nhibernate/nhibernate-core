@@ -3,6 +3,7 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -45,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 		{
 		 string hql = @"from Customer c where contains(c.Name, :smth)";
 
-		 HQLQueryPlan plan = new HQLStringQueryPlan(hql, false, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+		 HQLQueryPlan plan = new QueryExpressionPlan(new StringQueryExpression(hql), false, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
 
 		 Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
 		 Assert.AreEqual(1, plan.QuerySpaces.Count);

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.Hql.Ast
 	{
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
-			return new HQLStringQueryPlan(hql, scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
 		}
 
 		protected HQLQueryPlan CreateQueryPlan(string hql)

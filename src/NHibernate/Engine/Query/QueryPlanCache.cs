@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
@@ -56,7 +57,7 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
 				}
-				plan = new HQLStringQueryPlan(queryString, shallow, enabledFilters, factory);
+				plan = new QueryExpressionPlan(new StringQueryExpression(queryString), shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
@@ -81,7 +82,7 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
 				}
-				plan = new HQLExpressionQueryPlan(queryExpression, shallow, enabledFilters, factory);
+				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
@@ -108,7 +109,7 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
 							  + filterString + ")");
 				}
-				plan = new FilterQueryPlan(filterString, collectionRole, shallow, enabledFilters, factory);
+				plan = new FilterQueryPlan(new StringQueryExpression(filterString), collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else

@@ -885,8 +885,7 @@
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="Driver\ReflectionDriveConnectionCommandProvider.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
-    <Compile Include="Engine\Query\HQLExpressionQueryPlan.cs" />
-    <Compile Include="Engine\Query\HQLStringQueryPlan.cs" />
+    <Compile Include="Engine\Query\QueryExpressionPlan.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
