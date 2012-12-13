@@ -91,7 +91,7 @@ namespace NHibernate.Hql.Ast
 
 		internal void AddChild(HqlTreeNode child)
 		{
-			if ((child is HqlExpressionSubTreeHolder) || (child is HqlDistinctHolder))
+			if (child is HqlExpressionSubTreeHolder) 
 			{
 				AddChildren(child.Children);
 			}
@@ -855,14 +855,6 @@ namespace NHibernate.Hql.Ast
 		{
 			AddChild(new HqlIdent(factory, methodName));
 			AddChild(new HqlExpressionList(factory, parameters));
-		}
-	}
-
-	[Obsolete("Use HqlExpressionSubTreeHolder instead")]
-	public class HqlDistinctHolder : HqlExpression
-	{
-		public HqlDistinctHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "distinct holder", factory, children)
-		{
 		}
 	}
 

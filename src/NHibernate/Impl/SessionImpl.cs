@@ -935,17 +935,7 @@ namespace NHibernate.Impl
 				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
 			}
 		}
-
-		/// <summary> Cascade copy an entity instance</summary>
-		[Obsolete("Use Merge(string, object, IDictionary) instead")]
-		public void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				FireSaveOrUpdateCopy(copiedAlready, new MergeEvent(entityName, obj, this));
-			}
-		}
-
+        
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
@@ -2051,24 +2041,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		[Obsolete("Use Merge(object) instead")]
-		public object SaveOrUpdateCopy(object obj)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
-			}
-		}
-
-		[Obsolete("No direct replacement. Use Merge instead.")]
-		public object SaveOrUpdateCopy(object obj, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
-			}
-		}
-
 		public IFilter GetEnabledFilter(string filterName)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2568,33 +2540,6 @@ namespace NHibernate.Impl
 				{
 					saveOrUpdateEventListener[i].OnSaveOrUpdate(@event);
 				}
-			}
-		}
-
-		private void FireSaveOrUpdateCopy(IDictionary copiedAlready, MergeEvent @event)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
-				{
-					saveOrUpdateCopyEventListener[i].OnMerge(@event, copiedAlready);
-				}
-			}
-		}
-
-		private object FireSaveOrUpdateCopy(MergeEvent @event)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
-				{
-					saveOrUpdateCopyEventListener[i].OnMerge(@event);
-				}
-				return @event.Result;
 			}
 		}
 

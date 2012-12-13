@@ -576,33 +576,6 @@ namespace NHibernate
 		void Persist(string entityName, object obj);
 
 		/// <summary>
-		/// Copy the state of the given object onto the persistent object with the same
-		/// identifier. If there is no persistent instance currently associated with
-		/// the session, it will be loaded. Return the persistent instance. If the
-		/// given instance is unsaved or does not exist in the database, save it and
-		/// return it as a newly persistent instance. Otherwise, the given instance
-		/// does not become associated with the session.
-		/// </summary>
-		/// <param name="obj">a transient instance with state to be copied</param>
-		/// <returns>an updated persistent instance</returns>
-		[Obsolete("Use Merge(object) instead")]
-		object SaveOrUpdateCopy(object obj);
-
-		/// <summary>
-		/// Copy the state of the given object onto the persistent object with the
-		/// given identifier. If there is no persistent instance currently associated
-		/// with the session, it will be loaded. Return the persistent instance. If
-		/// there is no database row with the given identifier, save the given instance
-		/// and return it as a newly persistent instance. Otherwise, the given instance
-		/// does not become associated with the session.
-		/// </summary>
-		/// <param name="obj">a persistent or transient instance with state to be copied</param>
-		/// <param name="id">the identifier of the instance to copy to</param>
-		/// <returns>an updated persistent instance</returns>
-		[Obsolete("No direct replacement. Use Merge instead.")]
-		object SaveOrUpdateCopy(object obj, object id);
-
-		/// <summary>
 		/// Remove a persistent instance from the datastore.
 		/// </summary>
 		/// <remarks>
