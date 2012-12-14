@@ -6,7 +6,7 @@
     <id name="Id">
       <generator class="assigned" />
     </id>
-    <property name="AlwaysTrue"  formula="(another_field &lt; now())"  />
+    <property name="AlwaysTrue"  formula="(another_field &lt; (CURRENT_TIMESTAMP + '00:01'::time) )"  />
   </class>
 	<database-object>
 		<create>
