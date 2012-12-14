@@ -212,46 +212,14 @@ namespace NHibernate.Linq.Visitors
 			switch (expression.NodeType)
 			{
 				case ExpressionType.Equal:
-					// Need to check for boolean equality
-					if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
-					{
-						return ResolveBooleanEquality(expression, lhs, rhs, (l, r) => _hqlTreeBuilder.Equality(l, r));
-					}
-
-					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
-					{
-						return _hqlTreeBuilder.IsNull(lhs);
-					}
-
-					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
-					{
-						return _hqlTreeBuilder.IsNull(rhs);
-					}
-
-					// Nothing was null, use standard equality.
-					return _hqlTreeBuilder.Equality(lhs, rhs);
+					return TranslateEqualityComparison(expression, lhs, rhs,
+					                                   expr => _hqlTreeBuilder.IsNull(expr),
+					                                   (l, r) => _hqlTreeBuilder.Equality(l, r));
 
 				case ExpressionType.NotEqual:
-					// Need to check for boolean in-equality
-					if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
-					{
-						return ResolveBooleanEquality(expression, lhs, rhs, (l, r) => _hqlTreeBuilder.Inequality(l, r));
-					}
-
-					// Check for nulls on left or right.
-					if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() && ((ConstantExpression) expression.Right).Value == null)
-					{
-						return _hqlTreeBuilder.IsNotNull(lhs);
-					}
-
-					if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() && ((ConstantExpression) expression.Left).Value == null)
-					{
-						return _hqlTreeBuilder.IsNotNull(rhs);
-					}
-
-					// Nothing was null, use standard inequality.
-					return _hqlTreeBuilder.Inequality(lhs, rhs);
+					return TranslateEqualityComparison(expression, lhs, rhs,
+					                                   expr => _hqlTreeBuilder.IsNotNull(expr),
+					                                   (l, r) => _hqlTreeBuilder.Inequality(l, r));
 
 				case ExpressionType.And:
 					return _hqlTreeBuilder.BitwiseAnd(lhs, rhs);
@@ -303,16 +271,36 @@ namespace NHibernate.Linq.Visitors
 			throw new InvalidOperationException();
 		}
 
-		private HqlTreeNode ResolveBooleanEquality(BinaryExpression expression, HqlExpression lhs, HqlExpression rhs, Func<HqlExpression, HqlExpression, HqlTreeNode> applyResultExpressions)
+		private HqlTreeNode TranslateEqualityComparison(BinaryExpression expression, HqlExpression lhs, HqlExpression rhs, Func<HqlExpression, HqlTreeNode> applyNullComparison, Func<HqlExpression, HqlExpression, HqlTreeNode> applyRegularComparison)
 		{
-			if (!(lhs is HqlBooleanExpression) && !(rhs is HqlBooleanExpression))
+			// Check for nulls on left or right.
+			if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() &&
+			    ((ConstantExpression) expression.Right).Value == null)
 			{
-				throw new InvalidOperationException("Invalid operators for ResolveBooleanEquality, this may indicate a bug in NHibernate");
+				rhs = null;
 			}
 
-			HqlExpression leftHqlExpression = GetExpressionForBooleanEquality(expression.Left, lhs);
-			HqlExpression rightHqlExpression = GetExpressionForBooleanEquality(expression.Right, rhs);
-			return applyResultExpressions(leftHqlExpression, rightHqlExpression);
+			if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() &&
+			    ((ConstantExpression) expression.Left).Value == null)
+			{
+				lhs = null;
+			}
+
+			// Need to check for boolean equality
+			if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
+			{
+				if (lhs != null)
+					lhs = GetExpressionForBooleanEquality(expression.Left, lhs);
+				if (rhs != null)
+					rhs = GetExpressionForBooleanEquality(expression.Right, rhs);
+			}
+
+			if (lhs == null)
+				return applyNullComparison(rhs);
+			if (rhs == null)
+				return applyNullComparison(lhs);
+
+			return applyRegularComparison(lhs, rhs);
 		}
 
 		private HqlExpression GetExpressionForBooleanEquality(Expression @operator, HqlExpression original)
