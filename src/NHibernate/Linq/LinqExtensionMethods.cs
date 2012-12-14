@@ -47,6 +47,15 @@ namespace NHibernate.Linq
             return new NhQueryable<T>(query.Provider, callExpression);
         }
 
+		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => Timeout<object>(null, 0)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(timeout));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
         public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
         {
             var nhQueryable = query as QueryableBase<T>;

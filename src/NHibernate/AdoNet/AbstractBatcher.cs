@@ -209,7 +209,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDataReader ExecuteReader(IDbCommand cmd)
+		public virtual IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
 			LogCommand(cmd);

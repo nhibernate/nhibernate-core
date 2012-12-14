@@ -70,6 +70,13 @@ namespace NHibernate.Linq
 					}, typeof(AsQueryableExpressionNode)
 				);
 
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
+					}, typeof (TimeoutExpressionNode)
+				);
+
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
@@ -138,6 +145,61 @@ namespace NHibernate.Linq
 		{
 			ParseInfo = parseInfo;
 			Data = data;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
+
+	public class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _timeout;
+
+		public TimeoutExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression timeout)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_timeout = timeout;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new TimeoutResultOperator(_parseInfo, _timeout);
+		}
+	}
+
+	public class TimeoutResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression Timeout { get; private set; }
+
+		public TimeoutResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression timeout)
+		{
+			ParseInfo = parseInfo;
+			Timeout = timeout;
 		}
 
 		public override IStreamedData ExecuteInMemory(IStreamedData input)
