@@ -348,6 +348,55 @@ namespace NHibernate.Test.Linq
 			query.ToList();
 		}
 
+
+		[Test]
+		[Description("NH-3337")]
+		public void ProductWithDoubleStringContainsAndNotNull()
+		{
+			// Consider this WCF DS query will fail:
+			// http://.../Products()?$filter=substringof("23",Code) and substringof('2',Name)
+			//
+			// It will generate a LINQ expression similar to this:
+			//
+			//.Where(
+			//   p =>
+			//     ((p.Code == null ? (bool?)null : p.Code.Contains("23"))
+			//     &&
+			//     (p.Name == null ? (bool?)null : p.Name.Contains("2"))) == null
+			//   ?
+			//   false
+			//   :
+			//     ((p.Code == null ? (bool?)null : p.Code.Contains("23"))
+			//     &&
+			//     (p.Name == null ? (bool?)null : p.Name.Contains("2"))).Value
+			//)
+			//
+			// In C# we cannot use && on nullable booleans, but it is allowed when building
+			// expression trees, so we need to construct the query gradually.
+
+			var nullAsNullableBool = Expression.Constant(null, typeof(bool?));
+			var valueProperty = typeof (bool?).GetProperty("Value");
+
+			var quantityIsNull = ((Expression<Func<Product, bool>>)(x => x.QuantityPerUnit == null));
+			var nameIsNull = ((Expression<Func<Product, bool>>)(x => x.Name == null));
+
+			var quantityContains23 = ((Expression<Func<Product, bool?>>)(x => x.QuantityPerUnit.Contains("box")));
+			var nameContains2 = ((Expression<Func<Product, bool?>>)(x => x.Name.Contains("cha")));
+
+			var conjunction = Expression.AndAlso(Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
+												 Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body));
+
+			var condition = Expression.Condition(Expression.Equal(conjunction, Expression.Constant(null)),
+			                                     Expression.Constant(false),
+			                                     Expression.MakeMemberAccess(conjunction, valueProperty));
+
+			var expr = Expression.Lambda<Func<Product, bool>>(condition, quantityIsNull.Parameters);
+
+			var results = db.Products.Where(expr).ToList();
+			Assert.That(results, Has.Count.EqualTo(1));
+		}
+		
+
 		[Test(Description = "NH-3261")]
 		public void UsersWithStringContainsAndNotNullName()
 		{
