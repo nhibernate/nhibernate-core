@@ -355,7 +355,7 @@ namespace NHibernate.Test.Linq
 			var nameIsNull = ((Expression<Func<Product, bool>>)(x => x.Name == null));
 
 			var quantityContains23 = ((Expression<Func<Product, bool?>>)(x => x.QuantityPerUnit.Contains("box")));
-			var nameContains2 = ((Expression<Func<Product, bool?>>)(x => x.Name.Contains("cha")));
+			var nameContains2 = ((Expression<Func<Product, bool?>>)(x => x.Name.Contains("Cha")));
 
 			var conjunction = Expression.AndAlso(Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
 												 Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body));
