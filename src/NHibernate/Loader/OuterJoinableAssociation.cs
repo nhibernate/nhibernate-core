@@ -22,8 +22,8 @@ namespace NHibernate.Loader
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
-		                                JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
-		                                IDictionary<string, IFilter> enabledFilters)
+										JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
+										IDictionary<string, IFilter> enabledFilters)
 		{
 			this.joinableType = joinableType;
 			this.lhsAlias = lhsAlias;
@@ -127,7 +127,7 @@ namespace NHibernate.Loader
 		{
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, on);
 			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
-			                   joinable.WhereJoinFragment(rhsAlias, false, true));
+							   joinable.WhereJoinFragment(rhsAlias, false, true));
 		}
 
 		public void ValidateJoin(string path)
@@ -155,13 +155,13 @@ namespace NHibernate.Loader
 		{
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
 			SqlString condition = string.Empty.Equals(manyToManyFilter)
-			                   	? on
-			                   	: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
+								? on
+								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
 									on.Append(" and ").Append(manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
 			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
-			                   joinable.WhereJoinFragment(rhsAlias, false, true));
+							   joinable.WhereJoinFragment(rhsAlias, false, true));
 		}
 	}
 }

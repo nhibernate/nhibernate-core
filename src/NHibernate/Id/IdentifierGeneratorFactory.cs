@@ -203,7 +203,7 @@ namespace NHibernate.Id
 		/// Thrown if there are any exceptions while creating the <see cref="IIdentifierGenerator"/>.
 		/// </exception>
 		public static IIdentifierGenerator Create(string strategy, IType type, IDictionary<string, string> parms,
-		                                          Dialect.Dialect dialect)
+												  Dialect.Dialect dialect)
 		{
 			try
 			{

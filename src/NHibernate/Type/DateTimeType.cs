@@ -97,11 +97,11 @@ namespace NHibernate.Type
 				return true;
 
 			return (date1.Year == date2.Year &&
-			        date1.Month == date2.Month &&
-			        date1.Day == date2.Day &&
-			        date1.Hour == date2.Hour &&
-			        date1.Minute == date2.Minute &&
-			        date1.Second == date2.Second);
+					date1.Month == date2.Month &&
+					date1.Day == date2.Day &&
+					date1.Hour == date2.Hour &&
+					date1.Minute == date2.Minute &&
+					date1.Second == date2.Second);
 		}
 
 		public virtual IComparer Comparator

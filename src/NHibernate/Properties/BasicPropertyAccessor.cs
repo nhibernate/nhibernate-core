@@ -87,7 +87,7 @@ namespace NHibernate.Properties
 
 			PropertyInfo property =
 				type.GetProperty(propertyName,
-				                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+								 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 			if (property != null && property.CanRead)
 			{

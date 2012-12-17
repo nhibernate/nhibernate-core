@@ -40,7 +40,7 @@ namespace NHibernate.Mapping
 					{
 						return
 							TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer, GenericArguments[0],
-							                                    GenericArguments[1]);
+																GenericArguments[1]);
 					}
 					else
 					{

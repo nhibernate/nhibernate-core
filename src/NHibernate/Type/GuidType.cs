@@ -45,7 +45,7 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public override object Get(IDataReader rs, string name)
 		{
-		    return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name));
 		}
 
 		/// <summary></summary>

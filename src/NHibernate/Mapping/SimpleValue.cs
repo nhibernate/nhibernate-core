@@ -139,7 +139,7 @@ namespace NHibernate.Mapping
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog,
-		                                                      string defaultSchema, RootClass rootClass)
+															  string defaultSchema, RootClass rootClass)
 		{
 			Dictionary<string, string> @params = new Dictionary<string, string>();
 

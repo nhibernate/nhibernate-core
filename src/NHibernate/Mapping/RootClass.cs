@@ -372,7 +372,7 @@ namespace NHibernate.Mapping
 			{
 				throw new MappingException(
 					string.Format("identifier mapping has wrong number of columns: {0} type: {1}", EntityName,
-					              Identifier.Type.Name));
+								  Identifier.Type.Name));
 			}
 			CheckCompositeIdentifier();
 		}

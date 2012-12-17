@@ -19,15 +19,15 @@ namespace NHibernate.Loader.Collection
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (OneToManyLoader));
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, ISessionFactoryImplementor session,
-		                       IDictionary<string, IFilter> enabledFilters)
+							   IDictionary<string, IFilter> enabledFilters)
 			: this(oneToManyPersister, 1, session, enabledFilters) {}
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, int batchSize, ISessionFactoryImplementor factory,
-		                       IDictionary<string, IFilter> enabledFilters)
+							   IDictionary<string, IFilter> enabledFilters)
 			: this(oneToManyPersister, batchSize, null, factory, enabledFilters) {}
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, int batchSize, SqlString subquery,
-		                       ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+							   ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(oneToManyPersister, factory, enabledFilters)
 		{
 			InitializeFromWalker(oneToManyPersister, subquery, batchSize, enabledFilters, factory);

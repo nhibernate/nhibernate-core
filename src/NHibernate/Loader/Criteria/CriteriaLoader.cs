@@ -30,7 +30,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly string[] userAliases;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
-		                      string rootEntityName, IDictionary<string, IFilter> enabledFilters)
+							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters)
 		{
 			translator = new CriteriaQueryTranslator(factory, rootCriteria, rootEntityName, CriteriaQueryTranslator.RootSqlAlias);
@@ -76,7 +76,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			object[] result;
 
@@ -116,7 +116,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary<string, LockMode> lockModes,
-		                                        Dialect.Dialect dialect)
+												Dialect.Dialect dialect)
 		{
 			if (lockModes == null || lockModes.Count == 0)
 			{

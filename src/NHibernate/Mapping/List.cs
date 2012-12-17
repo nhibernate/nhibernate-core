@@ -35,7 +35,7 @@ namespace NHibernate.Mapping
 				return TypeFactory.List(Role, ReferencedPropertyName, Embedded);;
 			}
 		}
-        
+		
 		public int BaseIndex
 		{
 			get { return baseIndex; }

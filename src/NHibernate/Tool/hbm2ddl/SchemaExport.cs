@@ -125,7 +125,7 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		private void Execute(Action<string> scriptAction, bool export, bool throwOnError, TextWriter exportOutput,
-		                     IDbCommand statement, string sql)
+							 IDbCommand statement, string sql)
 		{
 			Initialize();
 			try
@@ -147,7 +147,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				if (export)
 				{
-                    ExecuteSql(statement, sql);
+					ExecuteSql(statement, sql);
 				}
 			}
 			catch (Exception e)
@@ -161,28 +161,28 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-        private void ExecuteSql(IDbCommand cmd, string sql)
-        {
-            if (dialect.SupportsSqlBatches)
-            {
-                var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-                ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
+		private void ExecuteSql(IDbCommand cmd, string sql)
+		{
+			if (dialect.SupportsSqlBatches)
+			{
+				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
+				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
 
-                foreach (string stmt in splitter)
-                {
-                    log.DebugFormat("SQL Batch: {0}", stmt);
-                    cmd.CommandText = stmt;
-                    cmd.CommandType = CommandType.Text;
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            else
-            {
-                cmd.CommandText = sql;
-                cmd.CommandType = CommandType.Text;
-                cmd.ExecuteNonQuery();
-            }
-        }
+				foreach (string stmt in splitter)
+				{
+					log.DebugFormat("SQL Batch: {0}", stmt);
+					cmd.CommandText = stmt;
+					cmd.CommandType = CommandType.Text;
+					cmd.ExecuteNonQuery();
+				}
+			}
+			else
+			{
+				cmd.CommandText = sql;
+				cmd.CommandType = CommandType.Text;
+				cmd.ExecuteNonQuery();
+			}
+		}
 
 		/// <summary>
 		/// Executes the Export of the Schema in the given connection
@@ -201,7 +201,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// It does NOT close the given connection!
 		/// </remarks>
 		public void Execute(bool script, bool export, bool justDrop, IDbConnection connection,
-		                    TextWriter exportOutput)
+							TextWriter exportOutput)
 		{
 			if (script)
 			{
@@ -214,7 +214,7 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		public void Execute(Action<string> scriptAction, bool export, bool justDrop, IDbConnection connection,
-		                    TextWriter exportOutput)
+							TextWriter exportOutput)
 		{
 			Initialize();
 			IDbCommand statement = null;
