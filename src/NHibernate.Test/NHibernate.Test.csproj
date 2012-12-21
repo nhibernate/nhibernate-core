@@ -504,6 +504,7 @@
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\CollectionAssert.cs" />
+    <Compile Include="Linq\QueryTimeoutTests.cs" />
     <Compile Include="Linq\JoinTests.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
