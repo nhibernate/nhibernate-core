@@ -1871,6 +1871,9 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("dynamic-map")]
         DynamicMap,
+
+        [System.Xml.Serialization.XmlEnumAttribute("dynamic")]
+        Dynamic,
     }
     
     /// <remarks/>

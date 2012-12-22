@@ -61,6 +61,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -184,6 +185,7 @@
     <Compile Include="Driver\SybaseAseClientDriver.cs" />
     <Compile Include="Driver\SybaseSQLAnywhereDotNet4Driver.cs" />
     <Compile Include="Driver\SybaseSQLAnywhereDriver.cs" />
+    <Compile Include="Properties\DynamicAccessor.cs" />
     <Compile Include="Engine\Cascade.cs" />
     <Compile Include="Engine\IBatcher.cs" />
     <Compile Include="Engine\IMapping.cs" />
@@ -577,6 +579,9 @@
     <Compile Include="Proxy\DynamicProxy\ProxyFactory.cs" />
     <Compile Include="Proxy\DynamicProxy\ProxyImplementor.cs" />
     <Compile Include="Proxy\DynamicProxy\ProxyObjectReference.cs" />
+    <Compile Include="Proxy\Dynamic\DynamicLazyInitializer.cs" />
+    <Compile Include="Proxy\Dynamic\DynamicProxy.cs" />
+    <Compile Include="Proxy\Dynamic\DynamicProxyFactory.cs" />
     <Compile Include="Proxy\INHibernateProxy.cs" />
     <Compile Include="Proxy\IProxyFactory.cs" />
     <Compile Include="Proxy\AbstractLazyInitializer.cs" />
@@ -638,6 +643,9 @@
     <Compile Include="Transform\IResultTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />
     <Compile Include="TransientObjectException.cs" />
+    <Compile Include="Tuple\Component\DynamicComponentTuplizer.cs" />
+    <Compile Include="Tuple\DynamicInstantiator.cs" />
+    <Compile Include="Tuple\Entity\DynamicEntityTyplizer.cs" />
     <Compile Include="Type\AbstractType.cs" />
     <Compile Include="Type\AnsiStringType.cs" />
     <Compile Include="Type\ArrayType.cs" />

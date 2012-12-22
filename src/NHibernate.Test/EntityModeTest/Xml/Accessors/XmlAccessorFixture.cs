@@ -90,6 +90,10 @@ namespace NHibernate.Test.EntityModeTest.Xml.Accessors
 			Assert.That(id, Is.EqualTo(123L));
 		}
 
+        [Test]
+        public void toto()
+        {}
+
 		[Test]
 		public void LongElementAttributeExtraction()
 		{

@@ -237,6 +237,8 @@ namespace NHibernate.Properties
 					return DynamicMapPropertyAccessor;
 				case EntityMode.Xml:
 					return GetXmlPropertyAccessor(property.GetAccessorPropertyName(modeToUse), property.Type, null);
+                case EntityMode.Dynamic:
+                    return DynamicAccessor;
 				default:
 					throw new MappingException("Unknown entity mode [" + mode + "]");
 			}
@@ -291,5 +293,11 @@ namespace NHibernate.Properties
 			get { return MapAccessor; }
 		}
 
+        [NonSerialized]
+        private static readonly IPropertyAccessor DynamicAccessor = new DynamicAccessor();
+        public static IPropertyAccessor DynamicPropertyAccessor
+        {
+            get { return DynamicAccessor; }
+        }
 	}
 }
