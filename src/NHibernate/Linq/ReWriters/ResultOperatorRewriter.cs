@@ -103,7 +103,7 @@ namespace NHibernate.Linq.ReWriters
                 this.resultOperators.ForEach(f => expression.QueryModel.ResultOperators.Remove(f));
                 this.evaluationType = expression.QueryModel.SelectClause.GetOutputDataInfo();
 
-                if (expression.QueryModel.ResultOperators.Count == 0)
+                if (expression.QueryModel.ResultOperators.Count == 0 && expression.QueryModel.BodyClauses.Count == 0)
                 {
                     return expression.QueryModel.MainFromClause.FromExpression;
                 }
