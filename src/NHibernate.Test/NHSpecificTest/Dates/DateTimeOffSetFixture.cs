@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -12,7 +13,16 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override IList Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.DateTimeOffset.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.DateTimeOffset.hbm.xml" }; }
+		}
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			// Cannot handle DbType.DateTimeOffset via ODBC.
+			if (factory.ConnectionProvider.Driver is OdbcDriver)
+				return false;
+
+			return base.AppliesTo(factory);
 		}
 
 		protected override DbType? AppliesTo()
