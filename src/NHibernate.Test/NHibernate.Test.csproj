@@ -663,7 +663,7 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
-    <Compile Include="NHSpecificTest\Dates\DateTimeOffSetQueryFixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\DateTimeOffsetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
     <Compile Include="NHSpecificTest\NH3050\Entity.cs" />
@@ -1532,7 +1532,7 @@
     <Compile Include="NHSpecificTest\Futures\FutureCriteriaFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Person.cs" />
     <Compile Include="NHSpecificTest\Dates\AllDates.cs" />
-    <Compile Include="NHSpecificTest\Dates\DateTimeOffSetFixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\DateTimeOffsetFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Home.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\NH1274ExportExcludeFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Person.cs" />

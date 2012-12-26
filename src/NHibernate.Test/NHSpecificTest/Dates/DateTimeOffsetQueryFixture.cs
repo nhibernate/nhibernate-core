@@ -11,7 +11,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	[TestFixture]
-	public class DateTimeOffSetQueryFixture : FixtureBase
+	public class DateTimeOffsetQueryFixture : FixtureBase
 	{
 		protected override IList Mappings
 		{
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 
 		[Test(Description = "NH-3357")]
-		public void CanQueryWithAggerageInLinq()
+		public void CanQueryWithAggregateInLinq()
 		{
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())

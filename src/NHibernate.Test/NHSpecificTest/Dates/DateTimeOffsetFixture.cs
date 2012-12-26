@@ -9,7 +9,7 @@ using SharpTestsEx;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	[TestFixture]
-	public class DateTimeOffSetFixture : FixtureBase
+	public class DateTimeOffsetFixture : FixtureBase
 	{
 		protected override IList Mappings
 		{
