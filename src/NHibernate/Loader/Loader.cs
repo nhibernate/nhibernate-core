@@ -226,7 +226,14 @@ namespace NHibernate.Loader
 		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
 		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
-		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters,
+		                                                     bool returnProxies)
+		{
+			return DoQueryAndInitializeNonLazyCollections(session, queryParameters, returnProxies, null);
+		}
+
+
+		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
@@ -242,7 +249,7 @@ namespace NHibernate.Loader
 			{
 				try
 				{
-					result = DoQuery(session, queryParameters, returnProxies);
+					result = DoQuery(session, queryParameters, returnProxies, forcedResultTransformer);
 				}
 				finally
 				{
@@ -316,9 +323,18 @@ namespace NHibernate.Loader
 		}
 
 		internal object GetRowFromResultSet(IDataReader resultSet, ISessionImplementor session,
+		                                    QueryParameters queryParameters, LockMode[] lockModeArray,
+		                                    EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
+		                                    bool returnProxies)
+		{
+			return GetRowFromResultSet(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
+			                           keys, returnProxies, null);
+		}
+
+		internal object GetRowFromResultSet(IDataReader resultSet, ISessionImplementor session,
 											QueryParameters queryParameters, LockMode[] lockModeArray,
 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies)
+											bool returnProxies, IResultTransformer forcedResultTransformer)
 		{
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
@@ -356,7 +372,10 @@ namespace NHibernate.Loader
 				}
 			}
 
-			return GetResultColumnOrRow(row, queryParameters.ResultTransformer, resultSet, session);
+			return forcedResultTransformer == null
+				       ? GetResultColumnOrRow(row, queryParameters.ResultTransformer, resultSet, session)
+				       : forcedResultTransformer.TransformTuple(GetResultRow(row, resultSet, session),
+				                                                ResultRowAliases);
 		}
 
 		/// <summary>
@@ -401,7 +420,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
@@ -449,7 +468,7 @@ namespace NHibernate.Loader
 
 						object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey,
 															hydratedObjects,
-															keys, returnProxies);
+															keys, returnProxies, forcedResultTransformer);
 						results.Add(result);
 
 						if (createSubselects)
@@ -644,7 +663,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="transformer">The specified result transformer.</param>
 		/// <returns>True, if getResultColumnOrRow() transforms the results; false, otherwise</returns>
-		protected virtual bool AreResultSetRowsTransformedImmediately(IResultTransformer transformer)
+		protected virtual bool AreResultSetRowsTransformedImmediately()
 		{
 			return false;
 		}
@@ -654,6 +673,17 @@ namespace NHibernate.Loader
 		{
 			return results;
 		}
+
+
+		/// <summary>
+		/// Returns the aliases that correspond to a result row.
+		/// </summary>
+		/// <returns>Returns the aliases that correspond to a result row.</returns>
+		protected virtual string[] ResultRowAliases
+		{
+			get { return null; }
+		}
+
 
 		/// <summary>
 		/// Get the actual object that is returned in the user-visible result list.
@@ -666,6 +696,17 @@ namespace NHibernate.Loader
 		{
 			return row;
 		}
+
+		protected virtual bool[] IncludeInResultRow
+		{
+			get { return null; }
+		}
+
+		protected virtual object[] GetResultRow(Object[] row, IDataReader rs, ISessionImplementor session)
+		{
+			return row;
+		}
+
 
 		/// <summary>
 		/// For missing objects associated by one-to-one with another object in the
@@ -1499,21 +1540,43 @@ namespace NHibernate.Loader
 		{
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
-			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
-			QueryKey key = new QueryKey(Factory, SqlString, queryParameters, filterKeys,
-			                            AreResultSetRowsTransformedImmediately(queryParameters.ResultTransformer)
-				                            ? queryParameters.ResultTransformer
-				                            : null);
+			QueryKey key = GenerateQueryKey(session, queryParameters);
 
 			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, resultTypes, queryCache, key);
 
 			if (result == null)
 			{
-				result = DoList(session, queryParameters);
+				result = DoList(session, queryParameters, key.ResultTransformer);
 				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 			}
 
+			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
+			if (resolvedTransformer != null)
+			{
+				result = (AreResultSetRowsTransformedImmediately()
+					          ? key.ResultTransformer.RetransformResults(
+						          result,
+						          ResultRowAliases,
+						          queryParameters.ResultTransformer,
+						          IncludeInResultRow)
+					          : key.ResultTransformer.UntransformToTuples(result)
+				         );
+			}
+
 			return GetResultList(result, queryParameters.ResultTransformer);
+		}
+
+		private QueryKey GenerateQueryKey(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			return new QueryKey(Factory, SqlString, queryParameters, filterKeys,
+			                    CreateCacheableResultTransformer(queryParameters));
+		}
+
+		private CacheableResultTransformer CreateCacheableResultTransformer(QueryParameters queryParameters)
+		{
+			return CacheableResultTransformer.Create(
+				queryParameters.ResultTransformer, ResultRowAliases, IncludeInResultRow);
 		}
 
 		private IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
@@ -1535,7 +1598,7 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = queryCache.Get(key, resultTypes, queryParameters.NaturalKeyLookup, querySpaces, session);
+					result = queryCache.Get(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1553,23 +1616,6 @@ namespace NHibernate.Loader
 					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
 				}
 
-				// If there is a result transformer, but the loader is not expecting the data to be
-				// transformed yet, then the loader expects result elements that are Object[].
-				// The problem is that StandardQueryCache.get(...) does not return a tuple when
-				// resultTypes.length == 1. The following changes the data returned from the cache
-				// to be a tuple.
-				// TODO: this really doesn't belong here, but only Loader has the information
-				// to be able to do this.
-				if (result != null &&
-				    resultTypes.Length == 1 &&
-				    key.ResultTransformer == null &&
-				    ResolveResultTransformer(queryParameters.ResultTransformer) != null)
-				{
-					for (int i = 0; i < result.Count; i++)
-					{
-						result[i] = new[] {result[i]};
-					}
-				}
 			}
 			return result;
 		}
@@ -1579,25 +1625,7 @@ namespace NHibernate.Loader
 		{
 			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 			{
-				// If there is a result transformer, but the data has not been transformed yet,
-				// then result elements are Object[]. The problem is that StandardQueryCache.put(...)
-				// does not expect a tuple when resultTypes.length == 1. The following changes the
-				// data being cached to what StandardQueryCache.put(...) expects.
-				// TODO: this really doesn't belong here, but only Loader has the information
-				// to be able to do this.
-				IList cachedResult = result;
-				if (resultTypes.Length == 1 &&
-				    key.ResultTransformer == null &&
-				    ResolveResultTransformer(queryParameters.ResultTransformer) != null)
-				{
-					cachedResult = new ArrayList(result.Count);
-					for (int i = 0; i < result.Count; i++)
-					{
-						cachedResult.Add(((object[]) result[i])[0]);
-					}
-				}
-
-				bool put = queryCache.Put(key, resultTypes, cachedResult, queryParameters.NaturalKeyLookup, session);
+				bool put = queryCache.Put(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
@@ -1613,6 +1641,11 @@ namespace NHibernate.Loader
 		/// <returns></returns>
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters)
 		{
+			return DoList(session, queryParameters, null);
+		}
+
+		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
+		{
 			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
 			if (statsEnabled)
@@ -1623,7 +1656,7 @@ namespace NHibernate.Loader
 			IList result;
 			try
 			{
-				result = DoQueryAndInitializeNonLazyCollections(session, queryParameters, true);
+				result = DoQueryAndInitializeNonLazyCollections(session, queryParameters, true, forcedResultTransformer);
 			}
 			catch (HibernateException)
 			{

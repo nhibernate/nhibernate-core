@@ -164,6 +164,14 @@ namespace NHibernate.Loader.Criteria
 			return rootCriteria.Projection.ToSqlString(rootCriteria.ProjectionCriteria, 0, this, enabledFilters);
 		}
 
+
+		internal IType ResultType(ICriteria criteria)
+		{
+			return TypeFactory.ManyToOne(GetEntityName(criteria));
+			//return Factory.getTypeResolver().getTypeFactory().manyToOne(getEntityName(criteria));
+		}
+
+
 		public IType[] ProjectedTypes
 		{
 			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }

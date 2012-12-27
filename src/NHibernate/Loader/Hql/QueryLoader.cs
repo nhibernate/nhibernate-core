@@ -327,36 +327,34 @@ namespace NHibernate.Loader.Hql
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
 													   ISessionImplementor session)
 		{
-			row = ToResultRow(row);
+			Object[] resultRow = GetResultRow(row, rs, session);
 			bool hasTransform = HasSelectNew || resultTransformer != null;
+			return (!hasTransform && resultRow.Length == 1
+				        ? resultRow[0]
+				        : resultRow
+			       );
+		}
+
+		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		{
+			object[] resultRow;
 
 			if (_hasScalars)
 			{
 				string[][] scalarColumns = _scalarColumnNames;
 				int queryCols = _queryReturnTypes.Length;
-
-				if (!hasTransform && queryCols == 1)
+				resultRow = new object[queryCols];
+				for (int i = 0; i < queryCols; i++)
 				{
-					return _queryReturnTypes[0].NullSafeGet(rs, scalarColumns[0], session, null);
+					resultRow[i] = _queryReturnTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
 				}
-				else
-				{
-					row = new object[queryCols];
-					for (int i = 0; i < queryCols; i++)
-					{
-						row[i] = _queryReturnTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
-					}
-					return row;
-				}
-			}
-			else if (!hasTransform)
-			{
-				return row.Length == 1 ? row[0] : row;
 			}
 			else
 			{
-				return row;
+				resultRow = ToResultRow(row);
 			}
+
+			return resultRow;
 		}
 
 		private object[] ToResultRow(object[] row)
@@ -389,6 +387,25 @@ namespace NHibernate.Loader.Hql
 		private bool HasSelectNew
 		{
 			get { return _selectNewTransformer != null; }
+		}
+
+		protected override string[] ResultRowAliases
+		{
+			get { return _queryReturnAliases; }
+		}
+
+		protected override bool[] IncludeInResultRow
+		{
+			get
+			{
+				bool[] includeInResultTuple = _includeInSelect;
+				if (_hasScalars)
+				{
+					includeInResultTuple = new bool[_queryReturnTypes.Length];
+					ArrayHelper.Fill(includeInResultTuple, true);
+				}
+				return includeInResultTuple;
+			}
 		}
 
 		public IType[] ReturnTypes
