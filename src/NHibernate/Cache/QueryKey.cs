@@ -60,11 +60,6 @@ namespace NHibernate.Cache
 			_hashCode = ComputeHashCode();
 		}
 
-		public bool HasResultTransformer
-		{
-			get { return _customTransformer != null; }
-		}
-
 		public QueryKey SetFirstRows(int[] firstRows)
 		{
 			_multiQueriesFirstRows = firstRows;

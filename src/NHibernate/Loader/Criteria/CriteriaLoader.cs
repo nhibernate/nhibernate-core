@@ -79,6 +79,7 @@ namespace NHibernate.Loader.Criteria
 													   ISessionImplementor session)
 		{
 			object[] result;
+			string[] aliases;
 
 			if (translator.HasProjection)
 			{
@@ -101,18 +102,14 @@ namespace NHibernate.Loader.Criteria
 					}
 					position += numColumns;
 				}
+				aliases = translator.ProjectedAliases;
 			}
 			else
 			{
 				result = row;
+				aliases = userAliases;
 			}
-
-			if (customResultTransformer == null)
-			{
-				// apply the defaut transformer of criteria aka RootEntityResultTransformer
-				return result[result.Length - 1];
-			}
-			return result;
+			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
 		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary<string, LockMode> lockModes,
@@ -165,20 +162,9 @@ namespace NHibernate.Loader.Criteria
 			return lockModesArray;
 		}
 
-		public override IList GetResultList(IList results, IResultTransformer customResultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			if (customResultTransformer == null)
-			{
-				// apply the defaut transformer of criteria aka RootEntityResultTransformer
-				return results;
-			}
-			for (int i = 0; i < results.Count; i++)
-			{
-				var row = results[i] as object[] ?? new object[] { results[i] };
-				object result = customResultTransformer.TransformTuple(row, translator.HasProjection ? translator.ProjectedAliases : userAliases);
-				results[i] = result;
-			}
-			return customResultTransformer.TransformList(results);
+			return translator.RootCriteria.ResultTransformer.TransformList(results);
 		}
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
