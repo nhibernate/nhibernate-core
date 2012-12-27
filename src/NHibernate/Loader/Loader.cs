@@ -627,6 +627,29 @@ namespace NHibernate.Loader
 				collectionPersister);
 		}
 
+		
+		/// <summary>
+		/// Determine the actual ResultTransformer that will be used to transform query results.
+		/// </summary>
+		/// <param name="resultTransformer">The specified result transformer.</param>
+		/// <returns>The actual result transformer.</returns>
+		protected virtual IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
+		{
+			return resultTransformer;
+		}
+
+
+		/// <summary>
+		/// Are rows transformed immediately after being read from the ResultSet?
+		/// </summary>
+		/// <param name="transformer">The specified result transformer.</param>
+		/// <returns>True, if getResultColumnOrRow() transforms the results; false, otherwise</returns>
+		protected virtual bool AreResultSetRowsTransformedImmediately(IResultTransformer transformer)
+		{
+			return false;
+		}
+
+
 		public virtual IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
 			return results;
@@ -1477,7 +1500,10 @@ namespace NHibernate.Loader
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
-			QueryKey key = new QueryKey(Factory, SqlString, queryParameters, filterKeys);
+			QueryKey key = new QueryKey(Factory, SqlString, queryParameters, filterKeys,
+			                            AreResultSetRowsTransformedImmediately(queryParameters.ResultTransformer)
+				                            ? queryParameters.ResultTransformer
+				                            : null);
 
 			IList result = GetResultFromQueryCache(session, queryParameters, querySpaces, resultTypes, queryCache, key);
 
@@ -1526,6 +1552,24 @@ namespace NHibernate.Loader
 				{
 					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
 				}
+
+				// If there is a result transformer, but the loader is not expecting the data to be
+				// transformed yet, then the loader expects result elements that are Object[].
+				// The problem is that StandardQueryCache.get(...) does not return a tuple when
+				// resultTypes.length == 1. The following changes the data returned from the cache
+				// to be a tuple.
+				// TODO: this really doesn't belong here, but only Loader has the information
+				// to be able to do this.
+				if (result != null &&
+				    resultTypes.Length == 1 &&
+				    key.ResultTransformer == null &&
+				    ResolveResultTransformer(queryParameters.ResultTransformer) != null)
+				{
+					for (int i = 0; i < result.Count; i++)
+					{
+						result[i] = new[] {result[i]};
+					}
+				}
 			}
 			return result;
 		}
@@ -1535,7 +1579,25 @@ namespace NHibernate.Loader
 		{
 			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 			{
-				bool put = queryCache.Put(key, resultTypes, result, queryParameters.NaturalKeyLookup, session);
+				// If there is a result transformer, but the data has not been transformed yet,
+				// then result elements are Object[]. The problem is that StandardQueryCache.put(...)
+				// does not expect a tuple when resultTypes.length == 1. The following changes the
+				// data being cached to what StandardQueryCache.put(...) expects.
+				// TODO: this really doesn't belong here, but only Loader has the information
+				// to be able to do this.
+				IList cachedResult = result;
+				if (resultTypes.Length == 1 &&
+				    key.ResultTransformer == null &&
+				    ResolveResultTransformer(queryParameters.ResultTransformer) != null)
+				{
+					cachedResult = new ArrayList(result.Count);
+					for (int i = 0; i < result.Count; i++)
+					{
+						cachedResult.Add(((object[]) result[i])[0]);
+					}
+				}
+
+				bool put = queryCache.Put(key, resultTypes, cachedResult, queryParameters.NaturalKeyLookup, session);
 				if (put && _factory.Statistics.IsStatisticsEnabled)
 				{
 					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);

@@ -75,6 +75,18 @@ namespace NHibernate.Loader.Criteria
 			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
+		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
+		{
+			return translator.RootCriteria.ResultTransformer;
+		}
+
+		protected override bool AreResultSetRowsTransformedImmediately(IResultTransformer transformer)
+		{
+			// comparing to null just in case there is no transformer
+			// (there should always be a result transformer; 
+			return ResolveResultTransformer(transformer) != null;
+		}
+
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
 													   ISessionImplementor session)
 		{
@@ -109,7 +121,8 @@ namespace NHibernate.Loader.Criteria
 				result = row;
 				aliases = userAliases;
 			}
-			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
+
+			return ResolveResultTransformer(customResultTransformer).TransformTuple(result, aliases);
 		}
 
 		protected override SqlString ApplyLocks(SqlString sqlSelectString, IDictionary<string, LockMode> lockModes,
@@ -164,7 +177,7 @@ namespace NHibernate.Loader.Criteria
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			return translator.RootCriteria.ResultTransformer.TransformList(results);
+			return ResolveResultTransformer(resultTransformer).TransformList(results);
 		}
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()

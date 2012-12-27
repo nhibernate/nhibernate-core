@@ -109,7 +109,7 @@ namespace NHibernate.Impl
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 			QueryParameters combinedParameters = CreateCombinedQueryParameters();
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 

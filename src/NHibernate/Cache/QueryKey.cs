@@ -35,8 +35,9 @@ namespace NHibernate.Cache
 		/// <param name="queryString">The query string.</param>
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
+		/// <param name="customTransformer">The result transformer; should be null if data is not transformed before being cached.</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-						ISet<FilterKey> filters)
+		                ISet<FilterKey> filters, IResultTransformer customTransformer)
 		{
 			_factory = factory;
 			_sqlQueryString = queryString;
@@ -56,8 +57,13 @@ namespace NHibernate.Cache
 			}
 			_namedParameters = queryParameters.NamedParameters;
 			_filters = filters;
-			_customTransformer = queryParameters.ResultTransformer;
+			_customTransformer = customTransformer;
 			_hashCode = ComputeHashCode();
+		}
+
+		public IResultTransformer ResultTransformer
+		{
+			get { return _customTransformer; }
 		}
 
 		public QueryKey SetFirstRows(int[] firstRows)

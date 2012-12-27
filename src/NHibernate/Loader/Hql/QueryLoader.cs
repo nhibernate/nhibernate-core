@@ -319,6 +319,11 @@ namespace NHibernate.Loader.Hql
 			}
 		}
 
+		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
+		{
+			return HolderInstantiator.ResolveResultTransformer(_selectNewTransformer, resultTransformer);
+		}
+
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
 													   ISessionImplementor session)
 		{
