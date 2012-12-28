@@ -82,10 +82,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateQuery("from Blog b where b.Author = : author")
-						.SetString("author", "Gabriel")
-						.SetCacheable(true)
-						.SetResultTransformer(new DistinctRootEntityResultTransformer());
-					query.Executing(q=> q.List<Blog>()).NotThrows();
+					                   .SetString("author", "Gabriel")
+					                   .SetCacheable(true)
+					                   .SetResultTransformer(new DistinctRootEntityResultTransformer())
+					                   .List<Blog>();
 					tx.Commit();
 				}
 			}
@@ -100,9 +100,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-						.TransformUsing(new DistinctRootEntityResultTransformer())
-						.Cacheable();
-					query.Executing(q => q.List<Blog>()).NotThrows();
+					                   .TransformUsing(new DistinctRootEntityResultTransformer())
+					                   .Cacheable()
+					                   .List<Blog>();
 					tx.Commit();
 				}
 			}
@@ -148,9 +148,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.QueryOver<Blog>().Select(x => x.Author, x => x.Name).Where(x => x.Author == "Gabriel")
-						.TransformUsing(transformer)
-						.Cacheable();
-					query.Executing(q => q.List<BlogAuthorDto>()).NotThrows();
+					                   .TransformUsing(transformer)
+					                   .Cacheable()
+					                   .List<BlogAuthorDto>();
 					tx.Commit();
 				}
 			}
@@ -166,9 +166,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-						.SetFetchMode("Posts", FetchMode.Eager)
-						.SetCacheable(true);
-					query.Executing(q => q.List<Blog>()).NotThrows();
+					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .SetCacheable(true)
+					                   .List<Blog>();
 					tx.Commit();
 				}
 			}
@@ -183,9 +183,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-						.SetFetchMode("Posts", FetchMode.Eager)
-						.SetCacheable(true);
-					query.Executing(q => q.Future<Blog>().ToList()).NotThrows();
+					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .SetCacheable(true)
+					                   .Future<Blog>()
+					                   .ToList();
 					tx.Commit();
 				}
 			}
@@ -200,9 +201,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateQuery("select b from Blog b join fetch b.Posts where b.Author = : author")
-						.SetString("author", "Gabriel")
-						.SetCacheable(true);
-					query.Executing(q => q.List<Blog>()).NotThrows();
+					                   .SetString("author", "Gabriel")
+					                   .SetCacheable(true)
+					                   .List<Blog>();
 					tx.Commit();
 				}
 			}
