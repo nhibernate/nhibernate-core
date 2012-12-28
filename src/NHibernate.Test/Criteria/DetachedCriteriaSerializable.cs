@@ -46,7 +46,7 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void AllEmbeddedResultTrasformesHareSerializable()
+		public void AllEmbeddedResultTransformersAreSerializable()
 		{
 			NHAssert.InheritedAreMarkedSerializable(typeof(IResultTransformer));
 		}

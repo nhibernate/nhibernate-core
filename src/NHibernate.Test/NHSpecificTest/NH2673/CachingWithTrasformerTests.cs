@@ -11,7 +11,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
-	public class CachingWithTrasformerTests: TestCaseMappingByCode
+	public class CachingWithTransformerTests: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			public string AuthorName { get; set; }
 		}
 
-		private class BlogAuthorTrasformer : IResultTransformer
+		private class BlogAuthorTransformer : IResultTransformer
 		{
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{
@@ -129,9 +129,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 		[Test]
 		public void WhenCriteriaProjectionThenNotThrows()
 		{
-			// during the fix of NH-2673 was faund another bug related to cacheability of criteria with projection + trasformer 
+			// during the fix of NH-2673 was faund another bug related to cacheability of criteria with projection + transformer 
 			// then found reported as NH-1090
-			var transformer = new BlogAuthorTrasformer();
+			var transformer = new BlogAuthorTransformer();
 			using (new Scenario(Sfi))
 			{
 				using (var session = OpenSession())
