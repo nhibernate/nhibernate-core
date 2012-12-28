@@ -210,7 +210,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		[Test]
 		public void SimpleProjections()
 		{
-			var transformer = new CustomTrasformer();
+			var transformer = new CustomTransformer();
 			sessions.EvictQueries();
 			sessions.Statistics.Clear();
 
@@ -301,7 +301,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(es.FetchCount, Is.EqualTo(0)); //check that it was being cached
 		}
 
-		public class CustomTrasformer: IResultTransformer
+		public class CustomTransformer: IResultTransformer
 		{
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{

@@ -2,20 +2,29 @@
 using System.Collections;
 using System.Data;
 using System.Linq;
+using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	[TestFixture]
-	public class DateTimeOffSetQueryFixture : FixtureBase
+	public class DateTimeOffsetQueryFixture : FixtureBase
 	{
 		protected override IList Mappings
 		{
 			get { return new[] { "NHSpecificTest.Dates.Mappings.DateTimeOffset.hbm.xml" }; }
+		}
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			// Cannot handle DbType.DateTimeOffset via ODBC.
+			if (factory.ConnectionProvider.Driver is OdbcDriver)
+				return false;
+
+			return base.AppliesTo(factory);
 		}
 
 		protected override DbType? AppliesTo()
@@ -71,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 
 		[Test(Description = "NH-3357")]
-		public void CanQueryWithAggerageInLinq()
+		public void CanQueryWithAggregateInLinq()
 		{
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
