@@ -4653,6 +4653,38 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.QueryReuseTests.CanReuseAfterSum" executed="True" result="Success" success="True" asserts="2" />
                     </results>
                   </test-suite>
+                  <test-suite type="TestFixture" name="QueryTimeoutTests" executed="True" result="Failure" success="False" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.Linq.QueryTimeoutTests.CanSetTimeoutBeforeSkipOnLinqOrderedPageQuery" executed="True" result="Failure" success="False" asserts="1">
+                        <failure>
+                          <message><![CDATA[  Expected: 17
+  But was:  0
+]]></message>
+                        </failure>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.QueryTimeoutTests.CanSetTimeoutOnLinqGroupPageQuery" executed="True" result="Failure" success="False" asserts="1">
+                        <failure>
+                          <message><![CDATA[  Expected: 17
+  But was:  0
+]]></message>
+                        </failure>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.QueryTimeoutTests.CanSetTimeoutOnLinqPagingQuery" executed="True" result="Failure" success="False" asserts="1">
+                        <failure>
+                          <message><![CDATA[  Expected: 17
+  But was:  0
+]]></message>
+                        </failure>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.QueryTimeoutTests.CanSetTimeoutOnLinqQueries" executed="True" result="Failure" success="False" asserts="1">
+                        <failure>
+                          <message><![CDATA[  Expected: 17
+  But was:  0
+]]></message>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
                   <test-suite type="TestFixture" name="RegresstionTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Linq.RegresstionTests.CanUseNullConstantAndRestriction" executed="True" result="Success" success="True" asserts="1" />
