@@ -273,17 +273,19 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
-			if (a.Length != b.Length)
-			{
+			if (a == b)
+				return true;
+
+			if (a == null || b == null)
 				return false;
-			}
+
+			if (a.Length != b.Length)
+				return false;
 
 			for (int i = 0; i < a.Length; i++)
 			{
 				if (!Equals(a[i], b[i]))
-				{
 					return false;
-				}
 			}
 
 			return true;
@@ -291,19 +293,22 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals(byte[] a, byte[] b)
 		{
-			if (a.Length != b.Length)
-			{
+			if (a == b)
+				return true;
+
+			if (a == null || b == null)
 				return false;
-			}
+
+			if (a.Length != b.Length)
+				return false;
 
 			int i = 0;
 			int len = a.Length;
 			while (i < len)
 			{
 				if (a[i] != b[i])
-				{
 					return false;
-				}
+
 				i++;
 			}
 			return true;
