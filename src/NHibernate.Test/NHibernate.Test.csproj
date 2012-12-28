@@ -1137,6 +1137,7 @@
     <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
+    <Compile Include="UtilityTest\ArrayHelperTests.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
