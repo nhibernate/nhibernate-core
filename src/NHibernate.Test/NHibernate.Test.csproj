@@ -988,7 +988,7 @@
     <Compile Include="NHSpecificTest\NH2662\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2662\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2673\Blog.cs" />
-    <Compile Include="NHSpecificTest\NH2673\CachingWithTrasformerTests.cs" />
+    <Compile Include="NHSpecificTest\NH2673\CachingWithTransformerTests.cs" />
     <Compile Include="NHSpecificTest\NH2691\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2691\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2693\Fixture.cs" />
