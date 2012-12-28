@@ -675,7 +675,6 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
-    <Compile Include="NHSpecificTest\Dates\DateTimeOffSetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeOffsetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
