@@ -7,7 +7,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
@@ -206,6 +205,62 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					                   .List<Blog>();
 					tx.Commit();
 				}
+			}
+		}
+
+		
+		[Test(Description = "NH2961/3311")]
+		[Ignore("Not fixed yet.")]
+		public void CanCacheCriteriaWithLeftJoinAndResultTransformer()
+		{
+			Post posts = null;
+
+			using (new Scenario(Sfi))
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
+									.Left.JoinAlias(x => x.Posts, () => posts)
+									.TransformUsing(new DistinctRootEntityResultTransformer())
+									.Cacheable()
+									.List<Blog>();
+			}
+		}
+
+
+		[Test(Description = "NH2961/3311")]
+		[Ignore("Not fixed yet.")]
+		public void CanCacheCriteriaWithEagerLoadAndResultTransformer()
+		{
+			using (new Scenario(Sfi))
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
+									.Fetch(x => x.Posts).Eager
+									.TransformUsing(new DistinctRootEntityResultTransformer())
+									.Cacheable()
+									.List<Blog>();
+			}
+		}
+
+		
+		[Test(Description = "NH2961/3311")]
+		public void CanCacheCriteriaWithLeftJoin()
+		{
+			Post posts = null;
+			// Begins to work in 6e21608bbdec096558da956b9df41ab1d63dbd85.
+			// Same as CanCacheCriteriaWithLeftJoinAndResultTransformer() but without
+			// result transformer.
+
+			using (new Scenario(Sfi))
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var query = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
+				                   .Left.JoinAlias(x => x.Posts, () => posts)
+				                   .Cacheable()
+				                   .List<Blog>();
 			}
 		}
 	}
