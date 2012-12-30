@@ -263,7 +263,7 @@ namespace NHibernate.Mapping
 			{
 				// NH Specific: Hibernate doesn't make a distinction between
 				// lazy and no-proxy, but NHibernate does. While Hibernate tracks
-				// just whatever a property is lazy, we need to track lazy/no-proxy seperatedly.
+				// just whatever a property is lazy, we need to track lazy/no-proxy separately.
 				
 				return isLazy;
 			}

@@ -135,7 +135,7 @@ namespace NHibernate
 
 		/// Should the query force a refresh of the specified query cache region?
 		/// This is particularly useful in cases where underlying data may have been
-		/// updated via a seperate process (i.e., not modified through Hibernate) and
+		/// updated via a separate process (i.e., not modified through Hibernate) and
 		/// allows the application to selectively refresh the query cache regions
 		/// based on its knowledge of those events.
 		/// <param name="forceCacheRefresh">Should the query result in a forcible refresh of

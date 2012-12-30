@@ -30,7 +30,7 @@ namespace NHibernate.Id
 	/// <c>schema</c> are optional.
 	/// </p>
 	/// <p>
-	/// The hi value MUST be fecthed in a seperate transaction to the <c>ISession</c>
+	/// The hi value MUST be fecthed in a separate transaction to the <c>ISession</c>
 	/// transaction so the generator must be able to obtain a new connection and 
 	/// commit it. Hence this implementation may not be used when the user is supplying
 	/// connections.  In that case a <see cref="SequenceHiLoGenerator"/> would be a 

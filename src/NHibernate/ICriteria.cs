@@ -121,7 +121,7 @@ namespace NHibernate
 		/// Specify an association fetching strategy.  Currently, only
 		/// one-to-many and one-to-one associations are supported.
 		/// </summary>
-		/// <param name="associationPath">A dot seperated property path.</param>
+		/// <param name="associationPath">A dot separated property path.</param>
 		/// <param name="mode">The Fetch mode.</param>
 		/// <returns></returns>
 		ICriteria SetFetchMode(string associationPath, FetchMode mode);
@@ -181,7 +181,7 @@ namespace NHibernate
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
 		/// using the specified join type.
 		/// </summary>
-		/// <param name="associationPath">A dot-seperated property path</param>
+		/// <param name="associationPath">A dot-separated property path</param>
 		/// <param name="joinType">The type of join to use</param>
 		/// <returns>The created "sub criteria"</returns>
 		ICriteria CreateCriteria(string associationPath, JoinType joinType);
