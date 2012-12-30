@@ -114,7 +114,6 @@
     <Compile Include="Any\PropertySet.cs" />
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
@@ -707,6 +706,8 @@
     <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3311\Blog.cs" />
+    <Compile Include="NHSpecificTest\NH3311\CachingWithTrasformerTests.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
@@ -1107,6 +1108,8 @@
     <Compile Include="ReadOnly\StudentDto.cs" />
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
+    <Compile Include="SecondLevelCacheTest\CacheableWithDistinctRootEntityFixture.cs" />
+    <Compile Include="SecondLevelCacheTest\ReadonlyTestCase.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
