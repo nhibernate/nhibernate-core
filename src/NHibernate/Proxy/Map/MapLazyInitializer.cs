@@ -11,7 +11,8 @@ namespace NHibernate.Proxy.Map
 		public MapLazyInitializer(string entityName, object id, ISessionImplementor session) 
 			: base(entityName, id, session) {}
 
-		public IDictionary Map
+		
+        public IDictionary Map
 		{
 			get { return (IDictionary) GetImplementation(); }
 		}

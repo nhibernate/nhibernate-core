@@ -43,6 +43,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			BindPocoRepresentation(classMapping, model);
 			BindXmlRepresentation(classMapping, model);
+            BindDynamicRepresentation(classMapping, model);
 			BindMapRepresentation(classMapping, model);
 
 			BindPersistentClassCommonValues(classMapping, model, inheritedMetas);
@@ -130,6 +131,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				entity.AddTuplizer(EntityMode.Map, tupClassName);
 			}
 		}
+        
+        private void BindDynamicRepresentation(IEntityMapping classMapping, PersistentClass entity)
+        {
+            HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Dynamic);
+            if (tuplizer != null)
+            {
+                string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
+                entity.AddTuplizer(EntityMode.Dynamic, tupClassName);
+            }
+        }
 
 		private void BindXmlRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{

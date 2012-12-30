@@ -1432,6 +1432,7 @@
 						<xs:enumeration value="poco" />
 						<xs:enumeration value="xml" />
 						<xs:enumeration value="dynamic-map" />
+            <xs:enumeration value="dynamic" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>

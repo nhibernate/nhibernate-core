@@ -12,6 +12,8 @@ namespace NHibernate.Cfg.MappingSchema
 					return EntityMode.Poco;
 				case HbmTuplizerEntitymode.Xml:
 					return EntityMode.Xml;
+                case HbmTuplizerEntitymode.Dynamic:
+                    return EntityMode.Dynamic;
 				case HbmTuplizerEntitymode.DynamicMap:
 					return EntityMode.Map;
 				default:

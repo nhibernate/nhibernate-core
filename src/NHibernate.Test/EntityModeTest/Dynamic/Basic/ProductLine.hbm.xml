@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+    This mapping demonstrates "dynamic" entities.
+-->
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+  <class entity-name="ProductLine">
+    <id name="Id" column="productId" type="System.Int32">
+      <generator class="native"/>
+    </id>
+    <property name="Description" not-null="true" length="200" type="string"/>
+
+    <bag name="Models" cascade="all" inverse="true">
+      <key column="productId"/>
+      <one-to-many class="Model"/>
+    </bag>
+
+  </class>
+  <class entity-name="Model">
+    <id name="Id" column="modelId" type="System.Int32">
+      <generator class="native"/>
+    </id>
+
+    <property name="Name" not-null="true" length="25" type="string"/>
+    <property name="Description" not-null="true" length="200" type="string"/>
+    <many-to-one name="ProductLine" column="productId" not-null="true" class="ProductLine"/>
+
+  </class>
+
+
+</hibernate-mapping>

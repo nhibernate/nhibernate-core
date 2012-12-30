@@ -5,7 +5,8 @@ namespace NHibernate
 	{
 		Poco,
 		Map,
-		Xml
+		Xml,
+        Dynamic
 	}
 
 	public static class EntityModeHelper
@@ -20,6 +21,8 @@ namespace NHibernate
 					return "dynamic-map";
 				case EntityMode.Xml:
 					return "xml";
+                case EntityMode.Dynamic:
+                    return "dynamic";
 			}
 			return null;
 		}
@@ -35,6 +38,8 @@ namespace NHibernate
 					return EntityMode.Map;
 				case "xml":
 					return EntityMode.Xml;
+                case "dynamic":
+                    return EntityMode.Dynamic;
 				default:
 					return EntityMode.Poco;
 			}

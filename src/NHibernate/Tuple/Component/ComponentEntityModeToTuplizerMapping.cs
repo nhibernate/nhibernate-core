@@ -40,6 +40,18 @@ namespace NHibernate.Tuple.Component
 				userSuppliedTuplizerImpls.Remove(EntityMode.Map);
 			}
 
+            // Build the dynamic tuplizer...
+            ITuplizer dynamicTuplizer;
+            string dyntuplizerImpl;
+            if (!userSuppliedTuplizerImpls.TryGetValue(EntityMode.Dynamic, out dyntuplizerImpl))
+            {
+                dynamicTuplizer = new DynamicComponentTuplizer(component);
+            }
+            else
+            {
+                dynamicTuplizer = BuildComponentTuplizer(dyntuplizerImpl, component);
+                userSuppliedTuplizerImpls.Remove(EntityMode.Dynamic);
+            }
 			// then the pojo tuplizer, using the dynamic-map tuplizer if no pojo representation is available
 			ITuplizer pojoTuplizer;
 			string tempObject2;
@@ -71,6 +83,10 @@ namespace NHibernate.Tuple.Component
 			{
 				AddTuplizer(EntityMode.Map, dynamicMapTuplizer);
 			}
+            if (dynamicTuplizer != null)
+            {
+                AddTuplizer(EntityMode.Dynamic, dynamicTuplizer);
+            }
 
 			// then handle any user-defined entity modes..
 			foreach (KeyValuePair<EntityMode, string> entry in userSuppliedTuplizerImpls)
