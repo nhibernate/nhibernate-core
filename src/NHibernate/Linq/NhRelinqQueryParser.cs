@@ -168,7 +168,7 @@ namespace NHibernate.Linq
 	}
 
 
-	public class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
+	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
 	{
 		private readonly MethodCallExpressionParseInfo _parseInfo;
 		private readonly ConstantExpression _timeout;
@@ -191,7 +191,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	public class TimeoutResultOperator : ResultOperatorBase
+	internal class TimeoutResultOperator : ResultOperatorBase
 	{
 		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
 		public ConstantExpression Timeout { get; private set; }

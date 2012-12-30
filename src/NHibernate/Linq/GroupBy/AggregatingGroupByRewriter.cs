@@ -29,6 +29,8 @@ namespace NHibernate.Linq.GroupBy
 	/// </summary>
 	public class AggregatingGroupByRewriter
 	{
+		private AggregatingGroupByRewriter() { }
+
 		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
 			{
 				typeof (SkipResultOperator),
