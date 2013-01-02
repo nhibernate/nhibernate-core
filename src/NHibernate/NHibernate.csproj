@@ -1024,7 +1024,6 @@
     <Compile Include="Linq\NhQueryable.cs" />
     <Compile Include="Linq\ResultOperators\NonAggregatingGroupBy.cs" />
     <Compile Include="Linq\GroupBy\NonAggregatingGroupByRewriter.cs" />
-    <Compile Include="Linq\ParameterAggregator.cs" />
     <Compile Include="Linq\Visitors\SelectClauseVisitor.cs" />
     <Compile Include="Linq\Visitors\QueryModelVisitor.cs" />
     <Compile Include="Linq\ResultTransformer.cs" />
