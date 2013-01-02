@@ -44,7 +44,7 @@
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
-	<target name="ilmerge" depends="generate-assemblyinfo common.compile-dll">
+	<target name="merge" depends="generate-assemblyinfo common.compile-dll">
 		<uptodate property="NHibernate.dll.uptodate">
 			<sourcefiles>
 				<include name="${bin.dir}/unmerged/NHibernate.dll"/>
@@ -61,10 +61,10 @@
       <copy file="${bin.dir}/unmerged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<copy file="${bin.dir}/unmerged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 			
-			<exec program="../../Tools/ILMerge/ILMerge.exe">
+			<exec program="../../Tools/ilrepack/ilrepack.exe">
 				<arg value="/t:library" />
 				<arg value="/internalize" />
-				<arg value="/targetplatform:&quot;v4,${referenceassemblies.dir}&quot;" />
+				<arg value="/targetplatform:v4" />
 				<arg value="/keyfile:../NHibernate.snk" />
 				<arg value="/out:${bin.dir}/merged/NHibernate.dll" />
 				<arg value="${bin.dir}/NHibernate.dll" />
@@ -77,9 +77,9 @@
       <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
       <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 
-      <exec program="../../Tools/ILMerge/ILMerge.exe">
+      <exec program="../../Tools/ilrepack/ilrepack.exe">
         <arg value="/t:library" />
-        <arg value="/targetplatform:&quot;v4,${referenceassemblies.dir}&quot;" />
+        <arg value="/targetplatform:v4" />
         <arg value="/keyfile:../NHibernate.snk" />
         <arg value="/out:${bin.dir}/merged/NHibernate.dll" />
         <arg value="${bin.dir}/NHibernate.dll" />
@@ -95,7 +95,7 @@
 		</if>
 	</target>
 	
-	<target name="build" description="Build NHibernate" depends="ilmerge">
+	<target name="build" description="Build NHibernate" depends="merge">
 		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
 	</target>
 

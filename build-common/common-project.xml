@@ -250,6 +250,7 @@
 				
 				<!-- For some reason, NAnt doesn't detect that APTCA has a public no-argument constructor -->
 				<attribute asis="true" type="AllowPartiallyTrustedCallersAttribute" if="${assembly.allow-partially-trusted-callers}" />
+				<attribute asis="true" type="SecurityRulesAttribute" value="SecurityRuleSet.Level1" if="${assembly.allow-partially-trusted-callers}" />
 			</attributes>
 		</asminfo>
 	</target>
