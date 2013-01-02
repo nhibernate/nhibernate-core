@@ -99,10 +99,10 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags=SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags=SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{

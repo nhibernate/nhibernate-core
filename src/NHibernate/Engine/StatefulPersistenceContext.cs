@@ -1495,9 +1495,10 @@ namespace NHibernate.Engine
 			InitTransientState();
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{

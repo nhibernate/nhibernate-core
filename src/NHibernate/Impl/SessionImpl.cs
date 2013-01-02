@@ -133,10 +133,10 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However,
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags = SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -935,7 +935,7 @@ namespace NHibernate.Impl
 				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
 			}
 		}
-        
+		
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
