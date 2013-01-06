@@ -63,6 +63,8 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
+			SimplifyCompareRewriter.ReWrite(queryModel);
+
 			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
 			visitor.Visit();
 

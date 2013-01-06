@@ -706,5 +706,83 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
+
+
+		[Test(Description = "NH-3366")]
+		public void CanUseCompareInQueryWithNonConstantZero()
+		{
+			using (var ls = new SqlLogSpy())
+			{
+				// Comparison with p.ProductId is somewhat non-sensical - the point
+				// is that it should work also when it's not something that can be reduced
+				// to a constant zero.
+				var result = db.Products.Where(p => string.Compare(p.Name, "Pavlova") < (p.ProductId - p.ProductId)).ToList();
+
+				Assert.That(result, Has.Count.EqualTo(47));
+
+				// This should generate SQL with some nested case expressions - it should not be
+				// simplified.
+				string wholeLog = ls.GetWholeLog();
+				Assert.That(wholeLog, Is.StringContaining("when product0_.ProductName=@p0 then 0"));
+			}
+		}
+
+
+		[Test(Description = "NH-3366")]
+		[TestCaseSource(typeof(WhereTests), "CanUseCompareInQueryDataSource")]
+		public void CanUseCompareInQuery(Expression<Func<Product, bool>> expression, int expectedCount, string expectedSqlFragment, bool expectCase)
+		{
+			using (var ls = new SqlLogSpy())
+			{
+				var result = db.Products.Where(expression).ToList();
+
+				Assert.That(result, Has.Count.EqualTo(expectedCount));
+
+				string wholeLog = ls.GetWholeLog();
+				Assert.That(wholeLog, Is.StringContaining(expectedSqlFragment));
+
+				Assert.That(wholeLog, expectCase ? Is.StringContaining("case") : Is.Not.StringContaining("case"));
+			}
+		}
+
+
+		private List<object[]> CanUseCompareInQueryDataSource()
+		{
+			return new List<object[]>
+				{
+					// The full set of operators over strings.
+					TestRow(p => p.Name.CompareTo("Pavlova") < 0, 47, "product0_.ProductName<@p0", false),
+					TestRow(p => p.Name.CompareTo("Pavlova") <= 0, 48, "product0_.ProductName<=@p0", false),
+					TestRow(p => p.Name.CompareTo("Pavlova") == 0, 1, "product0_.ProductName=@p0", false),
+					TestRow(p => p.Name.CompareTo("Pavlova") != 0, 76, "product0_.ProductName<>@p0", false),
+					TestRow(p => p.Name.CompareTo("Pavlova") >= 0, 30, "product0_.ProductName>=@p0", false),
+					TestRow(p => p.Name.CompareTo("Pavlova") > 0, 29, "product0_.ProductName>@p0", false),
+
+					// Some of the above with the constant zero as first operator (needs to inverse the operator).
+					TestRow(p => 0 <= p.Name.CompareTo("Pavlova"), 30, "product0_.ProductName>=@p0", false),
+					TestRow(p => 0 == p.Name.CompareTo("Pavlova"), 1, "product0_.ProductName=@p0", false),
+					TestRow(p => 0 > p.Name.CompareTo("Pavlova"), 47, "product0_.ProductName<@p0", false),
+
+					// Over integers.
+					TestRow(p => p.UnitsInStock.CompareTo(13) < 0, 15, "product0_.UnitsInStock<@p0", false),
+					TestRow(p => p.UnitsInStock.CompareTo(13) >= 0, 62, "product0_.UnitsInStock>=@p0", false),
+
+					// Over floats.
+					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, "product0_.ShippingWeight<=@p0", false),
+					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, "product0_.ShippingWeight<=@p0", false),
+					
+					// Over nullable decimals.
+					TestRow(p => p.UnitPrice.Value.CompareTo((decimal) 14.00) <= 0, 24, "product0_.UnitPrice<=@p0", false),
+					TestRow(p => 0 >= p.UnitPrice.Value.CompareTo((decimal) 14.00), 24, "product0_.UnitPrice<=@p0", false),
+				};
+		}
+
+		private static object[] TestRow(Expression<Func<Product, bool>> expression, int expectedCount, string expectedSqlFragment, bool expectCase)
+		{
+			return new object[]
+				{
+					expression, expectedCount, expectedSqlFragment, expectCase
+				};
+		}
 	}
 }

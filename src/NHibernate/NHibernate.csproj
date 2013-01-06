@@ -164,6 +164,7 @@
     <Compile Include="Dialect\SybaseSQLAnywhere12Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
+    <Compile Include="Driver\DotConnectMySqlDriver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
     <Compile Include="Driver\FirebirdDriver.cs" />
     <Compile Include="Driver\IDriver.cs" />
@@ -293,6 +294,8 @@
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
+    <Compile Include="Linq\Functions\CompareGenerator.cs" />
+    <Compile Include="Linq\Visitors\SimplifyCompareRewriter.cs" />
     <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
