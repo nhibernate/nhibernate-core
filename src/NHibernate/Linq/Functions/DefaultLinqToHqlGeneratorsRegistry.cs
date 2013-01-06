@@ -33,6 +33,8 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new LengthGenerator());
             this.Merge(new TrimGenerator());
 
+			this.Merge(new CompareGenerator());
+
 			this.Merge(new AnyHqlGenerator());
 			this.Merge(new AllHqlGenerator());
 			this.Merge(new MinHqlGenerator());
