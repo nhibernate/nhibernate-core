@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Remotion.Linq;
+using NHibernate.Linq.Functions;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 
-namespace NHibernate.Linq.Visitors
+namespace NHibernate.Linq.ExpressionTransformers
 {
 	/// <summary>
 	/// Applications of the string.Compare(a,b) and a.CompareTo(b) (for various types)
@@ -12,20 +14,13 @@ namespace NHibernate.Linq.Visitors
 	/// Compare/CompareTo method call. The comparison operator is then applied
 	/// directly to the arguments for the Compare/CompareTo call.
 	/// </summary>
-	internal class SimplifyCompareRewriter : NhExpressionTreeVisitor
+	internal class SimplifyCompareTransformer : IExpressionTransformer<BinaryExpression>
 	{
 		// Examples:
 		// string.Compare(a, b) = 0    =>    a = b
 		// string.Compare(a, b) > 0    =>    a > b
 		// string.Compare(a, b) < 0    =>    a < b
 		// a.CompareTo(b) op 0         =>    a op b
-
-
-		internal static void ReWrite(QueryModel queryModel)
-		{
-			var v = new SimplifyCompareRewriter();
-			queryModel.TransformExpressions(v.VisitExpression);
-		}
 
 
 		private static readonly IDictionary<ExpressionType, ExpressionType> ActingOperators = new Dictionary
@@ -39,22 +34,14 @@ namespace NHibernate.Linq.Visitors
 				{ExpressionType.NotEqual, ExpressionType.NotEqual},
 			};
 
-		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
-			{
-				ReflectionHelper.GetMethodDefinition(() => string.Compare(null, null)),
-				ReflectionHelper.GetMethodDefinition<string>(s => s.CompareTo(s)),
-				ReflectionHelper.GetMethodDefinition<char>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<byte>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<short>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<int>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<long>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
-				ReflectionHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
-			};
+
+		public ExpressionType[] SupportedExpressionTypes
+		{
+			get { return ActingOperators.Keys.ToArray(); }
+		}
 
 
-		protected override Expression VisitBinaryExpression(BinaryExpression expression)
+		public Expression Transform(BinaryExpression expression)
 		{
 			ExpressionType inverseExpressionType;
 			if (ActingOperators.TryGetValue(expression.NodeType, out inverseExpressionType))
@@ -68,7 +55,7 @@ namespace NHibernate.Linq.Visitors
 					return Build(inverseExpressionType, expression.Right);
 			}
 
-			return base.VisitBinaryExpression(expression);
+			return expression;
 		}
 
 
@@ -94,10 +81,7 @@ namespace NHibernate.Linq.Visitors
 			if (methodCall == null)
 				return false;
 
-			if (!ActingMethods.Contains(methodCall.Method))
-				return false;
-
-			return true;
+			return CompareGenerator.IsCompareMethod(methodCall.Method);
 		}
 
 
@@ -111,16 +95,16 @@ namespace NHibernate.Linq.Visitors
 			// There is no built in lt, lt, gt or gte for strings - must pass along a placeholder
 			// method for this case.
 			if (methodCall.Arguments[0].Type == typeof (string))
-				return Expression.MakeBinary(et, VisitExpression(lhs), VisitExpression(rhs), false, DummyStringCompareMethod);
+				return Expression.MakeBinary(et, lhs, rhs, false, DummyStringCompareMethod);
 
-			return Expression.MakeBinary(et, VisitExpression(lhs), VisitExpression(rhs));
+			return Expression.MakeBinary(et, lhs, rhs);
 		}
 
 
 		private static readonly MethodInfo DummyStringCompareMethod = ReflectionHelper.GetMethodDefinition(() => DummyStringCompare(null, null));
 		private static bool DummyStringCompare(string lhs, string rhs)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException("This method is not intended to be called.");
 		}
 	}
 }
