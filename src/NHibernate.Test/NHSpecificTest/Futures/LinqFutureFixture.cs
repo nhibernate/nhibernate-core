@@ -265,6 +265,40 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+		[Test(Description = "NH-2385")]
+		public void CanCombineSingleFutureValueWithFetchMany()
+		{
+			int personId;
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "inserted name" };
+				var p2 = new Person { Name = null };
+
+				s.Save(p1);
+				s.Save(p2);
+				personId = p2.Id;
+				tx.Commit();
+			}
+
+			using (var s = sessions.OpenSession())
+			{
+				var meContainer = s.Query<Person>()
+								   .Where(x => x.Id == personId)
+								   .FetchMany(x => x.Children)
+								   .ToFutureValue();
+
+				Assert.AreEqual(personId, meContainer.Value.Id);
+			}
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
+			}
+		}
+
 		[Test]
 		public void CanExecuteMultipleQueriesOnSameExpression()
 		{
