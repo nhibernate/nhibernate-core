@@ -377,7 +377,8 @@ namespace NHibernate.Test.Linq
 
 			var ids = db.Products
 				.Where(x => subquery.Contains(x))
-				.Where(x => x.UnitsInStock > 0);
+				.Where(x => x.UnitsInStock > 0)
+				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
