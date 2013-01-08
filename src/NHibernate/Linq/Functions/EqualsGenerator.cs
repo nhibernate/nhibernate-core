@@ -13,26 +13,41 @@ namespace NHibernate.Linq.Functions
 		public EqualsGenerator()
 		{
 			SupportedMethods = new[]
-								{
-									ReflectionHelper.GetMethodDefinition<string>(x => x.Equals(default(string))),
-									ReflectionHelper.GetMethodDefinition<int>(x => x.Equals(default(int))),
-									ReflectionHelper.GetMethodDefinition<short>(x => x.Equals(default(short))),
-									ReflectionHelper.GetMethodDefinition<long>(x => x.Equals(default(long))),
-									ReflectionHelper.GetMethodDefinition<DateTime>(x => x.Equals(default(DateTime))),
-									ReflectionHelper.GetMethodDefinition<Guid>(x => x.Equals(default(Guid))),
-									ReflectionHelper.GetMethodDefinition<double>(x => x.Equals(default(double))),
-									ReflectionHelper.GetMethodDefinition<float>(x => x.Equals(default(float))),
-									ReflectionHelper.GetMethodDefinition<decimal>(x => x.Equals(default(decimal))),
-									ReflectionHelper.GetMethodDefinition<char>(x => x.Equals(default(char))),
-									ReflectionHelper.GetMethodDefinition<byte>(x => x.Equals(default(byte)))
-								};
+				{
+					ReflectionHelper.GetMethodDefinition(() => string.Equals(default(string), default(string))),
+					ReflectionHelper.GetMethodDefinition<string>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<char>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<sbyte>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<byte>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<short>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<ushort>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<int>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<uint>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<long>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<ulong>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<float>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<double>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<decimal>(x => x.Equals(x)),
+
+					ReflectionHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<DateTime>(x => x.Equals(x)),
+					ReflectionHelper.GetMethodDefinition<DateTimeOffset>(x => x.Equals(x))
+				};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
+			Expression lhs = arguments.Count == 1 ? targetObject : arguments[0];
+			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
+
 			return treeBuilder.Equality(
-				visitor.Visit(targetObject).AsExpression(),
-				visitor.Visit(arguments[0]).AsExpression());
+				visitor.Visit(lhs).AsExpression(),
+				visitor.Visit(rhs).AsExpression());
 		}
 	}
 
