@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
@@ -31,8 +32,10 @@ namespace NHibernate.Linq.Functions
 				ReflectionHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
 				ReflectionHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
 				ReflectionHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
-			};
 
+				ReflectionHelper.GetMethodDefinition<DateTime>(x => x.CompareTo(x)),
+				ReflectionHelper.GetMethodDefinition<DateTimeOffset>(x => x.CompareTo(x)),
+			};
 
 		internal static bool IsCompareMethod(MethodInfo methodInfo)
 		{

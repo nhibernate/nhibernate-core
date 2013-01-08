@@ -361,8 +361,8 @@ namespace NHibernate.Test.Linq
 												 Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body));
 
 			var condition = Expression.Condition(Expression.Equal(conjunction, Expression.Constant(null)),
-			                                     Expression.Constant(false),
-			                                     Expression.MakeMemberAccess(conjunction, valueProperty));
+												 Expression.Constant(false),
+												 Expression.MakeMemberAccess(conjunction, valueProperty));
 
 			var expr = Expression.Lambda<Func<Product, bool>>(condition, quantityIsNull.Parameters);
 
@@ -736,10 +736,14 @@ namespace NHibernate.Test.Linq
 					// Over floats.
 					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
 					TestRow(p => p.ShippingWeight.CompareTo((float) 4.98) <= 0, 17, false),
-					
+
 					// Over nullable decimals.
 					TestRow(p => p.UnitPrice.Value.CompareTo((decimal) 14.00) <= 0, 24, false),
 					TestRow(p => 0 >= p.UnitPrice.Value.CompareTo((decimal) 14.00), 24, false),
+
+					// Over nullable DateTime.
+					TestRow(p => p.OrderLines.Any(o => o.Order.ShippingDate.Value.CompareTo(DateTime.Now) <= 0), 77, false),
+					TestRow(p => p.OrderLines.Any(o => 0 >= o.Order.ShippingDate.Value.CompareTo(DateTime.Now)), 77, false),
 				};
 		}
 
