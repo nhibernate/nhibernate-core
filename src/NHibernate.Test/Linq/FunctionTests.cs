@@ -206,6 +206,15 @@ namespace NHibernate.Test.Linq
 			ObjectDumper.Write(query);
 		}
 
+		[Test, Description("NH-3367")]
+		public void WhereStaticStringEqual()
+		{
+			var query = (from item in db.Users
+						 where string.Equals(item.Name, "ayende")
+						 select item).ToList();
+			ObjectDumper.Write(query);
+		}
+
 		[Test]
 		public void WhereIntEqual()
 		{
