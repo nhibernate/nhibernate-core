@@ -131,7 +131,18 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			throw new NotImplementedException();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				//NOTE: We are using cast here because we do not want to change interface signature.
+				return (IList<T>) Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+			}
+			finally
+			{
+				After();
+			}
 		}
 	}
 

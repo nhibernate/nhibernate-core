@@ -76,7 +76,7 @@ namespace NHibernate.Linq
 
             var provider = (INhQueryProvider) nhQueryable.Provider;
             var future = provider.ExecuteFuture(nhQueryable.Expression);
-            if(future is DelayedEnumerator<T>)
+	        if (future is IEnumerable<T>)
             {
                 return new FutureValue<T>(() => ((IEnumerable<T>) future));
             }
