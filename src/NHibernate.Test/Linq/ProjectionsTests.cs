@@ -235,6 +235,20 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		[Ignore("Not fixed yet, see NH-3333")]
+		public void ProjectAnonymousTypeWithCollection()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { o, o.OrderLines };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.Not.EqualTo(0));
+			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
+		}
+
+		[Test]
 		public void CanProjectComplexDictionaryIndexer()
 		{
 			//NH-3000
@@ -349,17 +363,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(result[0].Value, Is.EqualTo(value.Substring(result[0].Start)));
 			Assert.That(result[1].Value, Is.EqualTo(value.Substring(result[1].Start)));
 			Assert.That(result[2].Value, Is.EqualTo(value.Substring(result[2].Start)));
-		}
-
-		[Test]
-		public void ProjectAnonymousTypeWithCollection()
-		{
-			//NH-3333
-			var query = from o in db.Orders
-						select new { o, o.OrderLines }; // done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
-
-			var result = query.ToList();
-			Assert.Pass();
 		}
 
 		private string FormatName(string name, DateTime? lastLoginDate)
