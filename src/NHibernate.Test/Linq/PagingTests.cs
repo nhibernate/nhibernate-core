@@ -378,6 +378,7 @@ namespace NHibernate.Test.Linq
 			var ids = db.Products
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.UnitsInStock > 0)
+				.OrderByDescending(x => x.ProductId)
 				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
