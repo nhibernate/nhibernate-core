@@ -351,6 +351,15 @@ namespace NHibernate.Test.Linq
 			Assert.That(result[2].Value, Is.EqualTo(value.Substring(result[2].Start)));
 		}
 
+		[Test]
+		public void ProjecitonWithCollection()
+		{
+			//NH-3333
+			var query = (from o in db.Orders
+						 select new { o, o.OrderLines }) // done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+				.ToList();
+		}
+
 		private string FormatName(string name, DateTime? lastLoginDate)
 		{
 			return string.Format("User {0} logged in at {1}", name, lastLoginDate);
