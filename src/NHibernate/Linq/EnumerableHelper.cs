@@ -16,12 +16,22 @@ namespace NHibernate.Linq
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
 		{
-			if (method == null)
-			{
-				throw new ArgumentNullException("method");
-			}
-			MethodInfo methodInfo = ((MethodCallExpression) method.Body).Method;
+			MethodInfo methodInfo = GetMethod(method);
 			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
+
+			return ((MethodCallExpression)method.Body).Method;
 		}
 
 		/// <summary>
@@ -32,12 +42,21 @@ namespace NHibernate.Linq
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
 		{
-			if (method == null)
-			{
-				throw new ArgumentNullException("method");
-			}
-			var methodInfo = ((MethodCallExpression)method.Body).Method;
+			MethodInfo methodInfo = GetMethod(method);
 			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod(Expression<System.Action> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
+
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary>
@@ -57,52 +76,52 @@ namespace NHibernate.Linq
 		}
 	}
 
-    // TODO rename / remove - reflection helper above is better
-    public static class EnumerableHelper
-    {
-        public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
-        {
-            return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-                .Where(m => m.Name == name &&
-                            ParameterTypesMatch(m.GetParameters(), parameterTypes))
-                .Single();
-        }
+	// TODO rename / remove - reflection helper above is better
+	public static class EnumerableHelper
+	{
+		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
+		{
+			return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+				.Where(m => m.Name == name &&
+							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+				.Single();
+		}
 
-        public static MethodInfo GetMethod(string name, System.Type[] parameterTypes, System.Type[] genericTypeParameters)
-        {
-            return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-                .Where(m => m.Name == name &&
-                            m.ContainsGenericParameters &&
-                            m.GetGenericArguments().Count() == genericTypeParameters.Length &&
-                            ParameterTypesMatch(m.GetParameters(), parameterTypes))
-                .Single()
-                .MakeGenericMethod(genericTypeParameters);
-        }
+		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes, System.Type[] genericTypeParameters)
+		{
+			return typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+				.Where(m => m.Name == name &&
+							m.ContainsGenericParameters &&
+							m.GetGenericArguments().Count() == genericTypeParameters.Length &&
+							ParameterTypesMatch(m.GetParameters(), parameterTypes))
+				.Single()
+				.MakeGenericMethod(genericTypeParameters);
+		}
 
-        private static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
-        {
-            if (parameters.Length != types.Length)
-            {
-                return false;
-            }
+		private static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
+		{
+			if (parameters.Length != types.Length)
+			{
+				return false;
+			}
 
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i].ParameterType == types[i])
-                {
-                    continue;
-                }
+			for (int i = 0; i < parameters.Length; i++)
+			{
+				if (parameters[i].ParameterType == types[i])
+				{
+					continue;
+				}
 
-                if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
-                    parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
-                {
-                    continue;
-                }
+				if (parameters[i].ParameterType.ContainsGenericParameters && types[i].ContainsGenericParameters &&
+					parameters[i].ParameterType.GetGenericArguments().Length == types[i].GetGenericArguments().Length)
+				{
+					continue;
+				}
 
-                return false;
-            }
+				return false;
+			}
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 }

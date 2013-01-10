@@ -235,6 +235,20 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		[Ignore("Not fixed yet, see NH-3333")]
+		public void ProjectAnonymousTypeWithCollection()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { o, o.OrderLines };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.Not.EqualTo(0));
+			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
+		}
+
+		[Test]
 		public void CanProjectComplexDictionaryIndexer()
 		{
 			//NH-3000

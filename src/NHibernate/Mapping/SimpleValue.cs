@@ -90,9 +90,7 @@ namespace NHibernate.Mapping
 
 		public bool IsIdentityColumn(Dialect.Dialect dialect)
 		{
-			return
-				IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect).Equals(
-					typeof (IdentityGenerator));
+			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect) == typeof (IdentityGenerator);
 		}
 
 		public string NullValue
@@ -116,7 +114,7 @@ namespace NHibernate.Mapping
 			get { return typeParameters; }
 			set
 			{
-				if (!CollectionHelper.DictionaryEquals((IDictionary)typeParameters, (IDictionary)value))
+				if (!CollectionHelper.DictionaryEquals(typeParameters, value))
 				{
 					typeParameters = value;
 					type = null; // invalidate type

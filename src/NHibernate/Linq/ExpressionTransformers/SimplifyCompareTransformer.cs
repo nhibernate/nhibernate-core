@@ -70,7 +70,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 				if (constantExpr.Type == typeof(long) && ((long)constantExpr.Value) == 0)
 					return true;
 			}
-			
+
 			return false;
 		}
 
@@ -92,17 +92,30 @@ namespace NHibernate.Linq.ExpressionTransformers
 			var lhs = methodCall.Arguments.Count == 1 ? methodCall.Object : methodCall.Arguments[0];
 			var rhs = methodCall.Arguments.Count == 1 ? methodCall.Arguments[0] : methodCall.Arguments[1];
 
-			// There is no built in lt, lt, gt or gte for strings - must pass along a placeholder
-			// method for this case.
-			if (methodCall.Arguments[0].Type == typeof (string))
-				return Expression.MakeBinary(et, lhs, rhs, false, DummyStringCompareMethod);
+			// There is no built in lt, lte, gt or gte for strings and some other types. Must
+			// pass along a placeholder method for these cases.
+			MethodInfo dummyCompare;
+			if (dummies.TryGetValue(methodCall.Arguments[0].Type, out dummyCompare))
+				return Expression.MakeBinary(et, lhs, rhs, false, dummyCompare);
 
 			return Expression.MakeBinary(et, lhs, rhs);
 		}
 
 
-		private static readonly MethodInfo DummyStringCompareMethod = ReflectionHelper.GetMethodDefinition(() => DummyStringCompare(null, null));
-		private static bool DummyStringCompare(string lhs, string rhs)
+		private static readonly IDictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
+			{
+				// Corresponds to string.Compare(a, b).
+				{typeof (string), ReflectionHelper.GetMethod(() => DummyComparison<string>(null, null))},
+
+				// System.Data.Services.Providers.DataServiceProviderMethods has Compare methods for these types.
+				{typeof (bool), ReflectionHelper.GetMethod(() => DummyComparison<bool>(false, false))},
+				{typeof (bool?), ReflectionHelper.GetMethod(() => DummyComparison<bool?>(null, null))},
+				{typeof (Guid), ReflectionHelper.GetMethod(() => DummyComparison<Guid>(Guid.Empty, Guid.Empty))},
+				{typeof (Guid?), ReflectionHelper.GetMethod(() => DummyComparison<Guid?>(null, null))},
+			};
+
+
+		private static bool DummyComparison<T>(T lhs, T rhs)
 		{
 			throw new NotSupportedException("This method is not intended to be called.");
 		}
