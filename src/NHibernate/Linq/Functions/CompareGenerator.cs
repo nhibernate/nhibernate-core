@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace NHibernate.Linq.Functions
 {
-	internal class CompareGenerator : BaseHqlGeneratorForMethod
+	internal class CompareGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
 		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
 			{
@@ -39,7 +39,13 @@ namespace NHibernate.Linq.Functions
 
 		internal static bool IsCompareMethod(MethodInfo methodInfo)
 		{
-			return ActingMethods.Contains(methodInfo);
+			if (ActingMethods.Contains(methodInfo))
+				return true;
+
+			// This is .Net 4 only, and in the System.Data.Services assembly, which we don't depend directly on.
+			return methodInfo != null && methodInfo.Name == "Compare" &&
+			       methodInfo.DeclaringType != null &&
+			       methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
 		}
 
 
@@ -50,7 +56,7 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			// Instance CompareTo() or static string.Compare()?
+			// Instance a.CompareTo(b) or static string.Compare(a, b)?
 			Expression lhs = arguments.Count == 1 ? targetObject : arguments[0];
 			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
 
@@ -71,5 +77,26 @@ namespace NHibernate.Linq.Functions
 					},
 				treeBuilder.Constant(-1));
 		}
+
+
+		#region IRuntimeMethodHqlGenerator methods
+
+		public bool SupportsMethod(MethodInfo method)
+		{
+			// SupportsMethod() is from IRuntimeMethodHqlGenerator. Strictly speaking we would only
+			// need to handle the DataServiceProviderMethods.Compare() here (since the others
+			// are registered from BaseHqlGeneratorForMethod.SupportedMethods), but for consistency
+			// let's just delegate to the static IsCompareMethod().
+
+			return IsCompareMethod(method);
+		}
+
+		
+		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+		{
+			return this;
+		}
+
+		#endregion
 	}
 }
