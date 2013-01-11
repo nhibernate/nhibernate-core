@@ -280,7 +280,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			sqlQuery = s.GetNamedQuery("organizationreturnproperty");
+			sqlQuery = s.GetNamedQuery("organization-using-manual-aliases");
 			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			list = sqlQuery.List();
 			Assert.AreEqual(2, list.Count);
