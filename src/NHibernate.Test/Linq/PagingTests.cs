@@ -441,7 +441,6 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20);
 
 			var ids = db.Products
-				.OrderByDescending(x => x.ProductId)
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.UnitsInStock > 0)
 				.OrderByDescending(x => x.ProductId)
