@@ -8,6 +8,44 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
+	public class LikeGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	{
+		public IEnumerable<MethodInfo> SupportedMethods
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments,
+		                            HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+		{
+			return treeBuilder.Like(
+				visitor.Visit(arguments[0]).AsExpression(),
+				visitor.Visit(arguments[1]).AsExpression());
+		}
+
+		public bool SupportsMethod(MethodInfo method)
+		{
+			// This will match the following methods:
+			//   NHibernate.Linq.SqlMethods.Like(string, string)
+			//   System.Data.Linq.SqlClient.SqlMethods.Like(string, string) (from Linq2SQL)
+			//   plus any 2-argument method named Like in a class named SqlMethods
+			//
+			// The latter case allows application developers to define their own placeholder method
+			// to avoid referencing Linq2Sql or Linq2NHibernate, if they so wish.
+
+			return method != null && method.Name == "Like" &&
+			       method.GetParameters().Length == 2 &&
+			       method.DeclaringType != null &&
+			       method.DeclaringType.FullName.EndsWith("SqlMethods");
+		}
+
+		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
+		{
+			return this;
+		}
+	}
+
+
 	public class LengthGenerator : BaseHqlGeneratorForProperty
 	{
 		public LengthGenerator()
