@@ -118,7 +118,7 @@
 
 	<target name="setup-teamcity-mysql">
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
-		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQLDialect" />
+		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Protocol=pipe;Database=nhibernate;User ID=nhibernate;Password=nhibernate;" />
 		<copy todir="${bin.dir}">
 			<fileset basedir="${root.dir}/lib/teamcity/mysql">
