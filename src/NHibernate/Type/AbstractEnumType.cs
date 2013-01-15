@@ -38,9 +38,9 @@ namespace NHibernate.Type
 
 		#region IIdentifierType Members
 
-		public object StringToObject(string xml)
+		public virtual object StringToObject(string xml)
 		{
-			return Enum.Parse(enumType, xml);
+			return Enum.Parse(enumType, xml, true);
 		}
 
 		#endregion
