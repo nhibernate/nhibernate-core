@@ -76,7 +76,7 @@ namespace NHibernate.Dialect
 				//Numeric type:
 				RegisterColumnType(DbType.Boolean, "TINYINT(1)"); // SELECT IF(0, 'true', 'false');
 				RegisterColumnType(DbType.Byte, "TINYINT UNSIGNED");
-				RegisterColumnType(DbType.Currency, "MONEY");
+				RegisterColumnType(DbType.Currency, "NUMERIC(18,4)");
 				RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
 				RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
 				RegisterColumnType(DbType.Double, "DOUBLE");
