@@ -238,11 +238,7 @@ namespace NHibernate.Type
 
 			for (int i = 0; i < span; i++)
 			{
-				bool dirty =
-					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
-					&& properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
-
+				var dirty = Dirty(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i);
 				if (dirty)
 				{
 					if (results == null)
@@ -262,6 +258,16 @@ namespace NHibernate.Type
 				System.Array.Copy(results, 0, trimmed, 0, count);
 				return trimmed;
 			}
+		}
+
+		private static bool Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i)
+		{
+			if (Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]))
+				return false;
+			if (Equals(LazyPropertyInitializer.UnfetchedProperty, previousState[i]))
+				return true;
+			return properties[i].IsDirtyCheckable(anyUninitializedProperties) &&
+				   properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
 		}
 
 		/// <summary>
