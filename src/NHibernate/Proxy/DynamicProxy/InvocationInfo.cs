@@ -17,15 +17,16 @@ namespace NHibernate.Proxy.DynamicProxy
 	{
 		private readonly object[] args;
 		private readonly object proxy;
-		private readonly MethodInfo targetMethod;
+		private readonly MethodInfo _targetMethod;
+		private readonly MethodInfo _callbackMethod;
 		private readonly StackTrace trace;
 		private readonly System.Type[] typeArgs;
 
-		public InvocationInfo(object proxy, MethodInfo targetMethod,
-													StackTrace trace, System.Type[] genericTypeArgs, object[] args)
+		public InvocationInfo(object proxy, MethodInfo targetMethod, MethodInfo callbackMethod, StackTrace trace, System.Type[] genericTypeArgs, object[] args)
 		{
 			this.proxy = proxy;
-			this.targetMethod = targetMethod;
+			this._targetMethod = targetMethod;
+			_callbackMethod = callbackMethod;
 			typeArgs = genericTypeArgs;
 			this.args = args;
 			this.trace = trace;
@@ -38,7 +39,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public MethodInfo TargetMethod
 		{
-			get { return targetMethod; }
+			get { return _targetMethod; }
 		}
 
 		public StackTrace StackTrace
@@ -64,16 +65,12 @@ namespace NHibernate.Proxy.DynamicProxy
 		public override string ToString()
 		{
 			var builder = new StringBuilder();
-			builder.AppendFormat("Target Method:{0,30:G}\n", GetMethodName(targetMethod));
+			builder.AppendFormat("Target Method:{0,30:G}\n", GetMethodName(_targetMethod));
 			builder.AppendLine("Arguments:");
 
-			foreach (ParameterInfo info in targetMethod.GetParameters())
+			foreach (var info in _targetMethod.GetParameters())
 			{
-				object currentArgument = args[info.Position];
-				if (currentArgument == null)
-				{
-					currentArgument = "(null)";
-				}
+				object currentArgument = args[info.Position] ?? "(null)";
 				builder.AppendFormat("\t{0,10:G}: {1}\n", info.Name, currentArgument);
 			}
 			builder.AppendLine();
@@ -104,6 +101,11 @@ namespace NHibernate.Proxy.DynamicProxy
 			builder.Append(")");
 
 			return builder.ToString();
+		}
+
+		public virtual object InvokeMethodOnTarget()
+		{
+			return _callbackMethod.Invoke(Target, Arguments);
 		}
 	}
 }

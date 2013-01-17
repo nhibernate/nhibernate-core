@@ -7,17 +7,7 @@ namespace NHibernate.Intercept
 	[Serializable]
 	public class DefaultDynamicLazyFieldInterceptor : IFieldInterceptorAccessor, Proxy.DynamicProxy.IInterceptor
 	{
-		public DefaultDynamicLazyFieldInterceptor(object targetInstance)
-		{
-			if (targetInstance == null)
-			{
-				throw new ArgumentNullException("targetInstance");
-			}
-			TargetInstance = targetInstance;
-		}
-
 		public IFieldInterceptor FieldInterceptor { get; set; }
-		public object TargetInstance { get; private set; }
 
 		public object Intercept(InvocationInfo info)
 		{
@@ -30,7 +20,8 @@ namespace NHibernate.Intercept
 					{
 						return FieldInterceptor;
 					}
-					object propValue = info.TargetMethod.Invoke(TargetInstance, info.Arguments);
+
+					object propValue = info.InvokeMethodOnTarget();
 
 					var result = FieldInterceptor.Intercept(info.Target, ReflectHelper.GetPropertyName(info.TargetMethod), propValue);
 
@@ -59,7 +50,7 @@ namespace NHibernate.Intercept
 				}
 			}
 
-			return info.TargetMethod.Invoke(TargetInstance, info.Arguments);
+			return info.InvokeMethodOnTarget();
 		}
 	}
 }

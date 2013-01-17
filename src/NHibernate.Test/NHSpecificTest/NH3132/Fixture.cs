@@ -5,24 +5,8 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3132
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public class Fixture : BugTestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
-
-		protected override IList Mappings
-		{
-			get
-			{
-				return new string[]
-					{
-						"NHSpecificTest.NH3132.Mappings.hbm.xml"
-					};
-			}
-		}
-
 		/// <summary>
 		/// push some data into the database
 		/// Really functions as a save test also 
@@ -51,12 +35,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 			base.OnTearDown();
 
 			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				using (var tran = session.BeginTransaction())
-				{
-					session.Delete("from Product");
-					tran.Commit();
-				}
+				session.Delete("from Product");
+				tran.Commit();
 			}
 		}
 
@@ -79,23 +61,50 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 		{
 			using (var session = OpenSession())
 			{
-				Product product = session.CreateCriteria(typeof(Product))
+				var product = session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
 					.UniqueResult<Product>();
 
-				Assert.IsNotNull(product);
+				Assert.That(product, Is.Not.Null);
 				product.Name = "Changed";
 
 				session.Flush();
 				
 				session.Clear();
 
-				Product product1 = session.CreateCriteria(typeof(Product))
+				var product1 = session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "Changed"))
 					.UniqueResult<Product>();
+
+				Assert.That(product1, Is.Not.Null);
+				Assert.That(product1.Name, Is.EqualTo("Changed"));
+			}
+		}
+
+		[Test]
+		public void Correct_value_gets_saved_with_lazy()
+		{
+			using (var session = OpenSession())
+			{
+				var product = session.CreateCriteria(typeof(Product))
+					.Add(Restrictions.Eq("Name", "First"))
+					.UniqueResult<Product>();
+
+				Assert.That(product, Is.Not.Null);
+				product.Name = "Changed";
+				product.Lazy = "LazyChanged";
+
+				session.Flush();
 				
-				Assert.IsNotNull(product1);
-				Assert.AreEqual("Changed", product1.Name);
+				session.Clear();
+
+				var product1 = session.CreateCriteria(typeof(Product))
+					.Add(Restrictions.Eq("Name", "Changed"))
+					.UniqueResult<Product>();
+
+				Assert.That(product1, Is.Not.Null);
+				Assert.That(product1.Name, Is.EqualTo("Changed"));
+				Assert.That(product1.Lazy, Is.EqualTo("LazyChanged"));
 			}
 		}
 	}
