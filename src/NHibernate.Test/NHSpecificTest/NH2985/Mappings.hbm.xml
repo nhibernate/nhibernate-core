@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.NH2985"
+				   assembly="NHibernate.Test">
+
+	<class name="ClassA">
+		<id name="Id">
+			<generator class="guid"/>
+		</id>
+		<property name="Name"/>
+    <list name="Childs" table="ClassB" cascade="save-update" >
+      <key column="linkId"  />
+      <index column="indexInList" />
+      <one-to-many class="WebImage" />
+    </list>
+
+  </class>
+  <class name="WebImage"
+         table="WebImage"
+         lazy="true"
+         dynamic-update="true">
+    <id name="Id"
+        column="weim_id" type="Guid" >
+      <generator class="guid" />
+
+    </id>
+
+    <property name="ImageUrl" column="weim_Url" type="String" length="5001"/>
+
+    <property name="ImageData" column="weim_imageData" type="Byte[]" length="10000" lazy="true"  />
+
+    <property name="Width" column="weim_width"  />
+    <property name="Height" column="weim_height" />
+    <property name="ImgEval" column="weim_imgeval" />
+    <property name="ContextEval" column="weim_contexteval" />
+    <property name="ContainingPage" column="weim_containingPage" />
+    <property name="AltText" column="weim_altText" />
+    <property name="SurroundingText" column="weim_surroundingText" />
+    <property name="Status" column="weim_status" />
+    <property name="Note" column="weim_note" length="5001" />
+    <property name="Bookmarked" column="weim_bookmarked" />
+    <property name="OldImage" column="weim_oldimage" />
+    <property name="OldPosition" column="weim_oldposition" />
+  </class>
+
+</hibernate-mapping>
