@@ -13,6 +13,38 @@ namespace NHibernate.Test.Linq
 	public class FunctionTests : LinqTestCase
 	{
 		[Test]
+		public void LikeFunction()
+		{
+			var query = (from e in db.Employees
+						 where NHibernate.Linq.SqlMethods.Like(e.FirstName, "Ma%et")
+						 select e).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
+
+		private static class SqlMethods
+		{
+			public static bool Like(string expression, string pattern)
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		[Test]
+		public void LikeFunctionUserDefined()
+		{
+			// Verify that any method named Like, in a class named SqlMethods, will be translated.
+
+			var query = (from e in db.Employees
+						 where NHibernate.Test.Linq.FunctionTests.SqlMethods.Like(e.FirstName, "Ma%et")
+						 select e).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
+
+		[Test]
 		public void SubstringFunction2()
 		{
 			if (Dialect is FirebirdDialect)

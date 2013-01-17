@@ -107,7 +107,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
 			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
-			RegisterColumnType(DbType.Currency, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			RegisterColumnType(DbType.Double, 19, "NUMBER($p,$s)");

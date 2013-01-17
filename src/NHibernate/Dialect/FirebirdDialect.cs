@@ -41,7 +41,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
 			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
-			RegisterColumnType(DbType.Currency, "DECIMAL($p,$s)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(18,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)

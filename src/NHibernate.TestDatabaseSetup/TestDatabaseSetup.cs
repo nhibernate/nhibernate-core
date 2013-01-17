@@ -22,8 +22,14 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
+				{"NHibernate.Driver.MySqlDataDriver", SetupMySql},
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle}
 			};
+
+		private static void SetupMySql(Cfg.Configuration obj)
+		{
+			//TODO: do nothing
+		}
 
 		[Test]
 		public void SetupDatabase()

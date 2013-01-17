@@ -114,6 +114,19 @@
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+	</target>	
+
+	<target name="setup-teamcity-mysql">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
+		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Protocol=pipe;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Old Guids=True;" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/mysql">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/mysql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">
