@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3374
 {
-	[Igonre("Not fixed yet.")]
+	[Ignore("Not fixed yet.")]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
