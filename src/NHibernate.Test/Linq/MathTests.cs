@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -112,6 +113,9 @@ namespace NHibernate.Test.Linq
 		public void Atan2Test()
 		{
 			IgnoreIfNotSupported("atan2");
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore("Fails on Oracle due to NH-3381.");
+
 			Test(o => Math.Round(Math.Atan2((double)o.Discount, 0.5d), 5));
 		}
 
