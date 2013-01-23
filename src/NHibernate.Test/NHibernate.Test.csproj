@@ -667,6 +667,8 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\NH3374\Document.cs" />
     <Compile Include="NHSpecificTest\NH3374\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2042\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2042\Fixture.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeOffsetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
@@ -2862,6 +2864,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2042\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2860\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />

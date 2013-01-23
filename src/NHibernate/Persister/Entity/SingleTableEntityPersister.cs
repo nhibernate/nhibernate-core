@@ -658,7 +658,7 @@ possible solutions:
 
 			//figure out which formulas are needed (excludes lazy-properties)
 			List<int> formulaNumbers = new List<int>();
-			int[] formulaTableNumbers = SubclassColumnTableNumberClosure;
+			int[] formulaTableNumbers = SubclassFormulaTableNumberClosure;
 			for (int i = 0; i < SubclassFormulaTemplateClosure.Length; i++)
 			{
 				if (tableNumbers.Contains(formulaTableNumbers[i]))
