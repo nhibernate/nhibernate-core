@@ -714,6 +714,9 @@
     <Compile Include="NHSpecificTest\NH3324\ChildEntity.cs" />
     <Compile Include="NHSpecificTest\NH3324\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3324\FixtureByCode.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\FixtureNonPublicProperty.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\Model.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\FixturePublicProperty.cs" />
     <Compile Include="NHSpecificTest\NH3374\Document.cs" />
     <Compile Include="NHSpecificTest\NH3374\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2042\Model.cs" />

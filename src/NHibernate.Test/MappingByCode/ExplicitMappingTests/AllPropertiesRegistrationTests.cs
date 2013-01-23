@@ -114,41 +114,6 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 
 		[Test]
-		public void WhenMapPropertiesInTheInheritedThenMapInBase()
-		{
-			// without ignoring MyClass as root-class I will try to map all properties using the inherited class.
-			// NH have to recognize the case and, following Object-Relational-Mapping rules, map those properties in the base class.
-			// Where needed, using the SimpleModelInspector, the user can revert this behavior checking the DeclaringType and ReflectedType of the persistent member.
-			var mapper = new ModelMapper();
-			mapper.Class<MyClass>(mc => mc.Id(x => x.Id));
-			mapper.JoinedSubclass<Inherited>(mc =>
-														{
-															mc.Property(x => x.Simple, map => map.Access(Accessor.Field));
-															mc.Property(x => x.ComplexType, map => map.Access(Accessor.Field));
-															mc.Bag(x => x.Bag, y => y.Access(Accessor.Field));
-															mc.IdBag(x => x.IdBag, y => y.Access(Accessor.Field));
-															mc.List(x => x.List, y => y.Access(Accessor.Field));
-															mc.Set(x => x.Set, y => y.Access(Accessor.Field));
-															mc.Map(x => x.Map, y => y.Access(Accessor.Field));
-															mc.OneToOne(x => x.OneToOne, y => y.Access(Accessor.Field));
-															mc.ManyToOne(x => x.ManyToOne, y => y.Access(Accessor.Field));
-															mc.Any(x => x.Any, typeof(int), y => y.Access(Accessor.Field));
-															mc.Component(x => x.DynamicCompo, new { A=2 }, y => y.Access(Accessor.Field));
-															mc.Component(x => x.Compo, y =>
-																												 {
-																													 y.Access(Accessor.Field);
-																													 y.Property(c => c.Something);
-																												 });
-														});
-			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses[0];
-			var hbmJoinedSubclass = mappings.JoinedSubclasses[0];
-			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
-			hbmClass.Properties.Select(p => p.Access).All(x=> x.Satisfy(access=> access.Contains("field.")));
-			hbmJoinedSubclass.Properties.Should().Be.Empty();
-		}
-
-		[Test]
 		public void WhenMapPropertiesInTheBaseJumpedClassThenMapInInherited()
 		{
 			// ignoring MyClass and using Inherited, as root-class, I will try to map all properties using the base class.
@@ -186,41 +151,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			hbmClass.Properties.Select(p => p.Access).All(x => x.Satisfy(access => access.Contains("field.")));
 		}
 
-		[Test]
-		public void WhenMapPropertiesInTheInheritedUsingMemberNameThenMapInBase()
-		{
-			// without ignoring MyClass as root-class I will try to map all properties using the inherited class.
-			// NH have to recognize the case and, following Object-Relational-Mapping rules, map those properties in the base class.
-			var mapper = new ModelMapper();
-			mapper.Class<MyClass>(mc => mc.Id(x => x.Id));
-			mapper.JoinedSubclass<Inherited>(mc =>
-			                                 {
-			                                 	mc.Property("Simple", map => map.Access(Accessor.Field));
-			                                 	mc.Property("ComplexType", map => map.Access(Accessor.Field));
-			                                 	mc.Bag<string>("Bag", y => y.Access(Accessor.Field));
-			                                 	mc.IdBag<MyCompo>("IdBag", y => y.Access(Accessor.Field));
-																				mc.List<string>("List", y => y.Access(Accessor.Field));
-																				mc.Set<string>("Set", y => y.Access(Accessor.Field));
-																				mc.Map<int, string>("Map", y => y.Access(Accessor.Field));
-																				mc.OneToOne<Related>("OneToOne", y => y.Access(Accessor.Field));
-																				mc.ManyToOne<Related>("ManyToOne", y => y.Access(Accessor.Field));
-																				mc.Any<object>("Any", typeof(int), y => y.Access(Accessor.Field));
-																				mc.Component("DynamicCompo", new { A = 2 }, y => y.Access(Accessor.Field));
-																				mc.Component<MyCompo>("Compo", y =>
-			                                 	                           {
-			                                 	                           	y.Access(Accessor.Field);
-			                                 	                           	y.Property(c => c.Something);
-			                                 	                           });
-			                                 });
-			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses[0];
-			var hbmJoinedSubclass = mappings.JoinedSubclasses[0];
-			hbmClass.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo");
-			hbmClass.Properties.Select(p => p.Access).All(x => x.Satisfy(access => access.Contains("field.")));
-			hbmJoinedSubclass.Properties.Should().Be.Empty();
-		}
-
-		[Test]
+	    [Test]
 		public void WhenMapPropertiesInTheBaseJumpedClassUsingMemberNameThenMapInInherited()
 		{
 			// ignoring MyClass and using Inherited, as root-class, I will try to map all properties using the base class.

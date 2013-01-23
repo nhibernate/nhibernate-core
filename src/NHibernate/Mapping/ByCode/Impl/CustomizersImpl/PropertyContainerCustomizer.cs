@@ -41,9 +41,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected virtual void RegisterPropertyMapping<TProperty>(Expression<Func<TEntity, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegistePropertyMapping(mapping, member, memberOf);
+			RegistePropertyMapping(mapping, memberOf);
 		}
 
 		public void Property(string notVisiblePropertyOrFieldName, Action<IPropertyMapper> mapping)
@@ -57,7 +56,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			// done unsing expressions are faster than those done with pure reflection.
 			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
 			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
-			RegistePropertyMapping(mapping, member, memberOf);
+			RegistePropertyMapping(mapping, memberOf);
 		}
 
 		protected void RegistePropertyMapping(Action<IPropertyMapper> mapping, params MemberInfo[] members)
@@ -69,11 +68,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 		}
 
-		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property,
-										  Action<IComponentMapper<TComponent>> mapping) where TComponent : class
+		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property, Action<IComponentMapper<TComponent>> mapping)
+			where TComponent : class
 		{
 			RegisterComponentMapping(property, mapping);
 		}
+
 		public void Component<TComponent>(Expression<Func<TEntity, TComponent>> property) where TComponent : class
 		{
 			RegisterComponentMapping(property, x => { });
