@@ -215,13 +215,13 @@ namespace NHibernate.Linq.Visitors
 			{
 				case ExpressionType.Equal:
 					return TranslateEqualityComparison(expression, lhs, rhs,
-					                                   expr => _hqlTreeBuilder.IsNull(expr),
-					                                   (l, r) => _hqlTreeBuilder.Equality(l, r));
+													   expr => _hqlTreeBuilder.IsNull(expr),
+													   (l, r) => _hqlTreeBuilder.Equality(l, r));
 
 				case ExpressionType.NotEqual:
 					return TranslateEqualityComparison(expression, lhs, rhs,
-					                                   expr => _hqlTreeBuilder.IsNotNull(expr),
-					                                   (l, r) => _hqlTreeBuilder.Inequality(l, r));
+													   expr => _hqlTreeBuilder.IsNotNull(expr),
+													   (l, r) => _hqlTreeBuilder.Inequality(l, r));
 
 				case ExpressionType.And:
 					return _hqlTreeBuilder.BitwiseAnd(lhs, rhs);
@@ -277,13 +277,13 @@ namespace NHibernate.Linq.Visitors
 		{
 			// Check for nulls on left or right.
 			if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() &&
-			    ((ConstantExpression) expression.Right).Value == null)
+				((ConstantExpression) expression.Right).Value == null)
 			{
 				rhs = null;
 			}
 
 			if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() &&
-			    ((ConstantExpression) expression.Left).Value == null)
+				((ConstantExpression) expression.Left).Value == null)
 			{
 				lhs = null;
 			}
@@ -444,14 +444,14 @@ namespace NHibernate.Linq.Visitors
 			var test = VisitExpression(expression.Test).AsExpression();
 			var ifTrue = BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfTrue).AsExpression());
 			var ifFalse = (expression.IfFalse != null
-				               ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
-				               : null);
+							   ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
+							   : null);
 
 			var @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
 
 			return (expression.Type == typeof (bool) || expression.Type == (typeof (bool?)))
-				       ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
-				       : _hqlTreeBuilder.Cast(@case, expression.Type);
+					   ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
+					   : _hqlTreeBuilder.Cast(@case, expression.Type);
 		}
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)

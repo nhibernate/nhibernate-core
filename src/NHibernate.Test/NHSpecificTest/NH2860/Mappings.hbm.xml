@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH2860">
+
+  <class name="ClassA" table="A" lazy="true" dynamic-update="true" polymorphism="explicit">
+    <id name="ID" column="ID" type="int" unsaved-value="0">
+      <generator class="native" >
+        <param name="sequence">gen_a_id</param>
+      </generator>
+    </id>
+    <property name="Text" column="TEXT" type="string" length="200" not-null="false"/>
+    <property name="Blob_Field" column="BLOB_FIELD" type="BinaryBlob" not-null="false" lazy="true"/>
+
+  </class>
+</hibernate-mapping>
