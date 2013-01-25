@@ -93,19 +93,35 @@ namespace NHibernate.Test.Linq
 		}
 		
 		[Test]
-		public void CategoriesIdAndDateWithOrderLinesIdAndDiscount()
+		public void TimesheetIdAndUserLastLoginDates()
 		{
 			var timesheets = db.Timesheets
 				.Select(o =>
 						new
 							{
 								o.Id,
-								LastLoginDates = o.Users.Select(x => x.LastLoginDate).ToArray()
+								Users = o.Users.Select(x => x.LastLoginDate).ToArray()
 							})
 				.ToList();
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
-			Assert.That(timesheets[0].LastLoginDates, Is.Not.Empty);
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-2986")]
+		public void TimesheetIdAndUsersTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Id,
+								Users = o.Users.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
 		}
 
 		[Test]

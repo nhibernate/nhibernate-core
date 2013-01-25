@@ -32,7 +32,17 @@ namespace NHibernate.Linq.NestedSelects
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			expressions.Add(new ExpressionHolder {Expression = expression, Tuple = tuple});
+			return AddAndConvertExpression(expression);
+		}
+
+		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		{
+			return AddAndConvertExpression(expression);
+		}
+
+		private Expression AddAndConvertExpression(Expression expression)
+		{
+			expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple });
 
 			return Expression.Convert(
 				Expression.ArrayIndex(

@@ -9,6 +9,7 @@ using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.NestedSelects
 {
@@ -88,14 +89,24 @@ namespace NHibernate.Linq.NestedSelects
 
 		static Expression GetIdentifier(ISessionFactory sessionFactory, IEnumerable<ExpressionHolder> expressions, ExpressionHolder e)
 		{
-			foreach (var holders in expressions)
+			foreach (var holder in expressions)
 			{
-				if (holders.Tuple == e.Tuple)
+				if (holder.Tuple == e.Tuple)
 				{
-					var memberExpression = holders.Expression as MemberExpression;
+					var memberExpression = holder.Expression as MemberExpression;
 					if (memberExpression != null)
 					{
 						var expression = memberExpression.Expression;
+						var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
+						if (classMetadata != null)
+						{
+							return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
+						}
+					}
+					var querySourceReferenceExpression = holder.Expression as QuerySourceReferenceExpression;
+					if (querySourceReferenceExpression != null)
+					{
+						var expression = querySourceReferenceExpression;
 						var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
 						if (classMetadata != null)
 						{
