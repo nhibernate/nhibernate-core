@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
@@ -44,22 +45,28 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 		private static LambdaExpression CreateSelector(System.Type sourceType, Expression selector)
 		{
 			var parameter = Expression.Parameter(sourceType, "item");
-			var selectorSource = (Expression) parameter;
-
-			if (sourceType != SourceOf(selector))
+			
+			var querySource = GetQuerySourceReferenceExpression(selector);
+			
+			Expression selectorBody;
+			if (sourceType != querySource.Type)
 			{
+				//TODO: it looks like some "magic".
 				var member = sourceType.GetMember(((QuerySourceReferenceExpression) selector).ReferencedQuerySource.ItemName)[0];
 
-				selectorSource = Expression.MakeMemberAccess(parameter, member);
+				selectorBody = Expression.MakeMemberAccess(parameter, member);
 			}
-
-			var keySelector = new GroupByKeySelectorVisitor(selectorSource).Visit(selector);
-			return Expression.Lambda(keySelector, parameter);
+			else
+			{
+				selectorBody = ReplacingExpressionTreeVisitor.Replace(querySource, parameter, selector);
+			}
+			
+			return Expression.Lambda(selectorBody, parameter);
 		}
 
-		private static System.Type SourceOf(Expression keySelector)
+		private static Expression GetQuerySourceReferenceExpression(Expression keySelector)
 		{
-			return new GroupByKeySourceFinder().Visit(keySelector).Type;
+			return new GroupByKeySourceFinder().Visit(keySelector);
 		}
 	}
 }

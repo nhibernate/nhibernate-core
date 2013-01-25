@@ -4,26 +4,6 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-    internal class GroupByKeySelectorVisitor : ExpressionTreeVisitor
-    {
-        private readonly Expression _parameter;
-
-        public GroupByKeySelectorVisitor(Expression parameter)
-        {
-            _parameter = parameter;
-        }
-
-        public Expression Visit(Expression expression)
-        {
-            return VisitExpression(expression);
-        }
-
-        protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
-        {
-            return _parameter;
-        }
-    }
-
 	internal class GroupByKeySourceFinder : ExpressionTreeVisitor
 	{
 		private Expression _source;
