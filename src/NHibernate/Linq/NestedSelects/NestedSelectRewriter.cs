@@ -15,6 +15,8 @@ namespace NHibernate.Linq.NestedSelects
 {
 	static class NestedSelectRewriter
 	{
+		private static readonly MethodInfo CastMethod = EnumerableHelper.GetMethod("Cast", new[] { typeof (IEnumerable) }, new[] { typeof (object[]) });
+
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
 			var nsqmv = new NestedSelectDetector();
@@ -41,44 +43,35 @@ namespace NHibernate.Linq.NestedSelects
 
 			queryModel.TransformExpressions(visitor.Swap);
 
-			var ctor = Tuple.Type.GetConstructor(System.Type.EmptyTypes);
-			
-			var key = Expression.Parameter(Tuple.Type, "key");
+			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
 
-			var values = Expression.Parameter(typeof (IEnumerable<Tuple>), "values");
+			var key = Expression.Property(group, "Key");
 
 			var expressions = new List<ExpressionHolder>();
 
-			var rewriter = new SelectClauseRewriter(key, values, expressions, GetIdentifier(sessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause)));
+			var rewriter = new SelectClauseRewriter(key, group, expressions, GetIdentifier(sessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause)));
 
 			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
 
-			var field = Tuple.Type.GetField("Items");
+			var keySelector = CreateSelector(expressions, 0);
 
-			var keySelector = CreateSelector(ctor, field, expressions, 0);
-
-			var elementSelector = CreateSelector(ctor, field, expressions, 1);
-
-			var cast = EnumerableHelper.GetMethod("Cast", new[] {typeof (IEnumerable)}, new[] {typeof (object[])});
+			var elementSelector = CreateSelector(expressions, 1);
 
 			var groupBy = EnumerableHelper.GetMethod("GroupBy",
-													 new[] {typeof (IEnumerable<>), typeof (Func<,>), typeof (Func<,>), typeof (Func<,,>)},
-													 new[] {typeof (object[]), Tuple.Type, Tuple.Type, queryModel.SelectClause.Selector.Type});
+													 new[] { typeof (IEnumerable<>), typeof (Func<,>), typeof (Func<,>) },
+													 new[] { typeof (object[]), typeof (Tuple), typeof (Tuple) });
 
-			var toList = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { queryModel.SelectClause.Selector.Type });
-			
 			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
 
-			var call = Expression.Call(toList,
-									   Expression.Call(groupBy,
-													   Expression.Call(cast, input),
-													   keySelector,
-													   elementSelector,
-													   Expression.Lambda(resultSelector, key, values)));
-
-			var lambda = Expression.Lambda(call, input);
+			var lambda = Expression.Lambda(
+				Expression.Call(groupBy,
+								Expression.Call(CastMethod, input),
+								keySelector,
+								elementSelector),
+				input);
 
 			queryModel.ResultOperators.Add(new ClientSideSelect2(lambda));
+			queryModel.ResultOperators.Add(new ClientSideSelect(Expression.Lambda(resultSelector, group)));
 
 			var initializers = expressions.Select(e => e.Expression == null
 														   ? GetIdentifier(sessionFactory, expressions, e)
@@ -87,7 +80,7 @@ namespace NHibernate.Linq.NestedSelects
 			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
 		}
 
-		static Expression GetIdentifier(ISessionFactory sessionFactory, IEnumerable<ExpressionHolder> expressions, ExpressionHolder e)
+		private static Expression GetIdentifier(ISessionFactory sessionFactory, IEnumerable<ExpressionHolder> expressions, ExpressionHolder e)
 		{
 			foreach (var holder in expressions)
 			{
@@ -114,25 +107,25 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
 			if (classMetadata == null)
-				return Expression.Constant(null);
+			return Expression.Constant(null);
 			
 			return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
 		}
 
-		static LambdaExpression CreateSelector(ConstructorInfo ctor, MemberInfo field, IEnumerable<ExpressionHolder> expressions, int tuple)
+		static LambdaExpression CreateSelector(IEnumerable<ExpressionHolder> expressions, int tuple)
 		{
 			var parameter = Expression.Parameter(typeof (object[]), "x");
 
-			var initializers = expressions.Select((x, index) => new {x.Tuple, index})
+			var initializers = expressions.Select((x, index) => new { x.Tuple, index})
 				.Where(x => x.Tuple == tuple)
 				.Select(x => ArrayIndex(x.index, parameter));
 
 			var newArrayInit = Expression.NewArrayInit(typeof (object), initializers);
-			
+
 			return Expression.Lambda(
 				Expression.MemberInit(
-					Expression.New(ctor),
-					Expression.Bind(field, newArrayInit)),
+					Expression.New(typeof (Tuple)),
+					Expression.Bind(Tuple.ItemsField, newArrayInit)),
 				parameter);
 		}
 

@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class Tuple : IEquatable<Tuple>
+	internal class Tuple : IEquatable<Tuple>
 	{
+		public static readonly FieldInfo ItemsField = typeof (Tuple).GetField("Items");
+
 		public object[] Items;
 
 		public bool Equals(Tuple other)
@@ -26,7 +29,5 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			return (Items != null ? Items.Length.GetHashCode() : 0);
 		}
-
-		public static readonly System.Type Type = typeof (Tuple);
 	}
 }

@@ -11,17 +11,17 @@ namespace NHibernate.Linq.NestedSelects
 		static readonly Expression<Func<Tuple, bool>> WherePredicate = t => !ReferenceEquals(null, t.Items[0]);
 
 		readonly ICollection<ExpressionHolder> expressions;
-		readonly ParameterExpression parameter;
+		readonly Expression parameter;
 		readonly ParameterExpression values;
 		readonly int tuple;
 		int position;
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression) 
+		public SelectClauseRewriter(Expression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression) 
 			: this(parameter, values, expressions, expression, 0)
 		{
 		}
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression, int tuple)
+		public SelectClauseRewriter(Expression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression, int tuple)
 		{
 			this.expressions = expressions;
 			this.parameter = parameter;
@@ -47,7 +47,7 @@ namespace NHibernate.Linq.NestedSelects
 			return Expression.Convert(
 				Expression.ArrayIndex(
 					Expression.MakeMemberAccess(parameter,
-												Tuple.Type.GetField("Items")),
+												Tuple.ItemsField),
 					Expression.Constant(++position)),
 				expression.Type);
 		}
@@ -64,11 +64,11 @@ namespace NHibernate.Linq.NestedSelects
 
 			var where = EnumerableHelper.GetMethod("Where",
 												   new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-												   new[] {Tuple.Type});
+												   new[] {typeof (Tuple)});
 
 			var select = EnumerableHelper.GetMethod("Select",
 													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-													new[] {Tuple.Type, selector.Type});
+													new[] {typeof (Tuple), selector.Type});
 
 			var toList = EnumerableHelper.GetMethod("ToList",
 													new[] {typeof (IEnumerable<>)},
