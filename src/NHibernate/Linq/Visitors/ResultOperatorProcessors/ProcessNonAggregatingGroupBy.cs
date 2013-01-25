@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
-using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
@@ -12,22 +11,26 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var tSource = queryModelVisitor.Model.SelectClause.Selector.Type;
-			var tKey = resultOperator.GroupBy.KeySelector.Type;
-			var tElement = resultOperator.GroupBy.ElementSelector.Type;
+			var selector = queryModelVisitor.Model.SelectClause.Selector;
+			var keySelector = resultOperator.GroupBy.KeySelector;
+			var elementSelector = resultOperator.GroupBy.ElementSelector;
+
+			var sourceType = selector.Type;
+			var keyType = keySelector.Type;
+			var elementType = elementSelector.Type;
 
 			// Stuff in the group by that doesn't map to HQL.  Run it client-side
 			var listParameter = Expression.Parameter(typeof(IEnumerable<object>), "list");
 
-			var keySelectorExpr = CreateSelector(tSource, resultOperator.GroupBy.KeySelector);
+			var keySelectorExpr = ReverseResolvingExpressionTreeVisitor.ReverseResolve(selector, keySelector);
 
-			var elementSelectorExpr = CreateSelector(tSource, resultOperator.GroupBy.ElementSelector);
+			var elementSelectorExpr = ReverseResolvingExpressionTreeVisitor.ReverseResolve(selector, elementSelector);
 
 			var groupByMethod = EnumerableHelper.GetMethod("GroupBy",
 														   new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) },
-														   new[] { tSource, tKey, tElement });
+														   new[] { sourceType, keyType, elementType });
 
-			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { tSource });
+			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { sourceType });
 
 			var toList = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { resultOperator.GroupBy.ItemType });
 
@@ -40,33 +43,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
 
 			tree.AddListTransformer(lambdaExpr);
-		}
-
-		private static LambdaExpression CreateSelector(System.Type sourceType, Expression selector)
-		{
-			var parameter = Expression.Parameter(sourceType, "item");
-			
-			var querySource = GetQuerySourceReferenceExpression(selector);
-			
-			Expression selectorBody;
-			if (sourceType != querySource.Type)
-			{
-				//TODO: it looks like some "magic".
-				var member = sourceType.GetMember(((QuerySourceReferenceExpression) selector).ReferencedQuerySource.ItemName)[0];
-
-				selectorBody = Expression.MakeMemberAccess(parameter, member);
-			}
-			else
-			{
-				selectorBody = ReplacingExpressionTreeVisitor.Replace(querySource, parameter, selector);
-			}
-			
-			return Expression.Lambda(selectorBody, parameter);
-		}
-
-		private static Expression GetQuerySourceReferenceExpression(Expression keySelector)
-		{
-			return new GroupByKeySourceFinder().Visit(keySelector);
 		}
 	}
 }

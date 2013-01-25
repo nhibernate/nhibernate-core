@@ -1013,7 +1013,6 @@
     <Compile Include="Linq\ExpressionToHqlTranslationResults.cs" />
     <Compile Include="Linq\EnumerableHelper.cs" />
     <Compile Include="Linq\GroupBy\GroupBySelectClauseRewriter.cs" />
-    <Compile Include="Linq\Visitors\GroupByKeySelectorVisitor.cs" />
     <Compile Include="Linq\Visitors\HqlGeneratorExpressionTreeVisitor.cs" />
     <Compile Include="Linq\LinqExtensionMethods.cs" />
     <Compile Include="Linq\ReWriters\MergeAggregatingResultsRewriter.cs" />
