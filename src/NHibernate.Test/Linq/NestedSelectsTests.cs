@@ -168,6 +168,53 @@ namespace NHibernate.Test.Linq
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
 		}
 
+		[Test(Description = "NH-3333")]
+		public void TimesheetIdAndUsers()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+						{
+							o.Id,
+							o.Users
+						})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-3333")]
+		public void TimesheetAndUsers()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+						{
+							o,
+							o.Users
+						})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-3333")]
+		public void TimesheetUsers()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Users
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
 		[Test]
 		public void EmployeesIdAndWithSubordinatesId()
 		{
