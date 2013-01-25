@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
@@ -62,23 +63,43 @@ namespace NHibernate.Linq.NestedSelects
 
 			var resultSelector = rewriter.VisitExpression(selector);
 
-			var where = EnumerableHelper.GetMethod("Where",
-												   new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-												   new[] {typeof (Tuple)});
+			var whereMethod = EnumerableHelper.GetMethod("Where",
+														 new[] { typeof (IEnumerable<>), typeof (Func<,>) },
+														 new[] { typeof (Tuple) });
 
-			var select = EnumerableHelper.GetMethod("Select",
-													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-													new[] {typeof (Tuple), selector.Type});
+			var selectMethod = EnumerableHelper.GetMethod("Select",
+														  new[] { typeof (IEnumerable<>), typeof (Func<,>) },
+														  new[] { typeof (Tuple), selector.Type });
 
-			var toList = EnumerableHelper.GetMethod("ToList",
-													new[] {typeof (IEnumerable<>)},
-													new[] {selector.Type});
+			var toListMethod = EnumerableHelper.GetMethod("ToList",
+														  new[] { typeof (IEnumerable<>) },
+														  new[] { selector.Type });
 
-			return Expression.Call(Expression.Call(toList,
-												   Expression.Call(select,
-																   Expression.Call(where, values, WherePredicate),
-																   Expression.Lambda(resultSelector, value))),
-								   "AsReadOnly", System.Type.EmptyTypes);
+			var select = Expression.Call(selectMethod,
+										 Expression.Call(whereMethod, values, WherePredicate),
+										 Expression.Lambda(resultSelector, value));
+
+			var constructor = GetCollectionConstructor(expression.QueryModel.GetResultType(), selector.Type);
+			if (constructor != null)
+				return Expression.New(constructor, @select);
+
+			return Expression.Call(Expression.Call(toListMethod, @select),
+								   "AsReadonly",
+								   System.Type.EmptyTypes);
+		}
+
+		private static ConstructorInfo GetCollectionConstructor(System.Type collectionType, System.Type elementType)
+		{
+			if (collectionType.IsInterface)
+			{
+				if (collectionType.IsGenericType && collectionType.GetGenericTypeDefinition() == typeof (ISet<>))
+				{
+					return typeof (HashSet<>).MakeGenericType(elementType).GetConstructor(new[] { typeof (IEnumerable<>).MakeGenericType(elementType) });
+				}
+				return null;
+			}
+
+			return collectionType.GetConstructor(new[] { typeof (IEnumerable<>).MakeGenericType(elementType) });
 		}
 	}
 }

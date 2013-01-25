@@ -10,6 +10,7 @@ using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.NestedSelects
 {
@@ -24,24 +25,28 @@ namespace NHibernate.Linq.NestedSelects
 			if (!nsqmv.HasSubquery)
 				return;
 
-			var subQueryModel = nsqmv.Expression.QueryModel;
+			var subQueryExpression = GetSubQueryExpression(queryModel, nsqmv.Expression);
+			if (subQueryExpression != null)
+			{
+				var subQueryModel = subQueryExpression.QueryModel;
 
-			var mainFromClause = subQueryModel.MainFromClause;
+				var mainFromClause = subQueryModel.MainFromClause;
 
-			var restrictions = subQueryModel.BodyClauses
-				.OfType<WhereClause>()
-				.Select(w => new NhWithClause(w.Predicate));
+				var restrictions = subQueryModel.BodyClauses
+												.OfType<WhereClause>()
+												.Select(w => new NhWithClause(w.Predicate));
 
-			var join = new NhJoinClause(mainFromClause.ItemName,
-										mainFromClause.ItemType,
-										mainFromClause.FromExpression,
-										restrictions);
+				var join = new NhJoinClause(mainFromClause.ItemName,
+											mainFromClause.ItemType,
+											mainFromClause.FromExpression,
+											restrictions);
 
-			queryModel.BodyClauses.Add(join);
+				queryModel.BodyClauses.Add(join);
 
-			var visitor = new SwapQuerySourceVisitor(subQueryModel.MainFromClause, join);
+				var visitor = new SwapQuerySourceVisitor(subQueryModel.MainFromClause, join);
 
-			queryModel.TransformExpressions(visitor.Swap);
+				queryModel.TransformExpressions(visitor.Swap);
+			}
 
 			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
 
@@ -78,6 +83,25 @@ namespace NHibernate.Linq.NestedSelects
 														   : ConvertToObject(e.Expression));
 
 			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
+		}
+
+		private static SubQueryExpression GetSubQueryExpression(QueryModel queryModel, Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression == null)
+				return expression as SubQueryExpression;
+
+			var mainFromClause = new MainFromClause(new NameGenerator(queryModel).GetNewName(),
+													memberExpression.Type.GetGenericArguments()[0],
+													memberExpression);
+			var selectClause = new SelectClause(new QuerySourceReferenceExpression(mainFromClause));
+			var subQueryModel = new QueryModel(mainFromClause, selectClause)
+				{
+					ResultTypeOverride = memberExpression.Type
+				};
+			var subQueryExpression = new SubQueryExpression(subQueryModel);
+			queryModel.TransformExpressions(e => ReplacingExpressionTreeVisitor.Replace(memberExpression, subQueryExpression, e));
+			return subQueryExpression;
 		}
 
 		private static Expression GetIdentifier(ISessionFactory sessionFactory, IEnumerable<ExpressionHolder> expressions, ExpressionHolder e)

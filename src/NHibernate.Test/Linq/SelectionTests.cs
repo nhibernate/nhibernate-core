@@ -364,6 +364,13 @@ namespace NHibernate.Test.Linq
 			// ReSharper restore RedundantCast
 		}
 
+		[Test]
+		public void CanSelectCollection()
+		{
+			var orders = db.Customers.Where(c => c.CustomerId == "VINET").Select(o => o.Orders).ToList();
+			Assert.AreEqual(5, orders[0].Count);
+		}
+
 		public class Wrapper<T>
 		{
 			public T item;
