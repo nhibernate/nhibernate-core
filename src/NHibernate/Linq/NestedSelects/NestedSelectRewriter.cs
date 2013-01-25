@@ -49,7 +49,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var expressions = new List<ExpressionHolder>();
 
-			var rewriter = new SelectClauseRewriter(key, values, expressions);
+			var rewriter = new SelectClauseRewriter(key, values, expressions, GetIdentifier(sessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause)));
 
 			var resultSelector = rewriter.VisitExpression(queryModel.SelectClause.Selector);
 
@@ -91,31 +91,32 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			foreach (var holder in expressions)
 			{
+				//TODO: move this code to SelectClauseRewriter
 				if (holder.Tuple == e.Tuple)
 				{
+					//NOTE: probably will fail in some cases. Need to find underlying QuerySourceReferenceExpression and process it.
 					var memberExpression = holder.Expression as MemberExpression;
 					if (memberExpression != null)
 					{
-						var expression = memberExpression.Expression;
-						var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
-						if (classMetadata != null)
-						{
-							return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
-						}
+						return GetIdentifier(sessionFactory, memberExpression.Expression);
 					}
 					var querySourceReferenceExpression = holder.Expression as QuerySourceReferenceExpression;
 					if (querySourceReferenceExpression != null)
 					{
-						var expression = querySourceReferenceExpression;
-						var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
-						if (classMetadata != null)
-						{
-							return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
-						}
+						return GetIdentifier(sessionFactory, querySourceReferenceExpression);
 					}
 				}
 			}
 			return Expression.Constant(null);
+		}
+
+		private static Expression GetIdentifier(ISessionFactory sessionFactory, Expression expression)
+		{
+			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
+			if (classMetadata == null)
+				return Expression.Constant(null);
+			
+			return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
 		}
 
 		static LambdaExpression CreateSelector(ConstructorInfo ctor, MemberInfo field, IEnumerable<ExpressionHolder> expressions, int tuple)

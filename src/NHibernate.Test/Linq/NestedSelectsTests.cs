@@ -23,6 +23,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void OrdersOrderLinesId()
+		{
+			var orders = db.Orders
+				.Select(o => new
+								 {
+									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
+								 })
+				.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(830));
+		}
+
+		[Test]
 		public void OrdersIdWithOrderLinesIdShouldBeNotLazy()
 		{
 			var orders = db.Orders
@@ -116,6 +129,37 @@ namespace NHibernate.Test.Linq
 						new
 							{
 								o.Id,
+								Users = o.Users.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-2986")]
+		public void TimesheetAndUsersTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o,
+								Users = o.Users.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-2986")]
+		public void TimesheetUsersTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
 								Users = o.Users.Select(x => x)
 							})
 				.ToList();

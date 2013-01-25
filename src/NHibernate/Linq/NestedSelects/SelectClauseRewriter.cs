@@ -16,18 +16,18 @@ namespace NHibernate.Linq.NestedSelects
 		readonly int tuple;
 		int position;
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions) 
-			: this(parameter, values, expressions, 0)
+		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression) 
+			: this(parameter, values, expressions, expression, 0)
 		{
 		}
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, int tuple)
+		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, Expression expression, int tuple)
 		{
 			this.expressions = expressions;
 			this.parameter = parameter;
 			this.values = values;
 			this.tuple = tuple;
-			this.expressions.Add(new ExpressionHolder {Tuple = tuple}); //ID placeholder
+			this.expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
 		}
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
@@ -58,7 +58,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var value = Expression.Parameter(typeof (Tuple), "value");
 
-			var rewriter = new SelectClauseRewriter(value, values, expressions, tuple + 1);
+			var rewriter = new SelectClauseRewriter(value, values, expressions, null, tuple + 1);
 
 			var resultSelector = rewriter.VisitExpression(selector);
 
