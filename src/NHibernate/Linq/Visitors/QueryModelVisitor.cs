@@ -4,6 +4,7 @@ using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
+using NHibernate.Linq.NestedSelects;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors.ResultOperatorProcessors;
@@ -19,6 +20,8 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
+			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
+
 			// Remove unnecessary body operators
 			RemoveUnnecessaryBodyOperators.ReWrite(queryModel);
 
@@ -91,6 +94,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<ContainsResultOperator, ProcessContains>();
 			ResultOperatorMap.Add<NonAggregatingGroupBy, ProcessNonAggregatingGroupBy>();
 			ResultOperatorMap.Add<ClientSideSelect, ProcessClientSideSelect>();
+			ResultOperatorMap.Add<ClientSideSelect2, ProcessClientSideSelect2>();
 			ResultOperatorMap.Add<AnyResultOperator, ProcessAny>();
 			ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
 			ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
@@ -137,22 +141,10 @@ namespace NHibernate.Linq.Visitors
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
 
-			if (fromClause is NhJoinClause)
+			var joinClause = fromClause as NhJoinClause;
+			if (joinClause != null)
 			{
-				if (((NhJoinClause)fromClause).IsInner)
-				{
-					_hqlTree.AddFromClause(
-						_hqlTree.TreeBuilder.Join(
-							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(querySourceName)));
-				}
-				else
-				{
-					_hqlTree.AddFromClause(
-						_hqlTree.TreeBuilder.LeftJoin(
-							HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-							_hqlTree.TreeBuilder.Alias(querySourceName)));
-				}
+				VisitNhJoinClause(querySourceName, joinClause);
 			}
 			else if (fromClause.FromExpression is MemberExpression)
 			{
@@ -173,6 +165,24 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
+		}
+
+		private void VisitNhJoinClause(string querySourceName, NhJoinClause joinClause)
+		{
+			var expression = HqlGeneratorExpressionTreeVisitor.Visit(joinClause.FromExpression, VisitorParameters).AsExpression();
+			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
+
+			HqlTreeNode hqlJoin;
+			if (joinClause.IsInner)
+			{
+				hqlJoin = _hqlTree.TreeBuilder.Join(expression, @alias);
+			}
+			else
+			{
+				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, @alias);
+			}
+
+			_hqlTree.AddFromClause(hqlJoin);
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)

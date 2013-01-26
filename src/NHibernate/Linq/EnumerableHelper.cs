@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -73,6 +74,23 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException("property");
 			}
 			return ((MemberExpression)property.Body).Member;
+		}
+
+		internal static System.Type GetPropertyOrFieldType(this MemberInfo memberInfo)
+		{
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return propertyInfo.PropertyType;
+			}
+
+			var fieldInfo = memberInfo as FieldInfo;
+			if (fieldInfo != null)
+			{
+				return fieldInfo.FieldType;
+			}
+
+			return null;
 		}
 	}
 

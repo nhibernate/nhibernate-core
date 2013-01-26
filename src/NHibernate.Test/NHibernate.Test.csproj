@@ -521,6 +521,7 @@
     <Compile Include="Linq\LinqToHqlGeneratorsRegistryFactoryTest.cs" />
     <Compile Include="Linq\MethodCallTests.cs" />
     <Compile Include="Linq\MiscellaneousTextFixture.cs" />
+    <Compile Include="Linq\NestedSelectsTests.cs" />
     <Compile Include="Linq\NorthwindDbCreator.cs" />
     <Compile Include="Linq\NullComparisonTests.cs" />
     <Compile Include="Linq\ObjectDumper.cs" />

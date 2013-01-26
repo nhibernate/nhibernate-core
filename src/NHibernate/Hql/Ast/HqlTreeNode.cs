@@ -222,8 +222,8 @@ namespace NHibernate.Hql.Ast
 					}
 					if (type == typeof(DateTimeOffset))
 					{
-					    SetText("datetimeoffset");
-					    break;
+						SetText("datetimeoffset");
+						break;
 					}
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
