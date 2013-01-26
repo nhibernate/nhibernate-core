@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Type;
 using Remotion.Linq;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
@@ -25,32 +26,16 @@ namespace NHibernate.Linq.NestedSelects
 			var querySourceReferenceExpression = expression.Expression as QuerySourceReferenceExpression;
 			if (querySourceReferenceExpression != null)
 			{
-				System.Type memberType = null;
+				var memberType = expression.Member.GetPropertyOrFieldType();
 
-				var propertyInfo = expression.Member as PropertyInfo;
-				if (propertyInfo != null)
-				{
-					memberType = propertyInfo.PropertyType;
-				}
-
-				var fieldInfo = expression.Member as FieldInfo;
-				if (fieldInfo != null)
-				{
-					memberType = fieldInfo.FieldType;
-				}
-
-				if (memberType != null && IsCollectionType(memberType))
+				if (memberType != null && memberType.IsCollectionType())
 				{
 					HasSubquery = true;
 					Expression = expression;
 				}
 			}
-			return base.VisitMemberExpression(expression);
-		}
 
-		private static bool IsCollectionType(System.Type type)
-		{
-			return typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string);
+			return base.VisitMemberExpression(expression);
 		}
 	}
 }

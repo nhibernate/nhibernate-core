@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -33,6 +34,11 @@ namespace NHibernate.Util
 		public static bool IsNonPrimitive(this System.Type type)
 		{
 			return !type.IsPrimitive();
+		}
+
+		internal static bool IsCollectionType(this System.Type type)
+		{
+			return typeof (IEnumerable).IsAssignableFrom(type) && type != typeof (string);
 		}
 	}
 }
