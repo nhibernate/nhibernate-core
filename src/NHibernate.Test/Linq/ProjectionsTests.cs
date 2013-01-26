@@ -268,7 +268,7 @@ namespace NHibernate.Test.Linq
 						select new { o.OrderLines, A = 1, B = 2 };
 
 			var result = query.ToList();
-			Assert.That(result.Count, Is.Not.EqualTo(0));
+			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
 		[Test]
@@ -280,7 +280,7 @@ namespace NHibernate.Test.Linq
 						select new { OrderLines = o.OrderLines.ToList() };
 
 			var result = query.ToList();
-			Assert.That(result.Count, Is.Not.EqualTo(0));
+			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
 		[Test]
@@ -296,10 +296,10 @@ namespace NHibernate.Test.Linq
 							};
 
 			var result = query.ToList();
-			Assert.That(result.Count, Is.Not.EqualTo(0));
-			Assert.That(result[0].ExpandedElement.OrderLines, Is.EqualTo(result[0].ProjectedProperty0));
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
-
+		
 		[Test]
 		public void ProjectKnownTypeWithCollection2()
 		{
@@ -313,8 +313,8 @@ namespace NHibernate.Test.Linq
 							};
 
 			var result = query.ToList();
-			Assert.That(result.Count, Is.Not.EqualTo(0));
-			Assert.That(result[0].ExpandedElement.OrderLines, Is.EqualTo(result[0].ProjectedProperty0));
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
 
 		[Test]
