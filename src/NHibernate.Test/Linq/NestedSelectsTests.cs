@@ -121,6 +121,23 @@ namespace NHibernate.Test.Linq
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
 		}
 
+		[Test]
+		public void TimesheetIdAndUserLastLoginDatesAndEntriesIds()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Id,
+								LastLoginDates = o.Users.Select(u => u.LastLoginDate).ToArray(),
+								EntriesIds = o.Entries.Select(e => e.Id).ToArray()
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].LastLoginDates, Is.Not.Empty);
+		}
+
 		[Test(Description = "NH-2986")]
 		public void TimesheetIdAndUsersTransparentProjection()
 		{
@@ -168,6 +185,56 @@ namespace NHibernate.Test.Linq
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
 		}
 
+		[Test(Description = "NH-2986")]
+		public void TimesheetIdAndUsersAndEntriesTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Id,
+								Users = o.Users.Select(x => x),
+								Entries = o.Entries.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-2986")]
+		public void TimesheetAndUsersAndEntriesTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o,
+								Users = o.Users.Select(x => x),
+								Entries = o.Entries.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-2986")]
+		public void TimesheetUsersAndEntriesTransparentProjection()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								Users = o.Users.Select(x => x),
+								Entries = o.Entries.Select(x => x)
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
 		[Test(Description = "NH-3333")]
 		public void TimesheetIdAndUsers()
 		{
@@ -208,6 +275,56 @@ namespace NHibernate.Test.Linq
 						new
 							{
 								o.Users
+							})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-3333")]
+		public void TimesheetIdAndUsersAndEntries()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+						{
+							o.Id,
+							o.Users,
+							o.Entries
+						})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-3333")]
+		public void TimesheetAndUsersAndEntries()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+						{
+							o,
+							o.Users,
+							o.Entries
+						})
+				.ToList();
+
+			Assert.That(timesheets.Count, Is.EqualTo(3));
+			Assert.That(timesheets[0].Users, Is.Not.Empty);
+		}
+
+		[Test(Description = "NH-3333")]
+		public void TimesheetUsersAndEntries()
+		{
+			var timesheets = db.Timesheets
+				.Select(o =>
+						new
+							{
+								o.Users,
+								o.Entries
 							})
 				.ToList();
 

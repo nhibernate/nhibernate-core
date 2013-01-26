@@ -1,23 +1,31 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Type;
-using Remotion.Linq;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	class NestedSelectDetector : ExpressionTreeVisitor
+	internal class NestedSelectDetector : ExpressionTreeVisitor
 	{
-		public bool HasSubquery { get; set; }
-		public Expression Expression { get; private set; }
+		private readonly ICollection<Expression> _expressions = new List<Expression>();
+
+		public ICollection<Expression> Expressions
+		{
+			get { return _expressions; }
+		}
+
+		public bool HasSubqueries
+		{
+			get { return Expressions.Count > 0; }
+		}
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			HasSubquery |= expression.QueryModel.ResultOperators.Count == 0;
-			Expression = expression;
+			if (expression.QueryModel.ResultOperators.Count == 0)
+				Expressions.Add(expression);
 			return base.VisitSubQueryExpression(expression);
 		}
 
@@ -30,8 +38,7 @@ namespace NHibernate.Linq.NestedSelects
 
 				if (memberType != null && memberType.IsCollectionType())
 				{
-					HasSubquery = true;
-					Expression = expression;
+					Expressions.Add(expression);
 				}
 			}
 
