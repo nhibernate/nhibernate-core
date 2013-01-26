@@ -200,7 +200,7 @@ namespace NHibernate.Linq.NestedSelects
 									"ReferenceEquals",
 									System.Type.EmptyTypes,
 									Expression.ArrayIndex(
-										Expression.MakeMemberAccess(t, Tuple.ItemsField),
+										Expression.Property(t, Tuple.ItemsProperty),
 										Expression.Constant(index)),
 									Expression.Constant(null))),
 				t);
@@ -226,9 +226,7 @@ namespace NHibernate.Linq.NestedSelects
 			var newArrayInit = Expression.NewArrayInit(typeof(object), initializers);
 
 			return Expression.Lambda(
-				Expression.MemberInit(
-					Expression.New(typeof(Tuple)),
-					Expression.Bind(Tuple.ItemsField, newArrayInit)),
+					Expression.New(Tuple.Constructor, newArrayInit),
 				parameter);
 		}
 
