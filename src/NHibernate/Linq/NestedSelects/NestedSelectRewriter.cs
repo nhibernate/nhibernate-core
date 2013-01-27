@@ -202,9 +202,7 @@ namespace NHibernate.Linq.NestedSelects
 					Expression.Call(typeof (object),
 									"ReferenceEquals",
 									System.Type.EmptyTypes,
-									Expression.ArrayIndex(
-										Expression.MakeMemberAccess(t, Tuple.ItemsField),
-										Expression.Constant(index)),
+									ArrayIndex(Expression.Property(t, Tuple.ItemsProperty), index),
 									Expression.Constant(null))),
 				t);
 		}
@@ -224,18 +222,16 @@ namespace NHibernate.Linq.NestedSelects
 
 			var initializers = expressions.Select((x, index) => new { x.Tuple, index})
 				.Where(x => x.Tuple == tuple)
-				.Select(x => ArrayIndex(x.index, parameter));
+				.Select(x => ArrayIndex(parameter, x.index));
 
 			var newArrayInit = Expression.NewArrayInit(typeof (object), initializers);
 
 			return Expression.Lambda(
-				Expression.MemberInit(
-					Expression.New(typeof (Tuple)),
-					Expression.Bind(Tuple.ItemsField, newArrayInit)),
+				Expression.New(Tuple.Constructor, newArrayInit),
 				parameter);
 		}
 
-		private static Expression ArrayIndex(int value, Expression param)
+		private static Expression ArrayIndex(Expression param, int value)
 		{
 			return Expression.ArrayIndex(param, Expression.Constant(value));
 		}

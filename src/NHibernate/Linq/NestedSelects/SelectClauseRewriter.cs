@@ -54,8 +54,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			return Expression.Convert(
 				Expression.ArrayIndex(
-					Expression.MakeMemberAccess(parameter,
-												Tuple.ItemsField),
+					Expression.Property(parameter, Tuple.ItemsProperty),
 					Expression.Constant(expressions.Count - 1)),
 				expression.Type);
 		}
