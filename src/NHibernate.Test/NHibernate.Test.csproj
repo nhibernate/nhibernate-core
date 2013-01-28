@@ -1128,6 +1128,8 @@
     <Compile Include="NHSpecificTest\NH3126\Item.cs" />
     <Compile Include="NHSpecificTest\NH3126\Property.cs" />
     <Compile Include="NHSpecificTest\NH3126\PropertyValue.cs" />
+    <Compile Include="NHSpecificTest\NH3119\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3119\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3142\ChildrenTest.cs" />
     <Compile Include="NHSpecificTest\NH3142\DomainClass.cs" />
