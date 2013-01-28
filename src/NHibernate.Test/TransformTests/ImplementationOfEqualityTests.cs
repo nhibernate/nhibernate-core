@@ -9,6 +9,8 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.TransformTests
 {
+	using System.ComponentModel;
+
 	public class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes = typeof(IResultTransformer).Assembly.GetTypes().Where(t => typeof(IResultTransformer).IsAssignableFrom(t) && t.IsClass).ToList();
@@ -74,19 +76,17 @@ namespace NHibernate.Test.TransformTests
 			transformer1.GetHashCode().Should().Not.Be.EqualTo(transformer3.GetHashCode());
 		}
 
-		public delegate void DoNothingDelegate();
-		public delegate void DoNothingDelegate1();
 		[Test]
 		public void LinqResultTransformer_ShouldHaveEqualityBasedOnCtorParameter()
 		{
-			DoNothingDelegate d1 = () => { };
-			DoNothingDelegate d2 = () => { };
+			Func<object[], object> d1 = x => new object();
+			Func<IEnumerable<object>, IEnumerable<object>> d2 = x => x;
 			var transformer1 = new ResultTransformer(d1, d2);
 			var transformer2 = new ResultTransformer(d1, d2);
 			transformer1.Should().Be.EqualTo(transformer2);
 			transformer1.GetHashCode().Should().Be.EqualTo(transformer2.GetHashCode());
 
-			DoNothingDelegate1 d3 = () => { };
+			Func<IEnumerable<object>, IEnumerable<int>> d3 = x => new [] { 1, 2, 3 };
 			var transformer3 = new ResultTransformer(d1, d3);
 			transformer1.Should().Not.Be.EqualTo(transformer3);
 			transformer1.GetHashCode().Should().Not.Be.EqualTo(transformer3.GetHashCode());
