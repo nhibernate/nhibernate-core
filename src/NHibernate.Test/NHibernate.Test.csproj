@@ -712,6 +712,7 @@
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2692\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3383\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2772\Model.cs" />
     <Compile Include="NHSpecificTest\NH2772\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3058\DomainClass.cs" />
