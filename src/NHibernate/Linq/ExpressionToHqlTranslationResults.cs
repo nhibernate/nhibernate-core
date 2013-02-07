@@ -48,13 +48,13 @@ namespace NHibernate.Linq
             {
                 var invoked = Expression.Invoke(transformations[i], listTransformLambda.Body);
 
-                listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters.ToArray());
+                listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters);
             }
 
             var isCovariant = typeof(Func<object, object>).IsAssignableFrom(listTransformLambda.ReturnType);
             if (!isCovariant)
             {
-                listTransformLambda = Expression.Lambda(Expression.Convert(listTransformLambda.Body, typeof(object)), listTransformLambda.Parameters.ToArray());
+                listTransformLambda = Expression.Lambda(Expression.Convert(listTransformLambda.Body, typeof(object)), listTransformLambda.Parameters);
             }
 
             return listTransformLambda.Compile();
