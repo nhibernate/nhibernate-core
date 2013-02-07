@@ -9,8 +9,6 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.TransformTests
 {
-	using System.ComponentModel;
-
 	public class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes = typeof(IResultTransformer).Assembly.GetTypes().Where(t => typeof(IResultTransformer).IsAssignableFrom(t) && t.IsClass).ToList();
