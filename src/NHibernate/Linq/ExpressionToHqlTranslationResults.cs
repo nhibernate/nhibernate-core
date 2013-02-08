@@ -24,8 +24,8 @@ namespace NHibernate.Linq
 
             PostExecuteTransformer = MergeLambdasAndCompile(postExecuteTransformers);
 
-            var itemTransformer = MergeLambdasAndCompile(itemTransformers);
-            var listTransformer = MergeLambdasAndCompile(listTransformers);
+            var itemTransformer = (Func<object[], object>) MergeLambdasAndCompile(itemTransformers);
+            var listTransformer = (Func<IEnumerable<object>, object>) MergeLambdasAndCompile(listTransformers);
 
             if (itemTransformer != null || listTransformer != null)
             {
@@ -48,7 +48,13 @@ namespace NHibernate.Linq
             {
                 var invoked = Expression.Invoke(transformations[i], listTransformLambda.Body);
 
-                listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters.ToArray());
+                listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters);
+            }
+
+            var isCovariant = typeof(Func<object, object>).IsAssignableFrom(listTransformLambda.Type);
+            if (!isCovariant)
+            {
+                listTransformLambda = Expression.Lambda(Expression.Convert(listTransformLambda.Body, typeof(object)), listTransformLambda.Parameters);
             }
 
             return listTransformLambda.Compile();
