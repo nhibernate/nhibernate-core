@@ -51,7 +51,7 @@ namespace NHibernate.Linq
                 listTransformLambda = Expression.Lambda(invoked, listTransformLambda.Parameters);
             }
 
-            var isCovariant = typeof(Func<object, object>).IsAssignableFrom(listTransformLambda.ReturnType);
+            var isCovariant = typeof(Func<object, object>).IsAssignableFrom(listTransformLambda.Type);
             if (!isCovariant)
             {
                 listTransformLambda = Expression.Lambda(Expression.Convert(listTransformLambda.Body, typeof(object)), listTransformLambda.Parameters);
