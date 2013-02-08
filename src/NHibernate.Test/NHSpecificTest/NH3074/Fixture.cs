@@ -1,7 +1,7 @@
 ﻿using NHibernate.Cfg.MappingSchema;
+using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH3074
 {
@@ -35,18 +35,33 @@ namespace NHibernate.Test.NHSpecificTest.NH3074
 			}
 		}
 
-		[Test]
-		[Ignore("Failing")]
-		public void CanSetLockMode()
+		[Test, Ignore("Not fixed yet")]
+		public void HqlCanSetLockMode()
 		{
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				s.CreateQuery("select c from Animal c where c.Id=:id")
-					.SetInt32("id", Id)
-					.SetLockMode("c", LockMode.Upgrade)
-					.List<Cat>()
-					.Should().Not.Be.Empty();
+				var cats = s.CreateQuery("select c from Animal c where c.Id=:id")
+							.SetInt32("id", Id)
+							.SetLockMode("c", LockMode.Upgrade)
+							.List<Cat>();
+
+				Assert.That(cats, Is.Not.Empty);
+			}
+		}
+
+		[Test, Ignore("Not fixed yet")]
+		public void CritriaCanSetLockMode()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var cats = s.CreateCriteria<Animal>("c")
+							.Add(Restrictions.IdEq(Id))
+							.SetLockMode("c", LockMode.Upgrade)
+							.List<Cat>();
+
+				Assert.That(cats, Is.Not.Empty);
 			}
 		}
 
