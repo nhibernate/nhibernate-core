@@ -735,7 +735,7 @@ namespace NHibernate.Impl
 			{
 				return false;
 			}
-			if (entityClass.Equals(implementorClass))
+			if (entityClass == implementorClass)
 			{
 				// It is possible to have multiple mappings for the same entity class, but with different entity names.
 				// When querying for a specific entity name, we should only return entities for the requested entity name

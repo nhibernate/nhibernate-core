@@ -708,7 +708,7 @@ namespace NHibernate.Engine
 		/// <returns> An appropriately narrowed instance. </returns>
 		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
 		{
-			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsAssignableFrom(proxy.GetType());
+			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsInstanceOfType(proxy);
 
 			if (!alreadyNarrow)
 			{

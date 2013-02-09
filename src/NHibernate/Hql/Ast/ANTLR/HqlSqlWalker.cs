@@ -362,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
-			return typeof(TimestampType).IsAssignableFrom(type.GetType());
+			return type is TimestampType;
 		}
 
 		private static bool IsIntegral(IType type)
@@ -375,8 +375,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public static bool SupportsIdGenWithBulkInsertion(IIdentifierGenerator generator)
 		{
-			return typeof(SequenceGenerator).IsAssignableFrom(generator.GetType()) 
-				|| typeof(IPostInsertIdentifierGenerator).IsAssignableFrom(generator.GetType());
+			return generator is SequenceGenerator 
+				|| generator is IPostInsertIdentifierGenerator;
 		}
 
 		private void PostProcessDML(IRestrictableStatement statement)

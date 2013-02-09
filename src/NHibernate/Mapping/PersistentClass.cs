@@ -868,22 +868,26 @@ namespace NHibernate.Mapping
 							// property
 							property = identifierProperty;
 						}
-						else if (identifierProperty == null && Identifier != null && typeof(Component).IsInstanceOfType(Identifier))
+						else if (identifierProperty == null)
 						{
-							// we have an embedded composite identifier
-							try
+							var component = Identifier as Component;
+							if (component != null)
 							{
-								identifierProperty = GetProperty(element, ((Component)Identifier).PropertyIterator);
-								if (identifierProperty != null)
+								// we have an embedded composite identifier
+								try
 								{
-									// the root of the incoming property path matched one
-									// of the embedded composite identifier properties
-									property = identifierProperty;
+									identifierProperty = GetProperty(element, component.PropertyIterator);
+									if (identifierProperty != null)
+									{
+										// the root of the incoming property path matched one
+										// of the embedded composite identifier properties
+										property = identifierProperty;
+									}
 								}
-							}
-							catch (MappingException)
-							{
-								// ignore it...
+								catch (MappingException)
+								{
+									// ignore it...
+								}
 							}
 						}
 
