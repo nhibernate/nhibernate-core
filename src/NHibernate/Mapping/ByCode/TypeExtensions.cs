@@ -497,7 +497,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		private static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
+		internal static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
 		{
 			if(type.IsInterface)
 			{
