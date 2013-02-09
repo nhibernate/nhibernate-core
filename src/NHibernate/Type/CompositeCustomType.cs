@@ -53,6 +53,12 @@ namespace NHibernate.Type
 			{
 				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}
+
+			// This is to be nice to an application developer.
+			if (userType.PropertyTypes == null)
+				throw new InvalidOperationException(String.Format("ICompositeUserType {0} returned a null value for 'PropertyTypes'.", userType.GetType()));
+			if (userType.PropertyNames == null)
+				throw new InvalidOperationException(String.Format("ICompositeUserType {0} returned a null value for 'PropertyNames'.", userType.GetType()));
 		}
 
 		public virtual IType[] Subtypes
