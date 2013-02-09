@@ -687,6 +687,8 @@
     <Compile Include="NHSpecificTest\NH3332\State.cs" />
     <Compile Include="NHSpecificTest\NH3332\StateDescription.cs" />
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
+    <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
@@ -2877,6 +2879,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2860\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2651\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3121\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2789\Mappings.hbm.xml" />
