@@ -9,7 +9,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3105
 	public class Fixture
 	{
 		[Test]
-		public void CanMapComponentAsIdWhenComnponentIsDeclaredInBaseClass()
+		public void CanMapComponentAsIdWhenComponentIsDeclaredInBaseClass()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Entity>(rc =>
@@ -48,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3105
 		}
 
 		[Test]
-		public void CanMapComponentAsIdWhenComnponentIsDeclaredInClass()
+		public void CanMapComponentAsIdWhenComponentIsDeclaredInClass()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<EntityBase>(rc =>

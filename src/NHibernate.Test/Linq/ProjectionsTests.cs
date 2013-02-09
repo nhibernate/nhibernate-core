@@ -439,6 +439,10 @@ namespace NHibernate.Test.Linq
 			return string.Format("User {0} logged in at {1}", name, lastLoginDate);
 		}
 
+
+		/// <summary>
+		/// This mimic classes in System.Data.Services.Internal.
+		/// </summary>
 		class ExpandedWrapper<TExpandedElement>
 		{
 			public TExpandedElement ExpandedElement { get; set; }
@@ -446,6 +450,9 @@ namespace NHibernate.Test.Linq
 			public string ReferenceDescription { get; set; }
 		}
 
+		/// <summary>
+		/// This mimic classes in System.Data.Services.Internal.
+		/// </summary>
 		class ExpandedWrapper<TExpandedElement, TProperty0> : ExpandedWrapper<TExpandedElement>
 		{
 			public TProperty0 ProjectedProperty0 { get; set; }
