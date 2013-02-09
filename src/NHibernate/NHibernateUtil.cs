@@ -6,6 +6,7 @@ using NHibernate.Intercept;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -55,17 +56,15 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType GuessType(System.Type type)
 		{
-			if(type.IsGenericType && typeof(Nullable<>) == type.GetGenericTypeDefinition())
-			{
-				type = type.GetGenericArguments()[0];
-			}
+			type = type.UnwrapIfNullable();
+
 			IType value;
 			if (clrTypeToNHibernateType.TryGetValue(type, out value))
 				return value;
+			
 			if (type.IsEnum)
-			{
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
-			}
+			
 			if (typeof(IUserType).IsAssignableFrom(type) ||
 				typeof(ICompositeUserType).IsAssignableFrom(type))
 			{

@@ -40,5 +40,13 @@ namespace NHibernate.Util
 		{
 			return typeof (IEnumerable).IsAssignableFrom(type) && type != typeof (string);
 		}
+
+		internal static System.Type UnwrapIfNullable(this System.Type type)
+		{
+			if (type.IsNullable())
+				return type.NullableOf();
+
+			return type;
+		}
 	}
 }

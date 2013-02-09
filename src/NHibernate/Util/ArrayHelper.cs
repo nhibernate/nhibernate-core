@@ -136,16 +136,15 @@ namespace NHibernate.Util
 				{
 					if (addNull == null)
 					{
-						if (to.GetType().IsGenericType &&
-							to.GetType().GetGenericTypeDefinition() == typeof(List<>) &&
-							to.GetType().GetGenericArguments()[0].IsGenericType &&
-							to.GetType().GetGenericArguments()[0].GetGenericTypeDefinition() == typeof(Nullable<>))
+						var toType = to.GetType();
+						if (toType.IsGenericType &&
+							toType.GetGenericTypeDefinition() == typeof(List<>) &&
+							toType.GetGenericArguments()[0].IsNullable())
 						{
-							MethodInfo addMethod = to.GetType().GetMethod("Add");
-							System.Linq.Expressions.MethodCallExpression addMethodCall =
-								System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
+							MethodInfo addMethod = toType.GetMethod("Add");
+							var addMethodCall =	System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
 																		addMethod,
-																		System.Linq.Expressions.Expression.Constant(null, to.GetType().GetGenericArguments()[0]));
+																		System.Linq.Expressions.Expression.Constant(null, toType.GetGenericArguments()[0]));
 							System.Linq.Expressions.LambdaExpression addLambda =
 								System.Linq.Expressions.Expression.Lambda(addMethodCall);
 

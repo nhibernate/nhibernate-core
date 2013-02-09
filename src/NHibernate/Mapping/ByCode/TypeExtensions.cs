@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -324,16 +325,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static bool IsEnumOrNullableEnum(this System.Type type)
 		{
-			if (type == null)
-			{
-				return false;
-			}
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
-			{
-				System.Type typeOfNullable = type.GetGenericArguments()[0];
-				return typeOfNullable.IsEnum;
-			}
-			return type.IsEnum;
+			return type != null && type.UnwrapIfNullable().IsEnum;
 		}
 
 		public static bool IsFlagEnumOrNullableFlagEnum(this System.Type type)
@@ -342,11 +334,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return false;
 			}
-			System.Type typeofEnum = type;
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
-			{
-				typeofEnum = type.GetGenericArguments()[0];
-			}
+			var typeofEnum = type.UnwrapIfNullable();
 			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof (FlagsAttribute), false).Length > 0;
 		}
 

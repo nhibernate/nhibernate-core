@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast
 {
@@ -180,10 +181,7 @@ namespace NHibernate.Hql.Ast
 		internal HqlIdent(IASTFactory factory, System.Type type)
 			: base(HqlSqlWalker.IDENT, "", factory)
 		{
-			if (IsNullableType(type))
-			{
-				type = ExtractUnderlyingTypeFromNullable(type);
-			}
+			type = type.UnwrapIfNullable();
 
 			switch (System.Type.GetTypeCode(type))
 			{
@@ -227,17 +225,6 @@ namespace NHibernate.Hql.Ast
 					}
 					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
 			}
-		}
-
-		private static System.Type ExtractUnderlyingTypeFromNullable(System.Type type)
-		{
-			return type.GetGenericArguments()[0];
-		}
-
-		// TODO - code duplicated in LinqExtensionMethods
-		private static bool IsNullableType(System.Type type)
-		{
-			return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
 		}
 	}
 

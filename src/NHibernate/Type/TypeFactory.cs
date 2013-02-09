@@ -111,7 +111,7 @@ namespace NHibernate.Type
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
-				System.Type nullableType = typeof(Nullable<>).MakeGenericType(systemType);
+				var nullableType = typeof(Nullable<>).MakeGenericType(systemType);
 				typeAliases.Add(nullableType.FullName);
 				typeAliases.Add(nullableType.AssemblyQualifiedName);
 			}
@@ -467,104 +467,79 @@ namespace NHibernate.Type
 		{
 			IType type = Basic(typeName);
 
-			if (type == null)
+			if (type != null)
+				return type;
+			
+			string[] parsedTypeName;
+			TypeClassification typeClassification = GetTypeClassification(typeName);
+			if (typeClassification == TypeClassification.Length)
+				parsedTypeName = typeName.Split(LengthSplit);
+			else
+				parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
+
+
+			System.Type typeClass;
+			try
 			{
-				string[] parsedTypeName;
-				TypeClassification typeClassification = GetTypeClassification(typeName);
-				if (typeClassification == TypeClassification.Length)
-				{
-					parsedTypeName = typeName.Split(LengthSplit);
-				}
-				else
-					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
+				typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+			}
+			catch (Exception)
+			{
+				typeClass = null;
+			}
 
-
-				System.Type typeClass;
+			if (typeClass == null)
+				return null;
+				
+			if (typeof(IType).IsAssignableFrom(typeClass))
+			{
 				try
 				{
-					typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+					type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					typeClass = null;
+					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
+				InjectParameters(type, parameters);
+				return type;
+			}
+			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
+			{
+				return new CompositeCustomType(typeClass, parameters);
+			}
+			if (typeof(IUserType).IsAssignableFrom(typeClass))
+			{
+				return new CustomType(typeClass, parameters);
+			}
+			if (typeof(ILifecycle).IsAssignableFrom(typeClass))
+			{
+				return NHibernateUtil.Entity(typeClass);
+			}
 
-				if (typeClass != null)
+			var unwrapped = typeClass.UnwrapIfNullable();
+			if (unwrapped.IsEnum)
+			{
+				try
 				{
-					if (typeof(IType).IsAssignableFrom(typeClass))
-					{
-						try
-						{
-							type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
-						}
-						InjectParameters(type, parameters);
-					}
-					else if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
-					{
-						type = new CompositeCustomType(typeClass, parameters);
-					}
-					else if (typeof(IUserType).IsAssignableFrom(typeClass))
-					{
-						type = new CustomType(typeClass, parameters);
-					}
-					else if (typeof(ILifecycle).IsAssignableFrom(typeClass))
-					{
-						type = NHibernateUtil.Entity(typeClass);
-					}
-					else if (typeClass.IsEnum)
-					{
-						try
-						{
-							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass));
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Can't instantiate enum "+ typeClass.FullName +"; The enum can't be empty", e);
-						}
-					}
-					else if (IsNullableEnum(typeClass))
-					{
-						try
-						{
-							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass.GetGenericArguments()[0]));
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Can't instantiate enum " + typeClass.FullName + "; The enum can't be empty", e);
-						}
-					}
-					else if (typeClass.IsSerializable)
-					{
-						if (typeClassification == TypeClassification.Length)
-						{
-							type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
-						}
-						else if (length != null)
-						{
-							type = GetSerializableType(typeClass, length.Value);
-						}
-						else
-						{
-							type = GetSerializableType(typeClass);
-						}
-					}
+					return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
+				}
+				catch (Exception e)
+				{
+					throw new MappingException(string.Format("Can't instantiate enum {0}; The enum can't be empty", typeClass.FullName), e);
 				}
 			}
-			return type;
-		}
 
-		private static Boolean IsNullableEnum(System.Type typeClass)
-		{
-			if (!typeClass.IsGenericType) return false;
-			System.Type nullable = typeof(Nullable<>);
-			if (!nullable.Equals(typeClass.GetGenericTypeDefinition())) return false;
+			if (!typeClass.IsSerializable)
+				return null;
 
-			System.Type genericClass = typeClass.GetGenericArguments()[0];
-			return genericClass.IsSubclassOf(typeof(Enum));
+			if (typeClassification == TypeClassification.Length)
+				return GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
+			
+			if (length.HasValue)
+				return GetSerializableType(typeClass, length.Value);
+
+			return GetSerializableType(typeClass);
 		}
 
 

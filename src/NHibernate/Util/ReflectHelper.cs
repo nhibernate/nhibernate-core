@@ -127,13 +127,7 @@ namespace NHibernate.Util
 		{
 			System.Type propertyClass = ReflectedPropertyClass(theClass, name, access);
 
-			System.Type heuristicClass = propertyClass;
-
-			if (propertyClass.IsGenericType
-				&& propertyClass.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-			{
-				heuristicClass = propertyClass.GetGenericArguments()[0];
-			}
+			var heuristicClass = propertyClass.UnwrapIfNullable();
 
 			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
 		}

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 using NHibernate.Criterion;
-
+using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
 
 namespace NHibernate.Impl
@@ -274,7 +274,7 @@ namespace NHibernate.Impl
 				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
 					|| memberExpression.Expression.NodeType == ExpressionType.Call)
 				{
-					if (IsNullableOfT(memberExpression.Member.DeclaringType))
+					if (memberExpression.Member.DeclaringType.IsNullable())
 					{
 						// it's a Nullable<T>, so ignore any .Value
 						if (memberExpression.Member.Name == "Value")
@@ -455,11 +455,10 @@ namespace NHibernate.Impl
 			if (value == null)
 				return null;
 
-			if (type.IsAssignableFrom(value.GetType()))
+			if (type.IsInstanceOfType(value))
 				return value;
 
-			if (IsNullableOfT(type))
-				type = Nullable.GetUnderlyingType(type);
+			type = type.UnwrapIfNullable();
 
 			if (type.IsEnum)
 				return Enum.ToObject(type, value);
@@ -467,13 +466,7 @@ namespace NHibernate.Impl
 			if (type.IsPrimitive)
 				return Convert.ChangeType(value, type);
 
-			throw new Exception("Cannot convert '" + value.ToString() + "' to " + type.ToString());
-		}
-
-		private static bool IsNullableOfT(System.Type type)
-		{
-			return type.IsGenericType
-				&& type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
+			throw new Exception(string.Format("Cannot convert '{0}' to {1}", value, type));
 		}
 
 		private static ICriterion ProcessSimpleExpression(BinaryExpression be)
