@@ -14,13 +14,21 @@ namespace NHibernate.Mapping
 		/// Generates the SQL string to create the Primary Key Constraint in the database.
 		/// </summary>
 		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+        /// <param name="constraintName">The constraintName used for this primary key.</param>
 		/// <param name="defaultSchema"></param>
 		/// <returns>
 		/// A string that contains the SQL to create the Primary Key Constraint.
 		/// </returns>
-		public string SqlConstraintString(Dialect.Dialect d, string defaultSchema)
+		public string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultSchema)
 		{
-			StringBuilder buf = new StringBuilder(d.PrimaryKeyString + " (");
+            StringBuilder buf = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(constraintName))
+            {
+                buf.Append("constraint " + constraintName + " ");
+            }
+            buf.Append(d.PrimaryKeyString + " (");
+
 			int i = 0;
 			foreach (Column col in ColumnIterator)
 			{

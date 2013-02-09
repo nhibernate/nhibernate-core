@@ -411,12 +411,22 @@ namespace NHibernate.Mapping
 			}
 			if (HasPrimaryKey && (dialect.GenerateTablePrimaryKeyConstraintForIdentityColumn || !identityColumn))
 			{
-				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
+                string pkName = "PK_" + Name;
+                if (IsQuoted)
+                {
+                    pkName = dialect.QuoteForTableName(pkName);
+                }
+				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, pkName, defaultSchema));
 			}
 
 			foreach (UniqueKey uk in UniqueKeyIterator)
 			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
+                string suffix = "";
+                if (this.Name != uk.Table.Name)
+                {
+                    suffix = "_" + this.Name;
+                }
+                buf.Append(',').Append(uk.SqlConstraintString(dialect, suffix, IsQuoted));
 			}
 
 			if (dialect.SupportsTableCheck)
