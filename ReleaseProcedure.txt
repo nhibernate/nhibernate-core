@@ -15,6 +15,13 @@ These are the tasks typically needed to create an official NHibernate release.
   * Perform the release build including running all tests (GaRelease.bat or
     ShowBuildMenu.bat).
 	
+	NOTE: If you prefer to keep your source code in a path like e.g.:
+	  C:\Users\Something\Long\Projects\nhibernate-core
+	you may want to issue a command like:
+	  subst P: C:\Users\Something\Long\Projects
+	And then change to P:\nhibernate-core before building. This will avoid
+	displaying a long user-specific path in public symbol files.
+	
   * If no error or other issue requiring further changes occured, tag the
     current git HEAD with a tag according to version number. Don't forget to
 	push the tag to github.
