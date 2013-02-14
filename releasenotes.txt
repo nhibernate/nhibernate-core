@@ -23,6 +23,7 @@ Build vNext
         * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
         * DisableLogFormattedSql method removed: the default is disabled
         * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
 
 Build 3.3.2.GA
 =============================

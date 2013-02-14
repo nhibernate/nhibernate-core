@@ -113,10 +113,14 @@ namespace NHibernate.Test.Linq
 		public void Atan2Test()
 		{
 			IgnoreIfNotSupported("atan2");
-			if (Dialect is Oracle8iDialect)
-				Assert.Ignore("Fails on Oracle due to NH-3381.");
-
 			Test(o => Math.Round(Math.Atan2((double)o.Discount, 0.5d), 5));
+		}
+
+		[Test]
+		public void PowTest()
+		{
+			IgnoreIfNotSupported("power");
+			Test(o => Math.Round(Math.Pow((double)o.Discount, 0.5d), 5));
 		}
 
 		private void Test(Expression<Func<OrderLine, double>> selector)
