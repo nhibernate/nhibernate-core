@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
@@ -25,7 +26,7 @@ namespace NHibernate.Test.Legacy
 				c2 = new C2();
 				c1.C2 = c2;
 				c2.C1 = c1;
-				c2.C1s = new ArrayList();
+				c2.C1s = new List<C1>();
 				c2.C1s.Add(c1);
 				c1.C2 = c2;
 				s.Save(c2);

@@ -1,16 +1,16 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
 	[Serializable]
-	public class ReverseComparator : IComparer
+	public class ReverseComparator : IComparer<string>
 	{
 		#region IComparer Members
 
-		public int Compare(object x, object y)
+		public int Compare(string x, string y)
 		{
-			return - ((IComparable) x).CompareTo(y);
+			return - (x).CompareTo(y);
 		}
 
 		#endregion

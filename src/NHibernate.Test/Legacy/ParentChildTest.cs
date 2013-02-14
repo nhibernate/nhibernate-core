@@ -187,7 +187,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			s.Save(baz);
 			baz.SetDefaults();
-			IDictionary topGlarchez = new Hashtable();
+			IDictionary<char, GlarchProxy> topGlarchez = new Dictionary<char, GlarchProxy>();
 			baz.TopGlarchez = topGlarchez;
 			Glarch g1 = new Glarch();
 			g1.Name = "g1";
@@ -308,7 +308,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			baz.Parts = new ArrayList();
+			baz.Parts = new List<Part>();
 			Part p1 = new Part();
 			p1.Description = "xyz";
 			Part p2 = new Part();

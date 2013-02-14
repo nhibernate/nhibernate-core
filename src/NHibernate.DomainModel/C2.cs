@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -27,7 +28,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Holder for c1s
 		/// </summary>
-		private IList _c1s = new ArrayList();
+		private IList<C1> _c1s = new List<C1>();
 
 		#endregion
 
@@ -81,7 +82,7 @@ namespace NHibernate.DomainModel
 			set { _c1 = value; }
 		}
 
-		public virtual IList C1s
+		public virtual IList<C1> C1s
 		{
 			get { return _c1s; }
 			set { _c1s = value; }
