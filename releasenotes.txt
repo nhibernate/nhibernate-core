@@ -24,6 +24,7 @@ Build vNext
         * DisableLogFormattedSql method removed: the default is disabled
         * ISession.SaveOrUpdateCopy removed: Use Merge instead
         * Oracle: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
 
 Build 3.3.2.GA
 =============================

@@ -166,7 +166,6 @@
     <Compile Include="Driver\DB2Driver.cs" />
     <Compile Include="Driver\DotConnectMySqlDriver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
-    <Compile Include="Driver\FirebirdDriver.cs" />
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\IResultSetsCommand.cs" />
     <Compile Include="Driver\MySqlDataDriver.cs" />
