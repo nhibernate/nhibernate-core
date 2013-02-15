@@ -66,9 +66,9 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Fum b = (Fum) s.CreateCriteria(typeof(Fum))
-				              	.Add(Expression.In(
-				              	     	"FumString", new string[] {"a value", "no value"}))
-				              	.UniqueResult();
+								.Add(Expression.In(
+										"FumString", new string[] {"a value", "no value"}))
+								.UniqueResult();
 				//Assert.IsTrue( NHibernateUtil.IsInitialized( b.MapComponent.Fummap ) );
 				Assert.IsTrue(NHibernateUtil.IsInitialized(b.MapComponent.Stringmap));
 				Assert.IsTrue(b.MapComponent.Fummap.Count == 1);
@@ -605,7 +605,7 @@ namespace NHibernate.Test.Legacy
 					s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").List();
 					s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").List();
 				}
-                s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").List();
+				s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").List();
 				s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").List();
 			}
 		}
