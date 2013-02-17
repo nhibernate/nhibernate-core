@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -190,23 +191,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					if (fromElement.IsFetch)
 					{
-						FromElement origin;
-						if (fromElement.RealOrigin == null)
-						{
-							// work around that crazy issue where the tree contains
-							// "empty" FromElements (no text); afaict, this is caused
-							// by FromElementFactory.createCollectionJoin()
-							if (fromElement.Origin == null)
-							{
-								throw new QueryException("Unable to determine origin of join fetch [" + fromElement.GetDisplayText() + "]");
-							}
-
-							origin = fromElement.Origin;
-						}
-						else
-						{
-							origin = fromElement.RealOrigin;
-						}
+						var origin = GetOrigin(fromElement);
 
 						// Only perform the fetch if its owner is included in the select 
 						if (!_fromElementsForLoad.Contains(origin))
@@ -264,6 +249,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
 		}
 
+		private static FromElement GetOrigin(FromElement fromElement)
+		{
+			var realOrigin = fromElement.RealOrigin;
+			if (realOrigin != null)
+				return realOrigin;
+
+			// work around that crazy issue where the tree contains
+			// "empty" FromElements (no text); afaict, this is caused
+			// by FromElementFactory.createCollectionJoin()
+			var origin = fromElement.Origin;
+			if (origin == null)
+				throw new QueryException("Unable to determine origin of join fetch [" + fromElement.GetDisplayText() + "]");
+
+			return origin;
+		}
+
 		/// <summary>
 		/// FromElements which need to be accounted for in the load phase (either for return or for fetch).
 		/// </summary>
@@ -300,12 +301,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool IsMap
 		{
-			get { return _constructorNode == null ? false : _constructorNode.IsMap; }
+			get { return _constructorNode != null && _constructorNode.IsMap; }
 		}
 
 		public bool IsList
 		{
-			get { return _constructorNode == null ? false : _constructorNode.IsList; }
+			get { return _constructorNode != null && _constructorNode.IsList; }
 		}
 
 		/// <summary>
@@ -377,28 +378,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private void RenderNonScalarSelects(ISelectExpression[] selectExpressions, FromClause currentFromClause)
 		{
-			ASTAppender appender = new ASTAppender(ASTFactory, this);
-			int size = selectExpressions.Length;
-			int nonscalarSize = 0;
-
-			for (int i = 0; i < size; i++)
-			{
-				if (!selectExpressions[i].IsScalar)
-				{
-					nonscalarSize++;
-				}
-			}
+			var appender = new ASTAppender(ASTFactory, this);
+			var nonscalarSize = selectExpressions.Count(e => !e.IsScalar);
 
 			int j = 0;
-			for (int i = 0; i < size; i++)
+			foreach (var e in selectExpressions)
 			{
-				if (!selectExpressions[i].IsScalar)
+				if (!e.IsScalar)
 				{
-					ISelectExpression expr = selectExpressions[i];
-					FromElement fromElement = expr.FromElement;
+					FromElement fromElement = e.FromElement;
 					if (fromElement != null)
 					{
-						RenderNonScalarIdentifiers(fromElement, nonscalarSize, j, expr, appender);
+						RenderNonScalarIdentifiers(fromElement, nonscalarSize, j, e, appender);
 						j++;
 					}
 				}
@@ -408,11 +399,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// Generate the property select tokens.
 				int k = 0;
-				for (int i = 0; i < size; i++)
+				foreach (var e in selectExpressions)
 				{
-					if (!selectExpressions[i].IsScalar)
+					if (!e.IsScalar)
 					{
-						FromElement fromElement = selectExpressions[i].FromElement;
+						FromElement fromElement = e.FromElement;
 						if (fromElement != null)
 						{
 							RenderNonScalarProperties(appender, fromElement, nonscalarSize, k);

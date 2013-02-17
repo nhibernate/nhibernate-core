@@ -164,7 +164,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// The path may be a reference to an alias defined in the parent query.
 			string classAlias = ( alias == null ) ? null : alias.Text;
 			CheckForDuplicateClassAlias( classAlias );
-			FromElementFactory factory = new FromElementFactory(this, null, path, classAlias, null, false);
+			var factory = new FromElementFactory(this, null, path, classAlias, null, false);
 			return factory.AddFromElement();
 		}
 
@@ -284,7 +284,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool FromElementPredicate(IASTNode node) 
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -296,7 +296,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		static bool ExplicitFromPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -308,7 +308,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool CollectionFetchPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -323,7 +323,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			foreach (var entry in _fromElementByClassAlias)
 			{
 				string alias = entry.Key;
-				if (alias.ToLowerInvariant() == specifiedAlias.ToLowerInvariant())
+				if (string.Equals(alias, specifiedAlias, StringComparison.InvariantCultureIgnoreCase))
 				{
 					return entry.Value;
 				}

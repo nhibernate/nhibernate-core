@@ -63,22 +63,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 			string rootTableName = persister.TableName;
 			SqlString fromJoinFragment = persister.FromJoinFragment(tableAlias, true, false);
-			SqlString whereJoinFragment = persister.WhereJoinFragment(tableAlias, true, false);
-
-			select.SetFromClause(rootTableName + ' ' + tableAlias + fromJoinFragment);
-
-			if (whereJoinFragment == null)
-			{
-				whereJoinFragment = SqlString.Empty;
-			}
-			else
-			{
-				whereJoinFragment = whereJoinFragment.Trim();
-				if (whereJoinFragment.StartsWithCaseInsensitive("and "))
-				{
-					whereJoinFragment = whereJoinFragment.Substring(4);
-				}
-			}
+			select.SetFromClause(rootTableName + " " + tableAlias + fromJoinFragment);
+			
+			var whereJoinFragment = GetWhereJoinFragment(persister, tableAlias);
 
 			SqlString userWhereClause = SqlString.Empty;
 			if (whereClause.ChildCount != 0)
@@ -112,6 +99,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			insert.SetTableName(persister.TemporaryIdTableName);
 			insert.SetSelect(select);
 			return insert.ToSqlString();
+		}
+
+		private static SqlString GetWhereJoinFragment(IJoinable persister, string tableAlias)
+		{
+			SqlString whereJoinFragment = persister.WhereJoinFragment(tableAlias, true, false);
+			if (whereJoinFragment == null)
+			{
+				whereJoinFragment = SqlString.Empty;
+			}
+			else
+			{
+				whereJoinFragment = whereJoinFragment.Trim();
+				if (whereJoinFragment.StartsWithCaseInsensitive("and "))
+				{
+					whereJoinFragment = whereJoinFragment.Substring(4);
+				}
+			}
+			return whereJoinFragment;
 		}
 
 		protected string GenerateIdSubselect(IQueryable persister)
