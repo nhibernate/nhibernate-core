@@ -206,7 +206,7 @@ namespace NHibernate.Engine
 			                               OptionalObject, OptionalEntityName, OptionalId, ResultTransformer)
 			           {
 			           	ProcessedSql = ProcessedSql,
-			           	ProcessedSqlParameters = ProcessedSqlParameters.ToList()
+			            ProcessedSqlParameters = ProcessedSqlParameters != null ? ProcessedSqlParameters.ToList() : null
 			           };
 			return copy;
 		}
