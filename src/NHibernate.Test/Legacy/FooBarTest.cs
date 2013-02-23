@@ -14,6 +14,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
+using NHibernate.Test.NHSpecificTest.NH1914;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -89,7 +90,7 @@ namespace NHibernate.Test.Legacy
 		{
 			Glarch g = new Glarch();
 			Glarch g2 = new Glarch();
-			IList strings = new ArrayList();
+			IList<string> strings = new List<string>();
 			strings.Add("foo");
 			g2.Strings = strings;
 
@@ -1906,10 +1907,7 @@ namespace NHibernate.Test.Legacy
 				"left join bar.Baz baz left join baz.CascadingBars b " +
 				"where (bar.Name in (:nameList) or bar.Name in (:nameList)) and bar.String = :stringVal");
 
-			IList nameList = new ArrayList();
-			nameList.Add("bar");
-			nameList.Add("Bar");
-			nameList.Add("Bar Two");
+			var nameList = new List<string> {"bar", "Bar", "Bar Two"};
 			q.SetParameterList("nameList", nameList);
 			q.SetParameter("stringVal", "a string");
 			list = q.List();
@@ -2253,8 +2251,7 @@ namespace NHibernate.Test.Legacy
 					more.StringId = "id";
 					Stuff stuf = new Stuff();
 					stuf.MoreStuff = more;
-					more.Stuffs = new ArrayList();
-					more.Stuffs.Add(stuf);
+					more.Stuffs = new List<Stuff> {stuf};
 					stuf.Foo = bar;
 					stuf.Id = 1234;
 
@@ -2953,7 +2950,7 @@ namespace NHibernate.Test.Legacy
 			Foo f2 = new Foo();
 			Foo f3 = new Foo();
 			One o = new One();
-			baz.Ones = new ArrayList();
+			baz.Ones = new List<One>();
 			baz.Ones.Add(o);
 			Foo[] foos = new Foo[] {f1, null, f2};
 			baz.FooArray = foos;
@@ -3703,7 +3700,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(g);
 			g.ProxyArray = new GlarchProxy[] {g};
 			string gid = (string) s.GetIdentifier(g);
-			ArrayList list = new ArrayList();
+			IList<string> list = new List<string>();
 			list.Add("foo");
 			g.Strings = list;
 			// <sets> in h2.0.3
@@ -3750,7 +3747,7 @@ namespace NHibernate.Test.Legacy
 			g = (GlarchProxy) s.Load(typeof(Glarch), gid);
 			Assert.AreEqual(4, g.Version, "versioned collection after");
 			Assert.AreEqual(0, g.ProxyArray.Length, "version collection after");
-			g.FooComponents = new ArrayList();
+			g.FooComponents = new List<FooComponent>();
 			g.ProxyArray = null;
 			s.Flush();
 			s.Close();

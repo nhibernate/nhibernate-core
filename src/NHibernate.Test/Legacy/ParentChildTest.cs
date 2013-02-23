@@ -47,10 +47,10 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			Container baz = new Container();
 			Contained f = new Contained();
-			IList list = new ArrayList();
+			IList<Container> list = new List<Container>();
 			list.Add(baz);
 			f.Bag = list;
-			IList list2 = new ArrayList();
+			IList<Contained> list2 = new List<Contained>();
 			list2.Add(f);
 			baz.Bag = list2;
 			s.Save(f);
@@ -356,12 +356,12 @@ namespace NHibernate.Test.Legacy
 			s.Save(s2, (long) 2);
 			s.Save(s3, (long) 3);
 			Container c = new Container();
-			IList l = new ArrayList();
+			IList<Simple> l = new List<Simple>();
 			l.Add(s1);
 			l.Add(s3);
 			l.Add(s2);
 			c.OneToMany = l;
-			l = new ArrayList();
+			l = new List<Simple>();
 			l.Add(s1);
 			l.Add(null);
 			l.Add(s2);
@@ -504,14 +504,14 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Container c = new Container();
-			c.ManyToMany = new ArrayList();
-			c.Bag = new ArrayList();
+			c.ManyToMany = new List<Simple>();
+			c.Bag = new List<Contained>();
 			Simple s1 = new Simple();
 			Simple s2 = new Simple();
 			s1.Count = 123;
 			s2.Count = 654;
 			Contained c1 = new Contained();
-			c1.Bag = new ArrayList();
+			c1.Bag = new List<Container>();
 			c1.Bag.Add(c);
 			c.Bag.Add(c1);
 			c.ManyToMany.Add(s1);
@@ -565,17 +565,17 @@ namespace NHibernate.Test.Legacy
 			y.Count = 456;
 			s.Save(x, (long) 1);
 			s.Save(y, (long) 0);
-			IList o2m = new ArrayList();
+			IList<Simple> o2m = new List<Simple>();
 			o2m.Add(x);
 			o2m.Add(null);
 			o2m.Add(y);
-			IList m2m = new ArrayList();
+			IList<Simple> m2m = new List<Simple>();
 			m2m.Add(x);
 			m2m.Add(null);
 			m2m.Add(y);
 			c.OneToMany = o2m;
 			c.ManyToMany = m2m;
-			IList comps = new ArrayList();
+			IList<Container.ContainerInnerClass> comps = new List<Container.ContainerInnerClass>();
 			Container.ContainerInnerClass ccic = new Container.ContainerInnerClass();
 			ccic.Name = "foo";
 			ccic.Simple = x;
@@ -616,16 +616,16 @@ namespace NHibernate.Test.Legacy
 			{
 				Assert.AreEqual(c.ManyToMany[i], c.OneToMany[i]);
 			}
-			object o1 = c.OneToMany[0];
-			object o2 = c.OneToMany[2];
+			Simple o1 = c.OneToMany[0];
+			Simple o2 = c.OneToMany[2];
 			c.OneToMany.RemoveAt(2);
 			c.OneToMany[0] = o2;
 			c.OneToMany[1] = o1;
-			o1 = c.Components[2];
+			Container.ContainerInnerClass comp = c.Components[2];
 			c.Components.RemoveAt(2);
-			c.Components[0] = o1;
+			c.Components[0] = comp;
 			c.ManyToMany[0] = c.ManyToMany[2];
-			c.Composites.Add((Container.ContainerInnerClass)o1);
+			c.Composites.Add(comp);
 			t.Commit();
 			s.Close();
 
@@ -689,12 +689,12 @@ namespace NHibernate.Test.Legacy
 		public void CascadeCompositeElements()
 		{
 			Container c = new Container();
-			IList list = new ArrayList();
-			c.Cascades = list;
+			
+			c.Cascades = new List<Container.ContainerInnerClass>();
 			Container.ContainerInnerClass cic = new Container.ContainerInnerClass();
 			cic.Many = new Many();
 			cic.One = new One();
-			list.Add(cic);
+			c.Cascades.Add(cic);
 			ISession s = OpenSession();
 			s.Save(c);
 			s.Flush();
@@ -721,12 +721,11 @@ namespace NHibernate.Test.Legacy
 			c = new Container();
 			s = OpenSession();
 			s.Save(c);
-			list = new ArrayList();
-			c.Cascades = list;
+			c.Cascades = new List<Container.ContainerInnerClass>();
 			cic = new Container.ContainerInnerClass();
 			cic.Many = new Many();
 			cic.One = new One();
-			list.Add(cic);
+			c.Cascades.Add(cic);
 			s.Flush();
 			s.Close();
 
@@ -757,7 +756,7 @@ namespace NHibernate.Test.Legacy
 			Container c = new Container();
 			Contained c1 = new Contained();
 			Contained c2 = new Contained();
-			c.Bag = new ArrayList();
+			c.Bag = new List<Contained>();
 			c.Bag.Add(c1);
 			c.Bag.Add(c2);
 			c1.Bag.Add(c);
