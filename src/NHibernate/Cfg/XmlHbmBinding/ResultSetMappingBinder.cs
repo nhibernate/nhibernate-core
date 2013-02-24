@@ -292,7 +292,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				if (!propertyresults.TryGetValue(key,out intermediateResults))
 					propertyresults[key] = allResultColumns.ToArray();
 				else
-					ArrayHelper.AddAll(intermediateResults, allResultColumns); // TODO: intermediateResults not used after this
+				{
+					throw new NotImplementedException();
+					// 2013-02-24: In 89994bc113e1bb35bf6bcd0b7408d08340bfbccd, 2008-05-29, the intermediateResults
+					// variable was changed from ArrayList to string[]. The following code line was there before.
+					// Since an array cannot be modified, it seems this code line has never been hit since then.
+					// While working on NH-3345, I'm adding an ambigous overload for AddAll(), and I don't want to
+					// try to understand this code right now, so comment it out instead. /Oskar
+					//ArrayHelper.AddAll(intermediateResults, allResultColumns); // TODO: intermediateResults not used after this
+				}
 			}
 
 			Dictionary<string, string[]> newPropertyResults = new Dictionary<string, string[]>();

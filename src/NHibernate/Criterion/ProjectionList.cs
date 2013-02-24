@@ -120,11 +120,11 @@ namespace NHibernate.Criterion
 		
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			var result = new List<object>(Length);
+			var result = new List<string>(Length);
 			for (var i = 0; i < Length; i++)
 			{
 				var colAliases = GetColumnAliases(position, criteria, criteriaQuery, this[i]);
-				ArrayHelper.AddAll(result, colAliases);
+				result.AddRange(colAliases);
 				position += colAliases.Length;
 			}
 			return ArrayHelper.ToStringArray(result);
