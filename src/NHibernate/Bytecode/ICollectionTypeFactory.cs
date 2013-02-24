@@ -54,19 +54,6 @@ namespace NHibernate.Bytecode
 		CollectionType Bag<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
-		/// </returns>
-		CollectionType List(string role, string propertyRef, bool embedded);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with list 
 		/// semantics.
@@ -80,7 +67,7 @@ namespace NHibernate.Bytecode
 		/// </param>
 		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
 		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
+		/// A <see cref="GenericListType&lt;T&gt;"/> for the specified role.
 		/// </returns>
 		CollectionType List<T>(string role, string propertyRef, bool embedded);
 

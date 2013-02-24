@@ -676,7 +676,6 @@
     <Compile Include="Type\Int64Type.cs" />
     <Compile Include="Type\IType.cs" />
     <Compile Include="Type\IVersionType.cs" />
-    <Compile Include="Type\ListType.cs" />
     <Compile Include="Type\ManyToOneType.cs" />
     <Compile Include="Type\MapType.cs" />
     <Compile Include="Type\MetaType.cs" />
@@ -1251,7 +1250,6 @@
     <Compile Include="Collection\PersistentArrayHolder.cs" />
     <Compile Include="Collection\PersistentBag.cs" />
     <Compile Include="Collection\PersistentIdentifierBag.cs" />
-    <Compile Include="Collection\PersistentList.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />

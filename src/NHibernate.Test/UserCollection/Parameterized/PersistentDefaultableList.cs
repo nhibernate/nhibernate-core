@@ -14,7 +14,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 
 		public string DefaultValue
 		{
-			get { return ((IDefaultableList)list).DefaultValue; }
+			get { return ((IDefaultableList)WrappedList).DefaultValue; }
 		}
 	}
 }

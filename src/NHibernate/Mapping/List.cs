@@ -32,7 +32,8 @@ namespace NHibernate.Mapping
 					CheckGenericArgumentsLength(1);
 					return TypeFactory.GenericList(Role, ReferencedPropertyName, GenericArguments[0]);
 				}
-				return TypeFactory.List(Role, ReferencedPropertyName, Embedded);;
+
+				throw new MappingException("Non-generic persistent lists are not supported (role " + Role +").");
 			}
 		}
 		
