@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -32,7 +32,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Holder for c2s
 		/// </summary>
-		private IList _c2s = new ArrayList();
+		private IList<C2> _c2s = new List<C2>();
 
 		#endregion
 
@@ -53,7 +53,7 @@ namespace NHibernate.DomainModel
 		/// <param name="map">Initial map value</param>
 		/// <param name="address">Initial address value</param>
 		/// <param name="d">Initial d value</param>
-		public C1(String name, Int32 count, IDictionary map, String address, D d)
+		public C1(String name, Int32 count, IDictionary<string, string> map, String address, D d)
 			: base(name, count, map)
 		{
 			this._address = address;
@@ -64,7 +64,7 @@ namespace NHibernate.DomainModel
 		/// Minimal constructor for class C1
 		/// </summary>
 		/// <param name="map">Initial map value</param>
-		public C1(IDictionary map)
+		public C1(IDictionary<string, string> map)
 			: base(map)
 		{
 		}
@@ -97,7 +97,7 @@ namespace NHibernate.DomainModel
 			set { _c2 = value; }
 		}
 
-		public virtual IList C2s
+		public virtual IList<C2> C2s
 		{
 			get { return _c2s; }
 			set { _c2s = value; }

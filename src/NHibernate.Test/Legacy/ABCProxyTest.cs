@@ -243,8 +243,8 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			B b = new B();
 			s.Save(b);
-			Hashtable map = new Hashtable();
-			map.Add("3", 1);
+			IDictionary<string, string> map = new Dictionary<string, string>();
+			map.Add("3", "1");
 			b.Map = map;
 			s.Flush();
 			s.Delete(b);
@@ -253,8 +253,8 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			map = new Hashtable();
-			map.Add("3", 1);
+			map = new Dictionary<string, string>();
+			map.Add("3", "1");
 			b = new B();
 			b.Map = map;
 			s.Save(b);

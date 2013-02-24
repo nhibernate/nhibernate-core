@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel
 
 		private long _id;
 		private string _name;
-		private IList _subcategories = new ArrayList();
+		private IList<Category> _subcategories = new List<Category>();
 		private Assignable _assignable;
 
 		public long Id
@@ -27,7 +27,7 @@ namespace NHibernate.DomainModel
 			set { _name = value; }
 		}
 
-		public IList Subcategories
+		public IList<Category> Subcategories
 		{
 			get { return _subcategories; }
 			set { _subcategories = value; }

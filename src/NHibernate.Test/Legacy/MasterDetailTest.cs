@@ -850,7 +850,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			s.Save(c);
@@ -867,7 +867,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -895,7 +895,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			Category c2 = new Category();
@@ -907,7 +907,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -934,7 +934,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			s.Save(c);
@@ -951,7 +951,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -997,7 +997,7 @@ namespace NHibernate.Test.Legacy
 				c = (Category) s.Load(typeof(Category), c.Id);
 				Assert.IsNotNull(c.Subcategories[0]);
 				Assert.IsNotNull(c.Subcategories[1]);
-				IList list = ((Category) c.Subcategories[1]).Subcategories;
+				IList<Category> list = ((Category) c.Subcategories[1]).Subcategories;
 				Assert.IsNull(list[0]);
 				Assert.IsNotNull(list[1]);
 
@@ -1019,7 +1019,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			c.Name = "root";
@@ -1062,7 +1062,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			c.Name = "root";

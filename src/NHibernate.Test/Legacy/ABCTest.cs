@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
@@ -42,7 +43,7 @@ namespace NHibernate.Test.Legacy
 			using (ITransaction t = s.BeginTransaction())
 			{
 				B b = new B();
-				IDictionary map = new Hashtable();
+				IDictionary<string, string> map = new Dictionary<string, string>();
 				map["a"] = "a";
 				map["b"] = "b";
 				b.Map = map;
