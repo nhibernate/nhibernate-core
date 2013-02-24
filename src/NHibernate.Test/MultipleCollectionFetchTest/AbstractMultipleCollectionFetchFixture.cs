@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
@@ -12,9 +12,9 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected abstract void AddToCollection(ICollection collection, Person person);
+		protected abstract void AddToCollection(ICollection<Person> collection, Person person);
 
-		protected abstract ICollection CreateCollection();
+		protected abstract ICollection<Person> CreateCollection();
 
 		protected override void OnTearDown()
 		{

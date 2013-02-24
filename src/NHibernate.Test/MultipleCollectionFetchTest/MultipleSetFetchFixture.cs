@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
-using System.Net.NetworkInformation;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
 	[TestFixture]
-	[Ignore("Support for non-generic sets removed. To test generic set instead, need to duplicate or port the sister test fixtures too.")]
 	public class MultipleSetFetchFixture : AbstractMultipleCollectionFetchFixture
 	{
 		protected override IList Mappings
@@ -14,16 +13,14 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			get { return new string[] {"MultipleCollectionFetchTest.PersonSet.hbm.xml"}; }
 		}
 
-		protected override void AddToCollection(ICollection collection, Person person)
+		protected override void AddToCollection(ICollection<Person> persons, Person person)
 		{
-			//((ISet) collection).Add(person);
-			throw new NotImplementedException();
+			((ISet<Person>) persons).Add(person);
 		}
 
-		protected override ICollection CreateCollection()
+		protected override ICollection<Person> CreateCollection()
 		{
-			throw new NotImplementedException();
-			//return new HashSet();
+			return new HashSet<Person>();
 		}
 	}
 }

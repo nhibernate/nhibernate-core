@@ -68,7 +68,7 @@ namespace NHibernate.Loader
 
 		private static bool IsBag(ICollectionPersister collectionPersister)
 		{
-			return collectionPersister.CollectionType.GetType().IsAssignableFrom(typeof (BagType));
+			return collectionPersister.CollectionType is BagType;
 		}
 
 		/// <summary>
