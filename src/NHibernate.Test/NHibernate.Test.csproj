@@ -174,12 +174,6 @@
     <Compile Include="Component\Basic\OptionalComponent.cs" />
     <Compile Include="Component\Basic\Person.cs" />
     <Compile Include="Component\Basic\User.cs" />
-    <Compile Include="CompositeCollection\BaseClassA.cs" />
-    <Compile Include="CompositeCollection\BaseClassB.cs" />
-    <Compile Include="CompositeCollection\ChildClassA.cs" />
-    <Compile Include="CompositeCollection\ChildClassB.cs" />
-    <Compile Include="CompositeCollection\ChildColl.cs" />
-    <Compile Include="CompositeCollection\CompositeCollection.cs" />
     <Compile Include="CompositeId\ClassWithCompositeId.cs" />
     <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
     <Compile Include="CompositeId\CompositeIdFixture.cs" />
@@ -2374,9 +2368,6 @@
     <EmbeddedResource Include="TypedManyToOne\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
-    <EmbeddedResource Include="CompositeCollection\BaseClassB.hbm.xml" />
-    <EmbeddedResource Include="CompositeCollection\Composite.xml" />
     <EmbeddedResource Include="CompositeId\ClassWithCompositeId.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
