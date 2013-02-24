@@ -8,7 +8,7 @@ namespace NHibernate.Test.Events.Collections
 {
 	public class CollectionListeners
 	{
-		private readonly IList events = new ArrayList();
+		private readonly IList<AbstractCollectionEvent> events = new List<AbstractCollectionEvent>();
 
 		private readonly InitializeCollectionListener initializeCollectionListener;
 		private readonly List<IListener> listenersCalled = new List<IListener>();
@@ -51,7 +51,7 @@ namespace NHibernate.Test.Events.Collections
 			get { return listenersCalled; }
 		}
 
-		public IList Events
+		public IList<AbstractCollectionEvent> Events
 		{
 			get { return events; }
 		}

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CollectionTest
@@ -32,7 +32,7 @@ namespace NHibernate.Test.CollectionTest
 		{
 			A a = new A();
 			a.Name = "first generic type";
-			a.Items = new ArrayList();
+			a.Items = new List<string>();
 			a.Items.Add( "first string" );
 			a.Items.Add( "second string" );
 

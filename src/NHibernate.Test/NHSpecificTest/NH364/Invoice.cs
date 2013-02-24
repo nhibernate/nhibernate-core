@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH364
@@ -21,8 +21,8 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			set { _Number = value; }
 		}
 
-		private IList _Items = new ArrayList();
-		public virtual IList Items
+		private IList<InvoiceItem> _Items = new List<InvoiceItem>();
+		public virtual IList<InvoiceItem> Items
 		{
 			get { return _Items; }
 			set { _Items = value; }

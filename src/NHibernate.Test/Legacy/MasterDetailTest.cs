@@ -491,10 +491,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, q.List().Count);
 
 			q = s.CreateFilter(master.Details, "where this.id in (:ids)");
-			list = new ArrayList();
-			list.Add(did);
-			list.Add((long) -1);
-			q.SetParameterList("ids", list);
+			q.SetParameterList("ids", new[] {did, (long) -1});
 
 			Assert.AreEqual(1, q.List().Count);
 			Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
@@ -537,12 +534,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, enumer.Current);
 
 			f = s.CreateFilter(master.Details, "select max(this.I) where this.I not in (:list)");
-			IList coll = new ArrayList();
-			coll.Add(-666);
-			coll.Add(22);
-			coll.Add(0);
-
-			f.SetParameterList("list", coll);
+			f.SetParameterList("list", new List<int> {-666, 22, 0});
 			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(12, enumer.Current);
@@ -830,9 +822,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -1199,7 +1189,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			Assignable a = new Assignable();
 			a.Id = "foo";
-			a.Categories = new ArrayList();
+			a.Categories = new List<Category>();
 			Category c = new Category();
 			c.Assignable = a;
 			a.Categories.Add(c);

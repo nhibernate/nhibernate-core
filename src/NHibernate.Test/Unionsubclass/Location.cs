@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Unionsubclass
 {
@@ -6,7 +6,7 @@ namespace NHibernate.Test.Unionsubclass
 	{
 		private long id;
 		private string name;
-		private IList beings = new ArrayList();
+		private IList<Being> beings = new List<Being>();
 
 		protected Location() { }
 
@@ -33,7 +33,7 @@ namespace NHibernate.Test.Unionsubclass
 			set { name = value; }
 		}
 
-		public virtual IList Beings
+		public virtual IList<Being> Beings
 		{
 			get { return beings; }
 			set { beings = value; }

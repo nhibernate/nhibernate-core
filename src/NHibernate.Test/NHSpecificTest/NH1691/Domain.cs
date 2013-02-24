@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1691
 {
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 		public virtual Component Component { get; set; }
 		public virtual int Id { get; set; }
 		public string Name { get; set; }
-		public virtual IList Components { get; set; }
-		public virtual IList ComplexComponents { get; set; }
+		public virtual IList<Component> Components { get; set; }
+		public virtual IList<DeepComponent> ComplexComponents { get; set; }
 	}
 }

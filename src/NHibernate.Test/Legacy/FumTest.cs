@@ -438,10 +438,8 @@ namespace NHibernate.Test.Legacy
 			s.Save(fum2);
 			Qux q = new Qux();
 			s.Save(q);
-			IList list = new ArrayList();
-			list.Add(fum1);
 			q.Fums = new HashSet<Fum> {fum1, fum2};
-			q.MoreFums = list;
+			q.MoreFums = new List<Fum> {fum1};
 			fum1.QuxArray = new Qux[] {q};
 			s.Flush();
 			s.Close();
@@ -469,13 +467,10 @@ namespace NHibernate.Test.Legacy
 			s.Save(q);
 			Fum f1 = new Fum(FumKey("f1"));
 			Fum f2 = new Fum(FumKey("f2"));
-			IList list = new ArrayList();
-			list.Add(f1);
-			list.Add(f2);
 			f1.FumString = "f1";
 			f2.FumString = "f2";
 			q.Fums = new HashSet<Fum> {f1, f2};
-			q.MoreFums = list;
+			q.MoreFums = new List<Fum> {f1, f2};
 			s.Save(f1);
 			s.Save(f2);
 			s.Flush();
@@ -491,7 +486,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
+			var list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
 			Assert.AreEqual(2, list.Count, "deleted owner");
 			s.Lock(list[0], LockMode.Upgrade);
 			s.Lock(list[1], LockMode.Upgrade);
