@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SharpTestsEx;
 using System.Collections.ObjectModel;
@@ -34,7 +35,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				query.Executing(x => x.SetParameterList("myList", new ArrayList())).Throws().And.Exception.Should().Be.InstanceOf<ArgumentException>();
+
+				var ex = Assert.Throws<QueryException>(() => query.SetParameterList("myList", new List<object>()));
+				Assert.That(ex.Message, Is.EqualTo("An empty parameter-list generates wrong SQL; parameter name 'myList'"));
 			}
 		}
 
