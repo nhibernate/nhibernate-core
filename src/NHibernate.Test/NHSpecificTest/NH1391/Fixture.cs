@@ -85,16 +85,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 				var personWithSivasKangals = session.Get<PersonWithSivasKangals>(4);
 
 				Assert.That(personWithAnimals.AnimalsGeneric,Has.Count.EqualTo(4));
-				Assert.That(personWithAnimals.AnimalsNonGeneric, Has.Count.EqualTo(4));
 
 				Assert.That(personWithCats.CatsGeneric, Has.Count.EqualTo(1));
-				Assert.That(personWithCats.CatsNonGeneric, Has.Count.EqualTo(1));
 
 				Assert.That(personWithDogs.DogsGeneric, Has.Count.EqualTo(2));
-				Assert.That(personWithDogs.DogsNonGeneric, Has.Count.EqualTo(2));
 
 				Assert.That(personWithSivasKangals.SivasKangalsGeneric, Has.Count.EqualTo(1));
-				Assert.That(personWithSivasKangals.SivasKangalsNonGeneric, Has.Count.EqualTo(1));
 			}
 		}
 	}

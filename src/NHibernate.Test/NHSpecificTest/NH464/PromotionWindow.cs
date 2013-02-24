@@ -1,18 +1,18 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
 	public class PromotionWindow
 	{
-		private IList dates;
+		private IList<DateRange> dates;
 
 		public PromotionWindow()
 		{
-			this.dates = new ArrayList();
+			this.dates = new List<DateRange>();
 		}
 
-		public IList Dates
+		public IList<DateRange> Dates
 		{
 			get { return dates; }
 			set { dates = value; }

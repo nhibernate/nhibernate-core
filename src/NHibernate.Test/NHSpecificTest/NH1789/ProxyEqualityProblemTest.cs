@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
 
@@ -110,8 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 				Assert.AreEqual(mauriceProxy.ID, mauriceNonProxy.ID, "The two objects should have the same ID");
 
 				//Ok now we add the proxy version into a collection:
-				var collection = new ArrayList();
-				collection.Add(mauriceProxy);
+				var collection = new List<ICat> {mauriceProxy};
 
 				//The proxy should be able to find itself:
 				Assert.IsTrue(collection.Contains(mauriceProxy), "The proxy should be present in the collection");
