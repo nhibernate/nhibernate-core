@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1394
 {
@@ -7,12 +7,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		private int id;
 		private int iq;
 		private string name;
-		private IList pets;
+		private IList<Pet> pets;
 		private int shoeSize;
 
 		public Person()
 		{
-			pets = new ArrayList();
+			pets = new List<Pet>();
 		}
 
 		public Person(string name, int iq, int shoeSize)
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			this.name = name;
 			this.iq = iq;
 			this.shoeSize = shoeSize;
-			pets = new ArrayList();
+			pets = new List<Pet>();
 		}
 
 		public virtual int Id
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			set { shoeSize = value; }
 		}
 
-		public virtual IList Pets
+		public virtual IList<Pet> Pets
 		{
 			get { return pets; }
 			protected set { pets = value; }

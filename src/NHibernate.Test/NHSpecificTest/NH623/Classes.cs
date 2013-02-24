@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
@@ -129,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 	{
 		private int pageId;
 		private Document document;
-		private IList pages;
+		private IList<Page> pages;
 		private bool isActive;
 
 		public Page()
@@ -140,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		{
 			this.pageId = pageId;
 			this.document = document;
-			pages = new ArrayList();
+			pages = new List<Page>();
 		}
 
 		public virtual int PageId
@@ -155,7 +154,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 			set { document = value; }
 		}
 
-		public virtual IList Pages
+		public virtual IList<Page> Pages
 		{
 			get { return pages; }
 			set { pages = value; }

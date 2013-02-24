@@ -128,6 +128,12 @@ namespace NHibernate.Util
 		}
 
 		// NH-specific
+		public static void AddAll<T>(IList<T> to, IList<T> from)
+		{
+			foreach (T obj in from)
+				to.Add(obj);
+		}
+
 		public static void AddAll<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
 		{
 			foreach (KeyValuePair<TKey, TValue> de in from)

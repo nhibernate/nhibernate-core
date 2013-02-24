@@ -68,15 +68,9 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			SubMulti sm1 = new SubMulti();
 			SubMulti sm2 = new SubMulti();
-			IList list = new ArrayList();
-			IList anotherList = new ArrayList();
-			sm.Children = list;
-			sm.MoreChildren = anotherList;
+			sm.Children = new List<SubMulti> {sm1, sm2};
+			sm.MoreChildren = new List<SubMulti> {sm1, sm2};
 			sm.ExtraProp = "foo";
-			list.Add(sm1);
-			list.Add(sm2);
-			anotherList.Add(sm1);
-			anotherList.Add(sm2);
 			sm1.Parent = sm;
 			sm2.Parent = sm;
 			object id = s.Save(sm);
@@ -619,8 +613,7 @@ namespace NHibernate.Test.Legacy
 			multi1.Po = po;
 			multi2.Po = po;
 			po.Set = new HashSet<Multi> {multi1, multi2};
-			po.List = new ArrayList();
-			po.List.Add(new SubMulti());
+			po.List = new List<SubMulti> {new SubMulti()};
 			object id = s.Save(po);
 			Assert.IsNotNull(id);
 			t.Commit();
@@ -661,7 +654,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Lower ls = new Lower();
-			IList list = new ArrayList();
+			IList<Top> list = new List<Top>();
 			ls.Bag = list;
 			Top simple = new Top();
 			object id = s.Save(ls);

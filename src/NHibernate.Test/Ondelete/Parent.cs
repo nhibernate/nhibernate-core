@@ -1,11 +1,11 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Ondelete
 {
 	public class Parent
 	{
 		private string name;
-		private IList children = new ArrayList();
+		private IList<Child> children = new List<Child>();
 
 		protected Parent()
 		{
@@ -22,7 +22,7 @@ namespace NHibernate.Test.Ondelete
 			set { name = value; }
 		}
 
-		public virtual IList Children
+		public virtual IList<Child> Children
 		{
 			get { return children; }
 			set { children = value; }
