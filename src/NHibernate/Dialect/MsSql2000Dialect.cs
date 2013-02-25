@@ -426,38 +426,34 @@ namespace NHibernate.Dialect
 			return tableName;
 		}
 
-		private struct LockHintAppender
+		public struct LockHintAppender
 		{
-			private readonly MsSql2000Dialect dialect;
-			private readonly IDictionary<string, LockMode> aliasedLockModes;
+			private static readonly Regex FromClauseTableNameRegex = new Regex(@"from\s+(\w+)");
+
+			private readonly MsSql2000Dialect _dialect;
+			private readonly IDictionary<string, LockMode> _aliasedLockModes;
+
+			private readonly Regex _matchRegex;
+			private readonly Regex _unionSubclassRegex;
 
 			public LockHintAppender(MsSql2000Dialect dialect, IDictionary<string, LockMode> aliasedLockModes)
 			{
-				this.dialect = dialect;
-				this.aliasedLockModes = aliasedLockModes;
-			}
+				_dialect = dialect;
+				_aliasedLockModes = aliasedLockModes;
 
-			private string ReplaceMatch(Match match)
-			{
-				string alias = match.Groups[1].Value;
-				string lockHint = dialect.AppendLockHint(aliasedLockModes[alias], alias);
-				return string.Concat(" ", lockHint, match.Groups[2].Value);
+				// Regex matching any alias out of those given. Aliases should contain
+				// no dangerous characters (they are identifiers) so they are not escaped.
+				var aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+
+				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
+				// in various kinds of "FROM table1 alias1, table2 alias2".
+				_matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
+				_unionSubclassRegex = new Regex(@"\((.*)\)(?:\s+as)?\s+(?<alias>" + aliasesPattern + ")");
 			}
 
 			public SqlString AppendLockHint(SqlString sql)
 			{
-				// Regex matching any alias out of those given. Aliases should contain
-				// no dangerous characters (they are identifiers) so they are not escaped.
-				string aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
-
-				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
-				// in various kinds of "FROM table1 alias1, table2 alias2".
-				var matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
-				var unionSubclassRegex = new Regex(@"\((.*)\)(?:\s+as)?\s+(?<alias>" + aliasesPattern + ")");
-				var tableRegex = new Regex(@"from\s+(\w+)");
-
-				SqlStringBuilder result = new SqlStringBuilder();
-				MatchEvaluator evaluator = ReplaceMatch;
+				var result = new SqlStringBuilder();
 
 				foreach (object part in sql.Parts)
 				{
@@ -467,22 +463,33 @@ namespace NHibernate.Dialect
 						continue;
 					}
 
-					var unionMatch = unionSubclassRegex.Match((string) part);
-					if (unionMatch.Success)
-					{
-						var alias = unionMatch.Groups["alias"].Value;
-						var @this = this;
-						var replacement = tableRegex.Replace(unionMatch.Value, m => @this.dialect.AppendLockHint(@this.aliasedLockModes[alias], m.Value));
-
-						result.Add(unionSubclassRegex.Replace((string) part, replacement));
-					}
-					else
-					{
-						result.Add(matchRegex.Replace((string) part, evaluator));
-					}
+					result.Add(ProcessUnionSubclassCase((string) part) ?? _matchRegex.Replace((string) part, ReplaceMatch));
 				}
 
 				return result.ToSqlString();
+			}
+
+			private string ProcessUnionSubclassCase(string part)
+			{
+				var unionMatch = _unionSubclassRegex.Match((string)part);
+				if (!unionMatch.Success)
+				{
+					return null;
+				}
+
+				var alias = unionMatch.Groups["alias"].Value;
+				var lockMode = _aliasedLockModes[alias];
+				var @this = this;
+				var replacement = FromClauseTableNameRegex.Replace(unionMatch.Value, m => @this._dialect.AppendLockHint(lockMode, m.Value));
+
+				return _unionSubclassRegex.Replace(part, replacement);
+			}
+
+			private string ReplaceMatch(Match match)
+			{
+				string alias = match.Groups[1].Value;
+				string lockHint = _dialect.AppendLockHint(_aliasedLockModes[alias], alias);
+				return string.Concat(" ", lockHint, match.Groups[2].Value); // TODO: seems like this line is redundant
 			}
 		}
 
