@@ -53,10 +53,5 @@ namespace NHibernate.Linq
 		{
 			return (T)source;
 		}
-
-		internal static bool IsCollectionType(this System.Type type)
-		{
-			return typeof (IEnumerable).IsAssignableFrom(type) && type != typeof (string);
-		}
 	}
 }
