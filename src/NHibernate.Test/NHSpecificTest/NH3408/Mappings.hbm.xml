@@ -2,12 +2,18 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
            namespace="NHibernate.Test.NHSpecificTest.NH3408"
            assembly="NHibernate.Test">
-  <class name="Person">
+  <class name="Country">
     <id name="Id">
       <generator class="increment"/>
     </id>
     <property name="Name"/>
-    <property name="Photo"/>
+    <property name="Picture"/>
+    <set name="NationalHolidays" table="Holiday">
+      <key column="CalendarID" />
+      <element type="System.DateTime">
+        <column name="Holiday" sql-type="smalldatetime" />
+      </element>
+    </set>
   </class>
 
 </hibernate-mapping>

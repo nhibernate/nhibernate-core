@@ -5,9 +5,18 @@ using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.NestedSelects
 {
+	using System.Reflection;
+	using NHibernate.Metadata;
+
 	internal class NestedSelectDetector : NhExpressionTreeVisitor
 	{
 		private readonly ICollection<Expression> _expressions = new List<Expression>();
+		private readonly IDictionary<string, ICollectionMetadata> _collectionMetadata;
+
+		public NestedSelectDetector(IDictionary<string, ICollectionMetadata> collectionMetadata)
+		{
+			_collectionMetadata = collectionMetadata;
+		}
 
 		public ICollection<Expression> Expressions
 		{
@@ -33,13 +42,20 @@ namespace NHibernate.Linq.NestedSelects
 			{
 				var memberType = expression.Member.GetPropertyOrFieldType();
 
-				if (memberType != null && memberType.IsCollectionType())
+				if (memberType != null && memberType.IsCollectionType() && IsMappedCollection(expression.Member))
 				{
 					Expressions.Add(expression);
 				}
 			}
 
 			return base.VisitMemberExpression(expression);
+		}
+
+		private bool IsMappedCollection(MemberInfo memberInfo)
+		{
+			var key = memberInfo.DeclaringType.FullName + "." + memberInfo.Name;
+
+			return _collectionMetadata.ContainsKey(key);
 		}
 	}
 }
