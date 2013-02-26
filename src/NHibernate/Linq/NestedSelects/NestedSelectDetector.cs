@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	using System.Reflection;
-	using NHibernate.Metadata;
-
 	internal class NestedSelectDetector : NhExpressionTreeVisitor
 	{
+		private readonly ISessionFactory sessionFactory;
 		private readonly ICollection<Expression> _expressions = new List<Expression>();
-		private readonly IDictionary<string, ICollectionMetadata> _collectionMetadata;
 
-		public NestedSelectDetector(IDictionary<string, ICollectionMetadata> collectionMetadata)
+		public NestedSelectDetector(ISessionFactory sessionFactory)
 		{
-			_collectionMetadata = collectionMetadata;
+			this.sessionFactory = sessionFactory;
 		}
 
 		public ICollection<Expression> Expressions
@@ -53,9 +51,9 @@ namespace NHibernate.Linq.NestedSelects
 
 		private bool IsMappedCollection(MemberInfo memberInfo)
 		{
-			var key = memberInfo.DeclaringType.FullName + "." + memberInfo.Name;
+			var collectionRole = memberInfo.DeclaringType.FullName + "." + memberInfo.Name;
 
-			return _collectionMetadata.ContainsKey(key);
+			return sessionFactory.GetCollectionMetadata(collectionRole) != null;
 		}
 	}
 }

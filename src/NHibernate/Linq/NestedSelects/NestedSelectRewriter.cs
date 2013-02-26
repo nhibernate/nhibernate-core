@@ -8,6 +8,7 @@ using Iesi.Collections.Generic;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -19,7 +20,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
-			var nsqmv = new NestedSelectDetector(sessionFactory.GetAllCollectionMetadata());
+			var nsqmv = new NestedSelectDetector(sessionFactory);
 			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
 			if (!nsqmv.HasSubqueries)
 				return;
@@ -113,8 +114,8 @@ namespace NHibernate.Linq.NestedSelects
 		private static Expression ProcessMemberExpression(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, Expression memberExpression)
 		{
 			var join = new NhJoinClause(new NameGenerator(queryModel).GetNewName(),
-													GetElementType((MemberExpression) memberExpression),
-													memberExpression);
+										GetElementType(memberExpression.Type),
+										memberExpression);
 
 			queryModel.BodyClauses.Add(@join);
 
@@ -248,25 +249,12 @@ namespace NHibernate.Linq.NestedSelects
 			return Expression.Convert(expression, typeof(object));
 		}
 
-		private static System.Type GetElementType(MemberExpression expression)
+		private static System.Type GetElementType(System.Type type)
 		{
-			var type = expression.Type;
-			if (!type.IsCollectionType())
-			{
-				throw new ArgumentException();
-			}
-
-			if (type.IsGenericType)
-			{
-				return type.GetGenericArguments()[0];
-			}
-
-			if (type.IsArray)
-			{
-				return type.GetElementType();
-			}
-
-			throw new NotSupportedException("Unknown collection type " + type.FullName);
+			var elementType = ReflectHelper.GetCollectionElementType(type);
+			if (elementType == null)
+				throw new NotSupportedException("Unknown collection type " + type.FullName);
+			return elementType;
 		}
 	}
 }

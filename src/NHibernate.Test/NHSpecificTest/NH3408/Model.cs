@@ -1,7 +1,7 @@
+using System;
+
 namespace NHibernate.Test.NHSpecificTest.NH3408
 {
-	using System;
-
 	public class Country
 	{
 		public virtual int Id { get; set; }
