@@ -54,8 +54,11 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void ShouldHandleEscapingInSubselect()
 		{
-			var result = _appender.AppendLockHint(new SqlString("select Id, Name from (select Id, Name from [Employee] union all select Id, Name from [Manager]) person"));
-			Assert.That(result.ToString(), Is.EqualTo("select Id, Name from (select Id, Name from [Employee] with (updlock, rowlock) union all select Id, Name from [Manager] with (updlock, rowlock)) as person"));
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name from [Employee] with (updlock, rowlock) union all select Id, Name from [Manager] with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
 		}
 
 		[Test]
