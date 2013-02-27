@@ -519,7 +519,13 @@ namespace NHibernate.Dialect
 
 		public struct LockHintAppender
 		{
-			private static readonly Regex FromClauseTableNameRegex = new Regex(@"from\s+\[?(\w+)\]?", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+			private const string UnescapedNameRegex = @"\w+";
+			private const string EscapedNameRegex = @"\[([^\]]|\]\])+\]";
+			private const string NameRegex = "(" + UnescapedNameRegex + "|" + EscapedNameRegex + ")";
+			private const string NameSeparatorRegex = @"\s*\.\s*";
+			private const string FromTableNameRegex = @"from\s+(" + NameRegex + NameSeparatorRegex + "){0,2}" + NameRegex;
+
+			private static readonly Regex FromClauseTableNameRegex = new Regex(FromTableNameRegex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
 			private readonly MsSql2000Dialect _dialect;
 			private readonly IDictionary<string, LockMode> _aliasedLockModes;
@@ -546,7 +552,7 @@ namespace NHibernate.Dialect
 			{
 				var result = new SqlStringBuilder();
 
-				foreach (object part in sql.Parts)
+				foreach (object part in sql)
 				{
 					if (part == Parameter.Placeholder)
 					{

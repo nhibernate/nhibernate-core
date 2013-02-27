@@ -55,7 +55,37 @@ namespace NHibernate.Test.DialectTest
 		{
 			const string expectedQuery =
 				"select Id, Name FROM (select Id, Name FROM Employee with (updlock, rowlock) union all select Id, Name from Manager with (updlock, rowlock)) as person";
-			
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleExplicitSchemas()
+		{
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name FROM dbo.Employee with (updlock, rowlock) union all select Id, Name from Manager with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleExplicitSchemasAndDbNames()
+		{
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name FROM nhibernate.dbo.Employee with (updlock, rowlock) union all select Id, Name from Manager with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleExplicitSchemasAndDbNamesWithSpacesBetweenNameParts()
+		{
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name FROM nhibernate .dbo. Employee with (updlock, rowlock) union all select Id, Name from Manager with (updlock, rowlock)) as person";
+
 			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
 			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
 		}
@@ -65,6 +95,26 @@ namespace NHibernate.Test.DialectTest
 		{
 			const string expectedQuery =
 				"select Id, Name from (select Id, Name from [Employee] with (updlock, rowlock) union all select Id, Name from [Manager] with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleEscapingWithWhitespacesInSubselect()
+		{
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name from [Empl oyee] with (updlock, rowlock) union all select Id, Name from [Man ager] with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleEscapingWithSquareBracketsInSubselect()
+		{
+			const string expectedQuery =
+				"select Id, Name from (select Id, Name from [Empl ]]oyee] with (updlock, rowlock) union all select Id, Name from [Manager] with (updlock, rowlock)) as person";
 
 			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
 			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
