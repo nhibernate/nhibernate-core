@@ -20,25 +20,34 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void AppendHintToSingleTableAlias()
 		{
-			var result1 = _appender.AppendLockHint(new SqlString("select * from Person person"));
-			Assert.That(result1.ToString(), Is.EqualTo("select * from Person person with (updlock, rowlock)"));
+			const string expectedQuery1 = "select * from Person person with (updlock, rowlock)";
+			const string expectedQuery2 = "select * from Person as person with (updlock, rowlock)";
 
-			var result2 = _appender.AppendLockHint(new SqlString("select * from Person as person"));
-			Assert.That(result2.ToString(), Is.EqualTo("select * from Person as person with (updlock, rowlock)"));
+			var result1 = _appender.AppendLockHint(new SqlString(expectedQuery1.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result1.ToString(), Is.EqualTo(expectedQuery1));
+
+			var result2 = _appender.AppendLockHint(new SqlString(expectedQuery2.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result2.ToString(), Is.EqualTo(expectedQuery2));
 		}
 
 		[Test]
 		public void AppendHintToJoinedTableAlias()
 		{
-			var result = _appender.AppendLockHint(new SqlString("select * from Person person inner join Country country on person.Id = country.Id"));
-			Assert.That(result.ToString(), Is.EqualTo("select * from Person person with (updlock, rowlock) inner join Country country on person.Id = country.Id"));
+			const string expectedQuery =
+				"select * from Person person with (updlock, rowlock) inner join Country country on person.Id = country.Id";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
 		}
 
 		[Test]
 		public void AppendHintToUnionTableAlias()
 		{
-			var result = _appender.AppendLockHint(new SqlString("select Id, Name from (select Id, CONCAT(FirstName, LastName) from Employee union all select Id, CONCAT(FirstName, LastName) from Manager) as person"));
-			Assert.That(result.ToString(), Is.EqualTo("select Id, Name from (select Id, CONCAT(FirstName, LastName) from Employee with (updlock, rowlock) union all select Id, CONCAT(FirstName, LastName) from Manager with (updlock, rowlock)) as person"));
+			const string expectedQuery =
+				"select Id, Name from (select Id, CONCAT(FirstName, LastName) from Employee with (updlock, rowlock) union all select Id, CONCAT(FirstName, LastName) from Manager with (updlock, rowlock)) as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
 		}
 
 		[Test]
