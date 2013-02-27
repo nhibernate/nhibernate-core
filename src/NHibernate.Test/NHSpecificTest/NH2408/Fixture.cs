@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2408
 
 				query.SetLockMode("a", LockMode.Upgrade);
 
-				var result = query.List();
+				Assert.DoesNotThrow(() => query.List());
 			}
 		}
 	}

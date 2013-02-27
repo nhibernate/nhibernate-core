@@ -1,14 +1,14 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NHibernate.Dialect;
+using NHibernate.SqlCommand;
+using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest
 {
-	using System.Collections.Generic;
-	using NHibernate.Dialect;
-	using NHibernate.SqlCommand;
-
 	[TestFixture]
 	public class LockHintAppenderFixture
 	{
+		private const string MsSql2000LockHint = " with (updlock, rowlock)";
 		private MsSql2000Dialect.LockHintAppender _appender;
 
 		[SetUp]
@@ -39,6 +39,36 @@ namespace NHibernate.Test.DialectTest
 		{
 			var result = _appender.AppendLockHint(new SqlString("select Id, Name from (select Id, CONCAT(FirstName, LastName) from Employee union all select Id, CONCAT(FirstName, LastName) from Manager) as person"));
 			Assert.That(result.ToString(), Is.EqualTo("select Id, Name from (select Id, CONCAT(FirstName, LastName) from Employee with (updlock, rowlock) union all select Id, CONCAT(FirstName, LastName) from Manager with (updlock, rowlock)) as person"));
+		}
+
+		[Test]
+		public void ShouldIgnoreCasing()
+		{
+			const string expectedQuery =
+				"select Id, Name FROM (select Id, Name FROM Employee with (updlock, rowlock) union all select Id, Name from Manager with (updlock, rowlock)) as person";
+			
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
+		}
+
+		[Test]
+		public void ShouldHandleEscapingInSubselect()
+		{
+			var result = _appender.AppendLockHint(new SqlString("select Id, Name from (select Id, Name from [Employee] union all select Id, Name from [Manager]) person"));
+			Assert.That(result.ToString(), Is.EqualTo("select Id, Name from (select Id, Name from [Employee] with (updlock, rowlock) union all select Id, Name from [Manager] with (updlock, rowlock)) as person"));
+		}
+
+		[Test]
+		public void ShouldHandleMultilineQuery()
+		{
+			const string expectedQuery = @"
+select Id, Name from
+	(select Id, Name from Employee with (updlock, rowlock) union all
+	select Id, Name from Manager with (updlock, rowlock))
+as person";
+
+			var result = _appender.AppendLockHint(new SqlString(expectedQuery.Replace(MsSql2000LockHint, string.Empty)));
+			Assert.That(result.ToString(), Is.EqualTo(expectedQuery));
 		}
 	}
 }

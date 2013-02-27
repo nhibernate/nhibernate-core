@@ -9,7 +9,7 @@
     </id>
     <property name="Name"/>
 
-    <union-subclass name="Dog">
+    <union-subclass name="Dog" table="`Dog`">
     </union-subclass>
 
     <union-subclass name="Cat">
