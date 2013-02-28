@@ -523,7 +523,7 @@ namespace NHibernate.Dialect
 			private const string EscapedNameRegex = @"\[([^\]]|\]\])+\]";
 			private const string NameRegex = "(" + UnescapedNameRegex + "|" + EscapedNameRegex + ")";
 			private const string NameSeparatorRegex = @"\s*\.\s*";
-			private const string FromTableNameRegex = @"from\s+(" + NameRegex + NameSeparatorRegex + "){0,2}" + NameRegex;
+			private const string FromTableNameRegex = @"from\s+(" + NameRegex + "?" + NameSeparatorRegex + "){0,2}" + NameRegex;
 
 			private static readonly Regex FromClauseTableNameRegex = new Regex(FromTableNameRegex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
