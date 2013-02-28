@@ -11,7 +11,7 @@
     <set name="NationalHolidays" table="Holiday">
       <key column="CalendarID" />
       <element type="System.DateTime">
-        <column name="Holiday" sql-type="smalldatetime" />
+        <column name="Holiday" />
       </element>
     </set>
   </class>
