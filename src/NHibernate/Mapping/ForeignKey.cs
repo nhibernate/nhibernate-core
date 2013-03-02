@@ -178,10 +178,10 @@ namespace NHibernate.Mapping
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
-					.Append(ArrayHelper.ToStringArray((ICollection)Columns))
+					.Append(StringHelper.Join(", " , Columns))
 					.Append(" ref-columns:")
 					.Append('(')
-					.Append(ArrayHelper.ToStringArray((ICollection)ReferencedColumns))
+					.Append(StringHelper.Join(", ", ReferencedColumns))
 					.Append(") as ")
 					.Append(Name);
 				return result.ToString();
