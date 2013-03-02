@@ -2883,7 +2883,6 @@
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2408\Mappings.hbm.xml" />
-    <Content Include="NHSpecificTest\NH3324\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsNames.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsTypes.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2042\Mappings.hbm.xml" />
