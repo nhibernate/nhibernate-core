@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -272,7 +273,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Suclasses register a typename for the given type code, to be used in CAST()
+		/// Subclasses register a typename for the given type code, to be used in CAST()
 		/// statements.
 		/// </summary>
 		/// <param name="code">The typecode</param>
@@ -280,6 +281,18 @@ namespace NHibernate.Dialect
 		protected void RegisterCastType(DbType code, string name)
 		{
 			castTypeNames.Put(code, name);
+		}
+
+		/// <summary>
+		/// Subclasses register a typename for the given type code, to be used in CAST()
+		/// statements.
+		/// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="capacity"></param>
+		/// <param name="name">The database type name</param>
+		protected void RegisterCastType(DbType code, int capacity, string name)
+		{
+			castTypeNames.Put(code, capacity, name);
 		}
 
 		/// <summary> 
@@ -290,7 +303,7 @@ namespace NHibernate.Dialect
 		/// <returns> The database type name </returns>
 		public override string GetCastTypeName(SqlType sqlType)
 		{
-			string result = castTypeNames.Get(sqlType.DbType);
+			string result = castTypeNames.Get(sqlType.DbType, Column.DefaultLength, Column.DefaultPrecision, Column.DefaultScale);
 			if (result == null)
 			{
 				throw new HibernateException(string.Format("No CAST() type mapping for SqlType {0}", sqlType));
