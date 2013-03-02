@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -66,23 +65,6 @@ namespace NHibernate.Util
 				}
 			}
 			return map;
-		}
-
-		public static string[] ToStringArray(string property, string delim, IDictionary properties)
-		{
-			return ToStringArray((string) properties[property], delim);
-		}
-
-		public static string[] ToStringArray(string propValue, string delim)
-		{
-			if (propValue != null)
-			{
-				return StringHelper.Split(delim, propValue);
-			}
-			else
-			{
-				return new string[0];
-			}
 		}
 	}
 }

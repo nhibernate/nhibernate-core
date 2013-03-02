@@ -22,17 +22,8 @@ namespace NHibernate.Util
 
 		public static bool IsAllNegative(int[] array)
 		{
-			for (int i = 0; i < array.Length; i++)
-			{
-				if (array[i] >= 0)
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return array.All(t => t < 0);
 		}
-
 
 		public static T[] Fill<T>(T value, int length)
 		{
@@ -48,7 +39,6 @@ namespace NHibernate.Util
 				array[i] = value;
 			}
 		}
-
 
 		public static T[] Slice<T>(T[] strings, int begin, int length)
 		{
@@ -79,33 +69,6 @@ namespace NHibernate.Util
 		public static bool IsAllFalse(bool[] array)
 		{
 			return Array.IndexOf(array, true) < 0;
-		}
-
-		public static string[][] To2DStringArray(ICollection coll)
-		{
-			var result = new string[coll.Count][];
-			int i = 0;
-			foreach (object row in coll)
-			{
-				var rowAsCollection = row as ICollection;
-				if (rowAsCollection != null)
-				{
-					result[i] = new string[rowAsCollection.Count];
-					int j = 0;
-					foreach (object cell in rowAsCollection)
-					{
-						result[i][j++] = cell == null ? null : (string)cell;
-					}
-				}
-				else
-				{
-					result[i] = new string[1];
-					result[i][0] = row == null ? null : (string)row;
-				}
-				i++;
-			}
-
-			return result;
 		}
 
 		public static string ToString(object[] array)
@@ -161,16 +124,6 @@ namespace NHibernate.Util
 				{
 					to.Add(obj);
 				}
-			}
-		}
-
-		// NH-specific
-		public static void AddAll(IDictionary to, IDictionary from)
-		{
-			foreach (DictionaryEntry de in from)
-			{
-				// we want to override the values from to if they exists
-				to[de.Key] = de.Value;
 			}
 		}
 
@@ -233,38 +186,6 @@ namespace NHibernate.Util
 			}
 		}
 
-
-		private static void ExpandWithNulls(IList list, int requiredLength)
-		{
-			while (list.Count < requiredLength)
-			{
-				list.Add(null);
-			}
-		}
-
-		/// <summary>
-		/// Sets <paramref name="list" /> item at position <paramref name="index" /> to <paramref name="value" />.
-		/// Expands the list by adding <see langword="null" /> values, if needed.
-		/// </summary>
-		public static void SafeSetValue(IList list, int index, object value)
-		{
-			ExpandWithNulls(list, index + 1);
-			list[index] = value;
-		}
-
-		public static string[] ToStringArray(ICollection coll)
-		{
-			return (string[])ToArray(coll, typeof(string));
-		}
-
-
-		public static Array ToArray(ICollection coll, System.Type elementType)
-		{
-			Array result = Array.CreateInstance(elementType, coll.Count);
-			coll.CopyTo(result, 0);
-			return result;
-		}
-
 		public static int CountTrue(bool[] array)
 		{
 			return array.Count(t => t);
@@ -311,25 +232,6 @@ namespace NHibernate.Util
 				i++;
 			}
 			return true;
-		}
-
-
-		/// <summary>
-		/// Calculate a hash code based on the length and contents of the array.
-		/// The algorithm is such that if ArrayHelper.ArrayEquals(a,b) returns true,
-		/// then ArrayGetHashCode(a) == ArrayGetHashCode(b).
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="array"></param>
-		/// <returns></returns>
-		public static int ArrayGetHashCode<T>(T[] array)
-		{
-			int hc = array.Length;
-
-			for (int i = 0; i < array.Length; ++i)
-				hc = unchecked(hc * 31 + array[i].GetHashCode());
-
-			return hc;
 		}
 	}
 }

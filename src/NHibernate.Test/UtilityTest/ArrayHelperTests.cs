@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NHibernate.Util;
+﻿using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
@@ -11,22 +7,11 @@ namespace NHibernate.Test.UtilityTest
 	public class ArrayHelperTests
 	{
 		[Test]
-		public void GetHashCodeShouldBeEqual()
-		{
-			var a = new[] { 1, 2, 3, 4 };
-			var b = new[] { 1, 2, 3, 4 };
-
-			Assert.That(ArrayHelper.ArrayGetHashCode(a), Is.EqualTo(ArrayHelper.ArrayGetHashCode(b)));
-		}
-
-
-		[Test]
 		public void NullArraysShouldBeEqual()
 		{
 			bool[] a = null, b = null;
 			Assert.That(ArrayHelper.ArrayEquals(a, b), Is.True);
 		}
-
 
 		[Test]
 		public void EitherArrayNullShouldNotBeEqual()
@@ -36,7 +21,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ArrayHelper.ArrayEquals(a, b), Is.False);
 			Assert.That(ArrayHelper.ArrayEquals(b, a), Is.False);
 		}
-
 
 		[Test]
 		public void ArraysShouldBeEqual()
