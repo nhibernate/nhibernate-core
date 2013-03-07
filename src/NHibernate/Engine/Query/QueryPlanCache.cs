@@ -101,6 +101,9 @@ namespace NHibernate.Engine.Query
 				{
 					//NH-3413
 					//Here we have to use original expression.
+					//In most cases NH do not translate expression in second time, but 
+					// for cases when we have list parameters in query, like @p1.Contains(...),
+					// it does, and then it uses parameters from first try. 
 					//TODO: cache only required parts of QueryExpression
 					planExpression._expression = expression._expression;
 					planExpression._constantToParameterMap = expression._constantToParameterMap;
