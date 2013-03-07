@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Iesi.Collections.Generic;
 
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
@@ -93,6 +94,16 @@ namespace NHibernate.Engine.Query
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+				}
+				var planExpression = plan.QueryExpression as NhLinqExpression;
+				var expression = queryExpression as NhLinqExpression;
+				if (planExpression != null && expression != null)
+				{
+					//NH-3413
+					//Here we have to use original expression.
+					//TODO: cache only required parts of QueryExpression
+					planExpression._expression = expression._expression;
+					planExpression._constantToParameterMap = expression._constantToParameterMap;
 				}
 			}
 

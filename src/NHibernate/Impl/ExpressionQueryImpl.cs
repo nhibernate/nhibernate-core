@@ -109,17 +109,18 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
+			//TODO: Do we need to translate expression one more time here?
 			IASTNode newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			map.Aggregate(key, (sb, kvp) =>
-			                   {
-			                   	sb.Append(' ');
-			                   	sb.Append(kvp.Key);
-			                   	sb.Append(':');
-			                   	kvp.Value.Aggregate(sb, (sb2, str) => sb2.Append(str));
-			                   	return sb;
-			                   });
+							   {
+								sb.Append(' ');
+								sb.Append(kvp.Key);
+								sb.Append(':');
+								kvp.Value.Aggregate(sb, (sb2, str) => sb2.Append(str));
+								return sb;
+							   });
 
 			return new ExpandedQueryExpression(QueryExpression, newTree, key.ToString());
 		}
