@@ -58,20 +58,6 @@ namespace NHibernate.Bytecode
 		CollectionType List<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
-		/// with id-bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="IdentifierBagType"/> for the specified role.
-		/// </returns>
-		CollectionType IdBag(string role, string propertyRef, bool embedded);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList{T}"/> with identifier
 		/// bag semantics.

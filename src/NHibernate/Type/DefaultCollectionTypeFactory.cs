@@ -21,11 +21,6 @@ namespace NHibernate.Type
 			return new GenericListType<T>(role, propertyRef);
 		}
 
-		public virtual CollectionType IdBag(string role, string propertyRef, bool embedded)
-		{
-			return new IdentifierBagType(role, propertyRef, embedded);
-		}
-
 		public virtual CollectionType IdBag<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericIdentifierBagType<T>(role, propertyRef);

@@ -754,11 +754,6 @@ namespace NHibernate.Type
 			return Instance.CollectionTypeFactory.Array(role, propertyRef, embedded, elementClass);
 		}
 
-		public static CollectionType IdBag(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.IdBag(role, propertyRef, embedded);
-		}
-
 		public static CollectionType Map(string role, string propertyRef, bool embedded)
 		{
 			return Instance.CollectionTypeFactory.Map(role, propertyRef, embedded);

@@ -665,7 +665,6 @@
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
-    <Compile Include="Type\IdentifierBagType.cs" />
     <Compile Include="Type\IDiscriminatorType.cs" />
     <Compile Include="Type\IIdentifierType.cs" />
     <Compile Include="Type\ILiteralType.cs" />
