@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
@@ -241,7 +242,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <see langword="false" /> by default since most collections can determine which rows need to be
-		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
+		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentGenericBag{T}"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
 		bool NeedsRecreate(ICollectionPersister persister);

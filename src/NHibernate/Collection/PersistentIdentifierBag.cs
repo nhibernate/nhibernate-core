@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using NHibernate.Collection.Generic;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -14,7 +15,7 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	/// <summary>
-	/// Implements "bag" semantics more efficiently than a regular <see cref="PersistentBag" />
+	/// Implements "bag" semantics more efficiently than a regular <see cref="PersistentGenericBag{T}" />
 	/// by adding a synthetic identifier column to the table.
 	/// </summary>
 	/// <remarks>

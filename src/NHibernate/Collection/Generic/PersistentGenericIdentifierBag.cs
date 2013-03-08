@@ -9,7 +9,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Collection.Generic
 {
 	/// <summary>
-	/// Implements "bag" semantics more efficiently than <see cref="PersistentBag" /> by adding
+	/// Implements "bag" semantics more efficiently than <see cref="PersistentGenericBag{T}" /> by adding
 	/// a synthetic identifier column to the table.
 	/// </summary>
 	/// <remarks>
