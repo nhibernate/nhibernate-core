@@ -646,7 +646,6 @@
     <Compile Include="Type\AbstractType.cs" />
     <Compile Include="Type\AnsiStringType.cs" />
     <Compile Include="Type\ArrayType.cs" />
-    <Compile Include="Type\BagType.cs" />
     <Compile Include="Type\BinaryBlobType.cs" />
     <Compile Include="Type\BinaryType.cs" />
     <Compile Include="Type\BooleanType.cs" />

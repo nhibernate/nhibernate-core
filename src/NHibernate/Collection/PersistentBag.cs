@@ -6,9 +6,11 @@ using System.Diagnostics;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
+using NHibernate.Mapping;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.Collection
 {
@@ -28,14 +30,10 @@ namespace NHibernate.Collection
 
 		public PersistentBag(ISessionImplementor session) : base(session) {}
 
-		public PersistentBag(ISessionImplementor session, ICollection coll) : base(session)
+		public PersistentBag(ISessionImplementor session, IEnumerable<object> coll)
+			: base(session)
 		{
-			bag = coll as IList;
-
-			if (bag == null)
-			{
-				bag = new ArrayList(coll);
-			}
+			bag = coll as IList ?? new List<object>(coll);
 
 			SetInitialized();
 			IsDirectlyAccessible = true;
@@ -62,7 +60,7 @@ namespace NHibernate.Collection
 		}
 
 		public override object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
-		                                object owner)
+										object owner)
 		{
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead

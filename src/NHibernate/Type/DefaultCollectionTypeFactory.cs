@@ -11,11 +11,6 @@ namespace NHibernate.Type
 			return new ArrayType(role, propertyRef, elementClass, embedded);
 		}
 
-		public virtual CollectionType Bag(string role, string propertyRef, bool embedded)
-		{
-			return new BagType(role, propertyRef, embedded);
-		}
-
 		public virtual CollectionType Bag<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericBagType<T>(role, propertyRef);

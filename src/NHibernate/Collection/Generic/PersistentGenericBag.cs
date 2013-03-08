@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -37,7 +38,8 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericBag() {}
 		public PersistentGenericBag(ISessionImplementor session) : base(session) {}
 
-		public PersistentGenericBag(ISessionImplementor session, IEnumerable<T> coll) : base(session, coll as ICollection)
+		public PersistentGenericBag(ISessionImplementor session, IEnumerable<T> coll) 
+			: base(session, coll.Cast<object>())
 		{
 			gbag = coll as IList<T>;
 			if (gbag == null)
