@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
@@ -71,6 +72,19 @@ namespace NHibernate.Engine.Query
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
+				}
+				var planExpression = plan.QueryExpression as NhLinqExpression;
+				var expression = queryExpression as NhLinqExpression;
+				if (planExpression != null && expression != null)
+				{
+					//NH-3413
+					//Here we have to use original expression.
+					//In most cases NH do not translate expression in second time, but 
+					// for cases when we have list parameters in query, like @p1.Contains(...),
+					// it does, and then it uses parameters from first try. 
+					//TODO: cache only required parts of QueryExpression
+					planExpression._expression = expression._expression;
+					planExpression._constantToParameterMap = expression._constantToParameterMap;
 				}
 			}
 

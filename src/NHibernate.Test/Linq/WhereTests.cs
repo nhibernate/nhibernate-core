@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -438,6 +441,34 @@ namespace NHibernate.Test.Linq
 						 select user).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test, Description("NH-3413")]
+		public void UsersWithListContains_MutatingListDoesNotBreakOtherSessions()
+		{
+			{
+				var names = new List<string> { "ayende", "rahien" };
+
+				var query = (from user in db.Users
+							 where names.Contains(user.Name)
+							 select user).ToList();
+
+				Assert.AreEqual(2, query.Count); 
+
+				names.Clear();
+			}
+
+			{
+				var names = new List<string> { "ayende" };
+
+				var query = (from user in db.Users
+							 where names.Contains(user.Name)
+							 select user).ToList();
+
+				// This line fails with Expected: 1 But was: 0
+				// The SQL in NHProf shows that the where clause was executed as WHERE 1 = 0 as if names were empty
+				Assert.AreEqual(1, query.Count);
+			}
 		}
 
 		[Test]

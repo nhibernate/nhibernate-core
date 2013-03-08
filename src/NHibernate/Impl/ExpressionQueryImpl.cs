@@ -65,11 +65,12 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
+			//TODO: Do we need to translate expression one more time here?
 			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
-			{
+							   {
 				key.Append(' ');
 				key.Append(pair.Key);
 				key.Append(':');

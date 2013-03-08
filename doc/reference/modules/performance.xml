@@ -276,7 +276,7 @@ int accessLevel = (int) permissions["accounts"];  // Error!]]></programlisting>
                 of persistent collections. However, a different mechanism is needed for lazy
                 behavior in single-ended associations. The target entity of the association must
                 be proxied. NHibernate implements lazy initializing proxies for persistent objects
-                using runtime bytecode enhancement (via the excellent Castle.DynamicProxy library).
+                using runtime bytecode enhancement.
             </para>
 
             <para>

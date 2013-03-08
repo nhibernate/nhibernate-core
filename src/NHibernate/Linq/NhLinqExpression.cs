@@ -25,8 +25,8 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		private readonly Expression _expression;
-		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
+		internal Expression _expression;
+		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{

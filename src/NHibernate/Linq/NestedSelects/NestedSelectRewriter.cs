@@ -7,6 +7,7 @@ using System.Reflection;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -19,7 +20,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
-			var nsqmv = new NestedSelectDetector();
+			var nsqmv = new NestedSelectDetector(sessionFactory);
 			nsqmv.VisitExpression(queryModel.SelectClause.Selector);
 			if (!nsqmv.HasSubqueries)
 				return;
@@ -118,7 +119,7 @@ namespace NHibernate.Linq.NestedSelects
 		private static Expression ProcessMemberExpression(ISessionFactory sessionFactory, ICollection<ExpressionHolder> elementExpression, QueryModel queryModel, Expression @group, Expression memberExpression)
 		{
 			var join = new NhJoinClause(new NameGenerator(queryModel).GetNewName(),
-										memberExpression.Type.GetGenericArguments()[0],
+										GetElementType(memberExpression.Type),
 										memberExpression);
 
 			queryModel.BodyClauses.Add(@join);
@@ -165,6 +166,16 @@ namespace NHibernate.Linq.NestedSelects
 			var select = Expression.Call(selectMethod,
 										 Expression.Call(whereMethod, source, predicate),
 										 selector);
+
+			if (collectionType.IsArray)
+			{
+				var toArrayMethod = EnumerableHelper.GetMethod("ToArray",
+															  new[] { typeof(IEnumerable<>) },
+															  new[] { elementType });
+
+				var array = Expression.Call(toArrayMethod, @select);
+				return array;
+			}
 
 			var constructor = GetCollectionConstructor(collectionType, elementType);
 			if (constructor != null)
@@ -240,5 +251,13 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			return Expression.Convert(expression, typeof (object));
 		}
+
+		private static System.Type GetElementType(System.Type type)
+		{
+			var elementType = ReflectHelper.GetCollectionElementType(type);
+			if (elementType == null)
+				throw new NotSupportedException("Unknown collection type " + type.FullName);
+			return elementType;
+	}
 	}
 }
