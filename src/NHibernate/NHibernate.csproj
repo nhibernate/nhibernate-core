@@ -1246,7 +1246,6 @@
     </Compile>
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
-    <Compile Include="Collection\PersistentIdentifierBag.cs" />
     <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />
