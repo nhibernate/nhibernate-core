@@ -20,6 +20,7 @@ namespace NHibernate.Linq.Functions
 			RegisterGenerator(new GenericDictionaryContainsKeyRuntimeHqlGenerator());
 			RegisterGenerator(new ToStringRuntimeMethodHqlGenerator());
 			RegisterGenerator(new LikeGenerator());
+			RegisterGenerator(new GetValueOrDefaultGenerator());
 
 			RegisterGenerator(new CompareGenerator());
 			this.Merge(new CompareGenerator());
