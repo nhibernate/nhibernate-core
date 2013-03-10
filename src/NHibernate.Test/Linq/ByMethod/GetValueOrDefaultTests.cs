@@ -25,5 +25,15 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.AreEqual(830, orders.Count);
 		}
+
+		[Test]
+		public void GetValueOrDefaultWithSingleArgumentInWhere()
+		{
+			var orders = db.Orders
+						   .Where(x => x.Freight.GetValueOrDefault() > 0)
+						   .ToList();
+
+			Assert.AreEqual(830, orders.Count);
+		}
 	}
 }
