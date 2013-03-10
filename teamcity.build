@@ -23,8 +23,10 @@
 
 	<target name="verify-test-results">
 		<if test="${property::exists('NHibernate.Test.IgnoreFail')}">
-			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
+			<!-- Process the current results first, so that these will be available in build artifacts even
+				 if the last-result files is missing. -->
 			<property name="teamcity.current.result" value="${testResult::StripTimings(testresults.dir + '/NHibernate.Test.dll-results.xml', 'NHibernate.Test.current-results.xml')}" />
+			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
 			<property name="teamcity.report" value="${testResult::CompareResults(teamcity.current.result, teamcity.last.result)}" />
 		</if>
 	</target>
