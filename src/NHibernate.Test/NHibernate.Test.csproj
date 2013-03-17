@@ -502,6 +502,7 @@
     <Compile Include="Linq\ByMethod\CastTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
+    <Compile Include="Linq\ByMethod\GetValueOrDefaultTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />

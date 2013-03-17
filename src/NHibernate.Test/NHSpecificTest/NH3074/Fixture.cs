@@ -35,7 +35,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3074
 			}
 		}
 
-		[Test, Ignore("Not fixed yet")]
+		[Test]
+		[Ignore("Fails on at least Oracle and PostgreSQL. See NH-3074 and NH-2408.")]
 		public void HqlCanSetLockMode()
 		{
 			using (var s = OpenSession())
