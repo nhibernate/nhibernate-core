@@ -3,15 +3,15 @@ Build 3.3.3.GA
 
 BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
         was flawed - no matter where in the query Take() was placed it was
-		always applied as if it had been placed at the end. 3.3.3 fixes this,
-	    so that Take() now correctly follows the .Net semantics. That is, in
-		3.3.3, the following queries might now give different results:
-		
-		    session.Query<Foo>.OrderBy(...).Take(5).Where(...);
+        always applied as if it had been placed at the end. 3.3.3 fixes this,
+        so that Take() now correctly follows the .Net semantics. That is, in
+        3.3.3, the following queries might now give different results:
+
+            session.Query<Foo>.OrderBy(...).Take(5).Where(...);
             session.Query<Foo>.Where(...).OrderBy(...).Take(5);
 
-	    Starting with 3.3.3, the first query will generate a subquery to correctly
-		apply the row limit before the where-clause.
+        Starting with 3.3.3, the first query will generate a subquery to correctly
+        apply the row limit before the where-clause.
 
 ** Bug
     * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
