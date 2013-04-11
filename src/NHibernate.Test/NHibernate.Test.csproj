@@ -513,6 +513,7 @@
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\LoggingTests.cs" />
+    <Compile Include="Linq\QueryLock.cs" />
     <Compile Include="Linq\QueryTimeoutTests.cs" />
     <Compile Include="Linq\JoinTests.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
