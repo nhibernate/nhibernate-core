@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using NHibernate.Event;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -24,6 +25,8 @@ namespace NHibernate.Engine.Query
     public interface IQueryExpressionPlan : IQueryPlan
     {
         IQueryExpression QueryExpression { get; }
+
+        IQueryExpressionPlan Copy(IQueryExpression newExpression);
     }
 
 	/// <summary> Defines a query execution plan for an HQL query (or filter). </summary>
@@ -40,6 +43,16 @@ namespace NHibernate.Engine.Query
             _sourceQuery = sourceQuery;
 
             FinaliseQueryPlan();
+        }
+
+        protected HQLQueryPlan(HQLQueryPlan source)
+        {
+            Translators = source.Translators;
+            _sourceQuery = source._sourceQuery;
+            QuerySpaces = source.QuerySpaces;
+            ParameterMetadata = source.ParameterMetadata;
+            ReturnMetadata = source.ReturnMetadata;
+            SqlStrings = source.SqlStrings;
         }
 
 	    public ISet<string> QuerySpaces

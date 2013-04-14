@@ -83,8 +83,15 @@ namespace NHibernate.Engine.Query
 					// for cases when we have list parameters in query, like @p1.Contains(...),
 					// it does, and then it uses parameters from first try. 
 					//TODO: cache only required parts of QueryExpression
-					planExpression._expression = expression._expression;
-					planExpression._constantToParameterMap = expression._constantToParameterMap;
+                    //planExpression._expression = expression._expression;
+                    //planExpression._constantToParameterMap = expression._constantToParameterMap;
+
+
+                    //NH-3436
+                    // We have to return new instance plan with it's own query expression
+                    // because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
+                    expression.CopyExpressionTranslation(planExpression);
+                    plan = plan.Copy(expression);
 				}
 			}
 

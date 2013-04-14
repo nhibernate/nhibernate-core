@@ -70,5 +70,13 @@ namespace NHibernate.Linq
 			
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
+
+	    public void CopyExpressionTranslation(NhLinqExpression other)
+	    {
+	        if (other == null) throw new ArgumentNullException("other");
+
+	        ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
+            ParameterDescriptors = other.ParameterDescriptors;
+	    }
 	}
 }
