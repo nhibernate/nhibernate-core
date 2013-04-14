@@ -725,6 +725,7 @@
     <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3436\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />

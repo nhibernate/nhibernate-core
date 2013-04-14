@@ -18,9 +18,23 @@ namespace NHibernate.Engine.Query
 			this.collectionRole = collectionRole;
 		}
 
+        private FilterQueryPlan(FilterQueryPlan source, IQueryExpression newQueryExpression)
+            : base(source, newQueryExpression)
+        {
+            collectionRole = source.collectionRole;
+
+        }
+
 		public string CollectionRole
 		{
 			get { return collectionRole; }
 		}
+
+        public override IQueryExpressionPlan Copy(IQueryExpression queryExpression)
+        {
+            if (queryExpression == null) throw new ArgumentNullException("queryExpression");
+
+            return new FilterQueryPlan(this, queryExpression);
+        }
 	}
 }
