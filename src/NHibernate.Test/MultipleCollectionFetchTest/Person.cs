@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
 	public class Person
 	{
 		private int id;
-		private ICollection children;
-		private ICollection friends;
+		private ICollection<Person> children;
+		private ICollection<Person> friends;
 		private Person parent;
 
 		public virtual int Id
@@ -16,13 +16,13 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			set { id = value; }
 		}
 
-		public virtual ICollection Children
+		public virtual ICollection<Person> Children
 		{
 			get { return children; }
 			set { children = value; }
 		}
 
-		public virtual ICollection Friends
+		public virtual ICollection<Person> Friends
 		{
 			get { return friends; }
 			set { friends = value; }

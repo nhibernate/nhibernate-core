@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses.Expressions;
@@ -8,67 +7,56 @@ namespace NHibernate.Linq.NestedSelects
 {
 	class SelectClauseRewriter : ExpressionTreeVisitor
 	{
-		static readonly Expression<Func<Tuple, bool>> WherePredicate = t => !ReferenceEquals(null, t.Items[0]);
+		private readonly Dictionary<Expression, Expression> _dictionary;
 
 		readonly ICollection<ExpressionHolder> expressions;
-		readonly ParameterExpression parameter;
-		readonly ParameterExpression values;
+		readonly Expression parameter;
 		readonly int tuple;
-		int position;
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions) 
-			: this(parameter, values, expressions, 0)
+		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, Dictionary<Expression, Expression> dictionary) 
+			: this(parameter, expressions, expression, 0, dictionary)
 		{
 		}
 
-		public SelectClauseRewriter(ParameterExpression parameter, ParameterExpression values, ICollection<ExpressionHolder> expressions, int tuple)
+		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, int tuple, Dictionary<Expression, Expression> dictionary)
 		{
 			this.expressions = expressions;
 			this.parameter = parameter;
-			this.values = values;
 			this.tuple = tuple;
-			this.expressions.Add(new ExpressionHolder {Tuple = tuple}); //ID placeholder
+			this.expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple }); //ID placeholder
+			_dictionary = dictionary;
+		}
+
+		public override Expression VisitExpression(Expression expression)
+		{
+			if (expression == null)
+				return null;
+			Expression replacement;
+			if (_dictionary.TryGetValue(expression, out replacement))
+				return replacement;
+
+			return base.VisitExpression(expression);
 		}
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			expressions.Add(new ExpressionHolder {Expression = expression, Tuple = tuple});
+			return AddAndConvertExpression(expression);
+		}
+
+		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		{
+			return AddAndConvertExpression(expression);
+		}
+
+		private Expression AddAndConvertExpression(Expression expression)
+		{
+			expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple });
 
 			return Expression.Convert(
 				Expression.ArrayIndex(
-					Expression.MakeMemberAccess(parameter,
-												Tuple.Type.GetField("Items")),
-					Expression.Constant(++position)),
+					Expression.Property(parameter, Tuple.ItemsProperty),
+					Expression.Constant(expressions.Count - 1)),
 				expression.Type);
-		}
-
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
-		{
-			var selector = expression.QueryModel.SelectClause.Selector;
-
-			var value = Expression.Parameter(typeof (Tuple), "value");
-
-			var rewriter = new SelectClauseRewriter(value, values, expressions, tuple + 1);
-
-			var resultSelector = rewriter.VisitExpression(selector);
-
-			var where = EnumerableHelper.GetMethod("Where",
-												   new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-												   new[] {Tuple.Type});
-
-			var select = EnumerableHelper.GetMethod("Select",
-													new[] {typeof (IEnumerable<>), typeof (Func<,>)},
-													new[] {Tuple.Type, selector.Type});
-
-			var toList = EnumerableHelper.GetMethod("ToList",
-													new[] {typeof (IEnumerable<>)},
-													new[] {selector.Type});
-
-			return Expression.Call(Expression.Call(toList,
-												   Expression.Call(select,
-																   Expression.Call(where, values, WherePredicate),
-																   Expression.Lambda(resultSelector, value))),
-								   "AsReadOnly", System.Type.EmptyTypes);
 		}
 	}
 }

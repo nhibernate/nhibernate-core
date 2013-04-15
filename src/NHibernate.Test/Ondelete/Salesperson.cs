@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Ondelete
 {
 	public class Salesperson : Employee
 	{
-		private ISet<Person> customers = new HashedSet<Person>();
+		private ISet<Person> customers = new HashSet<Person>();
 
 		public virtual ISet<Person> Customers
 		{

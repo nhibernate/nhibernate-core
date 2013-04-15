@@ -57,6 +57,11 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
+		internal static string Join<T>(string separator, IEnumerable<T> objects)
+		{
+			return string.Join(separator, objects);
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

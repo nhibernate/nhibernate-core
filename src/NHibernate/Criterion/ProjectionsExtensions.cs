@@ -328,7 +328,7 @@ namespace NHibernate.Criterion
 		/// Project SQL function coalesce()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
-		public static Nullable<T> Coalesce<T>(this Nullable<T> objectProperty, T replaceValueIfIsNull) where T : struct
+		public static T? Coalesce<T>(this T? objectProperty, T replaceValueIfIsNull) where T : struct
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}

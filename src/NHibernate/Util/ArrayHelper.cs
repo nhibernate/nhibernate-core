@@ -22,17 +22,8 @@ namespace NHibernate.Util
 
 		public static bool IsAllNegative(int[] array)
 		{
-			for (int i = 0; i < array.Length; i++)
-			{
-				if (array[i] >= 0)
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return array.All(t => t < 0);
 		}
-
 
 		public static T[] Fill<T>(T value, int length)
 		{
@@ -48,7 +39,6 @@ namespace NHibernate.Util
 				array[i] = value;
 			}
 		}
-
 
 		public static T[] Slice<T>(T[] strings, int begin, int length)
 		{
@@ -81,33 +71,6 @@ namespace NHibernate.Util
 			return Array.IndexOf(array, true) < 0;
 		}
 
-		public static string[][] To2DStringArray(ICollection coll)
-		{
-			var result = new string[coll.Count][];
-			int i = 0;
-			foreach (object row in coll)
-			{
-				var rowAsCollection = row as ICollection;
-				if (rowAsCollection != null)
-				{
-					result[i] = new string[rowAsCollection.Count];
-					int j = 0;
-					foreach (object cell in rowAsCollection)
-					{
-						result[i][j++] = cell == null ? null : (string)cell;
-					}
-				}
-				else
-				{
-					result[i] = new string[1];
-					result[i][0] = row == null ? null : (string)row;
-				}
-				i++;
-			}
-
-			return result;
-		}
-
 		public static string ToString(object[] array)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -136,16 +99,15 @@ namespace NHibernate.Util
 				{
 					if (addNull == null)
 					{
-						if (to.GetType().IsGenericType &&
-							to.GetType().GetGenericTypeDefinition() == typeof(List<>) &&
-							to.GetType().GetGenericArguments()[0].IsGenericType &&
-							to.GetType().GetGenericArguments()[0].GetGenericTypeDefinition() == typeof(Nullable<>))
+						var toType = to.GetType();
+						if (toType.IsGenericType &&
+							toType.GetGenericTypeDefinition() == typeof(List<>) &&
+							toType.GetGenericArguments()[0].IsNullable())
 						{
-							MethodInfo addMethod = to.GetType().GetMethod("Add");
-							System.Linq.Expressions.MethodCallExpression addMethodCall =
-								System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
+							MethodInfo addMethod = toType.GetMethod("Add");
+							var addMethodCall =	System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Constant(to),
 																		addMethod,
-																		System.Linq.Expressions.Expression.Constant(null, to.GetType().GetGenericArguments()[0]));
+																		System.Linq.Expressions.Expression.Constant(null, toType.GetGenericArguments()[0]));
 							System.Linq.Expressions.LambdaExpression addLambda =
 								System.Linq.Expressions.Expression.Lambda(addMethodCall);
 
@@ -162,16 +124,6 @@ namespace NHibernate.Util
 				{
 					to.Add(obj);
 				}
-			}
-		}
-
-		// NH-specific
-		public static void AddAll(IDictionary to, IDictionary from)
-		{
-			foreach (DictionaryEntry de in from)
-			{
-				// we want to override the values from to if they exists
-				to[de.Key] = de.Value;
 			}
 		}
 
@@ -234,38 +186,6 @@ namespace NHibernate.Util
 			}
 		}
 
-
-		private static void ExpandWithNulls(IList list, int requiredLength)
-		{
-			while (list.Count < requiredLength)
-			{
-				list.Add(null);
-			}
-		}
-
-		/// <summary>
-		/// Sets <paramref name="list" /> item at position <paramref name="index" /> to <paramref name="value" />.
-		/// Expands the list by adding <see langword="null" /> values, if needed.
-		/// </summary>
-		public static void SafeSetValue(IList list, int index, object value)
-		{
-			ExpandWithNulls(list, index + 1);
-			list[index] = value;
-		}
-
-		public static string[] ToStringArray(ICollection coll)
-		{
-			return (string[])ToArray(coll, typeof(string));
-		}
-
-
-		public static Array ToArray(ICollection coll, System.Type elementType)
-		{
-			Array result = Array.CreateInstance(elementType, coll.Count);
-			coll.CopyTo(result, 0);
-			return result;
-		}
-
 		public static int CountTrue(bool[] array)
 		{
 			return array.Count(t => t);
@@ -273,17 +193,19 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
-			if (a.Length != b.Length)
-			{
+			if (a == b)
+				return true;
+
+			if (a == null || b == null)
 				return false;
-			}
-			
+
+			if (a.Length != b.Length)
+				return false;
+
 			for (int i = 0; i < a.Length; i++)
 			{
 				if (!Equals(a[i], b[i]))
-				{
 					return false;
-				}
 			}
 
 			return true;
@@ -291,19 +213,22 @@ namespace NHibernate.Util
 
 		public static bool ArrayEquals(byte[] a, byte[] b)
 		{
-			if (a.Length != b.Length)
-			{
+			if (a == b)
+				return true;
+
+			if (a == null || b == null)
 				return false;
-			}
+
+			if (a.Length != b.Length)
+				return false;
 
 			int i = 0;
 			int len = a.Length;
 			while (i < len)
 			{
 				if (a[i] != b[i])
-				{
 					return false;
-				}
+
 				i++;
 			}
 			return true;

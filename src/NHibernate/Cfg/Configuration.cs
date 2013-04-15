@@ -11,7 +11,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Iesi.Collections.Generic;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
@@ -184,7 +183,7 @@ namespace NHibernate.Cfg
 			mappingsQueue = new MappingsQueue();
 			eventListeners = new EventListeners();
 			typeDefs = new Dictionary<string, TypeDef>();
-			extendsQueue = new HashedSet<ExtendsQueueEntry>();
+			extendsQueue = new HashSet<ExtendsQueueEntry>();
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
@@ -970,7 +969,7 @@ namespace NHibernate.Cfg
 
 		private void ValidateFilterDefs()
 		{
-			var filterNames = new HashedSet<string>();
+			var filterNames = new HashSet<string>();
 			foreach (var filterDefinition in FilterDefinitions)
 			{
 				if (filterDefinition.Value == null)
@@ -997,12 +996,12 @@ namespace NHibernate.Cfg
 				filterNames.Clear();
 				foreach (var persistentClass in ClassMappings)
 				{
-					filterNames.AddAll(persistentClass.FilterMap.Keys);
+					filterNames.UnionWith(persistentClass.FilterMap.Keys);
 				}
 				foreach (var collectionMapping in CollectionMappings)
 				{
-					filterNames.AddAll(collectionMapping.FilterMap.Keys);
-					filterNames.AddAll(collectionMapping.ManyToManyFilterMap.Keys);
+					filterNames.UnionWith(collectionMapping.FilterMap.Keys);
+					filterNames.UnionWith(collectionMapping.ManyToManyFilterMap.Keys);
 				}
 				foreach (var filterName in FilterDefinitions.Keys)
 				{
@@ -1028,7 +1027,7 @@ namespace NHibernate.Cfg
 		private void ValidateEntities()
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
-			HashedSet<string> allProxyErrors = null;
+			HashSet<string> allProxyErrors = null;
 			IProxyValidator pvalidator = Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 
 			foreach (var clazz in classes.Values)
@@ -1042,11 +1041,11 @@ namespace NHibernate.Cfg
 					{
 						if (allProxyErrors == null)
 						{
-							allProxyErrors = new HashedSet<string>(errors);
+							allProxyErrors = new HashSet<string>(errors);
 						}
 						else
 						{
-							allProxyErrors.AddAll(errors);
+							allProxyErrors.UnionWith(errors);
 						}
 					}
 				}
@@ -1120,7 +1119,7 @@ namespace NHibernate.Cfg
 
 			log.Info("processing foreign key constraints");
 
-			ISet<ForeignKey> done = new HashedSet<ForeignKey>();
+			ISet<ForeignKey> done = new HashSet<ForeignKey>();
 			foreach (var table in TableMappings)
 			{
 				SecondPassCompileForeignKeys(table, done);

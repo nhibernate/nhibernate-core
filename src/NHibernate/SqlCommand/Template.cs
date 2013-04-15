@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NHibernate.Dialect.Function;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Util;
 using System.Collections.Generic;
 

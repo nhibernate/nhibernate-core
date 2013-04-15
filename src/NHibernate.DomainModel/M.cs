@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -14,7 +13,7 @@ namespace NHibernate.DomainModel
 
 		public M()
 		{
-			children = new HashedSet<N>();
+			children = new HashSet<N>();
 		}
 
 		public long UniqueSequence

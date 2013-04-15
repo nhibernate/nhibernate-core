@@ -18,7 +18,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                                                                                            out parameterName);
                     if (parameterName != null)
                     {
-                        tree.AddAdditionalCriteria((q, p) => q.SetCacheMode((CacheMode) p[parameterName.Name].First));
+                        tree.AddAdditionalCriteria((q, p) => q.SetCacheMode((CacheMode) p[parameterName.Name].Item1));
                     }
                     else
                     {
@@ -30,7 +30,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
                                                                                            out parameterName);
                     if (parameterName != null)
                     {
-                        tree.AddAdditionalCriteria((q, p) => q.SetCacheRegion((string) p[parameterName.Name].First));
+                        tree.AddAdditionalCriteria((q, p) => q.SetCacheRegion((string) p[parameterName.Name].Item1));
                     }
                     else
                     {

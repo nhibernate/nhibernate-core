@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
@@ -45,35 +47,14 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
+		[Obsolete("Please use overload with IQueryExpression")]
 		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			var key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
-			var plan = (IQueryPlan)planCache[key];
-
-			if (plan == null)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
-				}
-				plan = new HQLStringQueryPlan(queryString, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
-			}
-			else
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("located HQL query plan in cache (" + queryString + ")");
-				}
-			}
-
-			return plan;
+			return GetHQLQueryPlan(queryString.ToQueryExpression(), shallow, enabledFilters);
 		}
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			string expressionStr = queryExpression.Key;
-
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
 			var plan = (IQueryExpressionPlan)planCache[key];
 
@@ -81,22 +62,34 @@ namespace NHibernate.Engine.Query
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
 				}
-				plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
+				}
+				var planExpression = plan.QueryExpression as NhLinqExpression;
+				var expression = queryExpression as NhLinqExpression;
+				if (planExpression != null && expression != null)
+				{
+					//NH-3413
+					//Here we have to use original expression.
+					//In most cases NH do not translate expression in second time, but 
+					// for cases when we have list parameters in query, like @p1.Contains(...),
+					// it does, and then it uses parameters from first try. 
+					//TODO: cache only required parts of QueryExpression
+					planExpression._expression = expression._expression;
+					planExpression._constantToParameterMap = expression._constantToParameterMap;
 				}
 			}
 
 			return plan;
 		}
-
 
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
@@ -110,7 +103,7 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
 							  + filterString + ")");
 				}
-				plan = new FilterQueryPlan(filterString, collectionRole, shallow, enabledFilters, factory);
+				plan = new FilterQueryPlan(filterString.ToQueryExpression(), collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else

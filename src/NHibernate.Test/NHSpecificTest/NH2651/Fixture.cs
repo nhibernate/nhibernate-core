@@ -37,6 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2651
 		[Test]
 		public void TestConditionalProjectionWithConstantAndLikeExpression()
 		{
+			// Fails on Firebird since it's unable to determine the type of the
+			// case expression from the parameters. See http://tracker.firebirdsql.org/browse/CORE-1821.
+			// I don't want to mess up the test with cast statements that the DB really shouldn't need
+			// (or the NHibernate dialect should add them just when needed).
+
 			using (ISession session = this.OpenSession())
 			{
 				var projection = (Projections.Conditional(Restrictions.Eq("SampleData", 1),

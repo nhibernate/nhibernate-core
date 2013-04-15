@@ -199,6 +199,12 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
+		protected override Expression VisitQuerySourceReferenceExpression(Remotion.Linq.Clauses.Expressions.QuerySourceReferenceExpression expression)
+		{
+			_string.Append(expression.ReferencedQuerySource.ItemName);
+			return expression;
+		}
+
 		private void VisitMethod(MethodInfo methodInfo)
 		{
 			_string.Append(methodInfo.Name);

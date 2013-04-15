@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
@@ -9,7 +8,7 @@ namespace NHibernate.Test.SubclassFilterTest
 		private string title;
 		private string department;
 		private Employee manager;
-		private ISet<Employee> minions = new HashedSet<Employee>();
+		private ISet<Employee> minions = new HashSet<Employee>();
 
 		public Employee()
 		{

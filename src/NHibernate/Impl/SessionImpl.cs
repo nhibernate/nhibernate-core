@@ -24,7 +24,6 @@ using NHibernate.Proxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Impl
 {
@@ -134,10 +133,10 @@ namespace NHibernate.Impl
 		/// has complete control and what is serialized and those attributes are ignored.  However,
 		/// this method should be in synch with the attributes for easy readability.
 		/// </remarks>
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags = SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -601,46 +600,13 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return List(query, new QueryParameters(types, values));
+				return List(query.ToQueryExpression(), new QueryParameters(types, values));
 			}
 		}
 
 		public override void CloseSessionFromDistributedTransaction()
 		{
 			Dispose(true);
-		}
-
-		public override void List(string query, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
-				AutoFlushIfRequired(plan.QuerySpaces);
-
-				bool success = false;
-				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-				try
-				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					dontFlushFromFind--;
-					AfterOperation(success);
-				}
-			}
 		}
 
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
@@ -676,16 +642,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
-				AutoFlushIfRequired(plan.QuerySpaces);
-				return plan.Translators;
-			}
-		}
-
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -696,13 +652,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
+		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -717,13 +673,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IEnumerable Enumerable(string query, QueryParameters queryParameters)
+		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, true);
+				var plan = GetHQLQueryPlan(queryExpression, true);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -847,15 +803,13 @@ namespace NHibernate.Impl
 					{
 						throw new QueryException("The collection was unreferenced");
 					}
-					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
-																	 EnabledFilters);
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 				}
 				else
 				{
 					// otherwise, we only need to flush if there are in-memory changes
 					// to the queried tables
-					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow,
-																	 EnabledFilters);
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
 					if (AutoFlushIfRequired(plan.QuerySpaces))
 					{
 						// might need to run a different filter entirely after the flush
@@ -868,8 +822,7 @@ namespace NHibernate.Impl
 							{
 								throw new QueryException("The collection was dereferenced");
 							}
-							plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
-																			 EnabledFilters);
+							plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 						}
 					}
 				}
@@ -982,17 +935,7 @@ namespace NHibernate.Impl
 				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
 			}
 		}
-
-		/// <summary> Cascade copy an entity instance</summary>
-		[Obsolete("Use Merge(string, object, IDictionary) instead")]
-		public void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				FireSaveOrUpdateCopy(copiedAlready, new MergeEvent(entityName, obj, this));
-			}
-		}
-
+		
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
@@ -1927,7 +1870,7 @@ namespace NHibernate.Impl
 				int size = implementors.Length;
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
-				ISet<string> spaces = new HashedSet<string>();
+				ISet<string> spaces = new HashSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{
@@ -1939,7 +1882,7 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.AddAll(loaders[i].QuerySpaces);
+					spaces.UnionWith(loaders[i].QuerySpaces);
 				}
 
 				AutoFlushIfRequired(spaces);
@@ -2095,24 +2038,6 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 
 				Batcher.CancelLastQuery();
-			}
-		}
-
-		[Obsolete("Use Merge(object) instead")]
-		public object SaveOrUpdateCopy(object obj)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
-			}
-		}
-
-		[Obsolete("No direct replacement. Use Merge instead.")]
-		public object SaveOrUpdateCopy(object obj, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
 			}
 		}
 
@@ -2618,33 +2543,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void FireSaveOrUpdateCopy(IDictionary copiedAlready, MergeEvent @event)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
-				{
-					saveOrUpdateCopyEventListener[i].OnMerge(@event, copiedAlready);
-				}
-			}
-		}
-
-		private object FireSaveOrUpdateCopy(MergeEvent @event)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
-				{
-					saveOrUpdateCopyEventListener[i].OnMerge(@event);
-				}
-				return @event.Result;
-			}
-		}
-
 		private void FireUpdate(SaveOrUpdateEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -2683,13 +2581,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(queryExpression, false);
 				AutoFlushIfRequired(plan.QuerySpaces);
 
 				bool success = false;
@@ -2706,7 +2604,6 @@ namespace NHibernate.Impl
 				return result;
 			}
 		}
-
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{

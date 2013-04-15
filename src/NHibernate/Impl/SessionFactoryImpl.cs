@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Linq;
-using Iesi.Collections.Generic;
 
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -17,6 +16,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -282,7 +282,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);
@@ -294,7 +294,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);
@@ -586,7 +586,7 @@ namespace NHibernate.Impl
 		public IType[] GetReturnTypes(String queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnTypes;
 		}
 
@@ -594,7 +594,7 @@ namespace NHibernate.Impl
 		public string[] GetReturnAliases(string queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnAliases;
 		}
 
@@ -735,7 +735,7 @@ namespace NHibernate.Impl
 			{
 				return false;
 			}
-			if (entityClass.Equals(implementorClass))
+			if (entityClass == implementorClass)
 			{
 				// It is possible to have multiple mappings for the same entity class, but with different entity names.
 				// When querying for a specific entity name, we should only return entities for the requested entity name
@@ -1142,7 +1142,7 @@ namespace NHibernate.Impl
 
 			// Check named HQL queries
 			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
-			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
+			foreach (var entry in namedQueries)
 			{
 				string queryName = entry.Key;
 				NamedQueryDefinition qd = entry.Value;
@@ -1151,7 +1151,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("Checking named query: " + queryName);
 					//TODO: BUG! this currently fails for named queries for non-POJO entities
-					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>());
 				}
 				catch (QueryException e)
 				{
@@ -1230,8 +1230,6 @@ namespace NHibernate.Impl
 					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
-				case "managed_web":
-					return new ManagedWebSessionContext(this);
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
 			}

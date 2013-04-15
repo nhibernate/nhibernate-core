@@ -131,7 +131,7 @@ namespace NHibernate.Id
 			{
 				log.Error("could not get increment value", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not fetch initial value for increment generator");
+												 "could not fetch initial value for increment generator");
 			}
 		}
 	}

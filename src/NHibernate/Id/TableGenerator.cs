@@ -25,7 +25,7 @@ namespace NHibernate.Id
 	/// <c>System.Int32</c>
 	/// </p>
 	/// <p>
-	/// The hi value MUST be fetched in a seperate transaction to the <c>ISession</c>
+	/// The hi value MUST be fetched in a separate transaction to the <c>ISession</c>
 	/// transaction so the generator must be able to obtain a new connection and commit it.
 	/// Hence this implementation may not be used when the user is supplying connections.
 	/// </p>
@@ -178,10 +178,10 @@ namespace NHibernate.Id
 			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
 			// defaulting <id>'s with Int32 types at.
 			return new[]
-			       	{
-			       		"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
-			       		"insert into " + tableName + " values ( 1 )"
-			       	};
+					{
+						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
+						"insert into " + tableName + " values ( 1 )"
+					};
 		}
 
 		/// <summary>
@@ -210,7 +210,7 @@ namespace NHibernate.Id
 		#endregion
 
 		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn,
-		                                                  IDbTransaction transaction)
+														  IDbTransaction transaction)
 		{
 			long result;
 			int rows;
@@ -260,7 +260,7 @@ namespace NHibernate.Id
 				}
 
 				IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql,
-				                                                                           parameterTypes);
+																						   parameterTypes);
 				ups.Connection = conn;
 				ups.Transaction = transaction;
 

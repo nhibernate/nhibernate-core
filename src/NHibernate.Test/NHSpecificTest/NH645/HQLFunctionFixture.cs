@@ -4,22 +4,11 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Hql.Classic;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH645
 {
-	[TestFixture]
-	public class HqlFunctionWithClassicParser : HQLFunctionFixtureBase
-	{
-		protected override void Configure(Configuration configuration)
-		{
-			base.Configure(configuration);
-			configuration.SetProperty(Environment.QueryTranslator, typeof(ClassicQueryTranslatorFactory).AssemblyQualifiedName);
-		}
-	}
-
 	[TestFixture]
 	public class HqlFunctionWithAstHqlParser : HQLFunctionFixtureBase
 	{
@@ -66,16 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 				}
 				catch (Exception ex)
 				{
-					if (IsClassicParser)
-					{
-						if (ex is QueryException)
+					if (ex.GetType().FullName == "Antlr.Runtime.Tree.RewriteEmptyStreamException" || ex is InvalidCastException)
 							Assert.Fail("The parser think that 'freetext' is a boolean function");
-					}
-					else //Hql-Parser
-					{
-						if (ex.GetType().FullName == "Antlr.Runtime.Tree.RewriteEmptyStreamException" || ex is InvalidCastException)
-							Assert.Fail("The parser think that 'freetext' is a boolean function");
-					}
 				}
 		}
 

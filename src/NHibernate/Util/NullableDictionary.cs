@@ -8,7 +8,17 @@ namespace NHibernate.Util
 	{
 		private TValue _nullValue;
 		private bool _gotNullValue;
-		private readonly Dictionary<TKey, TValue> _dict = new Dictionary<TKey, TValue>();
+		private readonly Dictionary<TKey, TValue> _dict;
+
+		public NullableDictionary()
+		{
+			_dict = new Dictionary<TKey, TValue>();
+		}
+
+		public NullableDictionary(IEqualityComparer<TKey> comparer)
+		{
+			_dict = new Dictionary<TKey, TValue>(comparer);
+		}
 
 		public bool ContainsKey(TKey key)
 		{
@@ -181,15 +191,11 @@ namespace NHibernate.Util
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			TValue val = default(TValue);
+			TValue val;
 
 			if (TryGetValue(item.Key, out val))
 			{
-				if (Equals(item.Value, val))
-				{
-					return true;
-				}
-				return false;
+				return Equals(item.Value, val);
 			}
 			else
 			{

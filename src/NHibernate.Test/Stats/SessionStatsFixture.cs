@@ -1,5 +1,5 @@
 using System.Collections;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Stat;
 using NUnit.Framework;
 
@@ -26,7 +26,7 @@ namespace NHibernate.Test.Stats
 			europe.Name="Europe";
 			Country france = new Country();
 			france.Name="France";
-			europe.Countries= new HashedSet<Country>();
+			europe.Countries= new HashSet<Country>();
 			europe.Countries.Add(france);
 			s.Save(france);
 			s.Save(europe);

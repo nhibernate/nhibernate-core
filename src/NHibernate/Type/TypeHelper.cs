@@ -216,9 +216,9 @@ namespace NHibernate.Type
 		}
 		
 		/// <summary>
-	 	/// <para>Determine if any of the given field values are dirty, returning an array containing
-	 	/// indices of the dirty fields.</para>
-	 	/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// <para>Determine if any of the given field values are dirty, returning an array containing
+		/// indices of the dirty fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
 		/// </summary>
 		/// <param name="properties">The property definitions</param>
 		/// <param name="currentState">The current state of the entity</param>
@@ -240,11 +240,7 @@ namespace NHibernate.Type
 
 			for (int i = 0; i < span; i++)
 			{
-				bool dirty =
-					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
-					properties[i].IsDirtyCheckable(anyUninitializedProperties)
-					&& properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
-
+				var dirty = Dirty(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i);
 				if (dirty)
 				{
 					if (results == null)
@@ -266,10 +262,20 @@ namespace NHibernate.Type
 			}
 		}
 
+		private static bool Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i)
+		{
+			if (Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]))
+				return false;
+			if (Equals(LazyPropertyInitializer.UnfetchedProperty, previousState[i]))
+				return true;
+			return properties[i].IsDirtyCheckable(anyUninitializedProperties) &&
+				   properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
+		}
+
 		/// <summary>
 		/// <para>Determine if any of the given field values are modified, returning an array containing
-	 	/// indices of the modified fields.</para>
-	 	/// <para>If it is determined that no fields are dirty, null is returned.</para>
+		/// indices of the modified fields.</para>
+		/// <para>If it is determined that no fields are dirty, null is returned.</para>
 		/// </summary>
 		/// <param name="properties">The property definitions</param>
 		/// <param name="currentState">The current state of the entity</param>

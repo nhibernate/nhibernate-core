@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel.Northwind.Entities
 {
@@ -13,7 +12,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
         public ProductCategory() 
         {
-            _products = new HashedSet<Product>();
+            _products = new HashSet<Product>();
         }
 
         public virtual int CategoryId

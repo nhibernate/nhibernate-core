@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
@@ -45,7 +44,7 @@ namespace NHibernate.Dialect
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
-		private readonly HashedSet<string> _sqlKeywords = new HashedSet<string>();
+		private readonly HashSet<string> _sqlKeywords = new HashSet<string>();
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
@@ -2062,7 +2061,7 @@ namespace NHibernate.Dialect
 			get { return _sqlFunctions; }
 		}
 
-		public HashedSet<string> Keywords
+		public HashSet<string> Keywords
 		{
 			get { return _sqlKeywords; }
 		}

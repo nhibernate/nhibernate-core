@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -34,6 +34,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\Tools\nunit\nunit-x86.exe</StartProgram>
     <StartArguments>NHibernate.Test.dll</StartArguments>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,15 +67,14 @@
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Antlr3.Runtime.dll</HintPath>
+      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\log4net.dll</HintPath>
+      <HintPath>..\..\lib\net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <SpecificVersion>False</SpecificVersion>
@@ -82,7 +82,7 @@
     </Reference>
     <Reference Include="SharpTestsEx.NUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8c60d8070630b1c1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\SharpTestsEx.NUnit.dll</HintPath>
+      <HintPath>..\..\lib\net\SharpTestsEx.NUnit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -94,7 +94,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Linq.Dynamic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\System.Linq.Dynamic.dll</HintPath>
+      <HintPath>..\..\lib\net\System.Linq.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
@@ -174,12 +174,6 @@
     <Compile Include="Component\Basic\OptionalComponent.cs" />
     <Compile Include="Component\Basic\Person.cs" />
     <Compile Include="Component\Basic\User.cs" />
-    <Compile Include="CompositeCollection\BaseClassA.cs" />
-    <Compile Include="CompositeCollection\BaseClassB.cs" />
-    <Compile Include="CompositeCollection\ChildClassA.cs" />
-    <Compile Include="CompositeCollection\ChildClassB.cs" />
-    <Compile Include="CompositeCollection\ChildColl.cs" />
-    <Compile Include="CompositeCollection\CompositeCollection.cs" />
     <Compile Include="CompositeId\ClassWithCompositeId.cs" />
     <Compile Include="CompositeId\ClassWithCompositeIdFixture.cs" />
     <Compile Include="CompositeId\CompositeIdFixture.cs" />
@@ -220,6 +214,7 @@
     <Compile Include="DialectTest\FunctionTests\SequenceSupportFixture.cs" />
     <Compile Include="DialectTest\Ingres9DialectFixture.cs" />
     <Compile Include="DialectTest\MsSql2012DialectFixture.cs" />
+    <Compile Include="DialectTest\LockHintAppenderFixture.cs" />
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
@@ -507,9 +502,12 @@
     <Compile Include="Linq\ByMethod\CastTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByHavingTests.cs" />
     <Compile Include="Linq\ByMethod\GroupByTests.cs" />
+    <Compile Include="Linq\ByMethod\GetValueOrDefaultTests.cs" />
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
+    <Compile Include="Linq\LoggingTests.cs" />
+    <Compile Include="Linq\QueryTimeoutTests.cs" />
     <Compile Include="Linq\JoinTests.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
     <Compile Include="Linq\MathTests.cs" />
@@ -547,16 +545,16 @@
     <Compile Include="MappingByCode\ConventionModelMapperTests\PropertyToFieldAccessorTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\SafePoidTests.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\VersionOnBaseClassIntegrationTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\AllPropertiesRegistrationTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\BagOfNestedComponentsWithParentTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithComponentsTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ComponentAsIdTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ComposedIdTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ClassMappingRegistrationTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\AllPropertiesRegistrationTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\BagOfNestedComponentsWithParentTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ClassWithComponentsTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ComponentAsIdTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ComposedIdTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\ClassMappingRegistrationTest.cs" />
     <Compile Include="MappingByCode\CustomizerHolderMergeTest.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SplitPropertiesRegistrationTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\BasicMappingOfSimpleClass.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ColumnsNamingConvetions.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\BasicMappingOfSimpleClass.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ColumnsNamingConvetions.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\ComponentMappingRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\JoinedSubclassSequenceRegistrationTests.cs" />
@@ -565,20 +563,20 @@
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\SubclassSequenceRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassMappingStrategyTests.cs" />
     <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\UnionSubclassSequenceRegistrationTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ComponentMappingRegistrationTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\JoinedSubclassMappingRegistration.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\ModelMapperAddMappingByTypeTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\SubclassMappingRegistration.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\ConformistMappingRegistrationTests\UnionSubclassMappingRegistrationTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\DynamicComponentMappingTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\IdBagMappingTest.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\NaturalIdTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\NestedComponetsTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\PoidTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\RootClassPropertiesSplitsTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\SubclassPropertiesSplitsTests.cs" />
-    <Compile Include="MappingByCode\ExpliticMappingTests\VersionTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\ComponentMappingRegistrationTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\JoinedSubclassMappingRegistration.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\ModelMapperAddMappingByTypeTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\SubclassMappingRegistration.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\UnionSubclassMappingRegistrationTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\DynamicComponentMappingTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\IdBagMappingTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\NaturalIdTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\NestedComponetsTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\PoidTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\RootClassPropertiesSplitsTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\SubclassPropertiesSplitsTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\ImportTests.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Cat.cs" />
@@ -672,6 +670,30 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2692\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2772\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2772\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3058\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3408\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2297\CustomCompositeUserType.cs" />
+    <Compile Include="NHSpecificTest\NH2297\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2297\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2297\InvalidCustomCompositeUserTypeBase.cs" />
+    <Compile Include="NHSpecificTest\NH2408\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2408\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3324\ChildEntity.cs" />
+    <Compile Include="NHSpecificTest\NH3324\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3324\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3374\Document.cs" />
+    <Compile Include="NHSpecificTest\NH3374\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2042\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2042\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\DateTimeOffsetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
     <Compile Include="NHSpecificTest\NH2469\Domain.cs" />
@@ -707,6 +729,7 @@
     <Compile Include="NHSpecificTest\NH3316\Entity.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
+    <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="NHSpecificTest\NH2955\Employee.cs" />
     <Compile Include="NHSpecificTest\NH2955\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3175\Fixture.cs" />
@@ -716,6 +739,13 @@
     <Compile Include="NHSpecificTest\NH3171\Model.cs" />
     <Compile Include="NHSpecificTest\NH3171\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3070\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3332\Culture.cs" />
+    <Compile Include="NHSpecificTest\NH3332\DataType.cs" />
+    <Compile Include="NHSpecificTest\NH3332\DataTypeDescription.cs" />
+    <Compile Include="NHSpecificTest\NH3332\MasterEntity.cs" />
+    <Compile Include="NHSpecificTest\NH3332\State.cs" />
+    <Compile Include="NHSpecificTest\NH3332\StateDescription.cs" />
+    <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="NHSpecificTest\NH2651\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
@@ -978,7 +1008,7 @@
     <Compile Include="NHSpecificTest\NH2662\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2662\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2673\Blog.cs" />
-    <Compile Include="NHSpecificTest\NH2673\CachingWithTrasformerTests.cs" />
+    <Compile Include="NHSpecificTest\NH2673\CachingWithTransformerTests.cs" />
     <Compile Include="NHSpecificTest\NH2691\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2691\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2693\Fixture.cs" />
@@ -1049,6 +1079,8 @@
     <Compile Include="NHSpecificTest\NH3138\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3153\Model.cs" />
     <Compile Include="NHSpecificTest\NH3153\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3105\Model.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3105\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -1062,6 +1094,10 @@
     <Compile Include="NHSpecificTest\NH3139\Product.cs" />
     <Compile Include="NHSpecificTest\NH2852\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2852\Person.cs" />
+    <Compile Include="NHSpecificTest\NH2985\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2985\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2860\ClassA.cs" />
+    <Compile Include="NHSpecificTest\NH2860\SampleTest.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -1127,6 +1163,7 @@
     <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
+    <Compile Include="UtilityTest\ArrayHelperTests.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
@@ -1592,7 +1629,7 @@
     <Compile Include="NHSpecificTest\Futures\FutureCriteriaFixture.cs" />
     <Compile Include="NHSpecificTest\Futures\Person.cs" />
     <Compile Include="NHSpecificTest\Dates\AllDates.cs" />
-    <Compile Include="NHSpecificTest\Dates\DateTimeOffSetFixture.cs" />
+    <Compile Include="NHSpecificTest\Dates\DateTimeOffsetFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Home.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\NH1274ExportExcludeFixture.cs" />
     <Compile Include="NHSpecificTest\NH1274ExportExclude\Person.cs" />
@@ -2346,9 +2383,6 @@
     <EmbeddedResource Include="TypedManyToOne\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CompositeCollection\BaseClassA.hbm.xml" />
-    <EmbeddedResource Include="CompositeCollection\BaseClassB.hbm.xml" />
-    <EmbeddedResource Include="CompositeCollection\Composite.xml" />
     <EmbeddedResource Include="CompositeId\ClassWithCompositeId.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Customer.hbm.xml" />
     <EmbeddedResource Include="JoinedSubclass\JoinedSubclass.Employee.hbm.xml" />
@@ -2396,7 +2430,9 @@
     <EmbeddedResource Include="TypesTest\StringClobClass.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Cascade\Circle\CascadeMergeToChildBeforeParent.hbm.xml" />
     <EmbeddedResource Include="Cascade\Circle\MultiPathCircleCascade.hbm.xml" />
     <EmbeddedResource Include="Cascade\MultiPathCascade.hbm.xml" />
@@ -2917,6 +2953,21 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2408\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsNames.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsTypes.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2042\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2860\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />

@@ -55,7 +55,7 @@ namespace NHibernate.Transform
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(string.Format("transformed: {0} rows to: {1} distinct results",
-				                        list.Count, result.Count));
+										list.Count, result.Count));
 			}
 			return result;
 		}

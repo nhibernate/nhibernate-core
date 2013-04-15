@@ -30,16 +30,16 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public IMethodBodyEmitter MethodBodyEmitter { get; private set; }
 
-		#region IProxyMethodBuilder Members
-
-		public void CreateProxiedMethod(FieldInfo field, MethodInfo method, TypeBuilder typeBuilder)
+		private static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
 			const MethodAttributes methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
-			                                          MethodAttributes.Virtual;
+													  MethodAttributes.Virtual;
 			ParameterInfo[] parameters = method.GetParameters();
 
-			MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes,
-																   CallingConventions.HasThis, method.ReturnType,
+			MethodBuilder methodBuilder = typeBuilder.DefineMethod(name,
+																   methodAttributes,
+																   CallingConventions.HasThis,
+																   method.ReturnType,
 																   parameters.Select(param => param.ParameterType).ToArray());
 
 			System.Type[] typeArgs = method.GetGenericArguments();
@@ -71,12 +71,15 @@ namespace NHibernate.Proxy.DynamicProxy
 					typeArgsBuilder[index].SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
-
-
-			Debug.Assert(MethodBodyEmitter != null);
-			MethodBodyEmitter.EmitMethodBody(methodBuilder, method, field);
+			return methodBuilder;
 		}
 
-		#endregion
+		public void CreateProxiedMethod(FieldInfo field, MethodInfo method, TypeBuilder typeBuilder)
+		{
+			var callbackMethod = GenerateMethodSignature(method.Name + "_callback", method, typeBuilder);
+			var proxyMethod = GenerateMethodSignature(method.Name, method, typeBuilder);
+
+			MethodBodyEmitter.EmitMethodBody(proxyMethod, callbackMethod, method, field);
+		}
 	}
 }

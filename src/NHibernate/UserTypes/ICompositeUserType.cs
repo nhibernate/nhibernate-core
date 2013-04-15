@@ -80,18 +80,18 @@ namespace NHibernate.UserTypes
 		/// <returns></returns>
 		object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
 
-	    /// <summary>
-	    /// Write an instance of the mapped class to a prepared statement.
-	    /// Implementors should handle possibility of null values.
-	    /// A multi-column type should be written to parameters starting from index.
-	    /// If a property is not settable, skip it and don't increment the index.
-	    /// </summary>
-	    /// <param name="cmd"></param>
-	    /// <param name="value"></param>
-	    /// <param name="index"></param>
-	    /// <param name="settable"></param>
-	    /// <param name="session"></param>
-	    void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session);
+		/// <summary>
+		/// Write an instance of the mapped class to a prepared statement.
+		/// Implementors should handle possibility of null values.
+		/// A multi-column type should be written to parameters starting from index.
+		/// If a property is not settable, skip it and don't increment the index.
+		/// </summary>
+		/// <param name="cmd"></param>
+		/// <param name="value"></param>
+		/// <param name="index"></param>
+		/// <param name="settable"></param>
+		/// <param name="session"></param>
+		void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.

@@ -7,7 +7,7 @@ namespace NHibernate.Driver
 	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FirebirdDriver"/> class.
+		/// Initializes a new instance of the <see cref="FirebirdClientDriver"/> class.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>FirebirdSql.Data.Firebird</c> assembly can not be loaded.

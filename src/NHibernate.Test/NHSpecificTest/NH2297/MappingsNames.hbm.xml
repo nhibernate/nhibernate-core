@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					namespace="NHibernate.Test.NHSpecificTest.NH2297"
+					assembly="NHibernate.Test">
+	
+	<class name="EntityNH2297" schema="test">
+				<id name="Id">
+						<generator class="increment"/>
+				</id>
+				<property name="CustomTypeValue" type="NHibernate.Test.NHSpecificTest.NH2297.InvalidNamesCustomCompositeUserType, NHibernate.Test"/>
+	</class>
+	
+</hibernate-mapping>

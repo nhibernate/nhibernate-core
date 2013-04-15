@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
@@ -40,8 +39,8 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		public Blog()
 		{
-			_posts = new HashedSet<Post>();
-			_users = new HashedSet<User>();
+			_posts = new HashSet<Post>();
+			_users = new HashSet<User>();
 		}
 
 		public Blog(string name)
@@ -106,7 +105,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		private Blog _blog;
 		private string post_title;
 		private IList _comments;
-		private ISet<Category> categories = new HashedSet<Category>();
+		private ISet<Category> categories = new HashSet<Category>();
 
 		public ISet<Category> Categories
 		{
@@ -177,7 +176,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		public User()
 		{
-			_blogs = new HashedSet<Blog>();
+			_blogs = new HashSet<Blog>();
 		}
 
 		public User(string name)
@@ -191,7 +190,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 	{
 		private int category_id;
 		private string name;
-		private ISet<Post> posts = new HashedSet<Post>();
+		private ISet<Post> posts = new HashSet<Post>();
 
 		public Category()
 		{

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			dc2.Name = "Different Child 2";
 			dc2.Child = child2;
 
-			parent.DifferentChildren = new HashedSet<DifferentChild>();
+			parent.DifferentChildren = new HashSet<DifferentChild>();
 			parent.DifferentChildren.Add(dc1);
 			parent.DifferentChildren.Add(dc2);
 			using (ISession session = OpenSession())

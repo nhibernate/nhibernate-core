@@ -106,7 +106,7 @@ namespace NHibernate.SqlCommand
 		protected SqlString ToWhereString(string columnName, string op)
 		{
 			if (string.IsNullOrEmpty(columnName)) return null;
-			return new SqlStringBuilder(3).Add(columnName).Add(op).AddParameter().ToSqlString();
+			return new SqlString(columnName, op, Parameter.Placeholder);
 		}
 
 	}

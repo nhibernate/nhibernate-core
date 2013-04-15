@@ -39,5 +39,25 @@ namespace NHibernate.Test.MappingTest
 			fk.ReferencedTable = primaryTable;
 			Assert.Throws<FKUnmatchingColumnsException>(() => fk.AlignColumns());
 		}
+
+		[Test]
+		public void ToStringDoesNotThrow()
+		{
+			var key = new ForeignKey
+				{
+				Table = new Table("TestTable"),
+				Name = "TestForeignKey"
+			};
+			key.AddColumn(new Column("TestColumn"));
+			key.AddReferencedColumns(new[] { new Column("ReferencedColumn") });
+
+			string toString = null;
+			Assert.DoesNotThrow(() =>
+				{
+					toString = key.ToString();
+				});
+
+			Assert.That(toString, Is.EqualTo("NHibernate.Mapping.ForeignKey(TestTableNHibernate.Mapping.Column(TestColumn) ref-columns:(NHibernate.Mapping.Column(ReferencedColumn)) as TestForeignKey"));
+		}
 	}
 }

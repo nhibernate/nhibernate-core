@@ -23,7 +23,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.FirebirdDriver" /></description>
+	///			<description><see cref="NHibernate.Driver.FirebirdClientDriver" /></description>
 	///		</item>
 	/// </list>
 	/// </remarks>
@@ -41,7 +41,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
 			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
-			RegisterColumnType(DbType.Currency, "DECIMAL($p,$s)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(18,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
@@ -227,13 +226,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlStringBuilder()
-					.Add("cast('")
-					.Add(Name)
-					.Add("' as ")
-					.Add(FunctionReturnType.SqlTypes(factory)[0].ToString())
-					.Add(")")
-					.ToSqlString();
+				return new SqlString("cast('", Name, "' as ", FunctionReturnType.SqlTypes(factory)[0].ToString(), ")");
 			}
 		}
 

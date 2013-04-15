@@ -11,7 +11,6 @@ using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Hql.Classic;
 using NHibernate.Hql.Ast.ANTLR;
 
 namespace NHibernate.Test
@@ -32,17 +31,6 @@ namespace NHibernate.Test
 		protected TestDialect TestDialect
 		{
 			get { return TestDialect.GetTestDialect(Dialect); }
-		}
-
-		/// <summary>
-		/// To use in in-line test
-		/// </summary>
-		protected bool IsClassicParser
-		{
-			get
-			{
-				return sessions.Settings.QueryTranslatorFactory is ClassicQueryTranslatorFactory;
-			}
 		}
 
 		/// <summary>

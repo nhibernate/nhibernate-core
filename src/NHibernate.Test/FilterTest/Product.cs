@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
@@ -23,13 +22,13 @@ namespace NHibernate.Test.FilterTest
 
 			if (categories == null)
 			{
-				categories = new HashedSet<Category>();
+				categories = new HashSet<Category>();
 			}
 
 			categories.Add(category);
 			if (category.Products == null)
 			{
-				category.Products = new HashedSet<Product>();
+				category.Products = new HashSet<Product>();
 			}
 			category.Products.Add(this);
 		}

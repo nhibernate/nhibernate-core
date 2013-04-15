@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
-			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
+			RegisterColumnType(DbType.Decimal, 19, "NUMERIC($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -128,12 +128,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			var top = new SqlStringBuilder()
-				.Add(" top (")
-				.Add(limit)
-				.Add(")")
-				.ToSqlString();
-
+			var top = new SqlString(" top (", limit, ")");
 			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
 		}
 

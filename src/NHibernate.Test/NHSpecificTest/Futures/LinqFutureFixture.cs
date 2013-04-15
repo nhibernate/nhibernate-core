@@ -74,6 +74,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanUseSkipAndFetchManyWithToFuture()
 		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
 			using (var s = sessions.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -89,8 +91,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				var persons10 = s.Query<Person>()
 					.FetchMany(p => p.Children)
 					.Skip(5)
@@ -122,10 +122,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanUseFutureQuery()
 		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				var persons10 = s.Query<Person>()
 					.Take(10)
 					.ToFuture();
@@ -152,10 +152,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanUseFutureQueryWithAnonymousType()
 		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				var persons = s.Query<Person>()
 					.Select(p => new { Id = p.Id, Name = p.Name })
 					.ToFuture();
@@ -178,11 +178,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanUseFutureFetchQuery()
 		{
-			IDriver driver = sessions.ConnectionProvider.Driver;
-			if (!driver.SupportsMultipleQueries)
-			{
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
-			}
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+			
 			using (var s = sessions.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -198,8 +195,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				var persons = s.Query<Person>()
 					.FetchMany(p => p.Children)
 					.ToFuture();
@@ -219,8 +214,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				}
 			}
 
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				s.Delete("from Person");
 				tx.Commit();
@@ -230,10 +225,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void TwoFuturesRunInTwoRoundTrips()
 		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				using (var logSpy = new SqlLogSpy())
 				{
 					var persons10 = s.Query<Person>()
@@ -257,10 +252,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public void CanCombineSingleFutureValueWithEnumerableFutures()
 		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+			
 			using (var s = sessions.OpenSession())
 			{
-				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
 				var persons = s.Query<Person>()
 					.Take(10)
 					.ToFuture();
@@ -280,6 +275,40 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 				}
+			}
+		}
+
+		[Test(Description = "NH-2385")]
+		public void CanCombineSingleFutureValueWithFetchMany()
+		{
+			int personId;
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "inserted name" };
+				var p2 = new Person { Name = null };
+
+				s.Save(p1);
+				s.Save(p2);
+				personId = p2.Id;
+				tx.Commit();
+			}
+
+			using (var s = sessions.OpenSession())
+			{
+				var meContainer = s.Query<Person>()
+								   .Where(x => x.Id == personId)
+								   .FetchMany(x => x.Children)
+								   .ToFutureValue();
+
+				Assert.AreEqual(personId, meContainer.Value.Id);
+			}
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
 			}
 		}
 
@@ -315,5 +344,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 
 		}
+
 	}
 }

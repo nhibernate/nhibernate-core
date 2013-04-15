@@ -29,8 +29,6 @@ namespace NHibernate.Util
 	[Serializable]
 	public sealed class IdentityMap : IDictionary, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentityMap));
-
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
 		private IDictionary map;

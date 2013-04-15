@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copiedAlready)
+									   IDictionary copiedAlready)
 		{
 			if (IsEqual(original, target, session.EntityMode))
 				return original;

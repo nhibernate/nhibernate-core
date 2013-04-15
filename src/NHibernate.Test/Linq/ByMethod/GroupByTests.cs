@@ -241,6 +241,47 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void GroupByAndTake()
+		{
+			//NH-2566
+			var names = db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToList();
+			Assert.That(names.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void GroupByAndTake2()
+		{
+			//NH-2566
+			var results = (from o in db.Orders
+			               group o by o.Customer
+			               into g
+			               select g.Key.CustomerId)
+				.OrderBy(customerId => customerId)
+				.Skip(10)
+				.Take(10)
+				.ToList();
+			
+			Assert.That(results.Count, Is.EqualTo(10));
+		}
+
+		[Test]
+		[Ignore("Generates incorrect expression.")]
+		public void GroupByAndAll()
+		{
+			//NH-2566
+			var namesAreNotEmpty = db.Users.GroupBy(p => p.Name).Select(g => g.Key).All(name => name.Length > 0);
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
+		[Test]
+		public void GroupByAndAny()
+		{
+			//NH-2566
+			var namesAreNotEmpty = !db.Users.GroupBy(p => p.Name).Select(g => g.Key).Any(name => name.Length == 0);
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
+		[Test]
 		public void SelectFirstElementFromProductsGroupedByUnitPrice()
 		{
 			//NH-3180
@@ -267,7 +308,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
 		}
-
 
 		[Test]
 		public void SelectSingleElementFromProductsGroupedByUnitPrice()

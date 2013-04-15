@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -14,10 +13,10 @@ namespace NHibernate.DomainModel
 		private static object _emptyObject = new object();
 
 		private Master _otherMaster;
-		private ISet<Detail> _details = new HashedSet<Detail>();
-		private ISet<Detail> _moreDetails = new HashedSet<Detail>();
-		private ISet<Master> _incoming = new HashedSet<Master>();
-		private ISet<Master> _outgoing = new HashedSet<Master>();
+		private ISet<Detail> _details = new HashSet<Detail>();
+		private ISet<Detail> _moreDetails = new HashSet<Detail>();
+		private ISet<Master> _incoming = new HashSet<Master>();
+		private ISet<Master> _outgoing = new HashSet<Master>();
 		private string _name = "master";
 #pragma warning disable 169
 		private DateTime version;

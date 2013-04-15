@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.Criteria
 {
@@ -10,7 +9,7 @@ namespace NHibernate.Test.Criteria
 		private string name;		
 		private CityState cityState;
 		private Course preferredCourse;
-		private ISet<Enrolment> enrolments = new HashedSet<Enrolment>();
+		private ISet<Enrolment> enrolments = new HashSet<Enrolment>();
 		
 		public virtual long StudentNumber
 		{

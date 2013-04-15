@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 // This test is explicitly to ensure varius aliases beginning with underscore
 // can be handled properly, since some dialect had problems with it.

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
@@ -332,6 +331,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectAfterOrderByAndTake()
+		{
+			// NH-3320
+			var names = db.Users.OrderBy(p => p.Name).Take(3).Select(p => p.Name).ToList();
+			Assert.AreEqual(3, names.Count);
+		}
+
+		[Test]
 		public void CanSelectManyWithCast()
 		{
 			// NH-2688
@@ -355,6 +362,13 @@ namespace NHibernate.Test.Linq
 			var orders5 = db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as IEnumerable<Order>)).ToList();
 			Assert.AreEqual(5, orders5.Count);
 			// ReSharper restore RedundantCast
+		}
+
+		[Test]
+		public void CanSelectCollection()
+		{
+			var orders = db.Customers.Where(c => c.CustomerId == "VINET").Select(o => o.Orders).ToList();
+			Assert.AreEqual(5, orders[0].Count);
 		}
 
 		public class Wrapper<T>

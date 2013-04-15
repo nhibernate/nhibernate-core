@@ -3,7 +3,6 @@ using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
@@ -23,7 +22,7 @@ namespace NHibernate.Driver
 		public const byte MaxScale = 5;
 		public const byte MaxDateTime2 = 8;
 		public const byte MaxDateTimeOffset = 10;
-		
+
 		/// <summary>
 		/// Creates an uninitialized <see cref="IDbConnection" /> object for
 		/// the SqlClientDriver.
@@ -92,25 +91,14 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
-		public override IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
-			IDbCommand command = base.GenerateCommand(type, sqlString, parameterTypes);
-
-			SetParameterSizes(command.Parameters, parameterTypes);
-
-			return command;
+			base.InitializeParameter(dbParam, name, sqlType);
+			SetVariableLengthParameterSize(dbParam, sqlType);
 		}
-		
+
 		// Used from SqlServerCeDriver as well
-		public static void SetParameterSizes(IDataParameterCollection parameters, SqlType[] parameterTypes)
-		{
-			for (int i = 0; i < parameters.Count; i++)
-			{
-				SetVariableLengthParameterSize((IDbDataParameter) parameters[i], parameterTypes[i]);
-			}
-		}
-
-		protected static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		public static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
 		{
 			SetDefaultParameterSize(dbParam, sqlType);
 
@@ -166,7 +154,7 @@ namespace NHibernate.Driver
 		{
 			return (sqlType is StringClobSqlType) || ((DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) && sqlType.LengthDefined && (sqlType.Length > MaxSizeForLengthLimitedString));
 		}
-		
+
 		/// <summary>
 		/// Interprets if a parameter is a Blob (for the purposes of setting its default size)
 		/// </summary>

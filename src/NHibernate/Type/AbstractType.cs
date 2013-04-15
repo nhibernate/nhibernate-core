@@ -198,7 +198,7 @@ namespace NHibernate.Type
 		public abstract int GetColumnSpan(IMapping mapping);
 
 		public virtual object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
-		                      ForeignKeyDirection foreignKeyDirection)
+							  ForeignKeyDirection foreignKeyDirection)
 		{
 			bool include;
 			if (IsAssociationType)
@@ -267,7 +267,7 @@ namespace NHibernate.Type
 		}
 
 		public abstract object Replace(object original, object current, ISessionImplementor session, object owner,
-		                               IDictionary copiedAlready);
+									   IDictionary copiedAlready);
 
 		public abstract void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
 		public abstract object FromXMLNode(XmlNode xml, IMapping factory);

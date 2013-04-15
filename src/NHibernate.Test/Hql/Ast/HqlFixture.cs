@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Engine.Query;
+using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.Hql.Ast
 	{
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{
-			return new HQLStringQueryPlan(hql, scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
 		}
 
 		protected HQLQueryPlan CreateQueryPlan(string hql)
@@ -64,15 +65,15 @@ namespace NHibernate.Test.Hql.Ast
 			Check(plan.ReturnMetadata, true, false);
 		}
 
-        [Test]
-        public void OrderByPropertiesImplicitlySpecifiedInTheSelect()
-        {
-            // NH-2035 
-            using (ISession s = OpenSession())
-            {
-                s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
-            }
-        } 
+		[Test]
+		public void OrderByPropertiesImplicitlySpecifiedInTheSelect()
+		{
+			// NH-2035 
+			using (ISession s = OpenSession())
+			{
+				s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
+			}
+		} 
 
 		[Test]
 		public void CaseClauseInSelect()
@@ -303,7 +304,7 @@ namespace NHibernate.Test.Hql.Ast
 
 					// assert
 					Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-					                   	.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
+										.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
 
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
 					s.Transaction.Commit();

@@ -27,7 +27,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		 * all append invocations on the buf should go through this Output instance variable.
 		 * The value of this variable may be temporarily substitued by sql function processing code
 		 * to catch generated arguments.
-		 * This is because sql function templates need arguments as seperate string chunks
+		 * This is because sql function templates need arguments as separate string chunks
 		 * that will be assembled into the target dialect-specific function call.
 		 */
 		private readonly List<ISqlWriter> outputStack = new List<ISqlWriter>();

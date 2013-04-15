@@ -107,7 +107,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
 			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
-			RegisterColumnType(DbType.Currency, "NUMBER($p,$s)");
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
 			RegisterColumnType(DbType.Double, 19, "NUMBER($p,$s)");
@@ -211,12 +210,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("coalesce", new NvlFunction());
 
 			// Multi-param numeric dialect functions...
-			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Single));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
 			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
-			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Single));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
 			// Multi-param date dialect functions...
 			RegisterFunction("add_months", new StandardSQLFunction("add_months", NHibernateUtil.Date));

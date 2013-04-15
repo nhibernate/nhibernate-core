@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,31 +129,31 @@ namespace NHibernate.Linq
 			{
 				var param = parameters[parameterName];
 
-				if (param.First == null)
+				if (param.Item1 == null)
 				{
-					if (typeof(IEnumerable).IsAssignableFrom(param.Second.ReturnedClass) &&
-						param.Second.ReturnedClass != typeof(string))
+					if (typeof(IEnumerable).IsAssignableFrom(param.Item2.ReturnedClass) &&
+						param.Item2.ReturnedClass != typeof(string))
 					{
-						query.SetParameterList(parameterName, null, param.Second);
+						query.SetParameterList(parameterName, null, param.Item2);
 					}
 					else
 					{
-						query.SetParameter(parameterName, null, param.Second);
+						query.SetParameter(parameterName, null, param.Item2);
 					}
 				}
 				else
 				{
-					if (param.First is IEnumerable && !(param.First is string))
+					if (param.Item1 is IEnumerable && !(param.Item1 is string))
 					{
-						query.SetParameterList(parameterName, (IEnumerable)param.First);
+						query.SetParameterList(parameterName, (IEnumerable)param.Item1);
 					}
-					else if (param.Second != null)
+					else if (param.Item2 != null)
 					{
-						query.SetParameter(parameterName, param.First, param.Second);
+						query.SetParameter(parameterName, param.Item1, param.Item2);
 					}
 					else
 					{
-						query.SetParameter(parameterName, param.First);
+						query.SetParameter(parameterName, param.Item1);
 					}
 				}
 			}
@@ -167,18 +168,5 @@ namespace NHibernate.Linq
 				criteria(query, parameters);
 			}
 		}
-	}
-
-	public class Tuple<T1, T2>
-	{
-		public T1 First { get; set; }
-		public T2 Second { get; set; }
-	}
-
-	public class Tuple<T1, T2, T3>
-	{
-		public T1 First { get; set; }
-		public T2 Second { get; set; }
-		public T3 Third { get; set; }
 	}
 }

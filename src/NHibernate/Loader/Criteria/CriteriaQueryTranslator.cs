@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
@@ -34,7 +33,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
 			new Dictionary<string, ICriteriaInfoProvider>();
 
-		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashedSet<ICollectionPersister>();
+		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
@@ -82,16 +81,16 @@ namespace NHibernate.Loader.Criteria
 
 		public ISet<string> GetQuerySpaces()
 		{
-			ISet<string> result = new HashedSet<string>();
+			ISet<string> result = new HashSet<string>();
 
 			foreach (ICriteriaInfoProvider info in criteriaInfoMap.Values)
 			{
-				result.AddAll(info.Spaces);
+				result.UnionWith(info.Spaces);
 			}
 
 			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
 			{
-				result.AddAll(collectionPersister.CollectionSpaces);
+				result.UnionWith(collectionPersister.CollectionSpaces);
 			}
 			return result;
 		}

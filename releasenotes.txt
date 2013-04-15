@@ -1,13 +1,109 @@
 Build vNext
 =============================
 
-** Known BREAKING CHANGES from NH3.3.2.GA to vNext
+** Known BREAKING CHANGES from NH3.3.3.CR1 to vNext
+
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
 
     ##### Possible Breaking Changes #####
         * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
         * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
         * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
-	* Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators assepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Mis-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+
+Build 3.3.3.GA
+=============================
+
+BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
+        was flawed - no matter where in the query Take() was placed it was
+        always applied as if it had been placed at the end. 3.3.3 fixes this,
+        so that Take() now correctly follows the .Net semantics. That is, in
+        3.3.3, the following queries might now give different results:
+
+            session.Query<Foo>.OrderBy(...).Take(5).Where(...);
+            session.Query<Foo>.Where(...).OrderBy(...).Take(5);
+
+        Starting with 3.3.3, the first query will generate a subquery to correctly
+        apply the row limit before the where-clause.
+
+** Bug
+    * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
+    * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
+    * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
+    * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>
+    * [NH-3413] - Clearing a list used by Contains causes subsequent queries to fail
+
+Build 3.3.3.CR1
+=============================
+
+** Fix
+    * [NH-3148] - ComponentAsId properties do not maintain the Column specified using property mapper when component is from base class
+
+** Sub-task
+    * [NH-3052] - Projection of one-to-many generates invalid SQL
+    * [NH-3385] - Add ability to expand many subcollections with WCF Data Services
+
+** Bug
+    * [NH-2042] - Table per subclass, using a discriminator mappings with formula in child class error
+    * [NH-2539] - Contains/StartsWith fails when invoked via WCF Data Service.
+    * [NH-2566] - NotSupportedException when using Skip/Take/First/Single/Any on GroupBy
+    * [NH-2588] - NotSupportedException when using Skip/Take with Where clause
+    * [NH-2860] - Lazy property throwing casting exception
+    * [NH-2979] - MsSqlCe dialect doesn't give the correct SQL type for Decimal with Scale defined
+    * [NH-3039] - IndexOutOfRangeException thrown when web server is processing multiple sessionfactory creation requests
+    * [NH-3057] - Collection subquery constraint on joined-subclass inherited properties causes invalid sql (base classes are not joined in).
+    * [NH-3105] - ComponentAsId does not find property that belongs to a parent class
+    * [NH-3108] - OrderBy with Select throws exception
+    * [NH-3129] - Linq Provider doesn't recognize CompareTo method
+    * [NH-3241] - Linq: Mixing Fetch/FetchMany with Any() throws: ArgumentException: Expression of type 'System.Collections.IList' cannot be used for parameter of type 'System.Collections.Generic.IEnumerable`1[System.Object]'
+    * [NH-3261] - Linq Query throws when there is a conditional operator
+    * [NH-3305] - SybaseSQLAnywhere10Dialect defaults a numeric datatype to (19,255) precision, which is not compatible with the DB
+    * [NH-3318] - Composite-id does not allow superclass properties
+    * [NH-3320] - Exception in LINQ projection with OrderBy/Take - block using WCF Data Services projection's
+    * [NH-3326] - Exception in LINQ with pagination - block using WCF Data Services
+    * [NH-3330] - Exception in LINQ for nullable strings in Oracle - blocks using WCF Data Services
+    * [NH-3332] - The NH linq driver generates sql code that doesn't match the semantics of the original linq query
+    * [NH-3337] - Exception in LINQ for complex nullable conditionals - blocks using WCF Data Services
+    * [NH-3357] - System.NotSupportedException : Don't currently support idents of type DateTimeOffset
+    * [NH-3366] - LINQ query with various Compare() and CompareTo() fails (WCF Data Services)
+    * [NH-3369] - ToFuture/ToFutureValue should fall-back on dialects without MultiQuery support
+    * [NH-3378] - MySQLDialect incorrect handle DbType.Currency as MONEY
+    * [NH-3379] - Oracle8iDialect and FirebirdDialect incorrect handle DbType.Currency type
+
+** Improvement
+    * [NH-2297] - Configuration.BuildSessionFactory throws a NullReferenceException when loading an invalid ICompositeUserType
+    * [NH-3301] - Support SqlMethods.Like() in LINQ queries.
+    * [NH-3360] - Allow setting timeout on a LINQ query
+    * [NH-3367] - Support string.Equals()
+    * [NH-3368] - Add support for Equals method of sbyte, DateTimeOffset and unsigned numerics
+    * [NH-3371] - NHibernate should log LINQ expression trees to ease debugging
+
+** New Feature
+    * [NH-2986] - Add ability to include collections into projections
+    * [NH-3092] - Nhibernate Linq provider does not support Math functions like Math.Cos, Math.Sin, etc
+    * [NH-3180] - Could not select first element of the group
+    * [NH-3184] - Add ability to use ToFutureValue with aggregating queries
+    * [NH-3283] - New driver: Devart.Data.MySql
+    * [NH-3333] - Add ability to expand subcollections with WCF Data Services
+
+** Patch
+    * [NH-3255] - The IDbCommand that performs the cleanup of data in AbstractStatementExecutor.DropTemporaryTableIfNecessary does not have a connection.
 
 Build 3.3.2.GA
 =============================

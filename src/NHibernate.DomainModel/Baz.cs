@@ -385,7 +385,7 @@ namespace NHibernate.DomainModel
 		{
 			DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-			StringSet = new HashedSet<string> {"foo", "bar", "baz"};
+			StringSet = new HashSet<string> {"foo", "bar", "baz"};
 
 			StringDateMap = new SortedList();
 			StringDateMap.Add("now", DateTime.Now);
@@ -403,7 +403,7 @@ namespace NHibernate.DomainModel
 			Customs.Add(new String[] {"A", "B"});
 			Customs.Add(new String[] {"1", "2"});
 
-			FooSet = new HashedSet<FooProxy>();
+			FooSet = new HashSet<FooProxy>();
 			Components = new FooComponent[]
 				{
 					new FooComponent("foo", 42, null, null),
@@ -430,7 +430,7 @@ namespace NHibernate.DomainModel
 			Bag.Add("duplicate");
 			Bag.Add("unique");
 
-			Cached = new OrderedSet<CompositeElement>();
+			Cached = new LinkedHashSet<CompositeElement>();
 
 			CompositeElement ce = new CompositeElement();
 			ce.Foo = "foo";

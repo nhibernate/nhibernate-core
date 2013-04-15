@@ -6,7 +6,6 @@ using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
-using NHibernate.Hql.Classic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq

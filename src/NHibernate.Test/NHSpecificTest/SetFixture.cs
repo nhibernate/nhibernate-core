@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -406,7 +405,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 			{
 				ISessionImplementor si = (ISessionImplementor) s;
-				var set = new PersistentGenericSet<int>(si, new HashedSet<int>());
+				var set = new PersistentGenericSet<int>(si, new HashSet<int>());
 
 				set.Add(10);
 				set.Add(20);

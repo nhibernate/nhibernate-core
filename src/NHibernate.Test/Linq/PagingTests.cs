@@ -1,11 +1,218 @@
 using System.Linq;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
+	public class ProductProjection
+	{
+		public int ProductId { get; set; }
+		public string Name { get; set; }
+	}
+
 	[TestFixture]
 	public class PagingTests : LinqTestCase
 	{
+		[Test]
+		public void PageBetweenProjections()
+		{
+			// NH-3326
+			var list = db.Products
+						 .Select(p => new { p.ProductId, p.Name })
+						 .Skip(5).Take(10)
+						 .Select(a => new { a.Name, a.ProductId })
+						 .ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningNestedAnonymous()
+		{
+			// The important part in this query is that the outer select
+			// grabs the entire element from the inner select, plus more.
+
+			// NH-3326
+			var list = db.Products
+							.Select(p => new { p.ProductId, p.Name })
+							.Skip(5).Take(10)
+							.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+							.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningNestedClass()
+		{
+			// NH-3326
+			var list = db.Products
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Skip(5).Take(10)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningOrderedNestedAnonymous()
+		{
+			// Variation of NH-3326 with order
+			var list = db.Products
+				.Select(p => new { p.ProductId, p.Name })
+				.OrderBy(x => x.ProductId)
+				.Skip(5).Take(10)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningOrderedNestedClass()
+		{
+			// Variation of NH-3326 with order
+			var list = db.Products
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.OrderBy(x => x.ProductId)
+				.Skip(5).Take(10)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningOrderedConstrainedNestedAnonymous()
+		{
+			// Variation of NH-3326 with where
+			var list = db.Products
+				.Select(p => new { p.ProductId, p.Name })
+				.Where(p => p.ProductId > 0)
+				.OrderBy(x => x.ProductId)
+				.Skip(5).Take(10)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public void PageBetweenProjectionsReturningOrderedConstrainedNestedClass()
+		{
+			// Variation of NH-3326 with where
+			var list = db.Products
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Where(p => p.ProductId > 0)
+				.OrderBy(x => x.ProductId)
+				.Skip(5).Take(10)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test, Ignore("Not supported")]
+		public void PagedProductsWithOuterWhereClauseOrderedNestedAnonymous()
+		{
+			// NH-2588 and NH-3326
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
+				.Skip(10).Take(20)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.Where(x => x.ProductId > 0)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
+				.Skip(10).Take(20)
+				.Where(x => x.ProductId > 0)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test, Ignore("Not supported")]
+		public void PagedProductsWithOuterWhereClauseOrderedNestedAnonymousEquivalent()
+		{
+			// NH-2588 and NH-3326
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
+				.Skip(10).Take(20)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.Where(x => x.ProductId > 0)
+				.ToList();
+
+			var subquery = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
+				.Skip(10).Take(20);
+
+			var ids = db.Products
+				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
+				.Where(x => subquery.Contains(x))
+				.Where(x => x.ProductId > 0)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test, Ignore("Not supported")]
+		public void PagedProductsWithOuterWhereClauseOrderedNestedClass()
+		{
+			// NH-2588 and NH-3326
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Skip(10).Take(20)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.Where(x => x.ProductId > 0)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Skip(10).Take(20)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.Where(x => x.ProductId > 0)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test, Ignore("Not supported")]
+		public void PagedProductsWithOuterWhereClauseOrderedNestedClassEquivalent()
+		{
+			// NH-2588 and NH-3326
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Skip(10).Take(20)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.Where(x => x.ProductId > 0)
+				.ToList();
+
+			var subquery = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Skip(10).Take(20);
+
+			var ids = db.Products
+				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
+				.Where(x => subquery.Contains(x))
+				.Where(x => x.ProductId > 0)
+				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
 		[Test]
 		public void Customers1to5()
 		{
@@ -234,9 +441,10 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20);
 
 			var ids = db.Products
-				.OrderByDescending(x => x.ProductId)
 				.Where(x => subquery.Contains(x))
-				.Where(x => x.UnitsInStock > 0);
+				.Where(x => x.UnitsInStock > 0)
+				.OrderByDescending(x => x.ProductId)
+				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}

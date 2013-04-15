@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
@@ -96,13 +95,13 @@ namespace NHibernate.Impl
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
-			ISet<string> querySpaces = new HashedSet<string>();
+			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>();
 			int[] maxRows = new int[loaders.Count];
 			int[] firstRows = new int[loaders.Count];
 			for (int i = 0; i < loaders.Count; i++)
 			{
-				querySpaces.AddAll(loaders[i].QuerySpaces);
+				querySpaces.UnionWith(loaders[i].QuerySpaces);
 				resultTypesList.Add(loaders[i].ResultTypes);
 				firstRows[i] = parameters[i].RowSelection.FirstRow;
 				maxRows[i] = parameters[i].RowSelection.MaxRows;
@@ -280,7 +279,7 @@ namespace NHibernate.Impl
 				string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
 
-				ISet<string> spaces = new HashedSet<string>();
+				ISet<string> spaces = new HashSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{
@@ -293,7 +292,7 @@ namespace NHibernate.Impl
 						);
 					loaders.Add(loader);
 					loaderCriteriaMap.Add(criteriaIndex);
-					spaces.AddAll(loader.QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
 				}
 				criteriaIndex += 1;
 			}

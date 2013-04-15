@@ -23,8 +23,10 @@
 
 	<target name="verify-test-results">
 		<if test="${property::exists('NHibernate.Test.IgnoreFail')}">
-			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
+			<!-- Process the current results first, so that these will be available in build artifacts even
+				 if the last-result files is missing. -->
 			<property name="teamcity.current.result" value="${testResult::StripTimings(testresults.dir + '/NHibernate.Test.dll-results.xml', 'NHibernate.Test.current-results.xml')}" />
+			<copy file="${teamcity.last.result}" todir="${testresults.dir}"  />
 			<property name="teamcity.report" value="${testResult::CompareResults(teamcity.current.result, teamcity.last.result)}" />
 		</if>
 	</target>
@@ -114,6 +116,19 @@
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+	</target>	
+
+	<target name="setup-teamcity-mysql">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
+		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Protocol=pipe;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Old Guids=True;" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/mysql">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/mysql/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<script language="C#" prefix="testResult">

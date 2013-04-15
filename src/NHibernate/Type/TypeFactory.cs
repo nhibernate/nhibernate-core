@@ -104,14 +104,14 @@ namespace NHibernate.Type
 		private static IEnumerable<string> GetClrTypeAliases(System.Type systemType)
 		{
 			var typeAliases = new List<string>
-			                  	{
-			                  		systemType.FullName,
+								{
+									systemType.FullName,
 														systemType.AssemblyQualifiedName,
-			                  	};
+								};
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
-				System.Type nullableType = typeof(Nullable<>).MakeGenericType(systemType);
+				var nullableType = typeof(Nullable<>).MakeGenericType(systemType);
 				typeAliases.Add(nullableType.FullName);
 				typeAliases.Add(nullableType.AssemblyQualifiedName);
 			}
@@ -169,7 +169,7 @@ namespace NHibernate.Type
 		{
 			// NOTE : each .NET type mut appear only one time
 			RegisterType(typeof (Byte[]), NHibernateUtil.Binary, new[] {"binary"},
-			             l => GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
+						 l => GetType(NHibernateUtil.Binary, l, len => new BinaryType(SqlTypeFactory.GetBinary(len))));
 
 			RegisterType(typeof(Boolean), NHibernateUtil.Boolean, new[] { "boolean", "bool" });
 			RegisterType(typeof (Byte), NHibernateUtil.Byte, new[]{ "byte"});
@@ -179,10 +179,10 @@ namespace NHibernate.Type
 			RegisterType(typeof (DateTimeOffset), NHibernateUtil.DateTimeOffset, new[]{ "datetimeoffset"});
 
 			RegisterType(typeof (Decimal), NHibernateUtil.Decimal, new[] {"big_decimal", "decimal"},
-			             (p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
+						 (p, s) => GetType(NHibernateUtil.Decimal, p, s, st => new DecimalType(st)));
 
 			RegisterType(typeof (Double), NHibernateUtil.Double, new[] {"double"},
-			             (p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
+						 (p, s) => GetType(NHibernateUtil.Double, p, s, st => new DoubleType(st)));
 
 			RegisterType(typeof (Guid), NHibernateUtil.Guid, new[]{ "guid"});
 			RegisterType(typeof (Int16), NHibernateUtil.Int16, new[]{ "short"});
@@ -191,15 +191,15 @@ namespace NHibernate.Type
 			RegisterType(typeof(SByte), NHibernateUtil.SByte, EmptyAliases);
 
 			RegisterType(typeof (Single), NHibernateUtil.Single, new[] {"float", "single"},
-			             (p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
+						 (p, s) => GetType(NHibernateUtil.Single, p, s, st => new SingleType(st)));
 
 			RegisterType(typeof (String), NHibernateUtil.String, new[] {"string"},
-			             l => GetType(NHibernateUtil.String, l, len => new StringType(SqlTypeFactory.GetString(len))));
+						 l => GetType(NHibernateUtil.String, l, len => new StringType(SqlTypeFactory.GetString(len))));
 
 			RegisterType(typeof (TimeSpan), NHibernateUtil.TimeSpan, new[] {"timespan"});
 
 			RegisterType(typeof (System.Type), NHibernateUtil.Class, new[] {"class"},
-			             l => GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
+						 l => GetType(NHibernateUtil.Class, l, len => new TypeType(SqlTypeFactory.GetString(len))));
 
 			RegisterType(typeof (UInt16), NHibernateUtil.UInt16, new[] {"ushort"});
 			RegisterType(typeof (UInt32), NHibernateUtil.UInt32, new[] {"uint"});
@@ -226,15 +226,15 @@ namespace NHibernate.Type
 		private static void RegisterBuiltInTypes()
 		{
 			RegisterType(NHibernateUtil.AnsiString, EmptyAliases,
-			             l => GetType(NHibernateUtil.AnsiString, l, len => new AnsiStringType(SqlTypeFactory.GetAnsiString(len))));
+						 l => GetType(NHibernateUtil.AnsiString, l, len => new AnsiStringType(SqlTypeFactory.GetAnsiString(len))));
 
 			RegisterType(NHibernateUtil.AnsiChar, EmptyAliases);
 			
 			RegisterType(NHibernateUtil.BinaryBlob, EmptyAliases,
-			             l => GetType(NHibernateUtil.BinaryBlob, l, len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
+						 l => GetType(NHibernateUtil.BinaryBlob, l, len => new BinaryBlobType(SqlTypeFactory.GetBinaryBlob(len))));
 			
 			RegisterType(NHibernateUtil.StringClob, EmptyAliases,
-			             l => GetType(NHibernateUtil.StringClob, l, len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
+						 l => GetType(NHibernateUtil.StringClob, l, len => new StringClobType(SqlTypeFactory.GetStringClob(len))));
 			
 			RegisterType(NHibernateUtil.Date, new[] { "date" });
 			RegisterType(NHibernateUtil.Timestamp, new[] { "timestamp" });
@@ -252,9 +252,9 @@ namespace NHibernate.Type
 			
 			RegisterType(NHibernateUtil.DateTime2, new[] { "datetime2" });
 			RegisterType(NHibernateUtil.Serializable, new[] {"Serializable", "serializable"},
-			             l =>
-			             GetType(NHibernateUtil.Serializable, l,
-			                     len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
+						 l =>
+						 GetType(NHibernateUtil.Serializable, l,
+								 len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
 		}
 
 		public ICollectionTypeFactory CollectionTypeFactory
@@ -396,8 +396,8 @@ namespace NHibernate.Type
 		{
 			GetNullableTypeWithPrecision precisionDelegate;
 			return !getTypeDelegatesWithPrecision.TryGetValue(typeName, out precisionDelegate)
-			       	? null
-			       	: precisionDelegate(precision, scale);
+					? null
+					: precisionDelegate(precision, scale);
 		}
 
 		private static void AddToTypeOfName(string key, IType type)
@@ -467,104 +467,79 @@ namespace NHibernate.Type
 		{
 			IType type = Basic(typeName);
 
-			if (type == null)
+			if (type != null)
+				return type;
+			
+			string[] parsedTypeName;
+			TypeClassification typeClassification = GetTypeClassification(typeName);
+			if (typeClassification == TypeClassification.Length)
+				parsedTypeName = typeName.Split(LengthSplit);
+			else
+				parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
+
+
+			System.Type typeClass;
+			try
 			{
-				string[] parsedTypeName;
-				TypeClassification typeClassification = GetTypeClassification(typeName);
-				if (typeClassification == TypeClassification.Length)
-				{
-					parsedTypeName = typeName.Split(LengthSplit);
-				}
-				else
-					parsedTypeName = typeClassification == TypeClassification.PrecisionScale ? typeName.Split(PrecisionScaleSplit) : new[] { typeName };
+				typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+			}
+			catch (Exception)
+			{
+				typeClass = null;
+			}
 
-
-				System.Type typeClass;
+			if (typeClass == null)
+				return null;
+				
+			if (typeof(IType).IsAssignableFrom(typeClass))
+			{
 				try
 				{
-					typeClass = ReflectHelper.ClassForName(parsedTypeName[0]); //typeName);
+					type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					typeClass = null;
+					throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
 				}
+				InjectParameters(type, parameters);
+				return type;
+			}
+			if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
+			{
+				return new CompositeCustomType(typeClass, parameters);
+			}
+			if (typeof(IUserType).IsAssignableFrom(typeClass))
+			{
+				return new CustomType(typeClass, parameters);
+			}
+			if (typeof(ILifecycle).IsAssignableFrom(typeClass))
+			{
+				return NHibernateUtil.Entity(typeClass);
+			}
 
-				if (typeClass != null)
+			var unwrapped = typeClass.UnwrapIfNullable();
+			if (unwrapped.IsEnum)
+			{
+				try
 				{
-					if (typeof(IType).IsAssignableFrom(typeClass))
-					{
-						try
-						{
-							type = (IType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(typeClass);
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Could not instantiate IType " + typeClass.Name + ": " + e, e);
-						}
-						InjectParameters(type, parameters);
-					}
-					else if (typeof(ICompositeUserType).IsAssignableFrom(typeClass))
-					{
-						type = new CompositeCustomType(typeClass, parameters);
-					}
-					else if (typeof(IUserType).IsAssignableFrom(typeClass))
-					{
-						type = new CustomType(typeClass, parameters);
-					}
-					else if (typeof(ILifecycle).IsAssignableFrom(typeClass))
-					{
-						type = NHibernateUtil.Entity(typeClass);
-					}
-					else if (typeClass.IsEnum)
-					{
-						try
-						{
-							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass));
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Can't instantiate enum "+ typeClass.FullName +"; The enum can't be empty", e);
-						}
-					}
-					else if (IsNullableEnum(typeClass))
-					{
-						try
-						{
-							type = (IType)Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(typeClass.GetGenericArguments()[0]));
-						}
-						catch (Exception e)
-						{
-							throw new MappingException("Can't instantiate enum " + typeClass.FullName + "; The enum can't be empty", e);
-						}
-					}
-					else if (typeClass.IsSerializable)
-					{
-						if (typeClassification == TypeClassification.Length)
-						{
-							type = GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
-						}
-						else if (length != null)
-						{
-							type = GetSerializableType(typeClass, length.Value);
-						}
-						else
-						{
-							type = GetSerializableType(typeClass);
-						}
-					}
+					return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(unwrapped));
+				}
+				catch (Exception e)
+				{
+					throw new MappingException(string.Format("Can't instantiate enum {0}; The enum can't be empty", typeClass.FullName), e);
 				}
 			}
-			return type;
-		}
 
-		private static Boolean IsNullableEnum(System.Type typeClass)
-		{
-			if (!typeClass.IsGenericType) return false;
-			System.Type nullable = typeof(Nullable<>);
-			if (!nullable.Equals(typeClass.GetGenericTypeDefinition())) return false;
+			if (!typeClass.IsSerializable)
+				return null;
 
-			System.Type genericClass = typeClass.GetGenericArguments()[0];
-			return genericClass.IsSubclassOf(typeof(Enum));
+			if (typeClassification == TypeClassification.Length)
+				return GetSerializableType(typeClass, Int32.Parse(parsedTypeName[1]));
+			
+			if (length.HasValue)
+				return GetSerializableType(typeClass, length.Value);
+
+			return GetSerializableType(typeClass);
 		}
 
 
@@ -812,7 +787,7 @@ namespace NHibernate.Type
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{
 			MethodInfo mi = ReflectHelper.GetGenericMethodFrom<ICollectionTypeFactory>("Bag", new[] {elementClass},
-			                                                                             GenericCollectionSimpleSignature);
+																						 GenericCollectionSimpleSignature);
 
 			return (CollectionType)mi.Invoke(Instance.CollectionTypeFactory, new object[] { role, propertyRef, false });
 		}

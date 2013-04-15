@@ -50,7 +50,7 @@ namespace NHibernate.Cfg
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
 					var attrs =
 						(AssemblyInformationalVersionAttribute[])
-						thisAssembly.GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false);
+						thisAssembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
 
 					if (attrs != null && attrs.Length > 0)
 					{
@@ -95,7 +95,7 @@ namespace NHibernate.Cfg
 		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.
 		/// </summary>
 		public const string PreferPooledValuesLo = "id.optimizer.pooled.prefer_lo";
-		
+
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";
@@ -165,7 +165,7 @@ namespace NHibernate.Cfg
 		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
 
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
-		
+
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
@@ -176,14 +176,14 @@ namespace NHibernate.Cfg
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (Environment));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(IDictionary<string, string> props) {}
+		public static void VerifyProperties(IDictionary<string, string> props) { }
 
 		static Environment()
 		{

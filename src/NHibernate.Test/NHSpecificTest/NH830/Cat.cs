@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH830
 {
 	public class Cat
 	{
 		private int id;
-		private ISet<Cat> children = new HashedSet<Cat>();
-		private ISet<Cat> parents = new HashedSet<Cat>();
+		private ISet<Cat> children = new HashSet<Cat>();
+		private ISet<Cat> parents = new HashSet<Cat>();
 
 		public int Id
 		{

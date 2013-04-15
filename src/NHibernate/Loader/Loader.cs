@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Iesi.Collections.Generic;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -13,7 +12,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Exceptions;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -140,17 +139,6 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The SqlString to be called; implemented by all subclasses
 		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// The <c>setter</c> was added so that class inheriting from Loader could write a 
-		/// value using the Property instead of directly to the field.
-		/// </para>
-		/// <para>
-		/// The scope is <c>protected internal</c> because the <see cref="WhereParser"/> needs to
-		/// be able to <c>get</c> the SqlString of the <see cref="QueryTranslator"/> when
-		/// it is parsing a subquery.
-		/// </para>
-		/// </remarks>
 		public abstract SqlString SqlString { get; }
 
 		/// <summary>
@@ -515,7 +503,7 @@ namespace NHibernate.Loader
 			ISet<EntityKey>[] result = new ISet<EntityKey>[keys[0].Length];
 			for (int j = 0; j < result.Length; j++)
 			{
-				result[j] = new HashedSet<EntityKey>();
+				result[j] = new HashSet<EntityKey>();
 				for (int i = 0; i < keys.Count; i++)
 				{
 					EntityKey key = keys[i][j];
@@ -1665,9 +1653,8 @@ namespace NHibernate.Loader
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
 
-			var originSql = sqlString.Compact();
 			var result = new SqlStringBuilder();
-			foreach (var sqlPart in originSql)
+			foreach (var sqlPart in sqlString)
 			{
 				var parameter = sqlPart as Parameter;
 				if (parameter != null)
@@ -1728,7 +1715,7 @@ namespace NHibernate.Loader
 					}
 				}
 			}
-			return result.ToSqlString().Compact();
+			return result.ToSqlString();
 		}
 
 		protected SqlString AddLimitsParametersIfNeeded(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, QueryParameters queryParameters, ISessionImplementor session)

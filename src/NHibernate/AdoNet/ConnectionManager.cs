@@ -155,8 +155,8 @@ namespace NHibernate.AdoNet
 		}
 
 		public IDbConnection Disconnect() {
-            if (IsInActiveTransaction)
-                throw  new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
+			if (IsInActiveTransaction)
+				throw  new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
 			try
 			{
 				if (!ownConnection)
@@ -293,10 +293,10 @@ namespace NHibernate.AdoNet
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags = SecurityPermissionFlag.SerializationFormatter)]
 #if NET_4_0
 		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 #endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
