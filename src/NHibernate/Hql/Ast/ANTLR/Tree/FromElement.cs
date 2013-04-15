@@ -484,11 +484,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					&& EntityPersister.EntityMetamodel.HasNonIdentifierPropertyNamedId)
 			{
 				propertyName = EntityPersister.IdentifierPropertyName;
-			}
-			else
-			{
-				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
-			}
+            }
+            else if (IsCollectionOfValuesOrComponents)
+            {
+                propertyName = CollectionPropertyNames.Elements;
+            }
+            else
+            {
+                propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
+            }
 			if (Walker.StatementType == HqlSqlWalker.SELECT)
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
