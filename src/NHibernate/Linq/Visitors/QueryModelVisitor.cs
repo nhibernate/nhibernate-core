@@ -20,10 +20,6 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{
-			SubQueryFromClauseFlattener.ReWrite(queryModel);
-
-			LeftJoinRewriter.ReWrite(queryModel);
-
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
 			// Remove unnecessary body operators
@@ -43,6 +39,11 @@ namespace NHibernate.Linq.Visitors
 
 			// Rewrite non-aggregating group-joins
 			NonAggregatingGroupJoinRewriter.ReWrite(queryModel);
+
+			SubQueryFromClauseFlattener.ReWrite(queryModel);
+
+			// Rewrite left-joins
+			LeftJoinRewriter.ReWrite(queryModel);
 
 			// Rewrite paging
 			PagingRewriter.ReWrite(queryModel);
