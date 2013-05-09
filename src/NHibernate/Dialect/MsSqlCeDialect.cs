@@ -43,6 +43,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
