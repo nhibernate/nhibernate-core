@@ -14,6 +14,17 @@ namespace NHibernate.Engine.Query
             protected set;
         }
 
+		private HQLExpressionQueryPlan(HQLQueryPlan source, IQueryExpression newQueryExpression)
+			: base(source)
+		{
+			QueryExpression = newQueryExpression;
+		}
+
+		internal HQLExpressionQueryPlan Copy(IQueryExpression newExpression)
+		{
+			return new HQLExpressionQueryPlan(this, newExpression);
+		}
+
         public HQLExpressionQueryPlan(string expressionStr, IQueryExpression queryExpression, bool shallow,
                                       IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
             : this(expressionStr, queryExpression, null, shallow, enabledFilters, factory)
