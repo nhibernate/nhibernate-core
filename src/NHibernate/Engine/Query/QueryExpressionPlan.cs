@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate.Hql;
+using NHibernate.Linq;
 
 namespace NHibernate.Engine.Query
 {
@@ -20,9 +21,20 @@ namespace NHibernate.Engine.Query
 		{
 		}
 
+		private QueryExpressionPlan(HQLQueryPlan source, IQueryExpression expression) 
+			: base(source)
+		{
+			QueryExpression = expression;
+		}
+
 		protected static IQueryTranslator[] CreateTranslators(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
 		{
 			return factory.Settings.QueryTranslatorFactory.CreateQueryTranslators(queryExpression, collectionRole, shallow, enabledFilters, factory);
+		}
+
+		public QueryExpressionPlan Copy(IQueryExpression expression)
+		{
+			return new QueryExpressionPlan(this, expression);
 		}
 	}
 }

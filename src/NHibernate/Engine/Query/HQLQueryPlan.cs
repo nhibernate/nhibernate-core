@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using NHibernate.Event;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -41,6 +42,16 @@ namespace NHibernate.Engine.Query
 
             FinaliseQueryPlan();
         }
+
+		internal HQLQueryPlan(HQLQueryPlan source)
+		{
+			Translators = source.Translators;
+			_sourceQuery = source._sourceQuery;
+			QuerySpaces = source.QuerySpaces;
+			ParameterMetadata = source.ParameterMetadata;
+			ReturnMetadata = source.ReturnMetadata;
+			SqlStrings = source.SqlStrings;
+		}
 
 	    public ISet<string> QuerySpaces
 		{
