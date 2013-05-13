@@ -65,6 +65,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			customizersHolder.AddCustomizer(propertyPath, (IManyToManyMapper x) => x.ForeignKey(foreignKeyName));
 		}
 
+		public void Where(string sqlWhereClause)
+		{
+			customizersHolder.AddCustomizer(propertyPath, (IManyToManyMapper x) => x.Where(sqlWhereClause));
+		}
+
 		#endregion
 	}
 }
