@@ -207,9 +207,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected virtual void RegisterSetMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterSetMapping<TElement>(collectionMapping, mapping, member, memberOf);
+			RegisterSetMapping(collectionMapping, mapping, memberOf);
 		}
 
 		protected void RegisterSetMapping<TElement>(Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping, params MemberInfo[] members)
@@ -235,9 +234,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected virtual void RegisterBagMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterBagMapping<TElement>(collectionMapping, mapping, member, memberOf);
+			RegisterBagMapping(collectionMapping, mapping, memberOf);
 		}
 
 		protected void RegisterBagMapping<TElement>(Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping, params MemberInfo[] members)
@@ -263,9 +261,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected virtual void RegisterListMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterListMapping<TElement>(collectionMapping, mapping, member, memberOf);
+			RegisterListMapping(collectionMapping, mapping, memberOf);
 		}
 
 		protected void RegisterListMapping<TElement>(Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping, params MemberInfo[] members)
@@ -330,9 +327,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		protected virtual void RegisterIdBagMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
-			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
-			RegisterIdBagMapping<TElement>(collectionMapping, mapping, member, memberOf);
+			RegisterIdBagMapping(collectionMapping, mapping, memberOf);
 		}
 
 		protected virtual void RegisterIdBagMapping<TElement>(Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping,params MemberInfo[] members)

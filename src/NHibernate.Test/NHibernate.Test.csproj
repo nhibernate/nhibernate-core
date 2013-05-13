@@ -589,6 +589,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Fixture.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\FixtureByCode.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Parent.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3135\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3135\Models.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3280\Domain.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3280\OneToOneToInheritedProperty.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
