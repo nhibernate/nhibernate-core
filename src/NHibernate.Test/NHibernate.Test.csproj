@@ -673,6 +673,8 @@
     <Compile Include="NHSpecificTest\NH2923\Models.cs" />
     <Compile Include="NHSpecificTest\NH2923\ExtraLazyFixture.cs" />
     <Compile Include="NHSpecificTest\NH3405\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3428\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
