@@ -139,7 +139,7 @@ namespace NHibernate.Linq.Visitors
 							//    return VisitNhNew((NhNewExpression)expression);
 					}
 
-					throw new NotSupportedException(expression.GetType().Name);
+					throw new NotSupportedException(expression.ToString());
 			}
 		}
 
