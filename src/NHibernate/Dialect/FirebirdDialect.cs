@@ -121,7 +121,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "position(?1, ?2, cast(?3 as int))")); // The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  We have a unit test to cover this potential firebird bug.
+			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			//BLOB Functions
 			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
@@ -145,7 +145,6 @@ namespace NHibernate.Dialect
 		{
 			get { return "add"; }
 		}
-
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
 		{
@@ -282,6 +281,46 @@ namespace NHibernate.Dialect
 		public override string SelectGUIDString
 		{
 			get { return "select GEN_UUID() from RDB$DATABASE"; }
+		}
+
+		[Serializable]
+		private class PositionFunction : ISQLFunction
+		{
+			// The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  
+			// We have a unit test to cover this potential firebird bug.
+			private static readonly ISQLFunction LocateWith2Params = new StandardSQLFunction("position", NHibernateUtil.Int32);
+
+			private static readonly ISQLFunction LocateWith3Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
+																							 "position(?1, ?2, cast(?3 as int))");
+
+			public IType ReturnType(IType columnType, IMapping mapping)
+			{
+				return NHibernateUtil.Int32;
+			}
+
+			public bool HasArguments
+			{
+				get { return true; }
+			}
+
+			public bool HasParenthesesIfNoArguments
+			{
+				get { return true; }
+			}
+
+			public SqlString Render(IList args, ISessionFactoryImplementor factory)
+			{
+				if (args.Count == 2)
+				{
+					return LocateWith2Params.Render(args, factory);
+				}
+				if (args.Count == 3)
+				{
+					return LocateWith3Params.Render(args, factory);
+				}
+				
+				throw new QueryException("'postition' function takes 2 or 3 arguments");
+			}
 		}
 	}
 }
