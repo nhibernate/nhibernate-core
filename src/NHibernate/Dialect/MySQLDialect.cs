@@ -177,7 +177,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
-			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.Int32));
+			RegisterFunction("date", new StandardSQLFunction("date", NHibernateUtil.Date));
 			RegisterFunction("last_day", new StandardSQLFunction("last_day", NHibernateUtil.Date));
 		}
 
