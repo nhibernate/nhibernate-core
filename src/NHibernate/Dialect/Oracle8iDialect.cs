@@ -223,6 +223,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
+
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
