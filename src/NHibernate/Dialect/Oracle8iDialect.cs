@@ -205,7 +205,6 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("locate", new LocateFunction());
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "instr(?2,?1)"));
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "vsize(?1)*8"));
 			RegisterFunction("coalesce", new NvlFunction());
 
