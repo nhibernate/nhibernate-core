@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace NHibernate.Linq.Functions
 {
@@ -15,7 +14,10 @@ namespace NHibernate.Linq.Functions
 			{
 				throw new ArgumentNullException("generator");
 			}
-			Array.ForEach(generator.SupportedMethods.ToArray(), method=> registry.RegisterGenerator(method, generator));
+			foreach (var method in generator.SupportedMethods)
+			{
+				registry.RegisterGenerator(method, generator);
+			}
 		}
 
 		public static void Merge(this ILinqToHqlGeneratorsRegistry registry, IHqlGeneratorForProperty generator)
@@ -28,7 +30,10 @@ namespace NHibernate.Linq.Functions
 			{
 				throw new ArgumentNullException("generator");
 			}
-			Array.ForEach(generator.SupportedProperties.ToArray(), property => registry.RegisterGenerator(property, generator));
+			foreach (var property in generator.SupportedProperties)
+			{
+				registry.RegisterGenerator(property, generator);
+			}
 		}
 	}
 }
