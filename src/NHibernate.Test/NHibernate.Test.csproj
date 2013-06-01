@@ -707,6 +707,10 @@
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH2651\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
