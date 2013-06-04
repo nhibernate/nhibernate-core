@@ -32,8 +32,12 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private static MethodBuilder GenerateMethodSignature(string name, MethodInfo method, TypeBuilder typeBuilder)
 		{
-			const MethodAttributes methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
-													  MethodAttributes.Virtual;
+			//TODO: Should we use attributes of base method?
+			var methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+
+			if (method.IsSpecialName)
+				methodAttributes |= MethodAttributes.SpecialName;
+
 			ParameterInfo[] parameters = method.GetParameters();
 
 			MethodBuilder methodBuilder = typeBuilder.DefineMethod(name,

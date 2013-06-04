@@ -44,8 +44,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			      	unique = manyToMany.unique,
 			      	uniqueSpecified = manyToMany.unique,
 			      };
-			string defaultColumnName = elementType.Name;
-			columnMapper(new ColumnMapper(hbm, defaultColumnName));
+			columnMapper(new ColumnMapper(hbm, Collection.DefaultElementColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
 				manyToMany.Items = new[] {hbm};
@@ -53,7 +52,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
-				manyToMany.column = defaultColumnName == null || !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
+				manyToMany.column = Collection.DefaultElementColumnName.Equals(hbm.name) ? null : hbm.name;
 				manyToMany.unique = hbm.unique;
 			}
 		}

@@ -680,6 +680,11 @@
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="NHSpecificTest\NH2923\Models.cs" />
+    <Compile Include="NHSpecificTest\NH2923\ExtraLazyFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3405\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3428\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
@@ -713,8 +718,6 @@
     <Compile Include="NHSpecificTest\NH2806\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2969\Domain.cs" />
     <Compile Include="NHSpecificTest\NH2969\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
-    <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3182\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3182\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3187\Domain.cs">
@@ -723,10 +726,6 @@
     <Compile Include="NHSpecificTest\NH3187\Fixture.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
-    <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
-    <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
-    <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
@@ -748,6 +747,12 @@
     <Compile Include="NHSpecificTest\NH3332\State.cs" />
     <Compile Include="NHSpecificTest\NH3332\StateDescription.cs" />
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
+    <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH2651\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
@@ -795,8 +800,7 @@
     <Compile Include="NHSpecificTest\NH0000\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2856\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH2858\DomainClass.cs" />
-    <Compile Include="NHSpecificTest\NH2858\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2858\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2846\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2846\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />

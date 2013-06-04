@@ -853,9 +853,8 @@ namespace NHibernate.Persister.Collection
 		protected virtual string GetCountSqlSelectClause()
 		{
 			// NH: too many "if" when each collection can have its persister
-			return isCollectionIntegerIndex
-					? (string.Format("max({0}) + 1", IndexColumnNames[0]))
-							: (HasIndex ? string.Format("count({0})", GetIndexCountExpression()) : string.Format("count({0})", ElementColumnNames[0]));
+			if (isCollectionIntegerIndex) return string.Format("coalesce(max({0}) + 1, 0)", IndexColumnNames[0]); // Do we need this "optimization"?
+			return string.Format("count({0})", HasIndex ? GetIndexCountExpression() : ElementColumnNames[0]);
 		}
 
 		private string GetIndexCountExpression()

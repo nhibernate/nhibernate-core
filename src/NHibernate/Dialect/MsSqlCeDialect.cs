@@ -46,6 +46,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "DATETIME");
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
 
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));

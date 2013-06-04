@@ -205,7 +205,6 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("locate", new LocateFunction());
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "instr(?2,?1)"));
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "vsize(?1)*8"));
 			RegisterFunction("coalesce", new NvlFunction());
 
@@ -223,6 +222,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
+
+			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
