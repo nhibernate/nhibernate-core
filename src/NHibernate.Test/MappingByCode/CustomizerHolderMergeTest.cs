@@ -106,6 +106,20 @@ namespace NHibernate.Test.MappingByCode
 		}
 
 		[Test]
+		public void MergeShouldMergeManyToAnyMapper()
+		{
+			var emptyHolder = new CustomizersHolder();
+			var holder = new CustomizersHolder();
+			var called = false;
+
+			holder.AddCustomizer(propertyPath, (IManyToAnyMapper x) => called = true);
+			emptyHolder.Merge(holder);
+			emptyHolder.InvokeCustomizers(propertyPath, (IManyToAnyMapper) null);
+
+			called.Should().Be.True();
+		}
+
+		[Test]
 		public void MergeShouldMergeOneToManyMapper()
 		{
 			var emptyHolder = new CustomizersHolder();
