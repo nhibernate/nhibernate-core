@@ -61,5 +61,25 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			return new TRequestedType();
 		}
+
+		public override TRequestedType As5<TRequestedType>()
+		{
+			return base.As5<TRequestedType>();
+		}
+
+		public override TRequestedType AsBase5<TRequestedType>()
+		{
+			return base.AsBase5<TRequestedType>();
+		}
+
+		public override TRequestedType AsInterface5<TRequestedType>()
+		{
+			return base.AsInterface5<TRequestedType>();
+		}
+
+		public override TRequestedType AsInterfaceBase5<TRequestedType>()
+		{
+			return base.AsInterfaceBase5<TRequestedType>();
+		}
 	}
 }
