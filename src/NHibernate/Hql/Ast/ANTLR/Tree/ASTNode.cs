@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly IToken _token;
 		private List<IASTNode> _children;
 
-		public ASTNode()
+	    public ASTNode()
 			: this((IToken)null) {}
 
 		public ASTNode(IToken token)
@@ -425,7 +425,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			object node = _children[i];
 			RemoveChild(i);
-
 			return node;
 		}
 
@@ -469,7 +468,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return (ITree) DupNode();
 		}
 
-		int ITree.ChildIndex { get; set; }
+		int ITree.ChildIndex
+		{
+			get { return _childIndex; }
+			set { _childIndex = value; }
+		}
 
 		ITree ITree.Parent
 		{
@@ -513,6 +516,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			return GetEnumerator();
 		}
+
 		#endregion
 
 		// //////////////////////////////////////////////////////////
