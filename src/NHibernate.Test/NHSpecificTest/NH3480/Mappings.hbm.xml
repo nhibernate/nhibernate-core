@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3480">
+
+	<class name="Entity">
+        <composite-id name="Id">
+            <key-property name="Id" />
+        </composite-id>
+		<property name="Name" not-null="true" />
+        <property name="OtherId" unique="true" not-null="true" />
+        <set name="Children" cascade="all-delete-orphan" inverse="true">
+            <key property-ref="OtherId" column="Parent" />
+            <one-to-many class="Child" />
+        </set>
+    </class>
+
+    <class name="Child">
+        <id name="Id" generator="guid.comb" />
+        <property name="Name" not-null="true" />
+        <many-to-one name="Parent" property-ref="OtherId" not-null="true" />
+    </class>
+
+</hibernate-mapping>
