@@ -6,7 +6,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
     {
         public void Process(FetchOneRequest resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {
-            base.Process(resultOperator, queryModelVisitor, tree);
+            base.Process(resultOperator, queryModelVisitor, tree, false);
         }
     }
 }
