@@ -3,6 +3,8 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Linq.EagerFetching;
+using NHibernate.Linq.EagerFetching.Parsing;
 using NHibernate.Linq.ExpressionTransformers;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -54,6 +56,10 @@ namespace NHibernate.Linq
 			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("FetchMany") }, typeof(FetchManyExpressionNode));
 			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetch") }, typeof(ThenFetchOneExpressionNode));
 			methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenFetchMany") }, typeof(ThenFetchManyExpressionNode));
+            methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("InnerFetch") }, typeof(InnerFetchOneExpressionNode));
+            methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("InnerFetchMany") }, typeof(InnerFetchManyExpressionNode));
+            methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenInnerFetch") }, typeof(ThenInnerFetchOneExpressionNode));
+            methodInfoRegistry.Register(new[] { typeof(EagerFetchingExtensionMethods).GetMethod("ThenInnerFetchMany") }, typeof(ThenInnerFetchManyExpressionNode));
 
 			methodInfoRegistry.Register(
 				new[]

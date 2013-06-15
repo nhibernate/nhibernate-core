@@ -60,6 +60,12 @@
     <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>NHibernate.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -285,6 +291,12 @@
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
+    <Compile Include="Linq\EagerFetching\InnerFetchManyRequest.cs" />
+    <Compile Include="Linq\EagerFetching\InnerFetchOneRequest.cs" />
+    <Compile Include="Linq\EagerFetching\Parsing\InnerFetchManyExpressionNode.cs" />
+    <Compile Include="Linq\EagerFetching\Parsing\InnerFetchOneExpressionNode.cs" />
+    <Compile Include="Linq\EagerFetching\Parsing\ThenInnerFetchManyExpressionNode.cs" />
+    <Compile Include="Linq\EagerFetching\Parsing\ThenInnerFetchOneExpressionNode.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
     <Compile Include="Linq\Functions\GetValueOrDefaultGenerator.cs" />
@@ -312,6 +324,8 @@
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessInnerFetchMany.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessInnerFetchOne.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
@@ -1822,6 +1836,7 @@
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
+    <None Include="NHibernate.snk" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
