@@ -48,11 +48,7 @@ namespace NHibernate.Dialect
 
         public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
-            return new SqlStringBuilder(queryString)
-				.Add(" fetch first ")
-				.Add(limit)
-				.Add(" rows only ")
-				.ToSqlString();
+            return new SqlString(queryString, " fetch first ", limit, " rows only ");
 		}
 
 		public override bool UseMaxForLimit

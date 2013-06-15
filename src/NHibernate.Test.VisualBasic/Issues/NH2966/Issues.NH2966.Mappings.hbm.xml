@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test.VisualBasic" 
+                   namespace="NHibernate.Test.VisualBasic.Issues.NH2966">
+
+  <class name="Client" table="Clients">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+    <property name="Name" />
+    <set name="Orders" inverse="true" cascade="delete-orphan">
+      <key column="ClientId" />
+      <one-to-many class="Order" />
+    </set>
+  </class>
+
+  <class name="Order" table="Orders">
+    <id name="Id">
+      <generator class="guid.comb"/>
+    </id>
+  </class>
+</hibernate-mapping>

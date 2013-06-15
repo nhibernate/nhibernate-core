@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 	public class SQLite20Driver : ReflectionBasedDriver
 	{
 		/// <summary>
-		/// Initializes a new instance of <see cref="SQLiteDriver"/>.
+		/// Initializes a new instance of <see cref="SQLite20Driver"/>.
 		/// </summary>
 		/// <exception cref="HibernateException">
 		/// Thrown when the <c>SQLite.NET</c> assembly can not be loaded.

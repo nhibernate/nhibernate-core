@@ -2,28 +2,28 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
 				   assembly="NHibernate.Test"
 				   namespace="NHibernate.Test.Stateless.Fetching">
-    <class name="User" table="User_">
+    <class name="User" table="Users">
         <id name="Id" type="long">
             <generator class="increment" />
         </id>
         <property name="Name" />
     </class>
 
-    <class name="Resource">
+    <class name="Resource" table="Resources">
         <id name="Id" type="long">
             <generator class="increment" />
         </id>
-        <property name="Name" />
-        <many-to-one name="Owner"/>
+        <property name="Name"/>
+        <many-to-one name="Owner" column="OwnerId"/>
     </class>
 
-    <class name="Task">
+    <class name="Task" table="Tasks">
         <id name="Id" type="long">
             <generator class="increment" />
         </id>
         <property name="Description" />
-        <many-to-one name="User" column="user_"/>
-        <many-to-one name="Resource"/>
+        <many-to-one name="User" column="UserId"/>
+        <many-to-one name="Resource" column="ResourceId"/>
         <property name="DueDate" />
         <property name="StartDate" />
         <property name="CompletionDate" />

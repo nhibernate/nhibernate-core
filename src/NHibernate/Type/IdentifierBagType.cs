@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -68,7 +69,7 @@ namespace NHibernate.Type
 
 		public override object Instantiate(int anticipatedSize)
 		{
-			return anticipatedSize <= 0 ? new ArrayList() : new ArrayList(anticipatedSize + 1);
+			return anticipatedSize <= 0 ? new List<object>() : new List<object>(anticipatedSize + 1);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Persister.Collection;
@@ -33,7 +32,7 @@ namespace NHibernate.Engine
 		BatchFetchQueue BatchFetchQueue { get;}
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		ISet NullifiableEntityKeys { get;}
+		ISet<EntityKey> NullifiableEntityKeys { get;}
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
 		IDictionary<EntityKey, object> EntitiesByKey { get;}

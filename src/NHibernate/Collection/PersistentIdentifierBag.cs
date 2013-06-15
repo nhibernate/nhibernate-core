@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -196,7 +195,7 @@ namespace NHibernate.Collection
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((ICollection) snapshot).Count == 0;
+			return ((ISet<SnapshotElement>) snapshot).Count == 0;
 		}
 
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
@@ -271,11 +270,11 @@ namespace NHibernate.Collection
 			return element;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 
-			var map = new HashedSet<SnapshotElement>();
+			var map = new HashSet<SnapshotElement>();
 			int i = 0;
 			foreach (object value in values)
 			{

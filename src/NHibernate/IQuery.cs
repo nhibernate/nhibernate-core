@@ -77,7 +77,7 @@ namespace NHibernate
 		string[] NamedParameters { get; }
 		
 		/// <summary>
-	 	/// Will entities (and proxies) returned by the query be loaded in read-only mode?
+		/// Will entities (and proxies) returned by the query be loaded in read-only mode?
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -93,7 +93,7 @@ namespace NHibernate
 		/// <returns>
 		/// <c>true</c> if entities and proxies loaded by the query will be put in read-only mode, otherwise <c>false</c>.
 		/// </returns>
-	 	/// <seealso cref="IQuery.SetReadOnly(bool)" />
+		/// <seealso cref="IQuery.SetReadOnly(bool)" />
 		bool IsReadOnly { get; }
 
 		/// <summary>

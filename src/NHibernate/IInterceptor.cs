@@ -56,7 +56,7 @@ namespace NHibernate
 		/// </remarks>
 		/// <returns><see langword="true" /> if the user modified the <c>currentState</c> in any way</returns>
 		bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
-		                  IType[] types);
+						  IType[] types);
 
 		/// <summary>
 		/// Called before an object is saved
@@ -137,7 +137,7 @@ namespace NHibernate
 		/// <param name="types"></param>
 		/// <returns>An array of dirty property indicies or <see langword="null" /> to choose default behavior</returns>
 		int[] FindDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames,
-		                IType[] types);
+						IType[] types);
 
 		/// <summary>
 		/// Instantiate the entity class. Return <see langword="null" /> to indicate that Hibernate should use the default

@@ -6,8 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 {
 	public class DataType
 	{
-		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashedSet<DataTypeDescription>();
-		private ISet<MasterEntity> _masterEntities = new HashedSet<MasterEntity>();
+		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashSet<DataTypeDescription>();
+		private ISet<MasterEntity> _masterEntities = new HashSet<MasterEntity>();
 		private Int32 _id;
 		private String _name;
 		private Byte[] _rowVersionId;

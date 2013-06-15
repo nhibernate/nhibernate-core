@@ -20,7 +20,7 @@ namespace NHibernate.Exceptions
 			}
 			var sql = TryGetActualSqlQuery(exceptionContextInfo.SqlException, exceptionContextInfo.Sql);
 			ADOExceptionReporter.LogExceptions(exceptionContextInfo.SqlException,
-			                                   ExtendMessage(exceptionContextInfo.Message, sql, null, null));
+											   ExtendMessage(exceptionContextInfo.Message, sql, null, null));
 			return converter.Convert(exceptionContextInfo);
 		}
 
@@ -34,11 +34,11 @@ namespace NHibernate.Exceptions
 		/// <param name="sql">The SQL executed.</param>
 		/// <returns> The converted <see cref="ADOException"/>.</returns>
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
-		                                   SqlString sql)
+										   SqlString sql)
 		{
 			return Convert(converter,
-			               new AdoExceptionContextInfo
-			               	{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null});
+						   new AdoExceptionContextInfo
+							{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null});
 		}
 
 		/// <summary> 
@@ -56,7 +56,7 @@ namespace NHibernate.Exceptions
 		}
 
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
-		                                   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
+										   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			sql = TryGetActualSqlQuery(sqle, sql);
 			string extendMessage = ExtendMessage(message, sql != null ? sql.ToString() : null, parameterValues, namedParameters);
@@ -80,7 +80,7 @@ namespace NHibernate.Exceptions
 		}
 
 		public static string ExtendMessage(string message, string sql, object[] parameterValues,
-		                                   IDictionary<string, TypedValue> namedParameters)
+										   IDictionary<string, TypedValue> namedParameters)
 		{
 			var sb = new StringBuilder();
 			sb.Append(message).Append(Environment.NewLine).Append("[ ").Append(sql ?? SQLNotAvailable).Append(" ]");

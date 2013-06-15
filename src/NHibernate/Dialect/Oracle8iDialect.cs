@@ -209,12 +209,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("coalesce", new NvlFunction());
 
 			// Multi-param numeric dialect functions...
-			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Single));
+			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
 			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
-			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Single));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
 			// Multi-param date dialect functions...
 			RegisterFunction("add_months", new StandardSQLFunction("add_months", NHibernateUtil.Date));
@@ -270,7 +270,7 @@ namespace NHibernate.Dialect
 
 			string selectColumns = ExtractColumnOrAliasNames(sql);
 
-			var pagingSelect = new SqlStringBuilder(sql.Parts.Count + 10);
+			var pagingSelect = new SqlStringBuilder(sql.Count + 10);
 			if (offset != null)
 			{
 				pagingSelect.Add("select " + selectColumns + " from ( select row_.*, rownum rownum_ from ( ");

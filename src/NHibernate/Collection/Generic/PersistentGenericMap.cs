@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 			gmap = map;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(map.Count);
@@ -51,8 +51,8 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
-			IDictionary<TKey, TValue> sn = (IDictionary<TKey, TValue>)GetSnapshot();
-			foreach (KeyValuePair<TKey, TValue> e in sn)
+			var sn = (IDictionary<TKey, TValue>)GetSnapshot();
+			foreach (var e in sn)
 			{
 				if (!gmap.ContainsKey(e.Key))
 				{
@@ -65,17 +65,17 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			IDictionary sn = (IDictionary)GetSnapshot();
-			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
+			var sn = (IDictionary)GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>)entry;
 			return !sn.Contains(e.Key);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			IDictionary sn = (IDictionary)GetSnapshot();
-			KeyValuePair<TKey, TValue> e = (KeyValuePair<TKey, TValue>)entry;
-			object snValue = sn[e.Key];
-			bool isNew = !sn.Contains(e.Key);
+			var sn = (IDictionary)GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>)entry;
+			var snValue = sn[e.Key];
+			var isNew = !sn.Contains(e.Key);
 			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session)
 				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
@@ -92,7 +92,7 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			IDictionary sn = (IDictionary)GetSnapshot();
+			var sn = (IDictionary)GetSnapshot();
 			return sn[((KeyValuePair<TKey, TValue>)entry).Key];
 		}
 

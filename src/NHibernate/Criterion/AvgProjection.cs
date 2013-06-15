@@ -24,7 +24,7 @@ namespace NHibernate.Criterion
 			if (projection != null)
 			{
 				parameter =
-					StringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters)).ToString();
+					SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters)).ToString();
 			}
 			else
 			{

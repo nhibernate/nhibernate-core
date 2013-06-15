@@ -23,7 +23,7 @@ namespace NHibernate.Dialect
 	///		</listheader>
 	///		<item>
 	///			<term>connection.driver_class</term>
-	///			<description><see cref="NHibernate.Driver.FirebirdDriver" /></description>
+	///			<description><see cref="NHibernate.Driver.FirebirdClientDriver" /></description>
 	///		</item>
 	/// </list>
 	/// </remarks>
@@ -225,13 +225,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlStringBuilder()
-					.Add("cast('")
-					.Add(Name)
-					.Add("' as ")
-					.Add(FunctionReturnType.SqlTypes(factory)[0].ToString())
-					.Add(")")
-					.ToSqlString();
+				return new SqlString("cast('", Name, "' as ", FunctionReturnType.SqlTypes(factory)[0].ToString(), ")");
 			}
 		}
 

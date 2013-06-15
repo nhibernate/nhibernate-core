@@ -24,7 +24,7 @@ namespace NHibernate
 		public PropertyNotFoundException(System.Type targetType, string propertyName, string accessorType)
 			: base(String.Format("Could not find a {0} for property '{1}' in class '{2}'",
 													 accessorType, propertyName, targetType
-			       	))
+					))
 		{
 			this.targetType = targetType;
 			this.propertyName = propertyName;
@@ -47,7 +47,7 @@ namespace NHibernate
 
 		public PropertyNotFoundException(string propertyName, string fieldName, System.Type targetType)
 			: base(String.Format("Could not find the property '{0}', associated to the field '{1}', in class '{2}'", propertyName, fieldName, targetType
-			       	))
+					))
 		{
 			this.targetType = targetType;
 			this.propertyName = propertyName;

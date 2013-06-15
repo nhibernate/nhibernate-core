@@ -41,21 +41,6 @@ namespace NHibernate.Type
 			return new GenericIdentifierBagType<T>(role, propertyRef);
 		}
 
-		public virtual CollectionType Set(string role, string propertyRef, bool embedded)
-		{
-			return new SetType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType OrderedSet(string role, string propertyRef, bool embedded)
-		{
-			return new OrderedSetType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return new SortedSetType(role, propertyRef, comparer, embedded);
-		}
-
 		public virtual CollectionType Set<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericSetType<T>(role, propertyRef);

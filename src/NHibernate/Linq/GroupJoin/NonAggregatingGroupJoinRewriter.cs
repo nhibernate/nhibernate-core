@@ -6,6 +6,7 @@ using NHibernate.Linq.GroupJoin;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -153,7 +154,7 @@ namespace NHibernate.Linq.Visitors
 
 	}
 
-	internal class QuerySourceUsageLocator : NhExpressionTreeVisitor
+	internal class QuerySourceUsageLocator : ExpressionTreeVisitor
 	{
 		private readonly IQuerySource _querySource;
 		private bool _references;

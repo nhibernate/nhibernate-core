@@ -27,10 +27,8 @@ namespace NHibernate.Linq.GroupBy
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
 	/// </para>
 	/// </summary>
-	public class AggregatingGroupByRewriter
+	public static class AggregatingGroupByRewriter
 	{
-		private AggregatingGroupByRewriter() { }
-
 		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
 			{
 				typeof (SkipResultOperator),
@@ -66,7 +64,7 @@ namespace NHibernate.Linq.GroupBy
 
 			queryModel.ResultOperators.Insert(0, groupBy);
 
-			for (int i = 0; i < queryModel.BodyClauses.Count; i++)
+			for (var i = 0; i < queryModel.BodyClauses.Count; i++)
 			{
 				var clause = queryModel.BodyClauses[i];
 				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));

@@ -329,7 +329,7 @@ namespace NHibernate.Type
 		}
 
 		public override object Replace(object original, object target, ISessionImplementor session, object owner,
-		                               IDictionary copyCache)
+									   IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -342,8 +342,8 @@ namespace NHibernate.Type
 			}
 
 			object result = target == null || target == original
-			                	? InstantiateResult(original)
-			                	: target;
+								? InstantiateResult(original)
+								: target;
 
 			//for arrays, replaceElements() may return a different reference, since
 			//the array length might not match
@@ -362,7 +362,7 @@ namespace NHibernate.Type
 		}
 
 		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-		                                      ISessionImplementor session)
+											  ISessionImplementor session)
 		{
 			// TODO: does not work for EntityMode.DOM4J yet!
 			object result = target;
@@ -453,7 +453,7 @@ namespace NHibernate.Type
 		}
 
 		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable,
-		                                ISessionImplementor session)
+										ISessionImplementor session)
 		{
 			return false;
 		}
@@ -586,9 +586,9 @@ namespace NHibernate.Type
 				
 				if (element.IsProxy())
 				{
-                    INHibernateProxy proxy = element as INHibernateProxy; 
-                    
-                    ILazyInitializer li = proxy.HibernateLazyInitializer;
+					INHibernateProxy proxy = element as INHibernateProxy; 
+					
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (!li.IsUninitialized)
 						element = li.GetImplementation();
 				}
@@ -637,7 +637,7 @@ namespace NHibernate.Type
 
 		protected internal virtual string RenderLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			IList list = new ArrayList();
+			IList list = new List<object>();
 			IType elemType = GetElementType(factory);
 			IEnumerable iter = GetElementsIterator(value);
 			foreach (object o in iter)

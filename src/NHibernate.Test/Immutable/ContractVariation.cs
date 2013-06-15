@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Immutable
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Test.Immutable
 		private long version;
 		private Contract contract;
 		private string text;
-		private ISet<Info> infos = new HashedSet<Info>();
+		private ISet<Info> infos = new HashSet<Info>();
 
 		public ContractVariation()
 		{

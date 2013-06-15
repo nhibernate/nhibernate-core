@@ -451,7 +451,7 @@ namespace NHibernate.Test.QueryTest
 					.Add<int>(countItems); // we expect a generic result from this (List<int>)
 				var results = multiCriteria.List();
 
-				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<int>>());
 			}
 		}

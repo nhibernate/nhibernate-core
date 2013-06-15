@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
@@ -6,7 +6,7 @@ namespace NHibernate.Test.Operations
 	{
 		public VersionedEntity()
 		{
-			Children = new HashedSet<VersionedEntity>();
+			Children = new HashSet<VersionedEntity>();
 		}
 
 		public virtual string Id { get; set; }

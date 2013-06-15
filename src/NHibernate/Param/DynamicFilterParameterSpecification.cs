@@ -211,12 +211,12 @@ namespace NHibernate.Param
 
 			public void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 			{
-				int start = index;
-				int positions = 0;
-				int singleParameterColumnSpan = elementType.GetColumnSpan(session.Factory);
+				var start = index;
+				var positions = 0;
+				var singleParameterColumnSpan = elementType.GetColumnSpan(session.Factory);
 
-				var collection = (ICollection)value;
-				foreach (object element in collection)
+				var collection = (IEnumerable) value;
+				foreach (var element in collection)
 				{
 					elementType.NullSafeSet(st, element, start + positions, session);
 					positions += singleParameterColumnSpan;

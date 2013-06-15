@@ -70,7 +70,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(new EntityKey(id, persister, EntityMode.Poco));
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
 				if (loaded != null)
 				{
 					return loaded;
@@ -108,47 +108,6 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override IList List(string query, QueryParameters parameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				IList results = new ArrayList();
-				List(query, parameters, results);
-				return results;
-			}
-		}
-
-		public override void List(string query, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
-				bool success = false;
-				try
-				{
-					plan.PerformList(queryParameters, this, results);
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-				temporaryPersistenceContext.Clear();
-			}
-		}
-
 		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -177,28 +136,6 @@ namespace NHibernate.Impl
 					AfterOperation(success);
 				}
 				temporaryPersistenceContext.Clear();
-			}
-		}
-
-		public override IList<T> List<T>(string query, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(query, queryParameters, results);
-				return results;
-			}
-		}
-
-		public override IList<T> List<T>(CriteriaImpl criteria)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(criteria, results);
-				return results;
 			}
 		}
 
@@ -242,40 +179,15 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-
-		private IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
+		
+		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				if (!(persister is IOuterJoinLoadable))
-				{
-					throw new MappingException("class persister is not IOuterJoinLoadable: " + entityName);
-				}
-				return (IOuterJoinLoadable)persister;
-			}
+			throw new NotImplementedException();
 		}
 
-		public override IList List(CriteriaImpl criteria)
+		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				ArrayList results = new ArrayList();
-				List(criteria, results);
-				return results;
-			}
-		}
-
-		public override IEnumerable Enumerable(string query, QueryParameters parameters)
-		{
-			throw new NotSupportedException();
-		}
-
-		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
-		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters parameters)
@@ -329,51 +241,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				ArrayList results = new ArrayList();
-				List(spec, queryParameters, results);
-				return results;
-			}
-		}
-
-		public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				SQLCustomQuery query = new SQLCustomQuery(
-					spec.SqlQueryReturns,
-					spec.QueryString,
-					spec.QuerySpaces,
-					Factory);
-				ListCustomQuery(query, queryParameters, results);
-			}
-		}
-
-		public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				List(spec, queryParameters, results);
-				return results;
-			}
-		}
-
 		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 
-				CustomLoader loader = new CustomLoader(customQuery, Factory);
+				var loader = new CustomLoader(customQuery, Factory);
 
-				bool success = false;
+				var success = false;
 				try
 				{
 					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
@@ -384,17 +260,6 @@ namespace NHibernate.Impl
 					AfterOperation(success);
 				}
 				temporaryPersistenceContext.Clear();
-			}
-		}
-
-		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// TODO pull up
-				List<T> results = new List<T>();
-				ListCustomQuery(customQuery, queryParameters, results);
-				return results;
 			}
 		}
 
@@ -411,16 +276,6 @@ namespace NHibernate.Impl
 		public override IDictionary<string, IFilter> EnabledFilters
 		{
 			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
-		}
-
-		public override IQueryTranslator[] GetQueries(string query, bool scalar)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// take the union of the query spaces (ie the queried tables)
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-				return plan.Translators;
-			}
 		}
 
 		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
@@ -491,7 +346,7 @@ namespace NHibernate.Impl
 			{
 				if (entity.IsProxy())
 				{
-					INHibernateProxy proxy = entity as INHibernateProxy;
+					var proxy = entity as INHibernateProxy;
 					entity = proxy.HibernateLazyInitializer.GetImplementation();
 				}
 				return GuessEntityName(entity);
@@ -837,7 +692,7 @@ namespace NHibernate.Impl
 
 				if (persister.HasCache)
 				{
-					CacheKey ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, EntityMode, Factory);
+					CacheKey ck = GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 					persister.Cache.Remove(ck);
 				}
 
@@ -1061,13 +916,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(query, false);
+				var plan = GetHQLQueryPlan(queryExpression, false);
 				bool success = false;
 				int result;
 				try

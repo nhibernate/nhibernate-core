@@ -1,5 +1,5 @@
 ﻿using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {
@@ -8,7 +8,7 @@ namespace NHibernate.Test.Cascade.Circle
 		private long vehicleId;
 		private long version;
 		private string name;
-		private ISet<Transport> transports = new HashedSet<Transport>();
+		private ISet<Transport> transports = new HashSet<Transport>();
 		private Route route;
 		private string transientField = "vehicle original value";
 		

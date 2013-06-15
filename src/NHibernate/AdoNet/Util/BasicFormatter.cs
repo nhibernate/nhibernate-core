@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.AdoNet.Util
@@ -10,12 +9,12 @@ namespace NHibernate.AdoNet.Util
 	{
 		protected const string IndentString = "    ";
 		protected const string Initial = "\n    ";
-		protected static readonly HashedSet<string> beginClauses = new HashedSet<string>();
-		protected static readonly HashedSet<string> dml = new HashedSet<string>();
-		protected static readonly HashedSet<string> endClauses = new HashedSet<string>();
-		protected static readonly HashedSet<string> logical = new HashedSet<string>();
-		protected static readonly HashedSet<string> misc = new HashedSet<string>();
-		protected static readonly HashedSet<string> quantifiers = new HashedSet<string>();
+		protected static readonly HashSet<string> beginClauses = new HashSet<string>();
+		protected static readonly HashSet<string> dml = new HashSet<string>();
+		protected static readonly HashSet<string> endClauses = new HashSet<string>();
+		protected static readonly HashSet<string> logical = new HashSet<string>();
+		protected static readonly HashSet<string> misc = new HashSet<string>();
+		protected static readonly HashSet<string> quantifiers = new HashSet<string>();
 
 		static BasicFormatter()
 		{

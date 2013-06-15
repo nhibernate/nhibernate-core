@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -35,7 +35,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		[Test]
 		public void UpdateReservedWordsInDialect()
 		{
-			var reservedDb = new HashedSet<string>();
+			var reservedDb = new HashSet<string>();
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -97,7 +97,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		[Test]
 		public void AutoQuoteTableAndColumnsAtStratupIncludeKeyWordsImport()
 		{
-			var reservedDb = new HashedSet<string>();
+			var reservedDb = new HashSet<string>();
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			var connectionHelper = new ManagedProviderConnectionHelper(configuration.Properties);
@@ -123,18 +123,9 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			Assert.That(match, Is.EquivalentTo(reservedDb));
 		}
 
-		private static Column GetColumnByName(IEnumerable<Column> culs, string colName)
+		private static Column GetColumnByName(IEnumerable<Column> columns, string colName)
 		{
-			Column result= null;
-			foreach (var column in culs)
-			{
-				if (column.Name.Equals(colName))
-				{
-					result = column;
-					break;
-				}
-			}
-			return result;
+			return columns.FirstOrDefault(column => column.Name.Equals(colName));
 		}
 
 		[Test]

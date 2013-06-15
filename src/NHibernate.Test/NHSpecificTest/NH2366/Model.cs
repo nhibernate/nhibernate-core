@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2366
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2366
 	{
 		private int id;
 		private string value;
-		private ISet<Two> twos = new HashedSet<Two>();
+		private ISet<Two> twos = new HashSet<Two>();
 		
 		public virtual int Id
 		{

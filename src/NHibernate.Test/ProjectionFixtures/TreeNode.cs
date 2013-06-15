@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Test.ProjectionFixtures;
 
 namespace NHibernate.Test.ProjectionFixtures
@@ -13,7 +13,7 @@ namespace NHibernate.Test.ProjectionFixtures
 
         public TreeNode()
         {
-            DirectChildren = new HashedSet<TreeNode>();
+            DirectChildren = new HashSet<TreeNode>();
         }
     }
 }

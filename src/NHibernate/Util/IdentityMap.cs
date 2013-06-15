@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 
@@ -28,8 +29,6 @@ namespace NHibernate.Util
 	[Serializable]
 	public sealed class IdentityMap : IDictionary, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentityMap));
-
 		// key = IdentityKey of the passed in Key
 		// value = object passed in
 		private IDictionary map;
@@ -227,7 +226,7 @@ namespace NHibernate.Util
 		{
 			get
 			{
-				IList list = new ArrayList(map.Count);
+				IList list = new List<object>(map.Count);
 				foreach (DictionaryEntry de in map)
 				{
 					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);

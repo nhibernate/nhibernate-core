@@ -31,21 +31,21 @@ namespace NHibernate.Mapping
 				if (IsGeneric && IsSorted)
 				{
 					CheckGenericArgumentsLength(2);
-					if (TypeName.Contains("sorted-list"))
+					if (TypeName != null && TypeName.Contains("sorted-list"))
 					{
 						return
 							TypeFactory.GenericSortedList(Role, ReferencedPropertyName, Comparer, GenericArguments[0], GenericArguments[1]);
 					}
-					else if (TypeName.Contains("sorted-dictionary"))
+					else if (TypeName != null && TypeName.Contains("sorted-dictionary"))
 					{
 						return
 							TypeFactory.GenericSortedDictionary(Role, ReferencedPropertyName, Comparer, GenericArguments[0],
-							                                    GenericArguments[1]);
+																GenericArguments[1]);
 					}
 					else
 					{
 						throw new MappingException(
-							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map");
+							"Use collection-type='sorted-list/sorted-dictionary' to choose implementation for generic map owned by " + this.OwnerEntityName);
 					}
 				}
 				return base.CollectionType;

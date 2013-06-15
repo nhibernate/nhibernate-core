@@ -46,7 +46,7 @@ namespace NHibernate.Persister.Entity
 			// now look up the object we are really interested in!
 			// (this lets us correctly handle proxies and multi-row
 			// or multi-column queries)
-			return session.PersistenceContext.GetEntity(new EntityKey(id, persister, session.EntityMode));
+			return session.PersistenceContext.GetEntity(session.GenerateEntityKey(id, persister));
 		}
 	}
 }

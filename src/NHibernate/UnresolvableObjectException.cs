@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 using NHibernate.Impl;
 
@@ -91,8 +92,11 @@ namespace NHibernate
 
 		#region ISerializable Members
 
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags=SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags=SecurityPermissionFlag.SerializationFormatter)]
+#endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

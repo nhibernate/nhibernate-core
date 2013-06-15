@@ -99,14 +99,13 @@ namespace NHibernate.Criterion
 						propertyName);
 				}
 
-				return new SqlStringBuilder(6)
-					.Add(criteriaQuery.Factory.Dialect.LowercaseFunction)
-					.Add(StringHelper.OpenParen)
-					.Add(columnNames[0])
-					.Add(StringHelper.ClosedParen)
-					.Add(Op)
-					.Add(parameters.Single())
-					.ToSqlString();
+				return new SqlString(
+					criteriaQuery.Factory.Dialect.LowercaseFunction,
+					StringHelper.OpenParen,
+					columnNames[0],
+					StringHelper.ClosedParen,
+					Op,
+					parameters.Single());
 			}
 			else
 			{
@@ -190,7 +189,8 @@ namespace NHibernate.Criterion
 			{
 				return value.ToString();
 			}
-			return ObjectUtils.IdentityToString(value);
+
+			return ObjectHelpers.IdentityToString(value);
 		}
 	}
 }

@@ -136,7 +136,7 @@ namespace NHibernate.SqlCommand
 			}
 
 			SqlString sqlPart = part as SqlString;
-			if (StringHelper.IsNotEmpty(sqlPart))
+			if (SqlStringHelper.IsNotEmpty(sqlPart))
 			{
 				return Add(sqlPart);
 			}

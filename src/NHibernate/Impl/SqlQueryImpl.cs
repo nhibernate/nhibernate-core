@@ -70,7 +70,7 @@ namespace NHibernate.Impl
 			{
 				NativeSQLQueryRootReturn ret =
 					new NativeSQLQueryRootReturn(returnAliases[i], returnClasses[i].FullName,
-					                             lockModes == null ? LockMode.None : lockModes[i]);
+												 lockModes == null ? LockMode.None : lockModes[i]);
 				queryReturns.Add(ret);
 			}
 			this.querySpaces = querySpaces;
@@ -310,6 +310,15 @@ namespace NHibernate.Impl
 			{
 				After();
 			}
+		}
+
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			ExpandParameterLists(queryParameters.NamedParameters);
+
+			var sqlQuery = this as ISQLQuery;
+			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
 		}
 	}
 }

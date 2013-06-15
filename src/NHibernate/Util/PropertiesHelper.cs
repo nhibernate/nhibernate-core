@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Util
@@ -51,11 +50,11 @@ namespace NHibernate.Util
 		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary<string, string> properties)
 		{
 			IDictionary<string, string> map = new Dictionary<string, string>();
-			
-			if (properties.ContainsKey(property))
+
+			string propValue;
+			if (properties.TryGetValue(property, out propValue))
 			{
-				string propValue = properties[property];
-				StringTokenizer tokens = new StringTokenizer(propValue, delim, false);
+				var tokens = new StringTokenizer(propValue, delim, false);
 				IEnumerator<string> en = tokens.GetEnumerator();
 				while (en.MoveNext())
 				{
@@ -66,23 +65,6 @@ namespace NHibernate.Util
 				}
 			}
 			return map;
-		}
-
-		public static string[] ToStringArray(string property, string delim, IDictionary properties)
-		{
-			return ToStringArray((string) properties[property], delim);
-		}
-
-		public static string[] ToStringArray(string propValue, string delim)
-		{
-			if (propValue != null)
-			{
-				return StringHelper.Split(delim, propValue);
-			}
-			else
-			{
-				return new string[0];
-			}
 		}
 	}
 }

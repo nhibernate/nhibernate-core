@@ -233,6 +233,28 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void Customers11to20And21to30ShouldNoCacheQuery()
+		{
+			var query = (from c in db.Customers
+							orderby c.CustomerId
+							select c.CustomerId).Skip(10).Take(10).ToList();
+			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual(10, query.Count);
+
+			query = (from c in db.Customers
+						orderby c.CustomerId
+						select c.CustomerId).Skip(20).Take(10).ToList();
+			Assert.AreNotEqual(query[0], "BSBEV");
+			Assert.AreEqual(10, query.Count);
+
+			query = (from c in db.Customers
+						orderby c.CustomerId
+						select c.CustomerId).Skip(10).Take(20).ToList();
+			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual(20, query.Count);
+		}
+
+		[Test]
 		[Ignore("Multiple Takes (or Skips) not handled correctly")]
 		public void CustomersChainedTake()
 		{
@@ -241,7 +263,7 @@ namespace NHibernate.Test.Linq
 					 select c.CustomerId).Take(5).Take(6);
 			
 			var query = q.ToList();
-			
+
 			Assert.AreEqual(5, query.Count);
 			Assert.AreEqual("ALFKI", query[0]);
 			Assert.AreEqual("BLAUS", query[4]);
@@ -256,7 +278,6 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(query[0], "CONSH");
 			Assert.AreEqual(76, query.Count);
 		}
-
 
 		[Test]
 		[Ignore("Count with Skip or Take is incorrect (Skip / Take done on the query not the HQL, so get applied at the wrong point")]
@@ -356,6 +377,50 @@ namespace NHibernate.Test.Linq
 				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithOuterWhereClauseResort()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			var ids = db.Products
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			Assert.That(ids, Is.EqualTo(inMemoryIds));
+		}
+
+		[Test]
+		public void PagedProductsWithInnerAndOuterWhereClauses()
+		{
+			//NH-2588
+			var inMemoryIds = db.Products.ToList()
+				.Where(x => x.UnitsInStock < 100)
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			var ids = db.Products
+				.Where(x => x.UnitsInStock < 100)
+				.OrderByDescending(x => x.ProductId)
+				.Skip(10).Take(20)
+				.Where(x => x.UnitsInStock > 0)
+				.OrderBy(x => x.Name)
 				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));

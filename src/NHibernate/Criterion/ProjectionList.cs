@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -7,7 +6,6 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -120,19 +118,19 @@ namespace NHibernate.Criterion
 		
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			IList result = new ArrayList(this.Length);
-			for (int i = 0; i < this.Length; i++)
+			var result = new List<string>(Length);
+			for (var i = 0; i < Length; i++)
 			{
-				string[] colAliases = ProjectionList.GetColumnAliases(position, criteria, criteriaQuery, this[i]);
-				ArrayHelper.AddAll(result, colAliases);
+				var colAliases = GetColumnAliases(position, criteria, criteriaQuery, this[i]);
+				result.AddRange(colAliases);
 				position += colAliases.Length;
 			}
-			return ArrayHelper.ToStringArray(result);
+			return result.ToArray();
 		}
 		
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			for (int i = 0; i < this.Length; i++)
+			for (int i = 0; i < Length; i++)
 			{
 				string[] result = GetColumnAliases(alias, position, criteria, criteriaQuery, this[i]);
 				if (result != null) return result;

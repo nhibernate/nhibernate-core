@@ -6,8 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 {
 	public class State
 	{
-		private ISet<MasterEntity> _masterEntities = new HashedSet<MasterEntity>();
-		private ISet<StateDescription> _stateDescriptions = new HashedSet<StateDescription>();
+		private ISet<MasterEntity> _masterEntities = new HashSet<MasterEntity>();
+		private ISet<StateDescription> _stateDescriptions = new HashSet<StateDescription>();
 		private Int32 _id;
 		private String _name;
 		private Byte[] _rowVersionId;

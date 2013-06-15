@@ -6,6 +6,7 @@ using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
+	[TestFixture]
 	public class AnyExtensionTests
 	{
 		[Test]

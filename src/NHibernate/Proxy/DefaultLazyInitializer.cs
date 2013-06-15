@@ -15,8 +15,8 @@ namespace NHibernate.Proxy
 			typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		public DefaultLazyInitializer(string entityName, System.Type persistentClass, object id, MethodInfo getIdentifierMethod,
-		                       MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType,
-		                       ISessionImplementor session)
+							   MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType,
+							   ISessionImplementor session)
 			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session) {}
 
 		#region Implementation of IInterceptor

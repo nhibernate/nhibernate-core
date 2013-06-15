@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Iesi.Collections.Generic;
 
 namespace NHibernate.Type
@@ -25,7 +26,7 @@ namespace NHibernate.Type
 
 		public override object Instantiate(int anticipatedSize)
 		{
-			return new OrderedSet<T>();
+			return new LinkedHashSet<T>();
 		}
 	}
 }

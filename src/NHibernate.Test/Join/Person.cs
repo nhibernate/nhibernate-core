@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Join
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.Join
 	{
 		public Person()
 		{
-			OthersPhones = new HashedSet<string>();
+			OthersPhones = new HashSet<string>();
 		}
 		private char _Sex;
 		public virtual char Sex

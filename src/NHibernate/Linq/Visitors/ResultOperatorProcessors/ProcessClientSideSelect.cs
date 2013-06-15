@@ -25,8 +25,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			tree.AddListTransformer(lambda);
 		}
 	}
-
-	internal class ProcessClientSideSelect2 : IResultOperatorProcessor<ClientSideSelect2>
+	public class ProcessClientSideSelect2 : IResultOperatorProcessor<ClientSideSelect2>
 	{
 		public void Process(ClientSideSelect2 resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

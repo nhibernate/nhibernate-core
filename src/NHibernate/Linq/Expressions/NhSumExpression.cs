@@ -8,5 +8,10 @@ namespace NHibernate.Linq.Expressions
 			: base(expression, NhExpressionType.Sum)
 		{
 		}
+
+		public override Expression CreateNew(Expression expression)
+		{
+			return new NhSumExpression(expression);
+		}
 	}
 }

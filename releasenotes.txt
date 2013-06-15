@@ -1,3 +1,33 @@
+Build vNext
+=============================
+
+** Known BREAKING CHANGES from NH3.3.3.CR1 to vNext
+
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
+    ##### Possible Breaking Changes #####
+        * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
+        * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators assepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Mis-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+        * Static fields on NHibernateUtil are declared as their exact class
+
 Build 3.3.3.GA
 =============================
 

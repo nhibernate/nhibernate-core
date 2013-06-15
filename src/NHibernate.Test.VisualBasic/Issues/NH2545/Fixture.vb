@@ -44,11 +44,11 @@ Namespace Issues
 
                 Using session As ISession = OpenSession()
 
-                    Dim result = From e In session.Query(Of Entity)() _
+                    Dim result = (From e In session.Query(Of Entity)() _
                                  Where e.Name = "Bob" _
-                                 Select e
+                                 Select e).ToList()
 
-                    Assert.AreEqual(1, result.ToList().Count)
+                    Assert.AreEqual(1, result.Count)
 
                 End Using
 

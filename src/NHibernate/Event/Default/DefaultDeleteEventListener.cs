@@ -1,6 +1,5 @@
 using System;
-using Iesi.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Action;
 using NHibernate.Classic;
 using NHibernate.Engine;
@@ -30,7 +29,7 @@ namespace NHibernate.Event.Default
 			OnDelete(@event, new IdentitySet());
 		}
 
-		public virtual void OnDelete(DeleteEvent @event, ISet transientEntities)
+		public virtual void OnDelete(DeleteEvent @event, ISet<object> transientEntities)
 		{
 			IEventSource source = @event.Session;
 			IPersistenceContext persistenceContext = source.PersistenceContext;
@@ -65,7 +64,7 @@ namespace NHibernate.Event.Default
 					throw new TransientObjectException("the detached instance passed to delete() had a null identifier");
 				}
 
-				EntityKey key = new EntityKey(id, persister, source.EntityMode);
+				EntityKey key = source.GenerateEntityKey(id, persister);
 
 				persistenceContext.CheckUniqueness(key, entity);
 
@@ -139,13 +138,13 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">
 		/// A cache of already visited transient entities (to avoid infinite recursion).
 		/// </param>
-		protected virtual void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
+		protected virtual void DeleteTransientEntity(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
 			log.Info("handling transient entity in delete processing");
 			// NH different impl : NH-1895
 			if(transientEntities == null)
 			{
-				transientEntities = new HashedSet();
+				transientEntities = new HashSet<object>();
 			}
 			if (!transientEntities.Add(entity))
 			{
@@ -167,7 +166,7 @@ namespace NHibernate.Event.Default
 		/// <param name="isCascadeDeleteEnabled">Is delete cascading enabled? </param>
 		/// <param name="persister">The entity persister. </param>
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
-		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet transientEntities)
+		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -197,7 +196,7 @@ namespace NHibernate.Event.Default
 
 			// before any callbacks, etc, so subdeletions see that this deletion happened first
 			persistenceContext.SetEntryStatus(entityEntry, Status.Deleted);
-			EntityKey key = new EntityKey(entityEntry.Id, persister, session.EntityMode);
+			EntityKey key = session.GenerateEntityKey(entityEntry.Id, persister);
 
 			CascadeBeforeDelete(session, persister, entity, entityEntry, transientEntities);
 
@@ -241,7 +240,7 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		protected virtual void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet transientEntities)
+		protected virtual void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)
 		{
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;
@@ -260,7 +259,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet transientEntities)
+		protected virtual void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities)
 		{
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;

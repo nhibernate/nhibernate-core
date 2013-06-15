@@ -199,7 +199,7 @@ namespace NHibernate.Proxy
 		/// <returns>The Persistent Object this proxy is Proxying, or <see langword="null" />.</returns>
 		public object GetImplementation(ISessionImplementor s)
 		{
-			EntityKey key = new EntityKey(Identifier, s.Factory.GetEntityPersister(EntityName), s.EntityMode);
+			EntityKey key = s.GenerateEntityKey(Identifier, s.Factory.GetEntityPersister(EntityName));
 			return s.PersistenceContext.GetEntity(key);
 		}
 
@@ -249,7 +249,7 @@ namespace NHibernate.Proxy
 			if (id == null || s == null || entityName == null)
 				return null;
 
-			return new EntityKey(id, s.Factory.GetEntityPersister(entityName), s.EntityMode);
+			return s.GenerateEntityKey(id, s.Factory.GetEntityPersister(entityName));
 		}
 		
 		private void CheckTargetState()

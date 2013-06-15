@@ -6,6 +6,7 @@ using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -322,7 +323,7 @@ namespace NHibernate.Linq.Visitors
 
 			//When the expression is a member-access not nullable then use the HbmDot
 			var memberAccessExpression = @operator as MemberExpression;
-			if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof (bool).Equals(memberAccessExpression.Type))
+			if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof (bool) == memberAccessExpression.Type)
 			{
 				// this case make the difference when the property "Value" of a nullable type is used (ignore the null since the user is explicity checking the Value)
 				return original;

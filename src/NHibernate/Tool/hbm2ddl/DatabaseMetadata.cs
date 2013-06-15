@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using Iesi.Collections.Generic;
 
 using NHibernate.Dialect.Schema;
 using NHibernate.Exceptions;
@@ -17,9 +16,9 @@ namespace NHibernate.Tool.hbm2ddl
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
 
 		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
-		private readonly ISet<string> sequences = new HashedSet<string>();
+		private readonly ISet<string> sequences = new HashSet<string>();
 		private readonly bool extras;
-	    private readonly Dialect.Dialect dialect;
+		private readonly Dialect.Dialect dialect;
 		private readonly IDataBaseSchema meta;
 		private readonly ISQLExceptionConverter sqlExceptionConverter;
 		private static readonly string[] Types = {"TABLE", "VIEW"};
@@ -33,8 +32,8 @@ namespace NHibernate.Tool.hbm2ddl
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
 			meta = dialect.GetDataBaseSchema(connection);
-		    this.dialect = dialect;
-		    this.extras = extras;
+			this.dialect = dialect;
+			this.extras = extras;
 			InitSequences(connection, dialect);
 			sqlExceptionConverter = dialect.BuildSQLExceptionConverter();
 		}
@@ -60,7 +59,7 @@ namespace NHibernate.Tool.hbm2ddl
 					{
 						metaInfo =
 							meta.GetTables(StringHelper.ToUpperCase(catalog), StringHelper.ToUpperCase(schema),
-							               StringHelper.ToUpperCase(name), Types);
+										   StringHelper.ToUpperCase(name), Types);
 					}
 					else
 					{
@@ -68,7 +67,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							metaInfo =
 								meta.GetTables(StringHelper.ToLowerCase(catalog), StringHelper.ToLowerCase(schema),
-								               StringHelper.ToLowerCase(name), Types);
+											   StringHelper.ToLowerCase(name), Types);
 						}
 						else
 						{
@@ -168,8 +167,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public override String ToString()
 		{
-			return "DatabaseMetadata" + StringHelper.CollectionToString((ICollection)tables.Keys) + " " +
-						 StringHelper.CollectionToString((ICollection)sequences);
+			return string.Format("DatabaseMetadata{0} {1}", StringHelper.CollectionToString(tables.Keys), StringHelper.CollectionToString(sequences));
 		}
 	}
 }

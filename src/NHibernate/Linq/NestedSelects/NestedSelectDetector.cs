@@ -1,12 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	internal class NestedSelectDetector : NhExpressionTreeVisitor
+	internal class NestedSelectDetector : ExpressionTreeVisitor
 	{
 		private readonly ISessionFactory sessionFactory;
 		private readonly ICollection<Expression> _expressions = new List<Expression>();
@@ -54,6 +57,6 @@ namespace NHibernate.Linq.NestedSelects
 			var collectionRole = memberInfo.DeclaringType.FullName + "." + memberInfo.Name;
 
 			return sessionFactory.GetCollectionMetadata(collectionRole) != null;
-		}
+	}
 	}
 }

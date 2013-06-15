@@ -9,12 +9,6 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class WhereSubqueryTests : LinqTestCase
 	{
-		protected override void Configure(Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-			base.Configure(configuration);
-		}
-
 		[Test]
 		public void TimesheetsWithNoEntries()
 		{
@@ -22,27 +16,31 @@ namespace NHibernate.Test.Linq
 						 where !timesheet.Entries.Any()
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void TimeSheetsWithCountSubquery()
 		{
+// ReSharper disable UseMethodAny.1
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() >= 1
 						 select timesheet).ToList();
+// ReSharper restore UseMethodAny.1
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
 		public void TimeSheetsWithCountSubqueryReversed()
 		{
+// ReSharper disable UseMethodAny.1
 			var query = (from timesheet in db.Timesheets
 						 where 1 <= timesheet.Entries.Count()
 						 select timesheet).ToList();
+// ReSharper restore UseMethodAny.1
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -52,7 +50,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Count() > timesheet.Id
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -62,7 +60,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Id < timesheet.Entries.Count()
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -72,7 +70,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Average(e => e.NumberOfHours) > 12
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -82,7 +80,7 @@ namespace NHibernate.Test.Linq
 						 where 12 < timesheet.Entries.Average(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -93,7 +91,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Average(e => e.NumberOfHours) < timesheet.Id
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -104,7 +102,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Id > timesheet.Entries.Average(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -114,7 +112,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Max(e => e.NumberOfHours) == 14
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -124,7 +122,7 @@ namespace NHibernate.Test.Linq
 						 where 14 == timesheet.Entries.Max(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -134,7 +132,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Max(e => e.NumberOfHours) > timesheet.Id
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -144,7 +142,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Id < timesheet.Entries.Max(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -154,7 +152,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Min(e => e.NumberOfHours) < 7
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -164,7 +162,7 @@ namespace NHibernate.Test.Linq
 						 where 7 > timesheet.Entries.Min(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -174,7 +172,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Min(e => e.NumberOfHours) > timesheet.Id
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -184,7 +182,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Id < timesheet.Entries.Min(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -194,7 +192,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= 20
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -204,7 +202,7 @@ namespace NHibernate.Test.Linq
 						 where 20 >= timesheet.Entries.Sum(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -215,7 +213,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= timesheet.Id
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -226,7 +224,7 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Id >= timesheet.Entries.Sum(e => e.NumberOfHours)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -236,37 +234,34 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.Any(e => e.Comments.Contains("testing"))
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NG-2998")]
 		public void TimeSheetsWithStringContainsSubQueryWithAsQueryable()
 		{
-			//NH-2998
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(e => e.Comments.Contains("testing"))
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NH-2998")]
 		public void TimeSheetsWithStringContainsSubQueryWithAsQueryableAndExternalPredicate()
 		{
-			//NH-2998
 			Expression<Func<TimesheetEntry, bool>> predicate = e => e.Comments.Contains("testing");
 
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NH-2998")]
 		public void CategoriesSubQueryWithAsQueryableAndExternalPredicateWithClosure()
 		{
-			//NH-2998
 			var ids = new[] { 1 };
 			var quantities = new[] { 100 };
 
@@ -278,13 +273,12 @@ namespace NHibernate.Test.Linq
 						 where category.Products.AsQueryable().Any(predicate1)
 						 select category).ToList();
 
-			Assert.AreEqual(6, query.Count);
+			Assert.That(query.Count, Is.EqualTo(6));
 		}
 
-		[Test]
+		[Test(Description = "NH-2998")]
 		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithSecondLevelClosure()
 		{
-			//NH-2998
 			var ids = new[] { 1 };
 
 			Expression<Func<TimesheetEntry, bool>> predicate = e => !ids.Contains(e.Id);
@@ -293,85 +287,80 @@ namespace NHibernate.Test.Linq
 						 where timesheet.Entries.AsQueryable().Any(predicate)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NH-2998")]
 		public void TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithArray()
 		{
-			//NH-2998
 			Expression<Func<TimesheetEntry, bool>> predicate = e => !new[] { 1 }.Contains(e.Id);
 
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NH-2998")]
 		public void TimeSheetsSubQueryWithAsQueryableWithArray()
 		{
-			//NH-2998
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(e => !new[] { 1 }.Contains(e.Id))
 						 select timesheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		[Test(Description = "NH-3002")]
 		public void HqlOrderLinesWithInnerJoinAndSubQuery()
 		{
-			//NH-3002
 			var lines = session.CreateQuery(@"select c from OrderLine c
 join c.Order o
 where o.Customer.CustomerId = 'VINET'
 	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
 ").List<OrderLine>();
 
-			Assert.AreEqual(10, lines.Count);
+			Assert.That(lines.Count, Is.EqualTo(10));
 		}
 
-		[Test]
+		[Test(Description = "NH-3002")]
 		public void HqlOrderLinesWithImpliedJoinAndSubQuery()
 		{
-			//NH-3002
 			var lines = session.CreateQuery(@"from OrderLine c
 where c.Order.Customer.CustomerId = 'VINET'
 	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
 ").List<OrderLine>();
 
-			Assert.AreEqual(10, lines.Count);
+			Assert.That(lines.Count, Is.EqualTo(10));
 		}
 
-		[Test]
+		[Test(Description = "NH-2999 and NH-2988")]
 		public void OrderLinesWithImpliedJoinAndSubQuery()
 		{
-			//NH-2999 and NH-2988
+// ReSharper disable SimplifyLinqExpression
 			var lines = (from l in db.OrderLines
 						 where l.Order.Customer.CustomerId == "VINET"
 						 where !l.Order.Employee.Subordinates.Any(x => x.EmployeeId == 100)
 						 select l).ToList();
+// ReSharper restore SimplifyLinqExpression
 
-			Assert.AreEqual(10, lines.Count);
+			Assert.That(lines.Count, Is.EqualTo(10));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery1()
 		{
-			//NH-2904
 			var query = (from order in db.Orders
 						 where order.OrderLines.Any()
 						 select order).ToList();
 
-			Assert.AreEqual(830, query.Count);
+			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery2()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   select line.Order;
 
@@ -379,13 +368,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Contains(order)
 						 select order).ToList();
 
-			Assert.AreEqual(830, query.Count);
+			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery3()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   select line.Order.OrderId;
 
@@ -393,13 +381,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Contains(order.OrderId)
 						 select order).ToList();
 
-			Assert.AreEqual(830, query.Count);
+			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery4()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   select line.Order;
 
@@ -407,24 +394,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Any(x => x.OrderId == order.OrderId)
 						 select order).ToList();
 
-			Assert.AreEqual(830, query.Count);
+			Assert.That(query.Count, Is.EqualTo(830));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery5()
 		{
-			//NH-2904
 			var query = (from order in db.Orders
 						 where order.OrderLines.Any(x => x.Quantity == 5)
 						 select order).ToList();
 
-			Assert.AreEqual(61, query.Count);
+			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery6()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   where line.Quantity == 5
 						   select line.Order;
@@ -433,13 +418,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Contains(order)
 						 select order).ToList();
 
-			Assert.AreEqual(61, query.Count);
+			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery7()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   where line.Quantity == 5
 						   select line.Order.OrderId;
@@ -448,13 +432,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Contains(order.OrderId)
 						 select order).ToList();
 
-			Assert.AreEqual(61, query.Count);
+			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
-		[Test]
+		[Test(Description = "NH-2904")]
 		public void OrdersWithSubquery8()
 		{
-			//NH-2904
 			var subquery = from line in db.OrderLines
 						   where line.Quantity == 5
 						   select line.Order;
@@ -463,13 +446,22 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Any(x => x.OrderId == order.OrderId)
 						 select order).ToList();
 
-			Assert.AreEqual(61, query.Count);
+			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
-		[Test]
+		[Test(Description = "NH-2654")]
+		public void CategoriesWithDiscountedProducts()
+		{
+			var query = (from c in db.Categories
+						 where c.Products.Any(p => p.Discontinued)
+						 select c).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(5));
+		}
+
+		[Test(Description = "NH-3147")]
 		public void OrdersWithSubqueryWithJoin()
 		{
-			//NH-3147
 			var subquery = from line in db.OrderLines
 						   join product in db.Products
 							   on line.Product.ProductId equals product.ProductId
@@ -480,13 +472,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 where subquery.Contains(order)
 						 select order).ToList();
 
-			Assert.AreEqual(61, query.Count);
+			Assert.That(query.Count, Is.EqualTo(61));
 		}
 
-		[Test]
+		[Test(Description = "NH-2899")]
 		public void ProductsWithSubquery()
 		{
-			//NH-2899
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -497,10 +488,56 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-		[Test]
+		[Test(Description = "NH-2762")]
+		public void ProductsWithSubqueryAsIEnumerable()
+		{
+// ReSharper disable RedundantEnumerableCastCall
+			var categories = (from c in db.Categories
+							  where c.Name == "Confections"
+							  select c).ToList().OfType<ProductCategory>();
+// ReSharper restore RedundantEnumerableCastCall
+
+			var result = (from p in db.Products
+						  where categories.Contains(p.Category)
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test(Description = "NH-2762")]
+		public void ProductsWithSubqueryAsIGrouping()
+		{
+			var categories = (from c in db.Categories
+							  where c.Name == "Confections"
+							  select c).ToLookup(c => c.Name).Single();
+
+			var result = (from p in db.Products
+						  where categories.Contains(p.Category)
+						  select p)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(13));
+		}
+
+		[Test(Description = "NH-3155"), Ignore("Not fixed yet.")]
+		public void SubqueryWithGroupBy()
+		{
+			var sq = db.Orders
+				.GroupBy(x => x.ShippingDate)
+				.Select(x => x.Max(o => o.OrderId));
+
+			var result = db.Orders
+				.Where(x => sq.Contains(x.OrderId))
+				.Select(x => x.OrderId)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(388));
+		}
+
+		[Test(Description = "NH-3111")]
 		public void SubqueryWhereFailingTest()
 		{
-			//NH-3111
 			var list = (db.OrderLines
 				.Select(ol => new
 				{
@@ -514,10 +551,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
 
-		[Test]
+		[Test(Description = "NH-3111")]
 		public void SubqueryWhereFailingTest2()
 		{
-			//NH-3111
 			var list = db.OrderLines
 				.Select(ol => new
 				{
@@ -531,10 +567,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
 
-		[Test]
+		[Test(Description = "NH-3111")]
 		public void SubqueryWhereFailingTest3()
 		{
-			//NH-3111
 			var list = db.OrderLines
 				.Select(ol => new
 				{
@@ -548,10 +583,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
 
-		[Test]
+		[Test(Description = "NH-3190")]
 		public void ProductsWithSubqueryReturningBoolFirstOrDefaultEq()
 		{
-			//NH-3190
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
@@ -563,18 +597,18 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-		[Test]
+		[Test(Description = "NH-3190")]
 		public void CategoriesWithFirstProductIsNotDiscouned()
 		{
-			//NH-3190
 			var result = (from c in db.Categories
-						  where c.Products.Select(p => p.Discontinued).FirstOrDefault() == false
+						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
 						  select c).ToList();
 
 			Assert.That(result.Count, Is.EqualTo(7));
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test(Description = "NH-3190")]
+		[Ignore("Not fixed yet.")]
 		public void ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEq()
 		{
 			//NH-3190
@@ -589,10 +623,9 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-		[Test]
+		[Test(Description = "NH-3190")]
 		public void ProductsWithSubqueryReturningStringFirstOrDefaultEq()
 		{
-			//NH-3190
 			var result = (from p in db.Products
 						  where (from c in db.Categories
 								 where c.Name == "Confections"

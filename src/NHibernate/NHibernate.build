@@ -17,10 +17,14 @@
 		<property name="project.output" value="${bin.dir}/unmerged/NHibernate.dll" />
 
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="mscorlib.dll" />
 			<include name="System.dll" />
+			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
+			<include name="System.ServiceModel.dll" />
 			<include name="System.XML.dll" />
+			<include name="System.Xml.Linq.dll" />
 			<include name="System.Data.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="Antlr3.Runtime.dll" />
@@ -40,7 +44,7 @@
 
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
 
-	<target name="ilmerge" depends="generate-assemblyinfo common.compile-dll">
+	<target name="merge" depends="generate-assemblyinfo common.compile-dll">
 		<uptodate property="NHibernate.dll.uptodate">
 			<sourcefiles>
 				<include name="${bin.dir}/unmerged/NHibernate.dll"/>
@@ -57,9 +61,10 @@
       <copy file="${bin.dir}/unmerged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<copy file="${bin.dir}/unmerged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 			
-			<exec program="../../Tools/ILMerge/ILMerge.exe">
+			<exec program="../../Tools/ilrepack/ilrepack.exe">
 				<arg value="/t:library" />
 				<arg value="/internalize" />
+				<arg value="/targetplatform:v4" />
 				<arg value="/keyfile:../NHibernate.snk" />
 				<arg value="/out:${bin.dir}/merged/NHibernate.dll" />
 				<arg value="${bin.dir}/NHibernate.dll" />
@@ -72,8 +77,9 @@
       <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
       <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
 
-      <exec program="../../Tools/ILMerge/ILMerge.exe">
+      <exec program="../../Tools/ilrepack/ilrepack.exe">
         <arg value="/t:library" />
+        <arg value="/targetplatform:v4" />
         <arg value="/keyfile:../NHibernate.snk" />
         <arg value="/out:${bin.dir}/merged/NHibernate.dll" />
         <arg value="${bin.dir}/NHibernate.dll" />
@@ -89,7 +95,7 @@
 		</if>
 	</target>
 	
-	<target name="build" description="Build NHibernate" depends="ilmerge">
+	<target name="build" description="Build NHibernate" depends="merge">
 		<copy file="${bin.dir}/NHibernate.dll" tofile="${root.dir}/${lib.framework.dir}/NHibernate.dll"/>
 	</target>
 

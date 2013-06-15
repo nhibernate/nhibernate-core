@@ -12,38 +12,29 @@ namespace NHibernate.Util
 		/*
 		 * This class was created to filter List<ISelectable> to an IEnumerable<Column>
 		 */
-		private readonly IEnumerable collection;
+		private readonly IEnumerable _collection;
 
 		public SafetyEnumerable(IEnumerable collection)
 		{
-			this.collection = collection;
+			_collection = collection;
 		}
 
-		#region IEnumerable<T> Members
-
-		IEnumerator<T> IEnumerable<T>.GetEnumerator()
+		public IEnumerator<T> GetEnumerator()
 		{
-			IEnumerator enumerator = collection.GetEnumerator();
-			while(enumerator.MoveNext())
+			var enumerator = _collection.GetEnumerator();
+			while (enumerator.MoveNext())
 			{
-				object element = enumerator.Current;
+				var element = enumerator.Current;
 				if (element == null)
 					yield return default(T);
-				else
-					if (typeof(T).IsAssignableFrom(element.GetType()))
-						yield return (T) element;
+				else if (element is T)
+					yield return (T) element;
 			}
 		}
 
-		#endregion
-
-		#region IEnumerable Members
-
-		public IEnumerator GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable<T>)this).GetEnumerator();
+			return GetEnumerator();
 		}
-
-		#endregion
 	}
 }

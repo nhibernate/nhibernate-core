@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace NHibernate.Test
 {
-	public class NHAssert
+	public static class NHAssert
 	{
 		#region Serializable
 
@@ -31,7 +31,7 @@ namespace NHibernate.Test
 			var faulty = new List<System.Type>();
 
 			Assembly nhbA = Assembly.GetAssembly(clazz);
-			IList<System.Type> types = ClassList(nhbA, clazz);
+			var types = ClassList(nhbA, clazz);
 			foreach (System.Type tp in types)
 			{
 				object[] atts = tp.GetCustomAttributes(typeof(SerializableAttribute), false);
@@ -57,7 +57,7 @@ namespace NHibernate.Test
 		}
 
 		#endregion
-		private static IList<System.Type> ClassList(Assembly assembly, System.Type type)
+		private static IEnumerable<System.Type> ClassList(Assembly assembly, System.Type type)
 		{
 			IList<System.Type> result = new List<System.Type>();
 			if (assembly != null)

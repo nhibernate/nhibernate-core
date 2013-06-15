@@ -28,7 +28,7 @@ namespace NHibernate.Linq
 		internal Expression _expression;
 		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
-		public NhLinqExpression(Expression expression, ISessionFactory sessionFactory)
+		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
@@ -41,8 +41,7 @@ namespace NHibernate.Linq
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
 
 			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-																				p =>
-																				new Tuple<object, IType> { First = p.Value, Second = p.Type });
+																				p => System.Tuple.Create(p.Value, p.Type));
 
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
 
@@ -58,7 +57,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public IASTNode Translate(ISessionFactoryImplementor sessionFactory)
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();

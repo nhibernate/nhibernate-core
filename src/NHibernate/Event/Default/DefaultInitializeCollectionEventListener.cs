@@ -80,7 +80,7 @@ namespace NHibernate.Event.Default
 			{
 				ISessionFactoryImplementor factory = source.Factory;
 
-				CacheKey ck = new CacheKey(id, persister.KeyType, persister.Role, source.EntityMode, factory);
+				CacheKey ck = source.GenerateCacheKey(id, persister.KeyType, persister.Role);
 				object ce = persister.Cache.Get(ck, source.Timestamp);
 
 				if (factory.Statistics.IsStatisticsEnabled)

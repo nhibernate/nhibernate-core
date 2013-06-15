@@ -108,7 +108,7 @@ namespace NHibernate.Loader
 			collectionSuffixes = walker.CollectionSuffixes;
 			owners = walker.Owners;
 			collectionOwners = walker.CollectionOwners;
-			sql = walker.SqlString.Compact();
+			sql = walker.SqlString;
 			aliases = walker.Aliases;
 		}
 	}

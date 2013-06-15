@@ -132,7 +132,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override ICollection GetSnapshot(ICollectionPersister persister)
+		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			List<object> clonedList = new List<object>(bag.Count);

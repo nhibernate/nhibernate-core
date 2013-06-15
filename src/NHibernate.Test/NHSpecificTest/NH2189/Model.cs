@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2189
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 	{
 		public Policy()
 		{
-			Tasks = new HashedSet<Task>();
+			Tasks = new HashSet<Task>();
 		}
 
 		public virtual Guid Id { get; protected set; }

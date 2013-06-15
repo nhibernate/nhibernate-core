@@ -232,7 +232,7 @@
             reflection.
             </para>
             </remarks>
-            <exception cref="T:System.ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         </member>
         <member name="T:NAnt.Core.Attributes.BuildElementCollectionAttribute">
             <summary>
@@ -715,8 +715,15 @@
             </summary>
             <remarks>
             Derived classes that wish to add custom initialization should override 
-            the <see cref="M:NAnt.Core.Element.Initialize"/> method.
+            the <see cref="M:Initialize()" /> method.
             </remarks>
+        </member>
+        <member name="M:NAnt.Core.Element.GetLocation">
+            <summary>
+            Retrieves the location in the build file where the element is 
+            defined.
+            </summary>
+            <returns>The element's build file location</returns>
         </member>
         <member name="M:NAnt.Core.Element.Log(NAnt.Core.Level,System.String)">
             <summary>
@@ -1741,7 +1748,7 @@
         <member name="M:NAnt.Core.Filters.ExpandProperties.ReplenishBuffer">
             <summary>
             Refills the buffer, running our input through 
-            <see cref="M:NAnt.Core.PropertyDictionary.ExpandProperties(System.String,NAnt.Core.Location)"/>.)
+            <see cref="M:PropertyDictionary.ExpandProperties(string, Location)" />.)
             </summary>
         </member>
         <member name="P:NAnt.Core.Filters.ExpandProperties.AtEnd">
@@ -2267,7 +2274,7 @@
             </summary>
             <param name="s">A string containing the value to convert.</param>
             <returns>
-            <see langword="true"/> if <paramref name="value"/> is equivalent to 
+            <see langword="true"/> if <paramref name="s"/> is equivalent to 
             "True"; otherwise, <see langword="false"/>.
             </returns>
             <exception cref="T:System.FormatException"><paramref name="s"/> is not equivalent to <see cref="F:System.Boolean.TrueString"/> or <see cref="F:System.Boolean.FalseString"/>.</exception>
@@ -3684,7 +3691,7 @@
             Changes the extension of the path string.
             </summary>
             <param name="path">The path information to modify. The path cannot contain any of the characters 
-            defined in <see cref="F:System.IO.Path.InvalidPathChars"/>InvalidPathChars.</param>
+            defined in <see cref="T:System.IO.Path.InvalidPathChars"/>InvalidPathChars.</param>
             <param name="extension">The new extension (with a leading period). Specify a null reference 
             to remove an existing extension from <paramref name="path"/>.</param>
             <returns>
@@ -5243,7 +5250,7 @@
         </member>
         <member name="T:NAnt.Core.Tasks.CopyTask">
             <summary>
-            Copies a file or set of files to a new file or directory.
+            Copies a file, a directory, or set of files to a new file or directory.
             </summary>
             <remarks>
               <para>
@@ -5324,6 +5331,18 @@
                         <token key="TITLE" value="Foo Bar" />
                     </replacetokens>
                 </filterchain>
+            </copy>
+                ]]>
+              </code>
+            </example>
+            <example>
+              <para>
+              Copy an entire directory and its contents.
+              </para>
+              <code>
+                <![CDATA[
+            <copy tofile="target/dir">
+              <fileset basedir="source/dir"/>
             </copy>
                 ]]>
               </code>
@@ -7085,7 +7104,7 @@
         </member>
         <member name="T:NAnt.Core.Tasks.MoveTask">
             <summary>
-            Moves a file or set of files to a new file or directory.
+            Moves a file, a directory, or set of files to a new file or directory.
             </summary>
             <remarks>
               <para>
@@ -7158,6 +7177,18 @@
                         <token key="TITLE" value="Foo Bar" />
                     </replacetokens>
                 </filterchain>
+            </move>
+                ]]>
+              </code>
+            </example>
+            <example>
+              <para>
+              Move an entire directory and its contents.
+              </para>
+              <code>
+                <![CDATA[
+            <move tofile="target/dir">
+              <fileset basedir="source/dir"/>
             </move>
                 ]]>
               </code>
@@ -8404,7 +8435,7 @@
             Value for XmlDocument.PreserveWhitespace that is set before the xml is loaded.
             </param>
             <returns>
-            An <see cref="T:System.Xml.XmlDocument"/> containing
+            An <see cref="T:System.Xml.XmlDocument" /> containing
             the document object model representing the file.
             </returns>
         </member>
@@ -8906,86 +8937,28 @@
             tasks that use filesets. They are:
             </para>
             <list type="bullet">
-                <item>
-                    <description>
-                    **/*~
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/#*#
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/.#*
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/%*%
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/CVS
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/CVS/**
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/.cvsignore
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/.svn
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/.svn/**
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/_svn
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/_svn/**
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/SCCS
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/SCCS/**
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/vssver.scc
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/vssver2.scc
-                    </description>
-                </item>
-                <item>
-                    <description>
-                    **/_vti_cnf/**
-                    </description>
-                </item>
+                <item><description>**/.svn</description></item>
+                <item><description>**/.svn/**</description></item>
+                <item><description>**/_svn</description></item>
+                <item><description>**/_svn/**</description></item>
+                <item><description>**/.git</description></item>
+                <item><description>**/.git/**</description></item>
+                <item><description>**/.git* (eg. .gitignore)</description></item>
+                <item><description>**/.hg</description></item>
+                <item><description>**/.hg/**</description></item>
+                <item><description>**/.hg* (eg. .hgignore)</description></item>
+                <item><description>**/SCCS</description></item>
+                <item><description>**/SCCS/**</description></item>
+                <item><description>**/vssver.scc</description></item>
+                <item><description>**/vssver2.scc</description></item>
+                <item><description>**/_vti_cnf/**</description></item>
+                <item><description>**/*~</description></item>
+                <item><description>**/#*#</description></item>
+                <item><description>**/.#*</description></item>
+                <item><description>**/%*%</description></item>
+                <item><description>**/CVS</description></item>
+                <item><description>**/CVS/**</description></item>
+                <item><description>**/.cvsignore</description></item>
             </list>
             <para>
             If you do not want these default excludes applied, you may disable them 
@@ -11907,9 +11880,7 @@
             returns <paramref name="path2"/>.
             </returns>
             <remarks>
-              <para>
-              On *nix, processing is delegated to <see cref="M:System.IO.Path.Combine(System.String,System.String)"/>.
-              </para>
+              <para>On *nix, processing is delegated to <see cref="M:System.IO.Path.Combine(System.String,System.String)"/>.</para>
               <para>
               On Windows, this method normalized the paths to avoid running into
               the 260 character limit of a path and converts forward slashes in 
@@ -12102,7 +12073,7 @@
             aren't found in the local satellite assembly.
             </summary>
             <param name="assembly">
-            A <see cref="T:System.Reflection.Assembly"/> that represents the
+            A <see cref="T:System.Reflection.Assembly" /> that represents the
             assembly to register.
             </param>
             <example>
@@ -12121,23 +12092,23 @@
             Returns the value of the specified string resource.
             </summary>
             <param name="name">
-            A <see cref="T:System.String"/> that contains the name of the
+            A <see cref="T:System.String" /> that contains the name of the
             resource to get.
             </param>
             <returns>
-            A <see cref="T:System.String"/> that contains the value of the
+            A <see cref="T:System.String" /> that contains the value of the
             resource localized for the current culture.
             </returns>
             <remarks>
             The returned resource is localized for the cultural settings of the
-            current <see cref="T:System.Threading.Thread"/>.
+            current <see cref="T:System.Threading.Thread" />.
             <note>
             The <c>GetString</c> method is thread-safe.
             </note>
             </remarks>
             <example>
             The following example demonstrates the <c>GetString</c> method using
-            the cultural settings of the current <see cref="T:System.Threading.Thread"/>.
+            the cultural settings of the current <see cref="T:System.Threading.Thread" />.
             <code>
             <![CDATA[
             string localizedString = ResourceUtils.GetString("String_HelloWorld");
@@ -12153,7 +12124,7 @@
              <param name="name"></param>
              <param name="culture"></param>
              <returns>
-             A <see cref="T:System.String"/> that contains the value of the
+             A <see cref="T:System.String" /> that contains the value of the
              resource localized for the specified culture. 
             </returns>
              <remarks>
@@ -12178,18 +12149,18 @@
             the specified culture for the specified assembly.
             </summary>
             <param name="name">
-            A <see cref="T:System.String"/> that contains the name of the
+            A <see cref="T:System.String" /> that contains the name of the
             resource to get.
             </param>
             <param name="culture">
-            A <see cref="T:System.Globalization.CultureInfo"/> that represents
+            A <see cref="T:System.Globalization.CultureInfo" /> that represents
             the culture for which the resource is localized.
             </param>
             <param name="assembly">
-            A <see cref="T:System.Reflection.Assembly"/>
+            A <see cref="T:System.Reflection.Assembly" />
             </param>
             <returns>
-            A <see cref="T:System.String"/> that contains the value of the
+            A <see cref="T:System.String" /> that contains the value of the
             resource localized for the specified culture.
             </returns>
             <remarks>
@@ -12214,7 +12185,7 @@
             Registers the specified assembly.
             </summary>
             <param name="assembly">
-            A <see cref="T:System.Reflection.Assembly"/> that represents the
+            A <see cref="T:System.Reflection.Assembly" /> that represents the
             assembly to register.
             </param>
         </member>
@@ -14338,7 +14309,7 @@
         <member name="M:NAnt.Core.LogWriter.WriteLine(System.String,System.Object[])">
             <summary>
             Writes out a formatted string using the same semantics as 
-            <see cref="M:System.String.Format(System.String,System.Object[])"/>.
+            <see cref="M:string.Format(string, object[])" />.
             </summary>
             <param name="line">The formatting string.</param>
             <param name="args">The object array to write into format string.</param>
@@ -14559,7 +14530,7 @@
             </summary>
             <param name="uriOrFilePath">
             <para>The full path to the build file.</para>
-            <para>This can be of any form that <see cref="M:System.Xml.XmlDocument.Load(System.String)"/> accepts.</para>
+            <para>This can be of any form that <see cref="M:XmlDocument.Load(string)"/> accepts.</para>
             </param>
             <param name="threshold">The message threshold.</param>
             <param name="indentLevel">The project indentation level.</param>
@@ -14576,7 +14547,7 @@
             </summary>
             <param name="uriOrFilePath">
             <para>The full path to the build file.</para>
-            <para>This can be of any form that <see cref="M:System.Xml.XmlDocument.Load(System.String)"/> accepts.</para>
+            <para>This can be of any form that <see cref="M:XmlDocument.Load(string)"/> accepts.</para>
             </param>
             <param name="threshold">The message threshold.</param>
             <param name="indentLevel">The project indentation level.</param>
@@ -14593,7 +14564,7 @@
             </summary>
             <param name="uriOrFilePath">
             <para>The full path to the build file.</para>
-            <para>This can be of any form that <see cref="M:System.Xml.XmlDocument.Load(System.String)"/> accepts.</para>
+            <para>This can be of any form that <see cref="M:XmlDocument.Load(string)"/> accepts.</para>
             </param>
             <param name="parent">The parent <see cref="T:NAnt.Core.Project"/>.</param>
             <remarks>
@@ -14903,7 +14874,7 @@
             </summary>
             <param name="uriOrFilePath">
             <para>The full path to the build file.</para>
-            <para>This can be of any form that <see cref="M:System.Xml.XmlDocument.Load(System.String)"/> accepts.</para>
+            <para>This can be of any form that <see cref="M:XmlDocument.Load(string)"/> accepts.</para>
             </param>
             <returns>
             An <see cref="T:System.Xml.XmlDocument"/> based on the specified project 

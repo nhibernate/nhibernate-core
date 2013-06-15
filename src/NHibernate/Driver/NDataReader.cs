@@ -44,7 +44,7 @@ namespace NHibernate.Driver
 		/// </remarks>
 		public NDataReader(IDataReader reader, bool isMidstream)
 		{
-			ArrayList resultList = new ArrayList(2);
+			var resultList = new List<NResult>(2);
 
 			try
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Driver
 					resultList.Add(new NResult(reader, false));
 				}
 
-				results = (NResult[]) resultList.ToArray(typeof(NResult));
+				results = resultList.ToArray();
 			}
 			catch (Exception e)
 			{
@@ -594,10 +594,9 @@ namespace NHibernate.Driver
 				// interface, see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfSystemDataIDataRecordClassItemTopic1.asp.
 				// This is necessary for databases that don't preserve the case of field names when
 				// they are created without quotes (e.g. DB2, PostgreSQL).
-				if (fieldNameToIndex.ContainsKey(colName))
-				{
-					return fieldNameToIndex[colName];
-				}
+				int value;
+				if (fieldNameToIndex.TryGetValue(colName, out value))
+					return value;
 
 				foreach (KeyValuePair<string, int> pair in fieldNameToIndex)
 				{

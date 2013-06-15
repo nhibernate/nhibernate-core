@@ -1,5 +1,5 @@
 ﻿using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade
 {
@@ -17,7 +17,7 @@ namespace NHibernate.Test.Cascade
 		public G(string data)
 		{
 			this.data = data;
-			hs = new HashedSet<H>();
+			hs = new HashSet<H>();
 		}
 
 		public virtual long Id

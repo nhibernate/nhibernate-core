@@ -7,7 +7,7 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
-		<property name="Number" />
+		<property name="Number" column="`Number`" />
 		<bag name="Items" inverse="true" cascade="all-delete-orphan">
 			<key column="SalesOrder" />
 			<one-to-many class="Item"/>

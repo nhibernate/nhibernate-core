@@ -6,8 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 {
 	public class Culture
 	{
-		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashedSet<DataTypeDescription>();
-		private ISet<StateDescription> _stateDescriptions = new HashedSet<StateDescription>();
+		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashSet<DataTypeDescription>();
+		private ISet<StateDescription> _stateDescriptions = new HashSet<StateDescription>();
 		private String _countryCode;
 		private String _languageCode;
 		private Byte[] _rowVersionId;

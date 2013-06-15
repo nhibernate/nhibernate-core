@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading;
-using Iesi.Collections.Generic;
 
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -35,8 +34,8 @@ namespace NHibernate.AdoNet
 		private IDbCommand _batchCommand;
 		private SqlString _batchCommandSql;
 		private SqlType[] _batchCommandParameterTypes;
-		private readonly ISet<IDbCommand> _commandsToClose = new HashedSet<IDbCommand>();
-		private readonly ISet<IDataReader> _readersToClose = new HashedSet<IDataReader>();
+		private readonly HashSet<IDbCommand> _commandsToClose = new HashSet<IDbCommand>();
+		private readonly HashSet<IDataReader> _readersToClose = new HashSet<IDataReader>();
 		private readonly IDictionary<IDataReader, Stopwatch> _readersDuration = new Dictionary<IDataReader, Stopwatch>();
 		private IDbCommand _lastQuery;
 		private bool _releasing;
@@ -270,7 +269,7 @@ namespace NHibernate.AdoNet
 			_releasing = true;
 			try
 			{
-				foreach (IDataReader reader in new HashedSet<IDataReader>(_readersToClose))
+				foreach (IDataReader reader in new HashSet<IDataReader>(_readersToClose))
 				{
 					try
 					{

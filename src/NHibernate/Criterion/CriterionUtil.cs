@@ -55,7 +55,7 @@ namespace NHibernate.Criterion
 				enabledFilters);
 			return new SqlString[]
 				{
-					StringHelper.RemoveAsAliasesFromSql(sqlString)
+					SqlStringHelper.RemoveAsAliasesFromSql(sqlString)
 				};
 		}
 

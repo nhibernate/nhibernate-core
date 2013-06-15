@@ -177,7 +177,7 @@ namespace NHibernate
 		/// <param name="vals">A collection of values to list</param>
 		/// <param name="type">The Hibernate type of the values</param>
 		/// <returns>The instance for method chain.</returns>
-		IMultiQuery SetParameterList(string name, ICollection vals, IType type);
+		IMultiQuery SetParameterList(string name, IEnumerable vals, IType type);
 
 		/// <summary>
 		/// Bind multiple values to a named query parameter, guessing the Hibernate
@@ -187,7 +187,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="vals">A collection of values to list</param>
 		/// <returns>The instance for method chain.</returns>
-		IMultiQuery SetParameterList(string name, ICollection vals);
+		IMultiQuery SetParameterList(string name, IEnumerable vals);
 
 		/// <summary>
 		/// Bind an instance of a <see cref="string" /> to a named parameter

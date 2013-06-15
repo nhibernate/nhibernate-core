@@ -8,5 +8,6 @@ namespace NHibernate.Mapping.ByCode
 		void Formula(string formula);
 		void Lazy(LazyRelation lazyRelation);
 		void ForeignKey(string foreignKeyName);
+		void Where(string sqlWhereClause);
 	}
 }

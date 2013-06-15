@@ -51,7 +51,7 @@ namespace NHibernate.Persister
 		/// Creates a built in Entity Persister or a custom Persister.
 		/// </summary>
 		public static IEntityPersister CreateClassPersister(PersistentClass model, ICacheConcurrencyStrategy cache,
-		                                                    ISessionFactoryImplementor factory, IMapping cfg)
+															ISessionFactoryImplementor factory, IMapping cfg)
 		{
 			System.Type persisterClass = model.EntityPersisterClass;
 
@@ -74,7 +74,7 @@ namespace NHibernate.Persister
 		}
 
 		public static ICollectionPersister CreateCollectionPersister(Configuration cfg, Mapping.Collection model, ICacheConcurrencyStrategy cache,
-		                                                             ISessionFactoryImplementor factory)
+																	 ISessionFactoryImplementor factory)
 		{
 			System.Type persisterClass = model.CollectionPersisterClass;
 			if (persisterClass == null)
@@ -95,8 +95,8 @@ namespace NHibernate.Persister
 		/// Creates a specific Persister - could be a built in or custom persister.
 		/// </summary>
 		public static IEntityPersister Create(System.Type persisterClass, PersistentClass model,
-		                                      ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory,
-		                                      IMapping cfg)
+											  ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory,
+											  IMapping cfg)
 		{
 			ConstructorInfo pc;
 			try
@@ -131,7 +131,7 @@ namespace NHibernate.Persister
 		}
 
 		public static ICollectionPersister Create(System.Type persisterClass, Mapping.Collection model,
-		                                          ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, Configuration cfg)
+												  ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory, Configuration cfg)
 		{
 			ConstructorInfo pc;
 			var use4Parameters = false;

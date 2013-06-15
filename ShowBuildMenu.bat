@@ -1,7 +1,7 @@
 @echo off
 pushd %~dp0
 
-set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-3.5
+set NANT="%~dp0Tools\nant\bin\NAnt.exe" -t:net-4.0
 set BUILDTOOL="%~dp0Tools\BuildTool\bin\Release\BuildTool.exe"
 set AVAILABLE_CONFIGURATIONS=%~dp0available-test-configurations
 set CURRENT_CONFIGURATION=%~dp0current-test-configuration
@@ -138,12 +138,12 @@ set /p FOLDER=<folder.tmp
 del folder.tmp
 mkdir "%CURRENT_CONFIGURATION%" 2> nul
 del /q "%CURRENT_CONFIGURATION%\*"
-copy %FOLDER%\* "%CURRENT_CONFIGURATION%"
+copy "%FOLDER%\*" "%CURRENT_CONFIGURATION%"
 echo Configuration activated.
 goto main-menu
 
 :test-run
-start %NUNIT% NHibernate.nunit
+start "" %NUNIT% NHibernate.nunit
 goto main-menu
 
 rem :build-test

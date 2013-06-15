@@ -252,7 +252,7 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			ArrayList results = new ArrayList();
+			var results = new List<object>();
 			List(results);
 			return results;
 		}

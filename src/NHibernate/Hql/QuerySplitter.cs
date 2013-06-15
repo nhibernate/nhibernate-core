@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
-
 using NHibernate.Engine;
-using NHibernate.Hql.Classic;
 using NHibernate.Hql.Util;
 using NHibernate.Util;
 
@@ -14,8 +12,8 @@ namespace NHibernate.Hql
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
 
-		private static readonly ISet beforeClassTokens = new HashedSet();
-		private static readonly ISet notAfterClassTokens = new HashedSet();
+		private static readonly HashSet<string> beforeClassTokens = new HashSet<string>();
+		private static readonly HashSet<string> notAfterClassTokens = new HashSet<string>();
 
 		static QuerySplitter()
 		{
@@ -53,8 +51,8 @@ namespace NHibernate.Hql
 			{
 				return new String[] {query}; // just especially for the trivial collection filter
 			}
-			ArrayList placeholders = new ArrayList();
-			ArrayList replacements = new ArrayList();
+			var placeholders = new List<object>();
+			var replacements = new List<object>();
 			StringBuilder templateQuery = new StringBuilder(40);
 			int count = 0;
 			string last = null;
@@ -94,8 +92,8 @@ namespace NHibernate.Hql
 					// TODO H3.2 Different behavior
 					// NHb: This block is not an exactly port from H3.2 but a port from previous implementation of QueryTranslator
 					if (((last != null && beforeClassTokens.Contains(last)) &&
-					     (next == null || !notAfterClassTokens.Contains(next))) ||
-					    PathExpressionParser.EntityClass.Equals(last))
+						 (next == null || !notAfterClassTokens.Contains(next))) ||
+						ParserHelper.EntityClass.Equals(last))
 					{
 						System.Type clazz = helper.GetImportedClass(token);
 						if (clazz != null)
@@ -125,8 +123,8 @@ namespace NHibernate.Hql
 
 		private static bool IsPossiblyClassName(string last, string next)
 		{
-			return PathExpressionParser.EntityClass.Equals(last) ||
-			       (beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
+			return ParserHelper.EntityClass.Equals(last) ||
+				   (beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
 		}
 	}
 }

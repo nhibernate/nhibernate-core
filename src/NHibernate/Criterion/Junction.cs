@@ -61,15 +61,15 @@ namespace NHibernate.Criterion
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			ArrayList typedValues = new ArrayList();
+			var typedValues = new List<TypedValue>();
 
 			foreach (ICriterion criterion in this.criteria)
 			{
 				TypedValue[] subvalues = criterion.GetTypedValues(criteria, criteriaQuery);
-				ArrayHelper.AddAll(typedValues, subvalues);
+				typedValues.AddRange(subvalues);
 			}
 
-			return (TypedValue[]) typedValues.ToArray(typeof(TypedValue));
+			return typedValues.ToArray();
 		}
 
 		/// <summary>

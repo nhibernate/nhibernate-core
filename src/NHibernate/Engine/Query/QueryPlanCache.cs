@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
-
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Util;
 
@@ -48,52 +47,31 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
+		[Obsolete("Please use overload with IQueryExpression")]
 		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			var key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
-			var plan = (IQueryPlan)planCache[key];
-
-			if (plan == null)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
-				}
-				plan = new HQLStringQueryPlan(queryString, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
-			}
-			else
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("located HQL query plan in cache (" + queryString + ")");
-				}
-			}
-
-			return plan;
+			return GetHQLQueryPlan(queryString.ToQueryExpression(), shallow, enabledFilters);
 		}
 
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			string expressionStr = queryExpression.Key;
-
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
-			var plan = (HQLExpressionQueryPlan) planCache[key];
+			var plan = (QueryExpressionPlan)planCache[key];
 
 			if (plan == null)
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
 				}
-				plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
 				}
 				var planExpression = plan.QueryExpression as NhLinqExpression;
 				var expression = queryExpression as NhLinqExpression;
@@ -117,7 +95,6 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
-
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new FilterQueryPlanKey(filterString, collectionRole, shallow, enabledFilters);
@@ -130,7 +107,7 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
 							  + filterString + ")");
 				}
-				plan = new FilterQueryPlan(filterString, collectionRole, shallow, enabledFilters, factory);
+				plan = new FilterQueryPlan(filterString.ToQueryExpression(), collectionRole, shallow, enabledFilters, factory);
 				planCache.Put(key, plan);
 			}
 			else
@@ -197,7 +174,7 @@ namespace NHibernate.Engine.Query
 		{
 			private readonly string query;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
 			private readonly System.Type queryTypeDiscriminator;
 
@@ -219,11 +196,11 @@ namespace NHibernate.Engine.Query
 
 				if (enabledFilters == null || (enabledFilters.Count == 0))
 				{
-					filterNames = new HashedSet<string>();
+					filterNames = new HashSet<string>();
 				}
 				else
 				{
-					filterNames = new HashedSet<string>(enabledFilters.Keys);
+					filterNames = new HashSet<string>(enabledFilters.Keys);
 				}
 
 				unchecked
@@ -253,7 +230,7 @@ namespace NHibernate.Engine.Query
 					return false;
 				}
 
-				if (!CollectionHelper.SetEquals(filterNames, that.filterNames))
+				if (!filterNames.SetEquals(that.filterNames))
 				{
 					return false;
 				}
@@ -283,7 +260,7 @@ namespace NHibernate.Engine.Query
 			private readonly string query;
 			private readonly string collectionRole;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly HashSet<string> filterNames;
 			private readonly int hashCode;
 
 			public FilterQueryPlanKey(string query, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -294,11 +271,11 @@ namespace NHibernate.Engine.Query
 
 				if (enabledFilters == null || (enabledFilters.Count == 0))
 				{
-					filterNames = new HashedSet<string>();
+					filterNames = new HashSet<string>();
 				}
 				else
 				{
-					filterNames = new HashedSet<string>(enabledFilters.Keys);
+					filterNames = new HashSet<string>(enabledFilters.Keys);
 				}
 
 				int hash = query.GetHashCode();
@@ -323,7 +300,7 @@ namespace NHibernate.Engine.Query
 				{
 					return false;
 				}
-				if (!CollectionHelper.SetEquals(filterNames, that.filterNames))
+				if (!filterNames.SetEquals(that.filterNames))
 				{
 					return false;
 				}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel.NHSpecific
 {
@@ -7,7 +8,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// Summary description for ParentComparer.
 	/// </summary>
 	[Serializable]
-	public class ParentComparer : IComparer
+	public class ParentComparer : IComparer<Parent>
 	{
 		public ParentComparer()
 		{
@@ -22,14 +23,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			if (x == null && y != null) return -1;
 			if (x != null && y == null) return 1;
 			return x.Id - y.Id;
-		}
-
-		int IComparer.Compare(object x, object y)
-		{
-			Parent xParent = x as Parent;
-			Parent yParent = y as Parent;
-
-			return Compare(xParent, yParent);
 		}
 
 		#endregion

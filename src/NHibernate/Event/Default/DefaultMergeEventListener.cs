@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -59,7 +58,7 @@ namespace NHibernate.Event.Default
 				
 				if (transientCopyCache.Count > 0)
 				{
-					ISet<string> transientEntityNames = new HashedSet<string>();
+					ISet<string> transientEntityNames = new HashSet<string>();
 					
 					foreach (object transientEntity in transientCopyCache.Keys)
 					{
@@ -138,7 +137,7 @@ namespace NHibernate.Event.Default
 						object id = persister.GetIdentifier(entity, source.EntityMode);
 						if (id != null)
 						{
-							EntityKey key = new EntityKey(id, persister, source.EntityMode);
+							EntityKey key = source.GenerateEntityKey(id, persister);
 							object managedEntity = source.PersistenceContext.GetEntity(key);
 							entry = source.PersistenceContext.GetEntry(managedEntity);
 							if (entry != null)
@@ -437,7 +436,7 @@ namespace NHibernate.Event.Default
 				object id = persister.GetIdentifier(entity, source.EntityMode);
 				if (id != null)
 				{
-					EntityKey key = new EntityKey(id, persister, source.EntityMode);
+					EntityKey key = source.GenerateEntityKey(id, persister);
 					object managedEntity = source.PersistenceContext.GetEntity(key);
 					entry = source.PersistenceContext.GetEntry(managedEntity);
 				}

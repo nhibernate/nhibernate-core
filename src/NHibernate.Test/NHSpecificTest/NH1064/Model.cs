@@ -1,8 +1,5 @@
-using Iesi.Collections;
-
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1064
 {
@@ -25,8 +22,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 			set { _Name = value; }
 		}
 
-		private ISet _Bs = new HashedSet();
-		public virtual ISet Bs
+		private ISet<TypeB> _Bs = new HashSet<TypeB>();
+		public virtual ISet<TypeB> Bs
 		{
 			get { return _Bs; }
 			set { _Bs = value; }

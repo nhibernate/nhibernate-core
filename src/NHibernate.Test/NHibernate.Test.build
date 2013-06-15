@@ -12,11 +12,14 @@
 		<property name="clover.instrument" value="false" />
     <property name="sign" value="false" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="mscorlib.dll" />
 			<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
 			<include name="System.Xml.dll" />
+			<include name="System.Xml.Linq.dll" />
+			<include name="System.Drawing.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.Data.OracleClient.dll" />
 			<include name="Iesi.Collections.dll" />

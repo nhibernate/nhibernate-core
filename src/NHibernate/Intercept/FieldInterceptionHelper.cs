@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Intercept

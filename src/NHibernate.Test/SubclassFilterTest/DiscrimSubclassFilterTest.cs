@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using Iesi.Collections;
 using NUnit.Framework;
+using System.Linq;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
@@ -38,7 +38,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 			s.Clear();
 
-			results = new ArrayList(new HashedSet(s.CreateQuery("from Person as p left join fetch p.Minions").List()));
+			results = s.CreateQuery("from Person as p left join fetch p.Minions").List<Person>().Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in  results)
 			{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			}
 			s.Clear();
 
-			results = new ArrayList(new HashedSet(s.CreateQuery("from Employee as p left join fetch p.Minions").List()));
+			results = s.CreateQuery("from Employee as p left join fetch p.Minions").List<Employee>().Distinct().ToList();
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{

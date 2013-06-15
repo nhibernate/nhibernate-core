@@ -1166,9 +1166,6 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             
         <itemizedlist>
             <listitem>
-                <para>.NET Framework 2.0 or above is required,</para>
-            </listitem>
-            <listitem>
                 <para>the Nhibernate's drive used for your RDBMS may not supports batching,</para>
             </listitem>
             <listitem>

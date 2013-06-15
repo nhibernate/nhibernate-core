@@ -2420,10 +2420,28 @@
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>
+                            <entry><literal>Date</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Date</literal></entry>
+                            <entry><literal>type="Date"</literal> must be specified.</entry>
+                        </row>
+                        <row>
                             <entry><literal>DateTime</literal></entry>
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.DateTime</literal> - ignores the milliseconds</entry>
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>DateTime2</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.DateTime2</literal></entry>
+                            <entry><literal>type="DateTime2"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>DbTimestamp</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.DateTime</literal> - as specific as database supports.</entry>
+                            <entry><literal>type="DbTimestamp"</literal> must be specified.  When used as a <literal>version</literal> field, uses the database's current time rather than the client's current time.</entry>
                         </row>
                       <row>
                         <entry><literal>LocalDateTime</literal></entry>
@@ -2492,6 +2510,18 @@
                             <entry><literal>System.DateTime</literal></entry>
                             <entry><literal>DbType.Int64</literal></entry>
                             <entry><literal>type="Ticks"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>Time</literal></entry>
+                            <entry><literal>System.DateTime</literal></entry>
+                            <entry><literal>DbType.Time</literal></entry>
+                            <entry><literal>type="Time"</literal> must be specified.</entry>
+                        </row>
+                        <row>
+                            <entry><literal>TimeAsTimeSpan</literal></entry>
+                            <entry><literal>System.TimeSpan</literal></entry>
+                            <entry><literal>DbType.Time</literal></entry>
+                            <entry><literal>type="TimeAsTimeSpan"</literal> must be specified.</entry>
                         </row>
                         <row>
                             <entry><literal>TimeSpan</literal></entry>
@@ -2603,8 +2633,8 @@
             </table>	
             
             <para>
-                NHibernate supports some additional type names for compatibility with NHibernate (useful for those coming over from
-                NHibernate or using some of the tools to generate <literal>hbm.xml</literal> files).
+                NHibernate supports some additional type names for compatibility with Java's Hibernate (useful for those coming over from
+                Hibernate or using some of the tools to generate <literal>hbm.xml</literal> files).
                 A <literal>type="integer"</literal> or <literal>type="int"</literal> will map to an <literal>Int32</literal>
                 NHibernate type, <literal>type="short"</literal> to an <literal>Int16</literal> NHibernateType.
                 To see all of the conversions you can view the source of static constructor of the class

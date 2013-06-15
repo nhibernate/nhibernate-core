@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1899
         }
 
         [Test]
-        public void ShouldNotThrowOnSaveUpdateCopy()
+        public void ShouldNotThrowOnMerge()
         {
             Parent entity;
 
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1899
 
             using (ISession session2 = OpenSession()) 
 			{
-                entity = (Parent)session2.SaveOrUpdateCopy(entity);
+                entity = session2.Merge(entity);
             }
         }
     }

@@ -1,0 +1,387 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/EXPLICIT_INTERNAL_MODIFIER/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/EXPLICIT_PRIVATE_MODIFIER/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeStyle/CSharpUsing/AddImportsToDeepestScope/@EntryValue">False</s:Boolean>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=PrivateConstants/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=PrivateInstanceFields/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="_" Suffix="" Style="aaBb" /&gt;</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=PrivateStaticReadonly/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/Comment/@EntryValue">NUnit Assert.NotNull</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.Null);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/SearchPattern/@EntryValue">Assert.NotNull($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0BE95D01E0F2244E97F5FEFAD1EB1A63/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/Comment/@EntryValue">NUnit Assert.False</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/ReplacePattern/@EntryValue">Assert.That($actual$, Is.False);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/SearchPattern/@EntryValue">Assert.False($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0DCCC0B578308D41B80B4EFA9599A7BA/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/Comment/@EntryValue">NUnit Assert.IsNull</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Null);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/SearchPattern/@EntryValue">Assert.IsNull($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=0E4762BF2CF0104A9AB7290FAFF60B4D/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/Comment/@EntryValue">NUnit Assert.Less</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=greater/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=greater/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=greater/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=greater/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=lesser/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=lesser/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=lesser/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/CustomPatternPlaceholder/=lesser/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/ReplacePattern/@EntryValue">Assert.That($lesser$, Is.LessThan($greater$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/SearchPattern/@EntryValue">Assert.Less($lesser$, $greater$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=119461EE6366A146B464AA119B84F031/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/Comment/@EntryValue">NUnit Assert.LessOrEqual</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=greater/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=greater/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=greater/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=greater/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=lesser/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=lesser/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=lesser/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/CustomPatternPlaceholder/=lesser/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/ReplacePattern/@EntryValue">Assert.That($lesser$, Is.LessThanOrEqualTo($greater$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/SearchPattern/@EntryValue">Assert.LessOrEqual($lesser$, $greater$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3C93C49C978D1242A553D24CF14EB739/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/Comment/@EntryValue">NUnit Assert.IsNotInstanceOf</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=expected/Properties/=ExactType/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=expected/Properties/=Type/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/CustomPatternPlaceholder/=expected/Type/@EntryValue">TypePlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.InstanceOf&lt;$expected$&gt;());</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/SearchPattern/@EntryValue">Assert.IsNotInstanceOf(typeof($expected$), $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=3EB79FED69E0B54DA16A1A68D3338735/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/Comment/@EntryValue">NUnit Assert.IsNullOrEmpty</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Null.Or.Empty);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/SearchPattern/@EntryValue">Assert.IsNullOrEmpty($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=527893BA7BD05D4F993D8EF5F2951766/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/Comment/@EntryValue">NUnit Assert.IsNotNull</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.Null);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/SearchPattern/@EntryValue">Assert.IsNotNull($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58ABCCA1D53539498562B01FFB3F2779/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/Comment/@EntryValue">NUnit Assert.IsAssignableFrom</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=expected/Properties/=ExactType/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=expected/Properties/=Type/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/CustomPatternPlaceholder/=expected/Type/@EntryValue">TypePlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/ReplacePattern/@EntryValue">Assert.That($actual$, Is.AssignableFrom&lt;$expected$&gt;());</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/SearchPattern/@EntryValue">Assert.IsAssignableFrom(typeof($expected$), $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=62659CDB20639743994808E13D0CAEDC/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/Comment/@EntryValue">NUnit Assert.AreSame</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/ReplacePattern/@EntryValue">Assert.That($actual$, Is.SameAs($expected$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/SearchPattern/@EntryValue">Assert.AreSame($expected$, $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7FA7784420DD8148A311527F51FBE430/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/Comment/@EntryValue">NUnit Assert.ReferenceEquals</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/ReplacePattern/@EntryValue">Assert.That($actual$, Is.SameAs($expected$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/SearchPattern/@EntryValue">Assert.ReferenceEquals($expected$, $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=807104EE86133740BBD953CAE6724AFB/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/Comment/@EntryValue">NUnit Assert.Contains</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/ReplacePattern/@EntryValue">Assert.That($expected$, Contains.Item($actual$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/SearchPattern/@EntryValue">Assert.Contains($actual$, $expected$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B46080DB53ABD41880ABE959C5C4B0B/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/Comment/@EntryValue">NUnit Assert.IsFalse</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/ReplacePattern/@EntryValue">Assert.That($actual$, Is.False);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/SearchPattern/@EntryValue">Assert.IsFalse($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8B4D257F5006CD40A92D9A9997C73815/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/Comment/@EntryValue">NUnit Assert.AreNotSame</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.SameAs($expected$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/SearchPattern/@EntryValue">Assert.AreNotSame($expected$, $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8E6C50BF7FDC134A9B9B4F43F33B4860/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/Comment/@EntryValue">NUnit Assert.IsTrue</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/ReplacePattern/@EntryValue">Assert.That($actual$, Is.True);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/SearchPattern/@EntryValue">Assert.IsTrue($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8F2DAC2291AD7141A4C89E872AD14F02/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/Comment/@EntryValue">NUnit Assert.IsNotNullOrEmpty</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.Null.Or.Empty);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/SearchPattern/@EntryValue">Assert.IsNotNullOrEmpty($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=94F0D3BAA7A8F443A38AEA5B4B1C9673/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/Comment/@EntryValue">NUnit Assert.IsNotAssignableFrom</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=expected/Properties/=ExactType/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=expected/Properties/=Type/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/CustomPatternPlaceholder/=expected/Type/@EntryValue">TypePlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.AssignableFrom&lt;$expected$&gt;());</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/SearchPattern/@EntryValue">Assert.IsNotAssignableFrom(typeof($expected$), $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=99A55352593E86439BB76CF2A49F65A3/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/Comment/@EntryValue">NUnit Assert.AreEqual</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/ReplacePattern/@EntryValue">Assert.That($actual$, Is.EqualTo($expected$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/SearchPattern/@EntryValue">Assert.AreEqual($expected$, $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A267A1C780C5C04FBE3E482DDAA09F37/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/Comment/@EntryValue">NUnit Assert.IsNan</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/ReplacePattern/@EntryValue">Assert.That($actual$, Is.NaN);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/SearchPattern/@EntryValue">Assert.IsNaN($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A5A9E89E2FAAC942B58A2B80A8AE5084/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/Comment/@EntryValue">NUnit Assert.Greater</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=greater/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=greater/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=greater/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=greater/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=lesser/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=lesser/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=lesser/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/CustomPatternPlaceholder/=lesser/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/ReplacePattern/@EntryValue">Assert.That($greater$, Is.GreaterThan($lesser$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/SearchPattern/@EntryValue">Assert.Greater($greater$, $lesser$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=AD1B11420C387546A8CD2A34040A30C7/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/Comment/@EntryValue">NUnit Assert.Null</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Null);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/SearchPattern/@EntryValue">Assert.Null($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=B63C2CF4468AB74091F1500ECBD9AC7C/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/Comment/@EntryValue">NUnit Assert.IsInstanceOf</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=expected/Properties/=ExactType/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=expected/Properties/=Type/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/CustomPatternPlaceholder/=expected/Type/@EntryValue">TypePlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/ReplacePattern/@EntryValue">Assert.That($actual$, Is.InstanceOf&lt;$expected$&gt;());</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/SearchPattern/@EntryValue">Assert.IsInstanceOf(typeof($expected$), $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAA575E467D00A469E1B2A90F705AD79/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/Comment/@EntryValue">NUnit Assert.IsEmpty</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Empty);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/SearchPattern/@EntryValue">Assert.IsEmpty($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=BAC380D0EFF39042AAEB99463274878D/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/Comment/@EntryValue">NUnit Assert.IsNotEmpty</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.Empty);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/SearchPattern/@EntryValue">Assert.IsNotEmpty($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=CF97E0CAEAFA7641AD777CF084B2F3F8/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/Comment/@EntryValue">NUnit Assert.True</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/ReplacePattern/@EntryValue">Assert.That($actual$, Is.True);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/SearchPattern/@EntryValue">Assert.True($actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=D25009D00FA9BC4586F22A9FD3382CA1/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/Comment/@EntryValue">NUnit Assert.AreNotEqual</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=actual/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=actual/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=actual/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=actual/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=expected/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=expected/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=expected/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/CustomPatternPlaceholder/=expected/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/ReplacePattern/@EntryValue">Assert.That($actual$, Is.Not.EqualTo($expected$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/SearchPattern/@EntryValue">Assert.AreNotEqual($expected$, $actual$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=ED8E8CA616145648922B64179C98E1E2/Severity/@EntryValue">HINT</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/Comment/@EntryValue">NUnit Assert.GreaterOrEqual</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=greater/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=greater/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=greater/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=greater/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=lesser/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=lesser/Properties/=Maximal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=lesser/Properties/=Minimal/@EntryIndexedValue">1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/CustomPatternPlaceholder/=lesser/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/ReplaceComment/@EntryValue">Update to fluent syntax.</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/ReplacePattern/@EntryValue">Assert.That($greater$, Is.GreaterThanOrEqualTo($lesser$));</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/SearchPattern/@EntryValue">Assert.GreaterOrEqual($greater$, $lesser$);</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EDE6DA5BB1FD144F81E051772A257749/Severity/@EntryValue">HINT</s:String></wpf:ResourceDictionary>

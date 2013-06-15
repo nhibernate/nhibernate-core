@@ -1,4 +1,4 @@
-﻿using Iesi.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2746
 {
@@ -6,11 +6,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2746
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
-		public virtual Iesi.Collections.Generic.ISet<T2> Children { get; protected set; }
+		public virtual ISet<T2> Children { get; protected set; }
 
 		public T1()
 		{
-			this.Children = new HashedSet<T2>();
+			this.Children = new HashSet<T2>();
 		}
 	}
 

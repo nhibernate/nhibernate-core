@@ -52,7 +52,7 @@ namespace NHibernate.Util
 				{
 					// make sure that the DeclaringType is not System.Object - if that is the
 					// declaring type then there is no override.
-					return !method.DeclaringType.Equals(typeof(object));
+					return !(method.DeclaringType == typeof(object));
 				}
 			}
 			catch (AmbiguousMatchException)
@@ -127,13 +127,7 @@ namespace NHibernate.Util
 		{
 			System.Type propertyClass = ReflectedPropertyClass(theClass, name, access);
 
-			System.Type heuristicClass = propertyClass;
-
-			if (propertyClass.IsGenericType
-				&& propertyClass.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-			{
-				heuristicClass = propertyClass.GetGenericArguments()[0];
-			}
+			var heuristicClass = propertyClass.UnwrapIfNullable();
 
 			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
 		}
@@ -723,12 +717,12 @@ namespace NHibernate.Util
 				throw new ArgumentNullException("realDeclaringType");
 			}
 			var methodDeclaringType = source.DeclaringType;
-			if(realDeclaringType.Equals(methodDeclaringType))
+			if(realDeclaringType == methodDeclaringType)
 			{
 				return true;
 			}
 			if (methodDeclaringType.IsGenericType && !methodDeclaringType.IsGenericTypeDefinition && 
-				realDeclaringType.Equals(methodDeclaringType.GetGenericTypeDefinition()))
+				realDeclaringType == methodDeclaringType.GetGenericTypeDefinition())
 			{
 				return true;
 			}
@@ -746,7 +740,7 @@ namespace NHibernate.Util
 				if (realDeclaringType.IsGenericTypeDefinition)
 				{
 					bool implements = declaringTypeInterfaces
-						.Where(t => t.IsGenericType && t.GetGenericTypeDefinition().Equals(realDeclaringType))
+						.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == realDeclaringType)
 						.Select(implementedGenericInterface => methodDeclaringType.GetInterfaceMap(implementedGenericInterface))
 						.Any(methodsMap => methodsMap.TargetMethods.Contains(source));
 					if (implements)

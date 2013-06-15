@@ -137,9 +137,9 @@ namespace NHibernate.Mapping
 		}
 
 		public IIdentifierGenerator CreateIdentifierGenerator(Dialect.Dialect dialect, string defaultCatalog,
-		                                                      string defaultSchema, RootClass rootClass)
+															  string defaultSchema, RootClass rootClass)
 		{
-			Dictionary<string, string> @params = new Dictionary<string, string>();
+			var @params = new Dictionary<string, string>();
 
 			//if the hibernate-mapping did not specify a schema/catalog, use the defaults
 			//specified by properties - but note that if the schema/catalog were specified

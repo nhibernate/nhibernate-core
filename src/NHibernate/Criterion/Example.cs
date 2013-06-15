@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -31,7 +30,7 @@ namespace NHibernate.Criterion
 	public class Example : AbstractCriterion
 	{
 		private readonly object _entity;
-		private readonly ISet<string> _excludedProperties = new HashedSet<string>();
+		private readonly HashSet<string> _excludedProperties = new HashSet<string>();
 		private IPropertySelector _selector;
 		private bool _isLikeEnabled;
 		private char? escapeCharacter;
@@ -268,8 +267,8 @@ namespace NHibernate.Criterion
 		private bool IsPropertyIncluded(object value, String name, IType type)
 		{
 			return !_excludedProperties.Contains(name) &&
-			       !type.IsAssociationType &&
-			       _selector.Include(value, name, type);
+				   !type.IsAssociationType &&
+				   _selector.Include(value, name, type);
 		}
 
 		private object[] GetPropertyValues(IEntityPersister persister, ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -279,7 +278,7 @@ namespace NHibernate.Criterion
 			{
 				return persister.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
 			}
-			ArrayList list = new ArrayList();
+			var list = new List<object>();
 			for(int i = 0; i < persister.PropertyNames.Length; i++)
 			{
 				PropertyInfo pInfo = type.GetProperty(persister.PropertyNames[i]);
@@ -311,7 +310,7 @@ namespace NHibernate.Criterion
 				String propertyName = propertyNames[i];
 
 				bool isPropertyIncluded = i != meta.VersionProperty &&
-				                          IsPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
+										  IsPropertyIncluded(propertyValue, propertyName, propertyTypes[i]);
 				if (isPropertyIncluded)
 				{
 					if (propertyTypes[i].IsComponentType)
@@ -357,7 +356,7 @@ namespace NHibernate.Criterion
 			IType[] propertyTypes = meta.PropertyTypes;
 			object[] values = GetPropertyValues(meta, criteria, criteriaQuery);
 
-			ArrayList list = new ArrayList();
+			var list = new List<TypedValue>();
 			for (int i = 0; i < propertyNames.Length; i++)
 			{
 				object value = values[i];
@@ -379,7 +378,7 @@ namespace NHibernate.Criterion
 				}
 			}
 
-			return (TypedValue[]) list.ToArray(typeof(TypedValue));
+			return list.ToArray();
 		}
 
 		public override IProjection[] GetProjections()
@@ -477,8 +476,8 @@ namespace NHibernate.Criterion
 			}
 
 			ICriterion crit = propertyValue != null
-			                  	? GetNotNullPropertyCriterion(propertyValue, propertyName)
-			                  	: new NullExpression(propertyName);
+								? GetNotNullPropertyCriterion(propertyValue, propertyName)
+								: new NullExpression(propertyName);
 			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
 		}
 
@@ -486,10 +485,10 @@ namespace NHibernate.Criterion
 		{
 			bool isString = propertyValue is string;
 			return (_isLikeEnabled && isString)
-			       	? (ICriterion)
-			       	  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
-			       	                     _isIgnoreCaseEnabled)
-			       	: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
+					? (ICriterion)
+					  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
+										 _isIgnoreCaseEnabled)
+					: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 		}
 
 		protected void AppendComponentCondition(

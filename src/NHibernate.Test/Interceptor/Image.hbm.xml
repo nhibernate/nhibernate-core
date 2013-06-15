@@ -4,7 +4,7 @@
 				   namespace="NHibernate.Test.Interceptor">
 
     <class name="Image" table="image" abstract="false" select-before-update="true" >
-        <id name="Id" type="int" column="id">
+        <id name="Id" type="long" column="id">
             <generator class="native"/>
         </id>
         <component name="Details" class="Image+Detail">

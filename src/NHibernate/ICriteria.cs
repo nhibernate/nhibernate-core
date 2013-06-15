@@ -297,13 +297,13 @@ namespace NHibernate
 		/// </exception>
 		object UniqueResult();
 
-        /// <summary>
-        /// Get a enumerable that when enumerated will execute
-        /// a batch of queries in a single database roundtrip
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-	    IEnumerable<T> Future<T>();
+		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IEnumerable<T> Future<T>();
 
 		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through

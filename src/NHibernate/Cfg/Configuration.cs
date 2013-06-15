@@ -6,12 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Iesi.Collections;
-using Iesi.Collections.Generic;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
@@ -124,6 +123,9 @@ namespace NHibernate.Cfg
 			return (T)info.GetValue(name, typeof(T));
 		}
 
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			ConfigureProxyFactoryFactory();
@@ -181,7 +183,7 @@ namespace NHibernate.Cfg
 			mappingsQueue = new MappingsQueue();
 			eventListeners = new EventListeners();
 			typeDefs = new Dictionary<string, TypeDef>();
-			extendsQueue = new HashedSet<ExtendsQueueEntry>();
+			extendsQueue = new HashSet<ExtendsQueueEntry>();
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
@@ -313,7 +315,9 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			return collections.ContainsKey(role) ? collections[role] : null;
+			NHibernate.Mapping.Collection result;
+			collections.TryGetValue(role, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -548,7 +552,7 @@ namespace NHibernate.Cfg
 		private void OnBeforeBindMapping(BindMappingEventArgs bindMappingEventArgs)
 		{
 			var handler = BeforeBindMapping;
-			if(handler != null)
+			if (handler != null)
 			{
 				handler(this, bindMappingEventArgs);
 			}
@@ -819,8 +823,8 @@ namespace NHibernate.Cfg
 
 			var script = new List<string>();
 
-            if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.DisableForeignKeyConstraintsString))
-                script.Add(dialect.DisableForeignKeyConstraintsString);
+			if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.DisableForeignKeyConstraintsString))
+				script.Add(dialect.DisableForeignKeyConstraintsString);
 
 			// drop them in reverse order in case db needs it done that way...););
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
@@ -870,8 +874,8 @@ namespace NHibernate.Cfg
 				}
 			}
 
-            if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.EnableForeignKeyConstraintsString))
-                script.Add(dialect.EnableForeignKeyConstraintsString);
+			if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.EnableForeignKeyConstraintsString))
+				script.Add(dialect.EnableForeignKeyConstraintsString);
 
 			return script.ToArray();
 		}
@@ -924,7 +928,7 @@ namespace NHibernate.Cfg
 						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
 
-                    if (dialect.SupportsForeignKeyConstraintInAlterTable)
+					if (dialect.SupportsForeignKeyConstraintInAlterTable)
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{
@@ -965,7 +969,7 @@ namespace NHibernate.Cfg
 
 		private void ValidateFilterDefs()
 		{
-			var filterNames = new HashedSet<string>();
+			var filterNames = new HashSet<string>();
 			foreach (var filterDefinition in FilterDefinitions)
 			{
 				if (filterDefinition.Value == null)
@@ -992,12 +996,12 @@ namespace NHibernate.Cfg
 				filterNames.Clear();
 				foreach (var persistentClass in ClassMappings)
 				{
-					filterNames.AddAll(persistentClass.FilterMap.Keys);
+					filterNames.UnionWith(persistentClass.FilterMap.Keys);
 				}
 				foreach (var collectionMapping in CollectionMappings)
 				{
-					filterNames.AddAll(collectionMapping.FilterMap.Keys);
-					filterNames.AddAll(collectionMapping.ManyToManyFilterMap.Keys);
+					filterNames.UnionWith(collectionMapping.FilterMap.Keys);
+					filterNames.UnionWith(collectionMapping.ManyToManyFilterMap.Keys);
 				}
 				foreach (var filterName in FilterDefinitions.Keys)
 				{
@@ -1023,7 +1027,7 @@ namespace NHibernate.Cfg
 		private void ValidateEntities()
 		{
 			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
-			HashedSet<string> allProxyErrors = null;
+			HashSet<string> allProxyErrors = null;
 			IProxyValidator pvalidator = Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 
 			foreach (var clazz in classes.Values)
@@ -1037,11 +1041,11 @@ namespace NHibernate.Cfg
 					{
 						if (allProxyErrors == null)
 						{
-							allProxyErrors = new HashedSet<string>(errors);
+							allProxyErrors = new HashSet<string>(errors);
 						}
 						else
 						{
-							allProxyErrors.AddAll(errors);
+							allProxyErrors.UnionWith(errors);
 						}
 					}
 				}
@@ -1115,7 +1119,7 @@ namespace NHibernate.Cfg
 
 			log.Info("processing foreign key constraints");
 
-			ISet done = new HashedSet();
+			ISet<ForeignKey> done = new HashSet<ForeignKey>();
 			foreach (var table in TableMappings)
 			{
 				SecondPassCompileForeignKeys(table, done);
@@ -1139,7 +1143,7 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		private void SecondPassCompileForeignKeys(Table table, ISet done)
+		private void SecondPassCompileForeignKeys(Table table, ISet<ForeignKey> done)
 		{
 			table.CreateForeignKeys();
 
@@ -1282,26 +1286,26 @@ namespace NHibernate.Cfg
 			set { properties = value; }
 		}
 
-        /// <summary>
-        /// Returns the set of properties computed from the default properties in the dialect combined with the other properties in the configuration.
-        /// </summary>
-        /// <returns></returns>
-	    public IDictionary<string, string> GetDerivedProperties()
-	    {
-	        IDictionary<string, string> derivedProperties = new Dictionary<string, string>();
+		/// <summary>
+		/// Returns the set of properties computed from the default properties in the dialect combined with the other properties in the configuration.
+		/// </summary>
+		/// <returns></returns>
+		public IDictionary<string, string> GetDerivedProperties()
+		{
+			IDictionary<string, string> derivedProperties = new Dictionary<string, string>();
 
 			if (Properties.ContainsKey(Environment.Dialect))
 			{
-			    Dialect.Dialect dialect = Dialect.Dialect.GetDialect(Properties);
-                foreach (KeyValuePair<string, string> pair in dialect.DefaultProperties)
-                    derivedProperties[pair.Key] = pair.Value;
+				var dialect = Dialect.Dialect.GetDialect(Properties);
+				foreach (var pair in dialect.DefaultProperties)
+					derivedProperties[pair.Key] = pair.Value;
 			}
 
-            foreach (KeyValuePair<string, string> pair in Properties)
-                derivedProperties[pair.Key] = pair.Value;
+			foreach (var pair in Properties)
+				derivedProperties[pair.Key] = pair.Value;
 
-	        return derivedProperties;
-	    }
+			return derivedProperties;
+		}
 
 		/// <summary>
 		/// Set the default assembly to use for the mappings added to the configuration
@@ -2353,7 +2357,7 @@ namespace NHibernate.Cfg
 					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
 																				 table.IsQuoted);
 
-                    if (dialect.SupportsForeignKeyConstraintInAlterTable)
+					if (dialect.SupportsForeignKeyConstraintInAlterTable)
 					{
 						foreach (var fk in table.ForeignKeyIterator)
 						{

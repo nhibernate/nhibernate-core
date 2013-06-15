@@ -85,12 +85,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			ResolveFirstChild();
-			bool impliedJoin = true;
-
-			if ( level == RootLevel && !impliedAtRoot ) 
-			{
-				impliedJoin = false;
-			}
+			bool impliedJoin = !(level == RootLevel && !impliedAtRoot);
 
 			Resolve( true, impliedJoin, classAlias, parent );
 		}

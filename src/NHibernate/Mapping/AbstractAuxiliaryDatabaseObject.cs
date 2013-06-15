@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
@@ -16,15 +15,15 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public abstract class AbstractAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
 	{
-		private readonly HashedSet<string> dialectScopes;
+		private readonly HashSet<string> dialectScopes;
 		private IDictionary<string, string> parameters = new Dictionary<string, string>();
 
 		protected AbstractAuxiliaryDatabaseObject()
 		{
-			dialectScopes = new HashedSet<string>();
+			dialectScopes = new HashSet<string>();
 		}
 
-		protected AbstractAuxiliaryDatabaseObject(HashedSet<string> dialectScopes)
+		protected AbstractAuxiliaryDatabaseObject(HashSet<string> dialectScopes)
 		{
 			this.dialectScopes = dialectScopes;
 		}
@@ -34,7 +33,7 @@ namespace NHibernate.Mapping
 			dialectScopes.Add(dialectName);
 		}
 
-		public HashedSet<string> DialectScopes
+		public HashSet<string> DialectScopes
 		{
 			get { return dialectScopes; }
 		}
@@ -47,7 +46,7 @@ namespace NHibernate.Mapping
 		public bool AppliesToDialect(Dialect.Dialect dialect)
 		{
 			// empty means no scoping
-			return dialectScopes.IsEmpty || dialectScopes.Contains(dialect.GetType().FullName);
+			return dialectScopes.Count == 0 || dialectScopes.Contains(dialect.GetType().FullName);
 		}
 
 		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);

@@ -44,8 +44,8 @@ namespace NHibernate.Linq.Functions
 
 			// This is .Net 4 only, and in the System.Data.Services assembly, which we don't depend directly on.
 			return methodInfo != null && methodInfo.Name == "Compare" &&
-			       methodInfo.DeclaringType != null &&
-			       methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
+				   methodInfo.DeclaringType != null &&
+				   methodInfo.DeclaringType.FullName == "System.Data.Services.Providers.DataServiceProviderMethods";
 		}
 
 

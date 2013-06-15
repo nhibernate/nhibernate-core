@@ -1,4 +1,4 @@
-﻿using Iesi.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace NHibernate.Test.NHSpecificTest.NH2846
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 	{
 		public Post()
 		{
-			Comments = new HashedSet<Comment>();
+			Comments = new HashSet<Comment>();
 		}
 
 		public virtual int Id { get; set; }

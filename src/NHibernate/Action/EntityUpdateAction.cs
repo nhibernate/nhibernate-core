@@ -70,7 +70,7 @@ namespace NHibernate.Action
 			CacheKey ck = null;
 			if (persister.HasCache)
 			{
-				ck = new CacheKey(id, persister.IdentifierType, persister.RootEntityName, session.EntityMode, factory);
+				ck = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
 				slock = persister.Cache.Lock(ck, previousVersion);
 			}
 
@@ -140,7 +140,7 @@ namespace NHibernate.Action
 			IEntityPersister persister = Persister;
 			if (persister.HasCache)
 			{
-				CacheKey ck = new CacheKey(Id, persister.IdentifierType, persister.RootEntityName, Session.EntityMode, Session.Factory);
+				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
 
 				if (success && cacheEntry != null)
 				{

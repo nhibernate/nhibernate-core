@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
-using Iesi.Collections.Generic;
 
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Util;
@@ -26,7 +25,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		private int _fromElementCounter;
 
-        private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
+		private readonly NullableDictionary<string, FromElement> _fromElementByClassAlias = new NullableDictionary<string, FromElement>();
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
 		private readonly NullableDictionary<string, FromElement> _fromElementsByPath = new NullableDictionary<string, FromElement>();
 		private readonly List<FromElement> _fromElements = new List<FromElement>();
@@ -35,7 +34,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// All of the implicit FROM xxx JOIN yyy elements that are the destination of a collection.  These are created from
 		/// index operators on collection property references.
 		/// </summary>
-        private readonly NullableDictionary<string, FromElement> _collectionJoinFromElementsByPath = new NullableDictionary<string, FromElement>();
+		private readonly NullableDictionary<string, FromElement> _collectionJoinFromElementsByPath = new NullableDictionary<string, FromElement>();
 
 		/// <summary>
 		/// Pointer to the parent FROM clause, if there is one.
@@ -104,12 +103,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>true if the from node contains the class alias name.</returns>
 		public bool ContainsClassAlias(string alias)
 		{
-			bool isAlias = _fromElementByClassAlias.ContainsKey(alias);
-			if (!isAlias && SessionFactoryHelper.IsStrictJPAQLComplianceEnabled)
+			if (_fromElementByClassAlias.ContainsKey(alias))
 			{
-				isAlias = FindIntendedAliasedFromElementBasedOnCrazyJPARequirements(alias) != null;
+				return true;
 			}
-			return isAlias;
+			if (SessionFactoryHelper.IsStrictJPAQLComplianceEnabled)
+			{
+				return FindIntendedAliasedFromElementBasedOnCrazyJPARequirements(alias) != null;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -146,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (_childFromClauses == null)
 			{
-				_childFromClauses = new HashedSet<FromClause>();
+				_childFromClauses = new HashSet<FromClause>();
 			}
 			_childFromClauses.Add(fromClause);
 		}
@@ -162,7 +164,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// The path may be a reference to an alias defined in the parent query.
 			string classAlias = ( alias == null ) ? null : alias.Text;
 			CheckForDuplicateClassAlias( classAlias );
-			FromElementFactory factory = new FromElementFactory(this, null, path, classAlias, null, false);
+			var factory = new FromElementFactory(this, null, path, classAlias, null, false);
 			return factory.AddFromElement();
 		}
 
@@ -250,14 +252,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public string GetDisplayText()
 		{
 			return "FromClause{" +
-			       "level=" + _level +
-			       ", fromElementCounter=" + _fromElementCounter +
-			       ", fromElements=" + _fromElements.Count +
-			       ", fromElementByClassAlias=" + _fromElementByClassAlias.Keys +
-			       ", fromElementByTableAlias=" + _fromElementByTableAlias.Keys +
-			       ", fromElementsByPath=" + _fromElementsByPath.Keys +
-			       ", collectionJoinFromElementsByPath=" + _collectionJoinFromElementsByPath.Keys +
-			       "}";
+				   "level=" + _level +
+				   ", fromElementCounter=" + _fromElementCounter +
+				   ", fromElements=" + _fromElements.Count +
+				   ", fromElementByClassAlias=" + _fromElementByClassAlias.Keys +
+				   ", fromElementByTableAlias=" + _fromElementByTableAlias.Keys +
+				   ", fromElementsByPath=" + _fromElementsByPath.Keys +
+				   ", collectionJoinFromElementsByPath=" + _collectionJoinFromElementsByPath.Keys +
+				   "}";
 		}
 
 		private void CheckForDuplicateClassAlias(string classAlias)
@@ -270,7 +272,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool ProjectionListPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -282,7 +284,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool FromElementPredicate(IASTNode node) 
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -294,7 +296,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		static bool ExplicitFromPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -306,7 +308,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool CollectionFetchPredicate(IASTNode node)
 		{
-			FromElement fromElement = node as FromElement;
+			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
@@ -321,7 +323,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			foreach (var entry in _fromElementByClassAlias)
 			{
 				string alias = entry.Key;
-				if (alias.ToLowerInvariant() == specifiedAlias.ToLowerInvariant())
+				if (string.Equals(alias, specifiedAlias, StringComparison.InvariantCultureIgnoreCase))
 				{
 					return entry.Value;
 				}
@@ -360,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// Make sure that all from elements registered with this FROM clause are actually in the AST.
 			var iter = (new ASTIterator(GetFirstChild())).GetEnumerator();
-			var childrenInTree = new HashedSet<IASTNode>();
+			var childrenInTree = new HashSet<IASTNode>();
 			while (iter.MoveNext())
 			{
 				childrenInTree.Add(iter.Current);

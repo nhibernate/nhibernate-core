@@ -19,9 +19,6 @@ namespace NHibernate.Cfg.Loquacious
 
 		IDbIntegrationConfiguration EnableLogFormattedSql();
 
-		[Obsolete("Please use EnableLogFormattedSql. This method will be removed in a future version.")]
-		IDbIntegrationConfiguration DisableLogFormatedSql();
-
 		IConnectionConfiguration Connected { get; }
 
 		IBatcherConfiguration BatchingQueries { get; }

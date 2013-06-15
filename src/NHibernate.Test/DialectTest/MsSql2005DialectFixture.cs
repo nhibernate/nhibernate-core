@@ -75,7 +75,7 @@ namespace NHibernate.Test.DialectTest
 			var d = new MsSql2005Dialect();
 
 			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), null, new SqlString("10"));
-			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10)  c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
+			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10) c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
 		}
 
 		[Test]
@@ -222,7 +222,85 @@ namespace NHibernate.Test.DialectTest
 		public void GetLimitStringWithSqlComments()
 		{
 			var d = new MsSql2005Dialect();
-			Assert.Throws<NotSupportedException>(() => d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2")));
+			var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
+			Assert.That(limitSqlQuery, Is.Not.Null);
+			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(" /* criteria query */ SELECT TOP (2) p from lcdtm"));
+		}
+
+		[Test]
+		public void GetLimitStringWithSqlCommonTableExpression()
+		{
+			const string SQL = @"
+				WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+				(   -- Anchor member definition
+					SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+					FROM    MyEmployees
+					WHERE   ManagerID IS NULL
+					
+					UNION ALL
+					
+					-- Recursive member definition
+					SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+					FROM    MyEmployees AS e
+					INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
+				)
+				-- Statement that executes the CTE
+				SELECT  ManagerID, EmployeeID, Title, Level
+				FROM    DirectReports";
+
+			const string EXPECTED_SQL = @"
+				WITH DirectReports (ManagerID, EmployeeID, Title, DeptID, Level)
+				(   -- Anchor member definition
+					SELECT  ManagerID, EmployeeID, Title, Deptid, 0 AS Level
+					FROM    MyEmployees
+					WHERE   ManagerID IS NULL
+					
+					UNION ALL
+					
+					-- Recursive member definition
+					SELECT  e.ManagerID, e.EmployeeID, e.Title, e.Deptid, Level + 1
+					FROM    MyEmployees AS e
+					INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
+				)
+				-- Statement that executes the CTE
+				SELECT  TOP (2) ManagerID, EmployeeID, Title, Level
+				FROM    DirectReports";
+
+			var d = new MsSql2005Dialect();
+			var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
+			Assert.That(limitSqlQuery, Is.Not.Null);
+			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(EXPECTED_SQL));
+		}
+
+		[Test]
+		public void DontReturnLimitStringForStoredProcedureCall()
+		{
+			VerifyLimitStringForStoredProcedureCalls("EXEC sp_stored_procedures");
+			VerifyLimitStringForStoredProcedureCalls(@"
+				DECLARE @id int
+				SELECT  @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
+			VerifyLimitStringForStoredProcedureCalls(@"
+				DECLARE @id int
+				SELECT DISTINCT TOP 1 @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
+			VerifyLimitStringForStoredProcedureCalls(@"
+				DECLARE @id int
+				SELECT DISTINCT TOP (?) PERCENT WITH TIES @id = id FROM persons WHERE name LIKE ?
+				EXEC    get_person_summary @id");
+		}
+
+		private static void VerifyLimitStringForStoredProcedureCalls(string sql)
+		{
+			var d = new MsSql2005Dialect();
+			var limitSql = d.GetLimitString(new SqlString(sql), null, new SqlString("2"));
+			Assert.That(limitSql, Is.Null, "Limit only: {0}", sql);
+
+			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), null);
+			Assert.That(limitSql, Is.Null, "Offset only: {0}", sql);
+
+			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), new SqlString("2"));
+			Assert.That(limitSql, Is.Null, "Limit and Offset: {0}", sql);
 		}
 	}
 }

@@ -8,7 +8,6 @@ using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {
@@ -20,7 +19,8 @@ namespace NHibernate.Test.Linq
 		{
 			var query = (from user in db.Users
 						 select user).ToList();
-			Assert.AreEqual(3, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(3));
 		}
 
 		[Test]
@@ -29,15 +29,18 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.Name == "ayende" || true
 						 select user).ToList();
-			Assert.AreEqual(3, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(3));
 		}
+
 		[Test]
 		public void AndWithTrueReducesTo1Eq0Clause()
 		{
 			var query = (from user in db.Users
 						 where user.Name == "ayende" && false
 						 select user).ToList();
-			Assert.AreEqual(0, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -46,7 +49,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.Name == "ayende"
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -55,44 +59,57 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.Name == "ayende"
 						 select user).First();
-			Assert.AreEqual("ayende", query.Name);
+
+			Assert.That(query.Name, Is.EqualTo("ayende"));
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void FirstElementWithQueryThatReturnsNoResults()
 		{
-			var query = (from user in db.Users
-						 where user.Name == "xxx"
-						 select user).First();
+			var users = from user in db.Users
+						where user.Name == "xxx"
+						select user;
+
+			Assert.Throws<InvalidOperationException>(() =>
+				{
+					users.First();
+				});
 		}
 
 		[Test]
 		public void FirstOrDefaultElementWithQueryThatReturnsNoResults()
 		{
-			var query = (from user in db.Users
-						 where user.Name == "xxx"
-						 select user).FirstOrDefault();
+			var user = (from u in db.Users
+						where u.Name == "xxx"
+						select u).FirstOrDefault();
 
-			Assert.IsNull(query);
+			Assert.That(user, Is.Null);
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void SingleElementWithQueryThatReturnsNoResults()
 		{
-			var query = (from user in db.Users
-						 where user.Name == "xxx"
-						 select user).Single();
+			var users = from user in db.Users
+						where user.Name == "xxx"
+						select user;
+
+			Assert.Throws<InvalidOperationException>(() =>
+				{
+					users.Single();
+				});
 		}
 
-	  [Test]
-	  [ExpectedException(typeof(InvalidOperationException))]
-	  public void SingleElementWithQueryThatReturnsMultipleResults()
-	  {
-		 var query = (from user in db.Users
-					  select user).Single();
-	  }
+		[Test]
+		public void SingleElementWithQueryThatReturnsMultipleResults()
+		{
+			var users = from user in db.Users
+						select user;
+
+			Assert.Throws<InvalidOperationException>(() =>
+				{
+					users.Single();
+				});
+		}
 
 		[Test]
 		public void SingleOrDefaultElementWithQueryThatReturnsNoResults()
@@ -101,7 +118,7 @@ namespace NHibernate.Test.Linq
 						 where user.Name == "xxx"
 						 select user).SingleOrDefault();
 
-			Assert.IsNull(query);
+			Assert.That(query, Is.Null);
 		}
 
 		[Test]
@@ -110,7 +127,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt >= new DateTime(2000, 1, 1)
 						 select user).ToList();
-			Assert.AreEqual(2, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 
@@ -120,19 +138,20 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt >= new DateTime(2000, 1, 1) && user.RegisteredAt <= new DateTime(2001, 1, 1)
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void UsersByNameAndRegistrationDate()
 		{
 			var query = (from user in db.Users
-									 where user.Name == "ayende" && user.RegisteredAt == new DateTime(2010, 06, 17)
+						 where user.Name == "ayende" && user.RegisteredAt == new DateTime(2010, 06, 17)
 						 select user).FirstOrDefault();
 
-			Assert.IsNotNull(query);
-			Assert.AreEqual("ayende", query.Name);
-			Assert.AreEqual(new DateTime(2010, 06, 17), query.RegisteredAt);
+			Assert.That(query, Is.Not.Null);
+			Assert.That(query.Name, Is.EqualTo("ayende"));
+			Assert.That(query.RegisteredAt, Is.EqualTo(new DateTime(2010, 06, 17)));
 		}
 
 		[Test]
@@ -141,7 +160,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt > new DateTime(2000, 1, 1)
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -150,7 +170,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1)
 						 select user).ToList();
-			Assert.AreEqual(2, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -159,7 +180,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt < new DateTime(2000, 1, 1)
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -168,7 +190,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1) && user.Name == "nhibernate"
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -177,7 +200,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1) || user.Name == "nhibernate"
 						 select user).ToList();
-			Assert.AreEqual(2, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -186,7 +210,8 @@ namespace NHibernate.Test.Linq
 			var query = from u in db.Users
 						where u.Name == "ayende"
 						select u;
-			Assert.AreEqual(1, query.Count());
+
+			Assert.That(query.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -196,7 +221,7 @@ namespace NHibernate.Test.Linq
 						 where user.LastLoginDate == null
 						 select user).ToList();
 
-			CollectionAssert.AreCountEqual(2, query);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -206,7 +231,7 @@ namespace NHibernate.Test.Linq
 						 where user.LastLoginDate != null
 						 select user).ToList();
 
-			CollectionAssert.AreCountEqual(1, query);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -218,11 +243,11 @@ namespace NHibernate.Test.Linq
 
 			var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
 			var dynamicWhereClause = Expression.Lambda<Func<User, bool>>
-				  (Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
+				(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
 
 			var query = db.Users.Where(dynamicWhereClause).ToList();
 
-			CollectionAssert.AreCountEqual(2, query);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -233,7 +258,7 @@ namespace NHibernate.Test.Linq
 						select user;
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(1, list);
+			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -244,7 +269,7 @@ namespace NHibernate.Test.Linq
 						select user;
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(1, list);
+			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -255,7 +280,7 @@ namespace NHibernate.Test.Linq
 						select new { user.Name, RoleName = user.Role.Name };
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(1, list);
+			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -264,14 +289,14 @@ namespace NHibernate.Test.Linq
 			var query = from user in db.Users
 						where user.Role.Entity.Output != null
 						select new
-						{
-							user.Name,
-							RoleName = user.Role.Name,
-							user.Role.Entity.Output
-						};
+							{
+								user.Name,
+								RoleName = user.Role.Name,
+								user.Role.Entity.Output
+							};
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(1, list);
+			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -282,7 +307,7 @@ namespace NHibernate.Test.Linq
 						select new { user.Name, RoleName = user.Role.Name };
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(1, list);
+			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -293,7 +318,7 @@ namespace NHibernate.Test.Linq
 						select new { user.Name, RoleName = user.Role.Name };
 
 			var list = query.ToList();
-			CollectionAssert.AreCountEqual(2, list);
+			Assert.That(list.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -302,9 +327,9 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where user.Name.Contains("yend")
 						 select user).ToList();
-			Assert.AreEqual(1, query.Count);
-		}
 
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
 
 		[Test]
 		public void UsersWithStringContainsAndNotNullNameComplicated()
@@ -374,24 +399,24 @@ namespace NHibernate.Test.Linq
 		}
 		
 
-		[Test]
+		[Test(Description = "NH-3261")]
 		public void UsersWithStringContainsAndNotNullName()
 		{
-			//NH-3261
+			// ReSharper disable SimplifyConditionalTernaryExpression
 			var query = (from u in db.Users
 						 where u.Name == null ? false : u.Name.Contains("yend")
 						 select u).ToList();
+			// ReSharper restore SimplifyConditionalTernaryExpression
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
-		[Test]
+		[Test(Description = "NH-3261")]
 		public void UsersWithStringContainsAndNotNullNameHQL()
 		{
-			//NH-3261
 			var users = session.CreateQuery("from User u where (case when u.Name is null then 'false' else (case when u.Name LIKE '%yend%' then 'true' else 'false' end) end) = 'true'").List<User>();
 
-			Assert.AreEqual(1, users.Count);
+			Assert.That(users.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -403,7 +428,7 @@ namespace NHibernate.Test.Linq
 						 where names.Contains(user.Name)
 						 select user).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -415,7 +440,7 @@ namespace NHibernate.Test.Linq
 						 where names.Contains(user.Name)
 						 select user).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test, Description("NH-3413")]
@@ -452,8 +477,8 @@ namespace NHibernate.Test.Linq
 			var names = new List<string>();
 
 			var query = (from user in db.Users
-						where names.Contains(user.Name)
-						select user).ToList();
+						 where names.Contains(user.Name)
+						 select user).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -465,21 +490,21 @@ namespace NHibernate.Test.Linq
 			var names = allNames.Where(n => n == "does not exist");
 
 			var query = (from user in db.Users
-						where names.Contains(user.Name)
-						select user).ToList();
+						 where names.Contains(user.Name)
+						 select user).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
 
 		[Test]
-		[Ignore("inline empty list expression does not evaluate correctly")]
+		[Ignore("Inline empty list expression does not evaluate correctly")]
 		public void UsersWithEmptyInlineEnumerable()
 		{
 			var allNames = new List<string> { "ayende", "rahien" };
 
 			var query = (from user in db.Users
-						where allNames.Where(n => n == "does not exist").Contains(user.Name)
-						select user).ToList();
+						 where allNames.Where(n => n == "does not exist").Contains(user.Name)
+						 select user).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -487,14 +512,19 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void WhenTheSourceOfConstantIsICollectionThenNoThrows()
 		{
-			ICollection<string> names = new List<string> {"ayende", "rahien"};
+			ICollection<string> names = new List<string> { "ayende", "rahien" };
 
 			var query = (from user in db.Users
-							 where names.Contains(user.Name)
-							 select user);
+						 where names.Contains(user.Name)
+						 select user);
+
 			List<User> result = null;
-			Executing.This(() => result = query.ToList()).Should().NotThrow();
-			result.Count.Should().Be(2);
+			Assert.DoesNotThrow(() =>
+				{
+					result = query.ToList();
+				});
+
+			Assert.That(result.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -503,11 +533,16 @@ namespace NHibernate.Test.Linq
 			IList<string> names = new List<string> { "ayende", "rahien" };
 
 			var query = (from user in db.Users
-									 where names.Contains(user.Name)
-									 select user);
+						 where names.Contains(user.Name)
+						 select user);
+
 			List<User> result = null;
-			Executing.This(() => result = query.ToList()).Should().NotThrow();
-			result.Count.Should().Be(2);
+			Assert.DoesNotThrow(() =>
+				{
+					result = query.ToList();
+				});
+
+			Assert.That(result.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -519,7 +554,7 @@ namespace NHibernate.Test.Linq
 							 where sheet.Entries.Contains(entry)
 							 select sheet).Single();
 
-			Assert.AreEqual(2, timesheet.Id);
+			Assert.That(timesheet.Id, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -528,7 +563,8 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 where !user.Name.Contains("yend")
 						 select user).ToList();
-			Assert.AreEqual(2, query.Count);
+
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -540,7 +576,7 @@ namespace NHibernate.Test.Linq
 						 where !names.Contains(user.Name)
 						 select user).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -552,7 +588,7 @@ namespace NHibernate.Test.Linq
 						 where !names.Contains(user.Name)
 						 select user).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -564,7 +600,7 @@ namespace NHibernate.Test.Linq
 						 where !sheet.Entries.Contains(entry)
 						 select sheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -576,7 +612,7 @@ namespace NHibernate.Test.Linq
 						 where sheet.Users.Contains(user)
 						 select sheet).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -585,26 +621,26 @@ namespace NHibernate.Test.Linq
 			var query = (from o in session.Query<Animal>()
 						 select o).OfType<Dog>().ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
-				[Test(Description = "Reported as bug NH-2206")]
-				public void SearchOnObjectTypeUpCastWithExtensionMethod()
-				{
-					var query = (from o in session.Query<Dog>()
-											 select o).Cast<Animal>().ToList();
+		[Test(Description = "NH-2206")]
+		public void SearchOnObjectTypeUpCastWithExtensionMethod()
+		{
+			var query = (from o in session.Query<Dog>()
+						 select o).Cast<Animal>().ToList();
 
-					Assert.AreEqual(2, query.Count);
-				}
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
 
-				[Test(Description = "Reported as bug NH-2206")]
-				public void SearchOnObjectTypeCast()
-				{
-					var query = (from Dog o in session.Query<Dog>()
-											 select o).ToList();
+		[Test(Description = "NH-2206")]
+		public void SearchOnObjectTypeCast()
+		{
+			var query = (from Dog o in session.Query<Dog>()
+						 select o).ToList();
 
-					Assert.AreEqual(2, query.Count);
-				}
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
 
 		[Test]
 		public void SearchOnObjectTypeWithIsKeyword()
@@ -613,18 +649,18 @@ namespace NHibernate.Test.Linq
 						 where o is Dog
 						 select o).ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
-		public void BitwiseQuery() 
+		public void BitwiseQuery()
 		{
 			var featureSet = FeatureSet.HasMore;
 			var query = (from o in session.Query<User>()
 						 where (o.Features & featureSet) == featureSet
 						 select o).ToList();
 
-			Assert.IsNotNull(query);
+			Assert.That(query, Is.Not.Null);
 		}
 
 		[Test]
@@ -635,7 +671,7 @@ namespace NHibernate.Test.Linq
 						 where (o.Features & featureSet) == featureSet
 						 select o).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -646,41 +682,36 @@ namespace NHibernate.Test.Linq
 						 where ((o.Features | featureSet) & featureSet) == featureSet
 						 select o).ToList();
 
-			Assert.AreEqual(3, query.Count);
+			Assert.That(query.Count, Is.EqualTo(3));
 		}
 
-		[Test]
+		[Test(Description = "NH-2375")]
 		public void OfTypeWithWhereAndProjection()
 		{
-			// NH-2375
-			(from a
-				in session.Query<Animal>().OfType<Cat>()
+			(from a in session.Query<Animal>().OfType<Cat>()
 			 where a.Pregnant
 			 select a.Id).FirstOrDefault();
 		}
 
-		[Test]
+		[Test(Description = "NH-2375")]
 		public void OfTypeWithWhere()
 		{
-			// NH-2375
-			(from a
-				in session.Query<Animal>().OfType<Cat>()
+			(from a in session.Query<Animal>().OfType<Cat>()
 			 where a.Pregnant
 			 select a).FirstOrDefault();
 		}
 
-		[Test]
+		[Test(Description = "NH-3009")]
 		public void TimeSheetsWithSamePredicateTwoTimes()
 		{
-			//NH-3009
 			Expression<Func<Timesheet, bool>> predicate = timesheet => timesheet.Entries.Any(e => e.Id != 1);
 
 			var query = db.Timesheets
-				.Where(predicate)
-				.Where(predicate)
-				.ToList();
+						  .Where(predicate)
+						  .Where(predicate)
+						  .ToList();
 
-			Assert.AreEqual(2, query.Count);
+			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -691,7 +722,7 @@ namespace NHibernate.Test.Linq
 						 where animal.Father != null && serialNumbers.Contains(animal.Father.SerialNumber)
 						 select animal).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -703,7 +734,7 @@ namespace NHibernate.Test.Linq
 						 where father != null && serialNumbers.Contains(father.SerialNumber)
 						 select animal).ToList();
 
-			Assert.AreEqual(1, query.Count);
+			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
 

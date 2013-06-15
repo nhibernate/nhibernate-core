@@ -96,13 +96,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private static IType ExtractDataType(IASTNode operand) 
 		{
 			IType type = null;
-			if ( operand is SqlNode ) 
+			var sqlNode = operand as SqlNode;
+			if ( sqlNode != null ) 
 			{
-				type = ( ( SqlNode ) operand ).DataType;
+				type = sqlNode.DataType;
 			}
-			if ( type == null && operand is IExpectedTypeAwareNode )
+			if (type == null)
 			{
-				type = ( ( IExpectedTypeAwareNode ) operand ).ExpectedType;
+				var expectedTypeAwareNode = operand as IExpectedTypeAwareNode;
+				if (expectedTypeAwareNode != null)
+				{
+					type = expectedTypeAwareNode.ExpectedType;
+				}
 			}
 			return type;
 		}

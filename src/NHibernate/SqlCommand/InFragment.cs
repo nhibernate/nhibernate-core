@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -12,7 +13,7 @@ namespace NHibernate.SqlCommand
 		public static readonly string NotNull = "not null";
 		public static readonly string Null = "null";
 
-		private readonly ArrayList values = new ArrayList();
+		private readonly List<object> values = new List<object>();
 		private string columnName;
 
 		/// <summary>

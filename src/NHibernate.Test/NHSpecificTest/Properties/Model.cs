@@ -1,4 +1,4 @@
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 
 		public Person()
 		{
-			Accounts = new HashedSet<Account>();
+			Accounts = new HashSet<Account>();
 		}
 	}
 

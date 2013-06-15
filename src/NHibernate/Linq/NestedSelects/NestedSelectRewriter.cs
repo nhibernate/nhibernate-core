@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Iesi.Collections.Generic;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	internal static class NestedSelectRewriter
+	static class NestedSelectRewriter
 	{
-		private static readonly MethodInfo CastMethod = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { typeof(object[]) });
+		private static readonly MethodInfo CastMethod = EnumerableHelper.GetMethod("Cast", new[] { typeof (IEnumerable) }, new[] { typeof (object[]) });
 
 		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
 		{
@@ -26,8 +26,8 @@ namespace NHibernate.Linq.NestedSelects
 				return;
 
 			var elementExpression = new List<ExpressionHolder>();
-			var group = Expression.Parameter(typeof(IGrouping<Tuple, Tuple>), "g");
-
+			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
+			
 			var replacements = new Dictionary<Expression, Expression>();
 			foreach (var expression in nsqmv.Expressions)
 			{
@@ -53,10 +53,10 @@ namespace NHibernate.Linq.NestedSelects
 			var elementSelector = CreateSelector(elementExpression, 1);
 
 			var groupBy = EnumerableHelper.GetMethod("GroupBy",
-													 new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) },
-													 new[] { typeof(object[]), typeof(Tuple), typeof(Tuple) });
+													 new[] { typeof (IEnumerable<>), typeof (Func<,>), typeof (Func<,>) },
+													 new[] { typeof (object[]), typeof (Tuple), typeof (Tuple) });
 
-			var input = Expression.Parameter(typeof(IEnumerable<object>), "input");
+			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
 
 			var lambda = Expression.Lambda(
 				Expression.Call(groupBy,
@@ -70,7 +70,7 @@ namespace NHibernate.Linq.NestedSelects
 
 			var initializers = elementExpression.Select(e => ConvertToObject(e.Expression));
 
-			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof(object), initializers);
+			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
 		}
 
 		private static Expression ProcessExpression(QueryModel queryModel, ISessionFactory sessionFactory, Expression expression, List<ExpressionHolder> elementExpression, ParameterExpression @group)
@@ -78,11 +78,11 @@ namespace NHibernate.Linq.NestedSelects
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null)
 				return ProcessMemberExpression(sessionFactory, elementExpression, queryModel, @group, memberExpression);
-
+			
 			var subQueryExpression = expression as SubQueryExpression;
 			if (subQueryExpression != null)
 				return ProcessSubquery(sessionFactory, elementExpression, queryModel, @group, subQueryExpression.QueryModel);
-
+			
 			return null;
 		}
 
@@ -90,9 +90,14 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			var subQueryMainFromClause = subQueryModel.MainFromClause;
 
+			var restrictions = subQueryModel.BodyClauses
+											.OfType<WhereClause>()
+											.Select(w => new NhWithClause(w.Predicate));
+
 			var join = new NhJoinClause(subQueryMainFromClause.ItemName,
 										subQueryMainFromClause.ItemType,
-										subQueryMainFromClause.FromExpression);
+										subQueryMainFromClause.FromExpression,
+										restrictions);
 
 			queryModel.BodyClauses.Add(@join);
 
@@ -103,7 +108,7 @@ namespace NHibernate.Linq.NestedSelects
 			var selector = subQueryModel.SelectClause.Selector;
 
 			var collectionType = subQueryModel.GetResultType();
-
+			
 			var elementType = selector.Type;
 
 			var source = new QuerySourceReferenceExpression(@join);
@@ -137,7 +142,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static LambdaExpression MakeSelector(ICollection<ExpressionHolder> elementExpression, Expression @select, Expression identifier)
 		{
-			var parameter = Expression.Parameter(typeof(Tuple), "value");
+			var parameter = Expression.Parameter(typeof (Tuple), "value");
 
 			var rewriter = new SelectClauseRewriter(parameter, elementExpression, identifier, 1, new Dictionary<Expression, Expression>());
 
@@ -150,13 +155,13 @@ namespace NHibernate.Linq.NestedSelects
 		{
 			// source.Where(predicate).Select(selector).ToList();
 			var whereMethod = EnumerableHelper.GetMethod("Where",
-														  new[] { typeof(IEnumerable<>), typeof(Func<,>) },
-														  new[] { typeof(Tuple) });
+														  new[] { typeof (IEnumerable<>), typeof (Func<,>) },
+														  new[] { typeof (Tuple) });
 
 
 			var selectMethod = EnumerableHelper.GetMethod("Select",
-														   new[] { typeof(IEnumerable<>), typeof(Func<,>) },
-														   new[] { typeof(Tuple), elementType });
+														   new[] { typeof (IEnumerable<>), typeof (Func<,>) },
+														   new[] { typeof (Tuple), elementType });
 
 			var select = Expression.Call(selectMethod,
 										 Expression.Call(whereMethod, source, predicate),
@@ -172,17 +177,15 @@ namespace NHibernate.Linq.NestedSelects
 				return array;
 			}
 
-			var toListMethod = EnumerableHelper.GetMethod("ToList",
-														  new[] { typeof(IEnumerable<>) },
-														  new[] { elementType });
-
-			var list = Expression.Call(toListMethod, @select);
-
 			var constructor = GetCollectionConstructor(collectionType, elementType);
 			if (constructor != null)
-				return Expression.New(constructor, list);
+				return Expression.New(constructor, (Expression) @select);
 
-			return Expression.Call(list,
+			var toListMethod = EnumerableHelper.GetMethod("ToList",
+														  new[] { typeof (IEnumerable<>) },
+														  new[] { elementType });
+
+			return Expression.Call(Expression.Call(toListMethod, @select),
 								   "AsReadonly",
 								   System.Type.EmptyTypes);
 		}
@@ -193,7 +196,7 @@ namespace NHibernate.Linq.NestedSelects
 			{
 				if (collectionType.IsGenericType && collectionType.GetGenericTypeDefinition() == typeof(ISet<>))
 				{
-					return typeof(HashedSet<>).MakeGenericType(elementType).GetConstructor(new[] { typeof(ICollection<>).MakeGenericType(elementType) });
+					return typeof(HashSet<>).MakeGenericType(elementType).GetConstructor(new[] { typeof(IEnumerable<>).MakeGenericType(elementType) });
 				}
 				return null;
 			}
@@ -204,10 +207,10 @@ namespace NHibernate.Linq.NestedSelects
 		private static LambdaExpression MakePredicate(int index)
 		{
 			// t => Not(ReferenceEquals(t.Items[index], null))
-			var t = Expression.Parameter(typeof(Tuple), "t");
+			var t = Expression.Parameter(typeof (Tuple), "t");
 			return Expression.Lambda(
 				Expression.Not(
-					Expression.Call(typeof(object),
+					Expression.Call(typeof (object),
 									"ReferenceEquals",
 									System.Type.EmptyTypes,
 									ArrayIndex(Expression.Property(t, Tuple.ItemsProperty), index),
@@ -220,19 +223,19 @@ namespace NHibernate.Linq.NestedSelects
 			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
 			if (classMetadata == null)
 				return Expression.Constant(null);
-
+			
 			return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
 		}
 
 		private static LambdaExpression CreateSelector(IEnumerable<ExpressionHolder> expressions, int tuple)
 		{
-			var parameter = Expression.Parameter(typeof(object[]), "x");
+			var parameter = Expression.Parameter(typeof (object[]), "x");
 
-			var initializers = expressions.Select((x, index) => new { x.Tuple, index })
+			var initializers = expressions.Select((x, index) => new { x.Tuple, index})
 				.Where(x => x.Tuple == tuple)
 				.Select(x => ArrayIndex(parameter, x.index));
 
-			var newArrayInit = Expression.NewArrayInit(typeof(object), initializers);
+			var newArrayInit = Expression.NewArrayInit(typeof (object), initializers);
 
 			return Expression.Lambda(
 				Expression.New(Tuple.Constructor, newArrayInit),
@@ -246,7 +249,7 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression ConvertToObject(Expression expression)
 		{
-			return Expression.Convert(expression, typeof(object));
+			return Expression.Convert(expression, typeof (object));
 		}
 
 		private static System.Type GetElementType(System.Type type)
@@ -255,6 +258,6 @@ namespace NHibernate.Linq.NestedSelects
 			if (elementType == null)
 				throw new NotSupportedException("Unknown collection type " + type.FullName);
 			return elementType;
-		}
+	}
 	}
 }

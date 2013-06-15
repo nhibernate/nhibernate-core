@@ -66,8 +66,8 @@ namespace NHibernate.Type
 			
 			if (x.IsProxy())
 			{
-                INHibernateProxy proxy = x as INHibernateProxy; 
-                xid = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = x as INHibernateProxy; 
+				xid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -76,10 +76,10 @@ namespace NHibernate.Type
 
 			object yid;
 			
-            if (y.IsProxy())
+			if (y.IsProxy())
 			{
-                INHibernateProxy proxy = y as INHibernateProxy; 
-                yid = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = y as INHibernateProxy; 
+				yid = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -143,10 +143,10 @@ namespace NHibernate.Type
 		{
 			if (obj.IsProxy())
 			{
-                INHibernateProxy proxy = obj as INHibernateProxy; 
-                ILazyInitializer li = proxy.HibernateLazyInitializer;
-                
-                return li.Identifier;
+				INHibernateProxy proxy = obj as INHibernateProxy; 
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				
+				return li.Identifier;
 			}
 			else
 			{
@@ -495,8 +495,8 @@ namespace NHibernate.Type
 			
 			if (x.IsProxy())
 			{
-                INHibernateProxy proxy = x as INHibernateProxy; 
-                id = proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = x as INHibernateProxy; 
+				id = proxy.HibernateLazyInitializer.Identifier;
 			}
 			else
 			{
@@ -553,7 +553,7 @@ namespace NHibernate.Type
 
 			EntityUniqueKey euk =
 				new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory),
-				                    session.EntityMode, session.Factory);
+									session.EntityMode, session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			try

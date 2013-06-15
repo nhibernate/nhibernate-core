@@ -1,5 +1,5 @@
 ﻿using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {
@@ -8,7 +8,7 @@ namespace NHibernate.Test.Cascade.Circle
 		private long tourId;
 		private long version;
 		private string name;
-		private ISet<Node> nodes = new HashedSet<Node>();
+		private ISet<Node> nodes = new HashSet<Node>();
 		
 		public virtual long TourId
 		{

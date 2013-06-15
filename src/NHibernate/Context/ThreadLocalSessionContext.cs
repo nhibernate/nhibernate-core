@@ -125,9 +125,8 @@ namespace NHibernate.Context
 
 			if (context != null)
 			{
-				if (context.ContainsKey(factory))
+				if (context.TryGetValue(factory, out session))
 				{
-					session = context[factory];
 					context.Remove(factory);
 				}
 
@@ -175,13 +174,10 @@ namespace NHibernate.Context
 		{
 			if (context == null)
 				return null;
-			else
-			{
-				if (context.ContainsKey(factory))
-					return context[factory];
-				else
-					return null;
-			}
+		
+			ISession result;
+			context.TryGetValue(factory, out result);
+			return result;
 		}
 	}
 }

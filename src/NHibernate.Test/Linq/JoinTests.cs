@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
-using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -9,13 +7,6 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class JoinTests : LinqTestCase
 	{
-		protected override void Configure(Cfg.Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-			base.Configure(configuration);
-		}
-
-
 		[Test]
 		public void OrderLinesWith2ImpliedJoinShouldProduce2JoinsInSql()
 		{

@@ -165,6 +165,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToMany.foreignkey = foreignKeyName;
 		}
 
+		public void Where(string sqlWhereClause)
+		{
+			manyToMany.where = sqlWhereClause;
+		}
+
 		#endregion
 	}
 }

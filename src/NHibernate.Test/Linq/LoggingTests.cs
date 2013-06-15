@@ -48,8 +48,8 @@ namespace NHibernate.Test.Linq
 				var actualLog = logspy.GetWholeLog();
 
 				const string expectedLog =
-					"Expression (partially evaluated): value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product])" +
-					".Where(product => (product = Product#1)).Count()";
+					"Expression (partially evaluated): value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product])" + 
+					".Where(product => (product == Product#1)).Count()";
 				Assert.That(actualLog, Is.StringContaining(expectedLog));
 
 				// And verify that the proxy in the expression wasn't initialized.

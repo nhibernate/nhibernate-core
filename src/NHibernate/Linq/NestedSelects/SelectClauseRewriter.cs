@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	internal class SelectClauseRewriter : NhExpressionTreeVisitor
+	class SelectClauseRewriter : ExpressionTreeVisitor
 	{
 		private readonly Dictionary<Expression, Expression> _dictionary;
 

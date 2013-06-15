@@ -110,7 +110,7 @@ namespace NHibernate.Properties
 
 			FieldInfo field =
 				type.GetField(fieldName,
-				              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+							  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			if (field == null)
 			{
 				// recursively call this method for the base Type
@@ -281,7 +281,7 @@ namespace NHibernate.Properties
 				{
 					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
 					// would be thrown, but it doesn't hurt to make sure.
-					if (field.FieldType.IsAssignableFrom(value.GetType()) == false)
+					if (field.FieldType.IsInstanceOfType(value) == false)
 					{
 						// add some details to the error message - there have been a few forum posts an they are 
 						// all related to an ISet and IDictionary mixups.

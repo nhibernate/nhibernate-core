@@ -1,12 +1,12 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
 	public class Node
 	{
-		private ISet<Node> cascadingChildren = new HashedSet<Node>();
-		private ISet<Node> children = new HashedSet<Node>();
+		private ISet<Node> cascadingChildren = new HashSet<Node>();
+		private ISet<Node> children = new HashSet<Node>();
 		private DateTime created = DateTime.Now;
 
 		public virtual string Name { get; set; }

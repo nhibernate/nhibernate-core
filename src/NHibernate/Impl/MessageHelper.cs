@@ -94,7 +94,7 @@ namespace NHibernate.Impl
 		/// <param name="identifierType">The NHibernate type of the identifier.</param>
 		/// <returns>A descriptive <see cref="String" /> in the format of <c>[classname#id]</c></returns>
 		public static string InfoString(IEntityPersister persister, object id, IType identifierType,
-		                                ISessionFactoryImplementor factory)
+										ISessionFactoryImplementor factory)
 		{
 			StringBuilder s = new StringBuilder();
 			s.Append('[');

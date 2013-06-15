@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 			}
 
 			IEventSource source = @event.Session;
-			EntityKey key = new EntityKey(id, persister, source.EntityMode);
+			EntityKey key = source.GenerateEntityKey(id, persister);
 
 			source.PersistenceContext.CheckUniqueness(key, entity);
 

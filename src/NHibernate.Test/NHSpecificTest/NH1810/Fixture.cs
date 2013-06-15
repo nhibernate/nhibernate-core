@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 	public class Fixture : BugTestCase
 	{
 		// The problem is the same using a default sort="natural" collection for Children
-		// and there is no problem using a default HashedSet.
+		// and there is no problem using a default HashSet.
 		// look a the implementation of Children
 
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Fixture));

@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
+using NHibernate.Linq.EagerFetching;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
 using NHibernate.Linq.NestedSelects;
@@ -40,6 +41,11 @@ namespace NHibernate.Linq.Visitors
 			// Rewrite non-aggregating group-joins
 			NonAggregatingGroupJoinRewriter.ReWrite(queryModel);
 
+			SubQueryFromClauseFlattener.ReWrite(queryModel);
+
+			// Rewrite left-joins
+			LeftJoinRewriter.ReWrite(queryModel);
+
 			// Rewrite paging
 			PagingRewriter.ReWrite(queryModel);
 
@@ -54,7 +60,7 @@ namespace NHibernate.Linq.Visitors
 
 			// rewrite any operators that should be applied on the outer query
 			// by flattening out the sub-queries that they are located in
-			ResultOperatorRewriterResult result = ResultOperatorRewriter.Rewrite(queryModel);
+			var result = ResultOperatorRewriter.Rewrite(queryModel);
 
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
@@ -99,6 +105,8 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
 			ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
+            ResultOperatorMap.Add<InnerFetchOneRequest, ProcessInnerFetchOne>();
+            ResultOperatorMap.Add<InnerFetchManyRequest, ProcessInnerFetchMany>();
 			ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
 			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
@@ -180,6 +188,12 @@ namespace NHibernate.Linq.Visitors
 			else
 			{
 				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, @alias);
+			}
+
+			foreach (var withClause in joinClause.Restrictions)
+			{
+				var booleanExpression = HqlGeneratorExpressionTreeVisitor.Visit(withClause.Predicate, VisitorParameters).AsBooleanExpression();
+				hqlJoin.AddChild(_hqlTree.TreeBuilder.With(booleanExpression));
 			}
 
 			_hqlTree.AddFromClause(hqlJoin);

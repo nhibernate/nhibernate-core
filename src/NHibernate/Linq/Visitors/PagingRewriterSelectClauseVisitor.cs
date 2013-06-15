@@ -1,11 +1,12 @@
 ﻿using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
-	internal class PagingRewriterSelectClauseVisitor : NhExpressionTreeVisitor
+	internal class PagingRewriterSelectClauseVisitor : ExpressionTreeVisitor
 	{
 		private readonly FromClauseBase querySource;
 

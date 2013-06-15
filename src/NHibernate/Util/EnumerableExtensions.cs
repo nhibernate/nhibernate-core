@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -73,6 +74,14 @@ namespace NHibernate.Util
 				}
 			}
 			return null;
+		}
+
+		public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
+		{
+			foreach (T item in query)
+			{
+				method(item);
+			}
 		}
 
 		private static DisposableEnumerator GetDisposableEnumerator(this IEnumerable source)

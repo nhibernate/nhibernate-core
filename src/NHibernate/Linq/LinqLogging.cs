@@ -42,7 +42,7 @@ namespace NHibernate.Linq
 			protected override Expression VisitConstantExpression(ConstantExpression expression)
 			{
 				if (expression.Value.IsProxy())
-					return Expression.Parameter(expression.Type, ObjectUtils.IdentityToString(expression.Value));
+					return Expression.Parameter(expression.Type, ObjectHelpers.IdentityToString(expression.Value));
 
 				return base.VisitConstantExpression(expression);
 			}

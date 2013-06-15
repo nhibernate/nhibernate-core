@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1289
@@ -16,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 			{
 				var purchaseOrder = new Cons_PurchaseOrder
 				                    	{
-				                    		PurchaseItems = new HashedSet<PurchaseItem>(),
+				                    		PurchaseItems = new HashSet<PurchaseItem>(),
 				                    	};
 				var product = new Cons_Product
 				              	{

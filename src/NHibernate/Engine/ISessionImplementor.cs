@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
+using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
@@ -79,15 +80,16 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
+		[Obsolete("Use overload with IQueryExpression")]
 		IList List(string query, QueryParameters parameters);
 
-        /// <summary>
-        /// Execute a <c>List()</c> expression query
-        /// </summary>
-        /// <param name="queryExpression"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        IList List(IQueryExpression queryExpression, QueryParameters parameters);
+		/// <summary>
+		/// Execute a <c>List()</c> expression query
+		/// </summary>
+		/// <param name="queryExpression"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		IList List(IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query expression
@@ -96,12 +98,21 @@ namespace NHibernate.Engine
 		/// </summary>
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
+		[Obsolete("Use overload with IQueryExpression")]
 		void List(string query, QueryParameters parameters, IList results);
+
+		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		IList<T> List<T>(string query, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
+		/// </summary>
+		IList<T> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
@@ -118,12 +129,27 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
+		[Obsolete("Use overload with IQueryExpression")]
 		IEnumerable Enumerable(string query, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute an <c>Iterate()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
 		/// </summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
+		/// </summary>
+		IEnumerable<T> Enumerable<T>(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Execute a filter
@@ -220,7 +246,10 @@ namespace NHibernate.Engine
 
 		IQuery GetNamedSQLQuery(string name);
 
+		[Obsolete("Use overload with IQueryExpression")]
 		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
+		
+		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
 
@@ -292,7 +321,11 @@ namespace NHibernate.Engine
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
+		[Obsolete("Use overload with IQueryExpression")]
 		int ExecuteUpdate(string query, QueryParameters queryParameters);
+
+		/// <summary> Execute a HQL update or delete query</summary>
+		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
 
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 
@@ -303,5 +336,9 @@ namespace NHibernate.Engine
 		ITransactionContext TransactionContext { get; set; }
 
 		void CloseSessionFromDistributedTransaction();
+
+		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
+
+		CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName);
 	}
 }

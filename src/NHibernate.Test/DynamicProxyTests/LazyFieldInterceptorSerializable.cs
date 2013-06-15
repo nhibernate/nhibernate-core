@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using NHibernate.Intercept;
@@ -26,7 +26,7 @@ namespace NHibernate.Test.DynamicProxyTests
 		{
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
-			pf.PostInstantiate("MyClass", typeof(MyClass), new HashedSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
+			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
 			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy(new MyClass());
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 

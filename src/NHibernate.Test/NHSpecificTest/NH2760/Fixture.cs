@@ -4,7 +4,6 @@ using System.Linq;
 using NUnit.Framework;
 using NHibernate;
 using NHibernate.Linq;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2760
 {
@@ -71,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		}
 
 		[Test]
-		[Ignore("Passing")]
 		public void ShouldBeAbleToSelectUserGroupWhereUserCount()
 		{
 			using (ISession session = base.OpenSession())
@@ -93,7 +91,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		}
 
 		[Test]
-		[Ignore("Passing")]
 		public void ShouldBeAbleToSelectUserGroupAndSelectUserIdUserCount()
 		{
 			using (ISession session = base.OpenSession())
@@ -120,7 +117,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		}
 
 		[Test]
-		[Ignore("Passing")]
 		public void ShouldBeAbleToSelectUserGroupAndOrderByUserCountWithHql()
 		{
 			using (ISession session = base.OpenSession())

@@ -35,17 +35,17 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			string entityName = criteriaQuery.GetEntityName(criteria, propertyName);
-			string actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
-			string sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
+			var entityName = criteriaQuery.GetEntityName(criteria, propertyName);
+			var actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
+			var sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
 
-			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			IQueryableCollection collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
+			var factory = criteriaQuery.Factory;
+			var collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
 
-			string[] collectionKeys = collectionPersister.KeyColumnNames;
-			string[] ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
+			var collectionKeys = collectionPersister.KeyColumnNames;
+			var ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
 
-			StringBuilder innerSelect = new StringBuilder();
+			var innerSelect = new StringBuilder();
 			innerSelect.Append("(select 1 from ")
 				.Append(collectionPersister.TableName)
 				.Append(" where ")
@@ -60,15 +60,15 @@ namespace NHibernate.Criterion
 
 			innerSelect.Append(")");
 
-			return new SqlString(new string[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
+			return new SqlString(new object[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
 		}
 
 
 		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName,
-		                                                      ISessionFactoryImplementor factory)
+															  ISessionFactoryImplementor factory)
 		{
-			IPropertyMapping ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityName);
-			IType type = ownerMapping.ToType(actualPropertyName);
+			var ownerMapping = (IPropertyMapping) factory.GetEntityPersister(entityName);
+			var type = ownerMapping.ToType(actualPropertyName);
 			if (!type.IsCollectionType)
 			{
 				throw new MappingException(

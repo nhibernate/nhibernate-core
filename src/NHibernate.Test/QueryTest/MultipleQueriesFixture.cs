@@ -452,7 +452,7 @@ namespace NHibernate.Test.QueryTest
 					.Add<long>(countItems)
 					.List();
 
-				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<long>>());
 			}
 		}
@@ -482,7 +482,7 @@ namespace NHibernate.Test.QueryTest
 					.Add<Item>(parents)
 					.List();
 
-				Assert.That(results[0], Is.InstanceOf<ArrayList>());
+				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<Item>>());
 			}
 		}

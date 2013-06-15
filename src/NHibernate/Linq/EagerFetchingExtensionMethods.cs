@@ -30,6 +30,26 @@ namespace NHibernate.Linq
             return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
         }
 
+        public static INhFetchRequest<TOriginating, TRelated> InnerFetch<TOriginating, TRelated>(
+            this IQueryable<TOriginating> query, Expression<Func<TOriginating, TRelated>> relatedObjectSelector)
+        {
+            ArgumentUtility.CheckNotNull("query", query);
+            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+
+            var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TOriginating), typeof(TRelated));
+            return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
+        }
+
+        public static INhFetchRequest<TOriginating, TRelated> InnerFetchMany<TOriginating, TRelated>(
+            this IQueryable<TOriginating> query, Expression<Func<TOriginating, IEnumerable<TRelated>>> relatedObjectSelector)
+        {
+            ArgumentUtility.CheckNotNull("query", query);
+            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+
+            var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TOriginating), typeof(TRelated));
+            return CreateFluentFetchRequest<TOriginating, TRelated>(methodInfo, query, relatedObjectSelector);
+        }
+
         public static INhFetchRequest<TQueried, TRelated> ThenFetch<TQueried, TFetch, TRelated>(
             this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, TRelated>> relatedObjectSelector)
         {
@@ -41,6 +61,26 @@ namespace NHibernate.Linq
         }
 
         public static INhFetchRequest<TQueried, TRelated> ThenFetchMany<TQueried, TFetch, TRelated>(
+            this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, IEnumerable<TRelated>>> relatedObjectSelector)
+        {
+            ArgumentUtility.CheckNotNull("query", query);
+            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+
+            var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TQueried), typeof(TFetch), typeof(TRelated));
+            return CreateFluentFetchRequest<TQueried, TRelated>(methodInfo, query, relatedObjectSelector);
+        }
+
+        public static INhFetchRequest<TQueried, TRelated> ThenInnerFetch<TQueried, TFetch, TRelated>(
+           this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, TRelated>> relatedObjectSelector)
+        {
+            ArgumentUtility.CheckNotNull("query", query);
+            ArgumentUtility.CheckNotNull("relatedObjectSelector", relatedObjectSelector);
+
+            var methodInfo = ((MethodInfo)MethodBase.GetCurrentMethod()).MakeGenericMethod(typeof(TQueried), typeof(TFetch), typeof(TRelated));
+            return CreateFluentFetchRequest<TQueried, TRelated>(methodInfo, query, relatedObjectSelector);
+        }
+
+        public static INhFetchRequest<TQueried, TRelated> ThenInnerFetchMany<TQueried, TFetch, TRelated>(
             this INhFetchRequest<TQueried, TFetch> query, Expression<Func<TFetch, IEnumerable<TRelated>>> relatedObjectSelector)
         {
             ArgumentUtility.CheckNotNull("query", query);

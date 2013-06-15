@@ -1,5 +1,5 @@
 using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.Cascade
 	{
 		private long id;
 		private DateTime batchDate;
-		private ISet<Job> jobs = new HashedSet<Job>();
+		private ISet<Job> jobs = new HashSet<Job>();
 		public JobBatch() {}
 		public JobBatch(DateTime batchDate)
 		{

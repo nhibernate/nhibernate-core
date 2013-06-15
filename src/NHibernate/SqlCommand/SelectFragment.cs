@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Iesi.Collections;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -134,12 +133,8 @@ namespace NHibernate.SqlCommand
 		public string ToSqlStringFragment(bool includeLeadingComma)
 		{
 			StringBuilder buf = new StringBuilder(columns.Count * 10);
-			HashedSet columnsUnique = new HashedSet();
-
-			if (usedAliases != null)
-			{
-				columnsUnique.AddAll(usedAliases);
-			}
+			HashSet<string> columnsUnique =
+				usedAliases != null ? new HashSet<string>(usedAliases) : new HashSet<string>();
 
 			bool found = false;
 			for (int i = 0; i < columns.Count; i++)

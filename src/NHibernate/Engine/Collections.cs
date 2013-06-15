@@ -60,7 +60,7 @@ namespace NHibernate.Engine
 				//    throw new AssertionFailure("Unable to determine collection owner identifier for orphan-delete processing");
 				//  }
 				//}
-				EntityKey key = new EntityKey(ownerId, loadedPersister.OwnerEntityPersister, session.EntityMode);
+				EntityKey key = session.GenerateEntityKey(ownerId, loadedPersister.OwnerEntityPersister);
 				object owner = persistenceContext.GetEntity(key);
 				if (owner == null)
 				{
