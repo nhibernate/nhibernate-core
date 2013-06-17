@@ -31,7 +31,7 @@ namespace NHibernate.Engine
 			IJoinable joinable = type.GetAssociatedJoinable(factory);
 			if (uniqueKeyPropertyName == null)
 			{
-				return joinable.KeyColumnNames;
+				return joinable.JoinColumnNames;
 			}
 			else
 			{

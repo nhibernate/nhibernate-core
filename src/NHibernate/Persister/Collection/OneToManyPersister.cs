@@ -64,21 +64,69 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteString()
 		{
-			var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
-				.SetTableName(qualifiedTableName)
-				.AddColumns(KeyColumnNames, "null")
-				.SetIdentityColumn(KeyColumnNames, KeyType);
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
+					.SetTableName(qualifiedTableName)
+					.AddColumns(KeyColumnNames, "null")
+					.SetIdentityColumn(KeyColumnNames, KeyType);
 
-			if (HasIndex)
-				update.AddColumns(IndexColumnNames, "null");
+				if (HasIndex)
+					update.AddColumns(IndexColumnNames, "null");
 
-			if (HasWhere)
-				update.AddWhereFragment(sqlWhereString);
+				if (HasWhere)
+					update.AddWhereFragment(sqlWhereString);
 
-			if (Factory.Settings.IsCommentsEnabled)
-				update.SetComment("delete one-to-many " + Role);
+				if (Factory.Settings.IsCommentsEnabled)
+					update.SetComment("delete one-to-many " + Role);
 
-			return update.ToSqlCommandInfo();
+				return update.ToSqlCommandInfo();
+			}
+			else
+			{
+				var deleteSql = new SqlStringBuilder();
+
+				deleteSql.Add("update " + qualifiedTableName + " set ");
+				bool andNeeded = false;
+				foreach (string nextColumn in JoinColumnNames)
+				{
+					if (andNeeded)
+					{
+						deleteSql.Add(" and ");
+					}
+					deleteSql.Add(nextColumn + " = null");
+					andNeeded = true;
+				}
+
+				var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+				deleteSql.Add(" from " + qualifiedTableName + " inner join " + ownerPersister.TableName + " on ");
+				var ownerJoinColumns = ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName);
+				andNeeded = false;
+				for (int columnIndex = 0; columnIndex < JoinColumnNames.Length; columnIndex++)
+				{
+					if (andNeeded)
+					{
+						deleteSql.Add(" and ");
+					}
+					deleteSql.Add(qualifiedTableName + StringHelper.Dot + JoinColumnNames[columnIndex] + " = " + ownerPersister.TableName + StringHelper.Dot + ownerJoinColumns[columnIndex]);
+					andNeeded = true;
+				}
+
+				deleteSql.Add(" where ");
+				andNeeded = false;
+				foreach (string nextColumn in KeyColumnNames)
+				{
+					if (andNeeded)
+					{
+						deleteSql.Add(" and ");
+					}
+					deleteSql.Add(ownerPersister.TableName + StringHelper.Dot + nextColumn + " = ");
+					deleteSql.AddParameter();
+					andNeeded = true;
+				}
+
+				return new SqlCommandInfo(deleteSql.ToSqlString(), KeyType.SqlTypes(Factory));
+			}
 		}
 
 		/// <summary>
@@ -327,7 +375,7 @@ namespace NHibernate.Persister.Collection
 			for (int i = 0; i < columnNames.Length; i++)
 			{
 				var column = columnNames[i];
-				var tableAlias = ojl.GenerateTableAliasForColumn(alias, column);
+				var tableAlias = ojl.GenerateTableAliasForColumn(alias + (CollectionType.UseLHSPrimaryKey ? String.Empty : "owner_"), column);
 				selectFragment.AddColumn(tableAlias, column, columnAliases[i]);
 			}
 			return selectFragment;
@@ -343,7 +391,26 @@ namespace NHibernate.Persister.Collection
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+			var elementJoinFragment = ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				return elementJoinFragment;
+			}
+
+			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
+
+			var lhsKeyColumnNames = new string[JoinColumnNames.Length];
+			int k = 0;
+			foreach (string columnName in JoinColumnNames)
+			{
+				lhsKeyColumnNames[k] = alias + StringHelper.Dot + columnName;
+				k++;
+			}
+
+			var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+			join.AddJoin(ownerPersister.TableName, alias + "owner_", lhsKeyColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName), JoinType.LeftOuterJoin);
+			return join.ToFromFragmentString + elementJoinFragment;
 		}
 
 		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)

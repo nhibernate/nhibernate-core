@@ -16,9 +16,14 @@ namespace NHibernate.Persister.Entity
 		string Name { get; }
 
 		/// <summary>
-		/// The columns to join on.
+		/// The columns that identify the item.
 		/// </summary>
 		string[] KeyColumnNames { get; }
+
+		/// <summary>
+		/// The columns to join on.
+		/// </summary>
+		string[] JoinColumnNames { get; }
 
 		/// <summary>
 		/// Is this instance actually a ICollectionPersister?
