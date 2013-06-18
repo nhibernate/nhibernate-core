@@ -1,14 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
-using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -25,8 +23,9 @@ namespace NHibernate.Persister.Entity
 		private readonly string[] constraintOrderedTableNames;
 		private readonly string[][] constraintOrderedKeyColumnNames;
 
-		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, 
-			ISessionFactoryImplementor factory, IMapping mapping):base(persistentClass, cache, factory)
+		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+			ISessionFactoryImplementor factory, IMapping mapping)
+			: base(persistentClass, cache, factory)
 		{
 			if (IdentifierGenerator is IdentityGenerator)
 			{
@@ -178,7 +177,7 @@ namespace NHibernate.Persister.Entity
 
 		public override string DiscriminatorSQLValue
 		{
-			get { return discriminatorSQLValue;}
+			get { return discriminatorSQLValue; }
 		}
 
 		public override object DiscriminatorValue
@@ -332,7 +331,7 @@ namespace NHibernate.Persister.Entity
 							var sqlType = col.GetSqlTypeCode(mapping);
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
-						buf.Append(col.Name);
+						buf.Append(col.GetQuotedName(dialect));
 						buf.Append(StringHelper.CommaSpace);
 					}
 					buf.Append(clazz.SubclassId).Append(" as clazz_");
