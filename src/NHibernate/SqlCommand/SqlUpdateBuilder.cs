@@ -20,6 +20,8 @@ namespace NHibernate.SqlCommand
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
 		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
 
+		private SqlString join = null;
+
 		private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> whereParameterTypes = new List<SqlType>();
 		private SqlString assignments;
@@ -128,6 +130,28 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		public SqlUpdateBuilder SetJoin(string joinTableName, string[] lhsColumnNames, string[] rhsColumnNames)
+		{
+			SqlStringBuilder joinStringBuilder = new SqlStringBuilder();
+
+			joinStringBuilder.Add(" INNER JOIN ");
+			joinStringBuilder.Add(joinTableName);
+			joinStringBuilder.Add(" ON ");
+			bool andNeeded = false;
+			for (int columnIndex = 0; columnIndex < lhsColumnNames.Length; columnIndex++)
+			{
+				if (andNeeded)
+				{
+					joinStringBuilder.Add(" AND ");
+				}
+				joinStringBuilder.Add(tableName + StringHelper.Dot + lhsColumnNames[columnIndex] + " = " + joinTableName + StringHelper.Dot + rhsColumnNames[columnIndex]);
+				andNeeded = true;
+			}
+
+			join = joinStringBuilder.ToSqlString();
+			return this;
+		}
+
 		public SqlUpdateBuilder SetWhere(string whereSql)
 		{
 			if (StringHelper.IsNotEmpty(whereSql))
@@ -146,6 +170,20 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder SetIdentityColumn(string[] columnNames, IType identityType)
 		{
 			whereStrings.Add(ToWhereString(columnNames));
+			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
+			return this;
+		}
+
+ 		/// <summary>
+		/// Sets the IdentityColumn for the <c>UPDATE</c> sql to use.
+		/// </summary>
+		/// <param name="tableName">Table name to prepend to the columns.</param>
+		/// <param name="columnNames">An array of the column names for the Property</param>
+		/// <param name="identityType">The IType of the Identity Property.</param>
+		/// <returns>The SqlUpdateBuilder.</returns>
+		public SqlUpdateBuilder SetIdentityColumn(string tableName, string[] columnNames, IType identityType)
+		{
+			whereStrings.Add(ToWhereString(tableName, columnNames));
 			whereParameterTypes.AddRange(identityType.SqlTypes(Mapping));
 			return this;
 		}
@@ -232,6 +270,11 @@ namespace NHibernate.SqlCommand
 			{
 				initialCapacity += (columns.Count - 1) + (columns.Count * 3);
 			}
+
+			// 3 - JOIN
+			if (join != null)
+				initialCapacity += 3;
+
 			// 1 = "WHERE" 
 			initialCapacity++;
 
@@ -280,6 +323,13 @@ namespace NHibernate.SqlCommand
 					sqlBuilder.Add(", ");
 				}
 				sqlBuilder.Add(assignments);
+			}
+
+			if (join != null)
+			{
+				sqlBuilder.Add(" FROM ");
+				sqlBuilder.Add(tableName);
+				sqlBuilder.Add(join);
 			}
 
 			sqlBuilder.Add(" WHERE ");

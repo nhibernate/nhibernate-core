@@ -58,7 +58,7 @@ namespace NHibernate.Loader.Collection
 			int collectionJoins = CountCollectionPersisters(associations) + 1;
 			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
 
-			SqlStringBuilder whereString = WhereString(oneToManyPersister.CollectionType.UseLHSPrimaryKey ? alias : alias + "owner_", oneToManyPersister.KeyColumnNames, subquery, batchSize);
+			SqlStringBuilder whereString = WhereString(oneToManyPersister.GenerateTableAliasForKeyColumns(alias), oneToManyPersister.KeyColumnNames, subquery, batchSize);
 			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters);
 			whereString.Insert(0, StringHelper.MoveAndToBeginning(filter));
 

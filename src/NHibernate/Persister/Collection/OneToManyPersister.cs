@@ -64,69 +64,31 @@ namespace NHibernate.Persister.Collection
 		/// <returns></returns>
 		protected override SqlCommandInfo GenerateDeleteString()
 		{
+			var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
+				.SetTableName(qualifiedTableName)
+				.AddColumns(JoinColumnNames, "null");
+
 			if (CollectionType.UseLHSPrimaryKey)
 			{
-				var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
-					.SetTableName(qualifiedTableName)
-					.AddColumns(KeyColumnNames, "null")
-					.SetIdentityColumn(KeyColumnNames, KeyType);
-
-				if (HasIndex)
-					update.AddColumns(IndexColumnNames, "null");
-
-				if (HasWhere)
-					update.AddWhereFragment(sqlWhereString);
-
-				if (Factory.Settings.IsCommentsEnabled)
-					update.SetComment("delete one-to-many " + Role);
-
-				return update.ToSqlCommandInfo();
+				update.SetIdentityColumn(KeyColumnNames, KeyType);
 			}
 			else
 			{
-				var deleteSql = new SqlStringBuilder();
-
-				deleteSql.Add("update " + qualifiedTableName + " set ");
-				bool andNeeded = false;
-				foreach (string nextColumn in JoinColumnNames)
-				{
-					if (andNeeded)
-					{
-						deleteSql.Add(" and ");
-					}
-					deleteSql.Add(nextColumn + " = null");
-					andNeeded = true;
-				}
-
 				var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
-				deleteSql.Add(" from " + qualifiedTableName + " inner join " + ownerPersister.TableName + " on ");
-				var ownerJoinColumns = ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName);
-				andNeeded = false;
-				for (int columnIndex = 0; columnIndex < JoinColumnNames.Length; columnIndex++)
-				{
-					if (andNeeded)
-					{
-						deleteSql.Add(" and ");
-					}
-					deleteSql.Add(qualifiedTableName + StringHelper.Dot + JoinColumnNames[columnIndex] + " = " + ownerPersister.TableName + StringHelper.Dot + ownerJoinColumns[columnIndex]);
-					andNeeded = true;
-				}
-
-				deleteSql.Add(" where ");
-				andNeeded = false;
-				foreach (string nextColumn in KeyColumnNames)
-				{
-					if (andNeeded)
-					{
-						deleteSql.Add(" and ");
-					}
-					deleteSql.Add(ownerPersister.TableName + StringHelper.Dot + nextColumn + " = ");
-					deleteSql.AddParameter();
-					andNeeded = true;
-				}
-
-				return new SqlCommandInfo(deleteSql.ToSqlString(), KeyType.SqlTypes(Factory));
+				update.SetJoin(ownerPersister.TableName, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
+				update.SetIdentityColumn(ownerPersister.TableName, KeyColumnNames, KeyType);
 			}
+
+			if (HasIndex)
+				update.AddColumns(IndexColumnNames, "null");
+
+			if (HasWhere)
+				update.AddWhereFragment(sqlWhereString);
+
+			if (Factory.Settings.IsCommentsEnabled)
+				update.SetComment("delete one-to-many " + Role);
+
+			return update.ToSqlCommandInfo();
 		}
 
 		/// <summary>
@@ -196,6 +158,11 @@ namespace NHibernate.Persister.Collection
 		public override bool ConsumesCollectionAlias()
 		{
 			return true;
+		}
+
+		public override string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return CollectionType.UseLHSPrimaryKey ? alias : alias + "owner_";
 		}
 
 		protected override int DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
@@ -368,7 +335,7 @@ namespace NHibernate.Persister.Collection
 			for (int i = 0; i < columnNames.Length; i++)
 			{
 				var column = columnNames[i];
-				var tableAlias = ojl.GenerateTableAliasForColumn(alias + (CollectionType.UseLHSPrimaryKey ? String.Empty : "owner_"), column);
+				var tableAlias = CollectionType.UseLHSPrimaryKey ? ojl.GenerateTableAliasForColumn(alias, column) : GenerateTableAliasForKeyColumns(alias);
 				selectFragment.AddColumn(tableAlias, column, columnAliases[i]);
 			}
 			return selectFragment;
@@ -402,7 +369,7 @@ namespace NHibernate.Persister.Collection
 			}
 
 			var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
-			join.AddJoin(ownerPersister.TableName, alias + "owner_", lhsKeyColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName), JoinType.LeftOuterJoin);
+			join.AddJoin(ownerPersister.TableName, GenerateTableAliasForKeyColumns(alias), lhsKeyColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName), innerJoin ? JoinType.InnerJoin : JoinType.LeftOuterJoin);
 			return join.ToFromFragmentString + elementJoinFragment;
 		}
 
