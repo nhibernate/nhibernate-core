@@ -254,7 +254,7 @@ namespace NHibernate.Persister.Collection
 				foreach (Column col in collection.Owner.Key.ColumnIterator)
 				{
 					keyColumnNames[k] = col.GetQuotedName(dialect);
-					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_";
+					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_"; // Force the alias to be unique in case it conflicts with an alias in the entity
 					k++;
 				}
 				joinColumnNames = new string[collection.Key.ColumnSpan];
@@ -1986,6 +1986,11 @@ namespace NHibernate.Persister.Collection
 
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
+
+		public virtual string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return alias;
+		}
 
 		protected object PerformInsert(object ownerId, IPersistentCollection collection, IExpectation expectation,
 									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
