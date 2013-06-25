@@ -53,7 +53,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericBag<T>(session, (ICollection<T>) collection);
+			return new PersistentGenericBag<T>(session, (IEnumerable<T>) collection);
 		}
 
 		protected override void Add(object collection, object element)
