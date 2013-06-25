@@ -702,7 +702,7 @@ namespace NHibernate.Impl
 			}
 			if(!vals.Any())
 			{
-				throw new QueryException(string.Format("An empty parameter-list generate wrong SQL; parameter name '{0}'", name));
+				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
 			namedParameterLists[name] = new TypedValue(type, vals, session.EntityMode);
 			return this;
