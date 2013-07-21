@@ -11,6 +11,7 @@ using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -288,6 +289,8 @@ namespace NHibernate.Cfg
 			settings.IsMinimalPutsEnabled = useMinimalPuts;
 			// Not ported - JdbcBatchVersionedData
 
+			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
+			
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 
@@ -377,6 +380,27 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate TransactionFactory: " + className, cnfe);
+			}
+		}
+
+		private static IQueryModelRewriterFactory CreateQueryModelRewriterFactory(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(Environment.QueryModelRewriterFactory, properties, null);
+
+			if (className == null)
+				return null;
+
+			log.Info("Query model rewriter factory factory: " + className);
+
+			try
+			{
+				return
+					(IQueryModelRewriterFactory)
+					Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
 			}
 		}
 	}
