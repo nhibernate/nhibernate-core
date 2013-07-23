@@ -5,6 +5,6 @@ namespace NHibernate.AdoNet
 	/// <summary> Factory for <see cref="IBatcher"/> instances.</summary>
 	public interface IBatcherFactory
 	{
-		IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor);
+        IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session);
 	}
 }

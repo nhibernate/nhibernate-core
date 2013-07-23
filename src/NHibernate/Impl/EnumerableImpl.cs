@@ -119,7 +119,7 @@ namespace NHibernate.Impl
 			}
 			catch (DbException e)
 			{
-				throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
+                throw ADOExceptionHelper.Convert(_session, _session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
 												   new SqlString(_cmd.CommandText));
 			}
 			PostMoveNext(readResult);
@@ -144,7 +144,7 @@ namespace NHibernate.Impl
 			}
 			catch (DbException e)
 			{
-				throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
+                throw ADOExceptionHelper.Convert(_session, _session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query",
 												 new SqlString(_cmd.CommandText));
 			}
 		}

@@ -6,6 +6,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -131,7 +132,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (DbException e)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update",
+                    throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update",
 					                                 idInsertSelect);
 				}
 
@@ -168,7 +169,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					}
 					catch (DbException e)
 					{
-						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "error performing bulk update", updates[i]);
+                        throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, e, "error performing bulk update", updates[i]);
 					}
 				}
 

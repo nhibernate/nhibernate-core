@@ -6,6 +6,7 @@ using System.Data.Common;
 
 using NHibernate.Dialect.Schema;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.Mapping;
 using NHibernate.Util;
 
@@ -94,7 +95,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not get table metadata: " + name);
+                throw ADOExceptionHelper.Convert(null, sqlExceptionConverter, sqle, "could not get table metadata: " + name);
 			}
 		}
 

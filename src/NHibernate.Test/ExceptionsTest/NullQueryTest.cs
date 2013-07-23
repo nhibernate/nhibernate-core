@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Data;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExceptionsTest
@@ -35,7 +37,7 @@ namespace NHibernate.Test.ExceptionsTest
 			catch (Exception sqle)
 			{
 				Assert.DoesNotThrow(
-					() => ADOExceptionHelper.Convert(sessions.SQLExceptionConverter, sqle, "could not get or update next value", null));
+					() => ADOExceptionHelper.Convert((ISessionImplementor)session, sessions.SQLExceptionConverter, sqle, "could not get or update next value", null));
 			}
 			finally
 			{

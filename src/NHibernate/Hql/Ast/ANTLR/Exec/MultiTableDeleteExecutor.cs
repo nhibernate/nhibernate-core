@@ -5,6 +5,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -103,7 +104,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (DbException e)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk delete", idInsertSelect);
+                    throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk delete", idInsertSelect);
 				}
 
 				// Start performing the deletes
@@ -126,7 +127,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					}
 					catch (DbException e)
 					{
-						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "error performing bulk delete", deletes[i]);
+                        throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, e, "error performing bulk delete", deletes[i]);
 					}
 				}
 

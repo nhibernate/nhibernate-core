@@ -8,9 +8,9 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public class NonBatchingBatcherFactory : IBatcherFactory
 	{
-		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+        public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
 		{
-			return new NonBatchingBatcher(connectionManager, interceptor);
+			return new NonBatchingBatcher(connectionManager, interceptor, session);
 		}
 	}
 }

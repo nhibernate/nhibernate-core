@@ -6,6 +6,7 @@ using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Data.Common;
@@ -130,7 +131,7 @@ namespace NHibernate.Id
 			catch (DbException sqle)
 			{
 				log.Error("could not get increment value", sqle);
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle,
 												 "could not fetch initial value for increment generator");
 			}
 		}

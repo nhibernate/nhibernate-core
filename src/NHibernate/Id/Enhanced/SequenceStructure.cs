@@ -4,6 +4,7 @@ using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -132,7 +133,7 @@ namespace NHibernate.Id.Enhanced
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value", _owner._sql);
+                    throw ADOExceptionHelper.Convert(_session, _session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value", _owner._sql);
 				}
 			}
 

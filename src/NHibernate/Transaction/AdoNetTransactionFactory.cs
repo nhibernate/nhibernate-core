@@ -85,7 +85,7 @@ namespace NHibernate.Transaction
 					}
 					else if (t is DbException)
 					{
-						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
+                        throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, t,
 														 "error performing isolated work");
 					}
 					else

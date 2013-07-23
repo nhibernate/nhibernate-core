@@ -113,7 +113,8 @@ namespace NHibernate.Dialect.Lock
 				                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
 				                       		Sql = sql.ToString(),
 				                       		EntityName = lockable.EntityName,
-				                       		EntityId = id
+				                       		EntityId = id,
+                                            Session = session
 				                       	};
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, exceptionContext);
 			}

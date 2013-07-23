@@ -1277,7 +1277,8 @@ namespace NHibernate.Persister.Entity
 												"could not initialize lazy properties: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = SQLLazySelectString.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+											EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -1449,7 +1450,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = SQLSnapshotSelectString.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -1632,7 +1634,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = VersionSelectString.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -1694,7 +1697,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = VersionSelectString.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -2669,7 +2673,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not insert: " + MessageHelper.InfoString(this, id),
 											Sql = sql.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -2812,7 +2817,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not update: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = sql.Text.ToString(),
 																	EntityName = EntityName,
-																	EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -2932,7 +2938,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not delete: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = sql.Text.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -4020,7 +4027,8 @@ namespace NHibernate.Persister.Entity
 											Message = "unable to select generated column values",
 											Sql = selectionSQL.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
@@ -4111,7 +4119,8 @@ namespace NHibernate.Persister.Entity
 											Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
 											Sql = sql.ToString(),
 											EntityName = EntityName,
-											EntityId = id
+                                            EntityId = id,
+                                            Session = session
 										};
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}

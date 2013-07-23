@@ -2,21 +2,25 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {
 	public class MySqlClientBatchingBatcher : AbstractBatcher
 	{
-		private int batchSize;
+	    private readonly ISessionImplementor _session;
+	    private int batchSize;
 		private int totalExpectedRowsAffected;
 		private MySqlClientSqlCommandSet currentBatch;
 		private StringBuilder currentBatchCommandsLog;
 
-		public MySqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-			: base(connectionManager, interceptor)
+		public MySqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+			: base(connectionManager, interceptor, session)
 		{
-			batchSize = Factory.Settings.AdoBatchSize;
+		    _session = session;
+		    batchSize = Factory.Settings.AdoBatchSize;
 			currentBatch = CreateConfiguredBatch();
 
 			//we always create this, because we need to deal with a scenario in which
@@ -84,7 +88,7 @@ namespace NHibernate.AdoNet
 			}
 			catch (DbException e)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				throw ADOExceptionHelper.Convert(_session, Factory.SQLExceptionConverter, e, "could not execute batch command.");
 			}
 
 			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);

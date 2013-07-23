@@ -5,7 +5,9 @@ using System.Data.Common;
 using System.Reflection;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {
@@ -15,7 +17,8 @@ namespace NHibernate.AdoNet
 	/// </summary>
 	public class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
-		private int _batchSize;
+	    private readonly ISessionImplementor _session;
+	    private int _batchSize;
 		private int _countOfCommands = 0;
 		private int _totalExpectedRowsAffected;
 		private IDbCommand _currentBatch;
@@ -23,10 +26,11 @@ namespace NHibernate.AdoNet
 		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
 		private StringBuilder _currentBatchCommandsLog;
 
-		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-			: base(connectionManager, interceptor)
+		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+			: base(connectionManager, interceptor, session)
 		{
-			_batchSize = Factory.Settings.AdoBatchSize;
+		    _session = session;
+		    _batchSize = Factory.Settings.AdoBatchSize;
 			//we always create this, because we need to deal with a scenario in which
 			//the user change the logging configuration at runtime. Trying to put this
 			//behind an if(log.IsDebugEnabled) will cause a null reference exception 
@@ -133,7 +137,7 @@ namespace NHibernate.AdoNet
 				}
 				catch (DbException e)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+                    throw ADOExceptionHelper.Convert(_session, Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
 
 				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);

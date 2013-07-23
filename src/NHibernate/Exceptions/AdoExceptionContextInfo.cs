@@ -1,4 +1,6 @@
 using System;
+using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.Exceptions
 {
@@ -36,5 +38,10 @@ namespace NHibernate.Exceptions
 		/// Optional EntityId where available in the original exception context.
 		/// </summary>
 		public object EntityId { get; set; }
+
+        /// <summary>
+        /// Session from which the exception was thrown.
+        /// </summary>
+        public ISessionImplementor Session { get; set; }
 	}
 }

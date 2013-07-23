@@ -77,8 +77,8 @@ namespace NHibernate.Test.Linq
 
 			public static int LastCommandTimeout;
 
-			public TimeoutCatchingNonBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-				: base(connectionManager, interceptor)
+            public TimeoutCatchingNonBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+				: base(connectionManager, interceptor, session)
 			{
 			}
 
@@ -92,9 +92,9 @@ namespace NHibernate.Test.Linq
 
 		public class TimeoutCatchingNonBatchingBatcherFactory : IBatcherFactory
 		{
-			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+            public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
 			{
-				return new TimeoutCatchingNonBatchingBatcher(connectionManager, interceptor);
+				return new TimeoutCatchingNonBatchingBatcher(connectionManager, interceptor, session);
 			}
 		}
 	}

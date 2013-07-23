@@ -9,6 +9,7 @@ using Antlr.Runtime.Tree;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -89,7 +90,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle,
 																 "could not execute update query", sql);
 			}
 		}

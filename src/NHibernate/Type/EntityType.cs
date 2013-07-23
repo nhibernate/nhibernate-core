@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
@@ -572,7 +573,7 @@ namespace NHibernate.Type
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "Error performing LoadByUniqueKey");
+                throw ADOExceptionHelper.Convert(session, factory.SQLExceptionConverter, sqle, "Error performing LoadByUniqueKey");
 			}
 		}
 
