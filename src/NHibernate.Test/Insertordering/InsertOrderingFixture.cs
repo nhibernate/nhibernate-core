@@ -85,8 +85,8 @@ namespace NHibernate.Test.Insertordering
 			private static IList<int> batchSizes = new List<int>();
 			private static int currentBatch = -1;
 
-			public StatsBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-				: base(connectionManager, interceptor) {}
+			public StatsBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+				: base(connectionManager, interceptor, session) {}
 
 			public static IList<int> BatchSizes
 			{
@@ -139,9 +139,9 @@ namespace NHibernate.Test.Insertordering
 		{
 			#region IBatcherFactory Members
 
-			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+            public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
 			{
-				return new StatsBatcher(connectionManager, interceptor);
+				return new StatsBatcher(connectionManager, interceptor, session);
 			}
 
 			#endregion

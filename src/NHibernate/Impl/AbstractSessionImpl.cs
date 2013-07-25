@@ -425,7 +425,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqlException, message);
+				return ADOExceptionHelper.Convert(this, factory.SQLExceptionConverter, sqlException, message);
 			}
 		}
 

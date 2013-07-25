@@ -58,7 +58,7 @@ namespace NHibernate.AdoNet
 			this.connectionReleaseMode = connectionReleaseMode;
 
 			this.interceptor = interceptor;
-			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
+			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor, session);
 
 			ownConnection = suppliedConnection == null;
 		}
@@ -312,7 +312,7 @@ namespace NHibernate.AdoNet
 
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
-			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
+			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor, session);
 		}
 
 		#endregion

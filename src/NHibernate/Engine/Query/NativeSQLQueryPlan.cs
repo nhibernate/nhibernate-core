@@ -109,7 +109,7 @@ namespace NHibernate.Engine.Query
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle,
 												 "could not execute native bulk manipulation query:" + sourceQuery);
 			}
 

@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Id.Insert
@@ -48,7 +49,7 @@ namespace NHibernate.Id.Insert
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle,
 				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
 			}
 		}

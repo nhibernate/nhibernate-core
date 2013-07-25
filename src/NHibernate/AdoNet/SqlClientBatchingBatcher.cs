@@ -3,23 +3,27 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
 	public class SqlClientBatchingBatcher : AbstractBatcher
 	{
-		private int _batchSize;
+	    private readonly ISessionImplementor _session;
+	    private int _batchSize;
 		private int _totalExpectedRowsAffected;
 		private SqlClientSqlCommandSet _currentBatch;
 		private StringBuilder _currentBatchCommandsLog;
 		private readonly int _defaultTimeout;
 
-		public SqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-			: base(connectionManager, interceptor)
+		public SqlClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+			: base(connectionManager, interceptor, session)
 		{
-			_batchSize = Factory.Settings.AdoBatchSize;
+		    _session = session;
+		    _batchSize = Factory.Settings.AdoBatchSize;
 			_defaultTimeout = PropertiesHelper.GetInt32(Cfg.Environment.CommandTimeout, Cfg.Environment.Properties, -1);
 
 			_currentBatch = CreateConfiguredBatch();
@@ -88,7 +92,7 @@ namespace NHibernate.AdoNet
 			}
 			catch (DbException e)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+                throw ADOExceptionHelper.Convert(_session, Factory.SQLExceptionConverter, e, "could not execute batch command.");
 			}
 
 			Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);

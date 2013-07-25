@@ -7,6 +7,7 @@ using System.Threading;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -27,8 +28,9 @@ namespace NHibernate.AdoNet
 		private readonly ConnectionManager _connectionManager;
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly IInterceptor _interceptor;
+	    private readonly ISessionImplementor _session;
 
-		// batchCommand used to be called batchUpdate - that name to me implied that updates
+	    // batchCommand used to be called batchUpdate - that name to me implied that updates
 		// were being sent - however this could be just INSERT/DELETE/SELECT SQL statement not
 		// just update.  However I haven't seen this being used with read statements...
 		private IDbCommand _batchCommand;
@@ -45,11 +47,12 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		/// <param name="connectionManager">The <see cref="ConnectionManager"/> owning this batcher.</param>
 		/// <param name="interceptor"></param>
-		protected AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+		protected AbstractBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
 		{
 			_connectionManager = connectionManager;
 			_interceptor = interceptor;
-			_factory = connectionManager.Factory;
+		    _session = session;
+		    _factory = connectionManager.Factory;
 		}
 
 		protected IDriver Driver
@@ -539,7 +542,7 @@ namespace NHibernate.AdoNet
 
 		protected Exception Convert(Exception sqlException, string message)
 		{
-			return ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqlException, message);
+            return ADOExceptionHelper.Convert(_session, Factory.SQLExceptionConverter, sqlException, message);
 		}
 
 		#region IDisposable Members

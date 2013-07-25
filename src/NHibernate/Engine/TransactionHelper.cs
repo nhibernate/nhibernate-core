@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Engine.Transaction;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 
 namespace NHibernate.Engine
 {
@@ -33,7 +34,7 @@ namespace NHibernate.Engine
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get or update next value", null);
+					throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle, "could not get or update next value", null);
 				}
 			}
 

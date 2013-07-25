@@ -260,7 +260,7 @@ namespace NHibernate.Impl
 			{
 				var message = string.Format("Failed to execute multi criteria: [{0}]", resultSetsCommand.Sql);
 				log.Error(message, sqle);
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
+				throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi criteria", resultSetsCommand.Sql);
 			}
 			if (statsEnabled)
 			{

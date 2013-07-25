@@ -605,7 +605,7 @@ namespace NHibernate.Impl
 			{
 				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				log.Error(message, sqle);
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
 			if (statsEnabled)

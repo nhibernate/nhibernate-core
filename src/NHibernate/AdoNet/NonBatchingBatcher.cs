@@ -16,8 +16,8 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		/// <param name="connectionManager">The <see cref="ConnectionManager"/> for this batcher.</param>
 		/// <param name="interceptor"></param>
-		public NonBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
-			: base(connectionManager, interceptor)
+        public NonBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor, ISessionImplementor session)
+			: base(connectionManager, interceptor, session)
 		{
 		}
 

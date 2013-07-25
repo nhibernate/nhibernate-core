@@ -74,7 +74,7 @@ namespace NHibernate.Type
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle,
 				                                 "could not select current db timestamp", tsSelect);
 			}
 			finally

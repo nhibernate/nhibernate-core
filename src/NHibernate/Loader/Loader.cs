@@ -287,7 +287,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read next row of results",
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle, "could not read next row of results",
 												 SqlString, queryParameters.PositionalParameterValues,
 												 queryParameters.NamedParameters);
 			}
@@ -1285,7 +1285,7 @@ namespace NHibernate.Loader
 			catch (Exception sqle)
 			{
 				ILoadable[] persisters = EntityPersisters;
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle,
 												 "could not load an entity: "
 												 +
 												 MessageHelper.InfoString(persisters[persisters.Length - 1], id, identifierType,
@@ -1312,7 +1312,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(_factory.SQLExceptionConverter, sqle, "could not collection element by index",
+                throw ADOExceptionHelper.Convert(session, _factory.SQLExceptionConverter, sqle, "could not collection element by index",
 												 SqlString);
 			}
 
@@ -1349,7 +1349,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle,
 												 "could not load an entity batch: "
 												 + MessageHelper.InfoString(persister, ids, Factory), SqlString);
 				// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
@@ -1381,7 +1381,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle,
 												 "could not initialize a collection: "
 												 + MessageHelper.InfoString(CollectionPersisters[0], id), SqlString);
 			}
@@ -1412,7 +1412,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle,
 												 "could not initialize a collection batch: "
 												 + MessageHelper.InfoString(CollectionPersisters[0], ids), SqlString);
 			}
@@ -1440,7 +1440,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle,
 												 "could not load collection by subselect: "
 												 + MessageHelper.InfoString(CollectionPersisters[0], ids), SqlString,
 												 parameterValues, namedParameters);
@@ -1570,7 +1570,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString,
+                throw ADOExceptionHelper.Convert(session, Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString,
 												 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
 			}
 			if (statsEnabled)

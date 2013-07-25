@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 
@@ -33,35 +34,36 @@ namespace NHibernate.Exceptions
 		/// <param name="message">An optional error message.</param>
 		/// <param name="sql">The SQL executed.</param>
 		/// <returns> The converted <see cref="ADOException"/>.</returns>
-		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message,
+        public static Exception Convert(ISessionImplementor session, ISQLExceptionConverter converter, Exception sqlException, string message,
 										   SqlString sql)
 		{
 			return Convert(converter,
 						   new AdoExceptionContextInfo
-							{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null});
+							{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null, Session = session});
 		}
 
-		/// <summary> 
-		/// Converts the given SQLException into Exception hierarchy, as well as performing
-		/// appropriate logging. 
-		/// </summary>
-		/// <param name="converter">The converter to use.</param>
-		/// <param name="sqlException">The exception to convert.</param>
-		/// <param name="message">An optional error message.</param>
-		/// <returns> The converted <see cref="ADOException"/>.</returns>
-		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
+	    /// <summary> 
+	    /// Converts the given SQLException into Exception hierarchy, as well as performing
+	    /// appropriate logging. 
+	    /// </summary>
+	    /// <param name="session">The current session.</param>
+	    /// <param name="converter">The converter to use.</param>
+	    /// <param name="sqlException">The exception to convert.</param>
+	    /// <param name="message">An optional error message.</param>
+	    /// <returns> The converted <see cref="ADOException"/>.</returns>
+	    public static Exception Convert(ISessionImplementor session, ISQLExceptionConverter converter, Exception sqlException, string message)
 		{
 			var sql = TryGetActualSqlQuery(sqlException, SQLNotAvailable);
-			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql});
+			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql, Session = session });
 		}
 
-		public static Exception Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
+        public static Exception Convert(ISessionImplementor session, ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
 										   object[] parameterValues, IDictionary<string, TypedValue> namedParameters)
 		{
 			sql = TryGetActualSqlQuery(sqle, sql);
 			string extendMessage = ExtendMessage(message, sql != null ? sql.ToString() : null, parameterValues, namedParameters);
 			ADOExceptionReporter.LogExceptions(sqle, extendMessage);
-			return Convert(converter, sqle, extendMessage, sql);
+			return Convert(session, converter, sqle, extendMessage, sql);
 		}
 
 		/// <summary> For the given <see cref="Exception"/>, locates the <see cref="System.Data.Common.DbException"/>. </summary>

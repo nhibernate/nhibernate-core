@@ -3,6 +3,7 @@ using System.Data;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -49,7 +50,7 @@ namespace NHibernate.Id
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not retrieve GUID", sql);
+                throw ADOExceptionHelper.Convert(session, session.Factory.SQLExceptionConverter, sqle, "could not retrieve GUID", sql);
 			}
 		}
 
