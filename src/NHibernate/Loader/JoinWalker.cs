@@ -687,7 +687,9 @@ namespace NHibernate.Loader
 							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)
 						{
-							outerjoin.AddCondition(manyToOneFilterFragment);
+							// Ensure that the join condition is added to the join, not the where clause.
+							// Adding the condition to the where clause causes left joins to become inner joins.
+							outerjoin.AddFromFragmentString(new SqlString(manyToOneFilterFragment));
 						}
 					}
 				}
