@@ -6,7 +6,7 @@ namespace NHibernate.AdoNet
 	/// <summary> Implementation of ColumnNameCache. </summary>
 	public class ColumnNameCache
 	{
-        private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+        	private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
 		private readonly Dictionary<string, int?> columnNameToIndexCache;
 
 		public ColumnNameCache(int columnCount)
@@ -17,7 +17,7 @@ namespace NHibernate.AdoNet
 
 		public int GetIndexForColumnName(string columnName, ResultSetWrapper rs)
 		{
-		    int? cached = Read(columnName);
+            		int? cached = Read(columnName);
 			if (cached.HasValue)
 			{
 				return cached.Value;
@@ -25,37 +25,37 @@ namespace NHibernate.AdoNet
 			else
 			{
 				int index = rs.Target.GetOrdinal(columnName);
-                Insert(columnName, index);				
+                		Insert(columnName, index);
 				return index;
 			}
 		}
 
-        private int? Read(string key)
-        {            
-            cacheLock.EnterReadLock();
-            try
-            {
-                int? value;
-                columnNameToIndexCache.TryGetValue(key, out value);
-                return value;
-            }
-            finally
-            {
-                cacheLock.ExitReadLock();
-            }            
-        }
+        	private int? Read(string key)
+	        {
+        	    cacheLock.EnterReadLock();
+	            try
+        	    {
+                	int? value;
+	                columnNameToIndexCache.TryGetValue(key, out value);
+        	        return value;
+	            }
+        	    finally
+	            {
+        	        cacheLock.ExitReadLock();
+	            }
+	        }
 
-        private void Insert(string key, int value)
-        {
-            cacheLock.EnterWriteLock();
-            try
-            {
-                columnNameToIndexCache[key] = value;
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
-        }
+	        private void Insert(string key, int value)
+        	{
+	            cacheLock.EnterWriteLock();
+        	    try
+	            {
+        	        columnNameToIndexCache[key] = value;
+	            }
+	            finally
+	            {
+	                cacheLock.ExitWriteLock();
+	            }
+	        }
 	}
 }
