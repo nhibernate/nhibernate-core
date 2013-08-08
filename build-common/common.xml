@@ -66,7 +66,7 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="3.3.3.GA" overwrite="false" />
+	<property name="project.version" value="3.3.3.SP1" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
@@ -105,7 +105,11 @@
 					
 					string qualifier = matches.Groups["qualifier"].Value;
 					
+					// For official releases we must use a completely numeric version.
+					// For pre-releases, the alphanumerics should be retained, to make Nuget
+					// understand it's a pre-release.
 					if (qualifier == "GA") return ToNumericVersion(version);
+					if (qualifier == "SP") return ToNumericVersion(version);
 					
 					return String.Concat(
 						String.Join(".", new string[] { matches.Groups["major"].Value, matches.Groups["minor"].Value, matches.Groups["build"].Value }),
