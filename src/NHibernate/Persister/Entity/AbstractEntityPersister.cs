@@ -1134,6 +1134,15 @@ namespace NHibernate.Persister.Entity
 																	 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
 																																				 PropertyVersionability);
 					}
+					else
+					{
+						// NH-3512: if this is table-per-subclass inheritance and version property is generated,
+						// then it should be updated even if no other base class properties changed
+						if (this is JoinedSubclassEntityPersister)
+						{
+							tableUpdateNeeded[0] = true;
+						}
+					}
 				}
 				return tableUpdateNeeded;
 			}

@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3512">
 
 	<class name="Person">
-		<id name="Id" generator="assigned" />
+		<id name="Id" generator="identity" />
 		<version name="Version" generated="always" unsaved-value="null" type="BinaryBlob">
 			<column name="Version" not-null="false" sql-type="timestamp"/>
 		</version>

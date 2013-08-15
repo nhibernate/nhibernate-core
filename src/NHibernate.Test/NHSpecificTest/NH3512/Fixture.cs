@@ -6,15 +6,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 
 	public class Fixture : BugTestCase
 	{
+		private int _id;
+
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var employee = new Employee {Id = 1, Name = "Bob", Age = 33, Salary = 100};
+				var employee = new Employee {Name = "Bob", Age = 33, Salary = 100};
 				session.Save(employee);
 
 				transaction.Commit();
+
+				_id = employee.Id;
 			}
 		}
 
@@ -34,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 			using (ISession session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var person = session.Get<Person>(1);
+				var person = session.Get<Person>(_id);
 
 				var before = person.Version;
 
@@ -51,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 			using (ISession session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var employee = session.Get<Employee>(1);
+				var employee = session.Get<Employee>(_id);
 
 				var before = employee.Version;
 
