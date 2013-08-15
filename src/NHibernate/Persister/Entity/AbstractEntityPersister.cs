@@ -1106,7 +1106,7 @@ namespace NHibernate.Persister.Entity
 		/// The return here is an array of boolean values with each index corresponding
 		/// to a given table in the scope of this persister.
 		/// </remarks>
-		private bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
+		protected virtual bool[] GetTableUpdateNeeded(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			if (dirtyProperties == null)
 			{
@@ -1133,15 +1133,6 @@ namespace NHibernate.Persister.Entity
 						tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
 																	 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
 																																				 PropertyVersionability);
-					}
-					else
-					{
-						// NH-3512: if this is table-per-subclass inheritance and version property is generated,
-						// then it should be updated even if no other base class properties changed
-						if (this is JoinedSubclassEntityPersister)
-						{
-							tableUpdateNeeded[0] = true;
-						}
 					}
 				}
 				return tableUpdateNeeded;
@@ -3532,7 +3523,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary> 
 		/// Transform the array of property indexes to an array of booleans, true when the property is dirty
 		/// </summary>
-		protected bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
+		protected virtual bool[] GetPropertiesToUpdate(int[] dirtyProperties, bool hasDirtyCollection)
 		{
 			bool[] propsToUpdate = new bool[entityMetamodel.PropertySpan];
 			bool[] updateability = PropertyUpdateability; //no need to check laziness, dirty checking handles that
