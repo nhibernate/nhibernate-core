@@ -2,7 +2,8 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3512
 {
-	[TestFixture]
+	using NHibernate.Cfg;
+
 	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
@@ -28,8 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 			}
 		}
 
-		[Test]
-		public void ShouldChangeVersionWhenBasePropertyChanged()
+		protected void UpdateBaseEntity()
 		{
 			using (ISession session = OpenSession())
 			using (var transaction = session.BeginTransaction())
@@ -46,8 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 			}
 		}
 
-		[Test]
-		public void ShouldChangeVersionWhenDerivedPropertyChanged()
+		protected void UpdateDerivedEntity()
 		{
 			using (ISession session = OpenSession())
 			using (var transaction = session.BeginTransaction())
@@ -62,6 +61,46 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 
 				CollectionAssert.AreNotEqual(before, employee.Version);
 			}
+		}
+	}
+
+	[TestFixture]
+	public class DynamicUpdateOn : Fixture
+	{
+		protected override void Configure(Configuration configuration)
+		{
+			foreach (var mapping in configuration.ClassMappings)
+			{
+				mapping.DynamicUpdate = true;
+			}
+		}
+
+		[Test]
+		public void ShouldChangeVersionWhenBasePropertyChanged()
+		{
+			UpdateBaseEntity();
+		}
+
+		[Test]
+		public void ShouldChangeVersionWhenDerivedPropertyChanged()
+		{
+			UpdateDerivedEntity();
+		}
+	}
+
+	[TestFixture]
+	public class DynamicUpdateOff : Fixture
+	{
+		[Test]
+		public void ShouldChangeVersionWhenBasePropertyChanged()
+		{
+			UpdateBaseEntity();
+		}
+
+		[Test]
+		public void ShouldChangeVersionWhenDerivedPropertyChanged()
+		{
+			UpdateDerivedEntity();
 		}
 	}
 }
