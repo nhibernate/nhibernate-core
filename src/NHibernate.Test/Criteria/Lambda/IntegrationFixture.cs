@@ -592,14 +592,56 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void Functions()
 		{
+			var birthDate1 = new DateTime(2009, 08, 07);
+			var birthDate2 = new DateTime(2008, 07, 06);
+			var birthDate3 = new DateTime(2007, 06, 05);
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07), Age = 90 });
-				s.Save(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) });
-				s.Save(new Person() { Name = "pP3", BirthDate = new DateTime(2007, 06, 05) });
+				s.Save(new Person()
+					       {
+						       Name = "p1", 
+							   BirthDate = birthDate1, 
+							   BirthDateAsDateTimeOffset = new DateTimeOffset(birthDate1), 
+							   Age = 90
+					       });
+				s.Save(new Person()
+					       {
+						       Name = "p2", 
+							   BirthDate = birthDate2, 
+							   BirthDateAsDateTimeOffset = new DateTimeOffset(birthDate2)
+					       });
+				s.Save(new Person()
+					       {
+						       Name = "pP3", 
+							   BirthDate = birthDate3, 
+							   BirthDateAsDateTimeOffset = new DateTimeOffset(birthDate3)
+					       });
 
 				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDate.DatePart() == birthDate1)
+						.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p1");
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDateAsDateTimeOffset.DatePart() == birthDate1)
+						.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p1");
 			}
 
 			using (ISession s = OpenSession())
@@ -617,7 +659,31 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons =
 					s.QueryOver<Person>()
+						.Where(p => p.BirthDateAsDateTimeOffset.YearPart() == 2008)
+						.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p2");
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
 						.Where(p => p.BirthDate.YearPart().IsIn(new [] { 2008, 2009 }))
+						.OrderBy(p => p.Name).Asc
+						.List();
+
+				persons.Count.Should().Be(2);
+				persons[0].Name.Should().Be("p1");
+				persons[1].Name.Should().Be("p2");
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var persons =
+					s.QueryOver<Person>()
+						.Where(p => p.BirthDateAsDateTimeOffset.YearPart().IsIn(new[] { 2008, 2009 }))
 						.OrderBy(p => p.Name).Asc
 						.List();
 
@@ -640,9 +706,32 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			using (ISession s = OpenSession())
 			{
+				var yearOfBirth =
+					s.QueryOver<Person>()
+						.Where(p => p.Name == "p2")
+						.Select(p => p.BirthDateAsDateTimeOffset.YearPart())
+						.SingleOrDefault<object>();
+
+				yearOfBirth.GetType().Should().Be(typeof(int));
+				yearOfBirth.Should().Be(2008);
+			}
+
+			using (ISession s = OpenSession())
+			{
 				var avgYear =
 					s.QueryOver<Person>()
 						.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
+						.SingleOrDefault<object>();
+
+				avgYear.GetType().Should().Be(typeof(double));
+				string.Format("{0:0}", avgYear).Should().Be("2008");
+			}
+
+			using (ISession s = OpenSession())
+			{
+				var avgYear =
+					s.QueryOver<Person>()
+						.SelectList(list => list.SelectAvg(p => p.BirthDateAsDateTimeOffset.YearPart()))
 						.SingleOrDefault<object>();
 
 				avgYear.GetType().Should().Be(typeof(double));
