@@ -166,6 +166,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.table = tableName;
 		}
 
+		public void Check(string check)
+		{
+			classMapping.check = check;
+		}
+
 		public void Catalog(string catalogName)
 		{
 			classMapping.catalog = catalogName;
