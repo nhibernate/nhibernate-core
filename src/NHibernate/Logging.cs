@@ -85,7 +85,7 @@ namespace NHibernate
 				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
 				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-				var log4NetDllPath = Path.Combine(binPath, "log4net.dll");
+				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
 
 				if (File.Exists(log4NetDllPath))
 				{
