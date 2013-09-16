@@ -18,12 +18,20 @@ namespace NHibernate.Tuple.Component
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 
-
 		[OnDeserialized]
 		internal void OnDeserialized(StreamingContext context)
 		{
-			this.optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
+			this.SetReflectionOptimizer();
 		}
+
+		protected void SetReflectionOptimizer()
+		{
+			if (!hasCustomAccessors && Cfg.Environment.UseReflectionOptimizer)
+			{
+				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
+			}
+		}
+
 		public PocoComponentTuplizer(Mapping.Component component) : base(component)
 		{
 			componentClass = component.ComponentClass;
@@ -40,14 +48,9 @@ namespace NHibernate.Tuple.Component
 				parentGetter = parentProperty.GetGetter(componentClass);
 			}
 
-			if (hasCustomAccessors || !Cfg.Environment.UseReflectionOptimizer)
-			{
-				optimizer = null;
-			}
-			else
-			{
-				optimizer = Cfg.Environment.BytecodeProvider.GetReflectionOptimizer(componentClass, getters, setters);
-			}
+			SetReflectionOptimizer();
+
+			instantiator = BuildInstantiator(component);
 		}
 
 		public override System.Type MappedClass
