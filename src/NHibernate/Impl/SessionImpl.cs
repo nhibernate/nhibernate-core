@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -17,7 +16,6 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
-using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -935,7 +933,7 @@ namespace NHibernate.Impl
 				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
 			}
 		}
-		
+
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
@@ -2199,6 +2197,8 @@ namespace NHibernate.Impl
 					catch (Exception e)
 					{
 						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+
+						throw;
 					}
 				}
 			}
