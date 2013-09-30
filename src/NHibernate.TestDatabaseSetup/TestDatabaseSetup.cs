@@ -23,7 +23,8 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.MySqlDataDriver", SetupMySql},
-				{"NHibernate.Driver.OracleClientDriver", SetupOracle}
+				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
+				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle}
 			};
 
 		private static void SetupMySql(Cfg.Configuration obj)
