@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -7,8 +8,8 @@ namespace NHibernate.Test.Hql.Ast
 		private long id;
 		private string name;
 		private Classification classification;
-		private IDictionary animals;
-		private IDictionary mammals;
+		private IDictionary<string, Animal> animals;
+		private IDictionary<string, Mammal> mammals;
 		private Address address;
 
 		public virtual long Id
@@ -29,13 +30,13 @@ namespace NHibernate.Test.Hql.Ast
 			set { classification = value; }
 		}
 
-		public virtual IDictionary Animals
+		public virtual IDictionary<string, Animal> Animals
 		{
 			get { return animals; }
 			set { animals = value; }
 		}
 
-		public virtual IDictionary Mammals
+		public virtual IDictionary<string, Mammal> Mammals
 		{
 			get { return mammals; }
 			set { mammals = value; }

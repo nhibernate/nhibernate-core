@@ -41,21 +41,6 @@ namespace NHibernate.Type
 			return new GenericOrderedSetType<T>(role, propertyRef);
 		}
 
-		public virtual CollectionType Map(string role, string propertyRef, bool embedded)
-		{
-			return new MapType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType OrderedMap(string role, string propertyRef, bool embedded)
-		{
-			return new OrderedMapType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return new SortedMapType(role, propertyRef, comparer, embedded);
-		}
-
 		public virtual CollectionType Map<TKey, TValue>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericMapType<TKey, TValue>(role, propertyRef);

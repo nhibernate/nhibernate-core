@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Classic;
 
@@ -8,11 +7,11 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class MapComponent
 	{
-		private IDictionary _fummap = new Hashtable();
-		private IDictionary _stringmap = new Hashtable();
+		private IDictionary<string, Fum> _fummap = new Dictionary<string, Fum>();
+		private IDictionary<string, string> _stringmap = new Dictionary<string, string>();
 		private int _count;
 
-		public IDictionary Fummap
+		public IDictionary<string, Fum> Fummap
 		{
 			get { return _fummap; }
 			set { _fummap = value; }
@@ -24,7 +23,7 @@ namespace NHibernate.DomainModel
 			set { _count = value; }
 		}
 
-		public IDictionary Stringmap
+		public IDictionary<string, string> Stringmap
 		{
 			get { return _stringmap; }
 			set { _stringmap = value; }
