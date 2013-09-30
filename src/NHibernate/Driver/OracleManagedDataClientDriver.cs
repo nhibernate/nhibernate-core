@@ -20,6 +20,7 @@ namespace NHibernate.Driver
 		private readonly PropertyInfo oracleCommandBindByName;
 		private readonly PropertyInfo oracleDbType;
 		private readonly object oracleDbTypeRefCursor;
+		private readonly object oracleDbTypeXmlType;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
@@ -42,6 +43,7 @@ namespace NHibernate.Driver
 
 			var oracleDbTypeEnum = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleDbType", driverAssemblyName, false);
 			oracleDbTypeRefCursor = Enum.Parse(oracleDbTypeEnum, "RefCursor");
+			oracleDbTypeXmlType = Enum.Parse(oracleDbTypeEnum, "XmlType");
 		}
 
 		/// <summary></summary>
@@ -78,10 +80,19 @@ namespace NHibernate.Driver
 				case DbType.Guid:
 					base.InitializeParameter(dbParam, name, GuidSqlType);
 					break;
+				case DbType.Xml:
+					this.InitializeParameter(dbParam, name, oracleDbTypeXmlType);
+					break;
 				default:
 					base.InitializeParameter(dbParam, name, sqlType);
 					break;
 			}
+		}
+
+		private void InitializeParameter(IDbDataParameter dbParam, string name, object sqlType)
+		{
+			dbParam.ParameterName = FormatNameForParameter(name);
+			oracleDbType.SetValue(dbParam, sqlType, null);
 		}
 
 		protected override void OnBeforePrepare(IDbCommand command)
