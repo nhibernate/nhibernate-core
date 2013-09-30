@@ -28,6 +28,15 @@ Build vNext
         * Removed bunch of unused methods on *Helper classes
         * Static fields on NHibernateUtil are declared as their exact class
 
+Build 3.3.3.SP1
+=============================
+
+Fixes for regressions introduced in the 3.3.3 cycle.
+
+** Bug
+    * [NH-3429] - Exception when debug logging is enabled when using a linq expression that requires a proxy class.
+    * [NH-3436] - Linq-Query with IList<X>.Contains fails with NotSupportedException(The constant for 'System.Collections.Generic.List`1[System.Guid]' is not supported) at HqlTreeBuilder.Constant
+
 Build 3.3.3.GA
 =============================
 
