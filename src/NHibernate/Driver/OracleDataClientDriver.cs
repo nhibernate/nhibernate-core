@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Reflection;
 using NHibernate.AdoNet;
@@ -24,6 +25,7 @@ namespace NHibernate.Driver
 		private readonly PropertyInfo oracleCommandBindByName;
 		private readonly PropertyInfo oracleDbType;
 		private readonly object oracleDbTypeRefCursor;
+		private readonly object oracleDbTypeXmlType;
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleDataClientDriver"/>.
@@ -45,7 +47,8 @@ namespace NHibernate.Driver
 			oracleDbType = parameterType.GetProperty("OracleDbType");
 
 			System.Type oracleDbTypeEnum = ReflectHelper.TypeFromAssembly("Oracle.DataAccess.Client.OracleDbType", driverAssemblyName, false);
-			oracleDbTypeRefCursor = System.Enum.Parse(oracleDbTypeEnum, "RefCursor");
+			oracleDbTypeRefCursor = Enum.Parse(oracleDbTypeEnum, "RefCursor");
+			oracleDbTypeXmlType = Enum.Parse(oracleDbTypeEnum, "XmlType");
 		}
 
 		/// <summary></summary>
@@ -82,10 +85,19 @@ namespace NHibernate.Driver
 				case DbType.Guid:
 					base.InitializeParameter(dbParam, name, GuidSqlType);
 					break;
+				case DbType.Xml:
+					this.InitializeParameter(dbParam, name, oracleDbTypeXmlType);
+					break;
 				default:
 					base.InitializeParameter(dbParam, name, sqlType);
 					break;
 			}
+		}
+
+		private void InitializeParameter(IDbDataParameter dbParam, string name, object sqlType)
+		{
+			dbParam.ParameterName = FormatNameForParameter(name);
+			oracleDbType.SetValue(dbParam, sqlType, null);
 		}
 
 		protected override void OnBeforePrepare(IDbCommand command)
@@ -113,13 +125,9 @@ namespace NHibernate.Driver
 			command.Parameters.Insert(0, outCursor);
 		}
 
-		#region IEmbeddedBatcherFactoryProvider Members
-
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass
 		{
 			get { return typeof (OracleDataClientBatchingBatcherFactory); }
 		}
-
-		#endregion
 	}
 }
