@@ -63,12 +63,12 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (expression.Body.NodeType != ExpressionType.MemberAccess)
 			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (object)))
+				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (TProperty)))
 				{
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
 				throw new Exception(string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}",
-												  expression.Body.NodeType));
+					expression.Body.NodeType));
 			}
 			return ((MemberExpression) expression.Body).Member;
 		}

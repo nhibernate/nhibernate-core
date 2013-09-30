@@ -682,6 +682,9 @@
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Student.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Teacher.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2923\Models.cs" />
     <Compile Include="NHSpecificTest\NH2923\ExtraLazyFixture.cs" />
     <Compile Include="NHSpecificTest\NH3405\Fixture.cs" />
@@ -2968,6 +2971,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2408\Mappings.hbm.xml" />

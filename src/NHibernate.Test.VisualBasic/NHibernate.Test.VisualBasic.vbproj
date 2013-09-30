@@ -75,6 +75,8 @@
     <Compile Include="Issues\NH2966\Fixture.vb" />
     <Compile Include="Issues\NH3302\Entity.vb" />
     <Compile Include="Issues\NH3302\Fixture.vb" />
+    <Compile Include="Issues\NH2963\Entity.vb" />
+    <Compile Include="Issues\NH2963\Fixture.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
     <Compile Include="Issues\IssueTestCase.vb" />
