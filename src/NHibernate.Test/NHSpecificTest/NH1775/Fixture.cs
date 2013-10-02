@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1775
@@ -9,40 +7,30 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override string MappingsAssembly
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NHibernate.Test"; }
+			return !(dialect is Oracle8iDialect);
 		}
 
-		protected override IList Mappings
+		protected override void OnSetUp()
 		{
-			get { return new[] { "NHSpecificTest.NH1775.Member.hbm.xml" }; }
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Save(new Member { FirstName = "Bob", LastName = "One", Roles = 1 });
+				s.Save(new Member { FirstName = "Bob", LastName = "Two", Roles = 2 });
+				s.Save(new Member { FirstName = "Bob", LastName = "Four", Roles = 4 });
+				s.Save(new Member { FirstName = "Bob", LastName = "OneAndFour", Roles = 5 });
+
+				tx.Commit();
+			}
 		}
 
 		[Test]
 		public void BitwiseOperationsShouldBeSupported()
 		{
-			using (ISession s = OpenSession())
-			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					Member m = new Member {FirstName = "Bob", LastName = "One", Roles = 1};
-					s.Save(m);
-
-					m = new Member { FirstName = "Bob", LastName = "Two", Roles = 2 };
-					s.Save(m);
-
-					m = new Member { FirstName = "Bob", LastName = "Four", Roles = 4 };
-					s.Save(m);
-
-					m = new Member { FirstName = "Bob", LastName = "OneAndFour", Roles = 5 };
-					s.Save(m);
-					tx.Commit();
-				}
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				// &
 				IList<DTO> result = s.CreateQuery("select new DTO(m.Id, concat(m.FirstName, ' ', m.LastName)) from Member m where (m.Roles & :roles) = :roles")
@@ -83,8 +71,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				s.Delete("from Member");
 				tx.Commit();
