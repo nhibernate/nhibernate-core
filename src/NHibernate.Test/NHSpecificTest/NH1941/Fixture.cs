@@ -7,45 +7,55 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from Person");
+
+				t.Commit();
 			}
 		}
+		
 		[Test]
-		public void CanOverrideStringEnumGetValue()
+		public void SaveCanOverrideStringEnumGetValue()
 		{
-		    string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			var paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
+			using (var ls = new SqlLogSpy())
 			{
-				using (SqlLogSpy ls = new SqlLogSpy())
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
 				{
-					Person person = new Person() { Sex = Sex.Male };
+					var person = new Person { Sex = Sex.Male };
 					s.Save(person);
 
-					string log = ls.GetWholeLog();
-					Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'M'"));
+					t.Commit();
 				}
+				
+				var log = ls.GetWholeLog();
+				Assert.That(log.Contains(paramPrefix + "p0 = 'M'"), Is.True);
+			}
+		}
 
-				using (SqlLogSpy ls = new SqlLogSpy())
+		[Test]
+		public void ReadCanOverrideStringEnumGetValue()
+		{
+			var paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
+			using (var ls = new SqlLogSpy())
+			{
+				using (var s = OpenSession())
+				using (s.BeginTransaction())
 				{
-					Person person =
-						s.CreateQuery("from Person p where p.Sex = :personSex")
-							.SetParameter("personSex", Sex.Female)
-							.UniqueResult<Person>();
+					var person = s.CreateQuery("from Person p where p.Sex = :personSex")
+						.SetParameter("personSex", Sex.Female)
+						.UniqueResult<Person>();
 
 					Assert.That(person, Is.Null);
-
-					string log = ls.GetWholeLog();
-					Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'F'"));
 				}
-
-				tx.Rollback();
+			   
+				string log = ls.GetWholeLog();
+				Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'F'"));
 			}
 		}
 	}
