@@ -1,9 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using NHibernate.Cfg;
-using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1981
@@ -11,21 +5,43 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override void OnSetUp()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Save(new Article { Longitude = 90 });
+				s.Save(new Article { Longitude = 90 });
+				s.Save(new Article { Longitude = 120 });
+
+				tx.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Article");
+				
+				tx.Commit();
+			}
+		}
+
 		[Test]
 		public void CanGroupWithParameter()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				s.Save(new Article() { Longitude = 90 });
-				s.Save(new Article() { Longitude = 90 });
-				s.Save(new Article() { Longitude = 120 });
+				const string queryString =
+					@"select (Longitude / :divisor)
+					  from Article
+					  group by (Longitude / :divisor)
+					  order by 1";
 
-				IList<double> quotients =
-					s.CreateQuery(
-						@"select (Longitude / :divisor)
-						from Article
-						group by (Longitude / :divisor)")
+				var quotients = s.CreateQuery(queryString)
 					.SetDouble("divisor", 30)
 					.List<double>();
 
