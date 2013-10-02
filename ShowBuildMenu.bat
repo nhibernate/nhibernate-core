@@ -256,14 +256,18 @@ echo D. NHibernate Trunk - SQLite (32-bit)
 echo E. NHibernate Trunk - SQLite (64-bit)
 echo F. NHibernate Trunk - PostgreSQL
 echo G. NHibernate Trunk - Oracle (32-bit)
-echo H. NHibernate Trunk - SQL Server ODBC (32-bit)
+echo H. NHibernate Trunk - Oracle Managed (32-bit)
+echo I. NHibernate Trunk - Oracle Managed (64-bit)
+echo J. NHibernate Trunk - SQL Server ODBC (32-bit)
 echo.
 echo X.  Exit to main menu.
 echo.
 
-%BUILDTOOL% prompt ABCDEFGHX
-if errorlevel 8 goto main-menu
-if errorlevel 7 goto teamcity-sqlServerOdbc
+%BUILDTOOL% prompt ABCDEFGHIJX
+if errorlevel 10 goto main-menu
+if errorlevel 9 goto teamcity-sqlServerOdbc
+if errorlevel 8 goto teamcity-oraclemanaged-64
+if errorlevel 7 goto teamcity-oraclemanaged-32
 if errorlevel 6 goto teamcity-oracle32
 if errorlevel 5 goto teamcity-postgresql
 if errorlevel 4 goto teamcity-sqlite64
@@ -311,6 +315,18 @@ goto main-menu
 :teamcity-oracle32
 move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
 %NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle32
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-oraclemanaged-32
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle-managed32
+move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
+goto main-menu
+
+:teamcity-oraclemanaged-64
+move "%CURRENT_CONFIGURATION%" "%CURRENT_CONFIGURATION%-backup" 2> nul
+%NANT% /f:teamcity.build -D:skip.manual=true -D:CCNetLabel=-1 -D:config.teamcity=oracle-managed64
 move "%CURRENT_CONFIGURATION%-backup" "%CURRENT_CONFIGURATION%" 2> nul
 goto main-menu
 
