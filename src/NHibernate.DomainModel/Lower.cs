@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
@@ -9,7 +8,7 @@ namespace NHibernate.DomainModel
 		private int _intprop;
 		private string _foo;
 		private ISet<Top> _set;
-		private IList _bag;
+		private IList<Top> _bag;
 		private Lower _other;
 		private Top _another;
 		private Lower _yetAnother;
@@ -33,7 +32,7 @@ namespace NHibernate.DomainModel
 			set { _set = value; }
 		}
 
-		public IList Bag
+		public IList<Top> Bag
 		{
 			get { return _bag; }
 			set { _bag = value; }

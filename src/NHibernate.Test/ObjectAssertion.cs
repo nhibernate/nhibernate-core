@@ -31,7 +31,7 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <remarks>The objects contained in the arrays must implement Equals correctly.</remarks>
-		internal static void AreEqual(IList expected, IList actual)
+		internal static void AreEqual<T>(IList<T> expected, IList<T> actual)
 		{
 			AreEqual(expected, actual, true);
 		}
@@ -42,7 +42,7 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <param name="indexMatters">A boolean indicating if the List are compared at Index or by Contains.</param>
-		internal static void AreEqual(IList expected, IList actual, bool indexMatters)
+		internal static void AreEqual<T>(IList<T> expected, IList<T> actual, bool indexMatters)
 		{
 			Assert.AreEqual(expected.Count, actual.Count, "list lengths differ");
 			for (int i = 0; i < expected.Count; i++)
@@ -59,29 +59,31 @@ namespace NHibernate.Test
 			}
 		}
 
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <param name="compareValues">Set it to false when you only care about the keys, specifically with Sets.</param>
-		internal static void AreEqual(IDictionary expected, IDictionary actual, bool compareValues)
+		internal static void AreEqual<TKey, TItem>(IDictionary<TKey,TItem> expected, IDictionary<TKey,TItem> actual, bool compareValues)
 		{
 			Assert.AreEqual(expected.Count, actual.Count);
 
-			foreach (DictionaryEntry de in expected)
+			foreach (KeyValuePair<TKey, TItem> de in expected)
 			{
-				Assert.IsTrue(actual.Contains(de.Key));
+				Assert.IsTrue(actual.ContainsKey(de.Key));
 				if (compareValues)
 					Assert.AreEqual(expected[de.Key], actual[de.Key], "The item identified by the key " + de.Key.ToString());
 			}
 		}
 
+
 		[Test]
 		public void TestIDictionaryEqual()
 		{
-			IDictionary expected = new Hashtable(2);
-			IDictionary actualWithEqualValues = new Hashtable(2);
+			IDictionary<string, string> expected = new Dictionary<string, string>();
+			IDictionary<string, string> actualWithEqualValues = new Dictionary<string, string>();
 
 			expected["ZERO"] = "zero";
 			expected["ONE"] = "one";
@@ -91,6 +93,7 @@ namespace NHibernate.Test
 
 			AreEqual(expected, actualWithEqualValues, true);
 		}
+
 
 		public static void AreEqual(DateTime expected, DateTime actual, bool useMilliseconds)
 		{

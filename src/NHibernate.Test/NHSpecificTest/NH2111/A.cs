@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2111
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 	{
 		private int? _id;
 		private string _name;
-		private IList _lazyItems;
+		private IList<string> _lazyItems;
 
 		public int? Id
 		{
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 			set { _name = value; }
 		}
 
-		public IList LazyItems
+		public IList<string> LazyItems
 		{
 			get { return _lazyItems; }
 			set { _lazyItems = value; }

@@ -506,7 +506,7 @@ namespace NHibernate.Test.FilterTest
 				this.outer = outer;
 			}
 
-			public IList entitiesToCleanUp = new ArrayList();
+			public IList<object> entitiesToCleanUp = new List<object>();
 
 			public void Prepare()
 			{

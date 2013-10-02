@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -13,7 +14,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericMapType<TKey, TValue> : MapType
+	public class GenericMapType<TKey, TValue> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericMapType{TKey, TValue}"/> class for
@@ -45,6 +46,12 @@ namespace NHibernate.Type
 			get { return typeof(IDictionary<TKey, TValue>); }
 		}
 
+
+		public override IEnumerable GetElementsIterator(object collection)
+		{
+			return ((IDictionary<TKey, TValue>) collection).Values;
+		}
+
 		/// <summary>
 		/// Wraps an <see cref="IDictionary&lt;TKey,TValue&gt;"/> in a <see cref="PersistentGenericMap&lt;TKey,TValue&gt;"/>.
 		/// </summary>
@@ -62,6 +69,11 @@ namespace NHibernate.Type
 		protected override void Add(object collection, object element)
 		{
 			((IDictionary<TKey, TValue>) collection).Add((KeyValuePair<TKey, TValue>) element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((IDictionary) collection).Clear();
 		}
 
 		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
@@ -93,6 +105,16 @@ namespace NHibernate.Type
 		public override object Instantiate(int anticipatedSize)
 		{
 			return anticipatedSize <= 0 ? new Dictionary<TKey, TValue>() : new Dictionary<TKey, TValue>(anticipatedSize + 1);
+		}
+
+		public override object IndexOf(object collection, object element)
+		{
+			var dictionary = (IDictionary<TKey, TValue>) collection;
+
+			return dictionary
+				.Where(pair => Equals(pair.Value, element))
+				.Select(pair => pair.Key)
+				.FirstOrDefault();
 		}
 	}
 }

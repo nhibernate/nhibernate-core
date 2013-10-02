@@ -491,10 +491,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, q.List().Count);
 
 			q = s.CreateFilter(master.Details, "where this.id in (:ids)");
-			list = new ArrayList();
-			list.Add(did);
-			list.Add((long) -1);
-			q.SetParameterList("ids", list);
+			q.SetParameterList("ids", new[] {did, (long) -1});
 
 			Assert.AreEqual(1, q.List().Count);
 			Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
@@ -537,12 +534,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, enumer.Current);
 
 			f = s.CreateFilter(master.Details, "select max(this.I) where this.I not in (:list)");
-			IList coll = new ArrayList();
-			coll.Add(-666);
-			coll.Add(22);
-			coll.Add(0);
-
-			f.SetParameterList("list", coll);
+			f.SetParameterList("list", new List<int> {-666, 22, 0});
 			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(12, enumer.Current);
@@ -830,9 +822,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			IList l = new ArrayList();
-			l.Add(c);
-			assn.Categories = l;
+			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -850,7 +840,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			s.Save(c);
@@ -867,7 +857,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -895,7 +885,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			Category c2 = new Category();
@@ -907,7 +897,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -934,7 +924,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			s.Save(c);
@@ -951,7 +941,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = (Category) s.Load(typeof(Category), c.Id, LockMode.Upgrade);
-			IList list2 = c.Subcategories;
+			IList<Category> list2 = c.Subcategories;
 			t.Commit();
 			s.Close();
 
@@ -997,7 +987,7 @@ namespace NHibernate.Test.Legacy
 				c = (Category) s.Load(typeof(Category), c.Id);
 				Assert.IsNotNull(c.Subcategories[0]);
 				Assert.IsNotNull(c.Subcategories[1]);
-				IList list = ((Category) c.Subcategories[1]).Subcategories;
+				IList<Category> list = ((Category) c.Subcategories[1]).Subcategories;
 				Assert.IsNull(list[0]);
 				Assert.IsNotNull(list[1]);
 
@@ -1019,7 +1009,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			c.Name = "root";
@@ -1062,7 +1052,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Category c = new Category();
-			IList list = new ArrayList();
+			IList<Category> list = new List<Category>();
 			c.Subcategories = list;
 			list.Add(new Category());
 			c.Name = "root";
@@ -1199,7 +1189,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			Assignable a = new Assignable();
 			a.Id = "foo";
-			a.Categories = new ArrayList();
+			a.Categories = new List<Category>();
 			Category c = new Category();
 			c.Assignable = a;
 			a.Categories.Add(c);

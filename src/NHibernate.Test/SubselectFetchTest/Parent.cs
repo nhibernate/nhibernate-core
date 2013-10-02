@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.SubselectFetchTest
 {
 	public class Parent
 	{
 		private string name;
-		private IList children = new ArrayList();
-		private IList moreChildren = new ArrayList();
+		private IList<Child> children = new List<Child>();
+		private IList<Child> moreChildren = new List<Child>();
 
 		protected Parent()
 		{
@@ -24,13 +24,13 @@ namespace NHibernate.Test.SubselectFetchTest
 			set { name = value; }
 		}
 
-		public virtual IList Children
+		public virtual IList<Child> Children
 		{
 			get { return children; }
 			set { children = value; }
 		}
 
-		public virtual IList MoreChildren
+		public virtual IList<Child> MoreChildren
 		{
 			get { return moreChildren; }
 			set { moreChildren = value; }

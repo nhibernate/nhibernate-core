@@ -1,19 +1,15 @@
-using System.Collections;
+using System.Collections.Generic;
+
 namespace NHibernate.Test.UserCollection.Parameterized
 {
-	public class DefaultableListImpl : ArrayList, IDefaultableList
+	public class DefaultableListImpl : List<string>, IDefaultableList
 	{
-		private string defaultValue;
 		public DefaultableListImpl() {}
 		public DefaultableListImpl(int capacity) : base(capacity) {}
 
 		#region IDefaultableList Members
 
-		public string DefaultValue
-		{
-			get { return defaultValue; }
-			set { defaultValue = value; }
-		}
+		public string DefaultValue { get; set; }
 
 		#endregion
 	}

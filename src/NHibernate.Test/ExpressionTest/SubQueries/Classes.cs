@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
@@ -104,7 +103,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		private int post_id;
 		private Blog _blog;
 		private string post_title;
-		private IList _comments;
+		private IList<Comment> _comments;
 		private ISet<Category> categories = new HashSet<Category>();
 
 		public ISet<Category> Categories
@@ -113,7 +112,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			set { categories = value; }
 		}
 
-		public virtual IList Comments
+		public virtual IList<Comment> Comments
 		{
 			get { return _comments; }
 			set { _comments = value; }
@@ -140,7 +139,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		public Post()
 		{
-			_comments = new ArrayList();
+			_comments = new List<Comment>();
 		}
 
 		public Post(string title)

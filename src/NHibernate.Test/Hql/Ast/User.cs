@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.Hql.Ast
 		private long id;
 		private string userName;
 		private Human human;
-		private IList permissions;
+		private IList<string> permissions;
 
 		public virtual long Id
 		{
@@ -27,7 +27,7 @@ namespace NHibernate.Test.Hql.Ast
 			set { human = value; }
 		}
 
-		public virtual IList Permissions
+		public virtual IList<string> Permissions
 		{
 			get { return permissions; }
 			set { permissions = value; }

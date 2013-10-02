@@ -650,7 +650,6 @@
     <Compile Include="Type\AbstractType.cs" />
     <Compile Include="Type\AnsiStringType.cs" />
     <Compile Include="Type\ArrayType.cs" />
-    <Compile Include="Type\BagType.cs" />
     <Compile Include="Type\BinaryBlobType.cs" />
     <Compile Include="Type\BinaryType.cs" />
     <Compile Include="Type\BooleanType.cs" />
@@ -670,7 +669,6 @@
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
-    <Compile Include="Type\IdentifierBagType.cs" />
     <Compile Include="Type\IDiscriminatorType.cs" />
     <Compile Include="Type\IIdentifierType.cs" />
     <Compile Include="Type\ILiteralType.cs" />
@@ -680,9 +678,7 @@
     <Compile Include="Type\Int64Type.cs" />
     <Compile Include="Type\IType.cs" />
     <Compile Include="Type\IVersionType.cs" />
-    <Compile Include="Type\ListType.cs" />
     <Compile Include="Type\ManyToOneType.cs" />
-    <Compile Include="Type\MapType.cs" />
     <Compile Include="Type\MetaType.cs" />
     <Compile Include="Type\MutableType.cs" />
     <Compile Include="Type\NullableType.cs" />
@@ -692,7 +688,6 @@
     <Compile Include="Type\SerializableType.cs" />
     <Compile Include="Type\SerializationException.cs" />
     <Compile Include="Type\SingleType.cs" />
-    <Compile Include="Type\SortedMapType.cs" />
     <Compile Include="Type\StringClobType.cs" />
     <Compile Include="Type\StringType.cs" />
     <Compile Include="Type\TicksType.cs" />
@@ -1253,10 +1248,6 @@
     </Compile>
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
-    <Compile Include="Collection\PersistentBag.cs" />
-    <Compile Include="Collection\PersistentIdentifierBag.cs" />
-    <Compile Include="Collection\PersistentList.cs" />
-    <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />
     <Compile Include="Context\CurrentSessionContext.cs" />
@@ -1766,7 +1757,6 @@
     <Compile Include="Type\EnumCharType.cs" />
     <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
-    <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />
     <Compile Include="Type\GenericIdentifierBagType.cs" />
     <Compile Include="Type\GenericSortedListType.cs" />

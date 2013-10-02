@@ -754,35 +754,6 @@ namespace NHibernate.Type
 			return Instance.CollectionTypeFactory.Array(role, propertyRef, embedded, elementClass);
 		}
 
-		public static CollectionType List(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.List(role, propertyRef, embedded);
-		}
-
-		public static CollectionType Bag(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.Bag(role, propertyRef, embedded);
-		}
-
-		public static CollectionType IdBag(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.IdBag(role, propertyRef, embedded);
-		}
-
-		public static CollectionType Map(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.Map(role, propertyRef, embedded);
-		}
-
-		public static CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return Instance.CollectionTypeFactory.SortedMap(role, propertyRef, embedded, comparer);
-		}
-
-		public static CollectionType OrderedMap(string role, string propertyRef, bool embedded)
-		{
-			return Instance.CollectionTypeFactory.OrderedMap(role, propertyRef, embedded);
-		}
 
 		public static CollectionType GenericBag(string role, string propertyRef, System.Type elementClass)
 		{

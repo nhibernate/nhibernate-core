@@ -15,12 +15,12 @@ namespace NHibernate.DomainModel
 
 		short Order { get; set; }
 
-		IList Strings { get; set; }
+		IList<string> Strings { get; set; }
 
 		IDictionary DynaBean { get; set; }
 
 		ISet<string> StringSets { get; set; }
-		IList FooComponents { get; set; }
+		IList<FooComponent> FooComponents { get; set; }
 		GlarchProxy[] ProxyArray { get; set; }
 		ISet<GlarchProxy> ProxySet { get; set; }
 		Multiplicity Multiple { get; set; }

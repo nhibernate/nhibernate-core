@@ -24,20 +24,6 @@ namespace NHibernate.Bytecode
 		CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
-		/// with bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="BagType"/> for the specified role.
-		/// </returns>
-		CollectionType Bag(string role, string propertyRef, bool embedded);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList{T}"/> with bag semantics.
 		/// </summary>
@@ -54,19 +40,6 @@ namespace NHibernate.Bytecode
 		CollectionType Bag<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
-		/// </returns>
-		CollectionType List(string role, string propertyRef, bool embedded);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IList&lt;T&gt;"/> with list 
 		/// semantics.
@@ -80,23 +53,9 @@ namespace NHibernate.Bytecode
 		/// </param>
 		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
 		/// <returns>
-		/// A <see cref="ListType"/> for the specified role.
+		/// A <see cref="GenericListType&lt;T&gt;"/> for the specified role.
 		/// </returns>
 		CollectionType List<T>(string role, string propertyRef, bool embedded);
-
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IList"/>
-		/// with id-bag semantics.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="IdentifierBagType"/> for the specified role.
-		/// </returns>
-		CollectionType IdBag(string role, string propertyRef, bool embedded);
 
 		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
@@ -154,49 +113,6 @@ namespace NHibernate.Bytecode
 		CollectionType OrderedSet<T>(string role, string propertyRef, bool embedded);
 
 		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">
-		/// The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="MapType"/> for the specified role.
-		/// </returns>
-		CollectionType Map(string role, string propertyRef, bool embedded);
-
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
-		/// that maintains insertion order of elements.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="OrderedMapType"/> for the specified role.
-		/// </returns>
-		CollectionType OrderedMap(string role, string propertyRef, bool embedded);
-
-		/// <summary>
-		/// Creates a new <see cref="CollectionType"/> for an <see cref="IDictionary"/>
-		/// that is sorted by an <see cref="IComparer"/>.
-		/// </summary>
-		/// <param name="role">The role the collection is in.</param>
-		/// <param name="propertyRef">The name of the property in the
-		/// owner object containing the collection ID, or <see langword="null" /> if it is
-		/// the primary key.</param>
-		/// <param name="comparer">The <see cref="IComparer"/> that does the sorting.</param>
-		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
-		/// <returns>
-		/// A <see cref="SortedMapType"/> for the specified role.
-		/// </returns>
-		CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer);
-
-		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an 
 		/// <see cref="System.Collections.Generic.IDictionary&lt;TKey,TValue&gt;"/>.
 		/// </summary>
@@ -209,7 +125,7 @@ namespace NHibernate.Bytecode
 		/// </param>
 		/// <param name="embedded">Is embedded in XML (not supported yet)</param>
 		/// <returns>
-		/// A <see cref="MapType"/> for the specified role.
+		/// A <see cref="GenericMapType{TKey, TValue}"/> for the specified role.
 		/// </returns>
 		CollectionType Map<TKey, TValue>(string role, string propertyRef, bool embedded);
 

@@ -27,7 +27,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 			}
 			else
 			{
-				return new PersistentDefaultableList(session, (IList)collection);
+				return new PersistentDefaultableList(session, (IList<string>)collection);
 			}
 		}
 
@@ -38,12 +38,20 @@ namespace NHibernate.Test.UserCollection.Parameterized
 
 		public bool Contains(object collection, object entity)
 		{
-			return ((IDefaultableList)collection).Contains(entity);
+			var item = entity as string;
+			if (entity != null && item == null)
+				return false;
+
+			return ((IDefaultableList)collection).Contains(item);
 		}
 
 		public object IndexOf(object collection, object entity)
 		{
-			int index = ((IDefaultableList)collection).IndexOf(entity);
+			var item = entity as string;
+			if (entity != null && item == null)
+				return null;
+
+			int index = ((IDefaultableList)collection).IndexOf(item);
 			return index >= 0 ? (object) index : null;
 		}
 
@@ -51,10 +59,10 @@ namespace NHibernate.Test.UserCollection.Parameterized
 		{
 			IDefaultableList result = (IDefaultableList)target;
 			result.Clear();
-			foreach (object o in (IDefaultableList)original)
-			{
+
+			foreach (string o in (IDefaultableList) original)
 				result.Add(o);
-			}
+
 			return result;
 		}
 

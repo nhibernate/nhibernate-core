@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// to the database using bag semantics.
 	/// </summary>
 	[Serializable]
-	public class GenericBagType<T> : BagType
+	public class GenericBagType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericBagType{T}"/> class for
@@ -53,7 +53,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericBag<T>(session, (ICollection<T>) collection);
+			return new PersistentGenericBag<T>(session, (IEnumerable<T>) collection);
 		}
 
 		protected override void Add(object collection, object element)

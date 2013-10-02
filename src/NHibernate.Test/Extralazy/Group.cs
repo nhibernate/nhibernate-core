@@ -1,27 +1,28 @@
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.Extralazy
 {
 	public class Group
 	{
-		private string name;
-		private IDictionary users = new Hashtable();
+		private string _name;
+		private IDictionary<string, User> _users = new Dictionary<string, User>();
+
 		protected Group() {}
 		public Group(string name)
 		{
-			this.name = name;
+			this._name = name;
 		}
 
 		public virtual string Name
 		{
-			get { return name; }
-			set { name = value; }
+			get { return _name; }
+			set { _name = value; }
 		}
 
-		public virtual IDictionary Users
+		public virtual IDictionary<string, User> Users
 		{
-			get { return users; }
-			set { users = value; }
+			get { return _users; }
+			set { _users = value; }
 		}
 	}
 }

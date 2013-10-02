@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -10,8 +10,8 @@ namespace NHibernate.DomainModel
 	{
 		private Container _container;
 		private long _id;
-		private IList _bag = new ArrayList();
-		private IList _lazyBag = new ArrayList();
+		private IList<Container> _bag = new List<Container>();
+		private IList<Container> _lazyBag = new List<Container>();
 
 		# region object overrides
 
@@ -41,13 +41,13 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public virtual IList Bag
+		public virtual IList<Container> Bag
 		{
 			get { return _bag; }
 			set { _bag = value; }
 		}
 
-		public virtual IList LazyBag
+		public virtual IList<Container> LazyBag
 		{
 			get { return _lazyBag; }
 			set { _lazyBag = value; }

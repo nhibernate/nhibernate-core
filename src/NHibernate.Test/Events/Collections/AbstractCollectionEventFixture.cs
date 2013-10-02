@@ -886,11 +886,11 @@ namespace NHibernate.Test.Events.Collections
 		                           IEntity ownerExpected, object collExpected, int index)
 		{
 			Assert.That(listeners.ListenersCalled[index], Is.SameAs(listenerExpected));
-			Assert.That(((AbstractCollectionEvent) listeners.Events[index]).AffectedOwnerOrNull, Is.SameAs(ownerExpected));
-			Assert.That(((AbstractCollectionEvent) listeners.Events[index]).AffectedOwnerIdOrNull, Is.EqualTo(ownerExpected.Id));
-			Assert.That(((AbstractCollectionEvent) listeners.Events[index]).GetAffectedOwnerEntityName(),
+			Assert.That(listeners.Events[index].AffectedOwnerOrNull, Is.SameAs(ownerExpected));
+			Assert.That(listeners.Events[index].AffectedOwnerIdOrNull, Is.EqualTo(ownerExpected.Id));
+			Assert.That(listeners.Events[index].GetAffectedOwnerEntityName(),
 			            Is.EqualTo(ownerExpected.GetType().FullName));
-			Assert.That(((AbstractCollectionEvent) listeners.Events[index]).Collection, Is.SameAs(collExpected));
+			Assert.That(listeners.Events[index].Collection, Is.SameAs(collExpected));
 		}
 
 		protected void CheckNumberOfResults(CollectionListeners listeners, int nEventsExpected)

@@ -14,6 +14,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
+using NHibernate.Test.NHSpecificTest.NH1914;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -89,7 +90,7 @@ namespace NHibernate.Test.Legacy
 		{
 			Glarch g = new Glarch();
 			Glarch g2 = new Glarch();
-			IList strings = new ArrayList();
+			IList<string> strings = new List<string>();
 			strings.Add("foo");
 			g2.Strings = strings;
 
@@ -134,8 +135,8 @@ namespace NHibernate.Test.Legacy
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Baz baz = new Baz();
-					baz.Bag = new ArrayList();
-					baz.ByteBag = new ArrayList();
+					baz.Bag = new List<string>();
+					baz.ByteBag = new List<byte[]>();
 					s.Save(baz);
 					baz.Bag.Add("foo");
 					baz.Bag.Add("bar");
@@ -640,7 +641,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			bar.Baz = baz;
-			baz.ManyToAny = new ArrayList();
+			baz.ManyToAny = new List<object>();
 			baz.ManyToAny.Add(bar);
 			baz.ManyToAny.Add(foo);
 			s.Save(bar);
@@ -892,7 +893,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				baz = new Baz();
-				IList list = new ArrayList();
+				IList<Fee> list = new List<Fee>();
 				list.Add(new Fee());
 				baz.Fees = list;
 				s.Save(baz);
@@ -917,7 +918,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				baz = new Baz();
-				IList list = new ArrayList();
+				IList<Fee> list = new List<Fee>();
 				list.Add(new Fee());
 				list.Add(new Fee());
 				baz.Fees = list;
@@ -949,7 +950,7 @@ namespace NHibernate.Test.Legacy
 			{
 				baz = new Baz();
 				Foo foo = new Foo();
-				IList bag = new ArrayList();
+				IList<Foo> bag = new List<Foo>();
 				bag.Add(foo);
 				baz.IdFooBag = bag;
 				baz.Foo = foo;
@@ -1225,7 +1226,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			IList fooBag = new ArrayList();
+			IList<Foo> fooBag = new List<Foo>();
 			fooBag.Add(new Foo());
 			fooBag.Add(new Foo());
 			baz.FooBag = fooBag;
@@ -1258,7 +1259,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				IList l = new ArrayList();
+				IList<string> l = new List<string>();
 				baz.StringList = l;
 
 				l.Add("foo");
@@ -1319,8 +1320,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz b = new Baz();
-				IList stringList = new ArrayList();
-				IList feeList = new ArrayList();
+				IList<string> stringList = new List<string>();
+				IList<Fee> feeList = new List<Fee>();
 				b.Fees = feeList;
 				b.StringList = stringList;
 				feeList.Add(new Fee());
@@ -1360,7 +1361,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				IList fooBag = new ArrayList();
+				IList<Foo> fooBag = new List<Foo>();
 				fooBag.Add(new Foo());
 				fooBag.Add(new Foo());
 				baz.FooBag = fooBag;
@@ -1470,15 +1471,15 @@ namespace NHibernate.Test.Legacy
 			Foo foo2 = new Foo();
 			s.Save(foo2);
 			s.Flush();
-			IList list = new ArrayList();
+			IList<Fee> list = new List<Fee>();
 			for (int i = 0; i < 5; i++)
 			{
 				Fee fee = new Fee();
 				list.Add(fee);
 			}
 			baz.Fees = list;
-			list = s.CreateQuery("from Foo foo, Baz baz left join fetch baz.Fees").List();
-			Assert.IsTrue(NHibernateUtil.IsInitialized(((Baz) ((object[]) list[0])[1]).Fees));
+			var result = s.CreateQuery("from Foo foo, Baz baz left join fetch baz.Fees").List();
+			Assert.IsTrue(NHibernateUtil.IsInitialized(((Baz)((object[])result[0])[1]).Fees));
 			s.Delete(foo);
 			s.Delete(foo2);
 			s.Delete(baz);
@@ -1492,7 +1493,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			IList list = new ArrayList();
+			IList<Baz> list = new List<Baz>();
 			baz.Bazez = list;
 			list.Add(new Baz());
 			s.Save(baz);
@@ -1620,8 +1621,8 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			s.Save(baz);
 
-			IList l = new ArrayList();
-			IList l2 = new ArrayList();
+			IList<Foo> l = new List<Foo>();
+			IList<byte[]> l2 = new List<byte[]>();
 
 			baz.IdFooBag = l;
 			baz.ByteBag = l2;
@@ -1906,10 +1907,7 @@ namespace NHibernate.Test.Legacy
 				"left join bar.Baz baz left join baz.CascadingBars b " +
 				"where (bar.Name in (:nameList) or bar.Name in (:nameList)) and bar.String = :stringVal");
 
-			IList nameList = new ArrayList();
-			nameList.Add("bar");
-			nameList.Add("Bar");
-			nameList.Add("Bar Two");
+			var nameList = new List<string> {"bar", "Bar", "Bar Two"};
 			q.SetParameterList("nameList", nameList);
 			q.SetParameter("stringVal", "a string");
 			list = q.List();
@@ -2253,8 +2251,7 @@ namespace NHibernate.Test.Legacy
 					more.StringId = "id";
 					Stuff stuf = new Stuff();
 					stuf.MoreStuff = more;
-					more.Stuffs = new ArrayList();
-					more.Stuffs.Add(stuf);
+					more.Stuffs = new List<Stuff> {stuf};
 					stuf.Foo = bar;
 					stuf.Id = 1234;
 
@@ -2356,7 +2353,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			IList list = new ArrayList();
+			IList<Fee> list = new List<Fee>();
 			list.Add(new Fee());
 			list.Add(new Fee());
 			baz.Fees = list;
@@ -2608,7 +2605,7 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.IsFalse(found);
 
-			IList newList = new ArrayList();
+			IList<string> newList = new List<string>();
 			newList.Add("value");
 			baz.StringList = newList;
 			
@@ -2640,7 +2637,7 @@ namespace NHibernate.Test.Legacy
 			baz.SetDefaults();
 			baz.StringArray = new string[] {"stuff"};
 			baz.CascadingBars = new HashSet<BarProxy> {new Bar()};
-			IDictionary sgm = new Hashtable();
+			IDictionary<string, Glarch> sgm = new Dictionary<string, Glarch>();
 			sgm["a"] = new Glarch();
 			sgm["b"] = new Glarch();
 			baz.StringGlarchMap = sgm;
@@ -2751,21 +2748,24 @@ namespace NHibernate.Test.Legacy
 			s.Save(bar);
 			s.Save(bar2);
 			baz.TopFoos = new HashSet<Bar> { bar, bar2 };
-			baz.TopGlarchez = new Hashtable();
+			baz.TopGlarchez = new Dictionary<char, GlarchProxy>();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
 			baz.TopGlarchez['G'] = g;
-			Hashtable map = new Hashtable();
+			
+			var map = new Dictionary<Foo, GlarchProxy>();
 			map[bar] = g;
 			map[bar2] = g;
 			baz.FooToGlarch = map;
-			map = new Hashtable();
-			map[new FooComponent("name", 123, null, null)] = bar;
-			map[new FooComponent("nameName", 12, null, null)] = bar;
-			baz.FooComponentToFoo = map;
-			map = new Hashtable();
-			map[bar] = g;
-			baz.GlarchToFoo = map;
+			
+			var map2 = new Dictionary<FooComponent, Foo>();
+			map2[new FooComponent("name", 123, null, null)] = bar;
+			map2[new FooComponent("nameName", 12, null, null)] = bar;
+			baz.FooComponentToFoo = map2;
+
+			var map3 = new Dictionary<Foo, GlarchProxy>();
+			map3[bar] = g;
+			baz.GlarchToFoo = map3;
 			txn.Commit();
 			s.Close();
 
@@ -2950,7 +2950,7 @@ namespace NHibernate.Test.Legacy
 			Foo f2 = new Foo();
 			Foo f3 = new Foo();
 			One o = new One();
-			baz.Ones = new ArrayList();
+			baz.Ones = new List<One>();
 			baz.Ones.Add(o);
 			Foo[] foos = new Foo[] {f1, null, f2};
 			baz.FooArray = foos;
@@ -3358,8 +3358,9 @@ namespace NHibernate.Test.Legacy
 			s.Save(foo1);
 			s.Save(foo2);
 			baz1.FooArray = new Foo[] {foo1, null, foo2};
-			baz1.StringDateMap = new Hashtable();
+			baz1.StringDateMap = new Dictionary<string, DateTime?>();
 			baz1.StringDateMap["today"] = DateTime.Today;
+			baz1.StringDateMap["foo"] = null;
 			baz1.StringDateMap["tomm"] = new DateTime(DateTime.Today.Ticks + (new TimeSpan(1, 0, 0, 0, 0)).Ticks);
 			s.Flush();
 			s.Close();
@@ -3377,7 +3378,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			baz2 = (Baz) s.Load(typeof(Baz), baz2.Code);
 			baz1 = (Baz) s.Load(typeof(Baz), baz1.Code);
-			Assert.AreEqual(2, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
+			Assert.AreEqual(3, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
 			Assert.AreEqual(3, baz2.FooArray.Length, "baz2.FooArray length - reachability");
 			Assert.AreEqual(0, baz1.StringDateMap.Count, "baz1.StringDateMap count - reachability");
 			Assert.AreEqual(0, baz1.FooArray.Length, "baz1.FooArray length - reachability");
@@ -3699,7 +3700,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(g);
 			g.ProxyArray = new GlarchProxy[] {g};
 			string gid = (string) s.GetIdentifier(g);
-			ArrayList list = new ArrayList();
+			IList<string> list = new List<string>();
 			list.Add("foo");
 			g.Strings = list;
 			// <sets> in h2.0.3
@@ -3746,7 +3747,7 @@ namespace NHibernate.Test.Legacy
 			g = (GlarchProxy) s.Load(typeof(Glarch), gid);
 			Assert.AreEqual(4, g.Version, "versioned collection after");
 			Assert.AreEqual(0, g.ProxyArray.Length, "version collection after");
-			g.FooComponents = new ArrayList();
+			g.FooComponents = new List<FooComponent>();
 			g.ProxyArray = null;
 			s.Flush();
 			s.Close();
@@ -5284,7 +5285,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			var bars = new HashSet<BarProxy> { new Bar(), new Bar(), new Bar() };
 			baz.CascadingBars = bars;
-			IList foos = new ArrayList();
+			IList<Foo> foos = new List<Foo>();
 			foos.Add(new Foo());
 			foos.Add(new Foo());
 			baz.FooBag = foos;
@@ -5342,7 +5343,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(bar);
 			baz.FooSet = new HashSet<FooProxy> { bar };
 			baz.CascadingBars = new HashSet<BarProxy> { new Bar(), new Bar() };
-			ArrayList list = new ArrayList();
+			var list = new List<Foo>();
 			list.Add(new Foo());
 			baz.FooBag = list;
 			object id = s.Save(baz);

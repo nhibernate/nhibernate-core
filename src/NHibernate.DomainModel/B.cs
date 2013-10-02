@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -22,7 +22,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Holder for map
 		/// </summary>
-		private IDictionary _map;
+		private IDictionary<string, string> _map;
 
 		#endregion
 
@@ -41,7 +41,7 @@ namespace NHibernate.DomainModel
 		/// <param name="name">Initial name value</param>
 		/// <param name="count">Initial count value</param>
 		/// <param name="map">Initial map value</param>
-		public B(String name, Int32 count, IDictionary map)
+		public B(String name, Int32 count, IDictionary<string, string> map)
 			: base(name)
 		{
 			this._count = count;
@@ -52,7 +52,7 @@ namespace NHibernate.DomainModel
 		/// Minimal constructor for class B
 		/// </summary>
 		/// <param name="map">Initial map value</param>
-		public B(IDictionary map)
+		public B(IDictionary<string, string> map)
 		{
 			this._map = map;
 		}
@@ -73,7 +73,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for map
 		/// </summary>
-		public virtual IDictionary Map
+		public virtual IDictionary<string, string> Map
 		{
 			get { return _map; }
 			set { _map = value; }

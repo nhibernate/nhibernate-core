@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -12,7 +12,7 @@ namespace NHibernate.DomainModel
 		private string _stringId;
 		private int _intId;
 		// <bag> mapping
-		private IList _stuffs;
+		private IList<Stuff> _stuffs;
 		private string _name;
 
 
@@ -28,7 +28,7 @@ namespace NHibernate.DomainModel
 			set { _intId = value; }
 		}
 
-		public IList Stuffs
+		public IList<Stuff> Stuffs
 		{
 			get { return _stuffs; }
 			set { _stuffs = value; }
