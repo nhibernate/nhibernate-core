@@ -3,58 +3,53 @@ using System.Threading;
 
 namespace NHibernate.AdoNet
 {
-	/// <summary> Implementation of ColumnNameCache. </summary>
+	/// <summary> Implementation of ColumnNameCache. Thread safe. </summary>
 	public class ColumnNameCache
 	{
-		private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
-		private readonly Dictionary<string, int?> columnNameToIndexCache;
+		private readonly ReaderWriterLockSlim _cacheLock = new ReaderWriterLockSlim();
+		private readonly Dictionary<string, int> _columnNameToIndexCache;
 
 		public ColumnNameCache(int columnCount)
 		{
 			// should *not* need to grow beyond the size of the total number of columns in the rs
-			columnNameToIndexCache = new Dictionary<string, int?>(columnCount);
+			_columnNameToIndexCache = new Dictionary<string, int>(columnCount);
 		}
 
 		public int GetIndexForColumnName(string columnName, ResultSetWrapper rs)
 		{
-			int? cached = Read(columnName);
-			if (cached.HasValue)
+			int index;
+			if (!TryRead(columnName, out index))
 			{
-				return cached.Value;
-			}
-			else
-			{
-				int index = rs.Target.GetOrdinal(columnName);
+				index = rs.Target.GetOrdinal(columnName);
 				Insert(columnName, index);
-				return index;
 			}
+
+			return index;
 		}
 
-		private int? Read(string key)
+		private bool TryRead(string key, out int value)
 		{
-			cacheLock.EnterReadLock();
+			_cacheLock.EnterReadLock();
 			try
 			{
-				int? value;
-				columnNameToIndexCache.TryGetValue(key, out value);
-				return value;
+				return _columnNameToIndexCache.TryGetValue(key, out value);
 			}
 			finally
 			{
-				cacheLock.ExitReadLock();
+				_cacheLock.ExitReadLock();
 			}
 		}
 
 		private void Insert(string key, int value)
 		{
-			cacheLock.EnterWriteLock();
+			_cacheLock.EnterWriteLock();
 			try
 			{
-				columnNameToIndexCache[key] = value;
+				_columnNameToIndexCache[key] = value;
 			}
 			finally
 			{
-				cacheLock.ExitWriteLock();
+				_cacheLock.ExitWriteLock();
 			}
 		}
 	}
