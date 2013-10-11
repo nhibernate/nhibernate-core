@@ -295,8 +295,8 @@ namespace NHibernate.Test.Criteria
 			rt = new DistinctEntitiesResultTransformer();
 			NHAssert.IsSerializable(rt);
 
-            rt = new DistinctRootEntityResultTransformer();
-            NHAssert.IsSerializable(rt);
+			rt = new DistinctRootEntityResultTransformer();
+			NHAssert.IsSerializable(rt);
 
 			rt = new PassThroughResultTransformer();
 			NHAssert.IsSerializable(rt);

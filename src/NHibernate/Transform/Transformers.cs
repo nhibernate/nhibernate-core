@@ -30,7 +30,7 @@ namespace NHibernate.Transform
 			return AliasToBean(typeof(T));
 		}
 
-        public static readonly IResultTransformer DistinctEntities = new DistinctEntitiesResultTransformer();
+		public static readonly IResultTransformer DistinctEntities = new DistinctEntitiesResultTransformer();
 
 		public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
 

@@ -221,7 +221,7 @@ namespace NHibernate
 		/// "shape" of the query result set.
 		/// <seealso cref="CriteriaSpecification.RootEntity"/>
 		/// <seealso cref="CriteriaSpecification.DistinctRootEntity"/>
-        /// <seealso cref="CriteriaSpecification.DistinctEntities"/>
+		/// <seealso cref="CriteriaSpecification.DistinctEntities"/>
 		/// <seealso cref="CriteriaSpecification.AliasToEntityMap"/>
 		/// </summary>
 		/// <param name="resultTransformer"></param>

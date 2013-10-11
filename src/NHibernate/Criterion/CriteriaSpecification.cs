@@ -17,8 +17,8 @@ namespace NHibernate.Criterion
 		/// <summary> The result is a list of list of dictinct entities within each leaf list</summary>
 		public readonly static IResultTransformer DistinctEntities;
 
-        /// <summary> Each row of results is a distinct instance of the root entity</summary>
-        public readonly static IResultTransformer DistinctRootEntity;
+		/// <summary> Each row of results is a distinct instance of the root entity</summary>
+		public readonly static IResultTransformer DistinctRootEntity;
 
 		/// <summary> This result transformer is selected implicitly by calling <see cref="ICriteria.SetProjection"/> </summary>
 		public readonly static IResultTransformer Projection;

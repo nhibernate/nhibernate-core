@@ -37,12 +37,12 @@ namespace NHibernate.Transform
 
 		public DistinctEntitiesResultTransformer()
 		{
-		    returns = null;
+			returns = null;
 		}
 	
 		public DistinctEntitiesResultTransformer(bool[] returns)
 		{
-		    this.returns = returns;
+			this.returns = returns;
 		}
 
 		public object TransformTuple(object[] tuple, string[] aliases)
@@ -54,35 +54,35 @@ namespace NHibernate.Transform
 		{
 			IList result = new List<object>();
 			if (list.Count <= 0) {
-			    return result;
+				return result;
 			}
 
 			object[] first = (object[])list[0];
 	    
 			if (returns != null && returns.Length != first.Length)
 			{
-			    throw new ArgumentException("Return indicators constructor parameter does not match tuple length");
+				throw new ArgumentException("Return indicators constructor parameter does not match tuple length");
 			}
 	    
 			List<object>[] lists = new List<object>[first.Length];
 			ISet<Identity>[] distincts = new ISet<Identity>[first.Length];
 			for (int j = 0; j < lists.Length; j++)
 			{
-			    System.Collections.Generic.List<object> l = null;
+				System.Collections.Generic.List<object> l = null;
 	    
-			    if (returns != null && returns[j])
-			    {
-				l = new List<Object>();
-				lists[j] = l;
-				distincts[j] = new HashedSet<Identity>();
-			    }
-			    else
-			    {
-				lists[j] = null;
-				distincts[j] = null;
-			    }
+				if (returns != null && returns[j])
+				{
+					l = new List<Object>();
+					lists[j] = l;
+					distincts[j] = new HashedSet<Identity>();
+				}
+				else
+				{
+					lists[j] = null;
+					distincts[j] = null;
+				}
 	    
-			    result.Add(l);
+				result.Add(l);
 			}
 
 			for (int i = 0; i < list.Count; i++)
@@ -90,21 +90,21 @@ namespace NHibernate.Transform
 				object[] entities = (object[])list[i];
 				for (int j = 0; j < entities.Length; j++)
 				{
-				    if (lists[j] != null)
-				    {
-					object entity = entities[j];
-					if (distincts[j].Add(new Identity(entity)))
+					if (lists[j] != null)
 					{
-					    lists[j].Add(entity);
+						object entity = entities[j];
+						if (distincts[j].Add(new Identity(entity)))
+						{
+							lists[j].Add(entity);
+						}
 					}
-				    }
 				}
 			}
 
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(string.Format("transformed: {0} rows to: {1} lists of distinct results",
-				                        list.Count, lists.Length));
+										list.Count, lists.Length));
 			}
 			
 			return result;
