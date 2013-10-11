@@ -639,6 +639,7 @@
     <Compile Include="Transaction\AdoTransaction.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
+    <Compile Include="Transform\DistinctEntitiesResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />

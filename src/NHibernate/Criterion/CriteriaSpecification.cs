@@ -14,8 +14,11 @@ namespace NHibernate.Criterion
 		/// <summary> Each row of results is an instance of the root entity</summary>
 		public readonly static IResultTransformer RootEntity;
 
-		/// <summary> Each row of results is a distinct instance of the root entity</summary>
-		public readonly static IResultTransformer DistinctRootEntity;
+		/// <summary> The result is a list of list of dictinct entities within each leaf list</summary>
+		public readonly static IResultTransformer DistinctEntities;
+
+        /// <summary> Each row of results is a distinct instance of the root entity</summary>
+        public readonly static IResultTransformer DistinctRootEntity;
 
 		/// <summary> This result transformer is selected implicitly by calling <see cref="ICriteria.SetProjection"/> </summary>
 		public readonly static IResultTransformer Projection;
@@ -33,6 +36,7 @@ namespace NHibernate.Criterion
 		{
 			AliasToEntityMap = new AliasToEntityMapResultTransformer();
 			RootEntity = new RootEntityResultTransformer();
+            DistinctEntities = new DistinctEntitiesResultTransformer();
 			DistinctRootEntity = new DistinctRootEntityResultTransformer();
 			Projection = new PassThroughResultTransformer();
 			InnerJoin = JoinType.InnerJoin;
