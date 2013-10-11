@@ -36,7 +36,7 @@ namespace NHibernate.Criterion
 		{
 			AliasToEntityMap = new AliasToEntityMapResultTransformer();
 			RootEntity = new RootEntityResultTransformer();
-            DistinctEntities = new DistinctEntitiesResultTransformer();
+			DistinctEntities = new DistinctEntitiesResultTransformer();
 			DistinctRootEntity = new DistinctRootEntityResultTransformer();
 			Projection = new PassThroughResultTransformer();
 			InnerJoin = JoinType.InnerJoin;
