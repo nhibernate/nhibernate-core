@@ -87,7 +87,12 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-		// NH-specific
+
+		/// <summary>
+		/// Append all elements in the 'from' list to the 'to' list.
+		/// </summary>
+		/// <param name="to"></param>
+		/// <param name="from"></param>
 		public static void AddAll(IList to, IList from)
 		{
 			System.Action addNull = null;
