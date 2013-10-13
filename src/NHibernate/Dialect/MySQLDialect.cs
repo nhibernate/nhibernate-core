@@ -140,7 +140,7 @@ namespace NHibernate.Dialect
 			
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			
-			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Single));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			
 			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
