@@ -1,5 +1,6 @@
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -366,6 +367,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithOuterWhereClause()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.OrderByDescending(x => x.ProductId)
@@ -385,6 +389,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithOuterWhereClauseResort()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.OrderByDescending(x => x.ProductId)
@@ -406,6 +413,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithInnerAndOuterWhereClauses()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.Where(x => x.UnitsInStock < 100)
@@ -429,6 +439,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithOuterWhereClauseEquivalent()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.OrderByDescending(x => x.ProductId)
@@ -452,6 +465,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithOuterWhereClauseAndProjection()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.OrderByDescending(x => x.ProductId)
@@ -473,6 +489,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PagedProductsWithOuterWhereClauseAndComplexProjection()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
 			//NH-2588
 			var inMemoryIds = db.Products.ToList()
 				.OrderByDescending(x => x.ProductId)
