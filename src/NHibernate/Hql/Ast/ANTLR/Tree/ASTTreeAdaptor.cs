@@ -56,10 +56,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			((ITree)t).ChildIndex = index;
 		}
 
-		public override int GetNodeType(object t)
-		{
-			return ((ITree) t).Type;
-		}
+        //public override int GetNodeType(object t)   // Should perhaps be GetType(object) instead?
+        //{
+        //    return ((ITree) t).Type;
+        //}
 
 		public override void ReplaceChildren(object parent, int startChildIndex, int stopChildIndex, object t)
 		{
