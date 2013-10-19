@@ -24,7 +24,7 @@ options
 using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
-statement
+public statement
 	: selectStatement
 	| updateStatement
 	| deleteStatement
@@ -77,7 +77,7 @@ setClause
 	: ^( SET { Out(" set "); } comparisonExpr[false] ( { Out(", "); } comparisonExpr[false] )* )
 	;
 
-whereClause
+public whereClause
 	: ^(WHERE { Out(" where "); } whereClauseExpr )
 	;
 
@@ -101,7 +101,7 @@ orderDirection
 	| DESCENDING
 	;
 
-whereExpr
+public whereExpr
 	// Expect the filter subtree, followed by the theta join subtree, followed by the HQL condition subtree.
 	// Might need parens around the HQL condition if there is more than one subtree.
 	// Put 'and' between each subtree.
@@ -206,7 +206,7 @@ booleanExpr[ bool parens ]
 	| st=SQL_TOKEN { Out(st); } // solely for the purpose of mapping-defined where-fragments
 	;
 	
-comparisonExpr[ bool parens ]
+public comparisonExpr[ bool parens ]
 	: binaryComparisonExpression
 	| { if (parens) Out("("); } exoticComparisonExpression { if (parens) Out(")"); }
 	;
@@ -264,7 +264,7 @@ parenSelect
 	;
 
 	
-simpleExpr
+public simpleExpr
 	: c=constant { Out($c.start); }
 	| NULL { Out("null"); }
 	| addrExpr

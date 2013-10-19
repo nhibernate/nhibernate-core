@@ -126,7 +126,7 @@ tokens
 using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
-statement
+public statement
 	: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF!
 	;
 
