@@ -169,9 +169,10 @@ echo.
 goto main-menu
 
 :build-release-package
-%NANT% -D:project.config=release clean package
+%NANT% -D:project.config=release clean package nugetpushbat
 echo.
-echo Assuming the build succeeded, your results will be in the build folder.
+echo Assuming the build succeeded, your results will be in the build folder,
+echo including NuGet packages and tools to push them.
 echo.
 goto main-menu
 

@@ -31,7 +31,9 @@ These are the tasks typically needed to create an official NHibernate release.
 
   * Update download link on NHForge.
   
-  * Push nuget packages including the symbol packages.
+  * Push nuget packages including the symbol packages. The nuget packages
+    should already be available in the build directory, together with a batch
+    file to push them.
   
   * In Jira, mark the version as released.
   
