@@ -1,7 +1,7 @@
-Build vNext
+Build 4.0.0.Alpha1
 =============================
 
-** Known BREAKING CHANGES from NH3.3.3.GA to vNext
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0
 
     NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
     now been changed to use corresponding types from the BCL. The API for these types
@@ -29,6 +29,88 @@ Build vNext
         * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
         * Removed bunch of unused methods on *Helper classes
         * Static fields on NHibernateUtil are declared as their exact class
+
+** Sub-task
+    * [NH-3038] - Add Support for SQL Server 2012 Query Paging
+    * [NH-3098] - Pull code/history from nhibernate-core repository to new iesi.collections repository
+    * [NH-3099] - Remove Iesi.Collection-related code from nhibernate-core repository
+    * [NH-3163] - Remove internal use of non-generic ISet
+    * [NH-3165] - Remove support for non-generic ISet in mapped classes
+
+
+** Bug
+    * [NH-2008] - Mapping <set> with HashSet<T> generates unecessary update on collection owner
+    * [NH-2033] - Composite-Id relationships (key-many-to-one) do not appear to be used in CreateCriteria
+    * [NH-2762] - Failed to use IGrouping<TKey, TElement>.Contains() from Lookup to make SQL IN statement
+    * [NH-2772] - Lazy-collection not loaded when a property is Lazy-loaded
+    * [NH-2819] - DefaultDynamicLazyFieldInterceptor does not handle generic methods correctly
+    * [NH-2852] - Linq ThenFetch fails on deep where clause.
+    * [NH-2897] - MultiQuery/ToFuture broken with Contains (in)
+    * [NH-2915] - In Linq, Where clause is ignored if followed by Fetch and then by OrderBy
+    * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
+    * [NH-2955] - AbstractQueryImpl accepts IEnumerables in SetParameterList but breaks if they're not ICollections
+    * [NH-2977] - MsSqlServer dialects reject custom SQL Server queries with limits 
+    * [NH-2985] - Wrong equals operator when you use <list> mapping when child has property with lazy="true"
+    * [NH-3056] - Fetch clause suppresses where clause if positioned before Select clause
+    * [NH-3058] - Methods on entities with lazy properties do not trigger load of lazy properties
+    * [NH-3070] - Proxy for an entity with a lazy property and a formula property is not .Equal to itself
+    * [NH-3132] - Property with access="field.camelcase" not working when another property is lazy
+    * [NH-3139] - Optional Entity association using lazy property returns proxy instead of null 
+    * [NH-3160] - Null reference Exception when creating schema for dialect that doesn't support unique
+    * [NH-3183] - Linq ToFuture/ToFutureValue does not fall-back if dialect does not support multi-queries
+    * [NH-3186] - Simple query with Fetch and SingleOrDefault throws exception (regression from 3.3.0)
+    * [NH-3202] - Offset parameter is off by one for dialects with OffsetStartsAtOne set (SybaseSQLAnywhere10+)
+    * [NH-3235] - Query plan cache cannot be set to size zero
+    * [NH-3236] - Build menu incorrectly launches NUnit
+    * [NH-3244] - Proxying fails for methods with generic class as generic parameter constraints or generic parameter attributes
+    * [NH-3256] - GroupBySelectClauseRewriter fails or is suboptimal on .Net 4.0
+    * [NH-3260] - Unable to proxy generic methods with constraints referencing type parameters from containing class
+    * [NH-3274] - Take() support broken with Informix
+    * [NH-3281] - Linq providers are not being passed Limit and/or Offset as value only as parameters
+    * [NH-3340] - NHibernate assembly loses the AllowPartiallyTrustedCallers attribute after ILMerge
+    * [NH-3381] - atan2 should be defined to return double on Oracle and MySql
+    * [NH-3420] - Race Condition in result set wrapper because of the ColumnNameCache
+
+** Improvement
+    * [NH-2005] - hql concat function not registered in MsSqlCeDialect
+    * [NH-2808] - Missing overloads for Session.Save/Update/SaveOrUpdate
+    * [NH-3037] - ActionQueue Insertion sort performance degrades exponentially (HHH-2957 Port)
+    * [NH-3054] - Mapping By-Code support for non-generic User Collection Types
+    * [NH-3133] - Support for importing classes in mapping.
+    * [NH-3175] - Joins should support additional restrictions (HQL-with)
+    * [NH-3238] - Add Sql2008ClientDriver support in DatabaseSetup for testing
+    * [NH-3272] - Move TypeHelperExtensionMethods to a more internal namespace
+    * [NH-3319] - Typo in a folder name in NHibernate.Test project
+    * [NH-3343] - Remove NHibernate custom Tuple classes
+    * [NH-3382] - Improve materialization performance (for simple Linq query, may reduce 50%+ time)
+    * [NH-3398] - Support PostgreSQL trigonometric functions
+    * [NH-3399] - Static fields on NHibernateUtil should be declared as their exact class
+    * [NH-3459] - DefaultIfEmpty not supported when used with a GroupBy
+    * [NH-3553] - Support the 'power' function on MS SQL Server
+
+** New Feature
+    * [NH-3164] - Support building NHibernate on .Net 4
+    * [NH-3166] - Support for Microsoft Sql Server 2012 
+    * [NH-3193] - MsSqlCeDialect should correct override string manipulation functions
+    * [NH-3195] - MsSqlCeDialect should support TOP limit
+    * [NH-3284] - New Ingres9+ Dialect
+    * [NH-3349] - Add support for managed ODP.NET
+
+** Patch
+    * [NH-2778] - Batcher for MySql
+    * [NH-3540] - Null pointer exception for empty BaseDirectory (Path.combine)
+
+** Task
+    * [NH-2997] - Where() clause with many-to-many relation is missing (solution in description)
+    * [NH-3097] - Move Iesi.Collections project to own repository
+    * [NH-3185] - Update included Iesi.Collections.dll and add its pdb file
+    * [NH-3314] - Remove ManagedWebSessionContext
+    * [NH-3322] - Remove one of the Firebird drivers
+    * [NH-3339] - Remove SecurityPermission attributes with LinkDemand for .NET 4.0 assemblies
+    * [NH-3344] - Remove the classical HQL parser
+    * [NH-3345] - Remove support for persistent non-generic collections
+    * [NH-3346] - Remove members obsolete in NH3 from NH4
+    * [NH-3347] - Remove obsolete dialects for NH4
 
 Build 3.3.3.SP1
 =============================
