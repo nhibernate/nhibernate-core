@@ -737,6 +737,8 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3555\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3555\Model.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
@@ -2969,6 +2971,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3555\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
