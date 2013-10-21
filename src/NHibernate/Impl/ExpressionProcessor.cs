@@ -165,6 +165,14 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), ProjectionsExtensions.ProcessHourPart);
 			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), ProjectionsExtensions.ProcessMinutePart);
 			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), ProjectionsExtensions.ProcessSecondPart);
+			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTime)), ProjectionsExtensions.ProcessDatePart);
+			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTimeOffset)), ProjectionsExtensions.ProcessDatePartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTimeOffset)), ProjectionsExtensions.ProcessYearPartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTimeOffset)), ProjectionsExtensions.ProcessDayPartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTimeOffset)), ProjectionsExtensions.ProcessMonthPartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTimeOffset)), ProjectionsExtensions.ProcessHourPartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTimeOffset)), ProjectionsExtensions.ProcessMinutePartOfDateTimeOffset);
+			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTimeOffset)), ProjectionsExtensions.ProcessSecondPartOfDateTimeOffset);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(decimal)), ProjectionsExtensions.ProcessSqrt);

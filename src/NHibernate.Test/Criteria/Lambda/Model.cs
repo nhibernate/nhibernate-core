@@ -19,21 +19,23 @@ namespace NHibernate.Test.Criteria.Lambda
 			Children = new List<Child>();
 			Blood = 'O';
 			BirthDate = new DateTime(1950, 01, 01);
+			BirthDateAsDateTimeOffset = new DateTimeOffset(BirthDate);
 		}
 
 		public static string StaticName;
 
-		public virtual int					Id			{ get; set; }
-		public virtual string				Name		{ get; set; }
-		public virtual int					Age			{ get; set; }
-		public virtual PersonGender			Gender		{ get; set; }
-		public virtual int					Height		{ get; set; }
-		public virtual bool					HasCar		{ get; set; }
-		public virtual Person				Father		{ get; set; }
-		public virtual bool					IsParent	{ get; set; }
-		public virtual char					Blood		{ get; set; }
-		public virtual DateTime				BirthDate	{ get; set; }
-		public virtual PersonDetail			Detail		{ get; set; }
+		public virtual int					Id							{ get; set; }
+		public virtual string				Name						{ get; set; }
+		public virtual int					Age							{ get; set; }
+		public virtual PersonGender			Gender						{ get; set; }
+		public virtual int					Height						{ get; set; }
+		public virtual bool					HasCar						{ get; set; }
+		public virtual Person				Father						{ get; set; }
+		public virtual bool					IsParent					{ get; set; }
+		public virtual char					Blood						{ get; set; }
+		public virtual DateTime				BirthDate					{ get; set; }
+		public virtual DateTimeOffset		BirthDateAsDateTimeOffset	{ get; set; }
+		public virtual PersonDetail			Detail						{ get; set; }
 
 		public virtual int?					NullableAge			{ get; set; }
 		public virtual PersonGender?		NullableGender		{ get; set; }

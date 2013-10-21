@@ -11,6 +11,7 @@
 		<property name="Name" />
 		<property name="Age" />
 		<property name="BirthDate" />
+		<property name="BirthDateAsDateTimeOffset" />
 		<property name="Blood" />
 		<component name="Detail" class="PersonDetail">
 			<property name="MaidenName" />

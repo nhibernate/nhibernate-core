@@ -258,6 +258,8 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void FunctionExtensions()
 		{
+			var date = new DateTime(1970, 1, 1);
+
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.Add(Restrictions.Eq(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1970))
@@ -266,6 +268,14 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Eq(Projections.SqlFunction("hour", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("minute", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("second", NHibernateUtil.Int32, Projections.Property("BirthDate")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("date", NHibernateUtil.Date, Projections.Property("BirthDate")), date))
+					.Add(Restrictions.Eq(Projections.SqlFunction("date", NHibernateUtil.Date, Projections.Property("BirthDateAsDateTimeOffset")), date))
+					.Add(Restrictions.Eq(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1970))
+					.Add(Restrictions.Eq(Projections.SqlFunction("day", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("hour", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("minute", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1))
+					.Add(Restrictions.Eq(Projections.SqlFunction("second", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")), 1))
 					.Add(Restrictions.Eq(Projections.SqlFunction("sqrt", NHibernateUtil.Double, Projections.Property("Height")), 10d))
 					.Add(Restrictions.Eq(Projections.SqlFunction("lower", NHibernateUtil.String, Projections.Property("Name")), "test"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("upper", NHibernateUtil.String, Projections.Property("Name")), "TEST"))
@@ -288,6 +298,14 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => p.BirthDate.HourPart() == 1)
 					.And(p => p.BirthDate.MinutePart() == 1)
 					.And(p => p.BirthDate.SecondPart() == 1)
+					.And(p => p.BirthDate.DatePart() == date)
+					.And(p => p.BirthDateAsDateTimeOffset.DatePart() == date)
+					.And(p => p.BirthDateAsDateTimeOffset.YearPart() == 1970)
+					.And(p => p.BirthDateAsDateTimeOffset.DayPart() == 1)
+					.And(p => p.BirthDateAsDateTimeOffset.MonthPart() == 1)
+					.And(p => p.BirthDateAsDateTimeOffset.HourPart() == 1)
+					.And(p => p.BirthDateAsDateTimeOffset.MinutePart() == 1)
+					.And(p => p.BirthDateAsDateTimeOffset.SecondPart() == 1)
 					.And(p => p.Height.Sqrt() == 10)
 					.And(p => p.Name.Lower() == "test")
 					.And(p => p.Name.Upper() == "TEST")
