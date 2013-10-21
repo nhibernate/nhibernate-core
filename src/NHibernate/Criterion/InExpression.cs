@@ -61,9 +61,7 @@ namespace NHibernate.Criterion
 				// "something in ()" is always false
 				return new SqlString("1=0");
 			}
-
-			//TODO: add default capacity
-			SqlStringBuilder result = new SqlStringBuilder();
+			
 			SqlString[] columnNames =
 				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria, enabledFilters);
 			
@@ -71,35 +69,42 @@ namespace NHibernate.Criterion
 			// columnName1 in (values) and columnName2 in (values) and ...
 			Parameter[] parameters = GetParameterTypedValues(criteria, criteriaQuery).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 
-			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
-			{
-				SqlString columnName = columnNames[columnIndex];
-
-				if (columnIndex > 0)
-				{
-					result.Add(" and ");
-				}
-
-				result
-					.Add(columnName)
-					.Add(" in (");
-
-				for (int i = 0; i < _values.Length; i++)
-				{
-					if (i > 0)
-					{
-						result.Add(StringHelper.CommaSpace);
-					}
-					result.Add(parameters[i]);
-				}
-
-				result.Add(")");
-			}
-
-			return result.ToSqlString();
+			return BuildSqlString(columnNames, parameters);
 		}
 
-		private void AssertPropertyIsNotCollection(ICriteriaQuery criteriaQuery, ICriteria criteria)
+	    private SqlString BuildSqlString(SqlString[] columnNames, Parameter[] parameters)
+	    {
+			//TODO: add default capacity
+            var result = new SqlStringBuilder();
+	        for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
+	        {
+	            SqlString columnName = columnNames[columnIndex];
+
+	            if (columnIndex > 0)
+	            {
+	                result.Add(" and ");
+	            }
+
+	            result
+	                .Add(columnName)
+	                .Add(" in (");
+
+	            for (int i = 0; i < _values.Length; i++)
+	            {
+	                if (i > 0)
+	                {
+	                    result.Add(StringHelper.CommaSpace);
+	                }
+	                result.Add(parameters[i]);
+	            }
+
+	            result.Add(")");
+	        }
+
+	        return result.ToSqlString();
+	    }
+
+	    private void AssertPropertyIsNotCollection(ICriteriaQuery criteriaQuery, ICriteria criteria)
 		{
 			IType type = criteriaQuery.GetTypeUsingProjection(criteria, _propertyName);
 			if (type.IsCollectionType)
