@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3141
 {
 	[TestFixture]
-	public class ProxyIdPerformanceTest : BugTestCase
+	public class ProxyIdFixture : BugTestCase
 	{
 		private int id;
 
@@ -47,6 +47,31 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			//before fix: 2.2s
 			//after fix: 0.8s
 			Console.WriteLine(watch.Elapsed);
+		}
+		
+		[Test]
+		public void ShouldThrowExceptionIfIdChangedOnUnloadEntity()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var entity = s.Load<Entity>(id);
+				entity.Id ++;
+				Assert.Throws<HibernateException>(tx.Commit);
+			}
+		}
+
+		[Test]
+		public void ShouldThrowExceptionIfIdChangedOnLoadEntity()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var entity = s.Load<Entity>(id);
+				NHibernateUtil.Initialize(entity);
+				entity.Id++;
+				Assert.Throws<HibernateException>(tx.Commit);
+			}
 		}
 
 		private Entity CreateInitializedProxy()

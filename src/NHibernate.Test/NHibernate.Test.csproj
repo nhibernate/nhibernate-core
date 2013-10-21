@@ -1098,7 +1098,7 @@
     <Compile Include="MappingByCode\IntegrationTests\NH3105\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3436\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3141\Entity.cs" />
-    <Compile Include="NHSpecificTest\NH3141\ProxyIdPerformanceTest.cs" />
+    <Compile Include="NHSpecificTest\NH3141\ProxyIdFixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
