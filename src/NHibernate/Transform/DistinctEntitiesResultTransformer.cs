@@ -70,7 +70,7 @@ namespace NHibernate.Transform
 			{
 				System.Collections.Generic.List<object> l = null;
 	    
-				if (returns != null && returns[j])
+				if (returns == null || returns[j])
 				{
 					l = new List<Object>();
 					lists[j] = l;

@@ -119,6 +119,56 @@ namespace NHibernate.Test.SqlTest.Query
 				.List();
 			Assert.AreEqual(l.Count, 2);
 
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+
+			s.Delete(emp);
+			s.Delete(gavin);
+			s.Delete(ifa);
+			s.Delete(jboss);
+
+			t.Commit();
+			s.Close();
+		}
+
+		[Test]
+		public void DistinctEntities()
+		{
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			Organization ifa = new Organization("IFA");
+			Organization jboss = new Organization("JBoss");
+			Person gavin = new Person("Gavin");
+			Employment emp = new Employment(gavin, jboss, "AU");
+
+			s.Save(ifa);
+			s.Save(jboss);
+			s.Save(gavin);
+			s.Save(emp);
+
+			IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments")
+				.AddScalar("regionCode", NHibernateUtil.String)
+				.List();
+			Assert.AreEqual(2, l.Count);
+
+			l = s.CreateSQLQuery(OrgEmpPersonSQL)
+				.AddEntity("org", typeof(Organization))
+				.AddJoin("emp", "org.employments")
+				.AddJoin("pers", "emp.employee")
+				.List();
+			Assert.AreEqual(l.Count, 1);
+
+			t.Commit();
+			s.Close();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+
 			l = s.CreateSQLQuery("select {org.*}, {emp.*} " +
 									"from ORGANIZATION org " +
 									"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
@@ -126,7 +176,10 @@ namespace NHibernate.Test.SqlTest.Query
 				.AddJoin("emp", "org.employments")
 				.SetResultTransformer(new DistinctEntitiesResultTransformer())
 				.List();
+			Assert.AreNotEqual(l, null);
 			Assert.AreEqual(l.Count, 2);
+			Assert.AreNotEqual(l[0], null);
+			Assert.AreNotEqual(l[1], null);
 			Assert.AreEqual(((IList)l[0]).Count, 2);
 			Assert.AreEqual(((IList)l[1]).Count, 2);
 
@@ -135,8 +188,9 @@ namespace NHibernate.Test.SqlTest.Query
 									"     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2")
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
-				.SetResultTransformer(new DistinctEntitiesResultTransformer(new bool[2]{true, false}))
+				.SetResultTransformer(new DistinctEntitiesResultTransformer(new bool[2] { true, false }))
 				.List();
+			Assert.AreNotEqual(l, null);
 			Assert.AreEqual(l.Count, 2);
 			Assert.AreEqual(((IList)l[0]).Count, 2);
 			Assert.AreEqual(l[1], null);
