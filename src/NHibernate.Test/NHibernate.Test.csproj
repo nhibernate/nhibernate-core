@@ -1181,6 +1181,9 @@
     <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeyword.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeywordBase.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeywordsFixture.cs" />
     <Compile Include="UtilityTest\ArrayHelperTests.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
@@ -2971,6 +2974,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>

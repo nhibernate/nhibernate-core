@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.Unionsubclass" default-access="field">
+	<class name="DatabaseKeywordBase" abstract="true">
+
+		<id name="id" unsaved-value="0" column="id">
+			<generator class="hilo">
+				<param name="table">being_id</param>
+				<param name="column">next_id</param>
+			</generator>
+		</id>
+
+		<union-subclass name="DatabaseKeyword" table="databaseKeywords">
+			<property name="table" />
+			<property name="create" />
+			<property name="view" />
+			<property name="user" />
+		</union-subclass>
+	</class>
+
+</hibernate-mapping>
