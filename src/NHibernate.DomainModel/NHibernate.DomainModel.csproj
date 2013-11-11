@@ -71,7 +71,6 @@
     <Compile Include="A.cs" />
     <Compile Include="Abstract.cs" />
     <Compile Include="AbstractProxy.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assignable.cs" />
     <Compile Include="B.cs" />
     <Compile Include="Bar.cs" />
