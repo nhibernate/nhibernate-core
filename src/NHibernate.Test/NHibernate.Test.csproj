@@ -114,7 +114,6 @@
     <Compile Include="Any\PropertySet.cs" />
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
