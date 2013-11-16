@@ -153,31 +153,20 @@ namespace NHibernate.AdoNet
 			CloseConnection();
 		}
 
-		public IDbConnection Disconnect() {
-            if (IsInActiveTransaction)
-                throw  new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
-			try
+		public IDbConnection Disconnect()
+		{
+			if (IsInActiveTransaction)
+				throw new InvalidOperationException("Disconnect cannot be called while a transaction is in progress.");
+
+			if (!ownConnection)
 			{
-				if (!ownConnection)
-				{
-					return DisconnectSuppliedConnection();
-				}
-				else
-				{
-					DisconnectOwnConnection();
-					ownConnection = false;
-					return null;
-				}
+				return DisconnectSuppliedConnection();
 			}
-			finally
+			else
 			{
-				// Ensure that AfterTransactionCompletion gets called since
-				// it takes care of the locks and cache.
-				if (!IsInActiveTransaction)
-				{
-					// We don't know the state of the transaction
-					session.AfterTransactionCompletion(false, null);
-				}
+				DisconnectOwnConnection();
+				ownConnection = false;
+				return null;
 			}
 		}
 
@@ -340,7 +329,6 @@ namespace NHibernate.AdoNet
 		public void AfterNonTransactionalQuery(bool success)
 		{
 			log.Debug("after autocommit");
-			session.AfterTransactionCompletion(success, null);
 		}
 
 		private bool IsAfterTransactionRelease
