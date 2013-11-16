@@ -65,7 +65,7 @@ namespace NHibernate.Test.SystemTransactions
 			{
 			}
 			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-			Assert.AreEqual(2, interceptor.afterTransactionCompletionCalled);
+			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
 
 		[Test]
@@ -109,15 +109,12 @@ namespace NHibernate.Test.SystemTransactions
 		}
 
 
-		[Description("NH2128")]
+		[Description("NH2128, NH3572")]
 		[Theory]
 		public void ShouldNotifyAfterDistributedTransaction(bool doCommit)
 		{
 			// Note: For distributed transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
-
-			if (!doCommit)
-				Assert.Ignore("Rollback on distributed transaction doubles the number of calls to AfterTransactionCompletion - see NH-3572.");
 
 			var interceptor = new RecordingInterceptor();
 			ISession s1 = null;
