@@ -68,7 +68,7 @@ namespace NHibernate.AdoNet
 			{
 				if (transaction != null && transaction.IsActive)
 					return true;
-				return session.Factory.TransactionFactory.IsInDistributedActiveTransaction(session);
+				return Factory.TransactionFactory.IsInDistributedActiveTransaction(session);
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace NHibernate.AdoNet
 
 		private void CloseConnection()
 		{
-			session.Factory.ConnectionProvider.CloseConnection(connection);
+			Factory.ConnectionProvider.CloseConnection(connection);
 			connection = null;
 		}
 
@@ -193,10 +193,10 @@ namespace NHibernate.AdoNet
 			{
 				if (ownConnection)
 				{
-					connection = session.Factory.ConnectionProvider.GetConnection();
-					if (session.Factory.Statistics.IsStatisticsEnabled)
+					connection = Factory.ConnectionProvider.GetConnection();
+					if (Factory.Statistics.IsStatisticsEnabled)
 					{
-						session.Factory.StatisticsImplementor.Connect();
+						Factory.StatisticsImplementor.Connect();
 					}
 				}
 				else if (session.IsOpen)
@@ -308,7 +308,7 @@ namespace NHibernate.AdoNet
 
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
-			batcher = session.Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
+			batcher = Factory.Settings.BatcherFactory.CreateBatcher(this, interceptor);
 		}
 
 		#endregion
@@ -331,7 +331,7 @@ namespace NHibernate.AdoNet
 			{
 				if (transaction == null)
 				{
-					transaction = session.Factory.TransactionFactory.CreateTransaction(session);
+					transaction = Factory.TransactionFactory.CreateTransaction(session);
 				}
 				return transaction;
 			}
