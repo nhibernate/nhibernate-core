@@ -66,11 +66,11 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="3.3.4.CR1" overwrite="false" />
+	<property name="project.version" value="3.4.0.CR1" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
-	<property name="project.default-assembly-version" value="3.3.1.4000" overwrite="false" />
+	<property name="project.default-assembly-version" value="3.4.0.0000" overwrite="false" />
 
 	<!-- Compute short project version (major.minor) using a regex -->
 	<regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
