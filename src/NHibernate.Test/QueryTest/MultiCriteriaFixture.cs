@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -23,6 +25,20 @@ namespace NHibernate.Test.QueryTest
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
+		}
+
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
+
+			this.sessions.Statistics.Clear();
 		}
 
 		protected override void OnTearDown()
@@ -152,6 +168,22 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[Test]
+		public void CanUpdateStatisticsWhenGetMultiQueryFromSecondLevelCache()
+		{
+			CreateItems();
+
+			DoMutiQueryAndAssert();
+			Assert.AreEqual(0, sessions.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+
+			DoMutiQueryAndAssert();
+			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+		}
+
+		[Test]
 		public void TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries()
 		{
 			CreateItems();
@@ -248,7 +280,7 @@ namespace NHibernate.Test.QueryTest
 			using (var session = OpenSession())
 			{
 				var multiCriteria = session.CreateMultiCriteria();
-				
+
 				var firstCriteria = session.CreateCriteria(typeof(Item))
 					.Add(Restrictions.Lt("id", 50));
 
@@ -275,7 +307,7 @@ namespace NHibernate.Test.QueryTest
 
 				var firstCriteria = DetachedCriteria.For(typeof(Item))
 					.Add(Restrictions.Lt("id", 50));
-					
+
 				var secondCriteria = DetachedCriteria.For(typeof(Item));
 
 				multiCriteria.Add("firstCriteria", firstCriteria);
