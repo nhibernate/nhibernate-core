@@ -29,7 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3555
 				}
 			}
 
-			entity.Dic.Count.Should().Be.EqualTo(2);
+			using (var s = OpenSession())
+			{
+				using (s.BeginTransaction())
+				{
+					s.Get<MapEntity>(entity.Id)
+						.Dic.Count.Should().Be.EqualTo(1);					
+				}
+			}
 		}
 
 		protected override void OnTearDown()
