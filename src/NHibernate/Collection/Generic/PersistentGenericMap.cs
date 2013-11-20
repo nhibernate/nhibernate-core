@@ -74,7 +74,15 @@ namespace NHibernate.Collection.Generic
 			}
 			foreach (KeyValuePair<TKey, TValue> entry in gmap)
 			{
-				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+				TValue xmapValue;
+				if (xmap.TryGetValue(entry.Key, out xmapValue))
+				{
+					if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+					{
+						return false;
+					}
+				}
+				else
 				{
 					return false;
 				}

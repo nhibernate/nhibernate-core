@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test" 
+	namespace="NHibernate.Test.NHSpecificTest.NH3555">
+
+	<class name="MapEntity">
+		<id name="Id">
+			<generator class="identity"/>
+		</id>
+		<map name="Dic">
+			<key column ="entId"/>
+			<index-many-to-many class="KeyEntity"/>
+			<many-to-many class ="ValueEntity" />
+		</map>
+	</class>
+
+	<class name="KeyEntity">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<property name="Number" column="thenumber"/>
+	</class>
+
+	<class name="ValueEntity">
+		<id name="Id">
+			<generator class="identity" />
+		</id>
+		<property name="Number" column="thenumber"/>
+	</class>
+</hibernate-mapping>
