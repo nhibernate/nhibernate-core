@@ -223,8 +223,16 @@ namespace NHibernate.Linq.NestedSelects
 			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
 			if (classMetadata == null)
 				return Expression.Constant(null);
-			
-			return ConvertToObject(Expression.PropertyOrField(expression, classMetadata.IdentifierPropertyName));
+
+            var propertyName=classMetadata.IdentifierPropertyName;
+            NHibernate.Type.EmbeddedComponentType componentType;
+            if (propertyName == null && (componentType=classMetadata.IdentifierType as NHibernate.Type.EmbeddedComponentType)!=null)
+            {
+                //The identifier is an embedded composite key. We only need one property from it for a null check
+                propertyName = componentType.PropertyNames.First();
+            }
+
+            return ConvertToObject(Expression.PropertyOrField(expression, propertyName));
 		}
 
 		private static LambdaExpression CreateSelector(IEnumerable<ExpressionHolder> expressions, int tuple)
