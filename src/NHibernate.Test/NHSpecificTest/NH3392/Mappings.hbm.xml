@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.NH3392"
+           assembly="NHibernate.Test">
+  <class name="Dad" >
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <set cascade="save-update" name="Kids" inverse="true">
+      <key>
+        <column name="DadId" />
+      </key>
+      <one-to-many class="Kid" />
+    </set>
+    <set cascade="save-update" name="Friends" inverse="true">
+      <key>
+        <column name="DadId" />
+      </key>
+      <one-to-many class="FriendOfTheFamily" />
+    </set>
+  </class>
+
+  <class name="Mum" >
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <set cascade="save-update" name="Kids" inverse="true">
+      <key>
+        <column name="MumId" />
+      </key>
+      <one-to-many class="Kid" />
+    </set>
+    <set cascade="save-update" name="Friends" inverse="true">
+      <key>
+        <column name="MumId" />
+      </key>
+      <one-to-many class="FriendOfTheFamily" />
+    </set>
+  </class>
+
+  <class name="Kid" >
+    <composite-id>
+      <key-property name="MumId"  />
+      <key-property name="DadId" />
+    </composite-id>
+    <property name="Name" />
+  </class>
+
+  <class name="FriendOfTheFamily" >
+    <composite-id name="Id" class="MumAndDadId">
+      <key-property name="MumId"  />
+      <key-property name="DadId" />
+    </composite-id>
+    <property name="Name" />
+  </class>
+
+</hibernate-mapping>

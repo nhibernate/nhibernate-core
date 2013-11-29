@@ -676,6 +676,8 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3392\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3392\Model.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
@@ -2861,6 +2863,7 @@
     <EmbeddedResource Include="NHSpecificTest\LoadingNullEntityInSet\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
@@ -2971,6 +2974,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3392\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
