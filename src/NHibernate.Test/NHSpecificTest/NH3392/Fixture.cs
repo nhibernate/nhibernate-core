@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -37,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
                 var jimmy = new Kid { Name = "Jimmy", MumId = jenny.Id, DadId = benny.Id };
                 s.Save(jimmy);
                 var timmy = new Kid { Name = "Timmy", MumId = jenny.Id, DadId = lenny.Id };
-                s.Save(jimmy);
+                s.Save(timmy);
                 s.Flush();
             }
 
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
                 var jimmy = new FriendOfTheFamily { Name = "Jimmy", Id = new MumAndDadId { MumId = jenny.Id, DadId = benny.Id } };
                 s.Save(jimmy);
                 var timmy = new FriendOfTheFamily { Name = "Timmy", Id = new MumAndDadId { MumId = jenny.Id, DadId = lenny.Id } };
-                s.Save(jimmy);
+                s.Save(timmy);
                 s.Flush();
             }
 
