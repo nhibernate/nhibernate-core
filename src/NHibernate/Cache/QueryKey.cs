@@ -4,6 +4,8 @@ using System.Text;
 using Iesi.Collections;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -132,20 +134,46 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			EnsureSessionInInterceptor(namedParameters, that.namedParameters);
+
 			if (!CollectionHelper.DictionaryEquals(namedParameters, that.namedParameters))
 			{
 				return false;
 			}
 
-			if(!CollectionHelper.CollectionEquals<int>(multiQueriesFirstRows, that.multiQueriesFirstRows))
+			if (!CollectionHelper.CollectionEquals<int>(multiQueriesFirstRows, that.multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if(!CollectionHelper.CollectionEquals<int>(multiQueriesMaxRows, that.multiQueriesMaxRows))
+			if (!CollectionHelper.CollectionEquals<int>(multiQueriesMaxRows, that.multiQueriesMaxRows))
 			{
 				return false;
 			}
 			return true;
+		}
+
+		private void EnsureSessionInInterceptor(IDictionary<string, TypedValue> thes, IDictionary<string, TypedValue> that)
+		{
+			foreach (var item in that)
+			{
+				var proxy = item.Value.Value as IProxy;
+				if (proxy == null || proxy.Interceptor == null)
+					continue;
+
+				var thatAbstractLazyInitializer = proxy.Interceptor as AbstractLazyInitializer;
+				if (thatAbstractLazyInitializer == null || thatAbstractLazyInitializer.Session != null)
+					continue;
+
+				var thesProxy = thes[item.Key].Value as IProxy;
+				if (thesProxy == null || thesProxy.Interceptor == null)
+					continue;
+
+				var thesAbstractLazyInitializer = thesProxy.Interceptor as AbstractLazyInitializer;
+				if (thesAbstractLazyInitializer == null || thatAbstractLazyInitializer.Session != null)
+					continue;
+
+				thatAbstractLazyInitializer.Session = thesAbstractLazyInitializer.Session;
+			}
 		}
 
 		public override int GetHashCode()
