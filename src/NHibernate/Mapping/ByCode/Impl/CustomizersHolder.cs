@@ -364,6 +364,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			MergeDictionary(collectionRelationManyToManyCustomizers, source.collectionRelationManyToManyCustomizers);
 			MergeDictionary(collectionRelationElementCustomizers, source.collectionRelationElementCustomizers);
 			MergeDictionary(collectionRelationOneToManyCustomizers, source.collectionRelationOneToManyCustomizers);
+			MergeDictionary(collectionRelationManyToAnyCustomizers, source.collectionRelationManyToAnyCustomizers);
 			MergeDictionary(mapKeyManyToManyCustomizers, source.mapKeyManyToManyCustomizers);
 			MergeDictionary(mapKeyElementCustomizers, source.mapKeyElementCustomizers);
 			MergeDictionary(dynamicComponentCustomizers, source.dynamicComponentCustomizers);
@@ -387,7 +388,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		private void AddCustomizer<TSubject, TCustomizable>(IDictionary<TSubject, List<Action<TCustomizable>>> customizers,
-		                                                    TSubject member, Action<TCustomizable> customizer)
+															TSubject member, Action<TCustomizable> customizer)
 		{
 			List<Action<TCustomizable>> actions;
 			if (!customizers.TryGetValue(member, out actions))

@@ -589,6 +589,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Fixture.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\FixtureByCode.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Parent.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3280\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3280\OneToOneToInheritedProperty.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\IdMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\ManyToOneMapperTest.cs" />
@@ -668,6 +670,16 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Student.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Teacher.cs" />
+    <Compile Include="NHSpecificTest\NH3505\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2923\Models.cs" />
+    <Compile Include="NHSpecificTest\NH2923\ExtraLazyFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3405\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3140\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3428\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Model.cs" />
     <Compile Include="NHSpecificTest\NH2297\CustomCompositeUserType.cs" />
@@ -698,6 +710,10 @@
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="NHSpecificTest\NH2651\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2651\Model.cs" />
     <Compile Include="NHSpecificTest\NH2789\Entities.cs" />
@@ -736,8 +752,7 @@
     <Compile Include="NHSpecificTest\NH0000\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2856\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2856\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH2858\DomainClass.cs" />
-    <Compile Include="NHSpecificTest\NH2858\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH2858\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2846\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2846\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2875\Fixture.cs" />
@@ -1023,6 +1038,7 @@
     <Compile Include="NHSpecificTest\NH3153\Fixture.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3105\Model.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3105\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3436\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\Domain.cs" />
     <Compile Include="NHSpecificTest\NH941\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH941\FixtureUsingList.cs" />
@@ -2882,6 +2898,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsNames.hbm.xml" />
