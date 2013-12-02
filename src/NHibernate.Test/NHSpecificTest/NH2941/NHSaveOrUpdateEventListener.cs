@@ -30,19 +30,38 @@ namespace NHibernate.Test.NHSpecificTest.NH2941
         /// <param name="event">Information about the save or update pertaining to the entity being saved or updated.</param>
         internal static void ProcessEntitySaveOrUpdate(SaveOrUpdateEvent @event)
         {
-            if (@event.Entity != null)
+            string entityName = @event.EntityName;
+            if (string.IsNullOrEmpty(entityName))
             {
-                if (@event.Entity is Parent)
+                entityName = @event.Entity.GetType().Name;
+            }
+            if (!string.IsNullOrEmpty(entityName))
+            {
+                if (entityName.Contains("Parent"))
                 {
                     ParentSaveEventCount++;
                     Parent entity = (Parent) @event.Entity;
-                    @event.Session.Query<Parent>().Where(item => item.Name == entity.Name).ToList();
+                    using (ISession childSession = @event.Session.GetSession(EntityMode.Poco))
+                    {
+                        //Commenting out the original code and using child session instead, as suggested in the JIRA item comments.
+                        //@event.Session.Query<Parent>().Where(item => item.Name == entity.Name).ToList();
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+                        childSession.Query<Parent>().Where(item => item.Name == entity.Name).ToList();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+                    }
                 }
-                if (@event.Entity is Child)
+                if (entityName.Contains("Child"))
                 {
                     ChildSaveEventCount++;
                     Child entity = (Child) @event.Entity;
-                    @event.Session.Query<Child>().Where(item => item.Parent.Name == entity.Parent.Name).ToList();
+                    using (ISession childSession = @event.Session.GetSession(EntityMode.Poco))
+                    {
+                        //Commenting out the original code and using child session instead, as suggested in the JIRA item comments.
+                        //@event.Session.Query<Child>().Where(item => item.Parent.Name == entity.Parent.Name).ToList();
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+                        childSession.Query<Child>().Where(item => item.Parent.Name == entity.Parent.Name).ToList();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+                    }
                 }
             }
         }

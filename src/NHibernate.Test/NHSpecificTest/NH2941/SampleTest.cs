@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
+using NHibernate.Linq;
+using NHibernate.Test.Interceptor;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Event;
@@ -34,8 +37,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2941
         [Test]
         public void SaveNewParentWithChildren()
         {
+            bool parentQueryWithinTransaction;
             ((SessionFactoryImpl)sessions).EventListeners.SaveOrUpdateEventListeners =
                 new ISaveOrUpdateEventListener[] { new NHSaveOrUpdateEventListener() };
+
+            const int parentId = 101;
+            const string parentName = "Parent Name";
 
             using (TransactionScope transactionScope = new TransactionScope(TransactionScopeOption.Required,
                                                                          new TimeSpan(0, 0, 30)))
@@ -50,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2941
 
                     Parent parent;
                     parent = new Parent();
-                    parent.Id = 101;
-                    parent.Name = "Mom";
+                    parent.Id = parentId;
+                    parent.Name = parentName;
                     parent.Children = new List<Child>();
 
                     Child child1 = new Child();
@@ -71,16 +78,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2941
                     #endregion setup data
 
                     session.SaveOrUpdate(parent);
+                    //Query on the parent just saved.
+                    parentQueryWithinTransaction = session.Query<Parent>().Where(item => item.Name == parentName).Count() != 0;
+
                     txn.Commit();
                 }
                 transactionScope.Complete();
             }
             Assert.IsTrue(NHSaveOrUpdateEventListener.ParentSaveEventCount > 0, "Parent save event should be fired on save");
             Assert.IsTrue(NHSaveOrUpdateEventListener.ChildSaveEventCount > 0, "Child save event should be fired on save");
+            Assert.IsTrue(parentQueryWithinTransaction, "Parent changes were visible in a linq query within the transaction itself.");
 
             ((SessionFactoryImpl)sessions).EventListeners.SaveOrUpdateEventListeners =
                 new ISaveOrUpdateEventListener[0];
         }
-
     }
 }
+
+
