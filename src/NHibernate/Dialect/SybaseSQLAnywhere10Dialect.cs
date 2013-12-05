@@ -792,7 +792,7 @@ namespace NHibernate.Dialect
 
 		public override DbDataReader GetResultSet(DbCommand statement)
 		{
-			DbDataReader rdr = statement.ExecuteReader();
+			var rdr = statement.ExecuteReader();
 			return rdr;
 		}
 

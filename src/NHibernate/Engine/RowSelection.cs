@@ -3,8 +3,8 @@ using System;
 namespace NHibernate.Engine
 {
 	/// <summary>
-	/// Information to determine how to run an IDbCommand and what
-	/// records to return from the IDataReader.
+	/// Information to determine how to run an DbCommand and what
+	/// records to return from the DbDataReader.
 	/// </summary>
 	[Serializable]
 	public sealed class RowSelection

@@ -35,9 +35,9 @@ namespace NHibernate.Driver
 		{
 		}
 
-        public override IDbConnection CreateConnection()
+        public override DbConnection CreateConnection()
         {
-            DbConnection connection = (DbConnection)base.CreateConnection();
+            var connection = base.CreateConnection();
             connection.StateChange += Connection_StateChange;
             return connection;
         }
@@ -47,8 +47,8 @@ namespace NHibernate.Driver
             if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
                 e.CurrentState == ConnectionState.Open)
             {
-                DbConnection connection = (DbConnection)sender;
-                using (DbCommand command = connection.CreateCommand())
+                var connection = (DbConnection)sender;
+                using (var command = connection.CreateCommand())
                 {
                     // Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
                     command.CommandText = "PRAGMA foreign_keys = ON";

@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
@@ -25,14 +25,14 @@ namespace NHibernate.Driver
 
 		#region IDriveConnectionCommandProvider Members
 
-		public IDbConnection CreateConnection()
+		public DbConnection CreateConnection()
 		{
-			return (IDbConnection) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
+			return (DbConnection) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
 		}
 
-		public IDbCommand CreateCommand()
+		public DbCommand CreateCommand()
 		{
-			return (IDbCommand) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(commandType);
+			return (DbCommand) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(commandType);
 		}
 
 		#endregion

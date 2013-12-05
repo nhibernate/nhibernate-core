@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Data.Common;
 
 namespace NHibernate.Driver
@@ -17,12 +16,12 @@ namespace NHibernate.Driver
 			this.dbProviderFactory = dbProviderFactory;
 		}
 
-		public IDbConnection CreateConnection()
+		public DbConnection CreateConnection()
 		{
 			return dbProviderFactory.CreateConnection();
 		}
 
-		public IDbCommand CreateCommand()
+		public DbCommand CreateCommand()
 		{
 			return dbProviderFactory.CreateCommand();
 		}

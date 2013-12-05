@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
@@ -334,12 +334,12 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public object NullSafeGet(DbDataReader rs, string[] names, object owner)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public void NullSafeSet(DbCommand cmd, object value, int index)
 		{
 			throw new NotImplementedException();
 		}
@@ -404,12 +404,12 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
+		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
+		public void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			throw new NotImplementedException();
 		}

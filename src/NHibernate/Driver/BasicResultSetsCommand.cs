@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -39,7 +40,7 @@ namespace NHibernate.Driver
 			get { return sqlString; }
 		}
 
-		public virtual IDataReader GetReader(int? commandTimeout)
+		public virtual DbDataReader GetReader(int? commandTimeout)
 		{
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
@@ -54,7 +55,7 @@ namespace NHibernate.Driver
 			return new BatcherDataReaderWrapper(batcher, command);
 		}
 
-		protected virtual void BindParameters(IDbCommand command)
+		protected virtual void BindParameters(DbCommand command)
 		{
 			var wholeQueryParametersList = Sql.GetParameters().ToList();
 			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.Bind(command, wholeQueryParametersList, offset, Session));
@@ -78,13 +79,13 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public class BatcherDataReaderWrapper: IDataReader
+	public class BatcherDataReaderWrapper: DbDataReader
 	{
 		private readonly IBatcher batcher;
-		private readonly IDbCommand command;
-		private readonly IDataReader reader;
+		private readonly DbCommand command;
+		private readonly DbDataReader reader;
 
-		public BatcherDataReaderWrapper(IBatcher batcher, IDbCommand command)
+		public BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
 		{
 			if (batcher == null)
 			{
@@ -206,7 +207,7 @@ namespace NHibernate.Driver
 			return reader.GetDateTime(i);
 		}
 
-		public IDataReader GetData(int i)
+		public DbDataReader GetData(int i)
 		{
 			return reader.GetData(i);
 		}

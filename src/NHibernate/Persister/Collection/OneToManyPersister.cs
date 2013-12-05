@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet;
@@ -186,7 +185,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -247,7 +246,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							if (useBatch)
 							{
 								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data;using System.Data.Common;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -12,10 +12,10 @@ namespace NHibernate.Driver
 	/// of Collections.
 	/// </summary>
 	/// <remarks>
-	/// This is a completely off-line DataReader - the underlying IDataReader that was used to create
+	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : IDataReader
+	public class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 
@@ -32,17 +32,17 @@ namespace NHibernate.Driver
 		private int cachedColIndex = -1;
 
 		/// <summary>
-		/// Creates a NDataReader from a <see cref="IDataReader" />
+		/// Creates a NDataReader from a <see cref="DbDataReader" />
 		/// </summary>
-		/// <param name="reader">The <see cref="IDataReader" /> to get the records from the Database.</param>
-		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="IDataReader" /> in the middle of reading it.</param>
+		/// <param name="reader">The <see cref="DbDataReader" /> to get the records from the Database.</param>
+		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="DbDataReader" /> in the middle of reading it.</param>
 		/// <remarks>
-		/// NHibernate attempts to not have to read the contents of an <see cref="IDataReader"/> into memory until it absolutely
-		/// has to.  What that means is that it might have processed some records from the <see cref="IDataReader"/> and will
-		/// pick up the <see cref="IDataReader"/> midstream so that the underlying <see cref="IDataReader"/> can be closed 
+		/// NHibernate attempts to not have to read the contents of an <see cref="DbDataReader"/> into memory until it absolutely
+		/// has to.  What that means is that it might have processed some records from the <see cref="DbDataReader"/> and will
+		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader(IDataReader reader, bool isMidstream)
+		public NDataReader(DbDataReader reader, bool isMidstream)
 		{
 			var resultList = new List<NResult>(2);
 
@@ -68,7 +68,7 @@ namespace NHibernate.Driver
 			}
 			catch (Exception e)
 			{
-				throw new ADOException("There was a problem converting an IDataReader to NDataReader", e);
+				throw new ADOException("There was a problem converting an DbDataReader to NDataReader", e);
 			}
 			finally
 			{
@@ -99,7 +99,7 @@ namespace NHibernate.Driver
 			return GetCurrentResult().GetValue(currentRowIndex, name);
 		}
 
-		#region IDataReader Members
+		#region DbDataReader Members
 
 		/// <summary></summary>
 		public int RecordsAffected
@@ -176,7 +176,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// There are not any unmanaged resources or any disposable managed 
 		/// resources that this class is holding onto.  It is in here
-		/// to comply with the <see cref="IDataReader"/> interface.
+		/// to comply with the <see cref="DbDataReader"/> interface.
 		/// </remarks>
 		public void Dispose()
 		{
@@ -406,7 +406,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public IDataReader GetData(int i)
+		public DbDataReader GetData(int i)
 		{
 			throw new NotImplementedException("GetData(int) has not been implemented.");
 		}
@@ -493,12 +493,12 @@ namespace NHibernate.Driver
 			/// <summary>
 			/// Initializes a new instance of the NResult class.
 			/// </summary>
-			/// <param name="reader">The IDataReader to populate the Result with.</param>
+			/// <param name="reader">The DbDataReader to populate the Result with.</param>
 			/// <param name="isMidstream">
-			/// <see langword="true" /> if the <see cref="IDataReader"/> is already positioned on the record
+			/// <see langword="true" /> if the <see cref="DbDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult(IDataReader reader, bool isMidstream)
+			internal NResult(DbDataReader reader, bool isMidstream)
 			{
 				schemaTable = reader.GetSchemaTable();
 

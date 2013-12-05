@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -111,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 		public int? OffsetParameterValueFromCommand { get; private set; }
 
-		protected override void OnBeforePrepare(IDbCommand command)
+		protected override void OnBeforePrepare(DbCommand command)
 		{
 			base.OnBeforePrepare(command);
 			OffsetParameterValueFromCommand = null;
@@ -120,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!hasLimit)
 				return;
 
-			OffsetParameterValueFromCommand = (int)((IDataParameter)command.Parameters[_offsetParameterIndex]).Value;
+			OffsetParameterValueFromCommand = (int)command.Parameters[_offsetParameterIndex].Value;
 		}
 	}
 }

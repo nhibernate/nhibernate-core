@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.AdoNet
 {
@@ -9,23 +10,23 @@ namespace NHibernate.AdoNet
 	/// and Postgres). 
 	/// </summary>
 	/// <seealso cref="IDataRecord.GetOrdinal"/>
-	public class ResultSetWrapper : IDataReader
+	public class ResultSetWrapper : DbDataReader
 	{
-		private readonly IDataReader rs;
+		private readonly DbDataReader rs;
 		private readonly ColumnNameCache columnNameCache;
 
-		public ResultSetWrapper(IDataReader resultSet, ColumnNameCache columnNameCache)
+		public ResultSetWrapper(DbDataReader resultSet, ColumnNameCache columnNameCache)
 		{
 			rs = resultSet;
 			this.columnNameCache = columnNameCache;
 		}
 
-		internal IDataReader Target
+		internal DbDataReader Target
 		{
 			get { return rs; }
 		}
 
-		#region IDataReader Members
+		#region DbDataReader Members
 
 		public void Close()
 		{
@@ -198,7 +199,7 @@ namespace NHibernate.AdoNet
 			return rs.GetDateTime(i);
 		}
 
-		public IDataReader GetData(int i)
+		public DbDataReader GetData(int i)
 		{
 			return rs.GetData(i);
 		}

@@ -1,48 +1,48 @@
 using System;
-using System.Data;
+using System.Data;using System.Data.Common;
 
 
 namespace NHibernate.Driver
 {
 	/// <summary>
-	/// An implementation of <see cref="IDataReader"/> that will work with either an 
-	/// <see cref="IDataReader"/> returned by Execute or with an <see cref="IDataReader"/>
+	/// An implementation of <see cref="DbDataReader"/> that will work with either an 
+	/// <see cref="DbDataReader"/> returned by Execute or with an <see cref="DbDataReader"/>
 	/// whose contents have been read into a <see cref="NDataReader"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This allows NHibernate to use the underlying <see cref="IDataReader"/> for as long as
+	/// This allows NHibernate to use the underlying <see cref="DbDataReader"/> for as long as
 	/// possible without the need to read everything into the <see cref="NDataReader"/>.
 	/// </para>
 	/// <para>
-	/// The consumer of the <see cref="IDataReader"/> returned from <see cref="Engine.IBatcher"/> does
+	/// The consumer of the <see cref="DbDataReader"/> returned from <see cref="Engine.IBatcher"/> does
 	/// not need to know the underlying reader and can use it the same even if it switches from an
-	/// <see cref="IDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
+	/// <see cref="DbDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
 	/// </para>
 	/// </remarks>
-	public class NHybridDataReader : IDataReader
+	public class NHybridDataReader : DbDataReader
 	{
 		private IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
 
-		private IDataReader _reader;
+		private DbDataReader _reader;
 		private bool _isMidstream = false;
 
-		public IDataReader Target { get { return _reader; } }
+		public DbDataReader Target { get { return _reader; } }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
-		/// <param name="reader">The underlying IDataReader to use.</param>
-		public NHybridDataReader(IDataReader reader) : this(reader, false)
+		/// <param name="reader">The underlying DbDataReader to use.</param>
+		public NHybridDataReader(DbDataReader reader) : this(reader, false)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the NHybridDataReader class.
 		/// </summary>
-		/// <param name="reader">The underlying IDataReader to use.</param>
-		/// <param name="inMemory"><see langword="true" /> if the contents of the IDataReader should be read into memory right away.</param>
-		public NHybridDataReader(IDataReader reader, bool inMemory)
+		/// <param name="reader">The underlying DbDataReader to use.</param>
+		/// <param name="inMemory"><see langword="true" /> if the contents of the DbDataReader should be read into memory right away.</param>
+		public NHybridDataReader(DbDataReader reader, bool inMemory)
 		{
 			if (inMemory)
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Driver
 		}
 
 		/// <summary>
-		/// Reads all of the contents into memory because another <see cref="IDataReader"/>
+		/// Reads all of the contents into memory because another <see cref="DbDataReader"/>
 		/// needs to be opened.
 		/// </summary>
 		/// <remarks>
@@ -67,7 +67,7 @@ namespace NHibernate.Driver
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Moving IDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
+					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
 				}
 				_reader = new NDataReader(_reader, _isMidstream);
 			}
@@ -76,13 +76,13 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Gets if the object is in the middle of reading a Result.
 		/// </summary>
-		/// <value><see langword="true" /> if NextResult and Read have been called on the <see cref="IDataReader"/>.</value>
+		/// <value><see langword="true" /> if NextResult and Read have been called on the <see cref="DbDataReader"/>.</value>
 		public bool IsMidstream
 		{
 			get { return _isMidstream; }
 		}
 
-		#region IDataReader Members
+		#region DbDataReader Members
 
 		/// <summary></summary>
 		public int RecordsAffected
@@ -388,7 +388,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public IDataReader GetData(int i)
+		public DbDataReader GetData(int i)
 		{
 			return _reader.GetData(i);
 		}

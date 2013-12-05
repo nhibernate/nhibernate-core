@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Xml;
 using NHibernate.Engine;
@@ -35,12 +35,12 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public void Bind(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 
@@ -194,22 +194,22 @@ namespace NHibernate.Param
 				return false;
 			}
 
-			public object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+			public object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+			public void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 			{
 				throw new InvalidOperationException();
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+			public void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 			{
 				var start = index;
 				var positions = 0;
@@ -233,7 +233,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				throw new InvalidOperationException();
 			}

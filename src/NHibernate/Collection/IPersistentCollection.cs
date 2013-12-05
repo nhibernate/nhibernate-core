@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -102,12 +102,12 @@ namespace NHibernate.Collection
 		void PostAction();
 
 		/// <summary>
-		/// Called just before reading any rows from the <see cref="IDataReader" />
+		/// Called just before reading any rows from the <see cref="DbDataReader" />
 		/// </summary>
 		void BeginRead();
 
 		/// <summary>
-		/// Called after reading all rows from the <see cref="IDataReader" />
+		/// Called after reading all rows from the <see cref="DbDataReader" />
 		/// </summary>
 		/// <remarks>
 		/// This should be overridden by sub collections that use temporary collections
@@ -174,17 +174,17 @@ namespace NHibernate.Collection
 		IEnumerable Entries(ICollectionPersister persister);
 
 		/// <summary>
-		/// Reads the row from the <see cref="IDataReader"/>.
+		/// Reads the row from the <see cref="DbDataReader"/>.
 		/// </summary>
 		/// <remarks>
 		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections.
 		/// </remarks>
-		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name="reader">The DbDataReader that contains the value of the Identifier</param>
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		object ReadFrom(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 
 		/// <summary>
 		/// Get the identifier of the given collection entry

@@ -52,7 +52,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			CoordinateSharedCacheCleanup(session);
 
-			IDbCommand st = null;
+			DbCommand st = null;
 			RowSelection selection = parameters.RowSelection;
 
 			try
