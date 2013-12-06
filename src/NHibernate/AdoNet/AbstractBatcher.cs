@@ -359,6 +359,8 @@ namespace NHibernate.AdoNet
 			var actualReader = rsw == null ? reader : rsw.Target;
 			_readersToClose.Remove(actualReader);
 
+			var duration = GetReaderStopwatch(actualReader);
+
 			try
 			{
 				reader.Dispose();
@@ -370,17 +372,24 @@ namespace NHibernate.AdoNet
 			}
 
 			LogCloseReader();
+			LogDuration(duration);
+		}
 
-			if (!Log.IsDebugEnabled)
-				return;
-
-			var nhReader = actualReader as NHybridDataReader;
-			actualReader = nhReader == null ? actualReader : nhReader.Target;
+		private Stopwatch GetReaderStopwatch(DbDataReader reader)
+		{
+			var nhReader = reader as NHybridDataReader;
+			var actualReader = nhReader == null ? reader : nhReader.Target;
 
 			Stopwatch duration;
-			if (_readersDuration.TryGetValue(actualReader, out duration) == false)
-				return;
-			_readersDuration.Remove(actualReader);
+			if (_readersDuration.TryGetValue(actualReader, out duration))
+				_readersDuration.Remove(actualReader);
+			return duration;
+		}
+
+		private static void LogDuration(Stopwatch duration)
+		{
+			if (!Log.IsDebugEnabled || duration == null) return;
+
 			Log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
 		}
 
