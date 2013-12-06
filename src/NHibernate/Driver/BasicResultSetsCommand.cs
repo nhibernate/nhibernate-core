@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -100,139 +101,140 @@ namespace NHibernate.Driver
 			reader = batcher.ExecuteReader(command);
 		}
 
-		public void Dispose()
-		{
-			batcher.CloseCommand(command, reader);
-		}
-
-		#region IDataRecord Members
-
-		public string GetName(int i)
+		public override string GetName(int i)
 		{
 			return reader.GetName(i);
 		}
 
-		public string GetDataTypeName(int i)
+		public override string GetDataTypeName(int i)
 		{
 			return reader.GetDataTypeName(i);
 		}
 
-		public System.Type GetFieldType(int i)
+		public override IEnumerator GetEnumerator()
+		{
+			return reader.GetEnumerator();
+		}
+
+		public override System.Type GetFieldType(int i)
 		{
 			return reader.GetFieldType(i);
 		}
 
-		public object GetValue(int i)
+		public override object GetValue(int i)
 		{
 			return reader.GetValue(i);
 		}
 
-		public int GetValues(object[] values)
+		public override int GetValues(object[] values)
 		{
 			return reader.GetValues(values);
 		}
 
-		public int GetOrdinal(string name)
+		public override int GetOrdinal(string name)
 		{
 			return reader.GetOrdinal(name);
 		}
 
-		public bool GetBoolean(int i)
+		public override bool GetBoolean(int i)
 		{
 			return reader.GetBoolean(i);
 		}
 
-		public byte GetByte(int i)
+		public override byte GetByte(int i)
 		{
 			return reader.GetByte(i);
 		}
 
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
 		{
 			return reader.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
 		}
 
-		public char GetChar(int i)
+		public override char GetChar(int i)
 		{
 			return reader.GetChar(i);
 		}
 
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+		public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
 		{
 			return reader.GetChars(i, fieldoffset, buffer, bufferoffset, length);
 		}
 
-		public Guid GetGuid(int i)
+		public override Guid GetGuid(int i)
 		{
 			return reader.GetGuid(i);
 		}
 
-		public short GetInt16(int i)
+		public override short GetInt16(int i)
 		{
 			return reader.GetInt16(i);
 		}
 
-		public int GetInt32(int i)
+		public override int GetInt32(int i)
 		{
 			return reader.GetInt32(i);
 		}
 
-		public long GetInt64(int i)
+		public override long GetInt64(int i)
 		{
 			return reader.GetInt64(i);
 		}
 
-		public float GetFloat(int i)
+		public override float GetFloat(int i)
 		{
 			return reader.GetFloat(i);
 		}
 
-		public double GetDouble(int i)
+		public override double GetDouble(int i)
 		{
 			return reader.GetDouble(i);
 		}
 
-		public string GetString(int i)
+		public override string GetString(int i)
 		{
 			return reader.GetString(i);
 		}
 
-		public decimal GetDecimal(int i)
+		public override decimal GetDecimal(int i)
 		{
 			return reader.GetDecimal(i);
 		}
 
-		public DateTime GetDateTime(int i)
+		public override DateTime GetDateTime(int i)
 		{
 			return reader.GetDateTime(i);
 		}
 
-		public DbDataReader GetData(int i)
+		protected override DbDataReader GetDbDataReader(int ordinal)
 		{
-			return reader.GetData(i);
+			return reader.GetData(ordinal);
 		}
 
-		public bool IsDBNull(int i)
+		public override bool IsDBNull(int i)
 		{
 			return reader.IsDBNull(i);
 		}
 
-		public int FieldCount
+		public override int FieldCount
 		{
 			get { return reader.FieldCount; }
 		}
 
-		public object this[int i]
+		public override bool HasRows
+		{
+			get { return reader.HasRows; }
+		}
+
+		public override object this[int i]
 		{
 			get { return reader[i]; }
 		}
 
-		public object this[string name]
+		public override object this[string name]
 		{
 			get { return reader[name]; }
 		}
-
-		#endregion
 
 		public override bool Equals(object obj)
 		{
@@ -244,37 +246,37 @@ namespace NHibernate.Driver
 			return reader.GetHashCode();
 		}
 
-		public void Close()
+		public override void Close()
 		{
 			batcher.CloseCommand(command, reader);
 		}
 
-		public DataTable GetSchemaTable()
+		public override DataTable GetSchemaTable()
 		{
 			return reader.GetSchemaTable();
 		}
 
-		public bool NextResult()
+		public override bool NextResult()
 		{
 			return reader.NextResult();
 		}
 
-		public bool Read()
+		public override bool Read()
 		{
 			return reader.Read();
 		}
 
-		public int Depth
+		public override int Depth
 		{
 			get { return reader.Depth; }
 		}
 
-		public bool IsClosed
+		public override bool IsClosed
 		{
 			get { return reader.IsClosed; }
 		}
 
-		public int RecordsAffected
+		public override int RecordsAffected
 		{
 			get { return reader.RecordsAffected; }
 		}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 
@@ -12,7 +13,7 @@ namespace NHibernate.AdoNet
 	/// <seealso cref="IDataRecord.GetOrdinal"/>
 	public class ResultSetWrapper : DbDataReader
 	{
-		private readonly DbDataReader rs;
+		private DbDataReader rs;
 		private readonly ColumnNameCache columnNameCache;
 
 		public ResultSetWrapper(DbDataReader resultSet, ColumnNameCache columnNameCache)
@@ -26,205 +27,191 @@ namespace NHibernate.AdoNet
 			get { return rs; }
 		}
 
-		#region DbDataReader Members
-
-		public void Close()
+		public override void Close()
 		{
 			rs.Close();
 		}
 
-		public DataTable GetSchemaTable()
+		public override DataTable GetSchemaTable()
 		{
 			return rs.GetSchemaTable();
 		}
 
-		public bool NextResult()
+		public override bool NextResult()
 		{
 			return rs.NextResult();
 		}
 
-		public bool Read()
+		public override bool Read()
 		{
 			return rs.Read();
 		}
 
-		public int Depth
+		public override int Depth
 		{
 			get { return rs.Depth; }
 		}
 
-		public bool IsClosed
+		public override bool HasRows
+		{
+			get { return rs.HasRows; }
+		}
+
+		public override bool IsClosed
 		{
 			get { return rs.IsClosed; }
 		}
 
-		public int RecordsAffected
+		public override int RecordsAffected
 		{
 			get { return rs.RecordsAffected; }
 		}
 
-		#endregion
-
-		#region IDisposable Members
 		private bool disposed;
 
-		~ResultSetWrapper()
-		{
-			Dispose(false);
-		}
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		private void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (disposed)
 				return;
 
-			if (disposing)
+			if (disposing && rs != null)
 			{
-				if (rs != null)
-				{
-					if (!rs.IsClosed) rs.Close();
 					rs.Dispose();
+				rs = null;
 				}
-			}
 
 			disposed = true;
 		}
-		#endregion
 
-		#region IDataRecord Members
-
-		public string GetName(int i)
+		public override string GetName(int i)
 		{
 			return rs.GetName(i);
 		}
 
-		public string GetDataTypeName(int i)
+		public override string GetDataTypeName(int i)
 		{
 			return rs.GetDataTypeName(i);
 		}
 
-		public System.Type GetFieldType(int i)
+		public override IEnumerator GetEnumerator()
+		{
+			return rs.GetEnumerator();
+		}
+
+		public override System.Type GetFieldType(int i)
 		{
 			return rs.GetFieldType(i);
 		}
 
-		public object GetValue(int i)
+		public override object GetValue(int i)
 		{
 			return rs.GetValue(i);
 		}
 
-		public int GetValues(object[] values)
+		public override int GetValues(object[] values)
 		{
 			return rs.GetValues(values);
 		}
 
-		public int GetOrdinal(string name)
+		public override int GetOrdinal(string name)
 		{
 			return columnNameCache.GetIndexForColumnName(name, this);
 		}
 
-		public bool GetBoolean(int i)
+		public override bool GetBoolean(int i)
 		{
 			return rs.GetBoolean(i);
 		}
 
-		public byte GetByte(int i)
+		public override byte GetByte(int i)
 		{
 			return rs.GetByte(i);
 		}
 
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+		public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
 		{
 			return rs.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
 		}
 
-		public char GetChar(int i)
+		public override char GetChar(int i)
 		{
 			return rs.GetChar(i);
 		}
 
-		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+		public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
 		{
 			return rs.GetChars(i, fieldoffset, buffer, bufferoffset, length);
 		}
 
-		public Guid GetGuid(int i)
+		public override Guid GetGuid(int i)
 		{
 			return rs.GetGuid(i);
 		}
 
-		public short GetInt16(int i)
+		public override short GetInt16(int i)
 		{
 			return rs.GetInt16(i);
 		}
 
-		public int GetInt32(int i)
+		public override int GetInt32(int i)
 		{
 			return rs.GetInt32(i);
 		}
 
-		public long GetInt64(int i)
+		public override long GetInt64(int i)
 		{
 			return rs.GetInt64(i);
 		}
 
-		public float GetFloat(int i)
+		public override float GetFloat(int i)
 		{
 			return rs.GetFloat(i);
 		}
 
-		public double GetDouble(int i)
+		public override double GetDouble(int i)
 		{
 			return rs.GetDouble(i);
 		}
 
-		public string GetString(int i)
+		public override string GetString(int i)
 		{
 			return rs.GetString(i);
 		}
 
-		public decimal GetDecimal(int i)
+		public override decimal GetDecimal(int i)
 		{
 			return rs.GetDecimal(i);
 		}
 
-		public DateTime GetDateTime(int i)
+		public override DateTime GetDateTime(int i)
 		{
 			return rs.GetDateTime(i);
 		}
 
-		public DbDataReader GetData(int i)
+		protected override DbDataReader GetDbDataReader(int ordinal)
 		{
-			return rs.GetData(i);
+			return rs.GetData(ordinal);
 		}
 
-		public bool IsDBNull(int i)
+		public override bool IsDBNull(int i)
 		{
 			return rs.IsDBNull(i);
 		}
 
-		public int FieldCount
+		public override int FieldCount
 		{
 			get { return rs.FieldCount; }
 		}
 
-		public object this[int i]
+		public override object this[int i]
 		{
 			get { return rs[i]; }
 		}
 
-		public object this[string name]
+		public override object this[string name]
 		{
 			get { return rs[columnNameCache.GetIndexForColumnName(name, this)]; }
 		}
-
-		#endregion
 
 		public override bool Equals(object obj)
 		{
