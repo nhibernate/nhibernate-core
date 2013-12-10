@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 
 		protected Person()
 		{
-			todos = new HashedSet<Todo>();
+			todos = new HashSet<Todo>();
 			myStuff = new List<Stuff>();
 		}
 
