@@ -71,7 +71,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat_WithCast()
 		{
-			if(Dialect is Oracle8iDialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
 			}
@@ -347,6 +347,29 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+		[Test]
+		public void UseSumWithNullResultWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				long sum = session.CreateCriteria(typeof(Reptile))
+					.SetProjection(Projections.Sum(Projections.Id()))
+					.UniqueResult<long>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 
+		[Test]
+		public void UseSubquerySumWithNullResultWithProjection()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				int sum = session.CreateCriteria(typeof(Enrolment))
+					.CreateCriteria("Student", "s")
+					.SetProjection(Projections.Sum(Projections.SqlFunction("length", NHibernateUtil.Int32, Projections.Property("s.Name"))))
+					.UniqueResult<int>();
+				Assert.AreEqual(0, sum);
+			}
+		}
 	}
 }

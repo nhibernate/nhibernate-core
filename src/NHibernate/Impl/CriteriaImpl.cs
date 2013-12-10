@@ -60,7 +60,7 @@ namespace NHibernate.Impl
 		}
 
 		public CriteriaImpl(string entityOrClassName, ISessionImplementor session)
-			: this(entityOrClassName, CriteriaSpecification.RootAlias, session) {}
+			: this(entityOrClassName, CriteriaSpecification.RootAlias, session) { }
 
 		public CriteriaImpl(string entityOrClassName, string alias, ISessionImplementor session)
 		{
@@ -123,13 +123,13 @@ namespace NHibernate.Impl
 		{
 			get { return projection; }
 		}
-		
+
 		/// <inheritdoc />
 		public bool IsReadOnlyInitialized
 		{
 			get { return (readOnly != null); }
 		}
-		
+
 		/// <inheritdoc />
 		public bool IsReadOnly
 		{
@@ -280,13 +280,13 @@ namespace NHibernate.Impl
 		public T UniqueResult<T>()
 		{
 			object result = UniqueResult();
-			if (result == null && typeof (T).IsValueType)
+			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
 			}
 			else
 			{
-				return (T) result;
+				return (T)result;
 			}
 		}
 
@@ -471,12 +471,12 @@ namespace NHibernate.Impl
 
 		public ICriteria SetProjection(params IProjection[] projections)
 		{
-			if(projections==null)
+			if (projections == null)
 				throw new ArgumentNullException("projections");
-			if(projections.Length ==0)
+			if (projections.Length == 0)
 				throw new ArgumentException("projections must contain a least one projection");
 
-			if(projections.Length==1)
+			if (projections.Length == 1)
 			{
 				projection = projections[0];
 			}
@@ -566,7 +566,7 @@ namespace NHibernate.Impl
 				}
 				else
 				{
-					ICriteria clonedProjectionCriteria = (ICriteria) projectionCriteria.Clone();
+					ICriteria clonedProjectionCriteria = (ICriteria)projectionCriteria.Clone();
 					clone.projectionCriteria = clonedProjectionCriteria;
 				}
 			}
@@ -662,7 +662,7 @@ namespace NHibernate.Impl
 			}
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, string alias, JoinType joinType)
-				: this(root, parent, path, alias, joinType, null) {}
+				: this(root, parent, path, alias, joinType, null) { }
 
 			internal Subcriteria(CriteriaImpl root, ICriteria parent, string path, JoinType joinType)
 				: this(root, parent, path, null, joinType) { }
@@ -702,12 +702,12 @@ namespace NHibernate.Impl
 			{
 				get { return root.IsReadOnlyInitialized; }
 			}
-			
+
 			public bool IsReadOnly
 			{
 				get { return root.IsReadOnly; }
 			}
-				
+
 			public ICriteria SetLockMode(LockMode lockMode)
 			{
 				this.lockMode = lockMode;
@@ -808,14 +808,13 @@ namespace NHibernate.Impl
 			public T UniqueResult<T>()
 			{
 				object result = UniqueResult();
-				if (result == null && typeof (T).IsValueType)
+				if (result == null && typeof(T).IsValueType)
 				{
-					throw new InvalidCastException(
-						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+					return default(T);
 				}
 				else
 				{
-					return (T) result;
+					return (T)result;
 				}
 			}
 
@@ -897,13 +896,13 @@ namespace NHibernate.Impl
 				root.SetProjection(projections);
 				return this;
 			}
-			
+
 			public ICriteria SetReadOnly(bool readOnly)
 			{
 				root.SetReadOnly(readOnly);
 				return this;
 			}
-			
+
 			public ICriteria GetCriteriaByPath(string path)
 			{
 				return root.GetCriteriaByPath(path);
