@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Util;
-using System.Linq;
 
 namespace NHibernate.Stat
 {
@@ -23,7 +21,7 @@ namespace NHibernate.Stat
 		private long entityFetchCount;
 		private long entityUpdateCount;
 		// log operations that take longer than this value
-		private TimeSpan operationThreshold = TimeSpan.MaxValue; 
+		private TimeSpan operationThreshold = TimeSpan.MaxValue;
 		private long queryExecutionCount;
 		private TimeSpan queryExecutionMaxTime;
 		private string queryExecutionMaxTimeQueryString;
@@ -126,7 +124,7 @@ namespace NHibernate.Stat
 
 		public TimeSpan QueryExecutionMaxTime
 		{
-			get { return queryExecutionMaxTime; }
+			get { return queryExecutionMaxTime == TimeSpan.MinValue ? TimeSpan.Zero : queryExecutionMaxTime; }
 		}
 
 		public string QueryExecutionMaxTimeQueryString
@@ -221,7 +219,7 @@ namespace NHibernate.Stat
 			get
 			{
 				var result = new string[queryStatistics.Keys.Count];
-				queryStatistics.Keys.CopyTo(result,0);
+				queryStatistics.Keys.CopyTo(result, 0);
 				return result;
 			}
 		}
@@ -451,7 +449,7 @@ namespace NHibernate.Stat
 			log.Info("query cache puts: " + queryCachePutCount);
 			log.Info("query cache hits: " + queryCacheHitCount);
 			log.Info("query cache misses: " + queryCacheMissCount);
-			log.Info("max query time: " + queryExecutionMaxTime.Milliseconds + "ms");
+			log.Info("max query time: " + QueryExecutionMaxTime.TotalMilliseconds.ToString("0") + " ms");
 		}
 
 		public TimeSpan OperationThreshold
