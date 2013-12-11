@@ -1,0 +1,361 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Git2\nhibernate-core\NHibernate.nunit" total="18" errors="1" failures="15" not-run="3" inconclusive="0" ignored="3" skipped="0" invalid="0" date="2013-03-19" time="16:08:23">
+  <environment nunit-version="2.6.1.12217" clr-version="2.0.50727.6387" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Git2\nhibernate-core" machine-name="LEO-WIN8" user="llaba_000" user-domain="LEO-WIN8" />
+  <culture-info current-culture="fr-FR" current-uiculture="en-US" />
+  <test-suite type="Test Project" name="C:\Git2\nhibernate-core\NHibernate.nunit" executed="True" result="Failure" success="False" time="8.238" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Git2\nhibernate-core\src\NHibernate.TestDatabaseSetup\bin\Debug\NHibernate.TestDatabaseSetup.dll" executed="True" result="Failure" success="False" time="0.009" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" time="0.008" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="TestDatabaseSetup" executed="True" result="Failure" success="False" time="0.008" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="DatabaseSetup" executed="True" result="Failure" success="False" time="0.008" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.TestDatabaseSetup.DatabaseSetup.SetupDatabase" executed="True" result="Error" success="False" time="0.006" asserts="1">
+                        <failure>
+                          <message><![CDATA[System.Data.SqlClient.SqlException : Cannot open database "master2" requested by the login. The login failed.
+Login failed for user 'Leo-Win8\llaba_000'.]]></message>
+                          <stack-trace><![CDATA[at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+at System.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+at System.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+at System.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+at System.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions)
+at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+at System.Data.SqlClient.SqlConnection.Open()
+at NHibernate.TestDatabaseSetup.DatabaseSetup.SetupSqlServer(Configuration cfg) in c:\Git2\nhibernate-core\src\NHibernate.TestDatabaseSetup\TestDatabaseSetup.cs:line 52
+at NHibernate.TestDatabaseSetup.DatabaseSetup.SetupDatabase() in c:\Git2\nhibernate-core\src\NHibernate.TestDatabaseSetup\TestDatabaseSetup.cs:line 43
+]]></stack-trace>
+                        </failure>
+                      </test-case>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="Assembly" name="C:\Git2\nhibernate-core\src\NHibernate.Test\bin\Debug-2.0\NHibernate.Test.dll" executed="True" result="Failure" success="False" time="1.576" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" time="1.570" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Test" executed="True" result="Failure" success="False" time="1.570" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="CacheTest" executed="True" result="Failure" success="False" time="1.567" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="CacheFixture" executed="True" result="Success" success="True" time="0.292" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.CacheTest.CacheFixture.MinValueTimestamp" executed="True" result="Success" success="True" time="0.074" asserts="6" />
+                          <test-case name="NHibernate.Test.CacheTest.CacheFixture.TestSimpleCache" executed="True" result="Success" success="True" time="0.209" asserts="24" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="FilterKeyFixture" executed="True" result="Error" success="False" time="1.151" asserts="0">
+                        <failure>
+                          <message><![CDATA[SetUp : NHibernate.HibernateException : Could not open connection to: Server=(local);initial catalog=nhibernate2;Integrated Security=SSPI
+  ----> System.Data.SqlClient.SqlException : Cannot open database "nhibernate2" requested by the login. The login failed.
+Login failed for user 'Leo-Win8\llaba_000'.]]></message>
+                          <stack-trace><![CDATA[at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 27
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Action`1 scriptAction, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 333
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Boolean script, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 290
+at NHibernate.Tool.hbm2ddl.SchemaExport.Create(Boolean script, Boolean export) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 105
+at NHibernate.Test.TestCase.CreateSchema() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 243
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+--SqlException
+at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+at System.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+at System.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+at System.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+at System.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+at System.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions)
+at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnectionOptions userOptions)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+at System.Data.SqlClient.SqlConnection.Open()
+at NHibernate.Connection.DriverConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate\Connection\DriverConnectionProvider.cs:line 46
+at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 21
+]]></stack-trace>
+                        </failure>
+                        <results>
+                          <test-case name="NHibernate.Test.CacheTest.FilterKeyFixture.Equality" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in FilterKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.FilterKeyFixture.HashCode" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in FilterKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.FilterKeyFixture.NotEqualHashCode" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in FilterKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.FilterKeyFixture.NotEquality" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in FilterKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.FilterKeyFixture.ToStringIncludeAll" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in FilterKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="QueryCacheFixture" executed="True" result="Error" success="False" time="0.033" asserts="0">
+                        <failure>
+                          <message><![CDATA[SetUp : NHibernate.HibernateException : Could not open connection to: Server=(local);initial catalog=nhibernate2;Integrated Security=SSPI
+  ----> System.Data.SqlClient.SqlException : Cannot open database "nhibernate2" requested by the login. The login failed.
+Login failed for user 'Leo-Win8\llaba_000'.]]></message>
+                          <stack-trace><![CDATA[at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 27
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Action`1 scriptAction, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 333
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Boolean script, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 290
+at NHibernate.Tool.hbm2ddl.SchemaExport.Create(Boolean script, Boolean export) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 105
+at NHibernate.Test.TestCase.CreateSchema() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 243
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+--SqlException
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+at System.Data.SqlClient.SqlConnection.Open()
+at NHibernate.Connection.DriverConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate\Connection\DriverConnectionProvider.cs:line 46
+at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 21
+]]></stack-trace>
+                        </failure>
+                        <results>
+                          <test-case name="NHibernate.Test.CacheTest.QueryCacheFixture.QueryCacheWithNullParameters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryCacheFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="QueryKeyFixture" executed="True" result="Error" success="False" time="0.015" asserts="0">
+                        <failure>
+                          <message><![CDATA[SetUp : NHibernate.HibernateException : Could not open connection to: Server=(local);initial catalog=nhibernate2;Integrated Security=SSPI
+  ----> System.Data.SqlClient.SqlException : Cannot open database "nhibernate2" requested by the login. The login failed.
+Login failed for user 'Leo-Win8\llaba_000'.]]></message>
+                          <stack-trace><![CDATA[at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 27
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Action`1 scriptAction, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 333
+at NHibernate.Tool.hbm2ddl.SchemaExport.Execute(Boolean script, Boolean export, Boolean justDrop) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 290
+at NHibernate.Tool.hbm2ddl.SchemaExport.Create(Boolean script, Boolean export) in c:\Git2\nhibernate-core\src\NHibernate\Tool\hbm2ddl\SchemaExport.cs:line 105
+at NHibernate.Test.TestCase.CreateSchema() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 243
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+--SqlException
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+at System.Data.SqlClient.SqlConnection.Open()
+at NHibernate.Connection.DriverConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate\Connection\DriverConnectionProvider.cs:line 46
+at NHibernate.Test.DebugConnectionProvider.GetConnection() in c:\Git2\nhibernate-core\src\NHibernate.Test\DebugConnectionProvider.cs:line 21
+]]></stack-trace>
+                        </failure>
+                        <results>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.EqualityWithFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.HashCodeWithFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.NotEqualHashCodeWithFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.NotEqualityWithFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.ToStringWithFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.CacheTest.QueryKeyFixture.ToStringWithMoreFilters" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in QueryKeyFixture]]></message>
+                              <stack-trace />
+                            </failure>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="TimestamperFixture" executed="True" result="Inconclusive" success="False" time="0.001" asserts="0" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="Assembly" name="C:\Git2\nhibernate-core\src\NHibernate.Test.VisualBasic\bin\Debug\NHibernate.Test.VisualBasic.dll" executed="True" result="Failure" success="False" time="0.219" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" time="0.219" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Test" executed="True" result="Failure" success="False" time="0.219" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="VisualBasic" executed="True" result="Failure" success="False" time="0.218" asserts="0">
+                    <results>
+                      <test-suite type="Namespace" name="Issues" executed="True" result="Failure" success="False" time="0.218" asserts="0">
+                        <results>
+                          <test-suite type="Namespace" name="NH0000" executed="True" result="Failure" success="False" time="0.118" asserts="0">
+                            <results>
+                              <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" time="0.117" asserts="0">
+                                <failure>
+                                  <message><![CDATA[SetUp : System.NullReferenceException : Object reference not set to an instance of an object.]]></message>
+                                  <stack-trace><![CDATA[at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryExtensions.Merge(ILinqToHqlGeneratorsRegistry registry, IHqlGeneratorForMethod generator) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryExtensions.cs:line 17
+at NHibernate.Linq.Functions.DefaultLinqToHqlGeneratorsRegistry..ctor() in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\DefaultLinqToHqlGeneratorsRegistry.cs:line 49
+at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs:line 29
+at NHibernate.Cfg.SettingsFactory.BuildSettings(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Cfg\SettingsFactory.cs:line 55
+at NHibernate.Cfg.Configuration.BuildSettings() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1726
+at NHibernate.Cfg.Configuration.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1257
+at NHibernate.Test.TestCase.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 253
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+]]></stack-trace>
+                                </failure>
+                                <results>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH0000.Fixture.YourTestName" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                                    <failure>
+                                      <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                                      <stack-trace />
+                                    </failure>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite type="Namespace" name="NH2545" executed="True" result="Failure" success="False" time="0.023" asserts="0">
+                            <results>
+                              <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" time="0.022" asserts="0">
+                                <failure>
+                                  <message><![CDATA[SetUp : System.NullReferenceException : Object reference not set to an instance of an object.]]></message>
+                                  <stack-trace><![CDATA[at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryExtensions.Merge(ILinqToHqlGeneratorsRegistry registry, IHqlGeneratorForMethod generator) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryExtensions.cs:line 17
+at NHibernate.Linq.Functions.DefaultLinqToHqlGeneratorsRegistry..ctor() in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\DefaultLinqToHqlGeneratorsRegistry.cs:line 49
+at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs:line 29
+at NHibernate.Cfg.SettingsFactory.BuildSettings(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Cfg\SettingsFactory.cs:line 55
+at NHibernate.Cfg.Configuration.BuildSettings() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1726
+at NHibernate.Cfg.Configuration.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1257
+at NHibernate.Test.TestCase.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 253
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+]]></stack-trace>
+                                </failure>
+                                <results>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH2545.Fixture.LinqStringEquality" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                                    <failure>
+                                      <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                                      <stack-trace />
+                                    </failure>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite type="Namespace" name="NH2966" executed="True" result="Failure" success="False" time="0.032" asserts="0">
+                            <results>
+                              <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" time="0.032" asserts="0">
+                                <failure>
+                                  <message><![CDATA[SetUp : System.NullReferenceException : Object reference not set to an instance of an object.]]></message>
+                                  <stack-trace><![CDATA[at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryExtensions.Merge(ILinqToHqlGeneratorsRegistry registry, IHqlGeneratorForMethod generator) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryExtensions.cs:line 17
+at NHibernate.Linq.Functions.DefaultLinqToHqlGeneratorsRegistry..ctor() in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\DefaultLinqToHqlGeneratorsRegistry.cs:line 49
+at NHibernate.Linq.Functions.LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs:line 29
+at NHibernate.Cfg.SettingsFactory.BuildSettings(IDictionary`2 properties) in c:\Git2\nhibernate-core\src\NHibernate\Cfg\SettingsFactory.cs:line 55
+at NHibernate.Cfg.Configuration.BuildSettings() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1726
+at NHibernate.Cfg.Configuration.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate\Cfg\Configuration.cs:line 1257
+at NHibernate.Test.TestCase.BuildSessionFactory() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 253
+at NHibernate.Test.TestCase.TestFixtureSetUp() in c:\Git2\nhibernate-core\src\NHibernate.Test\TestCase.cs:line 102
+]]></stack-trace>
+                                </failure>
+                                <results>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH2966.Fixture.FetchMany" executed="True" result="Failure" success="False" time="0.000" asserts="0">
+                                    <failure>
+                                      <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                                      <stack-trace />
+                                    </failure>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite type="Namespace" name="NH3302" executed="True" result="Inconclusive" success="False" time="0.004" asserts="0">
+                            <results>
+                              <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[]]></message>
+                                </reason>
+                                <results>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH3302.Fixture.LinqStringLike" executed="False" result="Ignored">
+                                    <reason>
+                                      <message><![CDATA[]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH3302.Fixture.LinqStringLikeAsterix" executed="False" result="Ignored">
+                                    <reason>
+                                      <message><![CDATA[]]></message>
+                                    </reason>
+                                  </test-case>
+                                  <test-case name="NHibernate.Test.VisualBasic.Issues.NH3302.Fixture.LinqStringLikeQuestion" executed="False" result="Ignored">
+                                    <reason>
+                                      <message><![CDATA[]]></message>
+                                    </reason>
+                                  </test-case>
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
