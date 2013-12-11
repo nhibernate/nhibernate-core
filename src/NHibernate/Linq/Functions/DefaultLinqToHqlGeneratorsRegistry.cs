@@ -25,6 +25,9 @@ namespace NHibernate.Linq.Functions
 			RegisterGenerator(new CompareGenerator());
 			this.Merge(new CompareGenerator());
 
+			this.Merge(new ConvertToInt32Generator());
+			this.Merge(new ConvertToDecimalGenerator());
+			this.Merge(new ConvertToDoubleGenerator());
 			this.Merge(new StartsWithGenerator());
 			this.Merge(new EndsWithGenerator());
 			this.Merge(new ContainsGenerator());
