@@ -492,6 +492,7 @@
     <Compile Include="Insertordering\InsertOrderingFixture.cs" />
     <Compile Include="Insertordering\Membership.cs" />
     <Compile Include="Insertordering\User.cs" />
+    <Compile Include="KnownBugAttribute.cs" />
     <Compile Include="LazyOneToOne\Employee.cs" />
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />

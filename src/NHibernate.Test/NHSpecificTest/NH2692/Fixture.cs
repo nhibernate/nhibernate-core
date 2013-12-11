@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			}
 		}
 
-		[Test]
+		[Test, KnownBug]
 		public void QueryingChildrenComponents()
 		{
 			using (var session = OpenSession())
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			}
 		}
 
-		[Test]
+		[Test, KnownBug]
 		public void QueryingChildrenComponentsHql()
 		{
 			using (var session = OpenSession())
