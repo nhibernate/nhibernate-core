@@ -99,11 +99,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators = null;
-		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators = null;
-		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes = null;
-		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors = null;
-		private readonly static IDictionary<string, Func<MethodCallExpression, IProjection>> _customProjectionProcessors = null;
+		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, object, ICriterion>> _simpleExpressionCreators;
+		private readonly static IDictionary<ExpressionType, Func<ProjectionInfo, ProjectionInfo, ICriterion>> _propertyExpressionCreators;
+		private readonly static IDictionary<LambdaSubqueryType, IDictionary<ExpressionType, Func<string, DetachedCriteria, AbstractCriterion>>> _subqueryExpressionCreatorTypes;
+		private readonly static IDictionary<string, Func<MethodCallExpression, ICriterion>> _customMethodCallProcessors;
+		private readonly static IDictionary<string, Func<Expression, IProjection>> _customProjectionProcessors;
 
 		static ExpressionProcessor()
 		{
@@ -156,14 +156,32 @@ namespace NHibernate.Impl
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsIn(null, new List<object>()), RestrictionExtensions.ProcessIsInCollection);
 			RegisterCustomMethodCall(() => RestrictionExtensions.IsBetween(null, null).And(null), RestrictionExtensions.ProcessIsBetween);
 
-			_customProjectionProcessors = new Dictionary<string, Func<MethodCallExpression, IProjection>>();
-			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), ProjectionsExtensions.ProcessYearPart);
-			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), ProjectionsExtensions.ProcessDayPart);
-			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), ProjectionsExtensions.ProcessMonthPart);
-			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), ProjectionsExtensions.ProcessHourPart);
-			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), ProjectionsExtensions.ProcessMinutePart);
-			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), ProjectionsExtensions.ProcessSecondPart);
-			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
+			_customProjectionProcessors = new Dictionary<string, Func<Expression, IProjection>>();
+			RegisterCustomProjection(() => default(DateTime).Year, e => ProjectionsExtensions.ProcessYear(e.Expression));
+			RegisterCustomProjection(() => default(DateTime).Day, e => ProjectionsExtensions.ProcessDay(e.Expression));
+			RegisterCustomProjection(() => default(DateTime).Month, e => ProjectionsExtensions.ProcessMonth(e.Expression));
+		    RegisterCustomProjection(() => default(DateTime).Hour, e => ProjectionsExtensions.ProcessHour(e.Expression));
+		    RegisterCustomProjection(() => default(DateTime).Minute, e => ProjectionsExtensions.ProcessMinute(e.Expression));
+		    RegisterCustomProjection(() => default(DateTime).Second, e => ProjectionsExtensions.ProcessSecond(e.Expression));
+		    RegisterCustomProjection(() => default(DateTime).Date, e => ProjectionsExtensions.ProcessDate(e.Expression));
+
+			RegisterCustomProjection(() => default(DateTimeOffset).Year, e => ProjectionsExtensions.ProcessYear(e.Expression));
+			RegisterCustomProjection(() => default(DateTimeOffset).Day, e => ProjectionsExtensions.ProcessDay(e.Expression));
+			RegisterCustomProjection(() => default(DateTimeOffset).Month, e => ProjectionsExtensions.ProcessMonth(e.Expression));
+		    RegisterCustomProjection(() => default(DateTimeOffset).Hour, e => ProjectionsExtensions.ProcessHour(e.Expression));
+		    RegisterCustomProjection(() => default(DateTimeOffset).Minute, e => ProjectionsExtensions.ProcessMinute(e.Expression));
+		    RegisterCustomProjection(() => default(DateTimeOffset).Second, e => ProjectionsExtensions.ProcessSecond(e.Expression));
+		    RegisterCustomProjection(() => default(DateTimeOffset).Date, e => ProjectionsExtensions.ProcessDate(e.Expression));
+
+			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), e => ProjectionsExtensions.ProcessYear(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), e => ProjectionsExtensions.ProcessDay(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), e => ProjectionsExtensions.ProcessMonth(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), e => ProjectionsExtensions.ProcessHour(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), e => ProjectionsExtensions.ProcessMinute(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), e => ProjectionsExtensions.ProcessSecond(e.Arguments[0]));
+			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTime)), e => ProjectionsExtensions.ProcessDate(e.Arguments[0]));
+
+            RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(decimal)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(byte)), ProjectionsExtensions.ProcessSqrt);
@@ -247,10 +265,20 @@ namespace NHibernate.Impl
 			if (methodCallExpression != null)
 			{
 				var signature = Signature(methodCallExpression.Method);
-				Func<MethodCallExpression, IProjection> processor;
+				Func<Expression, IProjection> processor;
 				if (_customProjectionProcessors.TryGetValue(signature, out processor))
 				{
 					return ProjectionInfo.ForProjection(processor(methodCallExpression));
+				}
+			}
+		    var memberExpression = expression as MemberExpression;
+            if (memberExpression != null)
+			{
+                var signature = Signature(memberExpression.Member);
+				Func<Expression, IProjection> processor;
+				if (_customProjectionProcessors.TryGetValue(signature, out processor))
+				{
+                    return ProjectionInfo.ForProjection(processor(memberExpression));
 				}
 			}
 
@@ -613,6 +641,11 @@ namespace NHibernate.Impl
 				+ ":" + methodInfo;
 		}
 
+		public static string Signature(MemberInfo memberInfo)
+		{
+		    return memberInfo.DeclaringType.FullName + ":" + memberInfo;
+		}
+
 		private static ICriterion ProcessCustomMethodCall(MethodCallExpression methodCallExpression)
 		{
 			string signature = Signature(methodCallExpression.Method);
@@ -783,10 +816,20 @@ namespace NHibernate.Impl
 		{
 			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
 			string signature = Signature(functionExpression.Method);
-			_customProjectionProcessors.Add(signature, functionProcessor);
+		    _customProjectionProcessors.Add(signature, e => functionProcessor((MethodCallExpression) e));
 		}
 
+        /// <summary>
+		/// Register a custom projection for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">Lambda expression demonstrating call of custom method</param>
+		/// <param name="functionProcessor">function to convert MethodCallExpression to IProjection</param>
+		public static void RegisterCustomProjection<T>(Expression<Func<T>> function, Func<MemberExpression, IProjection> functionProcessor)
+        {
+            MemberExpression functionExpression = (MemberExpression) function.Body;
+            string signature = Signature(functionExpression.Member);
+            _customProjectionProcessors.Add(signature, e => functionProcessor((MemberExpression) e));
+		}
 	}
-
 }
 

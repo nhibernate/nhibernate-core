@@ -316,6 +316,34 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void FunctionsOrder()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) });
+				s.Save(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) });
+				s.Save(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 05) });
+
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			using (s.BeginTransaction())
+			{
+			    var persons =
+			        s.QueryOver<Person>()
+			            .OrderBy(p => p.BirthDate.Year).Desc
+			            .List();
+
+			    persons.Count.Should().Be(3);
+			    persons[0].Name.Should().Be("p1");
+			    persons[1].Name.Should().Be("p2");
+			    persons[2].Name.Should().Be("p3");
+			}
+		}
+
+		[Test]
 		public void MultiCriteria()
 		{
 			var driver = sessions.ConnectionProvider.Driver;
