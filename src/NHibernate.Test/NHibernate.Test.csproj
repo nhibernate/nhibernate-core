@@ -586,6 +586,8 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\ImportTests.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3041\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3041\OneToOneToPropertyReference.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Cat.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Dog.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\IAnimal.cs" />
