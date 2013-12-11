@@ -25,27 +25,24 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		internal Expression _expression;
-		internal IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
-
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
-			_expression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
+			var linqExpression = NhPartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation, the log won't include e.g.
 			// subquery expressions if those are defined by the application in a variable referenced
 			// from the main query.
-			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
+			LinqLogging.LogExpression("Expression (partially evaluated)", linqExpression);
 
-			_constantToParameterMap = ExpressionParameterVisitor.Visit(_expression, sessionFactory);
+			var constantToParameterMap = ExpressionParameterVisitor.Visit(linqExpression, sessionFactory);
 
-			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
+			ParameterValuesByName = constantToParameterMap.Values.ToDictionary(p => p.Name,
 																				p => System.Tuple.Create(p.Value, p.Type));
 
-			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
+			Key = ExpressionKeyVisitor.Visit(linqExpression, constantToParameterMap);
 
-			Type = _expression.Type;
+			Type = linqExpression.Type;
 
 			// Note - re-linq handles return types via the GetOutputDataInfo method, and allows for SingleOrDefault here for the ChoiceResultOperator...
 			ReturnType = NhLinqExpressionReturnType.Scalar;
@@ -55,19 +52,19 @@ namespace NHibernate.Linq
 				Type = Type.GetGenericArguments()[0];
 				ReturnType = NhLinqExpressionReturnType.Sequence;
 			}
-		}
 
-		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
-		{
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var querySourceNamer = new QuerySourceNamer();
-			var queryModel = NhRelinqQueryParser.Parse(_expression);
-			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters, querySourceNamer);
+			var queryModel = NhRelinqQueryParser.Parse(linqExpression);
+			var visitorParameters = new VisitorParameters(sessionFactory, constantToParameterMap, requiredHqlParameters, querySourceNamer);
 
 			ExpressionToHqlTranslationResults = QueryModelVisitor.GenerateHqlQuery(queryModel, visitorParameters, true);
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
-			
+		}
+
+		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
+		{
 			return ExpressionToHqlTranslationResults.Statement.AstNode;
 		}
 
