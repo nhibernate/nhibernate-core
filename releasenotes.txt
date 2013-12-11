@@ -1,7 +1,15 @@
+Build vNext
+=============================
+
+** Known BREAKING CHANGES from NH4.0.0.Alpha1 to 4.0.0.Alpha1
+
+    Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+
+
 Build 4.0.0.Alpha1
 =============================
 
-** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.Alpha1
 
     NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
     now been changed to use corresponding types from the BCL. The API for these types
