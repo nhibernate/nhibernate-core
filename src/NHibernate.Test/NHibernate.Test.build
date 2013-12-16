@@ -22,7 +22,6 @@
 			<include name="System.Drawing.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.Data.OracleClient.dll" />
-			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />

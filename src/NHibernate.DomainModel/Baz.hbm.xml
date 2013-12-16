@@ -67,7 +67,6 @@
 		<set
 			name="FooSet"
 			lazy="true"
-			order-by="string_"
 			batch-size="3"
 		>
 			<key>

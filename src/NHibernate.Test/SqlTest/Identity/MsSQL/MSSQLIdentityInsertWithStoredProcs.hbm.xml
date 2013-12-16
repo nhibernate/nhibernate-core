@@ -18,8 +18,7 @@
 		</id>
 		<property name="Name" not-null="true" column="NAME"/>
 		<set name="Employments"
-			inverse="true"
-			order-by="DUMMY">
+			inverse="true">
 			<key column="EMPLOYER"/>
 			<!-- only needed for DDL generation -->
 			<one-to-many class="Employment"/>

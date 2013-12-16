@@ -20,7 +20,6 @@
 			<include name="System.Core.dll" />
 			<include name="System.XML.dll" />
 			<include name="System.Data.dll" />
-			<include name="Iesi.Collections.dll" />
 			<include name="NHibernate.dll" />
 		</assemblyfileset>
 		

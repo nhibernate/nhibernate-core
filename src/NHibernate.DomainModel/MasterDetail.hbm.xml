@@ -24,11 +24,11 @@
 			column="big_dec"
 		/>
 		-->
-		<set name="Details" inverse="true" lazy="true" order-by="i asc">
+		<set name="Details" inverse="true" lazy="true">
 			<key column="master_key"/>
 			<one-to-many class="NHibernate.DomainModel.Detail, NHibernate.DomainModel"/>
 		</set>
-		<set name="MoreDetails" cascade="all" lazy="true" order-by="i desc">
+		<set name="MoreDetails" cascade="all" lazy="true">
 			<key column="more_master_key"/>
 			<one-to-many class="NHibernate.DomainModel.Detail, NHibernate.DomainModel"/>
 		</set>

@@ -14,7 +14,7 @@
 		<many-to-one name="father" column="father_id"/>
 		<many-to-one name="zoo" column="zoo_id"/>
 		<property name="serialNumber"/>
-		<set name="offspring" order-by="father_id">
+		<set name="offspring">
 			<key column="mother_id"/>
 			<one-to-many class="Animal"/>
 		</set>

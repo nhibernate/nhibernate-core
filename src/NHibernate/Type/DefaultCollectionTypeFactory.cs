@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Bytecode;
@@ -38,7 +39,7 @@ namespace NHibernate.Type
 
 		public virtual CollectionType OrderedSet<T>(string role, string propertyRef, bool embedded)
 		{
-			return new GenericOrderedSetType<T>(role, propertyRef);
+			throw new NotImplementedException("This ICollectionTypeFactory doesn't support ordered sets!");
 		}
 
 		public virtual CollectionType Map<TKey, TValue>(string role, string propertyRef, bool embedded)

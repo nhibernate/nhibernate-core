@@ -28,14 +28,14 @@
 }]]></programlisting>
         
         <para>
-            The actual interface might be <literal>Iesi.Collections.ISet</literal>,
+            The actual interface might be,
             <literal>System.Collections.ICollection</literal>,
             <literal>System.Collections.IList</literal>,
             <literal>System.Collections.IDictionary</literal>,
             <literal>System.Collections.Generic.ICollection&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IList&lt;T&gt;</literal>,
             <literal>System.Collections.Generic.IDictionary&lt;K, V&gt;</literal>,
-            <literal>Iesi.Collections.Generic.ISet&lt;T&gt;</literal>
+            <literal>System.Collections.Generic.ISet&lt;T&gt;</literal>
             or ... anything you like! (Where "anything you like" means you will
             have to write an implementation of <literal>NHibernate.UserType.IUserCollectionType</literal>.)
         </para>

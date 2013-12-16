@@ -250,7 +250,6 @@
 		</copy>
 		<copy todir="${bin-pack.required}">
 			<fileset basedir="${bin.dir}">
-				<include name="Iesi.Collections.???" />
 				<include name="NHibernate.???" />
 			</fileset>
 		</copy>

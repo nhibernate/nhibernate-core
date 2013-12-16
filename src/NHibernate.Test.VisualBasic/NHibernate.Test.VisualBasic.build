@@ -19,7 +19,6 @@
 			<include name="System.Xml.dll" />
 			<include name="System.Data.dll" />
 			<include name="System.Data.OracleClient.dll" />
-			<include name="Iesi.Collections.dll" />
 			<include name="log4net.dll" />
 			<include name="NHibernate.Test.dll" />
 			<include name="NHibernate.DomainModel.dll" />

@@ -2,7 +2,6 @@
 <project SchemaVersion="2.0">
     <assemblies>
         <assembly location="${bin.dir}/NHibernate.dll" documentation="${bin.dir}/NHibernate.xml" />
-        <assembly location="${bin.dir}/Iesi.Collections.dll" documentation="${bin.dir}/Iesi.Collections.xml" />
     </assemblies>
     <referencePaths>
         <referencePath path="${bin.dir}/nant" />

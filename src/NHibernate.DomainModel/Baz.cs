@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using System.Linq;
 
 namespace NHibernate.DomainModel
@@ -430,7 +428,7 @@ namespace NHibernate.DomainModel
 			Bag.Add("duplicate");
 			Bag.Add("unique");
 
-			Cached = new LinkedHashSet<CompositeElement>();
+			Cached = new HashSet<CompositeElement>();
 
 			CompositeElement ce = new CompositeElement();
 			ce.Foo = "foo";

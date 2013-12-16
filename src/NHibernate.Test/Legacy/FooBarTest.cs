@@ -8,13 +8,11 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
-using NHibernate.Test.NHSpecificTest.NH1914;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -974,7 +972,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Glarch glarch1 = new Glarch();
-				glarch1.ProxySet = new LinkedHashSet<GlarchProxy>();
+				glarch1.ProxySet = new HashSet<GlarchProxy>();
 
 				Glarch glarch2 = new Glarch();
 				glarch1.ProxySet.Add(glarch1);
