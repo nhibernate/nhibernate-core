@@ -85,6 +85,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly bool autoCloseSessionEnabled;
 		[NonSerialized]
+		private readonly bool ignoreExceptionBeforeTransactionCompletion;
+		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
 
 		#region System.Runtime.Serialization.ISerializable Members
@@ -201,6 +203,7 @@ namespace NHibernate.Impl
 		/// <param name="entityMode">The entity-mode for this session</param>
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
+		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		internal SessionImpl(
 			IDbConnection connection,
@@ -211,6 +214,7 @@ namespace NHibernate.Impl
 			EntityMode entityMode,
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
+			bool ignoreExceptionBeforeTransactionCompletion,
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
@@ -229,6 +233,7 @@ namespace NHibernate.Impl
 				this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
 				this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 				this.connectionReleaseMode = connectionReleaseMode;
+				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 
 				if (factory.Statistics.IsStatisticsEnabled)
@@ -2198,7 +2203,8 @@ namespace NHibernate.Impl
 					{
 						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
 
-						throw;
+						if (ignoreExceptionBeforeTransactionCompletion == false)
+							throw;
 					}
 				}
 			}

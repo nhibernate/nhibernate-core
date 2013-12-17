@@ -125,6 +125,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
 
+		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptions { get; internal set; }
+
 		#endregion
 	}
 }
