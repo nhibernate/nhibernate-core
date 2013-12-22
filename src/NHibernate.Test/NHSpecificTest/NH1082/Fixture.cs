@@ -1,6 +1,7 @@
-using System.Collections;
+using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
@@ -15,7 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInBeforeTransactionCompletionAbortTransaction()
 		{
+#pragma warning disable 618
 			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
+#pragma warning restore 618
 
 			var c = new C {ID = 1, Value = "value"};
 
@@ -39,7 +42,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInSynchronizationBeforeTransactionCompletionAbortTransaction()
 		{
+#pragma warning disable 618
 			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
+#pragma warning restore 618
 
 			var c = new C { ID = 1, Value = "value" };
 
@@ -64,6 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 
 
 	[TestFixture]
+	[Obsolete("Can be removed when Environment.InterceptorsBeforeTransactionCompletionIgnoreExceptions is removed.")]
 	public class OldBehaviorEnabledFixture : BugTestCase
 	{
 		public override string BugNumber
