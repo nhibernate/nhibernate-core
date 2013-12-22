@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 using NHibernate.AdoNet;
 using NHibernate.Collection;
 using NHibernate.Criterion;
@@ -17,7 +16,6 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
-using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -86,6 +84,8 @@ namespace NHibernate.Impl
 		private readonly bool flushBeforeCompletionEnabled;
 		[NonSerialized]
 		private readonly bool autoCloseSessionEnabled;
+		[NonSerialized]
+		private readonly bool ignoreExceptionBeforeTransactionCompletion;
 		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
 
@@ -203,6 +203,7 @@ namespace NHibernate.Impl
 		/// <param name="entityMode">The entity-mode for this session</param>
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
+		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		internal SessionImpl(
 			IDbConnection connection,
@@ -213,6 +214,7 @@ namespace NHibernate.Impl
 			EntityMode entityMode,
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
+			bool ignoreExceptionBeforeTransactionCompletion,
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
@@ -231,6 +233,7 @@ namespace NHibernate.Impl
 				this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
 				this.autoCloseSessionEnabled = autoCloseSessionEnabled;
 				this.connectionReleaseMode = connectionReleaseMode;
+				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 
 				if (factory.Statistics.IsStatisticsEnabled)
@@ -935,7 +938,7 @@ namespace NHibernate.Impl
 				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
 			}
 		}
-		
+
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
@@ -2199,6 +2202,9 @@ namespace NHibernate.Impl
 					catch (Exception e)
 					{
 						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+
+						if (ignoreExceptionBeforeTransactionCompletion == false)
+							throw;
 					}
 				}
 			}
