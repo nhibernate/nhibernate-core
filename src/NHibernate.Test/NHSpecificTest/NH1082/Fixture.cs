@@ -17,23 +17,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		{
 			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
 
-			C c = new C();
-			c.ID = 1;
-			c.Value = "value";
+			var c = new C {ID = 1, Value = "value"};
 
 			var sessionInterceptor = new SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion();
 			using (ISession s = sessions.OpenSession(sessionInterceptor))
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(c);
-				try
-				{
-					t.Commit();
-					Assert.Fail("BadException expected");
-				}
-				catch (BadException)
-				{
-				}
+
+				Assert.Throws<BadException>(t.Commit);
 			}
 
 			using (ISession s = sessions.OpenSession())
@@ -45,22 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 	}
 
 	[TestFixture]
-	public class OldBehaviorEnabledFixture : TestCase
+	public class OldBehaviorEnabledFixture : BugTestCase
 	{
-		protected override IList Mappings
+		public override string BugNumber
 		{
-			get
-			{
-				return new string[]
-				{
-					"NHSpecificTest.NH1082.Mappings.hbm.xml"
-				};
-			}
-		}
-
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
+			get { return "NH1082"; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -74,23 +55,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		{
 			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
 
-			C c = new C();
-			c.ID = 1;
-			c.Value = "value";
+			var c = new C {ID = 1, Value = "value"};
 
 			var sessionInterceptor = new SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion();
 			using (ISession s = sessions.OpenSession(sessionInterceptor))
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(c);
-				try
-				{
-					t.Commit();
-				}
-				catch (BadException)
-				{
-					Assert.Fail("BadException not expected");
-				}
+
+				Assert.DoesNotThrow(t.Commit);
 			}
 
 			using (ISession s = sessions.OpenSession())
