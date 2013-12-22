@@ -265,9 +265,9 @@ namespace NHibernate.Cfg
 			log.Info("Named query checking : " + EnabledDisabled(namedQueryChecking));
 			settings.IsNamedQueryStartupCheckingEnabled = namedQueryChecking;
 
-      var interceptorsBeforeTransactionCompletionIgnoreExceptions = PropertiesHelper.GetBoolean(Environment.InterceptorsBeforeTransactionCompletionIgnoreExceptions, properties, false);
-      log.Info("Ignoring exceptions in BeforeTransactionCompletion : " + EnabledDisabled(interceptorsBeforeTransactionCompletionIgnoreExceptions));
-      settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions = interceptorsBeforeTransactionCompletionIgnoreExceptions;
+			var interceptorsBeforeTransactionCompletionIgnoreExceptions = PropertiesHelper.GetBoolean(Environment.InterceptorsBeforeTransactionCompletionIgnoreExceptions, properties, false);
+			log.Info("Ignoring exceptions in BeforeTransactionCompletion : " + EnabledDisabled(interceptorsBeforeTransactionCompletionIgnoreExceptions));
+			settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = interceptorsBeforeTransactionCompletionIgnoreExceptions;
  
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled

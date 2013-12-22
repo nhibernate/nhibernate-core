@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInBeforeTransactionCompletionAbortTransaction()
 		{
-			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
 
 			var c = new C {ID = 1, Value = "value"};
 
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInSynchronizationBeforeTransactionCompletionAbortTransaction()
 		{
-			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
 
 			var c = new C { ID = 1, Value = "value" };
 
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInBeforeTransactionCompletionAreIgnored()
 		{
-			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
 
 			var c = new C {ID = 1, Value = "value"};
 
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInSynchronizationBeforeTransactionCompletionAreIgnored()
 		{
-			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled);
 
 			var c = new C { ID = 1, Value = "value" };
 
