@@ -34,7 +34,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 				Assert.IsNull(objectInDb);
 			}
 		}
+
+
+		[Test]
+		public void ExceptionsInSynchronizationBeforeTransactionCompletionAbortTransaction()
+		{
+			Assert.IsFalse(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+
+			var c = new C { ID = 1, Value = "value" };
+
+			var synchronization = new SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion();
+			using (ISession s = sessions.OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				t.RegisterSynchronization(synchronization);
+
+				s.Save(c);
+
+				Assert.Throws<BadException>(t.Commit);
+			}
+
+			using (ISession s = sessions.OpenSession())
+			{
+				var objectInDb = s.Get<C>(1);
+				Assert.IsNull(objectInDb);
+			}
+		}
 	}
+
 
 	[TestFixture]
 	public class OldBehaviorEnabledFixture : BugTestCase
@@ -61,6 +88,36 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			using (ISession s = sessions.OpenSession(sessionInterceptor))
 			using (ITransaction t = s.BeginTransaction())
 			{
+				s.Save(c);
+
+				Assert.DoesNotThrow(t.Commit);
+			}
+
+			using (ISession s = sessions.OpenSession())
+			{
+				var objectInDb = s.Get<C>(1);
+
+				Assert.IsNotNull(objectInDb);
+
+				s.Delete(objectInDb);
+				s.Flush();
+			}
+		}
+
+
+		[Test]
+		public void ExceptionsInSynchronizationBeforeTransactionCompletionAreIgnored()
+		{
+			Assert.IsTrue(sessions.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptions);
+
+			var c = new C { ID = 1, Value = "value" };
+
+			var synchronization = new SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion();
+			using (ISession s = sessions.OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				t.RegisterSynchronization(synchronization);
+
 				s.Save(c);
 
 				Assert.DoesNotThrow(t.Commit);
