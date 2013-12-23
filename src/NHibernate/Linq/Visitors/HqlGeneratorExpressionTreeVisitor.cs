@@ -273,20 +273,14 @@ namespace NHibernate.Linq.Visitors
 			throw new InvalidOperationException();
 		}
 
+
 		private HqlTreeNode TranslateEqualityComparison(BinaryExpression expression, HqlExpression lhs, HqlExpression rhs, Func<HqlExpression, HqlTreeNode> applyNullComparison, Func<HqlExpression, HqlExpression, HqlTreeNode> applyRegularComparison)
 		{
 			// Check for nulls on left or right.
-			if (expression.Right is ConstantExpression && expression.Right.Type.IsNullableOrReference() &&
-				((ConstantExpression) expression.Right).Value == null)
-			{
+			if (VisitorUtil.IsNullConstant(expression.Right))
 				rhs = null;
-			}
-
-			if (expression.Left is ConstantExpression && expression.Left.Type.IsNullableOrReference() &&
-				((ConstantExpression) expression.Left).Value == null)
-			{
+			if (VisitorUtil.IsNullConstant(expression.Left))
 				lhs = null;
-			}
 
 			// Need to check for boolean equality
 			if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)

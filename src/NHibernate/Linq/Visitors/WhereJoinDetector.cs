@@ -131,14 +131,14 @@ namespace NHibernate.Linq.Visitors
 			{
 				HandleBinaryOperation((a, b) => a.OrElse(b));
 			}
-			else if (expression.NodeType == ExpressionType.NotEqual && IsNullConstantExpression(expression.Right))
+			else if (expression.NodeType == ExpressionType.NotEqual && VisitorUtil.IsNullConstant(expression.Right))
 			{
 				// Discard result from right null.  Left is visited first, so it's below right on the stack.
 				_values.Pop();
 
 				HandleUnaryOperation(pvs => pvs.IsNotNull());
 			}
-			else if (expression.NodeType == ExpressionType.NotEqual && IsNullConstantExpression(expression.Left))
+			else if (expression.NodeType == ExpressionType.NotEqual && VisitorUtil.IsNullConstant(expression.Left))
 			{
 				// Discard result from left null.
 				var right = _values.Pop();
@@ -147,14 +147,14 @@ namespace NHibernate.Linq.Visitors
 
 				HandleUnaryOperation(pvs => pvs.IsNotNull());
 			}
-			else if (expression.NodeType == ExpressionType.Equal && IsNullConstantExpression(expression.Right))
+			else if (expression.NodeType == ExpressionType.Equal && VisitorUtil.IsNullConstant(expression.Right))
 			{
 				// Discard result from right null.  Left is visited first, so it's below right on the stack.
 				_values.Pop();
 
 				HandleUnaryOperation(pvs => pvs.IsNull());
 			}
-			else if (expression.NodeType == ExpressionType.Equal && IsNullConstantExpression(expression.Left))
+			else if (expression.NodeType == ExpressionType.Equal && VisitorUtil.IsNullConstant(expression.Left))
 			{
 				// Discard result from left null.
 				var right = _values.Pop();
@@ -322,12 +322,6 @@ namespace NHibernate.Linq.Visitors
 			SetResultValues(values);
 			
 			return result;
-		}
-
-		private static bool IsNullConstantExpression(Expression expression)
-		{
-			var constant = expression as ConstantExpression;
-			return constant != null && constant.Value == null;
 		}
 
 		private void SetResultValues(ExpressionValues values)

@@ -636,5 +636,45 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
+
+
+		[Test(Description = "NH-3423")]
+		public void NullComparedToNewExpressionInWhereClause()
+		{
+			// Construction will never be equal to null, so the ternary should be collapsed
+			// to just the IfFalse expression. Without this collapsing, we cannot generate HQL.
+
+			var result = db.Products
+				.Select(p => new {Name = p.Name, Pr2 = new {ReorderLevel = p.ReorderLevel}})
+				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(45));
+		}
+
+		private class Pr2
+		{
+			public int ReorderLevel { get; set; }
+		}
+
+		private class Pr1
+		{
+			public string Name { get; set; }
+			public Pr2 Pr2 { get; set; }
+		}
+
+		[Test(Description = "NH-3423")]
+		public void NullComparedToMemberInitExpressionInWhereClause()
+		{
+			// Construction will never be equal to null, so the ternary should be collapsed
+			// to just the IfFalse expression. Without this collapsing, we cannot generate HQL.
+
+			var result = db.Products
+				.Select(p => new Pr1 { Name = p.Name, Pr2 = new Pr2 { ReorderLevel = p.ReorderLevel } })
+				.Where(pr1 => (pr1.Pr2 == null ? (int?)null : pr1.Pr2.ReorderLevel) > 6)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(45));
+		}
 	}
 }

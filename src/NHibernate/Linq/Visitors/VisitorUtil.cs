@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections;
 using System.Reflection;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -47,6 +48,28 @@ namespace NHibernate.Linq.Visitors
 		{
 			string memberName;
 			return IsDynamicComponentDictionaryGetter(expression, sessionFactory, out memberName);
+		}
+
+
+		public static bool IsNullConstant(Expression expression)
+		{
+			return expression is ConstantExpression &&
+			       expression.Type.IsNullableOrReference() &&
+			       ((ConstantExpression)expression).Value == null;
+		}
+
+
+		public static bool IsBooleanConstant(Expression expression, out bool value)
+		{
+			var constantExpr = expression as ConstantExpression;
+			if (constantExpr != null && constantExpr.Type == typeof (bool))
+			{
+				value = (bool) constantExpr.Value;
+				return true;
+			}
+
+			value = false; // Dummy value.
+			return false;
 		}
 	}
 }
