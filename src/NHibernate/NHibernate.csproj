@@ -642,6 +642,7 @@
     <Compile Include="TransactionException.cs" />
     <Compile Include="Transaction\AdoNetWithDistributedTransactionFactory.cs" />
     <Compile Include="Transaction\AdoTransaction.cs" />
+    <Compile Include="Transaction\AfterTransactionCompletes.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
