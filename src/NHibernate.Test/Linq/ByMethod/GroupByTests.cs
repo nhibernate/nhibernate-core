@@ -143,6 +143,18 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
+		[Test, KnownBug("NH-????"), Description("Discovered as part of NH-2560")]
+		public void SingleKeyPropertyGroupWithOrderByCount()
+		{
+			var result = db.Orders
+				.GroupBy(o => o.Customer)
+				.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
+				.Select(g => g.Key)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(89));
+		}
+
 		[Test, KnownBug("NH-3027")]
 		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
 		{
