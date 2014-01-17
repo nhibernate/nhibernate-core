@@ -4,19 +4,21 @@ namespace NHibernate.Test
 {
 	public class KnownBugAttribute : ExpectedExceptionAttribute
 	{
-		public KnownBugAttribute()
+		public KnownBugAttribute(string bug)
 		{
-			UserMessage = "Known bug";
+			UserMessage = "Known bug " + bug;
 		}
 
-		public KnownBugAttribute(System.Type exceptionType) : base(exceptionType)
+		public KnownBugAttribute(string bug, System.Type exceptionType) 
+			: base(exceptionType)
 		{
-			UserMessage = "Known bug";
+			UserMessage = "Known bug " + bug;
 		}
 
-		public KnownBugAttribute(string exceptionName) : base(exceptionName)
+		public KnownBugAttribute(string bug, string exceptionName)
+			: base(exceptionName)
 		{
-			UserMessage = "Known bug";
+			UserMessage = "Known bug " + bug;
 		}
 	}
 }

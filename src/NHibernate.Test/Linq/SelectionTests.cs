@@ -296,6 +296,22 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(4, timesheets[2].EntryCount);
 		}
 
+		[Test, KnownBug("NH-3045")]
+		public void CanSelectFirstElementFromChildCollection()
+		{
+			using (var log = new SqlLogSpy())
+			{
+				var orders = db.Customers
+					.Select(customer => customer.Orders.OrderByDescending(x => x.OrderDate).First())
+					.ToList();
+
+				Assert.That(orders, Has.Count.GreaterThan(0));
+
+				var text = log.GetWholeLog();
+				var count = text.Split(new[] { "SELECT" }, StringSplitOptions.None).Length - 1;
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
 
 		[Test]
 		public void CanSelectWrappedType()
