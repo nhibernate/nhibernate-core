@@ -11,7 +11,7 @@
 		<property name="Name" />
 		<property name="Age" />
 		<property name="BirthDate" />
-		<property name="BirthDateAsDateTimeOffset" />
+		<property name="BirthDateAsDateTimeOffset" type="NHibernate.Test.DateTimeOffsetUserType, NHibernate.Test" />
 		<property name="Blood" />
 		<component name="Detail" class="PersonDetail">
 			<property name="MaidenName" />
