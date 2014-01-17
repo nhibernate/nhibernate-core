@@ -806,6 +806,11 @@
     <Compile Include="NHSpecificTest\NH2808\Model.cs" />
     <Compile Include="NHSpecificTest\NH2812\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2812\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\NH2439Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\Organisation.cs" />
+    <Compile Include="NHSpecificTest\NH2439\OrganisationSearchResult.cs" />
+    <Compile Include="NHSpecificTest\NH2439\RtoScope.cs" />
+    <Compile Include="NHSpecificTest\NH2439\TrainingComponent.cs" />
     <Compile Include="NHSpecificTest\NH2880\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2880\Model.cs" />
     <Compile Include="NHSpecificTest\NH2500\Fixture.cs" />
@@ -3064,6 +3069,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
     <EmbeddedResource Include="NHSpecificTest\NH3010\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2439\Mappings.hbm.xml" />
     <EmbeddedResource Include="MappingByCode\IntegrationTests\NH2825\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2880\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2982\Mappings.hbm.xml" />
