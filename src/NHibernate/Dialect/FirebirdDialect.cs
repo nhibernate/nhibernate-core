@@ -128,6 +128,30 @@ namespace NHibernate.Dialect
 			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
 		}
 
+		#region Temporaray Table Support
+
+		public override bool SupportsTemporaryTables
+		{
+			get { return true; }
+		}
+
+		public override string CreateTemporaryTableString
+		{
+			get { return "create global temporary table"; }
+		}
+
+		public override bool? PerformTemporaryTableDDLInIsolation()
+		{
+			return true;
+		}
+
+		public override bool DropTemporaryTableAfterUse()
+		{
+			return true;
+		}
+
+		#endregion
+
 		private static int GetAfterSelectInsertPoint(SqlString text)
 		{
 			if (text.StartsWithCaseInsensitive("select"))
