@@ -1,18 +1,18 @@
 using System;
 using System.Data;
+using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Action;
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-
-using Antlr.Runtime;
 using NHibernate.SqlTypes;
+using NHibernate.Transaction;
 using NHibernate.Util;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -142,9 +142,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			else
 			{
-				work.DoWork(session.ConnectionManager.GetConnection(), null);
-				session.ConnectionManager.AfterStatement();
-			}
+        using (var dummyCommand = session.ConnectionManager.CreateCommand())
+        {
+          work.DoWork(dummyCommand.Connection, dummyCommand.Transaction);
+          session.ConnectionManager.AfterStatement();
+        }
+      }
 		}
 
 		protected virtual bool ShouldIsolateTemporaryTableDDL()
@@ -165,21 +168,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 				if (ShouldIsolateTemporaryTableDDL())
 				{
-					if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-					{
-						Isolater.DoIsolatedWork(work, session);
-					}
-					else
-					{
-						Isolater.DoNonTransactedWork(work, session);
-					}
-				}
-				else
-				{
-					work.DoWork(session.ConnectionManager.GetConnection(), null);
-					session.ConnectionManager.AfterStatement();
-				}
-			}
+          session.ConnectionManager.Transaction.RegisterSynchronization(new AfterTransactionCompletes((success) =>
+          {
+            if (Factory.Settings.IsDataDefinitionInTransactionSupported)
+            {
+              Isolater.DoIsolatedWork(work, session);
+            }
+            else
+            {
+              Isolater.DoNonTransactedWork(work, session);
+            }
+          }));
+        }
+        else
+        {
+          using (var sillyCommand = session.ConnectionManager.CreateCommand())
+          {
+            work.DoWork(sillyCommand.Connection, sillyCommand.Transaction);
+            session.ConnectionManager.AfterStatement();
+          }
+        }
+      }
 			else
 			{
 				// at the very least cleanup the data :)
@@ -229,7 +238,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				IDbCommand stmnt = null;
 				try
 				{
-					stmnt = session.ConnectionManager.CreateCommand();
+					stmnt = connection.CreateCommand();
+          stmnt.Transaction = transaction;
 					stmnt.CommandText = persister.TemporaryIdTableDDL;
 					stmnt.ExecuteNonQuery();
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
@@ -273,7 +283,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				IDbCommand stmnt = null;
 				try
 				{
-					stmnt = session.ConnectionManager.CreateCommand();
+					stmnt = connection.CreateCommand();
+          stmnt.Transaction = transaction;
 					stmnt.CommandText = "drop table " + persister.TemporaryIdTableName;
 					stmnt.ExecuteNonQuery();
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
