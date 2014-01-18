@@ -2,30 +2,34 @@
 
 namespace NHibernate.Transaction
 {
-  public class AfterTransactionCompletes : ISynchronization
-  {
-    #region Fields
-    private readonly Action<bool> _whenCompleted;
-    #endregion
+	public class AfterTransactionCompletes : ISynchronization
+	{
+		#region Fields
 
-    #region Constructors/Destructors
-    public AfterTransactionCompletes(Action<bool> whenCompleted)
-    {
-      _whenCompleted = whenCompleted;
-    }
-    #endregion
+		private readonly Action<bool> _whenCompleted;
 
-    #region ISynchronization Members
+		#endregion
 
-    public void BeforeCompletion()
-    {
-    }
+		#region Constructors/Destructors
 
-    public void AfterCompletion(bool success)
-    {
-      _whenCompleted(success);
-    }
+		public AfterTransactionCompletes(Action<bool> whenCompleted)
+		{
+			_whenCompleted = whenCompleted;
+		}
 
-    #endregion
-  }
+		#endregion
+
+		#region ISynchronization Members
+
+		public void BeforeCompletion()
+		{
+		}
+
+		public void AfterCompletion(bool success)
+		{
+			_whenCompleted(success);
+		}
+
+		#endregion
+	}
 }
