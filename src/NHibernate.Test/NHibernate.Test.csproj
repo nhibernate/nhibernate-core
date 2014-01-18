@@ -764,6 +764,8 @@
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Domain.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="NHSpecificTest\NH2955\Employee.cs" />
     <Compile Include="NHSpecificTest\NH2955\Fixture.cs" />
@@ -1182,6 +1184,7 @@
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
+    <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
     <Compile Include="Stateless\FetchingLazyCollections\LazyCollectionFetchTests.cs" />
@@ -3035,6 +3038,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3221\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2969\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml">

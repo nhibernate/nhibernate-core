@@ -436,6 +436,7 @@ namespace NHibernate.Impl
 				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					ConnectionManager.AfterNonTransactionalQuery(success);
+					AfterTransactionCompletion(success, null);
 				}
 			}
 		}

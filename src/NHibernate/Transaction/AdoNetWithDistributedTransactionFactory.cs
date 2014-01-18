@@ -146,8 +146,9 @@ namespace NHibernate.Transaction
 			{
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
-					sessionImplementor.AfterTransactionCompletion(false, null);
 					logger.Debug("rolled back DTC transaction");
+					// Currently AfterTransactionCompletion is called by the handler for the TransactionCompleted event.
+					//sessionImplementor.AfterTransactionCompletion(false, null);
 					enlistment.Done();
 					IsInActiveTransaction = false;
 				}
