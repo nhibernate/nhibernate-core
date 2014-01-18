@@ -12,6 +12,12 @@ namespace NHibernate.Transaction
 
 		#region Constructors/Destructors
 
+		/// <summary>
+		/// Create an AfterTransactionCompletes that will execute the given delegate
+		/// when the transaction is completed. The action delegate will receive
+		/// the value 'true' if the transaction was completed successfully.
+		/// </summary>
+		/// <param name="whenCompleted"></param>
 		public AfterTransactionCompletes(Action<bool> whenCompleted)
 		{
 			_whenCompleted = whenCompleted;
