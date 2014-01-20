@@ -18,6 +18,8 @@ namespace NHibernate.Linq
 
 	public class DefaultQueryProvider : INhQueryProvider
 	{
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null));
+
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
 			Session = session;
@@ -43,7 +45,7 @@ namespace NHibernate.Linq
 
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
-			MethodInfo m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
 			return (IQueryable) m.Invoke(this, new[] {expression});
 		}
