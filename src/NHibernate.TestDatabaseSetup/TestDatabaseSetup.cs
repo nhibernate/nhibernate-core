@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
+using System.Data.SqlServerCe;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -10,9 +11,9 @@ using NUnit.Framework;
 
 namespace NHibernate.TestDatabaseSetup
 {
-    [TestFixture]
-    public class DatabaseSetup
-    {
+	[TestFixture]
+	public class DatabaseSetup
+	{
 		private static IDictionary<string, Action<Cfg.Configuration>> SetupMethods;
 
 		static DatabaseSetup()
@@ -25,6 +26,7 @@ namespace NHibernate.TestDatabaseSetup
 			SetupMethods.Add("NHibernate.Driver.NpgsqlDriver", SetupNpgsql);
 			SetupMethods.Add("NHibernate.Driver.OracleDataClientDriver", SetupOracle);
 			SetupMethods.Add("NHibernate.Driver.MySqlDataDriver", SetupMySql);
+			SetupMethods.Add("NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe);
 		}
 
 		private static void SetupMySql(Cfg.Configuration obj)
@@ -111,6 +113,24 @@ namespace NHibernate.TestDatabaseSetup
 			}
 
 			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
+		}
+
+		private static void SetupSqlServerCe(Cfg.Configuration cfg)
+		{
+			try
+			{
+				if (File.Exists("NHibernate.sdf"))
+					File.Delete("NHibernate.sdf");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+
+			using (var en = new SqlCeEngine("DataSource=\"NHibernate.sdf\""))
+			{
+				en.CreateDatabase();
+			}
 		}
 
 		private static void SetupNpgsql(Cfg.Configuration cfg)
