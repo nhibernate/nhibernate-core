@@ -222,6 +222,7 @@
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
+    <Compile Include="DriverTest\FirebirdClientDriverFixture.cs" />
     <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
