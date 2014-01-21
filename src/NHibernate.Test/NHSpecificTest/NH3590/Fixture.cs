@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			}
 		}
 
-		[Test]
+		[Test, KnownBug("3590")]
 		public void ShouldUpdate()
 		{
 			entity.Dates.Add(DateTime.Now);
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			}
 		}
 
-		[Test]
+		[Test, KnownBug("3590")]
 		public void ShouldMerge()
 		{
 			entity.Dates.Add(DateTime.Now);
