@@ -46,6 +46,7 @@
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
+		<property name="nhibernate.command_timeout" value="0" />
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
@@ -59,6 +60,7 @@
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
 		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
+		<property name="nhibernate.command_timeout" value="0" />
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
 		<copy todir="${bin.dir}">
