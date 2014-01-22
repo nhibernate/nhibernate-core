@@ -105,7 +105,7 @@ namespace NHibernate.Driver
 
 		public override bool SupportsMultipleQueries
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
