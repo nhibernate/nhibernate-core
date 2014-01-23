@@ -1,15 +1,9 @@
-using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
 	public class MsSqlCe40Dialect : MsSqlCeDialect
 	{
-		public MsSqlCe40Dialect()
-		{
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
-		}
-
 		public override bool SupportsLimit
 		{
 			get { return true; }

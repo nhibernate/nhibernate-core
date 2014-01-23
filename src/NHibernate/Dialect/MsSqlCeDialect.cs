@@ -63,6 +63,8 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
