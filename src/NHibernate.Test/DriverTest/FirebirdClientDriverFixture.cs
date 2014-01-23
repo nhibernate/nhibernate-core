@@ -1,4 +1,5 @@
-﻿using NHibernate.Driver;
+﻿using System.Data;
+using NHibernate.Driver;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -18,38 +19,48 @@ namespace NHibernate.Test.DriverTest
 		public void ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooled()
 		{
 			MakeDriver();
-			var connection1 = _driver.CreateConnection();
-			var connection2 = _driver.CreateConnection();
-			connection1.ConnectionString = _connectionString;
-			connection2.ConnectionString = _connectionString;
+			var connection1 = MakeConnection();
+			var connection2 = MakeConnection();
 
+			//open first connection
 			connection1.Open();
-			//return the connection1 to the pool
+			VerifyCountOfEstablishedConnectionsIs(1);
+
+			//return it to the pool
 			connection1.Close();
+			VerifyCountOfEstablishedConnectionsIs(1);
+
 			//open the second connection
 			connection2.Open();
+			VerifyCountOfEstablishedConnectionsIs(1);
 
-			var physicalConnections = GetEstablishedConnections();
-			physicalConnections.Should().Be(1);
+			//return it to the pool
+			connection2.Close();
+			VerifyCountOfEstablishedConnectionsIs(1);
 		}
 
 		[Test]
 		public void ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooled()
 		{
 			MakeDriver();
-			var connection1 = _driver.CreateConnection();
-			var connection2 = _driver.CreateConnection();
-			connection1.ConnectionString = _connectionString;
-			connection2.ConnectionString = _connectionString;
+			var connection1 = MakeConnection();
+			var connection2 = MakeConnection();
 
+			//open first connection
 			connection1.Open();
-			connection2.Open();
-			//return both to the pool
-			connection1.Close();
-			connection2.Close();
+			VerifyCountOfEstablishedConnectionsIs(1);
 
-			var physicalConnections = GetEstablishedConnections();
-			physicalConnections.Should().Be(2);
+			//open second one
+			connection2.Open();
+			VerifyCountOfEstablishedConnectionsIs(2);
+
+			//return connection1 to the pool
+			connection1.Close();
+			VerifyCountOfEstablishedConnectionsIs(2);
+
+			//return connection2 to the pool
+			connection2.Close();
+			VerifyCountOfEstablishedConnectionsIs(2);
 		}
 
 		#endregion
@@ -64,6 +75,19 @@ namespace NHibernate.Test.DriverTest
 
 			_driver = new FirebirdClientDriver();
 			_connectionString = cfg.GetProperty("connection.connection_string");
+		}
+
+		private IDbConnection MakeConnection()
+		{
+			var result = _driver.CreateConnection();
+			result.ConnectionString = _connectionString;
+			return result;
+		}
+
+		private void VerifyCountOfEstablishedConnectionsIs(int expectedCount)
+		{
+			var physicalConnections = GetEstablishedConnections();
+			physicalConnections.Should().Be(expectedCount);
 		}
 
 		private int GetEstablishedConnections()
