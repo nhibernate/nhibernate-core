@@ -80,7 +80,20 @@ namespace NHibernate.Cfg
 
 		protected internal SettingsFactory settingsFactory;
 
-		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof(HbmMapping));
+		private static XmlSerializer mappingDocumentSerializerOrNull;
+
+		private static XmlSerializer MappingDocumentSerializer
+		{
+			get
+			{
+				if (mappingDocumentSerializerOrNull == null)
+				{
+					mappingDocumentSerializerOrNull = new XmlSerializer(typeof(HbmMapping));
+				}
+
+				return mappingDocumentSerializerOrNull;
+			}
+		}
 
 		#region ISerializable Members
 		public Configuration(SerializationInfo info, StreamingContext context)
@@ -1810,7 +1823,7 @@ namespace NHibernate.Cfg
 				{
 					var hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
-					return new NamedXmlDocument(name, hbmDocument, mappingDocumentSerializer);
+					return new NamedXmlDocument(name, hbmDocument, MappingDocumentSerializer);
 				}
 				catch (MappingException)
 				{
