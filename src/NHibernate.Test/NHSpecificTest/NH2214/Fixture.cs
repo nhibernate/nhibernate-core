@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 
 				var query = criteria.GetExecutableCriteria(session);
 
-				Assert.Throws<HibernateException>(() => query.List());
+				Assert.Catch<HibernateException>(() => query.List());
 			}
 		}
 
