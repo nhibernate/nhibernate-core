@@ -18,7 +18,7 @@ namespace NHibernate
 	/// transaction. (Long transactions might span several database transactions.)
 	/// </para>
 	/// <para>
-	/// The main function of the <c>ISession</c> is to offer create, find and delete operations
+	/// The main function of the <c>ISession</c> is to offer create, find, update, and delete operations
 	/// for instances of mapped entity classes. Instances may exist in one of two states:
 	/// <list type="bullet">
 	/// <item>transient: not associated with any <c>ISession</c></item>
