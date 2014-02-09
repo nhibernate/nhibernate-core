@@ -8,7 +8,7 @@ namespace NHibernate.Test.Linq
 {
 	public class ExpressionSessionLeakTest : LinqTestCase
 	{
-		[Test, KnownBug("NH-3579")]
+		[Test]
 		public void SessionGetsCollected()
 		{
 			var reference = DoLinqInSeparateSession();
