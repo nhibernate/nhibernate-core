@@ -196,7 +196,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
-			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
+			RegisterColumnType(DbType.Double, "FLOAT(53)");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
 			RegisterColumnType(DbType.Int64, "BIGINT");
