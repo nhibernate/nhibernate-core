@@ -88,17 +88,17 @@ namespace NHibernate.Collection.Generic.SetHelpers
 			get { return ((ICollection<T>)_elements).IsReadOnly; }
 		}
 
-		public T this[T element]
+		public bool TryGetValue(T element, out T value)
 		{
-			get
+			var idx = _elements.IndexOf(element);
+			if (idx >= 0)
 			{
-				var idx = _elements.IndexOf(element);
-				if (idx >= 0)
-				{
-					return _elements[idx];
-				}
-				return default(T);
+				value = _elements[idx];
+				return true;
 			}
+
+			value = default(T);
+			return false;
 		}
 	}
 }

@@ -109,10 +109,15 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 
-			return !(from object obj in WrappedSet
-					 let oldValue = snapshot[(T)obj]
-					 where oldValue == null || elementType.IsDirty(oldValue, obj, Session)
-					 select obj).Any();
+
+			foreach (T obj in WrappedSet)
+			{
+				T oldValue;
+				if (!snapshot.TryGetValue(obj, out oldValue) || elementType.IsDirty(oldValue, obj, Session))
+					return false;
+			}
+
+			return true;
 		}
 
 		public override bool IsSnapshotEmpty(object snapshot)
@@ -138,10 +143,10 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = (T)persister.ElementType.Assemble(array[i], Session, owner);
+				var element = persister.ElementType.Assemble(array[i], Session, owner);
 				if (element != null)
 				{
-					WrappedSet.Add(element);
+					WrappedSet.Add((T) element);
 				}
 			}
 			SetInitialized();
@@ -160,10 +165,10 @@ namespace NHibernate.Collection.Generic
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			var element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			if (element != null)
 			{
-				_tempList.Add(element);
+				_tempList.Add((T) element);
 			}
 			return element;
 		}
@@ -219,10 +224,13 @@ namespace NHibernate.Collection.Generic
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
-			deletes.AddRange(from obj in WrappedSet
-							 let oldValue = sn[obj]
-							 where oldValue != null && elementType.IsDirty(obj, oldValue, Session)
-							 select oldValue);
+
+			foreach (var obj in WrappedSet)
+			{
+				T oldValue;
+				if (sn.TryGetValue(obj, out oldValue) && elementType.IsDirty(obj, oldValue, Session))
+					deletes.Add(oldValue);
+			}
 
 			return deletes;
 		}
@@ -230,11 +238,12 @@ namespace NHibernate.Collection.Generic
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (ISetSnapshot<T>)GetSnapshot();
-			object oldKey = sn[(T)entry];
+			T oldKey;
+
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
-			return oldKey == null || elemType.IsDirty(oldKey, entry, Session);
+			return !sn.TryGetValue((T) entry, out oldKey) || elemType.IsDirty(oldKey, entry, Session);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
