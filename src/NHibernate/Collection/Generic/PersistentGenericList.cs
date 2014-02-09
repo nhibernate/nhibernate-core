@@ -251,14 +251,12 @@ namespace NHibernate.Collection.Generic
 				Write();
 				return ((IList)WrappedList).Add(value);
 			}
-			else
-			{
-				QueueOperation(new SimpleAddDelayedOperation(this, (T) value));
-				//TODO: take a look at this - I don't like it because it changes the 
-				// meaning of Add - instead of returning the index it was added at 
-				// returns a "fake" index - not consistent with IList interface...
-				return -1;
-			}
+
+			QueueOperation(new SimpleAddDelayedOperation(this, (T) value));
+			//TODO: take a look at this - I don't like it because it changes the 
+			// meaning of Add - instead of returning the index it was added at 
+			// returns a "fake" index - not consistent with IList interface...
+			return -1;
 		}
 
 		bool IList.Contains(object value)

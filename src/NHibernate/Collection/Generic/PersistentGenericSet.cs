@@ -526,11 +526,11 @@ namespace NHibernate.Collection.Generic
 
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
 
 			public ClearDelayedOperation(PersistentGenericSet<T> enclosingInstance)
 			{
-				this.enclosingInstance = enclosingInstance;
+				_enclosingInstance = enclosingInstance;
 			}
 
 			public object AddedInstance
@@ -545,24 +545,24 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
-				enclosingInstance.WrappedSet.Clear();
+				_enclosingInstance.WrappedSet.Clear();
 			}
 		}
 
 		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
-			private readonly T value;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
+			private readonly T _value;
 
 			public SimpleAddDelayedOperation(PersistentGenericSet<T> enclosingInstance, T value)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.value = value;
+				_enclosingInstance = enclosingInstance;
+				_value = value;
 			}
 
 			public object AddedInstance
 			{
-				get { return value; }
+				get { return _value; }
 			}
 
 			public object Orphan
@@ -572,19 +572,19 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
-				enclosingInstance.WrappedSet.Add(value);
+				_enclosingInstance.WrappedSet.Add(_value);
 			}
 		}
 
 		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
-			private readonly T value;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
+			private readonly T _value;
 
 			public SimpleRemoveDelayedOperation(PersistentGenericSet<T> enclosingInstance, T value)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.value = value;
+				_enclosingInstance = enclosingInstance;
+				_value = value;
 			}
 
 			public object AddedInstance
@@ -594,12 +594,12 @@ namespace NHibernate.Collection.Generic
 
 			public object Orphan
 			{
-				get { return value; }
+				get { return _value; }
 			}
 
 			public void Operate()
 			{
-				enclosingInstance.WrappedSet.Remove(value);
+				_enclosingInstance.WrappedSet.Remove(_value);
 			}
 		}
 

@@ -7,16 +7,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private Entity entity;
+		private Entity _entity;
 
 		protected override void OnSetUp()
 		{
-			entity = new Entity();
+			_entity = new Entity();
 			using (var s = OpenSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Save(entity);
+					s.Save(_entity);
 					tx.Commit();
 				}
 			}
@@ -25,12 +25,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 		[Test]
 		public void ShouldUpdate()
 		{
-			entity.Dates.Add(DateTime.Now);
+			_entity.Dates.Add(DateTime.Now);
 			using (var s = OpenSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Update(entity);
+					s.Update(_entity);
 					tx.Commit();
 				}
 			}
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					s.Get<Entity>(entity.Id).Dates.Count
+					s.Get<Entity>(_entity.Id).Dates.Count
 						.Should().Be.EqualTo(1);
 				}
 			}
@@ -48,12 +48,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 		[Test]
 		public void ShouldMerge()
 		{
-			entity.Dates.Add(DateTime.Now);
+			_entity.Dates.Add(DateTime.Now);
 			using (var s = OpenSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Merge(entity);
+					s.Merge(_entity);
 					tx.Commit();
 				}
 			}
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					s.Get<Entity>(entity.Id).Dates.Count
+					s.Get<Entity>(_entity.Id).Dates.Count
 						.Should().Be.EqualTo(1);
 				}
 			}
@@ -74,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Delete(s.Get<Entity>(entity.Id));
+					s.Delete(s.Get<Entity>(_entity.Id));
 					tx.Commit();
 				}
 			}
