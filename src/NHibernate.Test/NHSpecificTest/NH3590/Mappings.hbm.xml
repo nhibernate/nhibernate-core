@@ -3,14 +3,13 @@
 				   namespace="NHibernate.Test.NHSpecificTest.NH3590"
 				   assembly="NHibernate.Test">
 
-  <class name="Entity">
-    <id name="Id"
-          type="guid">
-      <generator class="guid.comb" />
-    </id>
-    <set name="Dates">
-      <key column="entity_id" />
-      <element column="Date" type="DateTime"/>
-    </set>
-  </class>
+    <class name="Entity">
+        <id name="Id" type="guid">
+            <generator class="guid.comb" />
+        </id>
+        <set name="Dates">
+            <key column="entity_id" />
+            <element column="DateValue" type="DateTime"/>
+        </set>
+    </class>
 </hibernate-mapping>
