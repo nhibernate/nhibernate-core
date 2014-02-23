@@ -695,6 +695,8 @@
     <Compile Include="NHSpecificTest\NH1082\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1082\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1082\SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Product.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
@@ -3021,6 +3023,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1082\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3571\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
