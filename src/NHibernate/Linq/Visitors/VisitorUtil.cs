@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Collections;
 using System.Reflection;
 using NHibernate.Util;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -30,12 +31,41 @@ namespace NHibernate.Linq.Visitors
 			if (member == null)
 				return false;
 
+			var memberPath = member.Member.Name;
 			var metaData = sessionFactory.GetClassMetadata(member.Expression.Type);
+
+			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
+			targetObject = member.Expression;
+			while (metaData == null && targetObject != null &&
+			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
+			        targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType))
+			{
+				System.Type memberType;
+				if (targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType)
+				{
+					var querySourceExpression = (QuerySourceReferenceExpression) targetObject;
+					memberType = querySourceExpression.Type;
+				}
+				else if (targetObject.NodeType == ExpressionType.Parameter)
+				{
+					var parameterExpression = (ParameterExpression) targetObject;
+					memberType = parameterExpression.Type;
+				}
+				else //targetObject.NodeType == ExpressionType.MemberAccess
+				{
+					var memberExpression = ((MemberExpression) targetObject);
+					memberPath = memberExpression.Member.Name + "." + memberPath;
+					memberType = memberExpression.Type;
+					targetObject = memberExpression.Expression;
+				}
+				metaData = sessionFactory.GetClassMetadata(memberType);
+			}
+
 			if (metaData == null)
 				return false;
 
 			// IDictionary can be mapped as collection or component - is it mapped as a component?
-			var propertyType = metaData.GetPropertyType(member.Member.Name);
+			var propertyType = metaData.GetPropertyType(memberPath);
 			return (propertyType != null && propertyType.IsComponentType);
 		}
 
