@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 	{
 		public Product()
 		{
-			Details=new ProductDetails();
+			Details = new ProductDetails();
 		}
 		public virtual string ProductId { get; set; }
 
