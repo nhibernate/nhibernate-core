@@ -15,6 +15,8 @@ namespace NHibernate.Mapping.ByCode
 			Sequence = new SequenceGeneratorDef();
 			Identity = new IdentityGeneratorDef();
 			Assigned = new AssignedGeneratorDef();
+			EnhancedSequence = new EnhancedSequenceGeneratorDef();
+			EnhancedTable = new EnhancedTableGeneratorDef();
 		}
 
 		public static IGeneratorDef Assigned { get; private set; }
@@ -24,6 +26,8 @@ namespace NHibernate.Mapping.ByCode
 		public static IGeneratorDef GuidComb { get; private set; }
 		public static IGeneratorDef Sequence { get; private set; }
 		public static IGeneratorDef Identity { get; private set; }
+		public static IGeneratorDef EnhancedSequence { get; private set; }
+		public static IGeneratorDef EnhancedTable { get; private set; }
 
 		public static IGeneratorDef Foreign<TEntity>(Expression<Func<TEntity, object>> property)
 		{
@@ -239,6 +243,58 @@ namespace NHibernate.Mapping.ByCode
 		public string Class
 		{
 			get { return "identity"; }
+		}
+
+		public object Params
+		{
+			get { return null; }
+		}
+
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
+		#endregion
+	}
+
+	public class EnhancedSequenceGeneratorDef : IGeneratorDef
+	{
+		#region Implementation of IGeneratorDef
+
+		public string Class
+		{
+			get { return "enhanced-sequence"; }
+		}
+
+		public object Params
+		{
+			get { return null; }
+		}
+
+		public System.Type DefaultReturnType
+		{
+			get { return typeof(int); }
+		}
+
+		public bool SupportedAsCollectionElementId
+		{
+			get { return true; }
+		}
+		#endregion
+	}
+
+	public class EnhancedTableGeneratorDef : IGeneratorDef
+	{
+		#region Implementation of IGeneratorDef
+
+		public string Class
+		{
+			get { return "enhanced-table"; }
 		}
 
 		public object Params
