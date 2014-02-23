@@ -36,12 +36,14 @@ namespace NHibernate.Linq.Visitors
 
 			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
 			targetObject = member.Expression;
-			while (metaData == null && targetObject != null && (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter || (int)targetObject.NodeType == 100001))
+			while (metaData == null && targetObject != null &&
+			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
+			        targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType))
 			{
 				System.Type memberType;
-				if ((int)targetObject.NodeType == 100001)
+				if (targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType)
 				{
-					var querySourceExpression = (QuerySourceReferenceExpression)targetObject;
+					var querySourceExpression = (QuerySourceReferenceExpression) targetObject;
 					memberType = querySourceExpression.Type;
 				}
 				else if (targetObject.NodeType == ExpressionType.Parameter)
@@ -51,14 +53,14 @@ namespace NHibernate.Linq.Visitors
 				}
 				else //targetObject.NodeType == ExpressionType.MemberAccess
 				{
-					var memberExpression = ((MemberExpression)targetObject);
+					var memberExpression = ((MemberExpression) targetObject);
 					memberPath = memberExpression.Member.Name + "." + memberPath;
 					memberType = memberExpression.Type;
 					targetObject = memberExpression.Expression;
 				}
 				metaData = sessionFactory.GetClassMetadata(memberType);
-				
 			}
+
 			if (metaData == null)
 				return false;
 
