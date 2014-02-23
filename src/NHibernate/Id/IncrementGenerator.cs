@@ -27,11 +27,11 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
+		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
 
-		private long next;
+		private long _next;
 		private SqlString _sql;
-		private System.Type returnClass;
+		private System.Type _returnClass;
 
 		/// <summary>
 		///
@@ -49,9 +49,12 @@ namespace NHibernate.Id
 			if (!parms.TryGetValue("tables", out tableList))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.Tables, out tableList);
 			string[] tables = tableList.Split(", ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
 			if (!parms.TryGetValue("column", out column))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.PK, out column);
-			returnClass = type.ReturnedClass;
+
+			_returnClass = type.ReturnedClass;
+
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schema);
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalog);
 
@@ -89,12 +92,12 @@ namespace NHibernate.Id
 			{
 				GetNext(session);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(next++, returnClass);
+			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
 		private void GetNext(ISessionImplementor session)
 		{
-			log.Debug("fetching initial value: " + _sql);
+			Logger.Debug("fetching initial value: " + _sql);
 
 			try
 			{
@@ -107,14 +110,14 @@ namespace NHibernate.Id
 					{
 						if (reader.Read())
 						{
-							next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
+							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{
-							next = 1L;
+							_next = 1L;
 						}
 						_sql = null;
-						log.Debug("first free id: " + next);
+						Logger.Debug("first free id: " + _next);
 					}
 					finally
 					{
@@ -128,7 +131,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				log.Error("could not get increment value", sqle);
+				Logger.Error("could not get increment value", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 												 "could not fetch initial value for increment generator");
 			}

@@ -9,8 +9,10 @@ namespace NHibernate.Test.DriverTest
 	public class FirebirdClientDriverFixture
 	{
 		#region Fields
+
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
+
 		#endregion
 
 		#region Tests
@@ -66,6 +68,7 @@ namespace NHibernate.Test.DriverTest
 		#endregion
 
 		#region Private Members
+
 		private void MakeDriver()
 		{
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
@@ -99,10 +102,11 @@ namespace NHibernate.Test.DriverTest
 				using (var cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = "select count(*) from mon$attachments where mon$attachment_id <> current_connection";
-					return (int)cmd.ExecuteScalar();
+					return (int) cmd.ExecuteScalar();
 				}
 			}
 		}
+
 		#endregion
 	}
 }
