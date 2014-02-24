@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using NHibernate.Util;
@@ -406,6 +407,11 @@ namespace NHibernate
 			if (proxy.IsProxy())
 			{
 				return ((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementation().GetType();
+			}
+			//NH-3448 Fix GuessEntityName
+			else if ((proxy is IProxy) && (proxy is IFieldInterceptorAccessor))
+			{
+				return (proxy as IFieldInterceptorAccessor).FieldInterceptor.MappedClass;
 			}
 			else
 			{

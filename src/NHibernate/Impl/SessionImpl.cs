@@ -19,6 +19,7 @@ using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -1059,6 +1060,11 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
+				//NH-3448 Fix GuessEntityName
+				if ((entity is IProxy) && (entity is IFieldInterceptorAccessor))
+				{
+					return (entity as IFieldInterceptorAccessor).FieldInterceptor.EntityName;
+				}
 				string entityName = interceptor.GetEntityName(entity);
 				if (entityName == null)
 				{
