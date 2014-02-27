@@ -203,5 +203,11 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToList();
 		}
+
+		[Test(Description = "NH-3445"), KnownBug("NH-3445")]
+		public void OrderByWithSelectDistinctAndTake()
+		{
+			db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToList();
+		}
 	}
 }
