@@ -100,7 +100,7 @@ namespace NHibernate.Mapping.ByCode
 				return memberOfDeclaringType;
 			}
 
-			return typeof (TEntity).GetProperty(memberOfDeclaringType.Name, memberOfDeclaringType.GetPropertyOrFieldType());
+			return typeof (TEntity).GetProperty(memberOfDeclaringType.Name, PropertiesOfClassHierarchy, null, memberOfDeclaringType.GetPropertyOrFieldType(), new System.Type[0], null);
 		}
 
 		public static MemberInfo GetMemberFromDeclaringType(this MemberInfo source)
