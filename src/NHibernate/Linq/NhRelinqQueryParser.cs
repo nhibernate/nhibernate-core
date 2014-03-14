@@ -78,6 +78,13 @@ namespace NHibernate.Linq
 					}, typeof (TimeoutExpressionNode)
 				);
 
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.AsReadOnly<object>(null)),
+					}, typeof(AsReadOnlyExpressionNode)
+				);
+
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
@@ -168,6 +175,25 @@ namespace NHibernate.Linq
 		}
 	}
 
+	internal class AsReadOnlyExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+
+		public AsReadOnlyExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new AsReadOnlyResultOperator(_parseInfo);
+		}
+	}
 
 	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
 	{
@@ -189,6 +215,35 @@ namespace NHibernate.Linq
 		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
 		{
 			return new TimeoutResultOperator(_parseInfo, _timeout);
+		}
+	}
+
+	internal class AsReadOnlyResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+
+		public AsReadOnlyResultOperator(MethodCallExpressionParseInfo parseInfo)
+		{
+			ParseInfo = parseInfo;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
 		}
 	}
 

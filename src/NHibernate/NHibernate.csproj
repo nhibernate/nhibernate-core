@@ -311,6 +311,7 @@
     <Compile Include="Linq\Visitors\JoinBuilder.cs" />
     <Compile Include="Linq\Visitors\PagingRewriterSelectClauseVisitor.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAsReadOnly.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
