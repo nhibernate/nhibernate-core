@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Odbc;
 using System.Data.SqlClient;
+using System.Data.SqlServerCe;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using NHibernate.Test;
@@ -24,7 +25,8 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.MySqlDataDriver", SetupMySql},
 				{"NHibernate.Driver.OracleClientDriver", SetupOracle},
-				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle}
+				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle},
+				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe}
 			};
 
 		private static void SetupMySql(Cfg.Configuration obj)
@@ -111,6 +113,24 @@ namespace NHibernate.TestDatabaseSetup
 			}
 
 			FbConnection.CreateDatabase("Database=NHibernate.fdb;ServerType=1");
+		}
+
+		private static void SetupSqlServerCe(Cfg.Configuration cfg)
+		{
+			try
+			{
+				if (File.Exists("NHibernate.sdf"))
+					File.Delete("NHibernate.sdf");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+
+			using (var en = new SqlCeEngine("DataSource=\"NHibernate.sdf\""))
+			{
+				en.CreateDatabase();
+			}
 		}
 
 		private static void SetupNpgsql(Cfg.Configuration cfg)

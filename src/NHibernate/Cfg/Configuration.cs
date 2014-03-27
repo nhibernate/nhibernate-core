@@ -80,8 +80,6 @@ namespace NHibernate.Cfg
 
 		protected internal SettingsFactory settingsFactory;
 
-		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof(HbmMapping));
-
 		#region ISerializable Members
 		public Configuration(SerializationInfo info, StreamingContext context)
 		{
@@ -1810,7 +1808,7 @@ namespace NHibernate.Cfg
 				{
 					var hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
-					return new NamedXmlDocument(name, hbmDocument, mappingDocumentSerializer);
+					return new NamedXmlDocument(name, hbmDocument);
 				}
 				catch (MappingException)
 				{

@@ -42,6 +42,34 @@
 		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerOdbc/NHibernate.Test.last-results.xml" />
 	</target>
 
+	<target name="setup-teamcity-sqlServerCe32">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
+		<property name="nhibernate.command_timeout" value="0" />
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/X86">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="setup-teamcity-sqlServerCe64">
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.SqlServerCeDriver" />
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSqlCe40Dialect" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=NHibernate.sdf" />
+		<property name="nhibernate.command_timeout" value="0" />
+		<property name="NHibernate.Test.IgnoreFail" value="true" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/sqlServerCe/NHibernate.Test.last-results.xml" />
+		<copy todir="${bin.dir}">
+			<fileset basedir="${root.dir}/lib/teamcity/sqlServerCe/AMD64">
+				<include name="*.dll"/>
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="setup-teamcity-firebird32">
 		<property name="nhibernate.connection.driver_class"				value="NHibernate.Driver.FirebirdClientDriver" />
 		<property name="nhibernate.dialect"												value="NHibernate.Dialect.FirebirdDialect" />
