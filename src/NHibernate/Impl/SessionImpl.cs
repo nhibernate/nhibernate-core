@@ -286,7 +286,7 @@ namespace NHibernate.Impl
 					futureCriteriaBatch = new FutureCriteriaBatch(this);
 				return futureCriteriaBatch;
 			}
-			internal set
+			protected internal set
 			{
 				futureCriteriaBatch = value;
 			}
@@ -300,7 +300,7 @@ namespace NHibernate.Impl
 					futureQueryBatch = new FutureQueryBatch(this);
 				return futureQueryBatch;
 			}
-			internal set
+			protected internal set
 			{
 				futureQueryBatch = value;
 			}
