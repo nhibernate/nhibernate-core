@@ -56,5 +56,27 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 			        );
 			}
 		}
+
+	    [Test]
+	    public void GroupByClauseHasParameterSet()
+	    {
+            using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+			    MappingEntity mappingEntity = null;
+			    Assert.DoesNotThrow(() =>
+			        session.QueryOver<Entity>().SelectList(
+			            builder =>
+			                builder.Select(Projections.GroupProperty(
+			                    Projections.Conditional(
+			                        Restrictions.Eq(Projections.Property<Entity>(x => x.Name), ""),
+			                        Projections.Constant(1), Projections.Constant(2)))
+			                    .WithAlias(() => mappingEntity.Count))
+			            )
+			            .TransformUsing(Transformers.AliasToBean<MappingEntity>()).List<MappingEntity>()
+			        );
+			}
+	        
+	    }
 	}
 }

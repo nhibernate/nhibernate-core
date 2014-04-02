@@ -43,15 +43,15 @@ namespace NHibernate.Loader
 		{
 			WalkEntityTree(persister, Alias);
 			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString.ToString(), havingString, lockMode);
+			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
 		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
 		{
-			InitStatementString(null, condition, orderBy, string.Empty, null, lockMode);
+			InitStatementString(null, condition, orderBy, null, null, lockMode);
 		}
 
-		private void InitStatementString(SqlString projection,SqlString condition, SqlString orderBy, string groupBy, SqlString having, LockMode lockMode)
+		private void InitStatementString(SqlString projection,SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
 			int joins = CountEntityPersisters(associations);
 			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);

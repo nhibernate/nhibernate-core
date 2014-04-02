@@ -683,6 +683,9 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3609\MappingEntity.cs" />
+    <Compile Include="NHSpecificTest\NH3609\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3609\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
@@ -3014,6 +3017,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2865\Mappings.hbm.xml" />
