@@ -27,27 +27,23 @@ namespace NHibernate.Criterion
 			return (distinct) ? "distinct " + base.ToString() : base.ToString();
 		}
 
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery,
-		                                      IDictionary<string, IFilter> enabledFilters)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlStringBuilder buf = new SqlStringBuilder().Add("count(");
+			var buf = new SqlStringBuilder().Add("count(");
 			if (distinct)
 			{
 				buf.Add("distinct ");
 			}
-		    string column;
-            if(projection!=null)
-            {
-                column =
-                    SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery,
-                                                                               enabledFilters)).ToString();
-            }
-            else
-            {
-                column = criteriaQuery.GetColumn(criteria, propertyName);
-            }
+			if (projection != null)
+			{
+				buf.Add(SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery, enabledFilters)));
+			}
+			else
+			{
+				buf.Add(criteriaQuery.GetColumn(criteria, propertyName));
+			}
 
-		    buf.Add(column).Add(") as y").Add(position.ToString()).Add("_");
+			buf.Add(") as y").Add(position.ToString()).Add("_");
 			return buf.ToSqlString();
 		}
 
