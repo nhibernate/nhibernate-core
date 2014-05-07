@@ -1,3 +1,53 @@
+Build 3.4.0.CR1
+=============================
+
+** Sub-task
+    * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
+
+
+** Bug
+    * [NH-2128] - Interceptor fires AfterTransactionCompletion too many times with distributed transactions and user-supplied connections
+    * [NH-2921] - IsSpecialName of getter/setter method of proxy property returns false
+    * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
+    * [NH-2943] - Mapping XmlDocument (.NET) to XmlType (Oracle). Class XmlDocType not working.
+    * [NH-2963] - Validation on a collection property (mapped with Loquacious config) raise an exception [Invalid expression type: Expected ExpressionType.MemberAccess, Found Convert]
+    * [NH-3103] - ManyToAny ByCode does not use field customizer 
+    * [NH-3140] - Bag ManyToMany column is ignored if it's the same as the child entity name and is replaced with "elt" in the sql.
+    * [NH-3190] - QuerySyntaxException is thrown when where contains subselect that matches bool value
+    * [NH-3234] - Merge is failing with "Unable to resolve property"
+    * [NH-3237] - Max and Min aggregate expressions do not work for custom UserType due to unnecessary HQL Cast
+    * [NH-3277] - LINQ Projection of Int64 using ToString method causes "cast as char" instead of "cast as nvarchar" in MsSqlCe dialect
+    * [NH-3280] - Mapping OneToOne doesn't work for inherited members
+    * [NH-3315] - Distinct paging problem with alias SQL Server 2005
+    * [NH-3405] - Cannot Use XDocument When Setting Wrap Resultsets
+    * [NH-3496] - NHibernate SqlServer2012Dialect drop sequence bug
+    * [NH-3505] - Stateless sessions fail to save relationships pointing to proxies when versioning is enabled
+    * [NH-3572] - AfterTransactionCompletion called twice if a distributed transaction is rolled back
+    * [NH-3592] - Failed to execute multi criteria with Ms Sql Ce 4.0
+    * [NH-3614] - Cannot create project an enumerable of non-mapped objects (List<string>)
+    * [NH-3615] - Incorrect assumption that namespace always exists
+
+** Improvement
+    * [NH-2005] - hql concat function not registered in MsSqlCeDialect
+    * [NH-2958] - Delay creation of instance of XmlSerializer (loading xml assembly) until its needed.
+    * [NH-3465] - Add support of IIF function for Oracle
+    * [NH-3466] - Register MySQL functions
+    * [NH-3467] - Add support of 2-arg LOCATE function
+    * [NH-3608] - AbstractSessionImpl abstract method visibility
+
+** New Feature
+    * [NH-2405] - MySQL5InnoDBDialect
+    * [NH-3192] - MsSqlCeDialect should override date manipulation functions
+    * [NH-3193] - MsSqlCeDialect should correct override string manipulation functions
+    * [NH-3194] - MsSqlCe40Dialect should support variable limits
+    * [NH-3195] - MsSqlCeDialect should support TOP limit
+    * [NH-3196] - MsSqlCeDialect should support guid.native id generator
+
+** Patch
+    * [NH-2996] - MySQL 5.5 + .NET Connector 6.2+ and GUIDs: Need to use CHAR(36)
+    * [NH-3209] - DateTimeOffset properties have not been considered; only the properties of DateTime have been considered
+
+
 Build 3.3.3.SP1
 =============================
 
@@ -24,6 +74,7 @@ BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
 
 ** Bug
     * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
+    * [NH-3096] - Linq - does not support GetValueOrDefault()
     * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
     * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
     * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>
