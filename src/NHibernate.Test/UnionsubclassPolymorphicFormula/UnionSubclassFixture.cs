@@ -20,7 +20,7 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 			get { return new string[] { "UnionsubclassPolymorphicFormula.Party.hbm.xml" }; }
 		}
 
-		[Test]
+		[Test, KnownBug("NH-2354")]
 		public void QueryOverPersonTest()
 		{
 			using (ISession s = OpenSession())
@@ -45,7 +45,7 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 			}
 		}
 
-		[Test]
+		[Test, KnownBug("NH-2354")]
 		public void QueryOverCompanyTest()
 		{
 			using (ISession s = OpenSession())
