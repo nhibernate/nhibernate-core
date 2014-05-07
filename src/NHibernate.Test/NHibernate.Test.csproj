@@ -707,6 +707,9 @@
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
+    <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
     <Compile Include="NHSpecificTest\NH3505\Teacher.cs" />
     <Compile Include="NHSpecificTest\NH3505\Fixture.cs" />
@@ -3030,6 +3033,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3614\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
@@ -3552,6 +3556,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH3615\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

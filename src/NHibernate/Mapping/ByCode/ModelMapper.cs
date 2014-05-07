@@ -557,7 +557,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				defaultAssemblyName = firstType.Assembly.GetName().Name;
 			}
-			if (firstType != null && typeToMap.All(t => t.Namespace.Equals(firstType.Namespace)))
+			if (firstType != null && typeToMap.All(t => t.Namespace == firstType.Namespace))
 			{
 				defaultNamespace = firstType.Namespace;
 			}
