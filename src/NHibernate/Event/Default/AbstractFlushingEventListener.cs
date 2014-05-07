@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using NHibernate.Action;
@@ -80,7 +81,7 @@ namespace NHibernate.Event.Default
 					.Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 
 				log.Debug(sb.ToString());
-				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.GetEnumerator(), session.EntityMode);
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator(), session.EntityMode);
 			}
 		}
 
