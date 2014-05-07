@@ -210,7 +210,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 
 		
 		[Test(Description = "NH2961/3311")]
-		[Ignore("Not fixed yet.")]
 		public void CanCacheCriteriaWithLeftJoinAndResultTransformer()
 		{
 			Post posts = null;
@@ -229,7 +228,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 
 
 		[Test(Description = "NH2961/3311")]
-		[Ignore("Not fixed yet.")]
 		public void CanCacheCriteriaWithEagerLoadAndResultTransformer()
 		{
 			using (new Scenario(Sfi))

@@ -25,7 +25,7 @@ namespace NHibernate.Transform
 	/// </code>
 	/// </example>
 	[Serializable]
-	public class AliasToBeanResultTransformer : IResultTransformer
+	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer
 	{
 		private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		private readonly System.Type resultClass;
@@ -59,7 +59,14 @@ namespace NHibernate.Transform
 				                            	});
 		}
 
-		public object TransformTuple(object[] tuple, String[] aliases)
+
+		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
+		{
+			return false;
+		}	
+
+
+		public override object TransformTuple(object[] tuple, String[] aliases)
 		{
 			if (aliases == null)
 			{
@@ -107,7 +114,7 @@ namespace NHibernate.Transform
 			return result;
 		}
 
-		public IList TransformList(IList collection)
+		public override IList TransformList(IList collection)
 		{
 			return collection;
 		}

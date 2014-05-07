@@ -23,10 +23,14 @@ namespace NHibernate.Loader.Criteria
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
 		private readonly IType[] resultTypes;
+		private readonly bool[] includeInResultRow;
+
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
 		private readonly IList<string> userAliasList = new List<string>();
+		private readonly IList<IType> resultTypeList = new List<IType>();
+		private readonly IList<bool> includeInResultRowList = new List<bool>();
 
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaJoinWalker));
 
@@ -41,8 +45,6 @@ namespace NHibernate.Loader.Criteria
 
 			if (translator.HasProjection)
 			{
-				resultTypes = translator.ProjectedTypes;
-
 				InitProjection(
 					translator.GetSelect(enabledFilters),
 					translator.GetWhereCondition(enabledFilters),
@@ -51,16 +53,26 @@ namespace NHibernate.Loader.Criteria
 					translator.GetHavingCondition(enabledFilters),
 					enabledFilters, 
 					LockMode.None);
+
+				resultTypes = translator.ProjectedTypes;
+				userAliases = translator.ProjectedAliases;
+				includeInResultRow = new bool[resultTypes.Length];
+				ArrayHelper.Fill(IncludeInResultRow, true);
 			}
 			else
 			{
-				resultTypes = new IType[] {TypeFactory.ManyToOne(persister.EntityName)};
-
 				InitAll(translator.GetWhereCondition(enabledFilters), translator.GetOrderBy(), LockMode.None);
-			}
 
-			userAliasList.Add(criteria.Alias); //root entity comes *last*
-			userAliases = userAliasList.ToArray();
+				resultTypes = new IType[] { TypeFactory.ManyToOne(persister.EntityName) };
+
+				// root entity comes last
+				userAliasList.Add(criteria.Alias); //root entity comes *last*
+				resultTypeList.Add(translator.ResultType(criteria));
+				includeInResultRowList.Add(true);
+				userAliases = userAliasList.ToArray();
+				resultTypes = resultTypeList.ToArray();
+				includeInResultRow = includeInResultRowList.ToArray();
+			}
 		}
 
 		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
@@ -89,6 +101,11 @@ namespace NHibernate.Loader.Criteria
 		public string[] UserAliases
 		{
 			get { return userAliases; }
+		}
+
+		public bool[] IncludeInResultRow
+		{
+			get { return includeInResultRow; }
 		}
 
 		/// <summary>
@@ -154,6 +171,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
+			// TODO: deal with side-effects (changes to includeInSelectList, userAliasList, resultTypeList)!!!
 			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias(); 
 			if(shouldCreateUserAlias == false  && joinable.IsCollection)
 			{
@@ -167,11 +185,22 @@ namespace NHibernate.Loader.Criteria
 				string sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 				if (sqlAlias != null)
 				{
-					userAliasList.Add(subcriteria.Alias); //alias may be null
+					if (!translator.HasProjection)
+					{
+						includeInResultRowList.Add(subcriteria.Alias != null);
+						if (subcriteria.Alias!=null)
+						{
+							userAliasList.Add(subcriteria.Alias); //alias may be null
+							resultTypeList.Add(translator.ResultType(subcriteria));
+						}
+					}
 					return sqlAlias; //EARLY EXIT
 				}
-
-				userAliasList.Add(null);
+				else
+				{
+					if (!translator.HasProjection)
+						includeInResultRowList.Add(false);
+				}
 			}
 			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
 		}

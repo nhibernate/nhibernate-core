@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public class DistinctRootEntityResultTransformer : IResultTransformer
+	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
 		private static readonly object Hasher = new object();
@@ -58,6 +58,22 @@ namespace NHibernate.Transform
 										list.Count, result.Count));
 			}
 			return result;
+		}
+
+
+		public bool[] IncludeInTransform(String[] aliases, int tupleLength)
+		{
+			//return RootEntityResultTransformer.INSTANCE.includeInTransform(aliases, tupleLength);
+			var transformer = new RootEntityResultTransformer();
+			return transformer.IncludeInTransform(aliases, tupleLength);
+		}
+
+
+		public bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
+		{
+			//return RootEntityResultTransformer.INSTANCE.isTransformedValueATupleElement(null, tupleLength);
+			var transformer = new RootEntityResultTransformer();
+			return transformer.IsTransformedValueATupleElement(null, tupleLength);
 		}
 
 		public override bool Equals(object obj)

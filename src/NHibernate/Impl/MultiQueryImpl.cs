@@ -697,7 +697,7 @@ namespace NHibernate.Impl
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
