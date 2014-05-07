@@ -49,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				cm.Bag(x => x.Addresses, cp => { }, cr => { });
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping, "Street", "Number", "Owner");
+			VerifyMapping(mapping, false, "Street", "Number", "Owner");
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				}));
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping, "Street", "Number", "Owner");
+			VerifyMapping(mapping, false, "Street", "Number", "Owner");
 		}
 
 		[Test]
@@ -94,10 +94,10 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				}));
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping, "Street", "Number");
+			VerifyMapping(mapping, true, "Street", "Number");
 		}
 
-		private void VerifyMapping(HbmMapping mapping, params string[] properties)
+		private void VerifyMapping(HbmMapping mapping, bool hasParent, params string[] properties)
 		{
 			HbmClass rc = mapping.RootClasses.First(r => r.Name.Contains("Person"));
 			var relation = rc.Properties.First(p => p.Name == "Addresses");
@@ -110,8 +110,15 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			// definition of the property representing the bidiretional-relation we can't know is the mapping element (many-to-one or parent)
 			elementRelation.Properties.Should().Have.Count.EqualTo(properties.Length);
 			elementRelation.Properties.Select(p => p.Name).Should().Have.SameValuesAs(properties);
-			//elementRelation.Parent.Should().Not.Be.Null();
-			//elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			if (hasParent)
+			{
+				elementRelation.Parent.Should().Not.Be.Null();
+				elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			}
+			else
+			{
+				elementRelation.Parent.Should().Be.Null();
+			}
 			
 			// Nested
 			var propertyNestedRelation = elementRelation.Properties.FirstOrDefault(p => p.Name == "Number");
