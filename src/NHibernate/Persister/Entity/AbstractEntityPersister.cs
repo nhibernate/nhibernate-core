@@ -3211,9 +3211,9 @@ namespace NHibernate.Persister.Entity
 			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
 			{
 				string property = SubclassPropertyNameClosure[i];
-				string[] cols = subclassPropertyColumnNames[property];
+                string[] cols = GetSubclassPropertyColumnNames(property);
 
-				if (cols.Length > 0)
+				if (cols != null && cols.Length > 0)
 				{
 					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
 					propDictionary[key] = property;
