@@ -166,7 +166,7 @@ namespace NHibernate.Loader.Criteria
 
 		protected override bool GetFetchAllProperties(string path)
 		{
-			return translator.RootCriteria.GetFetchAllProperties(path) >= LazyPropertyFetchMode.Select;
+			return translator.RootCriteria.GetLazyPropertyFetchMode(path) >= LazyPropertyFetchMode.Select;
 		}
 
 		private static bool IsDefaultFetchMode(FetchMode fetchMode)

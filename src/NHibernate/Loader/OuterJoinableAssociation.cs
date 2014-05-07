@@ -20,7 +20,7 @@ namespace NHibernate.Loader
 		private readonly JoinType joinType;
 		private readonly SqlString on;
 		private readonly IDictionary<string, IFilter> enabledFilters;
-		private readonly bool featchAllProperties;
+		private readonly bool fetchAllProperties;
 
 		public OuterJoinableAssociation(IAssociationType joinableType, String lhsAlias, String[] lhsColumns, String rhsAlias,
 										JoinType joinType, SqlString withClause, ISessionFactoryImplementor factory,
@@ -44,7 +44,7 @@ namespace NHibernate.Loader
 			if (SqlStringHelper.IsNotEmpty(withClause))
 				on = on.Append(" and ( ").Append(withClause).Append(" )");
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
-			this.featchAllProperties = fetchAllProperties;
+			this.fetchAllProperties = fetchAllProperties;
 		}
 
 		public JoinType JoinType
@@ -98,9 +98,9 @@ namespace NHibernate.Loader
 			get { return joinable; }
 		}
 
-		public bool FeatchAllProperties
+		public bool FetchAllProperties
 		{
-			get { return featchAllProperties; }
+			get { return fetchAllProperties; }
 		}
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)

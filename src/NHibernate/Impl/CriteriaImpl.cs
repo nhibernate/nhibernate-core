@@ -1038,7 +1038,7 @@ namespace NHibernate.Impl
 			throw new HibernateException("Cannot provide root entity type because this criteria was initialized with an entity name.");
 		}
 
-	    public LazyPropertyFetchMode GetFetchAllProperties(string path)
+	    public LazyPropertyFetchMode GetLazyPropertyFetchMode(string path)
 	    {
 	        LazyPropertyFetchMode mode;
 	        if (lazyPropertyFetchModes.TryGetValue(path, out mode))

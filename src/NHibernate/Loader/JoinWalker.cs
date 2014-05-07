@@ -840,7 +840,7 @@ namespace NHibernate.Loader
 				if (!oj.IsCollection)
 				{
 					persisters[i] = (ILoadable)oj.Joinable;
-					entityEagerPropertyFetches[i] = oj.FeatchAllProperties;
+					entityEagerPropertyFetches[i] = oj.FetchAllProperties;
 					aliases[i] = oj.RHSAlias;
 					owners[i] = oj.GetOwner(associations);
 					ownerAssociationTypes[i] = (EntityType)oj.JoinableType;
@@ -904,7 +904,7 @@ namespace NHibernate.Loader
 
 					string selectFragment =
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
-																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin, join.FeatchAllProperties);
+																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin, join.FetchAllProperties);
 
 					if (selectFragment.Trim().Length > 0)
 					{
