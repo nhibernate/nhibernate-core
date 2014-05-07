@@ -4,6 +4,11 @@ Build vNext
 ** Known BREAKING CHANGES from NH4.0.0.Alpha1 to 4.0.0.Alpha1
 
     Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+    
+    The constructor of AbstractComponentTuplizer now behaves like AbstractEntityTuplizer in the way
+    that it doesn't create the instantiator any more. Custom component tuplizers that derive
+    directly from AbstractComponentTuplizer need to add this line of code in their constructor:
+      instantiator = BuildInstantiator(component);
 
 
 Build 4.0.0.Alpha1
