@@ -1230,6 +1230,10 @@
     <Compile Include="Unionsubclass\DatabaseKeywordBase.cs" />
     <Compile Include="Unionsubclass\DatabaseKeywordsFixture.cs" />
     <Compile Include="UtilityTest\ArrayHelperTests.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Company.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Party.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Person.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\UnionSubclassFixture.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
@@ -3048,6 +3052,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="UnionsubclassPolymorphicFormula\Party.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
