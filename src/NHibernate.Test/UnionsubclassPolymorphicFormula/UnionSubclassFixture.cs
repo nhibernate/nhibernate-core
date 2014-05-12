@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
-	[TestFixture]
+	[TestFixture, Explicit]
 	public class UnionSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
