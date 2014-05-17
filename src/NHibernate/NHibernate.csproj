@@ -287,6 +287,7 @@
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
+    <Compile Include="Linq\Functions\ConvertGenerator.cs" />
     <Compile Include="Linq\Functions\GetValueOrDefaultGenerator.cs" />
     <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
     <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
+    <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
     <Compile Include="Linq\Visitors\VisitorUtil.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
@@ -642,8 +644,12 @@
     <Compile Include="TransactionException.cs" />
     <Compile Include="Transaction\AdoNetWithDistributedTransactionFactory.cs" />
     <Compile Include="Transaction\AdoTransaction.cs" />
+    <Compile Include="Transaction\AfterTransactionCompletes.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
+    <Compile Include="Transform\CacheableResultTransformer.cs" />
+    <Compile Include="Transform\AliasedTupleSubsetResultTransformer.cs" />
+    <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />

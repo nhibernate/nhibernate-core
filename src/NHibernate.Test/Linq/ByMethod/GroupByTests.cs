@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -142,12 +143,21 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-		[Test]
-		[Ignore("Generates incorrect SQL. Reported as NH-3027.")]
+		[Test, KnownBug("NH-????"), Description("Discovered as part of NH-2560")]
+		public void SingleKeyPropertyGroupWithOrderByCount()
+		{
+			var result = db.Orders
+				.GroupBy(o => o.Customer)
+				.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
+				.Select(g => g.Key)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(89));
+		}
+
+		[Test, KnownBug("NH-3027")]
 		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
 		{
-			// NH-3027
-
 			var orderCounts = db.Orders
 				.GroupBy(o => o.Customer)
 				.Select(g => new { Customer = g.Key, OrderCount = g.Count() })
@@ -223,6 +233,31 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Count, Is.EqualTo(62));
 		}
 
+		[Test, KnownBug("NH-3025")]
+		public void SelectTupleKeyCountOfOrderLines()
+		{
+			var list = (from o in db.Orders.ToList()
+						group o by o.OrderDate
+						into g
+						select new
+								   {
+									   g.Key,
+									   Count = g.SelectMany(x => x.OrderLines).Count()
+								   }).ToList();
+
+			var query = (from o in db.Orders
+						group o by o.OrderDate
+						into g
+						select new
+								   {
+									   g.Key,
+									   Count = g.SelectMany(x => x.OrderLines).Count()
+								   }).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(481));
+			Assert.That(query, Is.EquivalentTo(list));
+		}
+
 		[Test]
 		public void GroupByTwoFieldsWhereOneOfThemIsTooDeep()
 		{
@@ -264,8 +299,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
 
-		[Test]
-		[Ignore("Generates incorrect expression.")]
+		[Test, KnownBug("NH-????")]
 		public void GroupByAndAll()
 		{
 			//NH-2566

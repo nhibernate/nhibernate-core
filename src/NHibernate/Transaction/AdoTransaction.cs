@@ -425,6 +425,10 @@ namespace NHibernate.Transaction
 					catch (Exception e)
 					{
 						log.Error("exception calling user Synchronization", e);
+#pragma warning disable 618
+						if (!session.Factory.Settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled)
+							throw;
+#pragma warning restore 618
 					}
 				}
 			}

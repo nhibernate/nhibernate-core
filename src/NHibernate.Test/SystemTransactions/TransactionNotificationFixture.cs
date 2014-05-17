@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Data;
 using System.Transactions;
 using NUnit.Framework;
 
@@ -12,32 +14,11 @@ namespace NHibernate.Test.SystemTransactions
 			get { return new string[] {}; }
 		}
 
-		public class RecordingInterceptor : EmptyInterceptor
-		{
-			public int afterTransactionBeginCalled;
-			public int afterTransactionCompletionCalled;
-			public int beforeTransactionCompletionCalled;
-
-			public override void AfterTransactionBegin(ITransaction tx)
-			{
-				afterTransactionBeginCalled++;
-			}
-
-			public override void AfterTransactionCompletion(ITransaction tx)
-			{
-				afterTransactionCompletionCalled++;
-			}
-
-			public override void BeforeTransactionCompletion(ITransaction tx)
-			{
-				beforeTransactionCompletionCalled++;
-			}
-		}
 
 		[Test]
 		public void NoTransaction()
 		{
-			RecordingInterceptor interceptor = new RecordingInterceptor();
+			var interceptor = new RecordingInterceptor();
 			using (sessions.OpenSession(interceptor))
 			{
 				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
@@ -49,7 +30,7 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void AfterBegin()
 		{
-			RecordingInterceptor interceptor = new RecordingInterceptor();
+			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope()) 
 			using (sessions.OpenSession(interceptor))
 			{
@@ -62,9 +43,9 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void Complete()
 		{
-			RecordingInterceptor interceptor = new RecordingInterceptor();
+			var interceptor = new RecordingInterceptor();
 			ISession session;
-			using(TransactionScope scope = new TransactionScope())
+			using(var scope = new TransactionScope())
 			{
 				session = sessions.OpenSession(interceptor);
 				scope.Complete();
@@ -78,13 +59,13 @@ namespace NHibernate.Test.SystemTransactions
 		[Test]
 		public void Rollback()
 		{
-			RecordingInterceptor interceptor = new RecordingInterceptor();
+			var interceptor = new RecordingInterceptor();
 			using (new TransactionScope())
 			using (sessions.OpenSession(interceptor))
 			{
 			}
 			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-			Assert.AreEqual(2, interceptor.afterTransactionCompletionCalled);
+			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
 
 		[Test]
@@ -126,5 +107,88 @@ namespace NHibernate.Test.SystemTransactions
 			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
 			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
+
+
+		[Description("NH2128, NH3572")]
+		[Theory]
+		public void ShouldNotifyAfterDistributedTransaction(bool doCommit)
+		{
+			// Note: For distributed transaction, calling Close() on the session isn't
+			// supported, so we don't need to test that scenario.
+
+			var interceptor = new RecordingInterceptor();
+			ISession s1 = null;
+			ISession s2 = null;
+
+			using (var tx = new TransactionScope())
+			{
+				try
+				{
+					s1 = OpenSession(interceptor);
+					s2 = OpenSession(interceptor);
+
+					s1.CreateCriteria<object>().List();
+					s2.CreateCriteria<object>().List();
+				}
+				finally
+				{
+					if (s1 != null)
+						s1.Dispose();
+					if (s2 != null)
+						s2.Dispose();
+				}
+
+				if (doCommit)
+					tx.Complete();
+			}
+
+			Assert.That(s1.IsOpen, Is.False);
+			Assert.That(s2.IsOpen, Is.False);
+			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
+		}
+
+
+		[Description("NH2128")]
+		[Theory]
+		public void ShouldNotifyAfterDistributedTransactionWithOwnConnection(bool doCommit)
+		{
+			// Note: For distributed transaction, calling Close() on the session isn't
+			// supported, so we don't need to test that scenario.
+
+			var interceptor = new RecordingInterceptor();
+			ISession s1 = null;
+			ISession s2 = null;
+
+			using (var tx = new TransactionScope())
+			{
+				using (IDbConnection ownConnection1 = sessions.ConnectionProvider.GetConnection())
+				using (IDbConnection ownConnection2 = sessions.ConnectionProvider.GetConnection())
+				{
+					try
+					{
+						s1 = sessions.OpenSession(ownConnection1, interceptor);
+						s2 = sessions.OpenSession(ownConnection2, interceptor);
+
+						s1.CreateCriteria<object>().List();
+						s2.CreateCriteria<object>().List();
+					}
+					finally
+					{
+						if (s1 != null)
+							s1.Dispose();
+						if (s2 != null)
+							s2.Dispose();
+					}
+
+					if (doCommit)
+						tx.Complete();
+				}
+			}
+
+			Assert.That(s1.IsOpen, Is.False);
+			Assert.That(s2.IsOpen, Is.False);
+			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
+		}
+
 	}
 }

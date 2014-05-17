@@ -302,6 +302,14 @@
 		</xmlpoke>
 
 		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='command_timeout']"
+			value="${nhibernate.command_timeout}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<xmlpoke file="${app.config}"
 			xpath="//*/hbm:property[@name='connection.driver_class']"
 			value="${nhibernate.connection.driver_class}">
 			<namespaces>

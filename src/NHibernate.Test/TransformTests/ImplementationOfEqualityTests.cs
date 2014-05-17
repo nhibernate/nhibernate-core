@@ -11,7 +11,10 @@ namespace NHibernate.Test.TransformTests
 {
 	public class ImplementationOfEqualityTests
 	{
-		private readonly IEnumerable<System.Type> transformerTypes = typeof(IResultTransformer).Assembly.GetTypes().Where(t => typeof(IResultTransformer).IsAssignableFrom(t) && t.IsClass).ToList();
+		private readonly IEnumerable<System.Type> transformerTypes =
+			typeof (IResultTransformer).Assembly.GetTypes()
+			                           .Where(t => typeof (IResultTransformer).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+			                           .ToList();
 
 		[Test]
 		public void AllEmbeddedTransformersOverridesEqualsAndGetHashCode()

@@ -24,7 +24,7 @@ namespace NHibernate.Collection.Generic
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
 		/// </summary>
-		protected ISet<T> set;
+		protected ISet<T> WrappedSet;
 
 		/// <summary>
 		/// A temporary list that holds the objects while the PersistentSet is being
@@ -67,7 +67,7 @@ namespace NHibernate.Collection.Generic
 			// do we need to copy it to be sure it won't be changing
 			// underneath us?
 			// ie. this.set.addAll(set);
-			set = original;
+			WrappedSet = original;
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
@@ -80,8 +80,8 @@ namespace NHibernate.Collection.Generic
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			var entityMode = Session.EntityMode;
-			var clonedSet = new SetSnapShot<T>(set.Count);
-			var enumerable = from object current in set
+			var clonedSet = new SetSnapShot<T>(WrappedSet.Count);
+			var enumerable = from object current in WrappedSet
 							 select persister.ElementType.DeepCopy(current, entityMode, persister.Factory);
 			foreach (var copied in enumerable)
 			{
@@ -95,24 +95,29 @@ namespace NHibernate.Collection.Generic
 			var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
 
 			// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-			if (set.Count == 0) return sn;
+			if (WrappedSet.Count == 0) return sn;
 			if (((ICollection)sn).Count == 0) return sn;
-			return GetOrphans(sn, set.ToArray(), entityName, Session);
+			return GetOrphans(sn, WrappedSet.ToArray(), entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
 			var snapshot = (ISetSnapshot<T>)GetSnapshot();
-			if (((ICollection)snapshot).Count != set.Count)
+			if (((ICollection)snapshot).Count != WrappedSet.Count)
 			{
 				return false;
 			}
 
-			return !(from object obj in set
-					 let oldValue = snapshot[(T)obj]
-					 where oldValue == null || elementType.IsDirty(oldValue, obj, Session)
-					 select obj).Any();
+
+			foreach (T obj in WrappedSet)
+			{
+				T oldValue;
+				if (!snapshot.TryGetValue(obj, out oldValue) || elementType.IsDirty(oldValue, obj, Session))
+					return false;
+			}
+
+			return true;
 		}
 
 		public override bool IsSnapshotEmpty(object snapshot)
@@ -122,7 +127,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			set = (ISet<T>)persister.CollectionType.Instantiate(anticipatedSize);
+			WrappedSet = (ISet<T>)persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		/// <summary>
@@ -138,10 +143,10 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = (T)persister.ElementType.Assemble(array[i], Session, owner);
+				var element = persister.ElementType.Assemble(array[i], Session, owner);
 				if (element != null)
 				{
-					set.Add(element);
+					WrappedSet.Add((T) element);
 				}
 			}
 			SetInitialized();
@@ -149,21 +154,21 @@ namespace NHibernate.Collection.Generic
 
 		public override bool Empty
 		{
-			get { return set.Count == 0; }
+			get { return WrappedSet.Count == 0; }
 		}
 
 		public override string ToString()
 		{
 			Read();
-			return StringHelper.CollectionToString(set);
+			return StringHelper.CollectionToString(WrappedSet);
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			var element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
 			if (element != null)
 			{
-				_tempList.Add(element);
+				_tempList.Add((T) element);
 			}
 			return element;
 		}
@@ -187,7 +192,7 @@ namespace NHibernate.Collection.Generic
 		{
 			foreach (T item in _tempList)
 			{
-				set.Add(item);
+				WrappedSet.Add(item);
 			}
 			_tempList = null;
 			SetInitialized();
@@ -196,15 +201,15 @@ namespace NHibernate.Collection.Generic
 
 		public override IEnumerable Entries(ICollectionPersister persister)
 		{
-			return set;
+			return WrappedSet;
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
 		{
-			var result = new object[set.Count];
+			var result = new object[WrappedSet.Count];
 			int i = 0;
 
-			foreach (object obj in set)
+			foreach (object obj in WrappedSet)
 			{
 				result[i++] = persister.ElementType.Disassemble(obj, Session, null);
 			}
@@ -217,12 +222,15 @@ namespace NHibernate.Collection.Generic
 			var sn = (ISetSnapshot<T>)GetSnapshot();
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
 
-			deletes.AddRange(sn.Where(obj => !set.Contains(obj)));
+			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
-			deletes.AddRange(from obj in set
-							 let oldValue = sn[obj]
-							 where oldValue != null && elementType.IsDirty(obj, oldValue, Session)
-							 select oldValue);
+
+			foreach (var obj in WrappedSet)
+			{
+				T oldValue;
+				if (sn.TryGetValue(obj, out oldValue) && elementType.IsDirty(obj, oldValue, Session))
+					deletes.Add(oldValue);
+			}
 
 			return deletes;
 		}
@@ -230,11 +238,12 @@ namespace NHibernate.Collection.Generic
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (ISetSnapshot<T>)GetSnapshot();
-			object oldKey = sn[(T)entry];
+			T oldKey;
+
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
-			return oldKey == null || elemType.IsDirty(oldKey, entry, Session);
+			return !sn.TryGetValue((T) entry, out oldKey) || elemType.IsDirty(oldKey, entry, Session);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
@@ -265,13 +274,13 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return set.SequenceEqual(that);
+			return WrappedSet.SequenceEqual(that);
 		}
 
 		public override int GetHashCode()
 		{
 			Read();
-			return set.GetHashCode();
+			return WrappedSet.GetHashCode();
 		}
 
 		public override bool EntryExists(object entry, int i)
@@ -281,7 +290,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsWrapper(object collection)
 		{
-			return set == collection;
+			return WrappedSet == collection;
 		}
 
 		#region ISet<T> Members
@@ -290,7 +299,7 @@ namespace NHibernate.Collection.Generic
 		public bool Contains(T item)
 		{
 			bool? exists = ReadElementExistence(item);
-			return exists == null ? set.Contains(item) : exists.Value;
+			return exists == null ? WrappedSet.Contains(item) : exists.Value;
 		}
 
 
@@ -300,7 +309,7 @@ namespace NHibernate.Collection.Generic
 			if (!exists.HasValue)
 			{
 				Initialize(true);
-				if (set.Add(o))
+				if (WrappedSet.Add(o))
 				{
 					Dirty();
 					return true;
@@ -324,9 +333,9 @@ namespace NHibernate.Collection.Generic
 
 			Initialize(true);
 
-			var oldCount = set.Count;
-			set.UnionWith(collection);
-			var newCount = set.Count;
+			var oldCount = WrappedSet.Count;
+			WrappedSet.UnionWith(collection);
+			var newCount = WrappedSet.Count;
 
 			// Union can only add, so if the set was modified the count must increase.
 			if (oldCount != newCount)
@@ -337,9 +346,9 @@ namespace NHibernate.Collection.Generic
 		{
 			Initialize(true);
 
-			var oldCount = set.Count;
-			set.IntersectWith(other);
-			var newCount = set.Count;
+			var oldCount = WrappedSet.Count;
+			WrappedSet.IntersectWith(other);
+			var newCount = WrappedSet.Count;
 
 			// Intersect can only remove, so if the set was modified the count must decrease.
 			if (oldCount != newCount)
@@ -354,9 +363,9 @@ namespace NHibernate.Collection.Generic
 
 			Initialize(true);
 
-			var oldCount = set.Count;
-			set.ExceptWith(collection);
-			var newCount = set.Count;
+			var oldCount = WrappedSet.Count;
+			WrappedSet.ExceptWith(collection);
+			var newCount = WrappedSet.Count;
 
 			// Except can only remove, so if the set was modified the count must decrease.
 			if (oldCount != newCount)
@@ -371,7 +380,7 @@ namespace NHibernate.Collection.Generic
 
 			Initialize(true);
 
-			set.SymmetricExceptWith(collection);
+			WrappedSet.SymmetricExceptWith(collection);
 
 			// If the other collection is non-empty, we are guaranteed to 
 			// remove or add at least one element.
@@ -381,37 +390,37 @@ namespace NHibernate.Collection.Generic
 		public bool IsSubsetOf(IEnumerable<T> other)
 		{
 			Read();
-			return set.IsProperSupersetOf(other);
+			return WrappedSet.IsProperSupersetOf(other);
 		}
 
 		public bool IsSupersetOf(IEnumerable<T> other)
 		{
 			Read();
-			return set.IsSupersetOf(other);
+			return WrappedSet.IsSupersetOf(other);
 		}
 
 		public bool IsProperSupersetOf(IEnumerable<T> other)
 		{
 			Read();
-			return set.IsProperSupersetOf(other);
+			return WrappedSet.IsProperSupersetOf(other);
 		}
 
 		public bool IsProperSubsetOf(IEnumerable<T> other)
 		{
 			Read();
-			return set.IsProperSubsetOf(other);
+			return WrappedSet.IsProperSubsetOf(other);
 		}
 
 		public bool Overlaps(IEnumerable<T> other)
 		{
 			Read();
-			return set.Overlaps(other);
+			return WrappedSet.Overlaps(other);
 		}
 
 		public bool SetEquals(IEnumerable<T> other)
 		{
 			Read();
-			return set.SetEquals(other);
+			return WrappedSet.SetEquals(other);
 		}
 
 		public bool Remove(T o)
@@ -420,7 +429,7 @@ namespace NHibernate.Collection.Generic
 			if (!exists.HasValue)
 			{
 				Initialize(true);
-				if (set.Remove(o))
+				if (WrappedSet.Remove(o))
 				{
 					Dirty();
 					return true;
@@ -445,9 +454,9 @@ namespace NHibernate.Collection.Generic
 			else
 			{
 				Initialize(true);
-				if (set.Count != 0)
+				if (WrappedSet.Count != 0)
 				{
-					set.Clear();
+					WrappedSet.Clear();
 					Dirty();
 				}
 			}
@@ -461,12 +470,12 @@ namespace NHibernate.Collection.Generic
 		{
 			// NH : we really need to initialize the set ?
 			Read();
-			set.CopyTo(array, arrayIndex);
+			WrappedSet.CopyTo(array, arrayIndex);
 		}
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : set.Count; }
+			get { return ReadSize() ? CachedSize : WrappedSet.Count; }
 		}
 
 		public bool IsReadOnly
@@ -497,7 +506,7 @@ namespace NHibernate.Collection.Generic
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return set.GetEnumerator();
+			return WrappedSet.GetEnumerator();
 		}
 
 		#endregion
@@ -507,7 +516,7 @@ namespace NHibernate.Collection.Generic
 		public IEnumerator<T> GetEnumerator()
 		{
 			Read();
-			return set.GetEnumerator();
+			return WrappedSet.GetEnumerator();
 		}
 
 		#endregion
@@ -517,11 +526,11 @@ namespace NHibernate.Collection.Generic
 
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
 
 			public ClearDelayedOperation(PersistentGenericSet<T> enclosingInstance)
 			{
-				this.enclosingInstance = enclosingInstance;
+				_enclosingInstance = enclosingInstance;
 			}
 
 			public object AddedInstance
@@ -536,24 +545,24 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
-				enclosingInstance.set.Clear();
+				_enclosingInstance.WrappedSet.Clear();
 			}
 		}
 
 		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
-			private readonly T value;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
+			private readonly T _value;
 
 			public SimpleAddDelayedOperation(PersistentGenericSet<T> enclosingInstance, T value)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.value = value;
+				_enclosingInstance = enclosingInstance;
+				_value = value;
 			}
 
 			public object AddedInstance
 			{
-				get { return value; }
+				get { return _value; }
 			}
 
 			public object Orphan
@@ -563,19 +572,19 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
-				enclosingInstance.set.Add(value);
+				_enclosingInstance.WrappedSet.Add(_value);
 			}
 		}
 
 		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericSet<T> enclosingInstance;
-			private readonly T value;
+			private readonly PersistentGenericSet<T> _enclosingInstance;
+			private readonly T _value;
 
 			public SimpleRemoveDelayedOperation(PersistentGenericSet<T> enclosingInstance, T value)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.value = value;
+				_enclosingInstance = enclosingInstance;
+				_value = value;
 			}
 
 			public object AddedInstance
@@ -585,12 +594,12 @@ namespace NHibernate.Collection.Generic
 
 			public object Orphan
 			{
-				get { return value; }
+				get { return _value; }
 			}
 
 			public void Operate()
 			{
-				enclosingInstance.set.Remove(value);
+				_enclosingInstance.WrappedSet.Remove(_value);
 			}
 		}
 

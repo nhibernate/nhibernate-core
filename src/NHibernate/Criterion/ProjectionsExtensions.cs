@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 
 using NHibernate.Impl;
+using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
@@ -24,14 +25,15 @@ namespace NHibernate.Criterion
 		/// Project SQL function year()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Pleae use DateTime.Year property instead")]
 		public static int YearPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessYearPart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessYear(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
+			IProjection property = ExpressionProcessor.FindMemberProjection(expression).AsProjection();
 			return Projections.SqlFunction("year", NHibernateUtil.Int32, property);
 		}
 
@@ -39,14 +41,15 @@ namespace NHibernate.Criterion
 		/// Project SQL function day()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Please use DateTime.Day property instead")]
 		public static int DayPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessDayPart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessDay(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
+			IProjection property = ExpressionProcessor.FindMemberProjection(expression).AsProjection();
 			return Projections.SqlFunction("day", NHibernateUtil.Int32, property);
 		}
 
@@ -54,60 +57,81 @@ namespace NHibernate.Criterion
 		/// Project SQL function month()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Please use DateTime.Month property instead")]
 		public static int MonthPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessMonthPart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessMonth(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			return Projections.SqlFunction("month", NHibernateUtil.Int32, property);
+			return SqlFunction("month", NHibernateUtil.Int32, expression);
+		}
+
+		private static IProjection SqlFunction(string name, IType type, System.Linq.Expressions.Expression projection)
+		{
+			IProjection property = ExpressionProcessor.FindMemberProjection(projection).AsProjection();
+			return Projections.SqlFunction(name, type, property);
 		}
 
 		/// <summary>
 		/// Project SQL function hour()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Please use DateTime.Hour property instead")]
 		public static int HourPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessHourPart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessHour(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			return Projections.SqlFunction("hour", NHibernateUtil.Int32, property);
+			return SqlFunction("hour", NHibernateUtil.Int32, expression);
 		}
 
 		/// <summary>
 		/// Project SQL function minute()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Please use DateTime.Minute property instead")]
 		public static int MinutePart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessMinutePart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessMinute(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			return Projections.SqlFunction("minute", NHibernateUtil.Int32, property);
+			return SqlFunction("minute", NHibernateUtil.Int32, expression);
 		}
 
 		/// <summary>
 		/// Project SQL function second()
 		/// Note: throws an exception outside of a QueryOver expression
 		/// </summary>
+		[Obsolete("Please use DateTime.Second property instead")]
 		public static int SecondPart(this DateTime dateTimeProperty)
 		{
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		internal static IProjection ProcessSecondPart(MethodCallExpression methodCallExpression)
+		internal static IProjection ProcessSecond(System.Linq.Expressions.Expression expression)
 		{
-			IProjection property = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
-			return Projections.SqlFunction("second", NHibernateUtil.Int32, property);
+			return SqlFunction("second", NHibernateUtil.Int32, expression);
+		}
+
+		/// <summary>
+		/// Project SQL function date()
+		/// Note: throws an exception outside of a QueryOver expression
+		/// </summary>
+		[Obsolete("Please use DateTime.Date property instead")]
+		public static DateTime DatePart(this DateTime dateTimeProperty)
+		{
+			throw new Exception("Not to be used directly - use inside QueryOver expression");
+		}
+
+		internal static IProjection ProcessDate(System.Linq.Expressions.Expression expression)
+		{
+			return SqlFunction("date", NHibernateUtil.Date, expression);
 		}
 
 		/// <summary>

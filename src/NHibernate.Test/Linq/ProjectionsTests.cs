@@ -317,6 +317,80 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void ProjectNestedKnownTypeWithCollection()
+		{
+			var query = from o in db.Products
+				select new ExpandedWrapper<Product, ExpandedWrapper<Supplier, IEnumerable<Product>>>
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new ExpandedWrapper<Supplier, IEnumerable<Product>>
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products,
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
+			Assert.That(result[0].ExpandedElement.Supplier.Products,
+				Is.EquivalentTo(result[0].ProjectedProperty0.ProjectedProperty0));
+		}
+
+		[Test]
+		public void ProjectNestedAnonymousTypeWithCollection()
+		{
+			var query = from o in db.Products
+				select new
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products,
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
+			Assert.That(result[0].ExpandedElement.Supplier.Products,
+				Is.EquivalentTo(result[0].ProjectedProperty0.ProjectedProperty0));
+		}
+
+		[Test]
+		public void ProjectNestedAnonymousTypeWithProjectedCollection()
+		{
+			var query = from o in db.Products
+				select new
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products.Select(x => new {x.Name}),
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result.Single(x => x.ExpandedElement.ProductId == 1).ProjectedProperty0.ProjectedProperty0.Count(),
+				Is.EqualTo(3));
+		}
+
+		[Test]
 		public void CanProjectComplexDictionaryIndexer()
 		{
 			//NH-3000

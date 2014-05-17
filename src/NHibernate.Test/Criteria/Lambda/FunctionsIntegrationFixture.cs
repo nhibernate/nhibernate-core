@@ -91,7 +91,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void SelectAvg()
+		public void SelectAvgYearPart()
 		{
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
@@ -168,7 +168,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void Order()
+		public void OrderByYearPart()
 		{
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
@@ -181,6 +181,101 @@ namespace NHibernate.Test.Criteria.Lambda
 				persons[0].Name.Should().Be("p1");
 				persons[1].Name.Should().Be("p2");
 				persons[2].Name.Should().Be("pP3");
+			}
+		}
+
+		[Test]
+		public void YearEqual()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var persons = s.QueryOver<Person>()
+					.Where(p => p.BirthDate.Year == 2008)
+					.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p2");
+			}
+		}
+
+		[Test]
+		public void YearIsIn()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var persons = s.QueryOver<Person>()
+					.Where(p => p.BirthDate.Year.IsIn(new[] { 2008, 2009 }))
+					.OrderBy(p => p.Name).Asc
+					.List();
+
+				persons.Count.Should().Be(2);
+				persons[0].Name.Should().Be("p1");
+				persons[1].Name.Should().Be("p2");
+			}
+		}
+
+		[Test]
+		public void YearSingleOrDefault()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var yearOfBirth = s.QueryOver<Person>()
+					.Where(p => p.Name == "p2")
+					.Select(p => p.BirthDate.Year)
+					.SingleOrDefault<object>();
+
+				yearOfBirth.GetType().Should().Be(typeof(int));
+				yearOfBirth.Should().Be(2008);
+			}
+		}
+
+		[Test]
+		public void SelectAvgYear()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var avgYear = s.QueryOver<Person>()
+					.SelectList(list => list.SelectAvg(p => p.BirthDate.Year))
+					.SingleOrDefault<object>();
+
+				avgYear.GetType().Should().Be(typeof(double));
+				string.Format("{0:0}", avgYear).Should().Be("2008");
+			}
+		}
+
+		[Test]
+		public void OrderByYear()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var persons = s.QueryOver<Person>()
+					.OrderBy(p => p.BirthDate.Year).Desc
+					.List();
+
+				persons.Count.Should().Be(3);
+				persons[0].Name.Should().Be("p1");
+				persons[1].Name.Should().Be("p2");
+				persons[2].Name.Should().Be("pP3");
+			}
+		}
+
+		[Test]
+		public void MonthEqualsDay()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var persons = s.QueryOver<Person>()
+					.Where(p => p.BirthDate.Month == p.BirthDate.Day)
+					.List();
+
+				persons.Count.Should().Be(1);
+				persons[0].Name.Should().Be("p2");
 			}
 		}
 	}

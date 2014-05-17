@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2756">
+  <class name="Document" table="documents">
+    <id name="Id" column="id">
+      <generator class="guid" />
+    </id>
+    <set name="Files" table="document_files">
+      <key column="document_id" />
+      <composite-element class="DocumentFile">
+        <property name="Description" column="description" />
+        <property name="Filename" formula="(select files.filename from files where files.id = file_id)" access="backfield" />
+        <many-to-one name="File" column="file_id" />
+      </composite-element>
+    </set>
+  </class>
+
+  <class name="File" table="files">
+    <id name="Id" column="id">
+      <generator class="guid" />
+    </id>
+    <property name="Filename" column="filename" />
+  </class>
+</hibernate-mapping>

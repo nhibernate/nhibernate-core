@@ -41,8 +41,8 @@ namespace NHibernate.Mapping.ByCode
 															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
 		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property) where TComponent : class;
 		void Component<TComponent>(Expression<Func<TContainer, IDictionary>> property,
-		                           TComponent dynamicComponentTemplate,
-		                           Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
+								   TComponent dynamicComponentTemplate,
+								   Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
 
 		void Component<TComponent>(string notVisiblePropertyOrFieldName,
 															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
@@ -57,7 +57,7 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IPlainPropertyContainerMapper<TContainer> : IBasePlainPropertyContainerMapper<TContainer>
 	{
-		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper> mapping) where TProperty : class;
-		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper> mapping) where TProperty : class;
+		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
+		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
 	}
 }

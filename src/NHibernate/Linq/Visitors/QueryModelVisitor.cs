@@ -237,6 +237,9 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 		{
+			var visitor = new SimplifyConditionalVisitor();
+			whereClause.Predicate = visitor.VisitExpression(whereClause.Predicate);
+
 			// Visit the predicate to build the query
 			var expression = HqlGeneratorExpressionTreeVisitor.Visit(whereClause.Predicate, VisitorParameters).AsBooleanExpression();
 			if (whereClause is NhHavingClause)

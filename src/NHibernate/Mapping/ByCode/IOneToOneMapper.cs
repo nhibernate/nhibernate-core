@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
@@ -10,5 +12,10 @@ namespace NHibernate.Mapping.ByCode
 		void PropertyReference(MemberInfo propertyInTheOtherSide);
 		void Formula(string formula);
 		void ForeignKey(string foreignKeyName);
+	}
+
+	public interface IOneToOneMapper<T> : IOneToOneMapper
+	{
+		void PropertyReference<TProperty>(Expression<Func<T, TProperty>> reference);
 	}
 }

@@ -3199,9 +3199,71 @@ namespace NHibernate.Persister.Entity
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
-			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), enabledFilters);
+
+			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
 
 			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+		}
+
+		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
+		{
+			IDictionary<PropertyKey, string> propDictionary = new Dictionary<PropertyKey, string>();
+			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
+			{
+				string property = SubclassPropertyNameClosure[i];
+                string[] cols = GetSubclassPropertyColumnNames(property);
+
+				if (cols != null && cols.Length > 0)
+				{
+					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
+					propDictionary[key] = property;
+				}
+			}
+
+			IDictionary<string, string> dict = new Dictionary<string, string>();
+			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
+			{
+				string col = SubclassColumnClosure[i];
+				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+
+				string fullColumn = string.Format("{0}.{1}", alias, col);
+
+				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
+				if (propDictionary.ContainsKey(key))
+				{
+					dict[propDictionary[key]] = fullColumn;
+				}
+
+				if (!dict.ContainsKey(col))
+				{
+					dict[col] = fullColumn;	
+				}
+			}
+
+			return dict;
+		}
+
+		private class PropertyKey
+		{
+			public string Column { get; set; }
+			public int TableNumber { get; set; }
+
+			public PropertyKey(string column, int tableNumber)
+			{
+				Column = column;
+				TableNumber = tableNumber;
+			}
+
+			public override int GetHashCode()
+			{
+				return Column.GetHashCode() ^ TableNumber.GetHashCode();
+			}
+
+			public override bool Equals(object other)
+			{
+				PropertyKey otherTuple = other as PropertyKey;
+				return otherTuple == null ? false : Column.Equals(otherTuple.Column) && TableNumber.Equals(otherTuple.TableNumber);
+			}
 		}
 
 		public virtual string GenerateFilterConditionAlias(string rootAlias)

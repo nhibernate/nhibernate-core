@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 
@@ -114,5 +115,23 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
+	}
+
+	public class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
+	{
+		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne) 
+			: base(member, oneToOne)
+		{
+		}
+
+		public OneToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorMapper, HbmOneToOne oneToOne)
+			: base(member, accessorMapper, oneToOne)
+		{
+		}
+
+		public void PropertyReference<TProperty>(Expression<Func<T, TProperty>> reference)
+		{
+			PropertyReference(TypeExtensions.DecodeMemberAccessExpression(reference));
+		}
 	}
 }

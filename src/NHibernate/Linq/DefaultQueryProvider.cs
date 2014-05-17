@@ -18,14 +18,19 @@ namespace NHibernate.Linq
 
 	public class DefaultQueryProvider : INhQueryProvider
 	{
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null));
+
+		private readonly WeakReference _session;
+
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
-			Session = session;
+			_session = new WeakReference(session, true);
 		}
 
-		protected virtual ISessionImplementor Session { get; private set; }
-
-		#region IQueryProvider Members
+		protected virtual ISessionImplementor Session
+		{
+			get { return _session.Target as ISessionImplementor; }
+		}
 
 		public virtual object Execute(Expression expression)
 		{
@@ -43,17 +48,15 @@ namespace NHibernate.Linq
 
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
-			MethodInfo m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
-			return (IQueryable) m.Invoke(this, new[] {expression});
+			return (IQueryable) m.Invoke(this, new object[] {expression});
 		}
 
 		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
 		{
 			return new NhQueryable<T>(this, expression);
 		}
-
-		#endregion
 
 		public virtual object ExecuteFuture(Expression expression)
 		{
@@ -89,7 +92,6 @@ namespace NHibernate.Linq
 			}
 
 			object result = method.Invoke(query, new object[0]);
-
 
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{

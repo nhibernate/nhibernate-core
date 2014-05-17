@@ -222,6 +222,7 @@
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
+    <Compile Include="DriverTest\FirebirdClientDriverFixture.cs" />
     <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
@@ -492,6 +493,9 @@
     <Compile Include="Insertordering\InsertOrderingFixture.cs" />
     <Compile Include="Insertordering\Membership.cs" />
     <Compile Include="Insertordering\User.cs" />
+    <Compile Include="KnownBugAttribute.cs" />
+    <Compile Include="Join\JoinedFilters.cs" />
+    <Compile Include="Join\TennisPlayer.cs" />
     <Compile Include="LazyOneToOne\Employee.cs" />
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
@@ -512,6 +516,7 @@
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
+    <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
     <Compile Include="Linq\LoggingTests.cs" />
     <Compile Include="Linq\QueryLock.cs" />
     <Compile Include="Linq\QueryTimeoutTests.cs" />
@@ -586,6 +591,8 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\ImportTests.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3041\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3041\OneToOneToPropertyReference.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Cat.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Dog.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\IAnimal.cs" />
@@ -596,6 +603,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Fixture.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\FixtureByCode.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2825\Parent.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3135\Fixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3135\Models.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3280\Domain.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3280\OneToOneToInheritedProperty.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
@@ -676,7 +685,22 @@
     <Compile Include="NHSpecificTest\AccessAndCorrectPropertyName\Model.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Domain.cs" />
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
+    <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
+    <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2756\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2865\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2865\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3377\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3377\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3392\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3392\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1082\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1082\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1082\SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Product.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
@@ -687,6 +711,9 @@
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
+    <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
     <Compile Include="NHSpecificTest\NH3505\Teacher.cs" />
     <Compile Include="NHSpecificTest\NH3505\Fixture.cs" />
@@ -708,6 +735,9 @@
     <Compile Include="NHSpecificTest\NH3324\ChildEntity.cs" />
     <Compile Include="NHSpecificTest\NH3324\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3324\FixtureByCode.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\FixtureNonPublicProperty.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\Model.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3269\FixturePublicProperty.cs" />
     <Compile Include="NHSpecificTest\NH3374\Document.cs" />
     <Compile Include="NHSpecificTest\NH3374\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2042\Model.cs" />
@@ -722,6 +752,11 @@
     <Compile Include="NHSpecificTest\NH2033\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3050\FixtureByCode.cs" />
+    <Compile Include="NHSpecificTest\NH3221\EqualityAndHashCodeProvider.cs" />
+    <Compile Include="NHSpecificTest\NH3221\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3221\Person.cs" />
+    <Compile Include="NHSpecificTest\NH3221\Stuff.cs" />
+    <Compile Include="NHSpecificTest\NH3221\Todo.cs" />
     <Compile Include="NHSpecificTest\NH3093\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3093\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2806\Domain.cs" />
@@ -740,6 +775,8 @@
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Domain.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="NHSpecificTest\NH2955\Employee.cs" />
     <Compile Include="NHSpecificTest\NH2955\Fixture.cs" />
@@ -759,7 +796,7 @@
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="DateTimeOffsetUserType.cs" />
     <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
     <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
@@ -782,6 +819,11 @@
     <Compile Include="NHSpecificTest\NH2808\Model.cs" />
     <Compile Include="NHSpecificTest\NH2812\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2812\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\NH2439Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\Organisation.cs" />
+    <Compile Include="NHSpecificTest\NH2439\OrganisationSearchResult.cs" />
+    <Compile Include="NHSpecificTest\NH2439\RtoScope.cs" />
+    <Compile Include="NHSpecificTest\NH2439\TrainingComponent.cs" />
     <Compile Include="NHSpecificTest\NH2880\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2880\Model.cs" />
     <Compile Include="NHSpecificTest\NH2500\Fixture.cs" />
@@ -1087,6 +1129,8 @@
     <Compile Include="NHSpecificTest\NH3126\Item.cs" />
     <Compile Include="NHSpecificTest\NH3126\Property.cs" />
     <Compile Include="NHSpecificTest\NH3126\PropertyValue.cs" />
+    <Compile Include="NHSpecificTest\NH3119\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3119\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3124\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3142\ChildrenTest.cs" />
     <Compile Include="NHSpecificTest\NH3142\DomainClass.cs" />
@@ -1123,6 +1167,8 @@
     <Compile Include="NHSpecificTest\ProxyValidator\ShouldBeProxiableTests.cs" />
     <Compile Include="NHSpecificTest\NH2898\ItemWithLazyProperty.cs" />
     <Compile Include="NHSpecificTest\NH2898\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3590\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3590\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
@@ -1153,6 +1199,7 @@
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
+    <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
     <Compile Include="Stateless\FetchingLazyCollections\LazyCollectionFetchTests.cs" />
@@ -1182,7 +1229,14 @@
     <Compile Include="TypesTest\XDocTypeFixture.cs" />
     <Compile Include="TypesTest\XmlDocClass.cs" />
     <Compile Include="TypesTest\XmlDocTypeFixture.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeyword.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeywordBase.cs" />
+    <Compile Include="Unionsubclass\DatabaseKeywordsFixture.cs" />
     <Compile Include="UtilityTest\ArrayHelperTests.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Company.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Party.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\Person.cs" />
+    <Compile Include="UnionsubclassPolymorphicFormula\UnionSubclassFixture.cs" />
     <Compile Include="UtilityTest\IdentitySetFixture.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\AnyExtensionTests.cs" />
     <Compile Include="UtilityTest\EnumerableExtensionsTests\FirstExtensionTests.cs" />
@@ -2862,6 +2916,7 @@
     <EmbeddedResource Include="NHSpecificTest\LoadingNullEntityInSet\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
@@ -2972,12 +3027,23 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2865\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2756\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3392\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1082\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3571\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3614\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
@@ -2989,10 +3055,13 @@
     <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="UnionsubclassPolymorphicFormula\Party.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3202\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3221\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2969\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml">
@@ -3027,6 +3096,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
     <EmbeddedResource Include="NHSpecificTest\NH3010\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2439\Mappings.hbm.xml" />
     <EmbeddedResource Include="MappingByCode\IntegrationTests\NH2825\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2880\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2982\Mappings.hbm.xml" />
@@ -3061,6 +3131,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2907\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2869\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH0000\Mappings.hbm.xml" />
+    <EmbeddedResource Include="Join\TennisPlayer.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2828\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\A.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2761\B.hbm.xml" />
@@ -3497,6 +3568,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NHSpecificTest\NH3615\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

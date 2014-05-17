@@ -7,25 +7,25 @@ namespace NHibernate.Collection.Generic.SetHelpers
 	[Serializable]
 	internal class SetSnapShot<T> : ISetSnapshot<T>
 	{
-		private readonly List<T> elements;
+		private readonly List<T> _elements;
 		public SetSnapShot()
 		{
-			elements = new List<T>();
+			_elements = new List<T>();
 		}
 
 		public SetSnapShot(int capacity)
 		{
-			elements = new List<T>(capacity);
+			_elements = new List<T>(capacity);
 		}
 
 		public SetSnapShot(IEnumerable<T> collection)
 		{
-			elements = new List<T>(collection);
+			_elements = new List<T>(collection);
 		}
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			return elements.GetEnumerator();
+			return _elements.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -35,7 +35,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public void Add(T item)
 		{
-			elements.Add(item);
+			_elements.Add(item);
 		}
 
 		public void Clear()
@@ -45,12 +45,12 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public bool Contains(T item)
 		{
-			return elements.Contains(item);
+			return _elements.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			elements.CopyTo(array, arrayIndex);
+			_elements.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(T item)
@@ -60,45 +60,45 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		public void CopyTo(Array array, int index)
 		{
-			((ICollection)elements).CopyTo(array, index);
+			((ICollection)_elements).CopyTo(array, index);
 		}
 
 		int ICollection.Count
 		{
-			get { return elements.Count; }
+			get { return _elements.Count; }
 		}
 
 		public object SyncRoot
 		{
-			get { return ((ICollection)elements).SyncRoot; }
+			get { return ((ICollection)_elements).SyncRoot; }
 		}
 
 		public bool IsSynchronized
 		{
-			get { return ((ICollection)elements).IsSynchronized; }
+			get { return ((ICollection)_elements).IsSynchronized; }
 		}
 
 		int ICollection<T>.Count
 		{
-			get { return elements.Count; }
+			get { return _elements.Count; }
 		}
 
 		public bool IsReadOnly
 		{
-			get { return ((ICollection<T>)elements).IsReadOnly; }
+			get { return ((ICollection<T>)_elements).IsReadOnly; }
 		}
 
-		public T this[T element]
+		public bool TryGetValue(T element, out T value)
 		{
-			get
+			var idx = _elements.IndexOf(element);
+			if (idx >= 0)
 			{
-				var idx = elements.IndexOf(element);
-				if (idx >= 0)
-				{
-					return elements[idx];
-				}
-				return default(T);
+				value = _elements[idx];
+				return true;
 			}
+
+			value = default(T);
+			return false;
 		}
 	}
 }

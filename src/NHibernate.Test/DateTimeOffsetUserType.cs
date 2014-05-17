@@ -1,10 +1,9 @@
-using System.Linq;
 using System;
 using System.Data;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
-namespace NHibernate.Test.NHSpecificTest.NH3237
+namespace NHibernate.Test
 {
 	public class DateTimeOffsetUserType : IUserType, IParameterizedType
 	{
@@ -12,8 +11,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 
 		public DateTimeOffsetUserType()
 		{
-
 		}
+
 		public DateTimeOffsetUserType(TimeSpan offset)
 		{
 			Offset = offset;
@@ -129,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 		public void SetParameterValues(System.Collections.Generic.IDictionary<string, string> parameters)
 		{
 			string offset;
-			if (parameters.TryGetValue("Offset", out offset))
+			if (parameters != null && parameters.TryGetValue("Offset", out offset))
 			{
 				Offset = TimeSpan.Parse(offset);
 			}

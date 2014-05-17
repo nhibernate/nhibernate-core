@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.ServiceModel.Security;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -23,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
 	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
-		protected IDictionary<TKey, TValue> gmap;
+		protected IDictionary<TKey, TValue> WrappedMap;
 
 		public PersistentGenericMap() { }
 
@@ -41,7 +40,7 @@ namespace NHibernate.Collection.Generic
 		public PersistentGenericMap(ISessionImplementor session, IDictionary<TKey, TValue> map)
 			: base(session)
 		{
-			gmap = map;
+			WrappedMap = map;
 			SetInitialized();
 			IsDirectlyAccessible = true;
 		}
@@ -49,8 +48,8 @@ namespace NHibernate.Collection.Generic
 		public override object GetSnapshot(ICollectionPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
-			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(gmap.Count);
-			foreach (KeyValuePair<TKey, TValue> e in gmap)
+			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
+			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
 				object copy = persister.ElementType.DeepCopy(e.Value, entityMode, persister.Factory);
 				clonedMap[e.Key] = (TValue)copy;
@@ -61,18 +60,18 @@ namespace NHibernate.Collection.Generic
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (IDictionary<TKey, TValue>) snapshot;
-			return GetOrphans((ICollection)sn.Values, (ICollection)gmap.Values, entityName, Session);
+			return GetOrphans((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
 			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
-			if (xmap.Count != gmap.Count)
+			if (xmap.Count != WrappedMap.Count)
 			{
 				return false;
 			}
-			foreach (KeyValuePair<TKey, TValue> entry in gmap)
+			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
 			{
 				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
 				{
@@ -89,23 +88,23 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsWrapper(object collection)
 		{
-			return gmap == collection;
+			return WrappedMap == collection;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			gmap = (IDictionary<TKey, TValue>)persister.CollectionType.Instantiate(anticipatedSize);
+			WrappedMap = (IDictionary<TKey, TValue>)persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		public override bool Empty
 		{
-			get { return (gmap.Count == 0); }
+			get { return (WrappedMap.Count == 0); }
 		}
 
 		public override string ToString()
 		{
 			Read();
-			return StringHelper.CollectionToString(gmap);
+			return StringHelper.CollectionToString(WrappedMap);
 		}
 
 		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
@@ -119,12 +118,12 @@ namespace NHibernate.Collection.Generic
 
 		protected virtual void AddDuringInitialize(object index, object element)
 		{
-			gmap[(TKey)index] = (TValue)element;
+			WrappedMap[(TKey)index] = (TValue)element;
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
 		{
-			return gmap;
+			return WrappedMap;
 		}
 
 		/// <summary>
@@ -140,16 +139,16 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				gmap[(TKey)persister.IndexType.Assemble(array[i], Session, owner)] =
+				WrappedMap[(TKey)persister.IndexType.Assemble(array[i], Session, owner)] =
 					(TValue)persister.ElementType.Assemble(array[i + 1], Session, owner);
 			}
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[] result = new object[gmap.Count * 2];
+			object[] result = new object[WrappedMap.Count * 2];
 			int i = 0;
-			foreach (KeyValuePair<TKey, TValue> e in gmap)
+			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
 				result[i++] = persister.IndexType.Disassemble(e.Key, Session, null);
 				result[i++] = persister.ElementType.Disassemble(e.Value, Session, null);
@@ -163,7 +162,7 @@ namespace NHibernate.Collection.Generic
 			var sn = (IDictionary<TKey, TValue>)GetSnapshot();
 			foreach (var e in sn)
 			{
-				if (!gmap.ContainsKey(e.Key))
+				if (!WrappedMap.ContainsKey(e.Key))
 				{
 					object key = e.Key;
 					deletes.Add(indexIsFormula ? e.Value : key);
@@ -213,18 +212,18 @@ namespace NHibernate.Collection.Generic
 				return false;
 			}
 			Read();
-			return CollectionHelper.DictionaryEquals(gmap, that);
+			return CollectionHelper.DictionaryEquals(WrappedMap, that);
 		}
 
 		public override int GetHashCode()
 		{
 			Read();
-			return gmap.GetHashCode();
+			return WrappedMap.GetHashCode();
 		}
 
 		public override bool EntryExists(object entry, int i)
 		{
-			return gmap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
+			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
 		}
 
 
@@ -233,7 +232,7 @@ namespace NHibernate.Collection.Generic
 		public bool ContainsKey(TKey key)
 		{
 			bool? exists = ReadIndexExistence(key);
-			return !exists.HasValue ? gmap.ContainsKey(key) : exists.Value;
+			return !exists.HasValue ? WrappedMap.ContainsKey(key) : exists.Value;
 		}
 
 		public void Add(TKey key, TValue value)
@@ -252,7 +251,7 @@ namespace NHibernate.Collection.Generic
 				}
 			}
 			Initialize(true);
-			gmap.Add(key, value);
+			WrappedMap.Add(key, value);
 			Dirty();
 		}
 
@@ -262,18 +261,16 @@ namespace NHibernate.Collection.Generic
 			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
 				Initialize(true);
-				bool contained = gmap.Remove(key);
+				bool contained = WrappedMap.Remove(key);
 				if (contained)
 				{
 					Dirty();
 				}
 				return contained;
 			}
-			else
-			{
-				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
-				return true;
-			}
+
+			QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
+			return true;
 		}
 
 
@@ -282,7 +279,7 @@ namespace NHibernate.Collection.Generic
 			object result = ReadElementByIndex(key);
 			if (result == Unknown)
 			{
-				return gmap.TryGetValue(key, out value);
+				return WrappedMap.TryGetValue(key, out value);
 			}
 			if(result == NotFound)
 			{
@@ -300,7 +297,7 @@ namespace NHibernate.Collection.Generic
 				object result = ReadElementByIndex(key);
 				if (result == Unknown)
 				{
-					return gmap[key];
+					return WrappedMap[key];
 				}
 				if (result == NotFound)
 				{
@@ -322,8 +319,8 @@ namespace NHibernate.Collection.Generic
 				}
 				Initialize(true);
 				TValue tempObject;
-				gmap.TryGetValue(key, out tempObject);
-				gmap[key] = value;
+				WrappedMap.TryGetValue(key, out tempObject);
+				WrappedMap[key] = value;
 				TValue old2 = tempObject;
 				// would be better to use the element-type to determine
 				// whether the old and the new are equal here; the problem being
@@ -341,7 +338,7 @@ namespace NHibernate.Collection.Generic
 			get
 			{
 				Read();
-				return gmap.Keys;
+				return WrappedMap.Keys;
 			}
 		}
 
@@ -350,7 +347,7 @@ namespace NHibernate.Collection.Generic
 			get
 			{
 				Read();
-				return gmap.Values;
+				return WrappedMap.Values;
 			}
 		}
 
@@ -372,10 +369,10 @@ namespace NHibernate.Collection.Generic
 			else
 			{
 				Initialize(true);
-				if (gmap.Count != 0)
+				if (WrappedMap.Count != 0)
 				{
 					Dirty();
-					gmap.Clear();
+					WrappedMap.Clear();
 				}
 			}
 		}
@@ -385,28 +382,24 @@ namespace NHibernate.Collection.Generic
 			bool? exists = ReadIndexExistence(item.Key);
 			if (!exists.HasValue)
 			{
-				return gmap.Contains(item);
+				return WrappedMap.Contains(item);
 			}
-			else
+
+			if (exists.Value)
 			{
-				if (exists.Value)
-				{
-					TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
-					TValue y = item.Value;
-					return EqualityComparer<TValue>.Default.Equals(x, y);
-				}
-				else
-				{
-					return false;
-				}
+				TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
+				TValue y = item.Value;
+				return EqualityComparer<TValue>.Default.Equals(x, y);
 			}
+
+			return false;
 		}
 
 		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
 		{
 			int c = Count;
-			TKey[] keys = new TKey[c];
-			TValue[] values = new TValue[c];
+			var keys = new TKey[c];
+			var values = new TValue[c];
 			if (Keys != null)
 			{
 				Keys.CopyTo(keys, arrayIndex);
@@ -431,15 +424,13 @@ namespace NHibernate.Collection.Generic
 				Remove(item.Key);
 				return true;
 			}
-			else
-			{
-				return false;
-			}
+
+			return false;
 		}
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : gmap.Count; }
+			get { return ReadSize() ? CachedSize : WrappedMap.Count; }
 		}
 
 		public bool IsReadOnly
@@ -473,7 +464,7 @@ namespace NHibernate.Collection.Generic
 		IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
 		{
 			Read();
-			return gmap.GetEnumerator();
+			return WrappedMap.GetEnumerator();
 		}
 
 		#endregion
@@ -483,7 +474,7 @@ namespace NHibernate.Collection.Generic
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			Read();
-			return gmap.GetEnumerator();
+			return WrappedMap.GetEnumerator();
 		}
 
 		#endregion
@@ -492,11 +483,11 @@ namespace NHibernate.Collection.Generic
 
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericMap<TKey, TValue> enclosingInstance;
+			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
 
 			public ClearDelayedOperation(PersistentGenericMap<TKey, TValue> enclosingInstance)
 			{
-				this.enclosingInstance = enclosingInstance;
+				_enclosingInstance = enclosingInstance;
 			}
 
 			public object AddedInstance
@@ -511,52 +502,52 @@ namespace NHibernate.Collection.Generic
 
 			public void Operate()
 			{
-				enclosingInstance.gmap.Clear();
+				_enclosingInstance.WrappedMap.Clear();
 			}
 		}
 
 		protected sealed class PutDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericMap<TKey, TValue> enclosingInstance;
-			private readonly TKey index;
-			private readonly TValue value;
-			private readonly object old;
+			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
+			private readonly TKey _index;
+			private readonly TValue _value;
+			private readonly object _old;
 
 			public PutDelayedOperation(PersistentGenericMap<TKey, TValue> enclosingInstance, TKey index, TValue value, object old)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.index = index;
-				this.value = value;
-				this.old = old;
+				_enclosingInstance = enclosingInstance;
+				_index = index;
+				_value = value;
+				_old = old;
 			}
 
 			public object AddedInstance
 			{
-				get { return value; }
+				get { return _value; }
 			}
 
 			public object Orphan
 			{
-				get { return old; }
+				get { return _old; }
 			}
 
 			public void Operate()
 			{
-				enclosingInstance.gmap[index] = value;
+				_enclosingInstance.WrappedMap[_index] = _value;
 			}
 		}
 
 		protected sealed class RemoveDelayedOperation : IDelayedOperation
 		{
-			private readonly PersistentGenericMap<TKey, TValue> enclosingInstance;
-			private readonly TKey index;
-			private readonly object old;
+			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
+			private readonly TKey _index;
+			private readonly object _old;
 
 			public RemoveDelayedOperation(PersistentGenericMap<TKey, TValue> enclosingInstance, TKey index, object old)
 			{
-				this.enclosingInstance = enclosingInstance;
-				this.index = index;
-				this.old = old;
+				_enclosingInstance = enclosingInstance;
+				_index = index;
+				_old = old;
 			}
 
 			public object AddedInstance
@@ -566,12 +557,12 @@ namespace NHibernate.Collection.Generic
 
 			public object Orphan
 			{
-				get { return old; }
+				get { return _old; }
 			}
 
 			public void Operate()
 			{
-				enclosingInstance.gmap.Remove(index);
+				_enclosingInstance.WrappedMap.Remove(_index);
 			}
 		}
 

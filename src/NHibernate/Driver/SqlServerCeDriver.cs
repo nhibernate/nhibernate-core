@@ -87,6 +87,10 @@ namespace NHibernate.Driver
 			get { return false; }
 		}
 
+		protected override void SetCommandTimeout(IDbCommand cmd)
+		{
+		}
+
 		public override IResultSetsCommand GetResultSetsCommand(Engine.ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
@@ -100,7 +104,7 @@ namespace NHibernate.Driver
 			if (prepareSql)
 			{
 				SqlClientDriver.SetVariableLengthParameterSize(dbParam, sqlType);
-			}
+		}
 		}
 
 		private static SqlType AdjustSqlType(SqlType sqlType)

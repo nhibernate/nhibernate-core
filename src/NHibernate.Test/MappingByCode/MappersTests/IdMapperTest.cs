@@ -98,6 +98,21 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			hbmId.generator.@class.Should().Be.EqualTo("assigned");
 		}
 
+		[Test]
+		public void CanSetGeneratorEnhancedSequence()
+		{
+			var hbmId = new HbmId();
+			new IdMapper(hbmId).Generator(Generators.EnhancedSequence);
+			hbmId.generator.@class.Should().Be.EqualTo("enhanced-sequence");
+		}
+
+		[Test]
+		public void CanSetGeneratorEnhancedTable()
+		{
+			var hbmId = new HbmId();
+			new IdMapper(hbmId).Generator(Generators.EnhancedTable);
+			hbmId.generator.@class.Should().Be.EqualTo("enhanced-table");
+		}
 		private class BaseEntity
 		{
 			private int id;

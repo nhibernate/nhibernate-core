@@ -39,9 +39,9 @@ namespace NHibernate.Collection.Generic
 		 * In the explicit implementation of IList<T> we need to duplicate code to take advantage
 		 * from the better performance the use of generic implementation have.
 		 */
-		private Dictionary<int, object> identifiers; //index -> id 
+		private Dictionary<int, object> _identifiers; //index -> id 
 
-		private IList<T> values; //element
+		private IList<T> _values; //element
 		
 		public PersistentIdentifierBag() {}
 		
@@ -49,16 +49,16 @@ namespace NHibernate.Collection.Generic
 
 		public PersistentIdentifierBag(ISessionImplementor session, IEnumerable<T> coll) : base(session)
 		{
-			values = coll as IList<T> ?? new List<T>(coll);
+			_values = coll as IList<T> ?? new List<T>(coll);
 			SetInitialized();
 			IsDirectlyAccessible = true;
-			identifiers = new Dictionary<int, object>();
+			_identifiers = new Dictionary<int, object>();
 		}
 
 		protected IList<T> InternalValues
 		{
-			get { return values; }
-			set { values = value; }
+			get { return _values; }
+			set { _values = value; }
 		}
 
 		/// <summary>
@@ -74,8 +74,8 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				identifiers[i / 2] = persister.IdentifierType.Assemble(array[i], Session, owner);
-				values.Add((T) persister.ElementType.Assemble(array[i + 1], Session, owner));
+				_identifiers[i / 2] = persister.IdentifierType.Assemble(array[i], Session, owner);
+				_values.Add((T) persister.ElementType.Assemble(array[i + 1], Session, owner));
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace NHibernate.Collection.Generic
 		{
 			// NH specific : To emulate IDictionary behavior but using Dictionary<int, object> (without boxing/unboxing for index)
 			object result;
-			identifiers.TryGetValue(index, out result);
+			_identifiers.TryGetValue(index, out result);
 			return result;
 		}
 
@@ -94,18 +94,18 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsWrapper(object collection)
 		{
-			return values == collection;
+			return _values == collection;
 		}
 
 		public override object Disassemble(ICollectionPersister persister)
 		{
-			object[] result = new object[values.Count * 2];
+			object[] result = new object[_values.Count * 2];
 
 			int i = 0;
-			for (int j = 0; j < values.Count; j++)
+			for (int j = 0; j < _values.Count; j++)
 			{
-				object val = values[j];
-				result[i++] = persister.IdentifierType.Disassemble(identifiers[j], Session, null);
+				object val = _values[j];
+				result[i++] = persister.IdentifierType.Disassemble(_identifiers[j], Session, null);
 				result[i++] = persister.ElementType.Disassemble(val, Session, null);
 			}
 
@@ -114,12 +114,12 @@ namespace NHibernate.Collection.Generic
 
 		public override bool Empty
 		{
-			get { return values.Count == 0; }
+			get { return _values.Count == 0; }
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
 		{
-			return values;
+			return _values;
 		}
 
 		public override bool EntryExists(object entry, int i)
@@ -131,13 +131,13 @@ namespace NHibernate.Collection.Generic
 		{
 			IType elementType = persister.ElementType;
 			var snap = (ISet<SnapshotElement>)GetSnapshot();
-			if (snap.Count != values.Count)
+			if (snap.Count != _values.Count)
 			{
 				return false;
 			}
-			for (int i = 0; i < values.Count; i++)
+			for (int i = 0; i < _values.Count; i++)
 			{
-				object val = values[i];
+				object val = _values[i];
 				object id = GetIdentifier(i);
 				object old = snap.Where(x => Equals(x.Id, id)).Select(x => x.Value).FirstOrDefault();
 				if (elementType.IsDirty(old, val, Session))
@@ -158,9 +158,9 @@ namespace NHibernate.Collection.Generic
 		{
 			var snap = (ISet<SnapshotElement>)GetSnapshot();
 			ArrayList deletes = new ArrayList(snap.Select(x => x.Id).ToArray());
-			for (int i = 0; i < values.Count; i++)
+			for (int i = 0; i < _values.Count; i++)
 			{
-				if (values[i] != null)
+				if (_values[i] != null)
 				{
 					deletes.Remove(GetIdentifier(i));
 				}
@@ -218,10 +218,10 @@ namespace NHibernate.Collection.Generic
 			object id = persister.ReadIdentifier(reader, descriptor.SuffixedIdentifierAlias, Session);
 
 			// eliminate duplication if loaded in a cartesian product
-			if (!identifiers.ContainsValue(id))
+			if (!_identifiers.ContainsValue(id))
 			{
-				identifiers[values.Count] = id;
-				values.Add((T) element);
+				_identifiers[_values.Count] = id;
+				_values.Add((T) element);
 			}
 			return element;
 		}
@@ -232,10 +232,10 @@ namespace NHibernate.Collection.Generic
 
 			var map = new HashSet<SnapshotElement>();
 			int i = 0;
-			foreach (object value in values)
+			foreach (object value in _values)
 			{
 				object id;
-				identifiers.TryGetValue(i++, out id);
+				_identifiers.TryGetValue(i++, out id);
 				var valueCopy = persister.ElementType.DeepCopy(value, entityMode, persister.Factory);
 				map.Add(new SnapshotElement { Id = id, Value = valueCopy });
 			}
@@ -245,7 +245,7 @@ namespace NHibernate.Collection.Generic
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (ISet<SnapshotElement>)GetSnapshot();
-			return GetOrphans(sn.Select(x => x.Value).ToArray(), (ICollection) values, entityName, Session);
+			return GetOrphans(sn.Select(x => x.Value).ToArray(), (ICollection) _values, entityName, Session);
 		}
 
 		public override void PreInsert(ICollectionPersister persister)
@@ -258,13 +258,13 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				int i = 0;
-				foreach (object entry in values)
+				foreach (object entry in _values)
 				{
 					int loc = i++;
-					if (!identifiers.ContainsKey(loc)) // TODO: native ids
+					if (!_identifiers.ContainsKey(loc)) // TODO: native ids
 					{
 						object id = persister.IdentifierGenerator.Generate(Session, entry);
-						identifiers[loc] = id;
+						_identifiers[loc] = id;
 					}
 				}
 			}
@@ -276,63 +276,63 @@ namespace NHibernate.Collection.Generic
 
 		public override void AfterRowInsert(ICollectionPersister persister, object entry, int i, object id)
 		{
-			identifiers[i] = id;
+			_identifiers[i] = id;
 		}
 
 		protected void BeforeRemove(int index)
 		{
-			int last = values.Count - 1;
+			int last = _values.Count - 1;
 			for (int i = index; i < last; i++)
 			{
 				object id = GetIdentifier(i + 1);
 				if (id == null)
 				{
-					identifiers.Remove(i);
+					_identifiers.Remove(i);
 				}
 				else
 				{
-					identifiers[i] = id;
+					_identifiers[i] = id;
 				}
 			}
-			identifiers.Remove(last);
+			_identifiers.Remove(last);
 		}
 
 		protected void BeforeInsert(int index)
 		{
-			for (int i = values.Count - 1; i >= index; i--)
+			for (int i = _values.Count - 1; i >= index; i--)
 			{
 				object id = GetIdentifier(i);
 				if (id == null)
 				{
-					identifiers.Remove(i + 1);
+					_identifiers.Remove(i + 1);
 				}
 				else
 				{
-					identifiers[i + 1] = id;
+					_identifiers[i + 1] = id;
 				}
 			}
-			identifiers.Remove(index);
+			_identifiers.Remove(index);
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			identifiers = anticipatedSize <= 0 ? new Dictionary<int, object>() : new Dictionary<int, object>(anticipatedSize + 1);
+			_identifiers = anticipatedSize <= 0 ? new Dictionary<int, object>() : new Dictionary<int, object>(anticipatedSize + 1);
 			InternalValues = (IList<T>) persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		int IList.Add(object value)
 		{
 			Add((T) value);
-			return values.Count - 1;
+			return _values.Count - 1;
 		}
 
 		public void Clear()
 		{
 			Initialize(true);
-			if (values.Count > 0 || identifiers.Count > 0)
+			if (_values.Count > 0 || _identifiers.Count > 0)
 			{
-				values.Clear();
-				identifiers.Clear();
+				_values.Clear();
+				_identifiers.Clear();
 				Dirty();
 			}
 		}
@@ -357,7 +357,7 @@ namespace NHibernate.Collection.Generic
 		{
 			Write();
 			BeforeRemove(index);
-			values.RemoveAt(index);
+			_values.RemoveAt(index);
 		}
 
 		void IList.Remove(object value)
@@ -387,7 +387,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : values.Count; }
+			get { return ReadSize() ? CachedSize : _values.Count; }
 		}
 
 		void ICollection.CopyTo(Array array, int index)
@@ -411,14 +411,14 @@ namespace NHibernate.Collection.Generic
 		public int IndexOf(T item)
 		{
 			Read();
-			return values.IndexOf(item);
+			return _values.IndexOf(item);
 		}
 
 		public void Insert(int index, T item)
 		{
 			Write();
 			BeforeInsert(index);
-			values.Insert(index, item);
+			_values.Insert(index, item);
 		}
 
 		public T this[int index]
@@ -426,25 +426,25 @@ namespace NHibernate.Collection.Generic
 			get
 			{
 				Read();
-				return values[index];
+				return _values[index];
 			}
 			set
 			{
 				Write();
-				values[index] = value;
+				_values[index] = value;
 			}
 		}
 
 		public void Add(T item)
 		{
 			Write();
-			values.Add(item);
+			_values.Add(item);
 		}
 
 		public bool Contains(T item)
 		{
 			Read();
-			return values.Contains(item);
+			return _values.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -458,11 +458,11 @@ namespace NHibernate.Collection.Generic
 		public bool Remove(T item)
 		{
 			Initialize(true);
-			int index = values.IndexOf(item);
+			int index = _values.IndexOf(item);
 			if (index >= 0)
 			{
 				BeforeRemove(index);
-				values.RemoveAt(index);
+				_values.RemoveAt(index);
 				Dirty();
 				return true;
 			}
@@ -472,7 +472,7 @@ namespace NHibernate.Collection.Generic
 		public IEnumerator<T> GetEnumerator()
 		{
 			Read();
-			return values.GetEnumerator();
+			return _values.GetEnumerator();
 		}
 
 		[Serializable]
