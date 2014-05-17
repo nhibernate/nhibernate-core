@@ -11,3 +11,16 @@ current-test-configuration
 # This will be copied from the build directory to the lib directory in order
 # to satisfy later build steps. But it should not be committed.
 NHibernate.dll
+src/packages/Antlr4.StringTemplate.4.0.6.9004/Antlr4.StringTemplate.4.0.6.9004.nupkg
+src/packages/Iesi.Collections.4.0.1.4000/Iesi.Collections.4.0.1.4000.nupkg
+src/packages/Iesi.Collections.4.0.1.4000/lib/net40/Iesi.Collections.xml
+src/packages/Remotion.Linq.1.15.9.0/Remotion.Linq.1.15.9.0.nupkg
+src/packages/Remotion.Linq.1.15.9.0/lib/net45/Remotion.Linq.xml
+src/packages/log4net.2.0.3/lib/net10-full/log4net.xml
+src/packages/log4net.2.0.3/lib/net11-full/log4net.xml
+src/packages/log4net.2.0.3/lib/net20-full/log4net.xml
+src/packages/log4net.2.0.3/lib/net35-client/log4net.xml
+src/packages/log4net.2.0.3/lib/net35-full/log4net.xml
+src/packages/log4net.2.0.3/lib/net40-client/log4net.xml
+src/packages/log4net.2.0.3/lib/net40-full/log4net.xml
+src/packages/log4net.2.0.3/log4net.2.0.3.nupkg
