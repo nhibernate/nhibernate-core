@@ -671,6 +671,10 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Author.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Book.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Publisher.cs" />
+    <Compile Include="NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs" />
     <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
