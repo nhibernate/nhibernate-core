@@ -54,17 +54,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Unique(bool unique)
 		{
-			Column(x => x.Unique(unique));
+			_manyToOne.unique = unique;
 		}
 
 		public void UniqueKey(string uniquekeyName)
 		{
-			Column(x => x.UniqueKey(uniquekeyName));
+			_manyToOne.uniquekey = uniquekeyName;
 		}
 
 		public void Index(string indexName)
 		{
-			Column(x => x.Index(indexName));
+			_manyToOne.index = indexName;
 		}
 
 		public void Fetch(FetchKind fetchMode)
