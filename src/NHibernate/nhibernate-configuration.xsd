@@ -114,6 +114,7 @@
 								<xs:enumeration value="format_sql" />
 								<xs:enumeration value="collectiontype.factory_class" />
                 <xs:enumeration value="order_inserts" />
+                <xs:enumeration value="linqtohql.generatorsregistry" />
               </xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
