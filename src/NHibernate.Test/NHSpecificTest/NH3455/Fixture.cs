@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 			}
 		}
 
-		[Test]
+		[Test, KnownBug("NH3345")]
 		public void OrderBySpecifiedProperty()
 		{
 			using (var session = OpenSession())
