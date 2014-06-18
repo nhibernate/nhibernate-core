@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="NHibernate.Test" 
+                   namespace="NHibernate.Test.NHSpecificTest.NH3620">
+  <class name="TwoBlobs">
+    <id name="Id" type="Int32" />
+    <property name="TheDate" />
+    <property name="Blob1" length="5224880" />
+    <property name="Blob2" length="5224880" />
+    
+  </class>
+</hibernate-mapping>
