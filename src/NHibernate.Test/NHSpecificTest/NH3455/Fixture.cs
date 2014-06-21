@@ -1,4 +1,5 @@
-﻿using NHibernate.Transform;
+﻿using NHibernate.Criterion;
+using NHibernate.Transform;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3455
@@ -52,8 +53,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 			}
 		}
 
-		[Test, KnownBug("NH3345")]
-		public void OrderBySpecifiedProperty()
+		[Test]
+		public void OrderBySpecifiedPropertyWithQueryOver()
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -67,6 +68,30 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 									.OrderBy(p => p.Age)
 									.Desc
 									.TransformUsing(Transformers.AliasToBean<PersonDto>())
+									.List<PersonDto>();
+
+				Assert.That(people.Count, Is.EqualTo(2));
+				Assert.That(people, Is.Ordered.By("Age").Descending);
+			}
+		}
+
+		[Test]
+		public void OrderBySpecifiedPropertyWithCriteria()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				PersonDto dto = null;
+				var selectList = Projections.ProjectionList()
+				                            .Add(Projections.Property("Id"), "Id")
+				                            .Add(Projections.Property("Name"), "Name")
+				                            .Add(Projections.Property("Address"), "Address")
+											.Add(Projections.Property("Age"), "Age");
+				var order = new Order("Age", false);
+				var people = session.CreateCriteria<Person>()
+									.SetProjection(selectList)
+									.AddOrder(order)
+									.SetResultTransformer(Transformers.AliasToBean<PersonDto>())
 									.List<PersonDto>();
 
 				Assert.That(people.Count, Is.EqualTo(2));
