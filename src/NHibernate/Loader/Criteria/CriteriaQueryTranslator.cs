@@ -815,7 +815,14 @@ namespace NHibernate.Loader.Criteria
 		{
 			//first look for a reference to a projection alias
 			IProjection projection = rootCriteria.Projection;
-			string[] projectionColumns = projection == null ? null : projection.GetColumnAliases(propertyName, 0);
+			string[] projectionColumns = null;
+
+			if (projection != null)
+			{
+				projectionColumns = projection is IEnhancedProjection
+					? ((IEnhancedProjection)projection).GetColumnAliases(propertyName, 0, subcriteria, this)
+					: projection.GetColumnAliases(propertyName, 0);
+			}
 
 			if (projectionColumns == null)
 			{

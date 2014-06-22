@@ -81,7 +81,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				PersonDto dto = null;
 				var selectList = Projections.ProjectionList()
 				                            .Add(Projections.Property("Id"), "Id")
 				                            .Add(Projections.Property("Name"), "Name")
