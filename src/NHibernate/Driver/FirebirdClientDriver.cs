@@ -14,10 +14,10 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
-		private const string SELECT_CLAUSE_EXP = "(?<=select|where|SELECT|WHERE).*";
+		private const string SELECT_CLAUSE_EXP = "(?<=select|where).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP);
+		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
 
 		/// <summary>
