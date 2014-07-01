@@ -266,7 +266,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					if (_parent.ChildCount > (ChildIndex + 1))
 					{
-						_parent.SetChild(ChildIndex + 1, value);
+						//_parent.SetChild(ChildIndex + 1, value);
+						_parent.InsertChild(ChildIndex + 1, value);
 					}
 					else
 					{
