@@ -228,7 +228,9 @@ namespace NHibernate.Test.Hql.Ast
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into IntegerVersioned ( name ) select name from IntegerVersioned").ExecuteUpdate();
+			int count = s.CreateQuery("insert into IntegerVersioned ( name ) select name from IntegerVersioned where id = :id")
+				.SetInt64("id", entity.Id)
+				.ExecuteUpdate();
 			t.Commit();
 			s.Close();
 
@@ -276,8 +278,9 @@ namespace NHibernate.Test.Hql.Ast
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count =
-				s.CreateQuery("insert into TimestampVersioned ( name ) select name from TimestampVersioned").ExecuteUpdate();
+			int count = s.CreateQuery("insert into TimestampVersioned ( name ) select name from TimestampVersioned where id = :id")
+				.SetInt64("id", entity.Id)
+				.ExecuteUpdate();
 			t.Commit();
 			s.Close();
 
