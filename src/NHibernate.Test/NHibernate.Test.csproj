@@ -249,6 +249,7 @@
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQuerySpecificationTest.cs" />
     <Compile Include="Events\DisposableListenersTest.cs" />
+    <Compile Include="ExceptionsTest\FbExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\NullQueryTest.cs" />
     <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
