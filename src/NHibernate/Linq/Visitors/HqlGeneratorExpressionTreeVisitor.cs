@@ -7,6 +7,7 @@ using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Util;
+using Remotion.Linq;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -387,7 +388,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				System.Type t = expression.Value.GetType();
 
-				if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof (NhQueryable<>))
+				if (t.IsGenericType && typeof(QueryableBase<>).IsAssignableFrom(t))
 				{
 					return _hqlTreeBuilder.Ident(t.GetGenericArguments()[0].FullName);
 				}
