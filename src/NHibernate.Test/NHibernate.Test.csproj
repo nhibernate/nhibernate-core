@@ -691,6 +691,8 @@
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
     <Compile Include="NHSpecificTest\NH2865\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2865\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3148\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3148\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3377\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3377\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3392\Fixture.cs" />
