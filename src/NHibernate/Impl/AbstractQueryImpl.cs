@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
-using NHibernate.Hql.Classic;
+using NHibernate.Hql;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
@@ -702,7 +702,7 @@ namespace NHibernate.Impl
 			}
 			if(!vals.Any())
 			{
-				throw new QueryException(string.Format("An empty parameter-list generate wrong SQL; parameter name '{0}'", name));
+				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
 			namedParameterLists[name] = new TypedValue(type, vals, session.EntityMode);
 			return this;
@@ -1039,6 +1039,6 @@ namespace NHibernate.Impl
 			return queryString;
 		}
 
-		internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 	}
 }

@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -31,6 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,8 +40,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
@@ -54,7 +54,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_2_0</DefineConstants>
+    <DefineConstants>TRACE;NET_2_0;NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
@@ -73,15 +73,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="Antlr3.Runtime, Version=3.1.0.39271, Culture=neutral, PublicKeyToken=3a9cab8f8d22bfb7">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Antlr3.Runtime.dll</HintPath>
+      <HintPath>..\..\lib\net\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\3.5\Remotion.Linq.dll</HintPath>
+      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq">
@@ -131,6 +130,8 @@
     <Compile Include="Cfg\Settings.cs" />
     <Compile Include="Cfg\SettingsFactory.cs" />
     <Compile Include="Collection\IPersistentCollection.cs" />
+    <Compile Include="Collection\Generic\SetHelpers\ISetSnapshot.cs" />
+    <Compile Include="Collection\Generic\SetHelpers\SetSnapShot.cs" />
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />
@@ -145,12 +146,16 @@
     <Compile Include="Dialect\Function\CountQueryFunctionInfo.cs" />
     <Compile Include="Dialect\Function\SumQueryFunctionInfo.cs" />
     <Compile Include="Dialect\GenericDialect.cs" />
+    <Compile Include="Dialect\Ingres9Dialect.cs" />
     <Compile Include="Dialect\InsertGeneratedIdentifierRetrievalMethod.cs" />
     <Compile Include="Dialect\MsSql2000Dialect.cs" />
     <Compile Include="Dialect\MsSql2005DialectQueryPager.cs" />
     <Compile Include="Dialect\MsSql2012Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MsSqlAzure2008Dialect.cs" />
+    <Compile Include="Dialect\MySQL55Dialect.cs" />
+    <Compile Include="Dialect\MySQL55InnoDBDialect.cs" />
+    <Compile Include="Dialect\MySQL5InnoDBDialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
@@ -162,8 +167,8 @@
     <Compile Include="Dialect\SybaseSQLAnywhere12Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
+    <Compile Include="Driver\DotConnectMySqlDriver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
-    <Compile Include="Driver\FirebirdDriver.cs" />
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\IResultSetsCommand.cs" />
     <Compile Include="Driver\MySqlDataDriver.cs" />
@@ -174,10 +179,10 @@
     <Compile Include="Driver\OleDbDriver.cs" />
     <Compile Include="Driver\OracleClientDriver.cs" />
     <Compile Include="Driver\OracleDataClientDriver.cs" />
+    <Compile Include="Driver\OracleManagedDataClientDriver.cs" />
     <Compile Include="Driver\Sql2008ClientDriver.cs" />
     <Compile Include="Driver\SqlClientDriver.cs" />
     <Compile Include="Driver\BasicResultSetsCommand.cs" />
-    <Compile Include="Driver\SQLiteDriver.cs" />
     <Compile Include="Driver\SybaseAsaClientDriver.cs" />
     <Compile Include="Driver\SybaseAseClientDriver.cs" />
     <Compile Include="Driver\SybaseSQLAnywhereDotNet4Driver.cs" />
@@ -223,21 +228,9 @@
     <Compile Include="FetchMode.cs" />
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
+    <Compile Include="Hql\StringQueryExpression.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
-    <Compile Include="Hql\Classic\ClauseParser.cs" />
-    <Compile Include="Hql\Classic\FromParser.cs" />
-    <Compile Include="Hql\Classic\FromPathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\GroupByParser.cs" />
-    <Compile Include="Hql\Classic\HavingParser.cs" />
-    <Compile Include="Hql\Classic\IParser.cs" />
-    <Compile Include="Hql\Classic\OrderByParser.cs" />
-    <Compile Include="Hql\Classic\ParserHelper.cs" />
-    <Compile Include="Hql\Classic\PathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\PreprocessingParser.cs" />
-    <Compile Include="Hql\Classic\QueryTranslator.cs" />
-    <Compile Include="Hql\Classic\SelectParser.cs" />
-    <Compile Include="Hql\Classic\SelectPathExpressionParser.cs" />
-    <Compile Include="Hql\Classic\WhereParser.cs" />
+    <Compile Include="Hql\ParserHelper.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IDatabinder.cs" />
     <Compile Include="Id\Assigned.cs" />
@@ -267,6 +260,7 @@
     <Compile Include="Cache\Entry\CacheEntry.cs" />
     <Compile Include="Engine\CollectionEntry.cs" />
     <Compile Include="Engine\CollectionKey.cs" />
+    <Compile Include="Impl\AbstractQueryImpl2.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />
@@ -292,6 +286,9 @@
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
+    <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
+    <Compile Include="Linq\Functions\ConvertGenerator.cs" />
+    <Compile Include="Linq\Functions\GetValueOrDefaultGenerator.cs" />
     <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
@@ -301,6 +298,10 @@
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
+    <Compile Include="Linq\Functions\CompareGenerator.cs" />
+    <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />
+    <Compile Include="Linq\LinqLogging.cs" />
+    <Compile Include="Linq\SqlMethods.cs" />
     <Compile Include="Linq\Visitors\NhPartialEvaluatingExpressionTreeVisitor.cs" />
     <Compile Include="Linq\QuerySourceNamer.cs" />
     <Compile Include="Linq\ReWriters\AddJoinsReWriter.cs" />
@@ -308,13 +309,16 @@
     <Compile Include="Linq\ReWriters\ResultOperatorRewriter.cs" />
     <Compile Include="Linq\ReWriters\ResultOperatorRewriterResult.cs" />
     <Compile Include="Linq\Visitors\JoinBuilder.cs" />
+    <Compile Include="Linq\Visitors\PagingRewriterSelectClauseVisitor.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
     <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
+    <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
     <Compile Include="Linq\Visitors\VisitorUtil.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
@@ -604,6 +608,10 @@
     <Compile Include="SqlCommand\JoinFragment.cs" />
     <Compile Include="SqlCommand\OracleJoinFragment.cs" />
     <Compile Include="SqlCommand\Parameter.cs" />
+    <Compile Include="SqlCommand\Parser\MsSqlSelectParser.cs" />
+    <Compile Include="SqlCommand\Parser\SqlToken.cs" />
+    <Compile Include="SqlCommand\Parser\SqlTokenizerExtensions.cs" />
+    <Compile Include="SqlCommand\Parser\SqlTokenType.cs" />
     <Compile Include="SqlCommand\QueryJoinFragment.cs" />
     <Compile Include="SqlCommand\QuerySelect.cs" />
     <Compile Include="SqlCommand\SelectFragment.cs" />
@@ -611,11 +619,14 @@
     <Compile Include="SqlCommand\SqlDeleteBuilder.cs" />
     <Compile Include="SqlCommand\SqlInsertBuilder.cs" />
     <Compile Include="SqlCommand\SqlCommandImpl.cs" />
+    <Compile Include="SqlCommand\Parser\SqlParserUtils.cs" />
     <Compile Include="SqlCommand\SqlSelectBuilder.cs" />
     <Compile Include="SqlCommand\SqlSimpleSelectBuilder.cs" />
     <Compile Include="SqlCommand\SqlString.cs" />
     <Compile Include="SqlCommand\SqlStringBuilder.cs" />
+    <Compile Include="SqlCommand\Parser\SqlTokenizer.cs" />
     <Compile Include="SqlCommand\SqlUpdateBuilder.cs" />
+    <Compile Include="SqlCommand\SqlStringHelper.cs" />
     <Compile Include="SqlCommand\Template.cs" />
     <Compile Include="SqlCommand\WhereBuilder.cs" />
     <Compile Include="SqlTypes\AnsiStringFixedLengthSqlType.cs" />
@@ -632,8 +643,12 @@
     <Compile Include="TransactionException.cs" />
     <Compile Include="Transaction\AdoNetWithDistributedTransactionFactory.cs" />
     <Compile Include="Transaction\AdoTransaction.cs" />
+    <Compile Include="Transaction\AfterTransactionCompletes.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
+    <Compile Include="Transform\CacheableResultTransformer.cs" />
+    <Compile Include="Transform\AliasedTupleSubsetResultTransformer.cs" />
+    <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />
@@ -641,7 +656,6 @@
     <Compile Include="Type\AbstractType.cs" />
     <Compile Include="Type\AnsiStringType.cs" />
     <Compile Include="Type\ArrayType.cs" />
-    <Compile Include="Type\BagType.cs" />
     <Compile Include="Type\BinaryBlobType.cs" />
     <Compile Include="Type\BinaryType.cs" />
     <Compile Include="Type\BooleanType.cs" />
@@ -661,7 +675,6 @@
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
-    <Compile Include="Type\IdentifierBagType.cs" />
     <Compile Include="Type\IDiscriminatorType.cs" />
     <Compile Include="Type\IIdentifierType.cs" />
     <Compile Include="Type\ILiteralType.cs" />
@@ -671,9 +684,7 @@
     <Compile Include="Type\Int64Type.cs" />
     <Compile Include="Type\IType.cs" />
     <Compile Include="Type\IVersionType.cs" />
-    <Compile Include="Type\ListType.cs" />
     <Compile Include="Type\ManyToOneType.cs" />
-    <Compile Include="Type\MapType.cs" />
     <Compile Include="Type\MetaType.cs" />
     <Compile Include="Type\MutableType.cs" />
     <Compile Include="Type\NullableType.cs" />
@@ -682,10 +693,7 @@
     <Compile Include="Type\SByteType.cs" />
     <Compile Include="Type\SerializableType.cs" />
     <Compile Include="Type\SerializationException.cs" />
-    <Compile Include="Type\SetType.cs" />
     <Compile Include="Type\SingleType.cs" />
-    <Compile Include="Type\SortedMapType.cs" />
-    <Compile Include="Type\SortedSetType.cs" />
     <Compile Include="Type\StringClobType.cs" />
     <Compile Include="Type\StringType.cs" />
     <Compile Include="Type\TicksType.cs" />
@@ -709,12 +717,13 @@
     <Compile Include="Util\EnumeratorAdapter.cs" />
     <Compile Include="Util\IdentityMap.cs" />
     <Compile Include="Util\JoinedEnumerable.cs" />
-    <Compile Include="Util\ObjectUtils.cs" />
+    <Compile Include="Util\ObjectHelpers.cs" />
     <Compile Include="Util\PropertiesHelper.cs" />
     <Compile Include="Util\ReflectHelper.cs" />
     <Compile Include="Util\SequencedHashMap.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\StringTokenizer.cs" />
+    <Compile Include="Util\TypeExtensions.cs" />
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -879,7 +888,6 @@
     <Compile Include="Dialect\Schema\MySQLMetaData.cs" />
     <Compile Include="Dialect\Schema\SQLiteMetaData.cs" />
     <Compile Include="Dialect\Schema\SybaseAnywhereMetaData.cs" />
-    <Compile Include="Dialect\SybaseASA10Dialect.cs" />
     <Compile Include="Dialect\SybaseASA9Dialect.cs" />
     <Compile Include="Driver\CsharpSqliteDriver.cs" />
     <Compile Include="Driver\DbProviderFactoryDriveConnectionCommandProvider.cs" />
@@ -888,8 +896,7 @@
     <Compile Include="Driver\OracleLiteDataClientDriver.cs" />
     <Compile Include="Driver\ReflectionDriveConnectionCommandProvider.cs" />
     <Compile Include="Engine\Query\CallableParser.cs" />
-    <Compile Include="Engine\Query\HQLExpressionQueryPlan.cs" />
-    <Compile Include="Engine\Query\HQLStringQueryPlan.cs" />
+    <Compile Include="Engine\Query\QueryExpressionPlan.cs" />
     <Compile Include="EntityModeEqualityComparer.cs" />
     <Compile Include="Event\AbstractPostDatabaseOperationEvent.cs" />
     <Compile Include="Event\AbstractPreDatabaseOperationEvent.cs" />
@@ -926,7 +933,7 @@
     <Compile Include="Hql\Ast\ANTLR\InvalidPathException.cs" />
     <Compile Include="Hql\Ast\ANTLR\InvalidWithClauseException.cs" />
     <Compile Include="Hql\Ast\ANTLR\IParseErrorHandler.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Loader\QueryLoader.cs" />
+    <Compile Include="Loader\Hql\QueryLoader.cs" />
     <Compile Include="Hql\Ast\ANTLR\PolymorphicQuerySourceDetector.cs" />
     <Compile Include="Hql\Ast\ANTLR\QuerySourceDetector.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\AssignmentSpecification.cs" />
@@ -951,8 +958,6 @@
     <Compile Include="Linq\Functions\LinqToHqlGeneratorsRegistryFactory.cs" />
     <Compile Include="Linq\Functions\StandardLinqExtensionMethodGenerator.cs" />
     <Compile Include="Linq\LinqExtensionMethodAttribute.cs" />
-    <Compile Include="Linq\TypeHelperExtensionMethods.cs" />
-    <Compile Include="Linq\Visitors\NameUnNamedParameters.cs" />
     <Compile Include="Linq\NhRelinqQueryParser.cs" />
     <Compile Include="Linq\Expressions\NhAggregatedExpression.cs" />
     <Compile Include="Linq\Expressions\NhAverageExpression.cs" />
@@ -1018,7 +1023,6 @@
     <Compile Include="Linq\ExpressionToHqlTranslationResults.cs" />
     <Compile Include="Linq\EnumerableHelper.cs" />
     <Compile Include="Linq\GroupBy\GroupBySelectClauseRewriter.cs" />
-    <Compile Include="Linq\Visitors\GroupByKeySelectorVisitor.cs" />
     <Compile Include="Linq\Visitors\HqlGeneratorExpressionTreeVisitor.cs" />
     <Compile Include="Linq\LinqExtensionMethods.cs" />
     <Compile Include="Linq\ReWriters\MergeAggregatingResultsRewriter.cs" />
@@ -1028,7 +1032,6 @@
     <Compile Include="Linq\NhQueryable.cs" />
     <Compile Include="Linq\ResultOperators\NonAggregatingGroupBy.cs" />
     <Compile Include="Linq\GroupBy\NonAggregatingGroupByRewriter.cs" />
-    <Compile Include="Linq\ParameterAggregator.cs" />
     <Compile Include="Linq\Visitors\SelectClauseVisitor.cs" />
     <Compile Include="Linq\Visitors\QueryModelVisitor.cs" />
     <Compile Include="Linq\ResultTransformer.cs" />
@@ -1132,7 +1135,6 @@
     <Compile Include="SqlTypes\XmlSqlType.cs" />
     <Compile Include="Tool\hbm2ddl\SchemaMetadataUpdater.cs" />
     <Compile Include="Tool\hbm2ddl\ScriptSplitter.cs" />
-    <Compile Include="Transaction\AdoNetWithDistrubtedTransactionFactory.cs" />
     <Compile Include="Transform\ToListResultTransformer.cs" />
     <Compile Include="Type\AbstractDateTimeSpecificKindType.cs" />
     <Compile Include="Type\DbTimestampType.cs" />
@@ -1252,16 +1254,10 @@
     </Compile>
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
-    <Compile Include="Collection\PersistentBag.cs" />
-    <Compile Include="Collection\PersistentIdentifierBag.cs" />
-    <Compile Include="Collection\PersistentList.cs" />
-    <Compile Include="Collection\PersistentMap.cs" />
-    <Compile Include="Collection\PersistentSet.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />
     <Compile Include="Context\CurrentSessionContext.cs" />
     <Compile Include="Context\ICurrentSessionContext.cs" />
-    <Compile Include="Context\ManagedWebSessionContext.cs" />
     <Compile Include="Context\MapBasedSessionContext.cs" />
     <Compile Include="Context\ThreadLocalSessionContext.cs" />
     <Compile Include="Context\ThreadStaticSessionContext.cs" />
@@ -1306,7 +1302,6 @@
     <Compile Include="Dialect\Schema\ITableMetadata.cs" />
     <Compile Include="Dialect\Schema\MsSqlMetaData.cs" />
     <Compile Include="Dialect\Schema\OracleMetaData.cs" />
-    <Compile Include="Driver\ASA10ClientDriver.cs" />
     <Compile Include="Driver\ISqlParameterFormatter.cs" />
     <Compile Include="Driver\SqlStringFormatter.cs" />
     <Compile Include="Criterion\SubqueryProjection.cs" />
@@ -1374,7 +1369,6 @@
     <Compile Include="Event\Default\DefaultRefreshEventListener.cs" />
     <Compile Include="Event\Default\DefaultReplicateEventListener.cs" />
     <Compile Include="Event\Default\DefaultSaveEventListener.cs" />
-    <Compile Include="Event\Default\DefaultSaveOrUpdateCopyEventListener.cs" />
     <Compile Include="Event\Default\DefaultSaveOrUpdateEventListener.cs" />
     <Compile Include="Event\Default\DefaultUpdateEventListener.cs" />
     <Compile Include="Event\Default\DirtyCollectionSearchVisitor.cs" />
@@ -1495,7 +1489,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Impl\AbstractDetachedQuery.cs" />
-    <Compile Include="Hql\Classic\FunctionStack.cs" />
     <Compile Include="Impl\AbstractSessionImpl.cs" />
     <Compile Include="Impl\DetachedNamedQuery.cs" />
     <Compile Include="Impl\DetachedQuery.cs" />
@@ -1553,7 +1546,6 @@
     <Compile Include="Criterion\SimpleSubqueryExpression.cs" />
     <Compile Include="Criterion\Subqueries.cs" />
     <Compile Include="Criterion\SubqueryExpression.cs" />
-    <Compile Include="Hql\Classic\ClassicQueryTranslatorFactory.cs" />
     <Compile Include="Hql\CollectionSubqueryFactory.cs" />
     <Compile Include="Criterion\IsEmptyExpression.cs" />
     <Compile Include="Criterion\IsNotEmptyExpression.cs" />
@@ -1569,7 +1561,6 @@
     <Compile Include="Dialect\IngresDialect.cs" />
     <Compile Include="Dialect\MsSql2005Dialect.cs" />
     <Compile Include="Dialect\PostgreSQL81Dialect.cs" />
-    <Compile Include="Driver\ASAClientDriver.cs" />
     <Compile Include="Driver\DB2400Driver.cs" />
     <Compile Include="Driver\FirebirdClientDriver.cs" />
     <Compile Include="Driver\IngresDriver.cs" />
@@ -1772,8 +1763,6 @@
     <Compile Include="Type\EnumCharType.cs" />
     <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
-    <Compile Include="Type\OrderedSetType.cs" />
-    <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />
     <Compile Include="Type\GenericIdentifierBagType.cs" />
     <Compile Include="Type\GenericSortedListType.cs" />

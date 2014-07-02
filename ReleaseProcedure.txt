@@ -1,0 +1,51 @@
+These are the tasks typically needed to create an official NHibernate release.
+
+
+  * In Jira, make sure no open issues have "fix version" set to the release
+    that is about to happen (as these will show in the release notes).
+  
+  * Update releasenotes.txt with list of issues from Jira's Release Notes
+    feature. See if any additions to the list of "known breaking changes"
+    are necessary.
+	
+  * Check/update version number in build-common/common.xml.
+  
+  * Don't forget to commit the above.
+  
+  * Perform the release build including running all tests (GaRelease.bat or
+    ShowBuildMenu.bat).
+	
+	NOTE: If you prefer to keep your source code in a path like e.g.:
+	  C:\Users\Something\Long\Projects\nhibernate-core
+	you may want to issue a command like:
+	  subst P: C:\Users\Something\Long\Projects
+	And then change to P:\nhibernate-core before building. This will avoid
+	displaying a long user-specific path in public symbol files.
+	
+  * If no error or other issue requiring further changes occured, tag the
+    current git HEAD with a tag according to version number. Don't forget to
+	push the tag to github.
+	
+  * Upload binary and source zip files to SourceForge. Update the "latest
+    release".
+
+  * Update download link on NHForge.
+  
+  * Push nuget packages including the symbol packages. The nuget packages
+    should already be available in the build directory, together with a batch
+    file to push them.
+  
+  * In Jira, mark the version as released.
+  
+  * Post release announcement to nhusers, nhibernate-development and as
+    project news on SourceForge.
+	
+	
+  * If this was a stable branch, merge it forward to master. Perhaps some
+    changes need to be edited out in the merge, but this will reduce the
+	risk of some issue being left unfixed on master.
+
+
+  * Several weeks or months after the release, in Jira, we will assume all
+    issues resolved in the release have been verified. Go ahead and close
+    them.

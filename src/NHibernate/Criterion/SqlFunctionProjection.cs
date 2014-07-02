@@ -81,11 +81,10 @@ namespace NHibernate.Criterion
 				arguments.Add(projectArg);
 			}
 
-			SqlStringBuilder sb = new SqlStringBuilder();
-			sb.Add(sqlFunction.Render(arguments, criteriaQuery.Factory));
-			sb.Add(" as ");
-			sb.Add(GetColumnAliases(position)[0]);
-			return sb.ToSqlString();
+			return new SqlString(
+				sqlFunction.Render(arguments, criteriaQuery.Factory),
+				" as ",
+				GetColumnAliases(position)[0]);
 		}
 
 		private ISQLFunction GetFunction(ICriteriaQuery criteriaQuery)
@@ -108,7 +107,7 @@ namespace NHibernate.Criterion
 													   IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery, enabledFilters);
-			return StringHelper.RemoveAsAliasesFromSql(sql);
+			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

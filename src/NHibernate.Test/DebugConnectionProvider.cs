@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using Iesi.Collections.Generic;
 using NHibernate.Connection;
 
 namespace NHibernate.Test
@@ -13,7 +12,7 @@ namespace NHibernate.Test
 	/// </summary>
 	public class DebugConnectionProvider : DriverConnectionProvider
 	{
-		private ISet<IDbConnection> connections = new HashedSet<IDbConnection>();
+		private ISet<IDbConnection> connections = new HashSet<IDbConnection>();
 
 		public override IDbConnection GetConnection()
 		{

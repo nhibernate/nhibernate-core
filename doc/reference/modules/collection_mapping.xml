@@ -150,7 +150,7 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
     name="propertyName"
     table="table_name"
     schema="schema_name"
-    lazy="true|false"
+    lazy="true|false|extra"
     inverse="true|false"
     cascade="all|none|save-update|delete|all-delete-orphan"
     sort="unsorted|natural|comparatorClass"
@@ -189,7 +189,8 @@ HashedSet hs = (HashedSet) cat.Kittens; //Error!]]></programlisting>
                     <para>
                         <literal>lazy</literal> (optional - defaults to <literal>true</literal>)
                         may be used to disable lazy fetching and specify that the association
-                        is always eagerly fetched.
+                        is always eagerly fetched. Using <literal>extra</literal> fetches only the
+						elements that are needed - see <xref linkend="performance-fetching"/> for more information.
                     </para>
                 </callout>
                 <callout arearefs="mappingcollection5">

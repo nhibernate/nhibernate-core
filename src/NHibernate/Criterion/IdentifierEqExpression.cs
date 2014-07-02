@@ -71,7 +71,7 @@ namespace NHibernate.Criterion
 			else
 			{
 				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(), criteriaQuery, enabledFilters);
-				result.Add(StringHelper.RemoveAsAliasesFromSql(sql));
+				result.Add(SqlStringHelper.RemoveAsAliasesFromSql(sql));
 			}
 		}
 

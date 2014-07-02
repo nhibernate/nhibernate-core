@@ -25,15 +25,13 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
+				System.Type elementType = typeof (object);
 				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericBag(Role, ReferencedPropertyName, GenericArguments[0]);
+					elementType = GenericArguments[0];
 				}
-				else
-				{
-					return TypeFactory.Bag(Role, ReferencedPropertyName, Embedded);
-				}
+				return TypeFactory.GenericBag(Role, ReferencedPropertyName, elementType);
 			}
 		}
 

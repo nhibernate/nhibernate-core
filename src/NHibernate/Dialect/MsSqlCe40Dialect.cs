@@ -9,8 +9,14 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override bool SupportsVariableLimit
+		{
+			get { return true; }
+		}
+
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
+			//TODO: Share code with MsSql2012Dialect.GetLimitString
 			var builder = new SqlStringBuilder(queryString);
 			if (queryString.IndexOfCaseInsensitive(" ORDER BY ") < 0)
 				builder.Add(" ORDER BY GETDATE()");

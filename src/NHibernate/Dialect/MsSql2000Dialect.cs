@@ -9,6 +9,7 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
+using NHibernate.SqlCommand.Parser;
 using NHibernate.Type;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -109,6 +110,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
 			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
@@ -193,7 +196,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL($p, $s)");
-			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
+			RegisterColumnType(DbType.Double, "FLOAT(53)");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
 			RegisterColumnType(DbType.Int64, "BIGINT");
@@ -340,15 +343,11 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
-			/*
-			 * "SELECT TOP limit rest-of-sql-statement"
-			 */
+			var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator();
+			if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
 
-			SqlStringBuilder topFragment = new SqlStringBuilder();
-			topFragment.Add(" top ");
-			topFragment.Add(limit);
-
-			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), topFragment.ToSqlString());
+			int insertPoint = tokenEnum.Current.SqlIndex;
+			return querySqlString.Insert(insertPoint, new SqlString("top ", limit, " "));
 		}
 
 		/// <summary>
@@ -398,19 +397,6 @@ namespace NHibernate.Dialect
 			return quoted.Replace(new string(CloseQuote, 2), CloseQuote.ToString());
 		}
 
-		private static int GetAfterSelectInsertPoint(SqlString sql)
-		{
-			if (sql.StartsWithCaseInsensitive("select distinct"))
-			{
-				return 15;
-			}
-			else if (sql.StartsWithCaseInsensitive("select"))
-			{
-				return 6;
-			}
-			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
-		}
-
 		protected bool NeedsLockHint(LockMode lockMode)
 		{
 			return lockMode.GreaterThan(LockMode.Read);
@@ -424,25 +410,6 @@ namespace NHibernate.Dialect
 			}
 
 			return tableName;
-		}
-
-		private struct LockHintAppender
-		{
-			private readonly MsSql2000Dialect dialect;
-			private readonly IDictionary<string, LockMode> aliasedLockModes;
-
-			public LockHintAppender(MsSql2000Dialect dialect, IDictionary<string, LockMode> aliasedLockModes)
-			{
-				this.dialect = dialect;
-				this.aliasedLockModes = aliasedLockModes;
-			}
-
-			public string ReplaceMatch(Match match)
-			{
-				string alias = match.Groups[1].Value;
-				string lockHint = dialect.AppendLockHint(aliasedLockModes[alias], alias);
-				return string.Concat(" ", lockHint, match.Groups[2].Value);
-			}
 		}
 
 		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
@@ -463,27 +430,7 @@ namespace NHibernate.Dialect
 				return sql;
 			}
 
-			// Regex matching any alias out of those given. Aliases should contain
-			// no dangerous characters (they are identifiers) so they are not escaped.
-			string aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
-
-			// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
-			// in various kinds of "FROM table1 alias1, table2 alias2".
-			Regex matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
-
-			SqlStringBuilder result = new SqlStringBuilder();
-			MatchEvaluator evaluator = new LockHintAppender(this, aliasedLockModes).ReplaceMatch;
-
-			foreach (object part in sql)
-			{
-				var parameter = part as Parameter;
-				if (parameter != null)
-					result.Add(parameter);
-				else
-					result.Add(matchRegex.Replace((string)part, evaluator));
-			}
-
-			return result.ToSqlString();
+			return new LockHintAppender(this, aliasedLockModes).AppendLockHint(sql);
 		}
 
 		public override long TimestampResolutionInTicks
@@ -554,6 +501,79 @@ namespace NHibernate.Dialect
 		public override bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
+		}
+
+		public struct LockHintAppender
+		{
+			private const string UnescapedNameRegex = @"\w+";
+			private const string EscapedNameRegex = @"\[([^\]]|\]\])+\]";
+			private const string NameRegex = "(" + UnescapedNameRegex + "|" + EscapedNameRegex + ")";
+			private const string NameSeparatorRegex = @"\s*\.\s*";
+			private const string FromTableNameRegex = @"from\s+(" + NameRegex + "?" + NameSeparatorRegex + "){0,2}" + NameRegex;
+
+			private static readonly Regex FromClauseTableNameRegex = new Regex(FromTableNameRegex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+			private readonly MsSql2000Dialect _dialect;
+			private readonly IDictionary<string, LockMode> _aliasedLockModes;
+
+			private readonly Regex _matchRegex;
+			private readonly Regex _unionSubclassRegex;
+
+			public LockHintAppender(MsSql2000Dialect dialect, IDictionary<string, LockMode> aliasedLockModes)
+			{
+				_dialect = dialect;
+				_aliasedLockModes = aliasedLockModes;
+
+				// Regex matching any alias out of those given. Aliases should contain
+				// no dangerous characters (they are identifiers) so they are not escaped.
+				var aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+
+				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
+				// in various kinds of "FROM table1 alias1, table2 alias2".
+				_matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
+				_unionSubclassRegex = new Regex(@"from\s+\(((?:.|\r|\n)*)\)(?:\s+as)?\s+(?<alias>" + aliasesPattern + ")", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+	}
+
+			public SqlString AppendLockHint(SqlString sql)
+			{
+				var result = new SqlStringBuilder();
+
+				foreach (object part in sql)
+				{
+					if (part == Parameter.Placeholder)
+					{
+						result.Add((Parameter)part);
+						continue;
+}
+
+					result.Add(ProcessUnionSubclassCase((string)part) ?? _matchRegex.Replace((string)part, ReplaceMatch));
+				}
+
+				return result.ToSqlString();
+			}
+
+			private string ProcessUnionSubclassCase(string part)
+			{
+				var unionMatch = _unionSubclassRegex.Match(part);
+				if (!unionMatch.Success)
+				{
+					return null;
+				}
+
+				var alias = unionMatch.Groups["alias"].Value;
+				var lockMode = _aliasedLockModes[alias];
+				var @this = this;
+				var replacement = FromClauseTableNameRegex.Replace(unionMatch.Value, m => @this._dialect.AppendLockHint(lockMode, m.Value));
+
+				return _unionSubclassRegex.Replace(part, replacement);
+			}
+
+			private string ReplaceMatch(Match match)
+			{
+				string alias = match.Groups[1].Value;
+				string lockHint = _dialect.AppendLockHint(_aliasedLockModes[alias], alias);
+				return string.Concat(" ", lockHint, match.Groups[2].Value); // TODO: seems like this line is redundant
+			}
 		}
 	}
 }

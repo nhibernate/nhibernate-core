@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
-using Iesi.Collections.Generic;
 
 using NHibernate.Bytecode;
 using NHibernate.Classic;
@@ -24,8 +24,8 @@ namespace NHibernate.Tuple.Entity
 		private readonly System.Type proxyInterface;
 		private readonly bool islifecycleImplementor;
 		private readonly bool isValidatableImplementor;
-		private readonly HashedSet<string> lazyPropertyNames = new HashedSet<string>();
-		private readonly HashedSet<string> unwrapProxyPropertyNames = new HashedSet<string>();
+		private readonly HashSet<string> lazyPropertyNames = new HashSet<string>();
+		private readonly HashSet<string> unwrapProxyPropertyNames = new HashSet<string>();
 		[NonSerialized]
 		private IReflectionOptimizer optimizer;
 		private readonly IProxyValidator proxyValidator;
@@ -34,6 +34,14 @@ namespace NHibernate.Tuple.Entity
 		internal void OnDeserialized(StreamingContext context)
 		{
 			SetReflectionOptimizer();
+
+			if (optimizer != null)
+			{
+				// Also set the InstantiationOptimizer on the deserialized PocoInstantiator.
+				((PocoInstantiator)Instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
+			}
+
+			ClearOptimizerWhenUsingCustomAccessors();
 		}
 		protected void SetReflectionOptimizer()
 		{
@@ -62,10 +70,7 @@ namespace NHibernate.Tuple.Entity
 
 			Instantiator = BuildInstantiator(mappedEntity);
 
-			if (hasCustomAccessors)
-			{
-				optimizer = null;
-			}
+			ClearOptimizerWhenUsingCustomAccessors();
 
 			proxyValidator = Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 		}
@@ -122,7 +127,7 @@ namespace NHibernate.Tuple.Entity
 
 			// determine the id getter and setter methods from the proxy interface (if any)
 			// determine all interfaces needed by the resulting proxy
-			var proxyInterfaces = new HashedSet<System.Type> {typeof (INHibernateProxy)};
+			var proxyInterfaces = new HashSet<System.Type> {typeof (INHibernateProxy)};
 
 			System.Type _mappedClass = persistentClass.MappedClass;
 			System.Type _proxyInterface = persistentClass.ProxyInterface;
@@ -228,7 +233,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (IsInstrumented && (EntityMetamodel.HasLazyProperties || EntityMetamodel.HasUnwrapProxyForProperties))
 			{
-				HashedSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
+				HashSet<string> lazyProps = lazyPropertiesAreUnfetched && EntityMetamodel.HasLazyProperties ? lazyPropertyNames : null;
 				//TODO: if we support multiple fetch groups, we would need
 				//      to clone the set of lazy properties!
 				FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, this.MappedClass ,lazyProps, unwrapProxyPropertyNames, session);
@@ -315,6 +320,14 @@ namespace NHibernate.Tuple.Entity
 		public override EntityMode EntityMode
 		{
 			get { return EntityMode.Poco; }
+		}
+
+		protected void ClearOptimizerWhenUsingCustomAccessors()
+		{
+			if (hasCustomAccessors)
+			{
+				optimizer = null;
+			}
 		}
 	}
 }

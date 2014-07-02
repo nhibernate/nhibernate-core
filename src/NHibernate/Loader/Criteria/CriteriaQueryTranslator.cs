@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Hql.Util;
@@ -34,7 +33,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly IDictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
 			new Dictionary<string, ICriteriaInfoProvider>();
 
-		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashedSet<ICollectionPersister>();
+		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
 		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
@@ -82,16 +81,16 @@ namespace NHibernate.Loader.Criteria
 
 		public ISet<string> GetQuerySpaces()
 		{
-			ISet<string> result = new HashedSet<string>();
+			ISet<string> result = new HashSet<string>();
 
 			foreach (ICriteriaInfoProvider info in criteriaInfoMap.Values)
 			{
-				result.AddAll(info.Spaces);
+				result.UnionWith(info.Spaces);
 			}
 
 			foreach (ICollectionPersister collectionPersister in criteriaCollectionPersisters)
 			{
-				result.AddAll(collectionPersister.CollectionSpaces);
+				result.UnionWith(collectionPersister.CollectionSpaces);
 			}
 			return result;
 		}
@@ -164,6 +163,14 @@ namespace NHibernate.Loader.Criteria
 		{
 			return rootCriteria.Projection.ToSqlString(rootCriteria.ProjectionCriteria, 0, this, enabledFilters);
 		}
+
+
+		internal IType ResultType(ICriteria criteria)
+		{
+			return TypeFactory.ManyToOne(GetEntityName(criteria));
+			//return Factory.getTypeResolver().getTypeFactory().manyToOne(getEntityName(criteria));
+		}
+
 
 		public IType[] ProjectedTypes
 		{
@@ -249,13 +256,8 @@ namespace NHibernate.Loader.Criteria
 		{
 			JoinType result;
 			if (associationPathJoinTypesMap.TryGetValue(path, out result))
-			{
 				return result;
-			}
-			else
-			{
-				return JoinType.InnerJoin;
-			}
+			return JoinType.InnerJoin;
 		}
 
 		public ICriteria GetCriteria(string path)
@@ -524,8 +526,8 @@ namespace NHibernate.Loader.Criteria
 		public string GetEntityName(ICriteria criteria)
 		{
 			ICriteriaInfoProvider result;
-            if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
-                return null;
+			if (criteriaInfoMap.TryGetValue(criteria, out result) == false)
+				return null;
 			return result.Name;
 		}
 
@@ -706,9 +708,9 @@ namespace NHibernate.Loader.Criteria
 
 		public SqlString GetWithClause(string path, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (withClauseMap.ContainsKey(path))
+			ICriterion crit;
+			if (withClauseMap.TryGetValue(path, out crit))
 			{
-				ICriterion crit = (ICriterion)withClauseMap[path];
 				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this, enabledFilters);
 			}
 			return null;
@@ -735,11 +737,11 @@ namespace NHibernate.Loader.Criteria
 			collectedParameterSpecifications.Add(specification);
 			namedParameters.Add(new NamedParameter(parameterName, parameter.Value, parameter.Type));
 			return specification.GetIdsForBackTrack(Factory).Select(x =>
-			                                                        {
-			                                                        	Parameter p = Parameter.Placeholder;
-			                                                        	p.BackTrack = x;
-			                                                        	return p;
-			                                                        });
+																	{
+																		Parameter p = Parameter.Placeholder;
+																		p.BackTrack = x;
+																		return p;
+																	});
 		}
 
 		public ICollection<IParameterSpecification> CollectedParameterSpecifications

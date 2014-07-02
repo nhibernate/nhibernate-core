@@ -10,7 +10,8 @@
 		<property name="assembly.description" value="The Visual Basic Unit Tests for NHibernate." />
 		<property name="assembly.is-cls-compliant" value="false" />
 		<property name="clover.instrument" value="false" />
-		<assemblyfileset id="project.references" basedir="${bin.dir}">
+    <property name="sign" value="false" />
+    <assemblyfileset id="project.references" basedir="${bin.dir}">
 			<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />

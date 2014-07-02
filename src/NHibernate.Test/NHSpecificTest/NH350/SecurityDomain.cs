@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH350
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 		private string m_Name;
 
 		private SecurityDomain m_ParentDomain;
-		private IList m_ChildDomains;
+		private IList<SecurityDomain> m_ChildDomains;
 
 		public SecurityDomain()
 		{
@@ -33,13 +33,13 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 			set { m_ParentDomain = value; }
 		}
 
-		public IList ChildDomains
+		public IList<SecurityDomain> ChildDomains
 		{
 			get
 			{
 				if (m_ChildDomains == null)
 				{
-					m_ChildDomains = new ArrayList();
+					m_ChildDomains = new List<SecurityDomain>();
 				}
 				return m_ChildDomains;
 			}

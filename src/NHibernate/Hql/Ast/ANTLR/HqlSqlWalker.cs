@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using Iesi.Collections.Generic;
 
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -45,7 +44,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
 
-		private readonly ISet<string> _querySpaces = new HashedSet<string>();
+		private readonly ISet<string> _querySpaces = new HashSet<string>();
 
 		private readonly LiteralProcessor _literalProcessor;
 
@@ -363,7 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// TODO NH: we should check the "generated" property
 			// currently only the Hibernate-supplied DbTimestampType is supported here
-			return typeof(TimestampType).IsAssignableFrom(type.GetType());
+			return type is TimestampType;
 		}
 
 		private static bool IsIntegral(IType type)
@@ -376,8 +375,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public static bool SupportsIdGenWithBulkInsertion(IIdentifierGenerator generator)
 		{
-			return typeof(SequenceGenerator).IsAssignableFrom(generator.GetType()) 
-				|| typeof(IPostInsertIdentifierGenerator).IsAssignableFrom(generator.GetType());
+			return generator is SequenceGenerator 
+				|| generator is IPostInsertIdentifierGenerator;
 		}
 
 		private void PostProcessDML(IRestrictableStatement statement)

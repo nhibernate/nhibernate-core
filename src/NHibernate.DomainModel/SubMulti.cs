@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -7,8 +7,8 @@ namespace NHibernate.DomainModel
 	{
 		private float _amount;
 		private SubMulti _parent;
-		private IList _children;
-		private IList _moreChildren;
+		private IList<SubMulti> _children;
+		private IList<SubMulti> _moreChildren;
 
 		public float Amount
 		{
@@ -22,13 +22,13 @@ namespace NHibernate.DomainModel
 			set { _parent = value; }
 		}
 
-		public IList Children
+		public IList<SubMulti> Children
 		{
 			get { return _children; }
 			set { _children = value; }
 		}
 
-		public IList MoreChildren
+		public IList<SubMulti> MoreChildren
 		{
 			get { return _moreChildren; }
 			set { _moreChildren = value; }

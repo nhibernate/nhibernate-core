@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -59,7 +58,7 @@ namespace NHibernate.Event.Default
 				
 				if (transientCopyCache.Count > 0)
 				{
-					ISet<string> transientEntityNames = new HashedSet<string>();
+					ISet<string> transientEntityNames = new HashSet<string>();
 					
 					foreach (object transientEntity in transientCopyCache.Keys)
 					{
@@ -418,7 +417,7 @@ namespace NHibernate.Event.Default
 			//
 			// This second condition is a special case which allows
 			// an entity to be merged during the same transaction
-			// (though during a seperate operation) in which it was
+			// (though during a separate operation) in which it was
 			// originally persisted/saved
 			bool changed =
 				!persister.VersionType.IsSame(persister.GetVersion(target, source.EntityMode),

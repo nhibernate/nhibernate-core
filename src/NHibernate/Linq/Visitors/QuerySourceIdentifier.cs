@@ -8,7 +8,7 @@ namespace NHibernate.Linq.Visitors
 	/// Identifies and names - using <see cref="QuerySourceNamer"/> - all QueryModel query sources
 	/// </summary>
 	/// <remarks>
-	/// It may seem expensive to do this as a seperate visitation of the query model, but unfortunately
+	/// It may seem expensive to do this as a separate visitation of the query model, but unfortunately
 	/// trying to identify query sources on the fly (i.e. while parsing the query model to generate
 	/// the HQL expression tree) means a query source may be referenced by a <c>QuerySourceReference</c>
 	/// before it has been identified - and named.

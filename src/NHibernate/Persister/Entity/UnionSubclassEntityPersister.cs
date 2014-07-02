@@ -35,9 +35,10 @@ namespace NHibernate.Persister.Entity
 
 			// TABLE
 
-			tableName =
-				persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
-				                                       factory.Settings.DefaultSchemaName);
+			var dialect = factory.Dialect;
+			var defaultCatalogName = factory.Settings.DefaultCatalogName;
+			var defaultSchemaName = factory.Settings.DefaultSchemaName;
+			tableName = persistentClass.Table.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName);
 
 			#region Custom SQL
 
@@ -48,9 +49,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLInsert;
 			callable = sql != null && persistentClass.IsCustomInsertCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLInsertCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLInsertCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLInsert = new SqlString[] { sql };
 			insertCallable = new bool[] { callable };
 			insertResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -58,9 +59,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLUpdate;
 			callable = sql != null && persistentClass.IsCustomUpdateCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLUpdateCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLUpdateCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLUpdate = new SqlString[] { sql };
 			updateCallable = new bool[] { callable };
 			updateResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -68,9 +69,9 @@ namespace NHibernate.Persister.Entity
 			sql = persistentClass.CustomSQLDelete;
 			callable = sql != null && persistentClass.IsCustomDeleteCallable;
 			checkStyle = sql == null
-			             	? ExecuteUpdateResultCheckStyle.Count
-			             	: (persistentClass.CustomSQLDeleteCheckStyle
-			             	   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
+							? ExecuteUpdateResultCheckStyle.Count
+							: (persistentClass.CustomSQLDeleteCheckStyle
+							   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(sql, callable));
 			customSQLDelete = new SqlString[] { sql };
 			deleteCallable = new bool[] { callable };
 			deleteResultCheckStyles = new ExecuteUpdateResultCheckStyle[] { checkStyle };
@@ -118,35 +119,34 @@ namespace NHibernate.Persister.Entity
 
 			subclassSpaces = persistentClass.SubclassTableClosureIterator
 				.Select(table =>
-					table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName))
+					table.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName))
 				.Distinct().ToArray();
 
 			subquery = GenerateSubquery(persistentClass, mapping);
 
 			if (IsMultiTable)
 			{
-				int idColumnSpan = IdentifierColumnSpan;
-				List<string> tableNames = new List<string>();
-				List<string[]> keyColumns = new List<string[]>();
+				var tableNames = new List<string>();
+				var keyColumns = new List<string[]>();
 				if (!IsAbstract)
 				{
 					tableNames.Add(tableName);
 					keyColumns.Add(IdentifierColumnNames);
 				}
-				foreach (Table tab in persistentClass.SubclassTableClosureIterator)
+				foreach (var tab in persistentClass.SubclassTableClosureIterator)
 				{
 					if (!tab.IsAbstractUnionTable)
 					{
 						string _tableName =
-							tab.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+							tab.GetQualifiedName(dialect, defaultCatalogName, defaultSchemaName);
 						tableNames.Add(_tableName);
 
-						List<string> key = new List<string>(idColumnSpan);
-						foreach (Column column in tab.PrimaryKey.ColumnIterator)
-							key.Add(column.GetQuotedName(factory.Dialect));
+						var names = tab.PrimaryKey.ColumnIterator
+									   .Select(column => column.GetQuotedName(dialect))
+									   .ToArray();
 
-						keyColumns.Add(key.ToArray());
-					}					
+						keyColumns.Add(names);
+					}
 				}
 
 				constraintOrderedTableNames = tableNames.ToArray();
@@ -247,44 +247,6 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		protected internal virtual bool IsDiscriminatorFormula
-		{
-			get { return false; }
-		}
-
-		/// <summary> Generate the SQL that selects a row by id</summary>
-		protected internal virtual SqlString GenerateSelectString(LockMode lockMode)
-		{
-			SqlSimpleSelectBuilder select = new SqlSimpleSelectBuilder(Factory.Dialect, Factory)
-				.SetLockMode(lockMode)
-				.SetTableName(TableName)
-				.AddColumns(IdentifierColumnNames)
-				.AddColumns(SubclassColumnClosure, SubclassColumnAliasClosure, SubclassColumnLaziness)
-				.AddColumns(SubclassFormulaClosure, SubclassFormulaAliasClosure, SubclassFormulaLaziness);
-			//TODO: include the rowids!!!!
-			if (HasSubclasses)
-			{
-				if (IsDiscriminatorFormula)
-				{
-					select.AddColumn(DiscriminatorFormula, DiscriminatorAlias);
-				}
-				else
-				{
-					select.AddColumn(DiscriminatorColumnName, DiscriminatorAlias);
-				}
-			}
-			if (Factory.Settings.IsCommentsEnabled)
-			{
-				select.SetComment("load " + EntityName);
-			}
-			return select.AddWhereFragment(IdentifierColumnNames, IdentifierType, "=").ToSqlString();
-		}
-
-		protected internal string DiscriminatorFormula
-		{
-			get { return null; } // NH : what this mean ? (see GenerateSelectString) 
-		}
-
 		protected override string GetTableName(int table)
 		{
 			return tableName;
@@ -342,43 +304,35 @@ namespace NHibernate.Persister.Entity
 
 		protected string GenerateSubquery(PersistentClass model, IMapping mapping)
 		{
-			Dialect.Dialect dialect = Factory.Dialect;
-			Settings settings = Factory.Settings;
+			var dialect = Factory.Dialect;
+			var settings = Factory.Settings;
 
 			if (!model.HasSubclasses)
 			{
 				return model.Table.GetQualifiedName(dialect, settings.DefaultCatalogName, settings.DefaultSchemaName);
 			}
 
-			var columns = new HashSet<Column>();
-			foreach (Table table in model.SubclassTableClosureIterator)
-			{
-				if (!table.IsAbstractUnionTable)
-				{
-					foreach (Column column in table.ColumnIterator)
-						columns.Add(column);
-				}
-			}
+			var columns = new HashSet<Column>(model.SubclassTableClosureIterator
+												   .Where(table => !table.IsAbstractUnionTable)
+												   .SelectMany(table => table.ColumnIterator));
 
-			StringBuilder buf = new StringBuilder().Append("( ");
-			IEnumerable<PersistentClass> siter =
-				new JoinedEnumerable<PersistentClass>(new SingletonEnumerable<PersistentClass>(model),
-				                                      new SafetyEnumerable<PersistentClass>(model.SubclassIterator));
+			var buf = new StringBuilder("( ");
 
-			foreach (PersistentClass clazz in siter)
+			var persistentClasses = PersistentClasses(model);
+			foreach (var clazz in persistentClasses)
 			{
-				Table table = clazz.Table;
+				var table = clazz.Table;
 				if (!table.IsAbstractUnionTable)
 				{
 					buf.Append("select ");
-					foreach (Column col in columns)
+					foreach (var col in columns)
 					{
 						if (!table.ContainsColumn(col))
 						{
-							SqlType sqlType = col.GetSqlTypeCode(mapping);
+							var sqlType = col.GetSqlTypeCode(mapping);
 							buf.Append(dialect.GetSelectClauseNullString(sqlType)).Append(" as ");
 						}
-						buf.Append(col.Name);
+						buf.Append(col.GetQuotedName(dialect));
 						buf.Append(StringHelper.CommaSpace);
 					}
 					buf.Append(clazz.SubclassId).Append(" as clazz_");
@@ -396,6 +350,13 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return buf.Append(" )").ToString();
+		}
+
+		private static IEnumerable<PersistentClass> PersistentClasses(PersistentClass model)
+		{
+			yield return model;
+			foreach (var subclass in model.SubclassIterator)
+				yield return subclass;
 		}
 
 		protected override string[] GetSubclassTableKeyColumns(int j)

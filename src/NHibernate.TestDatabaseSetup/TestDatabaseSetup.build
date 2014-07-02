@@ -7,9 +7,12 @@
 		<property name="assembly.description" value="Test Database Setup for NHibernate." />
 		<property name="assembly.is-cls-compliant" value="true" />
 		<property name="clover.instrument" value="false" />
-		<copy file="${root.dir}/lib/teamcity/firebird/FirebirdSql.Data.FirebirdClient.dll" todir="${bin.dir}" />
+    <property name="sign" value="false" />
+    <copy file="${root.dir}/lib/teamcity/firebird/FirebirdSql.Data.FirebirdClient.dll" todir="${bin.dir}" />
 		<copy file="${root.dir}/lib/teamcity/postgresql/Npgsql.dll" todir="${bin.dir}" />
+		<copy file="${root.dir}/lib/teamcity/sqlServerCe/System.Data.SqlServerCe.dll" todir="${bin.dir}" />
 		<assemblyfileset id="project.references" basedir="${bin.dir}">
+			<include name="mscorlib.dll" />
 			<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Data.dll" />
@@ -17,6 +20,7 @@
 			<include name="NHibernate.Test.dll" />
 			<include name="nunit.framework.dll" />
 			<include name="FirebirdSql.Data.FirebirdClient.dll" />
+			<include name="System.Data.SqlServerCe.dll" />
 			<include name="Npgsql.dll" />
 		</assemblyfileset>
 	</target>

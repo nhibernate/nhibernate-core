@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -39,7 +38,7 @@ namespace NHibernate.Test.SqlTest
 		private ProductIdType productId;
 		private string name;
 		private Person person;
-		private ISet<Order> orders = new HashedSet<Order>();
+		private ISet<Order> orders = new HashSet<Order>();
 
 		public virtual ProductIdType ProductId
 		{

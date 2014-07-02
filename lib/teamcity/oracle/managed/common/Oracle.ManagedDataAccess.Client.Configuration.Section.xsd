@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:simpleType name="parameterDirection">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Output"/>
+      <xs:enumeration value="InputOutput"/>
+      <xs:enumeration value="ReturnValue"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="customBoolean">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ONSParameters">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="nodeList"/>
+      <!--<xs:enumeration value="walletFile"/>
+      <xs:enumeration value="walletPassword"/>-->
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ONSModeValues">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="local"/>
+      <xs:enumeration value="remote"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="datatype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="System.Binary"/>
+      <xs:enumeration value="System.Boolean"/>
+      <xs:enumeration value="System.Byte"/>
+      <xs:enumeration value="System.Byte[]"/>
+      <xs:enumeration value="System.Char"/>
+      <xs:enumeration value="System.DateTime"/>
+      <xs:enumeration value="System.DateTimeOffset"/>
+      <xs:enumeration value="System.Decimal"/>
+      <xs:enumeration value="System.Double"/>
+      <xs:enumeration value="System.Guid"/>
+      <xs:enumeration value="System.Int16"/>
+      <xs:enumeration value="System.Int32"/>
+      <xs:enumeration value="System.Int64"/>
+      <xs:enumeration value="System.SByte"/>
+      <xs:enumeration value="System.Single"/>
+      <xs:enumeration value="System.String"/>
+      <xs:enumeration value="System.TimeSpan"/>
+      <xs:enumeration value="System.UInt16"/>
+      <xs:enumeration value="System.UInt32"/>
+      <xs:enumeration value="System.UInt64"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="providerType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BFile"/>
+      <xs:enumeration value="BinaryFloat"/>
+      <xs:enumeration value="BinaryDouble"/>
+      <xs:enumeration value="Blob"/>
+      <xs:enumeration value="Byte"/>
+      <xs:enumeration value="Char"/>
+      <xs:enumeration value="Clob"/>
+      <xs:enumeration value="Date"/>
+      <xs:enumeration value="Decimal"/>
+      <xs:enumeration value="Double"/>
+      <xs:enumeration value="Int16"/>
+      <xs:enumeration value="Int32"/>
+      <xs:enumeration value="Int64"/>
+      <xs:enumeration value="IntervalDS"/>
+      <xs:enumeration value="IntervalYM"/>
+      <xs:enumeration value="Long"/>
+      <xs:enumeration value="LongRaw"/>
+      <xs:enumeration value="NChar"/>
+      <xs:enumeration value="NClob"/>
+      <xs:enumeration value="NVarchar2"/>
+      <xs:enumeration value="Raw"/>
+      <xs:enumeration value="Single"/>
+      <xs:enumeration value="TimeStamp"/>
+      <xs:enumeration value="TimeStampLTZ"/>
+      <xs:enumeration value="TimeStampTZ"/>
+      <xs:enumeration value="Varchar2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nativeDataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BFile"/>
+      <xs:enumeration value="Binary_Float"/>
+      <xs:enumeration value="Binary_Double"/>
+      <xs:enumeration value="Blob"/>
+      <xs:enumeration value="Char"/>
+      <xs:enumeration value="Clob"/>
+      <xs:enumeration value="Date"/>
+      <xs:enumeration value="Number"/>
+      <xs:enumeration value="Interval Day To Second"/>
+      <xs:enumeration value="Interval Year To Month"/>
+      <xs:enumeration value="Long"/>
+      <xs:enumeration value="Long Raw"/>
+      <xs:enumeration value="NChar"/>
+      <xs:enumeration value="NClob"/>
+      <xs:enumeration value="NVarchar2"/>
+      <xs:enumeration value="Raw"/>
+      <xs:enumeration value="Rowid"/>
+      <xs:enumeration value="Timestamp"/>
+      <xs:enumeration value="Timestamp With Local Time Zone"/>
+      <xs:enumeration value="Timestamp With Time Zone"/>
+      <xs:enumeration value="URowid"/>
+      <xs:enumeration value="Varchar2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="providerDBType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AnsiString"/>
+      <xs:enumeration value="AnsiStringFixedLength"/>
+      <xs:enumeration value="Binary"/>
+      <xs:enumeration value="Byte"/>
+      <xs:enumeration value="Date"/>
+      <xs:enumeration value="DateTime"/>
+      <xs:enumeration value="DateTimeOffset"/>
+      <xs:enumeration value="Decimal"/>
+      <xs:enumeration value="Double"/>
+      <xs:enumeration value="Int16"/>
+      <xs:enumeration value="Int32"/>
+      <xs:enumeration value="Int64"/>
+      <xs:enumeration value="Single"/>
+      <xs:enumeration value="String"/>
+      <xs:enumeration value="StringFixedLength"/>
+      <xs:enumeration value="Time"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="oracle.manageddataaccess.client" >
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="version" type="versiontype" minOccurs="0" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="versiontype">
+    <xs:complexContent>
+      <xs:extension base="parameters">
+        <xs:attribute name="number" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="parameters">
+    <xs:all>
+      <xs:element minOccurs="0" name="settings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="setting">
+              <xs:complexType>
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="value" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="LDAPsettings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="LDAPsetting">
+              <xs:complexType>
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="value" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="distributedTransaction">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="setting">
+              <xs:complexType>
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="value" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="dataSources">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="dataSource">
+              <xs:complexType>
+                <xs:attribute name="alias" type="xs:string" use="required" />
+                <xs:attribute name="descriptor" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element minOccurs="0" name="connectionPools">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="connectionPool">
+              <xs:complexType>
+                <xs:attribute name="connectionString" type="xs:string" use="required" />
+                <xs:attribute name="poolName" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      
+      
+      <xs:element minOccurs="0" name="edmMappings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="edmMapping">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element minOccurs="0" maxOccurs="unbounded" name="add">
+                    <xs:complexType>
+                      <xs:attribute name="name" type="xs:string" use="required" />
+                      <xs:attribute name="precision" type="xs:int" use="required" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="dataType" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="implicitRefCursor">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="storedProcedure">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element maxOccurs="unbounded" minOccurs="0" name="refCursor">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="1" name="bindInfo">
+                          <xs:complexType>
+                            <xs:attribute name="mode" type="parameterDirection" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="metadata">
+                          <xs:complexType>
+                            <xs:attribute name="columnOrdinal" type="xs:int" use="required" />
+                            <xs:attribute name="columnName" type="xs:string" use="required" />
+                            <xs:attribute name="baseColumnName" type="xs:string" use="optional" />
+                            <xs:attribute name="baseSchemaName" type="xs:string" use="optional" />
+                            <xs:attribute name="baseTableName" type="xs:string" use="optional" />
+                            <xs:attribute name="providerType" type="providerType" use="optional" />
+                            <xs:attribute name="columnSize" type="xs:int" use="optional" />
+                            <xs:attribute name="numericPrecision" type="xs:int" use="optional" />
+                            <xs:attribute name="numericScale" type="xs:int" use="optional" />
+                            <xs:attribute name="isUnique" type="customBoolean" use="optional" />
+                            <xs:attribute name="isKey" type="customBoolean" use="optional" />
+                            <xs:attribute name="isRowID" type="customBoolean" use="optional" />
+                            <xs:attribute name="dataType" type="datatype" use="optional" />
+                            <xs:attribute name="allowDBNull" type="customBoolean" use="optional" />
+                            <xs:attribute name="isAliased" type="customBoolean" use="optional" />
+                            <xs:attribute name="isByteSemantic" type="customBoolean" use="optional" />
+                            <xs:attribute name="isExpression" type="customBoolean" use="optional" />
+                            <xs:attribute name="isHidden" type="customBoolean" use="optional" />
+                            <xs:attribute name="isReadOnly" type="customBoolean" use="optional" />
+                            <xs:attribute name="isLong" type="customBoolean" use="optional" />
+                            <xs:attribute name="udtTypeName" type="xs:string" use="optional" />
+                            <xs:attribute name="nativeDataType" type="nativeDataType" use="optional" />
+                            <xs:attribute name="providerDBType" type="providerDBType" use="optional" />
+                            <xs:attribute name="objectName" type="xs:string" use="optional" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="name" type="xs:string" use="optional" />
+                      <xs:attribute name="position" type="xs:int" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="schema" type="xs:string" use="optional" />
+                <xs:attribute name="name" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="onsConfig">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ons">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element maxOccurs="3" minOccurs="1" name="add">
+                    <xs:complexType>
+                      <xs:attribute name="name" type="ONSParameters" use="required" />
+                      <xs:attribute name="value" type="xs:string" use="required" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="database" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="configFile" type="xs:string" use="optional" />
+          <xs:attribute name="mode" type="ONSModeValues" use="required" />
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

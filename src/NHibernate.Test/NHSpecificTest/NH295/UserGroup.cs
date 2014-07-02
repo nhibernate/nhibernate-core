@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
 	[Serializable]
 	public class UserGroup : Party
 	{
-		private ISet<User> _users = new HashedSet<User>();
+		private ISet<User> _users = new HashSet<User>();
 
 		public UserGroup()
 		{

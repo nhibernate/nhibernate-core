@@ -608,7 +608,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   <test-suite type="TestFixture" name="DetachedCriteriaSerializable" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.AllCriterionAreSerializable" executed="True" result="Success" success="True" asserts="1" />
-                      <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.AllEmbeddedResultTrasformesHareSerializable" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.AllEmbeddedResultTransformesHareSerializable" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.AllProjectionAreSerializable" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.BasicCriterions" executed="True" result="Success" success="True" asserts="22" />
                       <test-case name="NHibernate.Test.Criteria.DetachedCriteriaSerializable.DetachedCriteriaItSelf" executed="True" result="Success" success="True" asserts="0" />
@@ -11045,14 +11045,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                   <test-suite type="Namespace" name="NH2673" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="CachingWithTrasformerTests" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="CachingWithTransformerTests" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenCriteriaProjectionThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenEagerLoadingWithCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenEagerLoadingWithHqlThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenEagerLoadingWithMultiCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTrasformerTests.WhenQueryThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenCriteriaProjectionThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenEagerLoadingWithCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenEagerLoadingWithHqlThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenEagerLoadingWithMultiCriteriaThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2673.CachingWithTransformerTests.WhenQueryThenNotThrows" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>

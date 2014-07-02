@@ -96,7 +96,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="factory">The SessionFactory that this EntityPersister will be stored in.</param>
 		/// <param name="mapping">The mapping used to retrieve type information.</param>
 		public JoinedSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
-		                                     ISessionFactoryImplementor factory, IMapping mapping)
+											 ISessionFactoryImplementor factory, IMapping mapping)
 			: base(persistentClass, cache, factory)
 		{
 			#region DISCRIMINATOR
@@ -203,18 +203,18 @@ namespace NHibernate.Persister.Entity
 				customSQLInsert[jk] = pc.CustomSQLInsert;
 				insertCallable[jk] = customSQLInsert[jk] != null && pc.IsCustomInsertCallable;
 				insertResultCheckStyles[jk] = pc.CustomSQLInsertCheckStyle
-				                              ??
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCallable[jk]);
+											  ??
+											  ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLInsert[jk], insertCallable[jk]);
 				customSQLUpdate[jk] = pc.CustomSQLUpdate;
 				updateCallable[jk] = customSQLUpdate[jk] != null && pc.IsCustomUpdateCallable;
 				updateResultCheckStyles[jk] = pc.CustomSQLUpdateCheckStyle
-				                              ??
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCallable[jk]);
+											  ??
+											  ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLUpdate[jk], updateCallable[jk]);
 				customSQLDelete[jk] = pc.CustomSQLDelete;
 				deleteCallable[jk] = customSQLDelete[jk] != null && pc.IsCustomDeleteCallable;
 				deleteResultCheckStyles[jk] = pc.CustomSQLDeleteCheckStyle
-				                              ??
-				                              ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCallable[jk]);
+											  ??
+											  ExecuteUpdateResultCheckStyle.DetermineDefault(customSQLDelete[jk], deleteCallable[jk]);
 				jk--;
 				pc = pc.Superclass;
 			}
@@ -278,7 +278,7 @@ namespace NHibernate.Persister.Entity
 				int id =
 					GetTableId(
 						persistentClass.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
-						                                       factory.Settings.DefaultSchemaName), subclassTableNameClosure);
+															   factory.Settings.DefaultSchemaName), subclassTableNameClosure);
 				notNullColumnTableNumbers[subclassSpan - 1] = id;
 				notNullColumnNames = new string[subclassSpan];
 				notNullColumnNames[subclassSpan - 1] = subclassTableKeyColumnClosure[id][0]; 
@@ -308,7 +308,7 @@ namespace NHibernate.Persister.Entity
 						int id =
 							GetTableId(
 								sc.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
-								                          factory.Settings.DefaultSchemaName), subclassTableNameClosure);
+														  factory.Settings.DefaultSchemaName), subclassTableNameClosure);
 						notNullColumnTableNumbers[k2] = id;
 						notNullColumnNames[k2] = subclassTableKeyColumnClosure[id][0]; 
 						//( (Column) sc.getTable().getPrimaryKey().getColumnIterator().next() ).getName();
@@ -504,7 +504,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < discriminatorValues.Length; i++)
 			{
 				cases.AddWhenColumnNotNull(GenerateTableAlias(alias, notNullColumnTableNumbers[i]), notNullColumnNames[i],
-				                           discriminatorValues[i]);
+										   discriminatorValues[i]);
 			}
 			return cases;
 		}

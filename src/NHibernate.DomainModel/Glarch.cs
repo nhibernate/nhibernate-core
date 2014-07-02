@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
@@ -12,9 +11,9 @@ namespace NHibernate.DomainModel
 		private int _version;
 		private GlarchProxy _next;
 		private short _order;
-		private IList _strings;
+		private IList<string> _strings;
 		private ISet<string> _stringSets;
-		private IList _fooComponents;
+		private IList<FooComponent> _fooComponents;
 		private GlarchProxy[] _proxyArray;
 		private ISet<GlarchProxy> _proxySet;
 
@@ -63,7 +62,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _strings
 		/// </summary> 
-		public IList Strings
+		public IList<string> Strings
 		{
 			get { return _strings; }
 			set { _strings = value; }
@@ -84,7 +83,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Gets or sets the _fooComponents
 		/// </summary> 
-		public IList FooComponents
+		public IList<FooComponent> FooComponents
 		{
 			get { return _fooComponents; }
 			set { _fooComponents = value; }
@@ -127,7 +126,7 @@ namespace NHibernate.DomainModel
 
 		public LifecycleVeto OnSave(ISession s)
 		{
-			_dynaBean = new Hashtable();
+			_dynaBean = new Dictionary<string, object>();
 			_dynaBean["foo"] = "foo";
 			_dynaBean["bar"] = 66;
 			_immutable = "never changes!";

@@ -12,23 +12,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2976
 
 		public virtual IDictionary<Guid, Employee> Employees1 { get; set; }
 
-		public virtual IDictionary Employees2 { get; set; } 
-
 		public Employer()
 		{
 			Employees1 = new Dictionary<Guid, Employee>();
-			Employees2 = new Hashtable();
 		}
 
 		public virtual void AddEmployee1(Employee employee)
 		{
 			Employees1.Add(employee.Id, employee);
-			employee.Employer = this;
-		}
-
-		public virtual void AddEmployee2(Employee employee)
-		{
-			Employees2.Add(employee.Id, employee);
 			employee.Employer = this;
 		}
 	}

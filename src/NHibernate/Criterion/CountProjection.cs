@@ -39,7 +39,7 @@ namespace NHibernate.Criterion
             if(projection!=null)
             {
                 column =
-                    StringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery,
+                    SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery,
                                                                                enabledFilters)).ToString();
             }
             else

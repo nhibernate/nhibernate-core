@@ -59,7 +59,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public static AbstractCriterion Sql(SqlString sql)
 		{
-			return Sql(sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray);
+			return Sql(sql, ArrayHelper.EmptyObjectArray, TypeHelper.EmptyTypeArray);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public static AbstractCriterion Sql(string sql)
 		{
-			return Sql(sql, ArrayHelper.EmptyObjectArray, ArrayHelper.EmptyTypeArray);
+			return Sql(sql, ArrayHelper.EmptyObjectArray, TypeHelper.EmptyTypeArray);
 		}
 	}
 }

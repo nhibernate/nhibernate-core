@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ReadOnly
 {
@@ -10,7 +9,7 @@ namespace NHibernate.Test.ReadOnly
 		private string name;
 		private long version;
 		private VersionedNode parent;
-		private ISet<VersionedNode> children = new HashedSet<VersionedNode>();
+		private ISet<VersionedNode> children = new HashSet<VersionedNode>();
 
 		public VersionedNode()
 		{

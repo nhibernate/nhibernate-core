@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public IEnumerable<MemberInfo> GetEntityMembersForPoid(System.Type entityClass)
 		{
 			return entityClass.IsInterface
-			       	? entityClass.GetInterfaceProperties()
+					? entityClass.GetInterfaceProperties()
 					: entityClass.GetPropertiesOfHierarchy().Concat(GetFieldsOfHierarchy(entityClass));
 		}
 

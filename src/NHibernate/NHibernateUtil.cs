@@ -6,6 +6,7 @@ using NHibernate.Intercept;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -31,6 +32,10 @@ namespace NHibernate
 				IType type = (IType)info.GetValue(null);
 				clrTypeToNHibernateType[type.ReturnedClass] = type;
 			}
+
+			// There are multiple possibilites for boolean. Override so that we
+			// use the most natural mapping.
+			clrTypeToNHibernateType[Boolean.ReturnedClass] = Boolean;
 		}
 
 		/// <summary>
@@ -51,222 +56,216 @@ namespace NHibernate
 		/// <returns></returns>
 		public static IType GuessType(System.Type type)
 		{
-			if(type.IsGenericType && typeof(Nullable<>).Equals(type.GetGenericTypeDefinition()))
-			{
-				type = type.GetGenericArguments()[0];
-			}
-			if (clrTypeToNHibernateType.ContainsKey(type))
-			{
-				return clrTypeToNHibernateType[type];
-			}
-			else if (type.IsEnum)
-			{
+			type = type.UnwrapIfNullable();
+
+			IType value;
+			if (clrTypeToNHibernateType.TryGetValue(type, out value))
+				return value;
+			
+			if (type.IsEnum)
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
-			}
-			else if (
-				typeof(IUserType).IsAssignableFrom(type) ||
+			
+			if (typeof(IUserType).IsAssignableFrom(type) ||
 				typeof(ICompositeUserType).IsAssignableFrom(type))
 			{
 				return Custom(type);
 			}
-			else
-			{
-				return Entity(type);
-			}
+			
+			return Entity(type);
 		}
 
 		/// <summary>
 		/// NHibernate Ansi String type
 		/// </summary>
-		public static readonly NullableType AnsiString = new AnsiStringType();
+		public static readonly AnsiStringType AnsiString = new AnsiStringType();
 
 		/// <summary>
 		/// NHibernate binary type
 		/// </summary>
-		public static readonly NullableType Binary = new BinaryType();
+		public static readonly BinaryType Binary = new BinaryType();
 
 		/// <summary>
 		/// NHibernate binary blob type
 		/// </summary>
-		public static readonly NullableType BinaryBlob = new BinaryBlobType();
+		public static readonly BinaryBlobType BinaryBlob = new BinaryBlobType();
 
 		/// <summary>
 		/// NHibernate boolean type
 		/// </summary>
-		public static readonly NullableType Boolean = new BooleanType();
+		public static readonly BooleanType Boolean = new BooleanType();
 
 		/// <summary>
 		/// NHibernate byte type
 		/// </summary>
-		public static readonly NullableType Byte = new ByteType();
+		public static readonly ByteType Byte = new ByteType();
 
 		/// <summary>
 		/// NHibernate character type
 		/// </summary>
-		public static readonly NullableType Character = new CharType();
+		public static readonly CharType Character = new CharType();
 
 		/// <summary>
 		/// NHibernate Culture Info type
 		/// </summary>
-		public static readonly NullableType CultureInfo = new CultureInfoType();
+		public static readonly CultureInfoType CultureInfo = new CultureInfoType();
 
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType DateTime = new DateTimeType();
+		public static readonly DateTimeType DateTime = new DateTimeType();
 
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType DateTime2 = new DateTime2Type();
+		public static readonly DateTime2Type DateTime2 = new DateTime2Type();
 
 		/// <summary>
 		/// NHibernate local date type
 		/// </summary>
-		public static readonly NullableType LocalDateTime = new LocalDateTimeType();
+		public static readonly LocalDateTimeType LocalDateTime = new LocalDateTimeType();
 
 		/// <summary>
 		/// NHibernate utc date type
 		/// </summary>
-		public static readonly NullableType UtcDateTime = new UtcDateTimeType();
+		public static readonly UtcDateTimeType UtcDateTime = new UtcDateTimeType();
 
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType DateTimeOffset = new DateTimeOffsetType();
+		public static readonly DateTimeOffsetType DateTimeOffset = new DateTimeOffsetType();
 
 		/// <summary>
 		/// NHibernate date type
 		/// </summary>
-		public static readonly NullableType Date = new DateType();
+		public static readonly DateType Date = new DateType();
 
 		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
-		public static readonly NullableType Decimal = new DecimalType();
+		public static readonly DecimalType Decimal = new DecimalType();
 
 		/// <summary>
 		/// NHibernate double type
 		/// </summary>
-		public static readonly NullableType Double = new DoubleType();
+		public static readonly DoubleType Double = new DoubleType();
 
 		/// <summary>
 		/// NHibernate Currency type (System.Decimal - DbType.Currency)
 		/// </summary>
-		public static readonly NullableType Currency = new CurrencyType();
+		public static readonly CurrencyType Currency = new CurrencyType();
 
 		/// <summary>
 		/// NHibernate Guid type.
 		/// </summary>
-		public static readonly NullableType Guid = new GuidType();
+		public static readonly GuidType Guid = new GuidType();
 
 		/// <summary>
 		/// NHibernate System.Int16 (short in C#) type
 		/// </summary>
-		public static readonly NullableType Int16 = new Int16Type();
+		public static readonly Int16Type Int16 = new Int16Type();
 
 		/// <summary>
 		/// NHibernate System.Int32 (int in C#) type
 		/// </summary>
-		public static readonly NullableType Int32 = new Int32Type();
+		public static readonly Int32Type Int32 = new Int32Type();
 
 		/// <summary>
 		/// NHibernate System.Int64 (long in C#) type
 		/// </summary>
-		public static readonly NullableType Int64 = new Int64Type();
+		public static readonly Int64Type Int64 = new Int64Type();
 
 		/// <summary>
 		/// NHibernate System.SByte type
 		/// </summary>
-		public static readonly NullableType SByte = new SByteType();
+		public static readonly SByteType SByte = new SByteType();
 
 		/// <summary>
 		/// NHibernate System.UInt16 (ushort in C#) type
 		/// </summary>
-		public static readonly NullableType UInt16 = new UInt16Type();
+		public static readonly UInt16Type UInt16 = new UInt16Type();
 
 		/// <summary>
 		/// NHibernate System.UInt32 (uint in C#) type
 		/// </summary>
-		public static readonly NullableType UInt32 = new UInt32Type();
+		public static readonly UInt32Type UInt32 = new UInt32Type();
 
 		/// <summary>
 		/// NHibernate System.UInt64 (ulong in C#) type
 		/// </summary>
-		public static readonly NullableType UInt64 = new UInt64Type();
+		public static readonly UInt64Type UInt64 = new UInt64Type();
 
 		/// <summary>
 		/// NHibernate System.Single (float in C#) Type
 		/// </summary>
-		public static readonly NullableType Single = new SingleType();
+		public static readonly SingleType Single = new SingleType();
 
 		/// <summary>
 		/// NHibernate String type
 		/// </summary>
-		public static readonly NullableType String = new StringType();
+		public static readonly StringType String = new StringType();
 
 		/// <summary>
 		/// NHibernate string clob type
 		/// </summary>
-		public static readonly NullableType StringClob = new StringClobType();
+		public static readonly StringClobType StringClob = new StringClobType();
 
 		/// <summary>
 		/// NHibernate Time type
 		/// </summary>
-		public static readonly NullableType Time = new TimeType();
+		public static readonly TimeType Time = new TimeType();
 
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType Ticks = new TicksType();
+		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType TimeAsTimeSpan = new TimeAsTimeSpanType();
+		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();
 
 		/// <summary>
 		/// NHibernate Ticks type
 		/// </summary>
-		public static readonly NullableType TimeSpan = new TimeSpanType();
+		public static readonly TimeSpanType TimeSpan = new TimeSpanType();
 
 		/// <summary>
 		/// NHibernate Timestamp type
 		/// </summary>
-		public static readonly NullableType Timestamp = new TimestampType();
-		
-		public static readonly NullableType DbTimestamp = new DbTimestampType();
+		public static readonly TimestampType Timestamp = new TimestampType();
+
+		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
 		/// NHibernate TrueFalse type
 		/// </summary>
-		public static readonly NullableType TrueFalse = new TrueFalseType();
+		public static readonly TrueFalseType TrueFalse = new TrueFalseType();
 
 		/// <summary>
 		/// NHibernate YesNo type
 		/// </summary>
-		public static readonly NullableType YesNo = new YesNoType();
+		public static readonly YesNoType YesNo = new YesNoType();
 
 		/// <summary>
 		/// NHibernate class type
 		/// </summary>
-		public static readonly NullableType Class = new TypeType();
+		public static readonly TypeType Class = new TypeType();
 
 		/// <summary>
 		/// NHibernate class meta type for association of kind <code>any</code>.
 		/// </summary>
 		/// <seealso cref="AnyType"/>
-		public static readonly IType ClassMetaType = new ClassMetaType();
+		public static readonly ClassMetaType ClassMetaType = new ClassMetaType();
 
 		/// <summary>
 		/// NHibernate serializable type
 		/// </summary>
-		public static readonly NullableType Serializable = new SerializableType();
+		public static readonly SerializableType Serializable = new SerializableType();
 
 		/// <summary>
 		/// NHibernate System.Object type
 		/// </summary>
-		public static readonly IType Object = new AnyType();
+		public static readonly AnyType Object = new AnyType();
 
 
 		//		/// <summary>
@@ -277,15 +276,15 @@ namespace NHibernate
 		//		/// NHibernate clob type
 		//		/// </summary>
 		//		public static readonly NullableType Clob = new ClobType();
-		
 
-		public static readonly NullableType AnsiChar = new AnsiCharType();
 
-		public static readonly NullableType XmlDoc = new XmlDocType();
+		public static readonly AnsiCharType AnsiChar = new AnsiCharType();
 
-    public static readonly NullableType XDoc = new XDocType();
+		public static readonly XmlDocType XmlDoc = new XmlDocType();
 
-		public static readonly NullableType Uri = new UriType();
+		public static readonly XDocType XDoc = new XDocType();
+
+		public static readonly UriType Uri = new UriType();
 
 		/// <summary>
 		/// A NHibernate persistent enum type

@@ -84,7 +84,8 @@ namespace NHibernate.Test.Component.Basic
 					});
 				Assert.That(exception.InnerException, Is.AssignableTo<DbException>());
 				Assert.That(exception.InnerException.Message,
-					Is.StringContaining("unique").IgnoreCase.And.StringContaining("constraint").IgnoreCase);
+					Is.StringContaining("unique").IgnoreCase.And.StringContaining("constraint").IgnoreCase
+					.Or.StringContaining("duplicate entry").IgnoreCase);
 			}
 		}
 	}

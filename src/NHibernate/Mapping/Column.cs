@@ -139,8 +139,8 @@ namespace NHibernate.Mapping
 				alias = alias.Substring(0, dialect.MaxAliasLength - _unique.Length);
 			}
 			bool useRawName = name.Equals(alias) &&
-			                  !quoted &&
-			                  !StringHelper.EqualsCaseInsensitive(name, "rowid");
+							  !quoted &&
+							  !StringHelper.EqualsCaseInsensitive(name, "rowid");
 
 			if (useRawName)
 			{

@@ -22,8 +22,6 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.Count();
 
-			Console.WriteLine(result);
-
 			Assert.That(result, Is.EqualTo(387));
 		}
 
@@ -34,8 +32,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = db.Orders
 				.Select(x => x.ShippingDate)
 				.Count();
-
-			Console.WriteLine(result);
 
 			Assert.That(result, Is.EqualTo(809));
 		}

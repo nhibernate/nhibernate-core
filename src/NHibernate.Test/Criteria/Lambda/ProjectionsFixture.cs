@@ -146,7 +146,21 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			var actual =
 				CreateTestQueryOver<Person>()
-					.Select(p => p.BirthDate.YearPart());
+					.Select(p => p.BirthDate.Year);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SelectSingleFunctionOfDateTimeOffset()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person))
+					.SetProjection(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")));
+
+			var actual =
+				CreateTestQueryOver<Person>()
+					.Select(p => p.BirthDateAsDateTimeOffset.Year);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -164,8 +178,27 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual =
 				CreateTestQueryOver<Person>(() => personAlias)
 					.SelectList(list => list
-						.Select(p => p.BirthDate.YearPart())
-						.Select(() => personAlias.BirthDate.MonthPart()));
+						.Select(p => p.BirthDate.Year)
+						.Select(() => personAlias.BirthDate.Month));
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		[Test]
+		public void SelectMultipleFunctionOfDateTimeOffset()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAlias")
+					.SetProjection(Projections.ProjectionList()
+						.Add(Projections.SqlFunction("year", NHibernateUtil.Int32, Projections.Property("BirthDateAsDateTimeOffset")))
+						.Add(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("personAlias.BirthDateAsDateTimeOffset"))));
+
+			Person personAlias = null;
+			var actual =
+				CreateTestQueryOver<Person>(() => personAlias)
+					.SelectList(list => list
+						.Select(p => p.BirthDateAsDateTimeOffset.Year)
+						.Select(() => personAlias.BirthDateAsDateTimeOffset.Month));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

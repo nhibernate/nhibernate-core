@@ -1,19 +1,18 @@
 using System;
+using System.Linq;
 using System.Collections;
-
 using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
 	/// <summary>
-	/// Combines multiple objects implementing <see cref="IEnumerable"/> into one.
+	/// Concatenates multiple objects implementing <see cref="IEnumerable"/> into one.
 	/// </summary>
-	public class JoinedEnumerable : IEnumerable, IEnumerator, IDisposable
+	public class JoinedEnumerable : IEnumerable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinedEnumerable));
 
-		private readonly IEnumerator[] _enumerators;
-		private int _current;
+		private readonly IEnumerable[] _enumerables;
 
 		/// <summary>
 		/// Creates an IEnumerable object from multiple IEnumerables.
@@ -21,147 +20,162 @@ namespace NHibernate.Util
 		/// <param name="enumerables">The IEnumerables to join together.</param>
 		public JoinedEnumerable(IEnumerable[] enumerables)
 		{
-			_enumerators = new IEnumerator[enumerables.Length];
-			for (int i = 0; i < enumerables.Length; i++)
-			{
-				_enumerators[i] = enumerables[i].GetEnumerator();
-			}
-			_current = 0;
+			_enumerables = new IEnumerable[enumerables.Length];
+			Array.Copy(enumerables, _enumerables, enumerables.Length);
 		}
 
-		public JoinedEnumerable(List<IEnumerable> enumerables)
+		public JoinedEnumerable(IEnumerable<IEnumerable> enumerables)
 			: this(enumerables.ToArray())
 		{
 		}
 
 		public JoinedEnumerable(IEnumerable first, IEnumerable second)
-			: this(new IEnumerable[] { first, second })
+			: this(new[] { first, second })
 		{
 		}
 
-
-		#region System.Collections.IEnumerator Members
-
-		/// <summary></summary>
-		public bool MoveNext()
-		{
-			for (; _current < _enumerators.Length; _current++)
-			{
-				if (_enumerators[_current].MoveNext())
-				{
-					return true;
-				}
-				else
-				{
-					// there are no items left to iterate over in the current
-					// enumerator so go ahead and dispose of it.
-					IDisposable disposable = _enumerators[_current] as IDisposable;
-					if (disposable != null)
-					{
-						disposable.Dispose();
-					}
-				}
-			}
-			return false;
-		}
-
-		/// <summary></summary>
-		public void Reset()
-		{
-			for (int i = 0; i < _enumerators.Length; i++)
-			{
-				_enumerators[i].Reset();
-			}
-			_current = 0;
-		}
-
-		/// <summary></summary>
-		public object Current
-		{
-			get { return _enumerators[_current].Current; }
-		}
-
-		#endregion
 
 		#region System.Collections.IEnumerable Members
 
 		/// <summary></summary>
 		public IEnumerator GetEnumerator()
 		{
-			Reset();
-			return this;
+			var enumerators = _enumerables.Select(enumerable => enumerable.GetEnumerator());
+			return new JoinedEnumerator(enumerators);
 		}
 
 		#endregion
 
-		#region IDisposable Members
 
-		/// <summary>
-		/// A flag to indicate if <c>Dispose()</c> has been called.
-		/// </summary>
-		private bool _isAlreadyDisposed;
 
-		/// <summary>
-		/// Finalizer that ensures the object is correctly disposed of.
-		/// </summary>
-		~JoinedEnumerable()
+		#region Nested class JoinedEnumerator
+
+		private class JoinedEnumerator : IEnumerator, IDisposable
 		{
-			Dispose(false);
-		}
+			private readonly IEnumerator[] _enumerators;
+			private int _current;
 
-		/// <summary>
-		/// Takes care of freeing the managed and unmanaged resources that 
-		/// this class is responsible for.
-		/// </summary>
-		public void Dispose()
-		{
-			log.Debug("running JoinedEnumerable.Dispose()");
-			Dispose(true);
-		}
-
-
-		/// <summary>
-		/// Takes care of freeing the managed and unmanaged resources that 
-		/// this class is responsible for.
-		/// </summary>
-		/// <param name="isDisposing">Indicates if this JoinedEnumerable is being Disposed of or Finalized.</param>
-		/// <remarks>
-		/// The command is closed and the reader is disposed.  This allows other ADO.NET
-		/// related actions to occur without needing to move all the way through the
-		/// EnumerableImpl.
-		/// </remarks>
-		protected virtual void Dispose(bool isDisposing)
-		{
-			if (_isAlreadyDisposed)
+			public JoinedEnumerator(IEnumerable<IEnumerator> enumerators)
 			{
-				// don't dispose of multiple times.
-				return;
+				_enumerators = enumerators.ToArray();
+				_current = 0;
 			}
 
-			// free managed resources that are being managed by the JoinedEnumerable if we
-			// know this call came through Dispose()
-			if (isDisposing)
+
+			#region System.Collections.IEnumerator Members
+
+			public bool MoveNext()
 			{
-				// dispose each IEnumerable that still needs to be disposed of
 				for (; _current < _enumerators.Length; _current++)
 				{
-					IDisposable currentDisposable = _enumerators[_current] as IDisposable;
-					if (currentDisposable != null)
+					if (_enumerators[_current].MoveNext())
 					{
-						currentDisposable.Dispose();
+						return true;
+					}
+					else
+					{
+						// there are no items left to iterate over in the current
+						// enumerator so go ahead and dispose of it.
+						IDisposable disposable = _enumerators[_current] as IDisposable;
+						if (disposable != null)
+						{
+							disposable.Dispose();
+						}
 					}
 				}
+				return false;
 			}
 
-			// free unmanaged resources here
 
-			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
+			public void Reset()
+			{
+				foreach (var enumerator in _enumerators)
+					enumerator.Reset();
+				_current = 0;
+			}
+
+
+			public object Current
+			{
+				get { return _enumerators[_current].Current; }
+			}
+
+			#endregion
+
+			#region IDisposable Members
+
+			/// <summary>
+			/// A flag to indicate if <c>Dispose()</c> has been called.
+			/// </summary>
+			private bool _isAlreadyDisposed;
+
+			/// <summary>
+			/// Finalizer that ensures the object is correctly disposed of.
+			/// </summary>
+			~JoinedEnumerator()
+			{
+				Dispose(false);
+			}
+
+			/// <summary>
+			/// Takes care of freeing the managed and unmanaged resources that 
+			/// this class is responsible for.
+			/// </summary>
+			public void Dispose()
+			{
+				log.Debug("running JoinedEnumerator.Dispose()");
+				Dispose(true);
+			}
+
+
+			/// <summary>
+			/// Takes care of freeing the managed and unmanaged resources that 
+			/// this class is responsible for.
+			/// </summary>
+			/// <param name="isDisposing">Indicates if this JoinedEnumerable is being Disposed of or Finalized.</param>
+			/// <remarks>
+			/// The command is closed and the reader is disposed.  This allows other ADO.NET
+			/// related actions to occur without needing to move all the way through the
+			/// EnumerableImpl.
+			/// </remarks>
+			private void Dispose(bool isDisposing)
+			{
+				if (_isAlreadyDisposed)
+				{
+					// don't dispose of multiple times.
+					return;
+				}
+
+				// free managed resources that are being managed by the JoinedEnumerable if we
+				// know this call came through Dispose()
+				if (isDisposing)
+				{
+					// dispose each IEnumerable that still needs to be disposed of
+					for (; _current < _enumerators.Length; _current++)
+					{
+						IDisposable currentDisposable = _enumerators[_current] as IDisposable;
+						if (currentDisposable != null)
+						{
+							currentDisposable.Dispose();
+						}
+					}
+				}
+
+				// free unmanaged resources here
+
+				_isAlreadyDisposed = true;
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
+			}
+
+			#endregion
 		}
 
 		#endregion
 	}
+
+
+
 
 	public class JoinedEnumerable<T> : IEnumerable<T>
 	{
@@ -195,7 +209,7 @@ namespace NHibernate.Util
 
 		public IEnumerator GetEnumerator()
 		{
-			return ((IEnumerable<T>) this).GetEnumerator();
+			return ((IEnumerable<T>)this).GetEnumerator();
 		}
 
 		#endregion
@@ -273,7 +287,7 @@ namespace NHibernate.Util
 
 			public object Current
 			{
-				get { return ((IEnumerator<T>) this).Current; }
+				get { return ((IEnumerator<T>)this).Current; }
 			}
 
 			#endregion

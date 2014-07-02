@@ -3,10 +3,11 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Test
 {
-	public class NHAssert
+	public static class NHAssert
 	{
 		#region Serializable
 
@@ -27,20 +28,22 @@ namespace NHibernate.Test
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz, string message, params object[] args)
 		{
-			var sb = new StringBuilder();
-			int failedCount = 0;
+			var faulty = new List<System.Type>();
+
 			Assembly nhbA = Assembly.GetAssembly(clazz);
-			IList<System.Type> types = ClassList(nhbA, clazz);
+			var types = ClassList(nhbA, clazz);
 			foreach (System.Type tp in types)
 			{
 				object[] atts = tp.GetCustomAttributes(typeof(SerializableAttribute), false);
 				if (atts.Length == 0)
-				{
-					sb.AppendLine(string.Format("    class {0} is not marked as Serializable", tp.FullName));
-					failedCount++;
-				}
+					faulty.Add(tp);
 			}
-			Assert.That(failedCount, Is.EqualTo(0));
+
+			if (faulty.Count > 0)
+			{
+				var classes = string.Join(Environment.NewLine, faulty.Select(t => "    " + t.FullName).ToArray());
+				Assert.Fail("The following classes was expected to be marked as Serializable:" + Environment.NewLine + classes);
+			}
 		}
 
 		public static void IsSerializable(object obj)
@@ -54,7 +57,7 @@ namespace NHibernate.Test
 		}
 
 		#endregion
-		private static IList<System.Type> ClassList(Assembly assembly, System.Type type)
+		private static IEnumerable<System.Type> ClassList(Assembly assembly, System.Type type)
 		{
 			IList<System.Type> result = new List<System.Type>();
 			if (assembly != null)

@@ -3,9 +3,6 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Engine;
-using NHibernate.Intercept;
-using NHibernate.Proxy;
-using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 
 namespace NHibernate.Properties
@@ -157,22 +154,6 @@ namespace NHibernate.Properties
 			}
 		}
 
-		private static object GetTarget(object maybeProxy)
-		{
-			//wish there were an interface to unwrap with
-			var proxy = maybeProxy as IProxy;
-			if (proxy != null)
-			{
-				var fieldInterceptor = proxy.Interceptor as DefaultDynamicLazyFieldInterceptor;
-				if (fieldInterceptor != null)
-				{
-					return fieldInterceptor.TargetInstance;
-				}
-			}
-
-			return maybeProxy;
-		}
-
 		/// <summary>
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 		/// </summary>
@@ -209,7 +190,7 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return field.GetValue(GetTarget(target));
+					return field.GetValue(target);
 				}
 				catch (Exception e)
 				{
@@ -294,13 +275,13 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					field.SetValue(GetTarget(target), value);
+					field.SetValue(target, value);
 				}
 				catch (ArgumentException ae)
 				{
 					// if I'm reading the msdn docs correctly this is the only reason the ArgumentException
 					// would be thrown, but it doesn't hurt to make sure.
-					if (field.FieldType.IsAssignableFrom(value.GetType()) == false)
+					if (field.FieldType.IsInstanceOfType(value) == false)
 					{
 						// add some details to the error message - there have been a few forum posts an they are 
 						// all related to an ISet and IDictionary mixups.

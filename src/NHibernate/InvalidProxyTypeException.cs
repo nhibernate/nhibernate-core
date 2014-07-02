@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Collections.Generic;
@@ -41,12 +42,15 @@ namespace NHibernate
 			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));
 		}
 
-		[SecurityPermission(SecurityAction.LinkDemand,
-			Flags=SecurityPermissionFlag.SerializationFormatter)]
+#if NET_4_0
+		[SecurityCritical]
+#else
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+#endif
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("errors", Errors, typeof(ICollection));
+			info.AddValue("errors", Errors, typeof (ICollection));
 		}
 
 		#endregion

@@ -44,7 +44,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public static string GetNormalizedPropertyName(string name)
 		{
-			return (string)HQL_COLLECTION_PROPERTIES[name];
+			return HQL_COLLECTION_PROPERTIES[name];
 		}
 
 		public static bool IsAnyCollectionProperty(string name)

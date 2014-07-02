@@ -197,7 +197,7 @@ namespace NHibernate.Type
 		}
 
 		public override object Replace(object original, object current, ISessionImplementor session, object owner,
-		                               IDictionary copiedAlready)
+									   IDictionary copiedAlready)
 		{
 			if (original == null)
 			{

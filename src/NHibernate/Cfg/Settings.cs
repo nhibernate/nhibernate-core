@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.AdoNet;
@@ -124,6 +125,9 @@ namespace NHibernate.Cfg
 		/// Get the registry to provide Hql-Generators for known properties/methods.
 		/// </summary>
 		public ILinqToHqlGeneratorsRegistry LinqToHqlGeneratorsRegistry { get; internal set; }
+
+		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
+		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled { get; internal set; }
 
 		#endregion
 	}

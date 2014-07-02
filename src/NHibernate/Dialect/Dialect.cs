@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Iesi.Collections.Generic;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Lock;
 using NHibernate.Dialect.Schema;
@@ -45,7 +44,7 @@ namespace NHibernate.Dialect
 		private readonly TypeNames _hibernateTypeNames = new TypeNames();
 		private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
 		private readonly IDictionary<string, ISQLFunction> _sqlFunctions;
-		private readonly HashedSet<string> _sqlKeywords = new HashedSet<string>();
+		private readonly HashSet<string> _sqlKeywords = new HashSet<string>();
 
 		private static readonly IDictionary<string, ISQLFunction> StandardAggregateFunctions = CollectionHelper.CreateCaseInsensitiveHashtable<ISQLFunction>();
 
@@ -85,7 +84,7 @@ namespace NHibernate.Dialect
 			
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
+			RegisterFunction("locate", new StandardSQLFunction("locate", NHibernateUtil.Int32));
 			RegisterFunction("trim", new AnsiTrimFunction());
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
@@ -265,7 +264,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Suclasses register a typename for the given type code. <c>$l</c> in the 
+		/// Subclasses register a typename for the given type code. <c>$l</c> in the 
 		/// typename will be replaced by the column length (if appropriate).
 		/// </summary>
 		/// <param name="code">The typecode</param>
@@ -1452,20 +1451,22 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
-		/// Add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
+		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
 		/// </summary>
 		/// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
 		/// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
 		/// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause.</returns>
+		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause. Returns <c>null</c> 
+		/// if <paramref name="queryString"/> represents a SQL statement to which a limit clause cannot be added, 
+		/// for example when the query string is custom SQL invoking a stored procedure.</returns>
 		public virtual SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			throw new NotSupportedException("Dialect does not have support for limit strings.");
 		}
 
 		/// <summary>
-		/// Generates a string to limit the result set to a number of maximum results with a specified offset into the results.
+		/// Attempts to generate a string to limit the result set to a number of maximum results with a specified offset into the results.
 		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
 		/// Performs error checking based on the various dialect limit support options.  If both parameters and fixed valeus are
 		/// specified, this will use the parameter option if possible.  Otherwise, it will fall back to a fixed string.
@@ -2060,7 +2061,7 @@ namespace NHibernate.Dialect
 			get { return _sqlFunctions; }
 		}
 
-		public HashedSet<string> Keywords
+		public HashSet<string> Keywords
 		{
 			get { return _sqlKeywords; }
 		}

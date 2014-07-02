@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -654,12 +653,11 @@ namespace NHibernate.Impl
 				queryResults = List();
 			}
 
-			if (!queryResultPositions.ContainsKey(key))
-			{
+			int queryResultPosition;
+			if (!queryResultPositions.TryGetValue(key, out queryResultPosition))
 				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			}
 
-			return queryResults[queryResultPositions[key]];
+			return queryResults[queryResultPosition];
 		}
 
 		public override string ToString()
@@ -680,12 +678,12 @@ namespace NHibernate.Impl
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
-			ISet<string> querySpaces = new HashedSet<string>();
+			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.AddAll(queryTranslator.QuerySpaces);
+				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -699,7 +697,7 @@ namespace NHibernate.Impl
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys)
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
@@ -764,9 +762,7 @@ namespace NHibernate.Impl
 		private void ThrowIfKeyAlreadyExists(string key)
 		{
 			if (queryResultPositions.ContainsKey(key))
-			{
 				throw new InvalidOperationException(String.Format("The key '{0}' already exists", key));
-			}
 		}
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)
@@ -780,7 +776,7 @@ namespace NHibernate.Impl
 		#endregion
 	}
 
-	internal interface ITranslator
+	public interface ITranslator
 	{
 		Loader.Loader Loader { get; }
 		IType[] ReturnTypes { get; }

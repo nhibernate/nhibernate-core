@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using Iesi.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Util
 {
@@ -304,33 +303,7 @@ namespace NHibernate.Util
 
 			return true;
 		}
-		public static bool SetEquals(ISet a, ISet b)
-		{
-			if (Equals(a, b))
-			{
-				return true;
-			}
-
-			if (a == null || b == null)
-			{
-				return false;
-			}
-
-			if (a.Count != b.Count)
-			{
-				return false;
-			}
-
-			foreach (object obj in a)
-			{
-				if (!b.Contains(obj))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
+		
 
 		/// <summary>
 		/// Computes a hash code for <paramref name="coll"/>.

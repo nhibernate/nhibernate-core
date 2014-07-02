@@ -20,7 +20,7 @@ namespace NHibernate.SqlCommand
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
 
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             SqlString on);
+									 SqlString on);
 
 		public abstract void AddCrossJoin(string tableName, string alias);
 
@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 
 		protected bool AddCondition(SqlStringBuilder buffer, SqlString on)
 		{
-			if (StringHelper.IsNotEmpty(on))
+			if (SqlStringHelper.IsNotEmpty(on))
 			{
 				if (!on.StartsWithCaseInsensitive(" and"))
 				{

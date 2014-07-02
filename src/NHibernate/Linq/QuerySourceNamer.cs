@@ -24,14 +24,17 @@ namespace NHibernate.Linq
 
 		public string GetName(IQuerySource querySource)
 		{
-			if (!_map.ContainsKey(querySource))
+			string result;
+			if (!_map.TryGetValue(querySource, out result))
+			{
 				throw new HibernateException(
 					String.Format("Query Source could not be identified: ItemName = {0}, ItemType = {1}, Expression = {2}",
-					              querySource.ItemName,
-					              querySource.ItemType,
-					              querySource));
+								  querySource.ItemName,
+								  querySource.ItemType,
+								  querySource));
+			}
 
-			return _map[querySource];
+			return result;
 		}
 
 		private string CreateUniqueName(string proposedName)

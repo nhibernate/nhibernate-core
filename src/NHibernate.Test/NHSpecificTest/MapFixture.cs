@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 			chiefsCriteria.Add(Expression.Eq("Name", "Chiefs"));
 
 			Team chiefs = (Team) chiefsCriteria.List()[0];
-			IList players = chiefs.Players;
+			IList<Child> players = chiefs.Players;
 
 			Parent parentDad = (Parent) s.Load(typeof(Parent), 1);
 			Child amyJones = (Child) s.Load(typeof(Child), 2);
@@ -185,11 +184,11 @@ namespace NHibernate.Test.NHSpecificTest
 			Team chiefs = new Team();
 			chiefs.Name = "Chiefs";
 
-			royals.Players = new ArrayList();
+			royals.Players = new List<Child>();
 			royals.Players.Add(amyJones);
 			royals.Players.Add(brianSmith);
 
-			chiefs.Players = new ArrayList();
+			chiefs.Players = new List<Child>();
 			chiefs.Players.Add(johnnyJones);
 			chiefs.Players.Add(sarahSmith);
 

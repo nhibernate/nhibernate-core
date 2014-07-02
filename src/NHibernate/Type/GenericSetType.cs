@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -13,7 +12,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericSetType<T> : SetType
+	public class GenericSetType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericSetType{T}"/> class for
@@ -58,14 +57,24 @@ namespace NHibernate.Type
 				var stronglyTypedCollection = collection as ICollection<T>;
 				if (stronglyTypedCollection == null)
 					throw new HibernateException(Role + " must be an implementation of ISet<T> or ICollection<T>");
-				set = new HashedSet<T>(stronglyTypedCollection);
+				set = new HashSet<T>(stronglyTypedCollection);
 			}
 			return new PersistentGenericSet<T>(session, set);
 		}
 
+		protected override void Add(object collection, object element)
+		{
+			((ISet<T>)collection).Add((T)element);
+		}
+
+		protected override void Clear(object collection)
+		{
+			((ISet<T>)collection).Clear();
+		}
+
 		public override object Instantiate(int anticipatedSize)
 		{
-			return new HashedSet<T>();
+			return new HashSet<T>();
 		}
 	}
 }

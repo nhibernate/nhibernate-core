@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
 {
@@ -37,8 +36,8 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 
 		public Parent()
 		{
-			this._children = new HashedSet<Child>();
-			this._differentChildren = new HashedSet<DifferentChild>();
+			this._children = new HashSet<Child>();
+			this._differentChildren = new HashSet<DifferentChild>();
 		}
 	}
 

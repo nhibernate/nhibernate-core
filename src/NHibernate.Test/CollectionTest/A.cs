@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.CollectionTest
 {
@@ -7,7 +7,7 @@ namespace NHibernate.Test.CollectionTest
 	{
 		private int? _id;
 		private string _name;
-		private IList _items;
+		private IList<string> _items;
 
 		public A() { }
 
@@ -23,7 +23,7 @@ namespace NHibernate.Test.CollectionTest
 			set { _name = value; }
 		}
 
-		public IList Items
+		public IList<string> Items
 		{
 			get { return _items; }
 			set { _items = value; }

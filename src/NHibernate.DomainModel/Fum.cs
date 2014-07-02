@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Classic;
 
 namespace NHibernate.DomainModel
@@ -9,11 +7,11 @@ namespace NHibernate.DomainModel
 	[Serializable]
 	public class MapComponent
 	{
-		private IDictionary _fummap = new Hashtable();
-		private IDictionary _stringmap = new Hashtable();
+		private IDictionary<string, Fum> _fummap = new Dictionary<string, Fum>();
+		private IDictionary<string, string> _stringmap = new Dictionary<string, string>();
 		private int _count;
 
-		public IDictionary Fummap
+		public IDictionary<string, Fum> Fummap
 		{
 			get { return _fummap; }
 			set { _fummap = value; }
@@ -25,7 +23,7 @@ namespace NHibernate.DomainModel
 			set { _count = value; }
 		}
 
-		public IDictionary Stringmap
+		public IDictionary<string, string> Stringmap
 		{
 			get { return _stringmap; }
 			set { _stringmap = value; }
@@ -49,7 +47,7 @@ namespace NHibernate.DomainModel
 		public Fum(FumCompositeID id)
 		{
 			_id = id;
-			_friends = new HashedSet<Fum>();
+			_friends = new HashSet<Fum>();
 			//TODO: H2.0.3 - this is diff from H2.0.3 because I am getting a null exception
 			// when executing the Sql.  H203 uses the CalendarType which we don't have so
 			// I am using DateTime instead...

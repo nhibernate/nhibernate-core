@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using NHibernate.Hql.Classic;
 using NHibernate.Util;
 using NHibernate.SqlCommand;
 

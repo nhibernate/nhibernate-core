@@ -6,7 +6,6 @@ using System.Text;
 
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Hql.Classic;
 using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
@@ -115,7 +114,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			// a theta-style join, convert its type from JOIN_FRAGMENT
 			// to FROM_FRAGMENT
 			if ( fromElement.Type == HqlSqlWalker.JOIN_FRAGMENT &&
-					( join.IsThetaStyle || StringHelper.IsNotEmpty( whereFrag ) ) ) 
+					( join.IsThetaStyle || SqlStringHelper.IsNotEmpty( whereFrag ) ) ) 
 			{
 				fromElement.Type = HqlSqlWalker.FROM_FRAGMENT;
 				fromElement.JoinSequence.SetUseThetaStyle( true ); // this is used during SqlGenerator processing

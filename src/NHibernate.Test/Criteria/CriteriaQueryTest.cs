@@ -2652,20 +2652,20 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void TransformToRowCountTest()
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				ICriteria crit = s.CreateCriteria(typeof (Student));
+				ICriteria subCriterium = crit.CreateCriteria("PreferredCourse");
+				subCriterium.Add(Property.ForName("CourseCode").Eq("PREFFERED_CODE"));
 
-			ICriteria crit = s.CreateCriteria(typeof(Student));
-			ICriteria subCriterium = crit.CreateCriteria("PreferredCourse");
-			subCriterium.Add(Property.ForName("CourseCode").Eq("PREFFERED_CODE"));
 
+				ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
 
-			ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
+				countCriteria.List();
 
-			countCriteria.List();
-
-			t.Rollback();
-			s.Close();
+				t.Rollback();
+			}
 		}
 
 		[Test]
@@ -2689,51 +2689,53 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void OrderProjectionAliasedTest()
 		{
-			ISession session = OpenSession();
-			ITransaction t = session.BeginTransaction();
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
+			{
 
-			Course courseA = new Course();
-			courseA.CourseCode = "HIB-A";
-			courseA.Description = "Hibernate Training A";
-			session.Save(courseA);
+				Course courseA = new Course();
+				courseA.CourseCode = "HIB-A";
+				courseA.Description = "Hibernate Training A";
+				session.Save(courseA);
 			
-			Student gavin = new Student();
-			gavin.Name = "Gavin King";
-			gavin.StudentNumber = 232;
-			gavin.PreferredCourse = courseA;
-			session.Save(gavin);
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 232;
+				gavin.PreferredCourse = courseA;
+				session.Save(gavin);
 			
-			Student leonardo = new Student();
-			leonardo.Name = "Leonardo Quijano";
-			leonardo.StudentNumber = 233;
-			leonardo.PreferredCourse = courseA;
-			session.Save(leonardo);
+				Student leonardo = new Student();
+				leonardo.Name = "Leonardo Quijano";
+				leonardo.StudentNumber = 233;
+				leonardo.PreferredCourse = courseA;
+				session.Save(leonardo);
 			
-			Student johnDoe = new Student();
-			johnDoe.Name = "John Doe";
-			johnDoe.StudentNumber = 235;
-			johnDoe.PreferredCourse = null;
-			session.Save(johnDoe);
+				Student johnDoe = new Student();
+				johnDoe.Name = "John Doe";
+				johnDoe.StudentNumber = 235;
+				johnDoe.PreferredCourse = null;
+				session.Save(johnDoe);
 			
-			IProjection conditional =
-				Projections.Conditional(
-					Restrictions.Eq("Name", "Gavin King"),
-					Projections.Constant("Name"),
-					Projections.Constant("AnotherName"));
+				IProjection conditional =
+					Projections.Conditional(
+						Restrictions.Eq("Name", "Gavin King"),
+						Projections.Constant("Name"),
+						Projections.Constant("AnotherName"));
 
-			ICriteria criteria = session.CreateCriteria(typeof(Student));
-			criteria.SetMaxResults(1);
-			criteria.SetFirstResult(1);
-			IList result = criteria.SetProjection(Projections.Alias(conditional, "CheckName"))
-			.AddOrder(Order.Asc("CheckName"))
-			.List();
+				ICriteria criteria = session.CreateCriteria(typeof(Student));
+				criteria.SetMaxResults(1);
+				criteria.SetFirstResult(1);
+				IList result = criteria.SetProjection(Projections.Alias(conditional, "CheckName"))
+					.AddOrder(Order.Asc("CheckName"))
+					.List();
 	
-			session.Delete(gavin);
-			session.Delete(leonardo);
-			session.Delete(johnDoe);
-			session.Delete(courseA);
-			t.Commit();
-			session.Close();
+				session.Delete(gavin);
+				session.Delete(leonardo);
+				session.Delete(johnDoe);
+				session.Delete(courseA);
+
+				t.Commit();
+			}
 		}
 
 		[Test]

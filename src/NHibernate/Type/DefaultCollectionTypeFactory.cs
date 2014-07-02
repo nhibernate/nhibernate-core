@@ -11,19 +11,9 @@ namespace NHibernate.Type
 			return new ArrayType(role, propertyRef, elementClass, embedded);
 		}
 
-		public virtual CollectionType Bag(string role, string propertyRef, bool embedded)
-		{
-			return new BagType(role, propertyRef, embedded);
-		}
-
 		public virtual CollectionType Bag<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericBagType<T>(role, propertyRef);
-		}
-
-		public virtual CollectionType List(string role, string propertyRef, bool embedded)
-		{
-			return new ListType(role, propertyRef, embedded);
 		}
 
 		public virtual CollectionType List<T>(string role, string propertyRef, bool embedded)
@@ -31,29 +21,9 @@ namespace NHibernate.Type
 			return new GenericListType<T>(role, propertyRef);
 		}
 
-		public virtual CollectionType IdBag(string role, string propertyRef, bool embedded)
-		{
-			return new IdentifierBagType(role, propertyRef, embedded);
-		}
-
 		public virtual CollectionType IdBag<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericIdentifierBagType<T>(role, propertyRef);
-		}
-
-		public virtual CollectionType Set(string role, string propertyRef, bool embedded)
-		{
-			return new SetType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType OrderedSet(string role, string propertyRef, bool embedded)
-		{
-			return new OrderedSetType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType SortedSet(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return new SortedSetType(role, propertyRef, comparer, embedded);
 		}
 
 		public virtual CollectionType Set<T>(string role, string propertyRef, bool embedded)
@@ -69,21 +39,6 @@ namespace NHibernate.Type
 		public virtual CollectionType OrderedSet<T>(string role, string propertyRef, bool embedded)
 		{
 			return new GenericOrderedSetType<T>(role, propertyRef);
-		}
-
-		public virtual CollectionType Map(string role, string propertyRef, bool embedded)
-		{
-			return new MapType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType OrderedMap(string role, string propertyRef, bool embedded)
-		{
-			return new OrderedMapType(role, propertyRef, embedded);
-		}
-
-		public virtual CollectionType SortedMap(string role, string propertyRef, bool embedded, IComparer comparer)
-		{
-			return new SortedMapType(role, propertyRef, comparer, embedded);
 		}
 
 		public virtual CollectionType Map<TKey, TValue>(string role, string propertyRef, bool embedded)

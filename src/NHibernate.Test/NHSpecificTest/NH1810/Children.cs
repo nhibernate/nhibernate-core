@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
@@ -33,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 	{
 	}
 
-	// Using a HashedSet<Child> instead SortedSet<Child> all work fine.
+	// Using a HashSet<Child> instead SortedSet<Child> all work fine.
 	public class Children : SortedSet<Child>, IChildren
 	{
 		private readonly IChildrenBehaviour behaviour;
@@ -150,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 
 		protected virtual object Instantiate()
 		{
-			return new HashedSet<T>();
+			return new HashSet<T>();
 		}
 	}
 }

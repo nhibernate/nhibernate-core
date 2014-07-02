@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 
@@ -73,11 +74,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 
-			if (_member != null && propertyInTheOtherSide.DeclaringType != _member.GetPropertyOrFieldType())
+			var declaringType = propertyInTheOtherSide.DeclaringType;
+			if (_member != null && !declaringType.IsAssignableFrom(_member.GetPropertyOrFieldType()))
 			{
 				throw new ArgumentOutOfRangeException("propertyInTheOtherSide",
-				                                      string.Format("Expected a member of {0} found the member {1} of {2}", _member.GetPropertyOrFieldType(), propertyInTheOtherSide,
-				                                                    propertyInTheOtherSide.DeclaringType));
+													  string.Format("Expected a member of {0} found the member {1} of {2}",
+																	_member.GetPropertyOrFieldType(),
+																	propertyInTheOtherSide,
+																	declaringType));
 			}
 
 			_oneToOne.propertyref = propertyInTheOtherSide.Name;
@@ -111,5 +115,23 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
+	}
+
+	public class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
+	{
+		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne) 
+			: base(member, oneToOne)
+		{
+		}
+
+		public OneToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorMapper, HbmOneToOne oneToOne)
+			: base(member, accessorMapper, oneToOne)
+		{
+		}
+
+		public void PropertyReference<TProperty>(Expression<Func<T, TProperty>> reference)
+		{
+			PropertyReference(TypeExtensions.DecodeMemberAccessExpression(reference));
+		}
 	}
 }

@@ -10,7 +10,8 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class IdentifierBag : IdentifierCollection
 	{
-		public IdentifierBag(PersistentClass owner) : base(owner)
+		public IdentifierBag(PersistentClass owner)
+			: base(owner)
 		{
 		}
 
@@ -18,12 +19,14 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
+				System.Type elementType = typeof(object);
 				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, GenericArguments[0]);
+					elementType = GenericArguments[0];
 				}
-				return TypeFactory.IdBag(Role, ReferencedPropertyName, Embedded);
+
+				return TypeFactory.GenericIdBag(Role, ReferencedPropertyName, elementType);
 			}
 		}
 	}

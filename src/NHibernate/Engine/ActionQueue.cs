@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Iesi.Collections.Generic;
 
 using NHibernate.Action;
 using NHibernate.Cache;
@@ -488,7 +487,7 @@ namespace NHibernate.Engine
 					}
 					catch (Exception e)
 					{
-						throw new AssertionFailure("Exception releasing cache locks", e);
+						throw new AssertionFailure("Unable to perform AfterTransactionCompletion callback", e);
 					}
 				}
 				processes.Clear();

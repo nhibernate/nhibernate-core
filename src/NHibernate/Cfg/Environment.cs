@@ -50,7 +50,7 @@ namespace NHibernate.Cfg
 					Assembly thisAssembly = Assembly.GetExecutingAssembly();
 					var attrs =
 						(AssemblyInformationalVersionAttribute[])
-						thisAssembly.GetCustomAttributes(typeof (AssemblyInformationalVersionAttribute), false);
+						thisAssembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
 
 					if (attrs != null && attrs.Length > 0)
 					{
@@ -95,7 +95,7 @@ namespace NHibernate.Cfg
 		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.
 		/// </summary>
 		public const string PreferPooledValuesLo = "id.optimizer.pooled.prefer_lo";
-		
+
 		public const string ShowSql = "show_sql";
 		public const string MaxFetchDepth = "max_fetch_depth";
 		public const string CurrentSessionContextClass = "current_session_context_class";
@@ -165,25 +165,33 @@ namespace NHibernate.Cfg
 		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
 
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
-		
+
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
 		public const string OrderInserts = "order_inserts";
+
+		/// <summary>
+		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
+		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.
+		/// The default setting is false.
+		/// </summary>
+		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
+		public const string InterceptorsBeforeTransactionCompletionIgnoreExceptions = "interceptors.beforetransactioncompletion_ignore_exceptions";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (Environment));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Environment));
 
 		/// <summary>
 		/// Issue warnings to user when any obsolete property names are used.
 		/// </summary>
 		/// <param name="props"></param>
 		/// <returns></returns>
-		public static void VerifyProperties(IDictionary<string, string> props) {}
+		public static void VerifyProperties(IDictionary<string, string> props) { }
 
 		static Environment()
 		{
@@ -231,7 +239,7 @@ namespace NHibernate.Cfg
 			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
 			if (nhConfig.SessionFactory != null)
 			{
-				foreach (KeyValuePair<string, string> kvp in nhConfig.SessionFactory.Properties)
+				foreach (var kvp in nhConfig.SessionFactory.Properties)
 				{
 					GlobalProperties[kvp.Key] = kvp.Value;
 				}
@@ -240,18 +248,12 @@ namespace NHibernate.Cfg
 
 		internal static void ResetSessionFactoryProperties()
 		{
-			string savedBytecodeProvider = null;
-			string savedUseReflectionOptimizer = null;
-
+			string savedBytecodeProvider;
+			GlobalProperties.TryGetValue(PropertyBytecodeProvider, out savedBytecodeProvider);
 			// Save values loaded and used in static constructor
-			if (GlobalProperties.ContainsKey(PropertyBytecodeProvider))
-			{
-				savedBytecodeProvider = GlobalProperties[PropertyBytecodeProvider];
-			}
-			if (GlobalProperties.ContainsKey(PropertyUseReflectionOptimizer))
-			{
-				savedUseReflectionOptimizer = GlobalProperties[PropertyUseReflectionOptimizer];
-			}
+
+			string savedUseReflectionOptimizer;
+			GlobalProperties.TryGetValue(PropertyUseReflectionOptimizer, out savedUseReflectionOptimizer);
 			// Clean all property loaded from app.config
 			GlobalProperties.Clear();
 

@@ -99,14 +99,13 @@ namespace NHibernate.Criterion
 						propertyName);
 				}
 
-				return new SqlStringBuilder(6)
-					.Add(criteriaQuery.Factory.Dialect.LowercaseFunction)
-					.Add(StringHelper.OpenParen)
-					.Add(columnNames[0])
-					.Add(StringHelper.ClosedParen)
-					.Add(Op)
-					.Add(parameters.Single())
-					.ToSqlString();
+				return new SqlString(
+					criteriaQuery.Factory.Dialect.LowercaseFunction,
+					StringHelper.OpenParen,
+					columnNames[0],
+					StringHelper.ClosedParen,
+					Op,
+					parameters.Single());
 			}
 			else
 			{
@@ -173,13 +172,25 @@ namespace NHibernate.Criterion
 			get { return op; }
 		}
 
-		string ValueToStrings()
+		private static readonly System.Type[] CallToStringTypes = new[]
 		{
-			if(value!=null && value.GetType().IsPrimitive)
+			typeof(DateTime),
+			typeof(string),
+		};
+
+		private string ValueToStrings()
+		{
+			if (value == null)
+			{
+				return "null";
+			}
+			var type = value.GetType();
+			if (type.IsPrimitive || CallToStringTypes.Any(t => t.IsAssignableFrom(type)))
 			{
 				return value.ToString();
 			}
-			return ObjectUtils.IdentityToString(value);
+
+			return ObjectHelpers.IdentityToString(value);
 		}
 	}
 }

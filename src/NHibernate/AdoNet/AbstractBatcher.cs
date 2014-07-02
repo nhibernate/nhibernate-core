@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading;
-using Iesi.Collections.Generic;
 
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -209,7 +208,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDataReader ExecuteReader(IDbCommand cmd)
+		public virtual IDataReader ExecuteReader(IDbCommand cmd)
 		{
 			CheckReaders();
 			LogCommand(cmd);
@@ -270,7 +269,7 @@ namespace NHibernate.AdoNet
 			_releasing = true;
 			try
 			{
-				foreach (IDataReader reader in new HashedSet<IDataReader>(_readersToClose))
+				foreach (IDataReader reader in new HashSet<IDataReader>(_readersToClose))
 				{
 					try
 					{

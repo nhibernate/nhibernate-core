@@ -709,14 +709,7 @@ ISession session = sessions.OpenSession(conn);
                             <entry>Sybase Adaptive Server Anywhere 9</entry>
                             <entry><literal>NHibernate.Dialect.SybaseASA9Dialect</literal></entry>
                             <entry></entry>
-                        </row>
-                        <row>
-                            <entry>Sybase Adaptive Server Anywhere 10</entry>
-                            <entry><literal>NHibernate.Dialect.SybaseASA10Dialect</literal></entry>
-                            <entry>
-                                Deprecated. Use the Sybase SQL Anywhere 10 Dialect instead.
-                            </entry>
-                        </row>
+                        </row>                        
                         <row>
                             <entry>Sybase SQL Anywhere 10</entry>
                             <entry><literal>NHibernate.Dialect.SybaseSQLAnywhere10Dialect</literal></entry>

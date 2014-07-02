@@ -33,12 +33,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// transfer an explicitly defined entity name
 			string entityName = classMapping.EntityName ??
-			                    ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").
-			                    	FullName;
+								ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").FullName;
 			if (entityName == null)
-			{
 				throw new MappingException("Unable to determine entity name");
-			}
 			model.EntityName = entityName;
 
 			BindPocoRepresentation(classMapping, model);
@@ -106,7 +103,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			// PERSISTER
 			if(!string.IsNullOrEmpty(classMapping.Persister))
 				model.EntityPersisterClass = ClassForNameChecked(classMapping.Persister, mappings,
-				                                                 "could not instantiate persister class: {0}");
+																 "could not instantiate persister class: {0}");
 
 			// CUSTOM SQL
 			HandleCustomSQL(classMapping, model);
@@ -146,9 +143,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindPocoRepresentation(IEntityMapping classMapping, PersistentClass entity)
 		{
 			string className = classMapping.Name == null
-			                   	? null
-													: ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").
-			                   	  	AssemblyQualifiedName;
+								? null
+								   : ClassForNameChecked(classMapping.Name, mappings, "persistent class {0} not found").AssemblyQualifiedName;
 
 			entity.ClassName = className;
 
@@ -210,8 +206,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// PROPERTIES
 			new PropertiesBinder(Mappings, persistentClass, dialect).Bind(joinMapping.Properties, join.Table,
-			                                                                                inheritedMetas, p => { },
-			                                                                                join.AddProperty);
+																							inheritedMetas, p => { },
+																							join.AddProperty);
 
 			// CUSTOM SQL
 			HandleCustomSQL(joinMapping, join);
@@ -263,13 +259,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		protected string GetClassTableName(PersistentClass model, string mappedTableName)
 		{
 			return string.IsNullOrEmpty(mappedTableName)
-			       	? mappings.NamingStrategy.ClassToTableName(model.EntityName)
-			       	: mappings.NamingStrategy.TableName(mappedTableName);
+					? mappings.NamingStrategy.ClassToTableName(model.EntityName)
+					: mappings.NamingStrategy.TableName(mappedTableName);
 		}
 
 		protected void BindComponent(IComponentMapping componentMapping, Component model, System.Type reflectedClass, string className,
-		                             string path, bool isNullable,
-		                             IDictionary<string, MetaAttribute> inheritedMetas)
+									 string path, bool isNullable,
+									 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			model.RoleName = path;
 			inheritedMetas = GetMetas(componentMapping as IDecoratable, inheritedMetas);
@@ -307,18 +303,18 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			string nodeName = !string.IsNullOrEmpty(componentMapping.EmbeddedNode)
-			                  	? componentMapping.EmbeddedNode
-			                  	: !string.IsNullOrEmpty(componentMapping.Name) ? componentMapping.Name : model.Owner.NodeName;
+								? componentMapping.EmbeddedNode
+								: !string.IsNullOrEmpty(componentMapping.Name) ? componentMapping.Name : model.Owner.NodeName;
 			model.NodeName = nodeName;
 
 			// Parent
 			if (componentMapping.Parent != null && !string.IsNullOrEmpty(componentMapping.Parent.name))
 			{
 				model.ParentProperty = new Property
-				                       	{
-				                       		Name = componentMapping.Parent.name,
-				                       		PropertyAccessorName = componentMapping.Parent.access ?? mappings.DefaultAccess
-				                       	}; 
+										{
+											Name = componentMapping.Parent.name,
+											PropertyAccessorName = componentMapping.Parent.access ?? mappings.DefaultAccess
+										}; 
 			}
 
 			new PropertiesBinder(Mappings, model, className, path, isNullable, Mappings.Dialect).Bind(
@@ -388,8 +384,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.IsConstrained = oneToOneMapping.constrained;
 
 			model.ForeignKeyType = oneToOneMapping.constrained
-			                       	? ForeignKeyDirection.ForeignKeyFromParent
-			                       	: ForeignKeyDirection.ForeignKeyToParent;
+									? ForeignKeyDirection.ForeignKeyFromParent
+									: ForeignKeyDirection.ForeignKeyToParent;
 
 			InitOuterJoinFetchSetting(oneToOneMapping, model);
 			InitLaziness(oneToOneMapping.Lazy, model, true);
@@ -409,17 +405,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				{
 					return ExecuteUpdateResultCheckStyle.Count;
 				}
-				else
+				switch (customSQL.check)
 				{
-					switch (customSQL.check)
-					{
-						case HbmCustomSQLCheck.None:
-							return ExecuteUpdateResultCheckStyle.None;
-						case HbmCustomSQLCheck.Rowcount:
-							return ExecuteUpdateResultCheckStyle.Count;
-						case HbmCustomSQLCheck.Param:
-							return null; // not supported
-					}
+					case HbmCustomSQLCheck.None:
+						return ExecuteUpdateResultCheckStyle.None;
+					case HbmCustomSQLCheck.Rowcount:
+						return ExecuteUpdateResultCheckStyle.Count;
+					case HbmCustomSQLCheck.Param:
+						return null; // not supported
 				}
 			}
 			return null;
@@ -429,8 +422,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			// Note : fetch="join" overrides default laziness
 			bool isLazyTrue = !restrictedLaziness.HasValue
-			                  	? defaultLazy && fetchable.IsLazy
-			                  	: restrictedLaziness == HbmRestrictedLaziness.Proxy;
+								? defaultLazy && fetchable.IsLazy
+								: restrictedLaziness == HbmRestrictedLaziness.Proxy;
 			fetchable.IsLazy = isLazyTrue;
 		}
 
@@ -544,10 +537,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			string entityName = string.IsNullOrEmpty(relationship.EntityName) ? null : relationship.EntityName;
 			string className = string.IsNullOrEmpty(relationship.Class) ? null : relationship.Class;
-			entityName = entityName
-									 ?? (className == null ? null : StringHelper.GetFullClassname(FullQualifiedClassName(className, mappings)));
-
-			return entityName;
+			return entityName ?? (className == null ? null : StringHelper.GetFullClassname(FullQualifiedClassName(className, mappings)));
 		}
 	}
 }

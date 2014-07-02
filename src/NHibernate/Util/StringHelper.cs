@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NHibernate.SqlCommand;
+
 
 namespace NHibernate.Util
 {
@@ -57,37 +57,9 @@ namespace NHibernate.Util
 			return buf.ToString();
 		}
 
-		public static SqlString Join(SqlString separator, IEnumerable objects)
+		internal static string Join<T>(string separator, IEnumerable<T> objects)
 		{
-			SqlStringBuilder buf = new SqlStringBuilder();
-			bool first = true;
-
-			foreach (object obj in objects)
-			{
-				if (!first)
-				{
-					buf.Add(separator);
-				}
-
-				first = false;
-				buf.AddObject(obj);
-			}
-
-			return buf.ToSqlString();
-		}
-
-		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
-		{
-			SqlString[] result = new SqlString[x.Length];
-			for (int i = 0; i < x.Length; i++)
-			{
-				result[i] = new SqlStringBuilder(3)
-					.Add(x[i])
-					.Add(sep)
-					.Add(y[i])
-					.ToSqlString();
-			}
-			return result;
+			return string.Join(separator, objects);
 		}
 
 		/// <summary>
@@ -491,15 +463,6 @@ namespace NHibernate.Util
 			return !IsEmpty(str);
 		}
 
-		public static bool IsNotEmpty(SqlString str)
-		{
-			return !IsEmpty(str);
-		}
-
-		public static bool IsEmpty(SqlString str)
-		{
-			return str == null || str.Count == 0;
-		}
 
 		/// <summary>
 		/// 
@@ -531,7 +494,7 @@ namespace NHibernate.Util
 				string[] qualified = new string[len];
 				for (int i = 0; i < len; i++)
 				{
-					qualified[i] = Qualify(prefix, names[i]);
+					qualified[i] = names[i] == null ? null : Qualify(prefix, names[i]);
 				}
 				return qualified;
 			}
@@ -712,12 +675,6 @@ namespace NHibernate.Util
 				sb.Remove(sb.Length - 2, 2);
 			return sb.ToString();
 		}
-
-		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
-		{
-			return sql.Substring(0, sql.LastIndexOfCaseInsensitive(" as "));
-		}
-
 
 		public static string ToUpperCase(string str)
 		{

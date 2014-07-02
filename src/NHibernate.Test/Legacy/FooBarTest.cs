@@ -14,6 +14,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Proxy;
+using NHibernate.Test.NHSpecificTest.NH1914;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -63,7 +64,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				One one = new One();
-				one.Manies = new HashedSet<Many>();
+				one.Manies = new HashSet<Many>();
 				s.Save(one);
 				s.Flush();
 
@@ -89,7 +90,7 @@ namespace NHibernate.Test.Legacy
 		{
 			Glarch g = new Glarch();
 			Glarch g2 = new Glarch();
-			IList strings = new ArrayList();
+			IList<string> strings = new List<string>();
 			strings.Add("foo");
 			g2.Strings = strings;
 
@@ -134,8 +135,8 @@ namespace NHibernate.Test.Legacy
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Baz baz = new Baz();
-					baz.Bag = new ArrayList();
-					baz.ByteBag = new ArrayList();
+					baz.Bag = new List<string>();
+					baz.ByteBag = new List<byte[]>();
 					s.Save(baz);
 					baz.Bag.Add("foo");
 					baz.Bag.Add("bar");
@@ -240,7 +241,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				baz.FooSet = new HashedSet<FooProxy>();
+				baz.FooSet = new HashSet<FooProxy>();
 				Foo foo = new Foo();
 				baz.FooSet.Add(foo);
 				s.Save(foo);
@@ -298,7 +299,7 @@ namespace NHibernate.Test.Legacy
 			{
 				Baz baz = new Baz();
 				Baz baz2 = new Baz();
-				baz.FooSet = new HashedSet<FooProxy>();
+				baz.FooSet = new HashSet<FooProxy>();
 				Foo foo = new Foo();
 				baz.FooSet.Add(foo);
 				s.Save(foo);
@@ -514,20 +515,10 @@ namespace NHibernate.Test.Legacy
 			{
 				if (!(Dialect is FirebirdDialect))
 				{
-					if (IsClassicParser)
-					{
-						list =
-								s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where ? = some foo.Component.ImportantDates.elements")
-										.SetDateTime(0, DateTime.Today).List();
-
-					}
-					else
-					{
-						list =
-							s.CreateQuery(
-								"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
-								SetDateTime(0, DateTime.Today).List();
-					}
+					list = s.CreateQuery(
+							"from foo in class NHibernate.DomainModel.Foo where ? = some elements(foo.Component.ImportantDates)").
+							SetDateTime(0, DateTime.Today).List();
+					
 					Assert.AreEqual(2, list.Count, "component query");
 				}
 
@@ -602,19 +593,10 @@ namespace NHibernate.Test.Legacy
 				IsEmpty(s.CreateQuery("from bar in class Bar where bar.String='a string' or bar.String='a string'").Enumerable()
 					));
 
-			if (IsClassicParser)
-			{
-				enumerable = s.CreateQuery(
-						"select foo.Component.Name, foo.Component.ImportantDates.elements from foo in class Foo where foo.TheFoo.id=?"
-						).SetString(0, foo.TheFoo.Key).Enumerable();
-			}
-			else
-			{
-				enumerable =
-					s.CreateQuery(
+			enumerable = s.CreateQuery(
 						"select foo.Component.Name, elements(foo.Component.ImportantDates) from foo in class Foo where foo.TheFoo.id=?").
 						SetString(0, foo.TheFoo.Key).Enumerable();
-			}
+			
 
 			int i = 0;
 			foreach (object[] row in enumerable)
@@ -625,18 +607,9 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.AreEqual(3, i); //WAS: 4
 
-			if (IsClassicParser)
-			{
-				enumerable = s.CreateQuery(
-						"select max(foo.Component.ImportantDates.elements) from foo in class Foo group by foo.id"
-						).Enumerable();
-			}
-			else
-			{
-				enumerable =
-					s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
+			enumerable = s.CreateQuery("select max(elements(foo.Component.ImportantDates)) from foo in class Foo group by foo.id").
 						Enumerable();
-			}
+			
 			IEnumerator enumerator = enumerable.GetEnumerator();
 
 			Assert.IsTrue(enumerator.MoveNext());
@@ -668,7 +641,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			baz.SetDefaults();
 			bar.Baz = baz;
-			baz.ManyToAny = new ArrayList();
+			baz.ManyToAny = new List<object>();
 			baz.ManyToAny.Add(bar);
 			baz.ManyToAny.Add(foo);
 			s.Save(bar);
@@ -839,19 +812,9 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery(
 					"from Baz baz where 'a' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
 					.List();
-
-				if (IsClassicParser)
-				{
-					s.CreateQuery(
-							"from Baz baz where 'b' in baz.CollectionComponent.Nested.Foos.elements and 1.0 in baz.CollectionComponent.Nested.Floats.elements")
-							.List();
-				}
-				else
-				{
-					s.CreateQuery(
-						"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
-						.List();
-				}
+				s.CreateQuery(
+					"from Baz baz where 'b' in elements(baz.CollectionComponent.Nested.Foos) and 1.0 in elements(baz.CollectionComponent.Nested.Floats)")
+					.List();
 			}
 
 			s.CreateQuery("from Foo foo join foo.TheFoo where foo.TheFoo in ('1','2','3')").List();
@@ -930,7 +893,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				baz = new Baz();
-				IList list = new ArrayList();
+				IList<Fee> list = new List<Fee>();
 				list.Add(new Fee());
 				baz.Fees = list;
 				s.Save(baz);
@@ -955,7 +918,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				baz = new Baz();
-				IList list = new ArrayList();
+				IList<Fee> list = new List<Fee>();
 				list.Add(new Fee());
 				list.Add(new Fee());
 				baz.Fees = list;
@@ -987,7 +950,7 @@ namespace NHibernate.Test.Legacy
 			{
 				baz = new Baz();
 				Foo foo = new Foo();
-				IList bag = new ArrayList();
+				IList<Foo> bag = new List<Foo>();
 				bag.Add(foo);
 				baz.IdFooBag = bag;
 				baz.Foo = foo;
@@ -1011,7 +974,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Glarch glarch1 = new Glarch();
-				glarch1.ProxySet = new OrderedSet<GlarchProxy>();
+				glarch1.ProxySet = new LinkedHashSet<GlarchProxy>();
 
 				Glarch glarch2 = new Glarch();
 				glarch1.ProxySet.Add(glarch1);
@@ -1178,7 +1141,7 @@ namespace NHibernate.Test.Legacy
 			{
 				baz = new Baz();
 				var stringSet = new SortedSet<string> { "foo", "bar" };
-				var fooSet = new HashedSet<FooProxy>();
+				var fooSet = new HashSet<FooProxy>();
 
 				for (int i = 0; i < 3; i++)
 				{
@@ -1192,7 +1155,7 @@ namespace NHibernate.Test.Legacy
 				s.Save(baz);
 
 				baz2 = new Baz();
-				fooSet = new HashedSet<FooProxy>();
+				fooSet = new HashSet<FooProxy>();
 				for (int i = 0; i < 2; i++)
 				{
 					Foo foo = new Foo();
@@ -1263,7 +1226,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			IList fooBag = new ArrayList();
+			IList<Foo> fooBag = new List<Foo>();
 			fooBag.Add(new Foo());
 			fooBag.Add(new Foo());
 			baz.FooBag = fooBag;
@@ -1296,7 +1259,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				IList l = new ArrayList();
+				IList<string> l = new List<string>();
 				baz.StringList = l;
 
 				l.Add("foo");
@@ -1357,8 +1320,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz b = new Baz();
-				IList stringList = new ArrayList();
-				IList feeList = new ArrayList();
+				IList<string> stringList = new List<string>();
+				IList<Fee> feeList = new List<Fee>();
 				b.Fees = feeList;
 				b.StringList = stringList;
 				feeList.Add(new Fee());
@@ -1398,7 +1361,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz baz = new Baz();
-				IList fooBag = new ArrayList();
+				IList<Foo> fooBag = new List<Foo>();
 				fooBag.Add(new Foo());
 				fooBag.Add(new Foo());
 				baz.FooBag = fooBag;
@@ -1433,7 +1396,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz b = new Baz();
-			var ss = new HashedSet<Sortable>
+			var ss = new HashSet<Sortable>
 				{
 					new Sortable("foo"), new Sortable("bar"), new Sortable("baz")
 				};
@@ -1508,15 +1471,15 @@ namespace NHibernate.Test.Legacy
 			Foo foo2 = new Foo();
 			s.Save(foo2);
 			s.Flush();
-			IList list = new ArrayList();
+			IList<Fee> list = new List<Fee>();
 			for (int i = 0; i < 5; i++)
 			{
 				Fee fee = new Fee();
 				list.Add(fee);
 			}
 			baz.Fees = list;
-			list = s.CreateQuery("from Foo foo, Baz baz left join fetch baz.Fees").List();
-			Assert.IsTrue(NHibernateUtil.IsInitialized(((Baz) ((object[]) list[0])[1]).Fees));
+			var result = s.CreateQuery("from Foo foo, Baz baz left join fetch baz.Fees").List();
+			Assert.IsTrue(NHibernateUtil.IsInitialized(((Baz)((object[])result[0])[1]).Fees));
 			s.Delete(foo);
 			s.Delete(foo2);
 			s.Delete(baz);
@@ -1530,7 +1493,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			IList list = new ArrayList();
+			IList<Baz> list = new List<Baz>();
 			baz.Bazez = list;
 			list.Add(new Baz());
 			s.Save(baz);
@@ -1658,8 +1621,8 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			s.Save(baz);
 
-			IList l = new ArrayList();
-			IList l2 = new ArrayList();
+			IList<Foo> l = new List<Foo>();
+			IList<byte[]> l2 = new List<byte[]>();
 
 			baz.IdFooBag = l;
 			baz.ByteBag = l2;
@@ -1906,7 +1869,7 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Baz baz = new Baz();
-			baz.CascadingBars = new HashedSet<BarProxy>();
+			baz.CascadingBars = new HashSet<BarProxy>();
 			s.Save(baz);
 			s.Flush();
 
@@ -1925,7 +1888,7 @@ namespace NHibernate.Test.Legacy
 			bar.Name = "Bar";
 			bar2.Name = "Bar Two";
 			Baz baz = new Baz();
-			baz.CascadingBars = new HashedSet<BarProxy> {bar};
+			baz.CascadingBars = new HashSet<BarProxy> {bar};
 			bar.Baz = baz;
 
 			ISession s = OpenSession();
@@ -1944,10 +1907,7 @@ namespace NHibernate.Test.Legacy
 				"left join bar.Baz baz left join baz.CascadingBars b " +
 				"where (bar.Name in (:nameList) or bar.Name in (:nameList)) and bar.String = :stringVal");
 
-			IList nameList = new ArrayList();
-			nameList.Add("bar");
-			nameList.Add("Bar");
-			nameList.Add("Bar Two");
+			var nameList = new List<string> {"bar", "Bar", "Bar Two"};
 			q.SetParameterList("nameList", nameList);
 			q.SetParameter("stringVal", "a string");
 			list = q.List();
@@ -2291,8 +2251,7 @@ namespace NHibernate.Test.Legacy
 					more.StringId = "id";
 					Stuff stuf = new Stuff();
 					stuf.MoreStuff = more;
-					more.Stuffs = new ArrayList();
-					more.Stuffs.Add(stuf);
+					more.Stuffs = new List<Stuff> {stuf};
 					stuf.Foo = bar;
 					stuf.Id = 1234;
 
@@ -2394,7 +2353,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			IList list = new ArrayList();
+			IList<Fee> list = new List<Fee>();
 			list.Add(new Fee());
 			list.Add(new Fee());
 			baz.Fees = list;
@@ -2435,7 +2394,7 @@ namespace NHibernate.Test.Legacy
 				s.CreateQuery(hql).List();
 			}
 
-			hql = IsClassicParser ? "select fum1.Friends.elements from fum1 in class Fum" : "select elements(fum1.Friends) from fum1 in class Fum";
+			hql = "select elements(fum1.Friends) from fum1 in class Fum";
 
 			s.CreateQuery(hql).List();
 
@@ -2567,14 +2526,7 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(1, s.CreateQuery("from Bar bar join bar.Baz.FooArray foo").List().Count);
 
-			if (IsClassicParser)
-			{
-				Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in bar.Baz.FooSet.elements").List().Count);
-			}
-			else
-			{
-				Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooSet)").List().Count);
-			}
+			Assert.AreEqual(0, s.CreateQuery("from bar in class Bar, foo in elements(bar.Baz.FooSet)").List().Count);
 
 			Assert.AreEqual(1, s.CreateQuery("from bar in class Bar, foo in elements( bar.Baz.FooArray )").List().Count);
 
@@ -2603,9 +2555,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(baz, enumer.Current);
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			bool found = false;
 			while (enumer.MoveNext())
@@ -2620,9 +2570,7 @@ namespace NHibernate.Test.Legacy
 			baz.StringArray = null;
 			s.CreateQuery("from baz in class Baz").Enumerable(); // no flush
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
@@ -2630,9 +2578,7 @@ namespace NHibernate.Test.Legacy
 			enumer = s.CreateQuery("from foo in class Foo").Enumerable().GetEnumerator(); // no flush
 			Assert.IsFalse(enumer.MoveNext());
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2645,18 +2591,9 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 
 			baz.StringList.Remove("1E1");
-			if (IsClassicParser)
-			{
-				s.CreateQuery("select baz.StringArray.elements from baz in class Baz").Enumerable(); //no flush
-			}
-			else
-			{
-				s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable(); //no flush
-			}
+			s.CreateQuery("select elements(baz.StringArray) from baz in class Baz").Enumerable(); //no flush
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			found = false;
 			while (enumer.MoveNext())
@@ -2668,7 +2605,7 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.IsFalse(found);
 
-			IList newList = new ArrayList();
+			IList<string> newList = new List<string>();
 			newList.Add("value");
 			baz.StringList = newList;
 			
@@ -2676,9 +2613,7 @@ namespace NHibernate.Test.Legacy
 			
 			baz.StringList = null;
 
-			enumer = IsClassicParser
-			         	? s.CreateQuery("select baz.StringList.elements from baz in class Baz").Enumerable().GetEnumerator()
-			         	: s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
+			enumer = s.CreateQuery("select elements(baz.StringList) from baz in class Baz").Enumerable().GetEnumerator();
 
 			Assert.IsFalse(enumer.MoveNext());
 
@@ -2701,8 +2636,8 @@ namespace NHibernate.Test.Legacy
 			s.Save(baz);
 			baz.SetDefaults();
 			baz.StringArray = new string[] {"stuff"};
-			baz.CascadingBars = new HashedSet<BarProxy> {new Bar()};
-			IDictionary sgm = new Hashtable();
+			baz.CascadingBars = new HashSet<BarProxy> {new Bar()};
+			IDictionary<string, Glarch> sgm = new Dictionary<string, Glarch>();
 			sgm["a"] = new Glarch();
 			sgm["b"] = new Glarch();
 			baz.StringGlarchMap = sgm;
@@ -2722,7 +2657,7 @@ namespace NHibernate.Test.Legacy
 			baz.Customs.Add(new string[] {"new", "custom"});
 			baz.StringArray = null;
 			baz.StringList[0] = "new value";
-			baz.StringSet = new HashedSet<string>();
+			baz.StringSet = new HashSet<string>();
 
 			// NOTE: We put two items in the map, but expect only one to come back, because
 			// of where="..." specified in the mapping for StringGlarchMap
@@ -2732,20 +2667,10 @@ namespace NHibernate.Test.Legacy
 			// disable this for dbs with no subselects
 			if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorAll)
 			{
-				if (IsClassicParser)
-				{
-					list =
-							s.CreateQuery(
-									"select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in baz.FooArray.elements and 3 = some baz.IntArray.elements and 4 > all baz.IntArray.indices")
-									.List();
-				}
-				else
-				{
-					list =
-						s.CreateQuery(
+				list = s.CreateQuery(
 							"select foo from foo in class NHibernate.DomainModel.Foo, baz in class NHibernate.DomainModel.Baz where foo in elements(baz.FooArray) and 3 = some elements(baz.IntArray) and 4 > all indices(baz.IntArray)")
 							.List();
-				}
+				
 
 				Assert.AreEqual(2, list.Count, "collection.elements find");
 			}
@@ -2753,24 +2678,13 @@ namespace NHibernate.Test.Legacy
 			// sapdb doesn't like distinct with binary type
 			//if( !(dialect is Dialect.SAPDBDialect) ) 
 			//{
-			if (IsClassicParser)
-			{
-				list =
-						s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements").List
-								();
-			}
-			else
-			{
-				list =
-					s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").
+			list = s.CreateQuery("select distinct foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").
 						List();
-			}
+			
 			Assert.AreEqual(2, list.Count, "collection.elements find");
 			//}
 
-			list = IsClassicParser
-			       	? s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooSet.elements").List()
-			       	: s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooSet)").List();
+			list = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooSet)").List();
 
 			Assert.AreEqual(1, list.Count, "association.elements find");
 
@@ -2833,22 +2747,25 @@ namespace NHibernate.Test.Legacy
 			Bar bar2 = new Bar();
 			s.Save(bar);
 			s.Save(bar2);
-			baz.TopFoos = new HashedSet<Bar> { bar, bar2 };
-			baz.TopGlarchez = new Hashtable();
+			baz.TopFoos = new HashSet<Bar> { bar, bar2 };
+			baz.TopGlarchez = new Dictionary<char, GlarchProxy>();
 			GlarchProxy g = new Glarch();
 			s.Save(g);
 			baz.TopGlarchez['G'] = g;
-			Hashtable map = new Hashtable();
+			
+			var map = new Dictionary<Foo, GlarchProxy>();
 			map[bar] = g;
 			map[bar2] = g;
 			baz.FooToGlarch = map;
-			map = new Hashtable();
-			map[new FooComponent("name", 123, null, null)] = bar;
-			map[new FooComponent("nameName", 12, null, null)] = bar;
-			baz.FooComponentToFoo = map;
-			map = new Hashtable();
-			map[bar] = g;
-			baz.GlarchToFoo = map;
+			
+			var map2 = new Dictionary<FooComponent, Foo>();
+			map2[new FooComponent("name", 123, null, null)] = bar;
+			map2[new FooComponent("nameName", 12, null, null)] = bar;
+			baz.FooComponentToFoo = map2;
+
+			var map3 = new Dictionary<Foo, GlarchProxy>();
+			map3[bar] = g;
+			baz.GlarchToFoo = map3;
 			txn.Commit();
 			s.Close();
 
@@ -3033,12 +2950,12 @@ namespace NHibernate.Test.Legacy
 			Foo f2 = new Foo();
 			Foo f3 = new Foo();
 			One o = new One();
-			baz.Ones = new ArrayList();
+			baz.Ones = new List<One>();
 			baz.Ones.Add(o);
 			Foo[] foos = new Foo[] {f1, null, f2};
 			baz.FooArray = foos;
 			// in h2.0.3 this is a Set
-			baz.Foos = new HashedSet<Foo> { f1 };
+			baz.Foos = new HashSet<Foo> { f1 };
 			s.Save(f1);
 			s.Save(f2);
 			s.Save(f3);
@@ -3228,7 +3145,7 @@ namespace NHibernate.Test.Legacy
 			Bar bar = new Bar();
 			s.Save(bar);
 			// h2.0.3 was a set
-			bar.Abstracts = new HashedSet<object>();
+			bar.Abstracts = new HashSet<object>();
 			bar.Abstracts.Add(bar);
 			Bar bar2 = new Bar();
 			bar.Abstracts.Add(bar2);
@@ -3366,7 +3283,7 @@ namespace NHibernate.Test.Legacy
 			Baz baz2 = new Baz();
 			s.Save(baz2);
 			baz1.IntArray = new int[] {1, 2, 3, 4};
-			baz1.FooSet = new HashedSet<FooProxy>();
+			baz1.FooSet = new HashSet<FooProxy>();
 			Foo foo = new Foo();
 			s.Save(foo);
 			baz1.FooSet.Add(foo);
@@ -3441,8 +3358,9 @@ namespace NHibernate.Test.Legacy
 			s.Save(foo1);
 			s.Save(foo2);
 			baz1.FooArray = new Foo[] {foo1, null, foo2};
-			baz1.StringDateMap = new Hashtable();
+			baz1.StringDateMap = new Dictionary<string, DateTime?>();
 			baz1.StringDateMap["today"] = DateTime.Today;
+			baz1.StringDateMap["foo"] = null;
 			baz1.StringDateMap["tomm"] = new DateTime(DateTime.Today.Ticks + (new TimeSpan(1, 0, 0, 0, 0)).Ticks);
 			s.Flush();
 			s.Close();
@@ -3460,7 +3378,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			baz2 = (Baz) s.Load(typeof(Baz), baz2.Code);
 			baz1 = (Baz) s.Load(typeof(Baz), baz1.Code);
-			Assert.AreEqual(2, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
+			Assert.AreEqual(3, baz2.StringDateMap.Count, "baz2.StringDateMap count - reachability");
 			Assert.AreEqual(3, baz2.FooArray.Length, "baz2.FooArray length - reachability");
 			Assert.AreEqual(0, baz1.StringDateMap.Count, "baz1.StringDateMap count - reachability");
 			Assert.AreEqual(0, baz1.FooArray.Length, "baz1.FooArray length - reachability");
@@ -3782,11 +3700,11 @@ namespace NHibernate.Test.Legacy
 			s.Save(g);
 			g.ProxyArray = new GlarchProxy[] {g};
 			string gid = (string) s.GetIdentifier(g);
-			ArrayList list = new ArrayList();
+			IList<string> list = new List<string>();
 			list.Add("foo");
 			g.Strings = list;
 			// <sets> in h2.0.3
-			g.ProxySet = new HashedSet<GlarchProxy> { g };
+			g.ProxySet = new HashSet<GlarchProxy> { g };
 			s.Flush();
 			s.Close();
 
@@ -3829,7 +3747,7 @@ namespace NHibernate.Test.Legacy
 			g = (GlarchProxy) s.Load(typeof(Glarch), gid);
 			Assert.AreEqual(4, g.Version, "versioned collection after");
 			Assert.AreEqual(0, g.ProxyArray.Length, "version collection after");
-			g.FooComponents = new ArrayList();
+			g.FooComponents = new List<FooComponent>();
 			g.ProxyArray = null;
 			s.Flush();
 			s.Close();
@@ -4131,7 +4049,7 @@ namespace NHibernate.Test.Legacy
 				fee2 = new Fee();
 				fee1.TheFee = fee2;
 				fee2.TheFee = fee1;
-				fee2.Fees = new HashedSet<string>();
+				fee2.Fees = new HashSet<string>();
 
 				fee3 = new Fee();
 				fee3.TheFee = fee1;
@@ -4176,7 +4094,7 @@ namespace NHibernate.Test.Legacy
 			Fee fee2 = new Fee();
 			fee1.TheFee = fee2;
 			fee2.TheFee = fee1;
-			fee2.Fees = new HashedSet<string>();
+			fee2.Fees = new HashSet<string>();
 			Fee fee3 = new Fee();
 			fee3.TheFee = fee1;
 			fee3.AnotherFee = fee2;
@@ -4733,7 +4651,7 @@ namespace NHibernate.Test.Legacy
 			s.Save(g3);
 			g2.ProxyArray = new GlarchProxy[] {null, g3, g};
 
-			g.ProxySet = new HashedSet<GlarchProxy> { g1, g2 };
+			g.ProxySet = new HashSet<GlarchProxy> { g1, g2 };
 			s.Save(g);
 			s.Save(g1);
 			s.Save(g2);
@@ -4980,18 +4898,9 @@ namespace NHibernate.Test.Legacy
 
 			IEnumerator e;
 
-			if (IsClassicParser)
-			{
-				e =
-					s.CreateQuery("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
-						GetEnumerator();
-			}
+			
 
 			bool found = false;
 			while (e.MoveNext())
@@ -5004,33 +4913,15 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(found);
 			baz.StringArray = null;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select distinct baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable()
+			e = s.CreateQuery("select distinct elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable()
 						.GetEnumerator();
-			}
+			
 			Assert.IsFalse(e.MoveNext());
 			baz.StringArray = new string[] {"foo", "bar"};
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select baz.StringArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.StringArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
+			
 			Assert.IsTrue(e.MoveNext());
 
 			Foo foo = new Foo();
@@ -5038,18 +4929,9 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			baz.FooArray = new Foo[] {foo};
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
-			}
+			
 			found = false;
 			while (e.MoveNext())
 			{
@@ -5062,66 +4944,29 @@ namespace NHibernate.Test.Legacy
 
 			baz.FooArray[0] = null;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in baz.FooArray.elements")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
+			e = s.CreateQuery("select foo from baz in class NHibernate.DomainModel.Baz, foo in elements(baz.FooArray)").Enumerable()
 						.GetEnumerator();
-			}
+			
 			Assert.IsFalse(e.MoveNext());
 			baz.FooArray[0] = foo;
 
-			if (IsClassicParser)
-			{
-				e = s.CreateQuery("select baz.FooArray.elements from baz in class NHibernate.DomainModel.Baz")
-						 .Enumerable()
-						 .GetEnumerator();
-			}
-			else
-			{
-				e =
-					s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
+			e = s.CreateQuery("select elements(baz.FooArray) from baz in class NHibernate.DomainModel.Baz").Enumerable().
 						GetEnumerator();
-			}
+			
 			Assert.IsTrue(e.MoveNext());
 
 			if (Dialect.SupportsSubSelects && !(Dialect is FirebirdDialect))
 			{
 				baz.FooArray[0] = null;
-				if (IsClassicParser)
-				{
-					e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in baz.FooArray.elements")
-							 .SetEntity(0, foo).Enumerable().GetEnumerator();
-				}
-				else
-				{
-					e =
-						s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
+				e = s.CreateQuery("from baz in class NHibernate.DomainModel.Baz where ? in elements(baz.FooArray)").SetEntity(0, foo).
 							Enumerable().GetEnumerator();
-				}
 
 				Assert.IsFalse(e.MoveNext());
 				baz.FooArray[0] = foo;
-				if (IsClassicParser)
-				{
-					e =
-						s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
-						              + "(select elt from baz in class NHibernate.DomainModel.Baz, elt in baz.FooArray.elements)").
-							Enumerable().GetEnumerator();
-				}
-				else
-				{
-					e =
-						s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
+				e = s.CreateQuery("select foo from foo in class NHibernate.DomainModel.Foo where foo in "
 													+ "(select elt from baz in class NHibernate.DomainModel.Baz, elt in elements(baz.FooArray))").
 							Enumerable().GetEnumerator();
-				}
+				
 				Assert.IsTrue(e.MoveNext());
 			}
 			s.Delete(foo);
@@ -5373,7 +5218,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			baz.CascadingBars = new HashedSet<BarProxy>();
+			baz.CascadingBars = new HashSet<BarProxy>();
 			s.Save(baz);
 			t.Commit();
 			s.Close();
@@ -5438,9 +5283,9 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Baz baz = new Baz();
-			var bars = new HashedSet<BarProxy> { new Bar(), new Bar(), new Bar() };
+			var bars = new HashSet<BarProxy> { new Bar(), new Bar(), new Bar() };
 			baz.CascadingBars = bars;
-			IList foos = new ArrayList();
+			IList<Foo> foos = new List<Foo>();
 			foos.Add(new Foo());
 			foos.Add(new Foo());
 			baz.FooBag = foos;
@@ -5496,9 +5341,9 @@ namespace NHibernate.Test.Legacy
 
 			bar = new Bar();
 			s.Save(bar);
-			baz.FooSet = new HashedSet<FooProxy> { bar };
-			baz.CascadingBars = new HashedSet<BarProxy> { new Bar(), new Bar() };
-			ArrayList list = new ArrayList();
+			baz.FooSet = new HashSet<FooProxy> { bar };
+			baz.CascadingBars = new HashSet<BarProxy> { new Bar(), new Bar() };
+			var list = new List<Foo>();
 			list.Add(new Foo());
 			baz.FooBag = list;
 			object id = s.Save(baz);
@@ -5624,12 +5469,12 @@ namespace NHibernate.Test.Legacy
 				Foo foo3 = new Foo();
 				s.Save(foo3);
 				Baz baz = new Baz();
-				baz.FooSet = new HashedSet<FooProxy> { foo1 };
+				baz.FooSet = new HashSet<FooProxy> { foo1 };
 				s.Save(baz);
 				Assert.AreEqual(1, baz.FooSet.Count);
 
 				var foos = new List<FooProxy> { foo2, foo3 };
-				baz.FooSet.AddAll(foos);
+				baz.FooSet.UnionWith(foos);
 				Assert.AreEqual(3, baz.FooSet.Count);
 
 				s.Flush();
@@ -5663,7 +5508,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz persistentBaz = s.Get(typeof(Baz), baz.Code) as Baz;
-				Baz copiedBaz = (Baz) s.SaveOrUpdateCopy(baz);
+				Baz copiedBaz = s.Merge(baz);
 				Assert.AreSame(persistentBaz, copiedBaz);
 
 				s.Delete(persistentBaz);

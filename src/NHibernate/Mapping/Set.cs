@@ -25,34 +25,30 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
+				System.Type elementType = typeof (object);
+
+				// If this set is part of a dynamic component, IsGeneric will be false, in
+				// which case we default to typing as object.
+				// TODO: For sets in dynamic component, grab the element type from the class attribute in the mappings.
+
 				if (this.IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);
-					if (IsSorted)
-					{
-						return TypeFactory.GenericSortedSet(Role, ReferencedPropertyName, Comparer, this.GenericArguments[0]);
-					}
-					else if (HasOrder)
-					{
-						return TypeFactory.GenericOrderedSet(Role, ReferencedPropertyName, this.GenericArguments[0]);
-					}
-					else
-					{
-						return TypeFactory.GenericSet(Role, ReferencedPropertyName, this.GenericArguments[0]);
-					}
+					elementType = this.GenericArguments[0];
+					//throw new NotSupportedException("Only generic sets are supported.");
 				}
-				// Non-generic
+
 				if (IsSorted)
 				{
-					return TypeFactory.SortedSet(Role, ReferencedPropertyName, Embedded, (IComparer) Comparer);
+					return TypeFactory.GenericSortedSet(Role, ReferencedPropertyName, Comparer, elementType);
 				}
 				else if (HasOrder)
 				{
-					return TypeFactory.OrderedSet(Role, ReferencedPropertyName, Embedded);
+					return TypeFactory.GenericOrderedSet(Role, ReferencedPropertyName, elementType);
 				}
 				else
 				{
-					return TypeFactory.Set(Role, ReferencedPropertyName, Embedded);
+					return TypeFactory.GenericSet(Role, ReferencedPropertyName, elementType);
 				}
 			}
 		}
@@ -62,19 +58,27 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				foreach (Column col in Key.ColumnIterator)
+				foreach (ISelectable selectable in Key.ColumnIterator)
 				{
-					pk.AddColumn(col);
+					if (!selectable.IsFormula)
+					{
+						Column col = (Column)selectable;
+						pk.AddColumn(col);
+					}
 				}
 
 				bool nullable = false;
-				foreach (Column col in Element.ColumnIterator)
+				foreach (ISelectable selectable in Element.ColumnIterator)
 				{
-					if (col.IsNullable)
+					if (!selectable.IsFormula)
 					{
-						nullable = true;
+						Column col = (Column) selectable;
+						if (col.IsNullable)
+						{
+							nullable = true;
+						}
+						pk.AddColumn(col);
 					}
-					pk.AddColumn(col);
 				}
 
 				// some databases (Postgres) will tolerate nullable

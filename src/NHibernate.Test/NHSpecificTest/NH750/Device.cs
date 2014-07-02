@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
 {
@@ -31,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			set { _manifacturer = value; }
 		}
 
-		private IList _drives = new ArrayList();
+		private IList<Drive> _drives = new List<Drive>();
 
-		public IList Drives
+		public IList<Drive> Drives
 		{
 			get { return _drives; }
 			set { _drives = value; }

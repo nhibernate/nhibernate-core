@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -482,7 +483,7 @@ namespace NHibernate.Collection
 		{
 			var ownerEntityName = role == null ? "Unavailable" : StringHelper.Qualifier(role);
 			throw new LazyInitializationException(ownerEntityName, key, "failed to lazily initialize a collection"
-			                                      + (role == null ? "" : " of role: " + role) + ", " + message);
+												  + (role == null ? "" : " of role: " + role) + ", " + message);
 		}
 
 		/// <summary>
@@ -540,7 +541,7 @@ namespace NHibernate.Collection
 		public virtual bool SetCurrentSession(ISessionImplementor session)
 		{
 			if (session == this.session // NH: added to fix NH-704
-			    && session.PersistenceContext.ContainsCollection(this))
+				&& session.PersistenceContext.ContainsCollection(this))
 			{
 				return false;
 			}
@@ -556,7 +557,7 @@ namespace NHibernate.Collection
 					else
 					{
 						throw new HibernateException("Illegal attempt to associate a collection with two open sessions: "
-						                             + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, session.Factory));
+													 + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, session.Factory));
 					}
 				}
 				else
@@ -574,7 +575,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>
 		/// <see langword="false" /> by default since most collections can determine which rows need to be
-		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentBag"/>'s for <c>many-to-many</c>
+		/// individually updated/inserted/deleted.  Currently only <see cref="PersistentGenericBag{T}"/>'s for <c>many-to-many</c>
 		/// need to be recreated.
 		/// </returns>
 		public virtual bool NeedsRecreate(ICollectionPersister persister)
@@ -690,8 +691,7 @@ namespace NHibernate.Collection
 		/// belong to the collection, and a collection of instances
 		/// that currently belong, return a collection of orphans
 		/// </summary>
-		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName,
-		                                        ISessionImplementor session)
+		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
 		{
 			// short-circuit(s)
 			if (currentElements.Count == 0)
@@ -797,7 +797,7 @@ namespace NHibernate.Collection
 
 		public abstract IEnumerable Entries(ICollectionPersister persister);
 
-		public abstract ICollection GetSnapshot(ICollectionPersister persister);
+		public abstract object GetSnapshot(ICollectionPersister persister);
 
 		public abstract bool EqualsSnapshot(ICollectionPersister persister);
 
@@ -829,7 +829,7 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
 		public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
-		                                object owner);
+										object owner);
 
 		public abstract object GetSnapshotElement(object entry, int i);
 

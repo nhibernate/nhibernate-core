@@ -43,7 +43,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var mapper = new ConventionModelMapper();
 			var baseEntityType = typeof(BaseEntity);
 			mapper.IsEntity((t, declared) => baseEntityType.IsAssignableFrom(t) && baseEntityType != t && !t.IsInterface);
-			mapper.IsRootEntity((t, declared) => baseEntityType.Equals(t.BaseType));
+			mapper.IsRootEntity((t, declared) => baseEntityType == t.BaseType);
 			mapper.Class<BaseEntity>(
 				map =>
 				{

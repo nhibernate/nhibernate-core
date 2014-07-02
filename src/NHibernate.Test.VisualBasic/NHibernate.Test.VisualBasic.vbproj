@@ -13,7 +13,7 @@
     <AssemblyName>NHibernate.Test.VisualBasic</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\Tools\nunit\nunit-x86.exe</StartProgram>
@@ -51,7 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\lib\net\3.5\nunit.framework.dll</HintPath>
+      <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -73,6 +73,10 @@
   <ItemGroup>
     <Compile Include="Issues\NH2966\Client.vb" />
     <Compile Include="Issues\NH2966\Fixture.vb" />
+    <Compile Include="Issues\NH3302\Entity.vb" />
+    <Compile Include="Issues\NH3302\Fixture.vb" />
+    <Compile Include="Issues\NH2963\Entity.vb" />
+    <Compile Include="Issues\NH2963\Fixture.vb" />
     <Compile Include="Issues\NH0000\Entity.vb" />
     <Compile Include="Issues\NH0000\Fixture.vb" />
     <Compile Include="Issues\IssueTestCase.vb" />
@@ -117,7 +121,9 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="NHibernate.Test.VisualBasic.build" />
+    <None Include="NHibernate.Test.VisualBasic.build">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
@@ -137,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Issues\NH2966\Issues.NH2966.Mappings.hbm.xml" />
+    <EmbeddedResource Include="Issues\NH3302\Issues.NH3302.Mappings.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

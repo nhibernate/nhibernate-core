@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -42,7 +41,7 @@ namespace NHibernate.Mapping
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		private readonly ISet<string> synchronizedTables = new HashedSet<string>();
+		private readonly ISet<string> synchronizedTables = new HashSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -869,22 +868,26 @@ namespace NHibernate.Mapping
 							// property
 							property = identifierProperty;
 						}
-						else if (identifierProperty == null && Identifier != null && typeof(Component).IsInstanceOfType(Identifier))
+						else if (identifierProperty == null)
 						{
-							// we have an embedded composite identifier
-							try
+							var component = Identifier as Component;
+							if (component != null)
 							{
-								identifierProperty = GetProperty(element, ((Component)Identifier).PropertyIterator);
-								if (identifierProperty != null)
+								// we have an embedded composite identifier
+								try
 								{
-									// the root of the incoming property path matched one
-									// of the embedded composite identifier properties
-									property = identifierProperty;
+									identifierProperty = GetProperty(element, component.PropertyIterator);
+									if (identifierProperty != null)
+									{
+										// the root of the incoming property path matched one
+										// of the embedded composite identifier properties
+										property = identifierProperty;
+									}
 								}
-							}
-							catch (MappingException)
-							{
-								// ignore it...
+								catch (MappingException)
+								{
+									// ignore it...
+								}
 							}
 						}
 
@@ -1105,7 +1108,7 @@ namespace NHibernate.Mapping
 
 		protected internal virtual void CheckColumnDuplication()
 		{
-			HashedSet<string> cols = new HashedSet<string>();
+			HashSet<string> cols = new HashSet<string>();
 			if (IdentifierMapper == null)
 			{
 				//an identifier mapper => Key will be included in the NonDuplicatedPropertyIterator

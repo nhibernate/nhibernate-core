@@ -56,6 +56,8 @@
 			define="${current.build.defines}"
 			debug="${build.debug}"
 			keyfile="${key.file}"
+			nostdlib="true"
+			noconfig="true"
 			output="${bin.dir}/${project::get-name()}.dll"
 			if="${sign}"
 		>
@@ -68,6 +70,8 @@
 			target="library"
 			define="${current.build.defines}"
 			debug="${build.debug}"
+			nostdlib="true"
+			noconfig="true"
 			output="${bin.dir}/${project::get-name()}.dll"
 			unless="${sign}"
 		>
@@ -100,6 +104,7 @@
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 			<imports refid="project.imports" />
+			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
 		</vbc>
 
 		<vbc 
@@ -114,6 +119,7 @@
 			<references refid="project.references" />
 			<resources refid="project.resources" />
 			<imports refid="project.imports" />
+			<arg line="/sdkpath:&quot;${referenceassemblies.dir}&quot;"/>
 		</vbc>
 		
 		<copy 
@@ -133,6 +139,8 @@
 			define="${current.build.defines}" 
 			debug="${build.debug}" 
 			keyfile="${key.file}"
+			nostdlib="true"
+			noconfig="true"
 			output="${project.output}" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			if="${sign}"
@@ -150,6 +158,8 @@
 			target="library" 
 			define="${current.build.defines}" 
 			debug="${build.debug}" 
+			nostdlib="true"
+			noconfig="true"
 			output="${project.output}" 
 			doc="${bin.dir}/${project::get-name()}.xml"
 			unless="${sign}"
@@ -208,8 +218,8 @@
 		<property overwrite="false" name="assembly.product" value="${project::get-name()}" />
 		<property overwrite="false" name="assembly.company" value="${project.company}" />
 		<property overwrite="false" name="assembly.title" value="${project::get-name()}" />
-		<property overwrite="false" name="assembly.version" value="${project.version.numeric}" />
-		<property overwrite="false" name="assembly.version.informational" value="${project.version.numeric}" />
+		<property overwrite="false" name="assembly.version" value="${project.default-assembly-version}" />
+		<property overwrite="false" name="assembly.version.informational" value="${project.version}" />
 		<property overwrite="false" name="assembly.version.file" value="${project.version.numeric}" />
 		<property overwrite="false" name="assembly.copyright" value="Licensed under LGPL." />
 		<property overwrite="false" name="assembly.sign" value="${sign}" />
@@ -240,6 +250,7 @@
 				
 				<!-- For some reason, NAnt doesn't detect that APTCA has a public no-argument constructor -->
 				<attribute asis="true" type="AllowPartiallyTrustedCallersAttribute" if="${assembly.allow-partially-trusted-callers}" />
+				<attribute asis="true" type="SecurityRulesAttribute" value="SecurityRuleSet.Level1" if="${assembly.allow-partially-trusted-callers}" />
 			</attributes>
 		</asminfo>
 	</target>
@@ -249,7 +260,7 @@
 		<call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
 		<property name="common.run-tests.failonerror" value="${not property::exists(project::get-name() + '.IgnoreFail')}"/>
 		<exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml " />
+			<arg line="${bin.dir}/${project::get-name()}.dll /xml:${testresults.dir}/${project::get-name()}.dll-results.xml /framework:${framework::get-target-framework()}" />
 		</exec>
 
 		<!--<nunit2>
@@ -285,6 +296,14 @@
 		<xmlpoke file="${app.config}"
 			xpath="//*/hbm:property[@name='dialect']"
 			value="${nhibernate.dialect}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='command_timeout']"
+			value="${nhibernate.command_timeout}">
 			<namespaces>
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>

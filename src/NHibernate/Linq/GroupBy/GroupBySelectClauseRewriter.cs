@@ -1,19 +1,20 @@
 using System;
 using System.Linq.Expressions;
-using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Parsing;
+using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.GroupBy
 {
-	internal class GroupBySelectClauseRewriter : NhExpressionTreeVisitor
+	internal class GroupBySelectClauseRewriter : ExpressionTreeVisitor
 	{
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{
 			var visitor = new GroupBySelectClauseRewriter(groupBy, model);
-			return visitor.VisitExpression(expression);
+			return TransparentIdentifierRemovingExpressionTreeVisitor.ReplaceTransparentIdentifiers(visitor.VisitExpression(expression));
 		}
 
 		private readonly GroupResultOperator _groupBy;
@@ -37,17 +38,6 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitMemberExpression(MemberExpression expression)
 		{
-			var parent = expression.Expression as MemberExpression;
-
-			Expression result;
-			if (parent != null &&
-				parent.Member.Name == "Key" &&
-				IsMemberOfModel(parent) &&
-				TryFindTransparentPropertyOfAnonymousObject(_groupBy.KeySelector, expression.Member.Name, out result))
-			{
-				return result;
-			}
-
 			if (!IsMemberOfModel(expression))
 			{
 				return base.VisitMemberExpression(expression);
@@ -66,35 +56,13 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
-			// If ElementSelector is NewExpression, then search for member of name "get_" + originalMemberExpression.Member.Name
-			if (TryFindTransparentPropertyOfAnonymousObject(elementSelector, expression.Member.Name, out result))
-				return result;
+			if (elementSelector is NewExpression && elementSelector.Type == expression.Expression.Type)
+			{
+				//TODO: probably we should check this with a visitor
+				return Expression.MakeMemberAccess(elementSelector, expression.Member);
+			}
 
 			throw new NotImplementedException();
-		}
-
-		private static bool TryFindTransparentPropertyOfAnonymousObject(Expression expression, string memberName, out Expression result)
-		{
-			// This method bypasses usage of anonymous object properties.
-			// For ex. `new { a = SomeProperty, b = OtherProperty, c = OneMoreProperty }.a` would be transformed to
-			// `SomeProperty`
-			// TODO - this wouldn't handle nested initialisers.  Should do a tree walk to find the correct member
-			var newExpression = expression as NewExpression;
-			if (newExpression != null)
-			{
-				var i = 0;
-				foreach (var member in newExpression.Members)
-				{
-					if (member.Name == "get_" + memberName)
-					{
-						result = newExpression.Arguments[i];
-						return true;
-					}
-					i++;
-				}
-			}
-			result = null;
-			return false;
 		}
 
 		// TODO - dislike this code intensly.  Should probably be a tree-walk in its own right

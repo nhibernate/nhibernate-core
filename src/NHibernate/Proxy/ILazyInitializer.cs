@@ -84,7 +84,7 @@ namespace NHibernate.Proxy
 		/// Associate the proxy with the given session.
 		///
 		/// Care should be given to make certain that the proxy is added to the session's persistence context as well
-		/// to maintain the symmetry of the association.  That must be done seperately as this method simply sets an
+		/// to maintain the symmetry of the association.  That must be done separately as this method simply sets an
 		/// internal reference.  We do also check that if there is already an associated session that the proxy
 		/// reference was removed from that previous session's persistence context.
 		/// </summary>

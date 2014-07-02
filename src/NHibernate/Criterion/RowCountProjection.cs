@@ -25,11 +25,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlStringBuilder result = new SqlStringBuilder()
-				.Add("count(*) as y")
-				.Add(position.ToString())
-				.Add("_");
-			return result.ToSqlString();
+			return new SqlString("count(*) as y", position.ToString(), "_");
 		}
 
 		public override string ToString()

@@ -54,19 +54,25 @@ namespace NHibernate.Linq.Functions
 									   ReflectionHelper.GetMethodDefinition(() => Math.Ceiling(default(double))),
 									   ReflectionHelper.GetMethodDefinition(() => Math.Truncate(default(decimal))),
 									   ReflectionHelper.GetMethodDefinition(() => Math.Truncate(default(double))),
+
+									   ReflectionHelper.GetMethodDefinition(() => Math.Pow(default(double), default(double))),
 								   };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression expression, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			string function = method.Name.ToLowerInvariant();
+
+			if (function == "pow")
+				function = "power";
+
 			HqlExpression firstArgument = visitor.Visit(arguments[0]).AsExpression();
 
 			if (arguments.Count == 2)
 			{
 				return treeBuilder.MethodCall(function, firstArgument, visitor.Visit(arguments[1]).AsExpression());
 			}
-
+			
 			return treeBuilder.MethodCall(function, firstArgument);
 		}
 	}

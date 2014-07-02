@@ -3,75 +3,46 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
-using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public class ProcessNonAggregatingGroupBy : IResultOperatorProcessor<NonAggregatingGroupBy>
-    {
-        public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
-        {
-            var tSource = queryModelVisitor.Model.SelectClause.Selector.Type;
-            var tKey = resultOperator.GroupBy.KeySelector.Type;
-            var tElement = resultOperator.GroupBy.ElementSelector.Type;
+	public class ProcessNonAggregatingGroupBy : IResultOperatorProcessor<NonAggregatingGroupBy>
+	{
+		public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
+		{
+			var selector = queryModelVisitor.Model.SelectClause.Selector;
+			var keySelector = resultOperator.GroupBy.KeySelector;
+			var elementSelector = resultOperator.GroupBy.ElementSelector;
 
-            // Stuff in the group by that doesn't map to HQL.  Run it client-side
-            var listParameter = Expression.Parameter(typeof(IEnumerable<object>), "list");
+			var sourceType = selector.Type;
+			var keyType = keySelector.Type;
+			var elementType = elementSelector.Type;
 
-            ParameterExpression itemParam = Expression.Parameter(tSource, "item");
-            Expression keySelectorSource = itemParam;
+			// Stuff in the group by that doesn't map to HQL.  Run it client-side
+			var listParameter = Expression.Parameter(typeof(IEnumerable<object>), "list");
 
-            if (tSource != SourceOf(resultOperator.GroupBy.KeySelector))
-            {
-                keySelectorSource = Expression.MakeMemberAccess(itemParam,
-                                                                tSource.GetMember(
-                                                                    ((QuerySourceReferenceExpression)
-                                                                     resultOperator.GroupBy.KeySelector).ReferencedQuerySource.
-                                                                        ItemName)[0]);
-            }
+			var keySelectorExpr = ReverseResolvingExpressionTreeVisitor.ReverseResolve(selector, keySelector);
 
+			var elementSelectorExpr = ReverseResolvingExpressionTreeVisitor.ReverseResolve(selector, elementSelector);
 
-            Expression keySelector = new GroupByKeySelectorVisitor(keySelectorSource).Visit(resultOperator.GroupBy.KeySelector);
+			var groupByMethod = EnumerableHelper.GetMethod("GroupBy",
+														   new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) },
+														   new[] { sourceType, keyType, elementType });
 
-            Expression elementSelectorSource = itemParam;
+			var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { sourceType });
 
-            if (tSource != SourceOf(resultOperator.GroupBy.ElementSelector))
-            {
-                elementSelectorSource = Expression.MakeMemberAccess(itemParam,
-                                                                    tSource.GetMember(
-                                                                        ((QuerySourceReferenceExpression)
-                                                                         resultOperator.GroupBy.ElementSelector).ReferencedQuerySource.
-                                                                            ItemName)[0]);
-            }
+			var toList = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { resultOperator.GroupBy.ItemType });
 
-            Expression elementSelector = new GroupByKeySelectorVisitor(elementSelectorSource).Visit(resultOperator.GroupBy.ElementSelector);
+			Expression castToItemExpr = Expression.Call(castToItem, listParameter);
 
-            var groupByMethod = EnumerableHelper.GetMethod("GroupBy",
-                                                           new[] { typeof(IEnumerable<>), typeof(Func<,>), typeof(Func<,>) },
-                                                           new[] { tSource, tKey, tElement });
+			var groupByExpr = Expression.Call(groupByMethod, castToItemExpr, keySelectorExpr, elementSelectorExpr);
 
-            var castToItem = EnumerableHelper.GetMethod("Cast", new[] { typeof(IEnumerable) }, new[] { tSource });
+			var toListExpr = Expression.Call(toList, groupByExpr);
 
-            var toList = EnumerableHelper.GetMethod("ToList", new[] { typeof(IEnumerable<>) }, new[] { resultOperator.GroupBy.ItemType });
+			var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
 
-            LambdaExpression keySelectorExpr = Expression.Lambda(keySelector, itemParam);
-
-            LambdaExpression elementSelectorExpr = Expression.Lambda(elementSelector, itemParam);
-
-            Expression castToItemExpr = Expression.Call(castToItem, listParameter);
-
-            var groupByExpr = Expression.Call(groupByMethod, castToItemExpr, keySelectorExpr, elementSelectorExpr);
-
-            var toListExpr = Expression.Call(toList, groupByExpr);
-
-            var lambdaExpr = Expression.Lambda(toListExpr, listParameter);
-
-            tree.AddListTransformer(lambdaExpr);
-        }
-
-        private static System.Type SourceOf(Expression keySelector)
-        {
-            return new GroupByKeySourceFinder().Visit(keySelector).Type;
-        }
-    }
+			tree.AddListTransformer(lambdaExpr);
+		}
+	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.ExceptionsTest
 {
@@ -8,7 +7,7 @@ namespace NHibernate.Test.ExceptionsTest
 	{
 		private long id;
 		private string username;
-		private ISet<Group> memberships = new HashedSet<Group>();
+		private ISet<Group> memberships = new HashSet<Group>();
 
 		public virtual long Id
 		{

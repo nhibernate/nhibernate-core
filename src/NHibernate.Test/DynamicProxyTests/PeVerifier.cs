@@ -31,7 +31,11 @@ namespace NHibernate.Test.DynamicProxyTests
 				dir = Directory.GetParent(dir).FullName;
 			}
 
-			_peVerifyPath = Path.Combine(dir, "Tools/PEVerify/PEVerify.exe");
+			var versionFolder = "4.0";
+			if (Environment.Version.Major == 2)
+				versionFolder = "3.5";
+
+			_peVerifyPath = Path.Combine(dir, "Tools/PEVerify/" + versionFolder + "/PEVerify.exe");
 
 			if (!File.Exists(_peVerifyPath))
 				throw new Exception(string.Format("Could not find PEVerify.exe at {0}", _peVerifyPath));

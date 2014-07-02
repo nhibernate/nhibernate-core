@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -191,14 +190,16 @@ namespace NHibernate.Loader
 			// add edges
 			for (int i = 0; i < fields.Count; i++)
 			{
-				if (fields[i].DependsOn != null)
+				var dependentAlias = fields[i];
+				if (dependentAlias.DependsOn != null)
 				{
-					for (int j = 0; j < fields[i].DependsOn.Length; j++)
+					for (int j = 0; j < dependentAlias.DependsOn.Length; j++)
 					{
-						var dependentField = fields[i].DependsOn[j].ToLower();
-						if (_indexes.ContainsKey(dependentField))
+						var dependentField = dependentAlias.DependsOn[j].ToLower();
+						int end;
+						if (_indexes.TryGetValue(dependentField, out end))
 						{
-							g.AddEdge(i, _indexes[dependentField]);
+							g.AddEdge(i, end);
 						}
 					}
 				}
@@ -293,8 +294,8 @@ namespace NHibernate.Loader
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
-		                                       int propertyNumber, string alias, string path, bool nullable, int currentDepth,
-		                                       ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+											   int propertyNumber, string alias, string path, bool nullable, int currentDepth,
+											   ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
 			string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, 0);
@@ -303,7 +304,7 @@ namespace NHibernate.Loader
 			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
 
 			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable,
-			                                lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
+											lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
 
 			AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 		}
@@ -322,12 +323,12 @@ namespace NHibernate.Loader
 				if (type.IsAssociationType)
 				{
 					WalkEntityAssociationTree((IAssociationType) type, persister, i, alias, path,
-					                          persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
+											  persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
 				}
 				else if (type.IsComponentType)
 				{
 					WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)),
-					                  currentDepth, associationTypeSQLInfo);
+									  currentDepth, associationTypeSQLInfo);
 				}
 			}
 		}
@@ -336,7 +337,7 @@ namespace NHibernate.Loader
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
 		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
-		                                 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			IType[] types = componentType.Subtypes;
 			string[] propertyNames = componentType.PropertyNames;
@@ -354,8 +355,8 @@ namespace NHibernate.Loader
 					bool[] propertyNullability = componentType.PropertyNullability;
 
 					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
-					                                propertyNullability == null || propertyNullability[i], currentDepth,
-					                                componentType.GetCascadeStyle(i));
+													propertyNullability == null || propertyNullability[i], currentDepth,
+													componentType.GetCascadeStyle(i));
 
 					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 				}
@@ -816,7 +817,7 @@ namespace NHibernate.Loader
 			aliases = new String[joins];
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
-			lockModeArray = ArrayHelper.FillArray(lockMode, joins);
+			lockModeArray = ArrayHelper.Fill(lockMode, joins);
 
 			int i = 0;
 			int j = 0;

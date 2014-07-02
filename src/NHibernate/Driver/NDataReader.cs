@@ -594,10 +594,9 @@ namespace NHibernate.Driver
 				// interface, see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfSystemDataIDataRecordClassItemTopic1.asp.
 				// This is necessary for databases that don't preserve the case of field names when
 				// they are created without quotes (e.g. DB2, PostgreSQL).
-				if (fieldNameToIndex.ContainsKey(colName))
-				{
-					return fieldNameToIndex[colName];
-				}
+				int value;
+				if (fieldNameToIndex.TryGetValue(colName, out value))
+					return value;
 
 				foreach (KeyValuePair<string, int> pair in fieldNameToIndex)
 				{

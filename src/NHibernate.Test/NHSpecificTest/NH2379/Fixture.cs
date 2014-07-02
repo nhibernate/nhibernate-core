@@ -109,6 +109,60 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 		}
 
 		[Test]
+		public void InnerJoinWithRestriction()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// inner join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			//         and orderlines1_.Name like ('Order Line 3') 
+			// 
+
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = (from o in session.Query<Order>()
+							  from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3"))
+							  select new { OrderId = o.Id, OrderLineId = (Guid?)ol.Id }).ToList();
+
+				Assert.AreEqual(2, result.Count);
+			}
+		}
+
+		[Test]
+		public void InnerJoinWithOutermostRestriction()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// inner join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = (from o in session.Query<Order>()
+							  from ol in o.OrderLines
+							  where ol.Name.StartsWith("Order Line 3")
+							  select new { OrderId = o.Id, OrderLineId = (Guid?)ol.Id }).ToList();
+
+				Assert.AreEqual(2, result.Count);
+			}
+		}
+
+		[Test]
 		public void LeftOuterJoin()
 		{
 			// 
@@ -162,6 +216,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 		[Test]
 		public void LeftOuterJoinWithOuterRestriction()
 		{
+			//TODO: should it be an inner join? As .DefaultIfEmpty() does not make any sense here.
+
 			// 
 			// select
 			//     order0_.Id as col_0_0_,
@@ -180,6 +236,34 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Name.StartsWith("Order Line 3"))
+							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+
+				Assert.AreEqual(2, result.Count);
+			}
+		}
+
+		[Test]
+		public void LeftOuterJoinWithOutermostRestriction()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = (from o in session.Query<Order>()
+							  from ol in o.OrderLines.DefaultIfEmpty()
+							  where ol.Name.StartsWith("Order Line 3")
 							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
 
 				Assert.AreEqual(2, result.Count);

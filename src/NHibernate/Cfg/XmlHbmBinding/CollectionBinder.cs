@@ -157,7 +157,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (!string.IsNullOrEmpty(collectionMapping.PersisterQualifiedName))
 			{
 				model.CollectionPersisterClass = ClassForNameChecked(collectionMapping.PersisterQualifiedName, mappings,
-				                                                     "could not instantiate collection persister class: {0}");
+																	 "could not instantiate collection persister class: {0}");
 			}
 
 			if(!string.IsNullOrEmpty(collectionMapping.CollectionType))
@@ -192,8 +192,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				//TABLE
 				string tableName = !string.IsNullOrEmpty(collectionMapping.Table)
-				                   	? mappings.NamingStrategy.TableName(collectionMapping.Table)
-				                   	: mappings.NamingStrategy.PropertyToTableName(className, path);
+									? mappings.NamingStrategy.TableName(collectionMapping.Table)
+									: mappings.NamingStrategy.PropertyToTableName(className, path);
 
 				string schema = string.IsNullOrEmpty(collectionMapping.Schema) ? mappings.SchemaName : collectionMapping.Schema;
 				string catalog = string.IsNullOrEmpty(collectionMapping.Catalog) ? mappings.CatalogName : collectionMapping.Catalog;
@@ -233,7 +233,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				isGeneric = collectionType.IsGenericType;
 			}
 
-			model.IsGeneric = isGeneric ?? false;
+			model.IsGeneric = isGeneric.GetValueOrDefault();
 
 			if (model.IsGeneric)
 			{
@@ -506,8 +506,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 		}
 
-		private void BindListSecondPass(HbmList listMapping, List model,
-			IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
+		private void BindListSecondPass(HbmList listMapping, List model, IDictionary<string, PersistentClass> persistentClasses, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			BindCollectionSecondPass(listMapping, model, persistentClasses, inheritedMetas);
 
@@ -515,10 +514,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			BindCollectionIndex(listMapping, model);
 			if (listMapping.ListIndex != null && !string.IsNullOrEmpty(listMapping.ListIndex.@base))
 			{
-					model.BaseIndex = Convert.ToInt32(listMapping.ListIndex.@base);
+				model.BaseIndex = Convert.ToInt32(listMapping.ListIndex.@base);
 			}
 
-			if (model.IsOneToMany && !model.Key.IsNullable && !model.IsInverse)
+			if (NeedBackref(model))
 			{
 				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
@@ -566,14 +565,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				iv = new SimpleValue(model.CollectionTable);
 				new ValuePropertyBinder(iv, Mappings).BindSimpleValue(listMapping.ListIndex,
-				                                                      IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
+																	  IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 			}
 			else if (listMapping.Index != null)
 			{
 				iv = new SimpleValue(model.CollectionTable);
 				listMapping.Index.type = NHibernateUtil.Int32.Name;
 				new ValuePropertyBinder(iv, Mappings).BindSimpleValue(listMapping.Index, IndexedCollection.DefaultIndexColumnName,
-				                                                      model.IsOneToMany);
+																	  model.IsOneToMany);
 			}
 			if (iv != null)
 			{
@@ -634,7 +633,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				var value = new SimpleValue(model.CollectionTable);
 				new ValuePropertyBinder(value, Mappings).BindSimpleValue(indexMapping, IndexedCollection.DefaultIndexColumnName,
-				                                                         model.IsOneToMany);
+																		 model.IsOneToMany);
 				model.Index = value;
 				if (string.IsNullOrEmpty(model.Index.TypeName))
 					throw new MappingException("map index element must specify a type: " + model.Role);
@@ -680,7 +679,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			bool indexIsFormula = model.Index.ColumnIterator.Any(x=> x.IsFormula);
-			if (model.IsOneToMany && !model.Key.IsNullable && !model.IsInverse && !indexIsFormula)
+			if (NeedBackref(model) && !indexIsFormula)
 			{
 				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
@@ -790,12 +789,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			
 			BindCache(collectionMapping.Cache, model);
 
-			if (model.IsOneToMany && !model.IsInverse && !model.Key.IsNullable)
+			if (NeedBackref(model))
 			{
 				// for non-inverse one-to-many, with a not-null fk, add a backref!
 				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
-				Backref prop = new Backref();
+				var prop = new Backref();
 				prop.Name = '_' + model.OwnerEntityName + "." + collectionMapping.Name + "Backref";
 				prop.IsUpdateable = false;
 				prop.IsSelectable = false;
@@ -811,7 +810,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var manyToMany = new ManyToOne(model.CollectionTable);
 			model.Element = manyToMany;
 			new ValuePropertyBinder(manyToMany, Mappings).BindSimpleValue(manyToManyMapping,
-			                                                           Mapping.Collection.DefaultElementColumnName, false);
+																	   Mapping.Collection.DefaultElementColumnName, false);
 			InitOuterJoinFetchSetting(manyToManyMapping, manyToMany);
 			var restrictedLaziness = manyToManyMapping.lazySpecified ? manyToManyMapping.lazy : (HbmRestrictedLaziness?) null;
 			InitLaziness(restrictedLaziness, manyToMany, true);
@@ -847,11 +846,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new TypeBinder(any, Mappings).Bind(manyToAnyMapping.idtype);
 			BindAnyMeta(manyToAnyMapping, any);
 			new ColumnsBinder(any, Mappings).Bind(manyToAnyMapping.Columns, true,
-			                                      () =>
-			                                      new HbmColumn
-			                                      	{
-			                                      		name = mappings.NamingStrategy.PropertyToColumnName(manyToAnyMapping.column1)
-			                                      	});
+												  () =>
+												  new HbmColumn
+													{
+														name = mappings.NamingStrategy.PropertyToColumnName(manyToAnyMapping.column1)
+													});
 		}
 
 		private void BindElement(HbmElement elementMapping, Mapping.Collection model)
@@ -901,7 +900,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				keyValue = (IKeyValue) model.Owner.GetProperty(propRef).Value;
 			}
 			var key = new DependantValue(model.CollectionTable, keyValue)
-			          	{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};
+						{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};
 
 			new ValuePropertyBinder(key, Mappings).BindSimpleValue(keyMapping, Mapping.Collection.DefaultKeyColumnName, model.IsOneToMany);
 
@@ -909,8 +908,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new MappingException("illegal use of an array as an identifier (arrays don't reimplement Equals)");
 			model.Key = key;
 
-			key.SetNullable(keyMapping.IsNullable.HasValue ? keyMapping.IsNullable.Value : true);
-			key.SetUpdateable(keyMapping.IsUpdatable.HasValue ? keyMapping.IsUpdatable.Value : true);
+			key.SetNullable(!keyMapping.IsNullable.HasValue || keyMapping.IsNullable.Value);
+			key.SetUpdateable(!keyMapping.IsUpdatable.HasValue || keyMapping.IsUpdatable.Value);
 			BindForeignKey(keyMapping.foreignkey, key);
 		}
 
@@ -929,7 +928,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var hasFilters = filters != null && filters.Length > 0;
 
 			if ((hasFilters || whereCondition != null) && collection.FetchMode == FetchMode.Join
-			    && collection.Element.FetchMode != FetchMode.Join)
+				&& collection.Element.FetchMode != FetchMode.Join)
 			{
 				throw new MappingException(
 					string.Format(
@@ -946,6 +945,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string access = propertyAccess ?? Mappings.DefaultAccess;
 
 			return containingType == null ? null : ReflectHelper.ReflectedPropertyClass(containingType, propertyName, access);
+		}
+
+		private static bool NeedBackref(Mapping.Collection model)
+		{
+			return model.IsOneToMany && !model.Key.IsNullable && !model.IsInverse;
 		}
 	}
 }

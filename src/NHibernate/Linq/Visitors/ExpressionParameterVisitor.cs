@@ -1,26 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Type;
+using Remotion.Linq.Parsing;
+using Remotion.Linq.Utilities;
 
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
 	/// Locates constants in the expression tree and generates parameters for each one
 	/// </summary>
-	public class ExpressionParameterVisitor : NhExpressionTreeVisitor
+	public class ExpressionParameterVisitor : ExpressionTreeVisitor
 	{
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
-		private readonly ISessionFactory _sessionFactory;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 
-		public ExpressionParameterVisitor(ISessionFactory sessionFactory)
+		private readonly ICollection<MethodBase> _pagingMethods = new HashSet<MethodBase>
+			{
+				ReflectionHelper.GetMethodDefinition(() => Queryable.Skip<object>(null, 0)),
+				ReflectionHelper.GetMethodDefinition(() => Queryable.Take<object>(null, 0)),
+				ReflectionHelper.GetMethodDefinition(() => Enumerable.Skip<object>(null, 0)),
+				ReflectionHelper.GetMethodDefinition(() => Enumerable.Take<object>(null, 0)),
+			};
+
+		public ExpressionParameterVisitor(ISessionFactoryImplementor sessionFactory)
 		{
 			_sessionFactory = sessionFactory;
 		}
 
-		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactory sessionFactory)
+		public static IDictionary<ConstantExpression, NamedParameter> Visit(Expression expression, ISessionFactoryImplementor sessionFactory)
 		{
 			var visitor = new ExpressionParameterVisitor(sessionFactory);
 			
@@ -31,10 +44,27 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitMethodCallExpression(MethodCallExpression expression)
 		{
+			var method = expression.Method.IsGenericMethod
+							 ? expression.Method.GetGenericMethodDefinition()
+							 : expression.Method;
+
+			if (_pagingMethods.Contains(method) && !_sessionFactory.Dialect.SupportsVariableLimit)
+			{
+				//TODO: find a way to make this code cleaner
+				var query = VisitExpression(expression.Arguments[0]);
+				var arg = expression.Arguments[1];
+
+				if (query == expression.Arguments[0])
+					return expression;
+
+				return Expression.Call(null, expression.Method, query, arg);
+			}
+
 			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
 			{
 				return expression;
 			}
+
 			return base.VisitMethodCallExpression(expression);
 		}
 

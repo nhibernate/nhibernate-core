@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 
@@ -25,7 +26,7 @@ namespace NHibernate.Test.Legacy
 				c2 = new C2();
 				c1.C2 = c2;
 				c2.C1 = c1;
-				c2.C1s = new ArrayList();
+				c2.C1s = new List<C1>();
 				c2.C1s.Add(c1);
 				c1.C2 = c2;
 				s.Save(c2);
@@ -242,8 +243,8 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			B b = new B();
 			s.Save(b);
-			Hashtable map = new Hashtable();
-			map.Add("3", 1);
+			IDictionary<string, string> map = new Dictionary<string, string>();
+			map.Add("3", "1");
 			b.Map = map;
 			s.Flush();
 			s.Delete(b);
@@ -252,8 +253,8 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			map = new Hashtable();
-			map.Add("3", 1);
+			map = new Dictionary<string, string>();
+			map.Add("3", "1");
 			b = new B();
 			b.Map = map;
 			s.Save(b);

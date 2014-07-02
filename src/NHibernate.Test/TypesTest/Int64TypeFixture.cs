@@ -36,9 +36,9 @@ namespace NHibernate.Test.TypesTest
 		{
 			Int64Type type = (Int64Type)NHibernateUtil.Int64;
 
-			Nullable<Int64> nullLong = null;
-			Nullable<Int64> valueLong = new Nullable<long>(5);
-			Nullable<long> fiveAgain = (long)5;
+			long? nullLong = null;
+			long? valueLong = 5;
+			long? fiveAgain = 5;
 			using (ISession s = OpenSession())
 			{
 				Assert.IsTrue(type.IsDirty(nullLong, valueLong, (ISessionImplementor)s), "should be dirty - null to '5'");

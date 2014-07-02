@@ -61,7 +61,7 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentException(name, "Undefined filter parameter [" + name + "]");
 			}
-			if (value != null && !type.ReturnedClass.IsAssignableFrom(value.GetType()))
+			if (value != null && !type.ReturnedClass.IsInstanceOfType(value))
 			{
 				throw new ArgumentException(name, "Incorrect type for parameter [" + name + "]");
 			}
@@ -131,9 +131,7 @@ namespace NHibernate.Impl
 			foreach (string parameterName in definition.ParameterNames)
 			{
 				if (!parameters.ContainsKey(parameterName))
-				{
-					throw new HibernateException("Filter [" + Name + "] parameter [" + parameterName + "] value not set");
-				}
+					throw new HibernateException(string.Format("Filter [{0}] parameter [{1}] value not set", Name, parameterName));
 			}
 		}
 	}

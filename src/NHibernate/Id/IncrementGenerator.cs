@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Exceptions;
+using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
-using NHibernate.Util;
-using System.Data.Common;
 
 namespace NHibernate.Id
 {
@@ -27,11 +27,11 @@ namespace NHibernate.Id
 	/// </remarks>
 	public class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
+		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
 
-		private long next;
-		private string sql;
-		private System.Type returnClass;
+		private long _next;
+		private SqlString _sql;
+		private System.Type _returnClass;
 
 		/// <summary>
 		///
@@ -49,9 +49,12 @@ namespace NHibernate.Id
 			if (!parms.TryGetValue("tables", out tableList))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.Tables, out tableList);
 			string[] tables = tableList.Split(", ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
 			if (!parms.TryGetValue("column", out column))
 				parms.TryGetValue(PersistentIdGeneratorParmsNames.PK, out column);
-			returnClass = type.ReturnedClass;
+
+			_returnClass = type.ReturnedClass;
+
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Schema, out schema);
 			parms.TryGetValue(PersistentIdGeneratorParmsNames.Catalog, out catalog);
 
@@ -72,7 +75,8 @@ namespace NHibernate.Id
 				column = "ids_." + column;
 			}
 
-			sql = "select max(" + column + ") from " + buf;
+			var sqlTxt = string.Format("select max({0}) from {1}", column, buf);
+			_sql = new SqlString(sqlTxt);
 		}
 
 		/// <summary>
@@ -84,54 +88,52 @@ namespace NHibernate.Id
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			if (sql != null)
+			if (_sql != null)
 			{
 				GetNext(session);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(next++, returnClass);
+			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
 		private void GetNext(ISessionImplementor session)
 		{
-			log.Debug("fetching initial value: " + sql);
+			Logger.Debug("fetching initial value: " + _sql);
 
 			try
 			{
-				IDbConnection conn = session.Factory.ConnectionProvider.GetConnection();
-				IDbCommand qps = conn.CreateCommand();
-				qps.CommandText = sql;
-				qps.CommandType = CommandType.Text;
+				var cmd = session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes);
+				IDataReader reader = null;
 				try
 				{
-					IDataReader rs = qps.ExecuteReader();
+					reader = session.Batcher.ExecuteReader(cmd);
 					try
 					{
-						if (rs.Read())
+						if (reader.Read())
 						{
-							next = !rs.IsDBNull(0) ? Convert.ToInt64(rs.GetValue(0)) + 1 : 1L;
+							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{
-							next = 1L;
+							_next = 1L;
 						}
-						sql = null;
-						log.Debug("first free id: " + next);
+						_sql = null;
+						Logger.Debug("first free id: " + _next);
 					}
 					finally
 					{
-						rs.Close();
+						reader.Close();
 					}
 				}
 				finally
 				{
-					session.Factory.ConnectionProvider.CloseConnection(conn);
+					session.Batcher.CloseCommand(cmd, reader);
 				}
 			}
 			catch (DbException sqle)
 			{
-				log.Error("could not get increment value", sqle);
+				Logger.Error("could not get increment value", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not fetch initial value for increment generator");
+												 "could not fetch initial value for increment generator");
 			}
 		}
 	}

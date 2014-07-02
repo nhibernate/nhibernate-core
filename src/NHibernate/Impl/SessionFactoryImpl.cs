@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Linq;
-using Iesi.Collections.Generic;
-
+using System.Runtime.Serialization;
+using System.Security;
+using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -16,6 +15,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
+using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
@@ -281,7 +281,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);
@@ -293,7 +293,7 @@ namespace NHibernate.Impl
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
-						roles = new HashedSet<string>();
+						roles = new HashSet<string>();
 						tmpEntityToCollectionRoleMap[entityName] = roles;
 					}
 					roles.Add(persister.Role);
@@ -419,6 +419,9 @@ namespace NHibernate.Impl
 
 		#region IObjectReference Members
 
+#if NET_4_0
+		[SecurityCritical]
+#endif
 		public object GetRealObject(StreamingContext context)
 		{
 			// the SessionFactory that was serialized only has values in the properties
@@ -487,10 +490,14 @@ namespace NHibernate.Impl
 		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 									ConnectionReleaseMode connectionReleaseMode)
 		{
+#pragma warning disable 618
+			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
+#pragma warning restore 618
+
 			return
 				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
 								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-								connectionReleaseMode);
+								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)
@@ -582,7 +589,7 @@ namespace NHibernate.Impl
 		public IType[] GetReturnTypes(String queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnTypes;
 		}
 
@@ -590,7 +597,7 @@ namespace NHibernate.Impl
 		public string[] GetReturnAliases(string queryString)
 		{
 			return
-				queryPlanCache.GetHQLQueryPlan(queryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
+				queryPlanCache.GetHQLQueryPlan(queryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>()).
 					ReturnMetadata.ReturnAliases;
 		}
 
@@ -731,7 +738,7 @@ namespace NHibernate.Impl
 			{
 				return false;
 			}
-			if (entityClass.Equals(implementorClass))
+			if (entityClass == implementorClass)
 			{
 				// It is possible to have multiple mappings for the same entity class, but with different entity names.
 				// When querying for a specific entity name, we should only return entities for the requested entity name
@@ -1138,7 +1145,7 @@ namespace NHibernate.Impl
 
 			// Check named HQL queries
 			log.Debug("Checking " + namedQueries.Count + " named HQL queries");
-			foreach (KeyValuePair<string, NamedQueryDefinition> entry in namedQueries)
+			foreach (var entry in namedQueries)
 			{
 				string queryName = entry.Key;
 				NamedQueryDefinition qd = entry.Value;
@@ -1147,7 +1154,7 @@ namespace NHibernate.Impl
 				{
 					log.Debug("Checking named query: " + queryName);
 					//TODO: BUG! this currently fails for named queries for non-POJO entities
-					queryPlanCache.GetHQLQueryPlan(qd.QueryString, false, new CollectionHelper.EmptyMapClass<string, IFilter>());
+					queryPlanCache.GetHQLQueryPlan(qd.QueryString.ToQueryExpression(), false, new CollectionHelper.EmptyMapClass<string, IFilter>());
 				}
 				catch (QueryException e)
 				{
@@ -1201,9 +1208,14 @@ namespace NHibernate.Impl
 
 		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
 		{
+#pragma warning disable 618
+			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
+#pragma warning restore 618
+
 			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
 												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
-												  settings.IsAutoCloseSessionEnabled, settings.ConnectionReleaseMode);
+												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
+												  settings.ConnectionReleaseMode);
 			if (sessionLocalInterceptor != null)
 			{
 				// NH specific feature
@@ -1226,8 +1238,6 @@ namespace NHibernate.Impl
 					return new ThreadStaticSessionContext(this);
 				case "web":
 					return new WebSessionContext(this);
-				case "managed_web":
-					return new ManagedWebSessionContext(this);
 				case "wcf_operation":
 					return new WcfOperationSessionContext(this);
 			}

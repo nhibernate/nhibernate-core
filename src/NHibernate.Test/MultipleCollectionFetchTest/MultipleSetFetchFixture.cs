@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-
-using Iesi.Collections;
-
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
@@ -15,14 +13,14 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 			get { return new string[] {"MultipleCollectionFetchTest.PersonSet.hbm.xml"}; }
 		}
 
-		protected override void AddToCollection(ICollection collection, Person person)
+		protected override void AddToCollection(ICollection<Person> persons, Person person)
 		{
-			((ISet) collection).Add(person);
+			((ISet<Person>) persons).Add(person);
 		}
 
-		protected override ICollection CreateCollection()
+		protected override ICollection<Person> CreateCollection()
 		{
-			return new HashedSet();
+			return new HashSet<Person>();
 		}
 	}
 }

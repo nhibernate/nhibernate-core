@@ -31,8 +31,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1061
 			// think this would be a huge problem.
 			// Having said that, if someone sees this and have a better idea to test,
 			// please feel free to change it.
-			FieldInfo sqlFieldInfo = generator.GetType().GetField("sql", BindingFlags.NonPublic | BindingFlags.Instance);
-			string sql = (string)sqlFieldInfo.GetValue(generator);
+			FieldInfo sqlFieldInfo = generator.GetType().GetField("_sql", BindingFlags.NonPublic | BindingFlags.Instance);
+			string sql = sqlFieldInfo.GetValue(generator).ToString();
 
 			Assert.AreEqual("select max(Id) from test.TestNH1061", sql);
 		}

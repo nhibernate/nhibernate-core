@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
 using System.Collections;
-using NHibernate.Metadata;
-using NHibernate.Type;
 using System.Reflection;
-using System.Collections.ObjectModel;
+using NHibernate.Util;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class VisitorUtil
+	public static class VisitorUtil
 	{
-		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
+		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
 			memberName = null;
 
@@ -34,12 +31,41 @@ namespace NHibernate.Linq.Visitors
 			if (member == null)
 				return false;
 
+			var memberPath = member.Member.Name;
 			var metaData = sessionFactory.GetClassMetadata(member.Expression.Type);
+
+			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
+			targetObject = member.Expression;
+			while (metaData == null && targetObject != null &&
+			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
+			        targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType))
+			{
+				System.Type memberType;
+				if (targetObject.NodeType == QuerySourceReferenceExpression.ExpressionType)
+				{
+					var querySourceExpression = (QuerySourceReferenceExpression) targetObject;
+					memberType = querySourceExpression.Type;
+				}
+				else if (targetObject.NodeType == ExpressionType.Parameter)
+				{
+					var parameterExpression = (ParameterExpression) targetObject;
+					memberType = parameterExpression.Type;
+				}
+				else //targetObject.NodeType == ExpressionType.MemberAccess
+				{
+					var memberExpression = ((MemberExpression) targetObject);
+					memberPath = memberExpression.Member.Name + "." + memberPath;
+					memberType = memberExpression.Type;
+					targetObject = memberExpression.Expression;
+				}
+				metaData = sessionFactory.GetClassMetadata(memberType);
+			}
+
 			if (metaData == null)
 				return false;
 
 			// IDictionary can be mapped as collection or component - is it mapped as a component?
-			var propertyType = metaData.GetPropertyType(member.Member.Name);
+			var propertyType = metaData.GetPropertyType(memberPath);
 			return (propertyType != null && propertyType.IsComponentType);
 		}
 
@@ -52,6 +78,28 @@ namespace NHibernate.Linq.Visitors
 		{
 			string memberName;
 			return IsDynamicComponentDictionaryGetter(expression, sessionFactory, out memberName);
+		}
+
+
+		public static bool IsNullConstant(Expression expression)
+		{
+			return expression is ConstantExpression &&
+			       expression.Type.IsNullableOrReference() &&
+			       ((ConstantExpression)expression).Value == null;
+		}
+
+
+		public static bool IsBooleanConstant(Expression expression, out bool value)
+		{
+			var constantExpr = expression as ConstantExpression;
+			if (constantExpr != null && constantExpr.Type == typeof (bool))
+			{
+				value = (bool) constantExpr.Value;
+				return true;
+			}
+
+			value = false; // Dummy value.
+			return false;
 		}
 	}
 }

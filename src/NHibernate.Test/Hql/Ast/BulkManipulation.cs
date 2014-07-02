@@ -431,7 +431,7 @@ namespace NHibernate.Test.Hql.Ast
 
 			DateTime initialVersion = entity.Version;
 
-			Thread.Sleep(300);
+			Thread.Sleep(1300);
 
 			s = OpenSession();
 			t = s.BeginTransaction();

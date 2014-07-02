@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -142,12 +143,21 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-		[Test]
-		[Ignore("Generates incorrect SQL. Reported as NH-3027.")]
+		[Test, KnownBug("NH-????"), Description("Discovered as part of NH-2560")]
+		public void SingleKeyPropertyGroupWithOrderByCount()
+		{
+			var result = db.Orders
+				.GroupBy(o => o.Customer)
+				.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
+				.Select(g => g.Key)
+				.ToList();
+
+			Assert.That(result.Count, Is.EqualTo(89));
+		}
+
+		[Test, KnownBug("NH-3027")]
 		public void SingleKeyPropertyGroupByEntityAndSelectEntity()
 		{
-			// NH-3027
-
 			var orderCounts = db.Orders
 				.GroupBy(o => o.Customer)
 				.Select(g => new { Customer = g.Key, OrderCount = g.Count() })
@@ -223,21 +233,86 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Count, Is.EqualTo(62));
 		}
 
+		[Test, KnownBug("NH-3025")]
+		public void SelectTupleKeyCountOfOrderLines()
+		{
+			var list = (from o in db.Orders.ToList()
+						group o by o.OrderDate
+						into g
+						select new
+								   {
+									   g.Key,
+									   Count = g.SelectMany(x => x.OrderLines).Count()
+								   }).ToList();
+
+			var query = (from o in db.Orders
+						group o by o.OrderDate
+						into g
+						select new
+								   {
+									   g.Key,
+									   Count = g.SelectMany(x => x.OrderLines).Count()
+								   }).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(481));
+			Assert.That(query, Is.EquivalentTo(list));
+		}
+
 		[Test]
 		public void GroupByTwoFieldsWhereOneOfThemIsTooDeep()
 		{
 			var query = (from ol in db.OrderLines
 						 let superior = ol.Order.Employee.Superior
-						 group ol by new {ol.Order.OrderId, SuperiorId = superior.EmployeeId}
+						 group ol by new { ol.Order.OrderId, SuperiorId = (int?)superior.EmployeeId }
 						 into temp
 						 select new
 									{
 										OrderId = (int?) temp.Key.OrderId,
-										SuperiorId = (int?) temp.Key.SuperiorId,
+										SuperiorId = temp.Key.SuperiorId,
 										Count = temp.Count(),
 									}).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void GroupByAndTake()
+		{
+			//NH-2566
+			var names = db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToList();
+			Assert.That(names.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void GroupByAndTake2()
+		{
+			//NH-2566
+			var results = (from o in db.Orders
+			               group o by o.Customer
+			               into g
+			               select g.Key.CustomerId)
+				.OrderBy(customerId => customerId)
+				.Skip(10)
+				.Take(10)
+				.ToList();
+			
+			Assert.That(results.Count, Is.EqualTo(10));
+		}
+
+		[Test, KnownBug("NH-????")]
+		public void GroupByAndAll()
+		{
+			//NH-2566
+			var namesAreNotEmpty = db.Users.GroupBy(p => p.Name).Select(g => g.Key).All(name => name.Length > 0);
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
+		[Test]
+		public void GroupByAndAny()
+		{
+			//NH-2566
+			var namesAreNotEmpty = !db.Users.GroupBy(p => p.Name).Select(g => g.Key).Any(name => name.Length == 0);
+			Assert.That(namesAreNotEmpty, Is.True);
 		}
 
 		[Test]
@@ -267,7 +342,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
 		}
-
 
 		[Test]
 		public void SelectSingleElementFromProductsGroupedByUnitPrice()

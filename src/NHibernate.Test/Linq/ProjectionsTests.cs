@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -144,8 +145,7 @@ namespace NHibernate.Test.Linq
 			var query = (from user in db.Users
 						 select user.Name).ToList();
 			Assert.AreEqual(3, query.Count);
-			Assert.AreEqual(3, query.Intersect(new[] { "ayende", "rahien", "nhibernate" })
-								   .ToList().Count);
+			Assert.AreEqual(3, query.Intersect(new[] { "ayende", "rahien", "nhibernate" }).Count());
 		}
 
 		[Test]
@@ -213,25 +213,181 @@ namespace NHibernate.Test.Linq
 		{
 			var query = db.Orders.SelectMany(o => o.OrderLines);
 			var result = query.ToList();
-			Assert.Pass();
+			Assert.That(result.Count, Is.EqualTo(2155));
 		}
 
 		[Test]
-		[Ignore("Broken, please fix. See NH-2707")]
 		public void CanProjectCollections()
 		{
 			var query = db.Orders.Select(o => o.OrderLines);
 			var result = query.ToList();
-			Assert.Pass();
+			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
 		[Test]
-		[Ignore("Broken, please fix. See NH-2707")]
 		public void CanProjectCollectionsInsideAnonymousType()
 		{
 			var query = db.Orders.Select(o => new { o.OrderId, o.OrderLines });
 			var result = query.ToList();
-			Assert.Pass();
+			Assert.That(result.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void ProjectAnonymousTypeWithCollection()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { o, o.OrderLines };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
+		}
+
+		[Test]
+		public void ProjectAnonymousTypeWithCollection1()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { o.OrderLines, o };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
+		}
+
+		[Test]
+		public void ProjectAnonymousTypeWithCollection2()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { o.OrderLines, A = 1, B = 2 };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void ProjectAnonymousTypeWithCollection3()
+		{
+			// NH-3333
+			// done by WCF DS: context.Orders.Expand(o => o.OrderLines) from the client 
+			var query = from o in db.Orders
+						select new { OrderLines = o.OrderLines.ToList() };
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+		}
+
+		[Test]
+		public void ProjectKnownTypeWithCollection()
+		{
+			var query = from o in db.Orders
+						select new ExpandedWrapper<Order, ISet<OrderLine>>
+							{
+								ExpandedElement = o,
+								ProjectedProperty0 = o.OrderLines,
+								Description = "OrderLine",
+								ReferenceDescription = "OrderLine"
+							};
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
+		}
+		
+		[Test]
+		public void ProjectKnownTypeWithCollection2()
+		{
+			var query = from o in db.Orders
+						select new ExpandedWrapper<Order, IEnumerable<OrderLine>>
+							{
+								ExpandedElement = o,
+								ProjectedProperty0 = o.OrderLines.Select(x => x),
+								Description = "OrderLine",
+								ReferenceDescription = "OrderLine"
+							};
+
+			var result = query.ToList();
+			Assert.That(result.Count, Is.EqualTo(830));
+			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
+		}
+
+		[Test]
+		public void ProjectNestedKnownTypeWithCollection()
+		{
+			var query = from o in db.Products
+				select new ExpandedWrapper<Product, ExpandedWrapper<Supplier, IEnumerable<Product>>>
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new ExpandedWrapper<Supplier, IEnumerable<Product>>
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products,
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
+			Assert.That(result[0].ExpandedElement.Supplier.Products,
+				Is.EquivalentTo(result[0].ProjectedProperty0.ProjectedProperty0));
+		}
+
+		[Test]
+		public void ProjectNestedAnonymousTypeWithCollection()
+		{
+			var query = from o in db.Products
+				select new
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products,
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
+			Assert.That(result[0].ExpandedElement.Supplier.Products,
+				Is.EquivalentTo(result[0].ProjectedProperty0.ProjectedProperty0));
+		}
+
+		[Test]
+		public void ProjectNestedAnonymousTypeWithProjectedCollection()
+		{
+			var query = from o in db.Products
+				select new
+				{
+					ExpandedElement = o,
+					ProjectedProperty0 = new
+					{
+						ExpandedElement = o.Supplier,
+						ProjectedProperty0 = o.Supplier.Products.Select(x => new {x.Name}),
+						Description = "Products",
+						ReferenceDescription = ""
+					},
+					Description = "Supplier",
+					ReferenceDescription = "Supplier"
+				};
+
+			var result = query.ToList();
+			Assert.That(result, Has.Count.EqualTo(77));
+			Assert.That(result.Single(x => x.ExpandedElement.ProductId == 1).ProjectedProperty0.ProjectedProperty0.Count(),
+				Is.EqualTo(3));
 		}
 
 		[Test]
@@ -354,6 +510,25 @@ namespace NHibernate.Test.Linq
 		private string FormatName(string name, DateTime? lastLoginDate)
 		{
 			return string.Format("User {0} logged in at {1}", name, lastLoginDate);
+		}
+
+
+		/// <summary>
+		/// This mimic classes in System.Data.Services.Internal.
+		/// </summary>
+		class ExpandedWrapper<TExpandedElement>
+		{
+			public TExpandedElement ExpandedElement { get; set; }
+			public string Description { get; set; }
+			public string ReferenceDescription { get; set; }
+		}
+
+		/// <summary>
+		/// This mimic classes in System.Data.Services.Internal.
+		/// </summary>
+		class ExpandedWrapper<TExpandedElement, TProperty0> : ExpandedWrapper<TExpandedElement>
+		{
+			public TProperty0 ProjectedProperty0 { get; set; }
 		}
 	}
 }

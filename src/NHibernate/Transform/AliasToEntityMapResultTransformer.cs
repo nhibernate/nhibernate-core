@@ -4,11 +4,11 @@ using System.Collections;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public class AliasToEntityMapResultTransformer : IResultTransformer
+	public class AliasToEntityMapResultTransformer : AliasedTupleSubsetResultTransformer
 	{
 		private static readonly object Hasher = new object();
 
-		public object TransformTuple(object[] tuple, string[] aliases)
+		public override object TransformTuple(object[] tuple, string[] aliases)
 		{
 			IDictionary result = new Hashtable();
 			for (int i = 0; i < tuple.Length; i++)
@@ -24,9 +24,15 @@ namespace NHibernate.Transform
 			return result;
 		}
 
-		public IList TransformList(IList collection)
+		public override IList TransformList(IList collection)
 		{
 			return collection;
+		}
+
+
+		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
+		{
+			return false;
 		}
 
 		public override bool Equals(object obj)
