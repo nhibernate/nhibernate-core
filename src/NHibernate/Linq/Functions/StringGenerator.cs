@@ -187,8 +187,8 @@ namespace NHibernate.Linq.Functions
 			{
 				return treeBuilder.MethodCall("locate",
 						visitor.Visit(arguments[0]).AsExpression(),
-						visitor.Visit(targetObject).AsExpression(),
-						treeBuilder.Constant(0));
+						visitor.Visit(targetObject).AsExpression());//,
+						//treeBuilder.Constant(0));
 			}
 			return treeBuilder.MethodCall("locate",
 					visitor.Visit(arguments[0]).AsExpression(),
