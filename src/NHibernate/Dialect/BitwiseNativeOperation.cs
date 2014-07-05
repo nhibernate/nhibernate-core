@@ -8,13 +8,13 @@ using NHibernate.Type;
 namespace NHibernate.Dialect
 {
 	[Serializable]
-	public class NativeBitwiseOperation : ISQLFunction
+	public class BitwiseNativeOperation : ISQLFunction
 	{
 		private readonly string _sqlToken;
         private Queue _args;
 		private SqlStringBuilder _sqlBuffer;
 
-		public NativeBitwiseOperation(string sqlToken)
+		public BitwiseNativeOperation(string sqlToken)
 		{
 			_sqlToken = sqlToken;
 		}

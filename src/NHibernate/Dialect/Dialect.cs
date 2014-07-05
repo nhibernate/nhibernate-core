@@ -113,11 +113,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(month from ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
-			//RegisterFunction("band", new SQLFunctionTemplate(NHibernateUtil.Int64, "?1 & ?2"));
-			RegisterFunction("band", new NativeBitwiseOpetration("&"));
-			RegisterFunction("bor", new NativeBitwiseOpetration("|"));
-			RegisterFunction("bxor", new NativeBitwiseOpetration("^"));
-			RegisterFunction("bnot", new NativeBitwiseOpetration("~"));
+			// Bitwise operations
+			RegisterFunction("band", new BitwiseNativeOperation("&"));
+			RegisterFunction("bor", new BitwiseNativeOperation("|"));
+			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
+			RegisterFunction("bnot", new BitwiseNativeOperation("~"));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
