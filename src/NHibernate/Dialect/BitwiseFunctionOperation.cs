@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
@@ -6,6 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Dialect
 {
+	[Serializable]
 	public class BitwiseFunctionOperation : ISQLFunction
 	{
 		private readonly string _functionName;
