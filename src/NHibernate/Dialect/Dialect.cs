@@ -113,6 +113,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(month from ?1)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(year from ?1)"));
 
+			//RegisterFunction("band", new SQLFunctionTemplate(NHibernateUtil.Int64, "?1 & ?2"));
+			RegisterFunction("band", new NativeBitwiseOpetration("&"));
+			RegisterFunction("bor", new NativeBitwiseOpetration("|"));
+			RegisterFunction("bxor", new NativeBitwiseOpetration("^"));
+			RegisterFunction("bnot", new NativeBitwiseOpetration("~"));
+
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
 			// register hibernate types for default use in scalar sqlquery type auto detection

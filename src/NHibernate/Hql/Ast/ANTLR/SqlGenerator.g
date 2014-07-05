@@ -305,10 +305,10 @@ additiveExpr
 	;
 
 bitwiseExpr
-	: ^(BAND expr { Out("&"); } nestedExpr)
-	| ^(BOR expr { Out("|"); } nestedExpr)
-	| ^(BXOR expr { Out("^"); } nestedExpr)
-	| ^(BNOT { Out("~"); } nestedExpr)	
+	: ^(BAND { BeginBitwiseOp("band"); } expr nestedExpr { EndBitwiseOp("band"); })
+	| ^(BOR { BeginBitwiseOp("bor"); } expr nestedExpr { EndBitwiseOp("bor"); })
+	| ^(BXOR { BeginBitwiseOp("bxor"); } expr nestedExpr { EndBitwiseOp("bxor"); })
+	| ^(BNOT { BeginBitwiseOp("bnot"); } nestedExpr { EndBitwiseOp("bnot"); })
 	;
 
 multiplicativeExpr

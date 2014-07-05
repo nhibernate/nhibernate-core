@@ -156,6 +156,7 @@
     <Compile Include="Dialect\MySQL55InnoDBDialect.cs" />
     <Compile Include="Dialect\MySQL5InnoDBDialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
+    <Compile Include="Dialect\NativeBitwiseOperation.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
     <Compile Include="Dialect\Schema\SchemaHelper.cs" />
