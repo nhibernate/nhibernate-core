@@ -220,6 +220,9 @@ namespace NHibernate.Linq.NestedSelects
 
 		private static Expression GetIdentifier(ISessionFactory sessionFactory, Expression expression)
 		{
+			if (expression.Type.IsPrimitive || expression.Type == typeof(string))
+				return expression;
+
 			var classMetadata = sessionFactory.GetClassMetadata(expression.Type);
 			if (classMetadata == null)
 				return Expression.Constant(null);

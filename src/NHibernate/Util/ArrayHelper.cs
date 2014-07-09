@@ -244,5 +244,23 @@ namespace NHibernate.Util
 			}
 			return true;
 		}
+
+		/// <summary>
+		/// Calculate a hash code based on the length and contents of the array.
+		/// The algorithm is such that if ArrayHelper.ArrayEquals(a,b) returns true,
+		/// then ArrayGetHashCode(a) == ArrayGetHashCode(b).
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		public static int ArrayGetHashCode<T>(T[] array)
+		{
+			int hc = array.Length;
+
+			foreach (var e in array)
+				hc = unchecked(hc*31 + e.GetHashCode());
+
+			return hc;
+		}
 	}
 }

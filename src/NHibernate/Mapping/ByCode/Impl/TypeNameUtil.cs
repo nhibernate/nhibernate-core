@@ -34,12 +34,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string typeAssemblyFullName = type.Assembly.FullName;
 			string typeNameSpace = type.Namespace;
 			string assembly = null;
-			if (!typeAssembly.Equals(mapDoc.assembly) && !typeAssemblyFullName.Equals(mapDoc.assembly))
+			if (typeAssembly != mapDoc.assembly && typeAssemblyFullName != mapDoc.assembly)
 			{
 				assembly = typeAssembly;
 			}
 			string @namespace = null;
-			if (!typeNameSpace.Equals(mapDoc.@namespace))
+			if (typeNameSpace != mapDoc.@namespace)
 			{
 				@namespace = typeNameSpace;
 			}

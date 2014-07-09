@@ -257,7 +257,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(qs.CacheHitCount, Is.EqualTo(1), "hit count should not go up since we are adding a resulttransformer");
+			Assert.That(qs.CacheHitCount, Is.EqualTo(2), "hit count should go up since the cache contains the result before the possible application of a resulttransformer");
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -266,7 +266,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(qs.CacheHitCount, Is.EqualTo(2), "hit count should go up since we are using the same resulttransformer");
+			Assert.That(qs.CacheHitCount, Is.EqualTo(3), "hit count should go up since we are using the same resulttransformer");
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -277,8 +277,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(qs.CacheHitCount, Is.EqualTo(3));
-			Assert.That(qs.CacheMissCount, Is.EqualTo(3));
+			Assert.That(qs.CacheHitCount, Is.EqualTo(4));
+			Assert.That(qs.CacheMissCount, Is.EqualTo(2));
 
 			Thread.Sleep(200);
 
@@ -294,10 +294,10 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				tx.Commit();
 			}
 
-			Assert.That(qs.CacheHitCount, Is.EqualTo(3));
-			Assert.That(qs.CacheMissCount, Is.EqualTo(4));
-			Assert.That(qs.CachePutCount, Is.EqualTo(4));
-			Assert.That(qs.ExecutionCount, Is.EqualTo(4));
+			Assert.That(qs.CacheHitCount, Is.EqualTo(4));
+			Assert.That(qs.CacheMissCount, Is.EqualTo(3));
+			Assert.That(qs.CachePutCount, Is.EqualTo(3));
+			Assert.That(qs.ExecutionCount, Is.EqualTo(3));
 			Assert.That(es.FetchCount, Is.EqualTo(0)); //check that it was being cached
 		}
 

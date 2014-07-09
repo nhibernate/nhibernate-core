@@ -68,7 +68,7 @@ namespace NHibernate.Cache
 			IList cacheable = new List<object>(result.Count + 1) {ts};
 			for (int i = 0; i < result.Count; i++)
 			{
-				if (returnTypes.Length == 1 && !key.HasResultTransformer)
+				if (returnTypes.Length == 1)
 				{
 					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
 				}
@@ -109,7 +109,7 @@ namespace NHibernate.Cache
 			Log.DebugFormat("returning cached query results for: {0}", key);
 			for (int i = 1; i < cacheable.Count; i++)
 			{
-				if (returnTypes.Length == 1 && !key.HasResultTransformer)
+				if (returnTypes.Length == 1)
 				{
 					returnTypes[0].BeforeAssemble(cacheable[i], session);
 				}
@@ -124,7 +124,7 @@ namespace NHibernate.Cache
 			{
 				try
 				{
-					if (returnTypes.Length == 1 && !key.HasResultTransformer)
+					if (returnTypes.Length == 1)
 					{
 						result.Add(returnTypes[0].Assemble(cacheable[i], session, null));
 					}

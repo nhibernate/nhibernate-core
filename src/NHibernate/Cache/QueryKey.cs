@@ -21,7 +21,7 @@ namespace NHibernate.Cache
 		private readonly int _maxRows = RowSelection.NoValue;
 		private readonly IDictionary<string, TypedValue> _namedParameters;
 		private readonly ISet<FilterKey> _filters;
-		private readonly IResultTransformer _customTransformer;
+		private readonly CacheableResultTransformer _customTransformer;
 		private readonly int _hashCode;
 
 		private int[] _multiQueriesFirstRows;
@@ -35,8 +35,9 @@ namespace NHibernate.Cache
 		/// <param name="queryString">The query string.</param>
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
+		/// <param name="customTransformer">The result transformer; should be null if data is not transformed before being cached.</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-						ISet<FilterKey> filters)
+		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
 		{
 			_factory = factory;
 			_sqlQueryString = queryString;
@@ -56,13 +57,13 @@ namespace NHibernate.Cache
 			}
 			_namedParameters = queryParameters.NamedParameters;
 			_filters = filters;
-			_customTransformer = queryParameters.ResultTransformer;
+			_customTransformer = customTransformer;
 			_hashCode = ComputeHashCode();
 		}
 
-		public bool HasResultTransformer
+		public CacheableResultTransformer ResultTransformer
 		{
-			get { return _customTransformer != null; }
+			get { return _customTransformer; }
 		}
 
 		public QueryKey SetFirstRows(int[] firstRows)

@@ -34,6 +34,14 @@ namespace NHibernate.Tuple.Entity
 		internal void OnDeserialized(StreamingContext context)
 		{
 			SetReflectionOptimizer();
+
+			if (optimizer != null)
+			{
+				// Also set the InstantiationOptimizer on the deserialized PocoInstantiator.
+				((PocoInstantiator)Instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
+			}
+
+			ClearOptimizerWhenUsingCustomAccessors();
 		}
 		protected void SetReflectionOptimizer()
 		{
@@ -62,10 +70,7 @@ namespace NHibernate.Tuple.Entity
 
 			Instantiator = BuildInstantiator(mappedEntity);
 
-			if (hasCustomAccessors)
-			{
-				optimizer = null;
-			}
+			ClearOptimizerWhenUsingCustomAccessors();
 
 			proxyValidator = Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
 		}
@@ -315,6 +320,14 @@ namespace NHibernate.Tuple.Entity
 		public override EntityMode EntityMode
 		{
 			get { return EntityMode.Poco; }
+		}
+
+		protected void ClearOptimizerWhenUsingCustomAccessors()
+		{
+			if (hasCustomAccessors)
+			{
+				optimizer = null;
+			}
 		}
 	}
 }
