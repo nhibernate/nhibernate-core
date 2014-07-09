@@ -194,5 +194,16 @@ namespace NHibernate.Dialect
 	    {
             get { return "drop "; }
 	    }
+
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "modify "; }
+        }
 	}
 }

@@ -438,6 +438,16 @@ namespace NHibernate.Dialect
             get { return "drop column "; }
 	    }
 
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "modify "; }
+        }
+
 	    public override string GenerateTemporaryTableName(String baseTableName)
 		{
 			string name = base.GenerateTemporaryTableName(baseTableName);
