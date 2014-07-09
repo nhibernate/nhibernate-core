@@ -276,6 +276,10 @@ namespace NHibernate.Dialect
 	    {
 	        get { return true; }
 	    }
+        public override string DropColumnString
+        {
+            get { return "drop "; }
+        }
 
 	    public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
 		{

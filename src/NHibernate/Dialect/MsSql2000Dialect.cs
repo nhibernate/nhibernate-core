@@ -503,6 +503,11 @@ namespace NHibernate.Dialect
 	        get { return true; }
 	    }
 
+	    public override string DropColumnString
+	    {
+            get { return "drop column "; }
+	    }
+
 	    public override bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character

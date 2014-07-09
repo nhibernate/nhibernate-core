@@ -2182,6 +2182,11 @@ namespace NHibernate.Dialect
 	        get { return false; }
 	    }
 
+	    public virtual string DropColumnString
+	    {
+            get { throw new NotSupportedException("No drop column syntax supported by Dialect"); }
+	    }
+
 		public virtual string DropForeignKeyString
 		{
 			get { return " drop constraint "; }

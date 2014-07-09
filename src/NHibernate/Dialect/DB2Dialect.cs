@@ -267,5 +267,9 @@ namespace NHibernate.Dialect
 	    {
 	        get { return true; }
 	    }
+        public override string DropColumnString
+        {
+            get { return "drop column "; }
+        }
 	}
 }

@@ -138,6 +138,11 @@ namespace NHibernate.Dialect
 	        get { return true; }
 	    }
 
+	    public override string DropColumnString
+	    {
+	        get { return "drop "; }
+	    }
+
 	    public override string Qualify(string catalog, string schema, string table)
 		{
 			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
