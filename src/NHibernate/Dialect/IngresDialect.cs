@@ -1,5 +1,4 @@
 using System.Data;
-using System.Runtime.Remoting.Messaging;
 using NHibernate.Cfg;
 
 namespace NHibernate.Dialect
