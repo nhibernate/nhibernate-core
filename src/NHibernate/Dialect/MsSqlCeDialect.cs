@@ -133,7 +133,12 @@ namespace NHibernate.Dialect
 			return querySqlString.Insert(GetAfterSelectInsertPoint(querySqlString), top);
 		}
 
-		public override string Qualify(string catalog, string schema, string table)
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string Qualify(string catalog, string schema, string table)
 		{
 			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
 			// similar to the SQLLite dialect.

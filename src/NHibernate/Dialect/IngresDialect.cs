@@ -1,4 +1,5 @@
 using System.Data;
+using System.Runtime.Remoting.Messaging;
 using NHibernate.Cfg;
 
 namespace NHibernate.Dialect
@@ -51,5 +52,10 @@ namespace NHibernate.Dialect
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.IngresDriver";
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
 	}
 }

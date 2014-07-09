@@ -184,5 +184,10 @@ namespace NHibernate.Dialect
 			}
 			return 0;
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
 	}
 }

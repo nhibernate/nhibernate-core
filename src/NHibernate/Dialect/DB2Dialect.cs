@@ -262,5 +262,10 @@ namespace NHibernate.Dialect
 		{
 			get { return " for read only with rs"; }
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
 	}
 }

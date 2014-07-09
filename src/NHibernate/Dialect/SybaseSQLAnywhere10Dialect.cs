@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.Remoting.Messaging;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
@@ -812,5 +813,10 @@ namespace NHibernate.Dialect
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
 	}
 }
