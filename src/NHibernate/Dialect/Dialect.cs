@@ -278,6 +278,11 @@ namespace NHibernate.Dialect
 
 		#region DDL support
 
+	    public virtual string BatchTerminator
+	    {
+	        get { return ""; }
+	    }
+
 		/// <summary>
 		/// Do we need to drop constraints before dropping tables in the dialect?
 		/// </summary>

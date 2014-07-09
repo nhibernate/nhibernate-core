@@ -518,6 +518,11 @@ namespace NHibernate.Dialect
 	        get { return "alter column "; }
 	    }
 
+	    public override string BatchTerminator
+	    {
+	        get { return "\r\nGO\r\n"; }
+	    }
+
 	    public override bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
