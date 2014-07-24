@@ -38,6 +38,7 @@ namespace NHibernate.Dialect
 
 		public FirebirdDialect()
 		{
+			RegisterKeywords();
 			RegisterColumnTypes();
 			RegisterFunctions();
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.FirebirdClientDriver";
@@ -268,9 +269,12 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		#region Private Members
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeyword("date");
+		}
 
-		private void RegisterColumnTypes()
+		protected virtual void RegisterColumnTypes()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
@@ -300,7 +304,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, "TIME");
 		}
 
-		private void RegisterFunctions()
+		protected virtual void RegisterFunctions()
 		{
 			OverrideStandardHQLFunctions();
 			RegisterFirebirdServerEmbeddedFunctions();
@@ -317,6 +321,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()
@@ -417,7 +422,5 @@ namespace NHibernate.Dialect
 		{
 			return dbType == DbType.Decimal && precision > MAX_DECIMAL_PRECISION;
 		}
-
-		#endregion
 	}
 }
