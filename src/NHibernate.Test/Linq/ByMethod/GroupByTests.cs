@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -143,16 +144,38 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-		[Test, KnownBug("NH-????"), Description("Discovered as part of NH-2560")]
+		[Test]
 		public void SingleKeyPropertyGroupWithOrderByCount()
 		{
-			var result = db.Orders
-				.GroupBy(o => o.Customer)
-				.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
-				.Select(g => g.Key)
-				.ToList();
+			// The problem with this test (as of 2014-07-25) is that the generated SQL will
+			// try to select columns that are not included in the group-by clause. But on MySQL and
+			// sqlite, it's apparently ok.
 
-			Assert.That(result.Count, Is.EqualTo(89));
+			// The try-catch in this clause aim to ignore the test on dialects where it shouldn't work,
+			// but give us a warning if it does start to work.
+
+			try
+			{
+				var result = db.Orders
+					.GroupBy(o => o.Customer)
+					.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
+					.Select(g => g.Key)
+					.ToList();
+
+				Assert.That(result.Count, Is.EqualTo(89));
+			}
+			catch (Exception)
+			{
+				if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+					throw;
+
+				Assert.Ignore("Known bug NH-????, discovered as part of NH-2560.");
+			}
+
+			if (Dialect is MySQLDialect || Dialect is SQLiteDialect)
+				return;
+
+			Assert.Fail("Unexpected success in test. Maybe something was fixed and the test needs to be updated?");
 		}
 
 		[Test, KnownBug("NH-3027")]
