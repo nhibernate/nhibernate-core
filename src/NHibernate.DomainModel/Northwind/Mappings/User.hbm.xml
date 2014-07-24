@@ -4,7 +4,7 @@
          proxy="IUser"
          >
     <id name="Id" column="UserId" type="Int32">
-      <generator class="native" />
+      <generator class="assigned" />
     </id>
 
     <property name="Name" type="AnsiString" />

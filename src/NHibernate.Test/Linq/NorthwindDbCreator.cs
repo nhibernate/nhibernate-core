@@ -34,6 +34,7 @@ namespace NHibernate.Test.Linq
 			{
 				new User("ayende", KnownDate)
 				{
+					Id = 1,
 					Role = roles[0],
 					InvalidLoginAttempts = 4,
 					Enum1 = EnumStoredAsString.Medium,
@@ -50,6 +51,7 @@ namespace NHibernate.Test.Linq
 				},
 				new User("rahien", new DateTime(1998, 12, 31))
 				{
+					Id = 2,
 					Role = roles[1],
 					InvalidLoginAttempts = 5,
 					Enum1 = EnumStoredAsString.Small,
@@ -60,6 +62,7 @@ namespace NHibernate.Test.Linq
 				},
 				new User("nhibernate", new DateTime(2000, 1, 1))
 				{
+					Id = 3,
 					InvalidLoginAttempts = 6,
 					LastLoginDate = DateTime.Now.AddDays(-1),
 					Enum1 = EnumStoredAsString.Medium,
@@ -71,11 +74,13 @@ namespace NHibernate.Test.Linq
 			{
 				new Timesheet
 				{
+					Id = 1,
 					SubmittedDate = KnownDate,
 					Submitted = true
 				},
 				new Timesheet
 				{
+					Id = 2,
 					SubmittedDate = KnownDate.AddDays(-1),
 					Submitted = false, 
 					Entries = new List<TimesheetEntry>
@@ -95,6 +100,7 @@ namespace NHibernate.Test.Linq
 				},
 				new Timesheet
 				{
+					Id = 3,
 					SubmittedDate = DateTime.Now.AddDays(1),
 					Submitted = true,
 					Entries = new List<TimesheetEntry>
