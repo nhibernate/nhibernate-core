@@ -79,6 +79,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
+
+			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 		}
 
 		public override string AddColumnString
