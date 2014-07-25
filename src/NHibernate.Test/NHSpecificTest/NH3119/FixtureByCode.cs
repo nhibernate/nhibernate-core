@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 				rc.Property(x => x.Name);
 				rc.Component(x => x.Component, c =>
 				{
-					c.Property(x => x.Value);
+					c.Property(x => x.Value, pmapper => pmapper.Column("`Value`"));
 				});
 			});
 
