@@ -3,7 +3,7 @@
 
 	<class name="OrderLine">
 		<id name="Id" generator="guid.comb" />
-		<property name="Count" />
+		<property name="Quantity" />
 	</class>
 
 </hibernate-mapping>

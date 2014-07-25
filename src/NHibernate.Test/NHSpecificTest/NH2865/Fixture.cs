@@ -13,10 +13,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2865
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new OrderLine {Count = "2"};
+				var e1 = new OrderLine {Quantity = "2"};
 				session.Save(e1);
 
-				var e2 = new OrderLine { Count = "3" };
+				var e2 = new OrderLine { Quantity = "3" };
 				session.Save(e2);
 
 				session.Flush();
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2865
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var result = session.Query<OrderLine>().Sum(l => int.Parse(l.Count));
+				var result = session.Query<OrderLine>().Sum(l => int.Parse(l.Quantity));
 
 				Assert.AreEqual(5, result);
 			}
