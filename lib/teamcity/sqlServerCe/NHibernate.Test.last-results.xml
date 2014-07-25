@@ -18164,7 +18164,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH479.Fixture.SaveOrUpdateCopyTest" executed="True" result="Error" success="False" asserts="0">
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH479.Fixture.MergeTest" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH479.Main][SQL: INSERT INTO Mains values ( )]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 28,Token in error = ) ]]]></message>

@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 		[Test]
 		public void CanProjectListOfStrings()
 		{
-			int id;
+			Guid id;
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{

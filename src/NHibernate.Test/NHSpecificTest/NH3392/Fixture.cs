@@ -25,22 +25,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
         public void ExpandSubCollectionWithEmbeddedCompositeID()
         {
             using (ISession s = OpenSession())
+            using (var tx = s.BeginTransaction())
             {
 
-                var jenny = new Mum { Name = "Jenny" };
-                s.Save(jenny);
-                var benny = new Dad { Name = "Benny" };
-                s.Save(benny);
-                var lenny = new Dad { Name = "Lenny" };
-                s.Save(lenny);
-                var jimmy = new Kid { Name = "Jimmy", MumId = jenny.Id, DadId = benny.Id };
-                s.Save(jimmy);
-                var timmy = new Kid { Name = "Timmy", MumId = jenny.Id, DadId = lenny.Id };
-                s.Save(timmy);
-                s.Flush();
+	            var jenny = new Mum {Name = "Jenny"};
+	            s.Save(jenny);
+	            var benny = new Dad {Name = "Benny"};
+	            s.Save(benny);
+	            var lenny = new Dad {Name = "Lenny"};
+	            s.Save(lenny);
+	            var jimmy = new Kid {Name = "Jimmy", MumId = jenny.Id, DadId = benny.Id};
+	            s.Save(jimmy);
+	            var timmy = new Kid {Name = "Timmy", MumId = jenny.Id, DadId = lenny.Id};
+	            s.Save(timmy);
+
+	            tx.Commit();
             }
 
-            using (var s = OpenSession())
+	        using (var s = OpenSession())
             {
                 var result=s.Query<Mum>().Select(x => new { x, x.Kids }).ToList();
                 Assert.That(result.Count, Is.EqualTo(1));
@@ -52,6 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
         public void ExpandSubCollectionWithCompositeID()
         {
             using (ISession s = OpenSession())
+			using (var tx = s.BeginTransaction())
             {
 
                 var jenny = new Mum { Name = "Jenny" };
@@ -64,7 +67,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
                 s.Save(jimmy);
                 var timmy = new FriendOfTheFamily { Name = "Timmy", Id = new MumAndDadId { MumId = jenny.Id, DadId = lenny.Id } };
                 s.Save(timmy);
-                s.Flush();
+
+                tx.Commit();
             }
 
             using (var s = OpenSession())
