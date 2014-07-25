@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
 
@@ -185,7 +186,9 @@ namespace NHibernate.Test.SystemTransactions
 				}
 			}
 
-			Assert.That(s1.IsOpen, Is.False);
+			// Transaction completion may happen asynchronously, so allow some delay.
+			Assert.That(() => s1.IsOpen, Is.False.After(500, 100));
+
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}
 
