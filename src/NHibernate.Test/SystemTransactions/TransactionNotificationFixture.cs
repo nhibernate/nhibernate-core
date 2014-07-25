@@ -157,37 +157,36 @@ namespace NHibernate.Test.SystemTransactions
 
 			var interceptor = new RecordingInterceptor();
 			ISession s1 = null;
-			ISession s2 = null;
 
 			using (var tx = new TransactionScope())
 			{
-				using (IDbConnection ownConnection1 = sessions.ConnectionProvider.GetConnection())
-				using (IDbConnection ownConnection2 = sessions.ConnectionProvider.GetConnection())
+				IDbConnection ownConnection1 = sessions.ConnectionProvider.GetConnection();
+
+				try
 				{
 					try
 					{
 						s1 = sessions.OpenSession(ownConnection1, interceptor);
-						s2 = sessions.OpenSession(ownConnection2, interceptor);
 
 						s1.CreateCriteria<object>().List();
-						s2.CreateCriteria<object>().List();
 					}
 					finally
 					{
 						if (s1 != null)
 							s1.Dispose();
-						if (s2 != null)
-							s2.Dispose();
 					}
 
 					if (doCommit)
 						tx.Complete();
 				}
+				finally
+				{
+					sessions.ConnectionProvider.CloseConnection(ownConnection1);
+				}
 			}
 
 			Assert.That(s1.IsOpen, Is.False);
-			Assert.That(s2.IsOpen, Is.False);
-			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(2));
+			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}
 
 	}
