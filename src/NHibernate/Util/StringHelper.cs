@@ -85,8 +85,14 @@ namespace NHibernate.Util
 
 		public static string Replace(string template, string placeholder, string replacement, bool wholeWords)
 		{
+			Predicate<string> isWholeWord = c => WhiteSpace.Contains(c) || ClosedParen.Equals(c) || Comma.Equals(c);
+			return ReplaceByPredicate(template, placeholder, replacement, wholeWords, isWholeWord);
+		}
+
+		private static string ReplaceByPredicate(string template, string placeholder, string replacement, bool useWholeWord, Predicate<string> isWholeWord)
+		{
 			// sometimes a null value will get passed in here -> SqlWhereStrings are a good example
-			if (template == null)
+			if (string.IsNullOrWhiteSpace(template))
 			{
 				return null;
 			}
@@ -100,21 +106,28 @@ namespace NHibernate.Util
 			{
 				// NH different implementation (NH-1253)
 				string replaceWith = replacement;
-				if(loc + placeholder.Length < template.Length)
+				if (loc + placeholder.Length < template.Length)
 				{
 					string afterPlaceholder = template[loc + placeholder.Length].ToString();
 					//After a token in HQL there can be whitespace, closedparen or comma.. 
-					if(wholeWords && !(WhiteSpace.Contains(afterPlaceholder) || ClosedParen.Equals(afterPlaceholder) || Comma.Equals(afterPlaceholder)))
+					if (useWholeWord && !isWholeWord(afterPlaceholder))
 					{
 						//If this is not a full token we don't want to touch it
 						replaceWith = placeholder;
 					}
 				}
 
-				return
-					new StringBuilder(template.Substring(0, loc)).Append(replaceWith).Append(
-						Replace(template.Substring(loc + placeholder.Length), placeholder, replacement, wholeWords)).ToString();
+				return new StringBuilder(template.Substring(0, loc))
+					.Append(replaceWith)
+					.Append(ReplaceByPredicate(template.Substring(loc + placeholder.Length), placeholder, replacement, useWholeWord, isWholeWord))
+					.ToString();
 			}
+		}
+
+		public static string ReplaceWholeWord(this string template, string placeholder, string replacement)
+		{
+			Predicate<string> isWholeWord = s => !Char.IsLetterOrDigit(s[0]);
+			return ReplaceByPredicate(template, placeholder, replacement, true, isWholeWord);
 		}
 
 		/// <summary>
@@ -177,7 +190,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string Unqualify(string qualifiedName)
 		{
-			if(qualifiedName.IndexOf('`') > 0)
+			if (qualifiedName.IndexOf('`') > 0)
 			{
 				// less performance but correctly manage generics classes
 				// where the entity-name was not specified
@@ -360,11 +373,11 @@ namespace NHibernate.Util
 
 		public static string LinesToString(this string[] text)
 		{
-			if(text == null)
+			if (text == null)
 			{
 				return null;
 			}
-			if(text.Length == 1)
+			if (text.Length == 1)
 			{
 				return text[0];
 			}
@@ -585,7 +598,7 @@ namespace NHibernate.Util
 			{
 				return result + "x"; //ick!
 			}
-			if(char.IsLetter(result[0]) || '_' == result[0])
+			if (char.IsLetter(result[0]) || '_' == result[0])
 			{
 				return result;
 			}

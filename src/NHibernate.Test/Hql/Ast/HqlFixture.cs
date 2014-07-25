@@ -299,7 +299,7 @@ namespace NHibernate.Test.Hql.Ast
 					s.Save(new Animal() {Description = "cat3", BodyWeight = 2.7f});
 
 					// act
-					s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a")
+					s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
 						.SetParameter<float>("weight", 5.7f).ExecuteUpdate();
 
 					// assert
