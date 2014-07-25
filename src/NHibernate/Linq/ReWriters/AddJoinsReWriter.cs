@@ -1,3 +1,5 @@
+using System.Linq;
+using NHibernate.Engine;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -12,12 +14,12 @@ namespace NHibernate.Linq.ReWriters
 
 	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
 	{
-		private readonly ISessionFactory _sessionFactory;
+		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly SelectJoinDetector _selectJoinDetector;
 		private readonly ResultOperatorAndOrderByJoinDetector _resultOperatorAndOrderByJoinDetector;
 		private readonly WhereJoinDetector _whereJoinDetector;
 
-		private AddJoinsReWriter(ISessionFactory sessionFactory, QueryModel queryModel)
+		private AddJoinsReWriter(ISessionFactoryImplementor sessionFactory, QueryModel queryModel)
 		{
 			_sessionFactory = sessionFactory;
 			var joiner = new Joiner(queryModel);
@@ -26,7 +28,7 @@ namespace NHibernate.Linq.ReWriters
 			_whereJoinDetector = new WhereJoinDetector(this, joiner);
 		}
 
-		public static void ReWrite(QueryModel queryModel, ISessionFactory sessionFactory)
+		public static void ReWrite(QueryModel queryModel, ISessionFactoryImplementor sessionFactory)
 		{
 			new AddJoinsReWriter(sessionFactory, queryModel).VisitQueryModel(queryModel);
 		}
@@ -53,7 +55,7 @@ namespace NHibernate.Linq.ReWriters
 
 		public bool IsEntity(System.Type type)
 		{
-			return _sessionFactory.GetClassMetadata(type) != null;
+			return _sessionFactory.GetImplementors(type.FullName).Any();
 		}
 
 		public bool IsIdentifier(System.Type type, string propertyName)
