@@ -35,19 +35,18 @@ namespace NHibernate.Criterion
 			{
 				buf.Add("distinct ");
 			}
-		    string column;
             if(projection!=null)
             {
-                column =
+                buf.Add(
                     SqlStringHelper.RemoveAsAliasesFromSql(projection.ToSqlString(criteria, position, criteriaQuery,
-                                                                               enabledFilters)).ToString();
+                        enabledFilters)));
             }
             else
             {
-                column = criteriaQuery.GetColumn(criteria, propertyName);
+                buf.Add(criteriaQuery.GetColumn(criteria, propertyName));
             }
 
-		    buf.Add(column).Add(") as y").Add(position.ToString()).Add("_");
+		    buf.Add(") as y").Add(position.ToString()).Add("_");
 			return buf.ToSqlString();
 		}
 
