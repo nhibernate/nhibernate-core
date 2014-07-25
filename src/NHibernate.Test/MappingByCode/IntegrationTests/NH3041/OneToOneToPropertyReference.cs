@@ -1,4 +1,6 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using System.Linq;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -84,7 +86,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3041
 			{
 				var person1 = session.Get<Person>(1);
 				var person2 = session.Get<Person>(2);
-				var personDetail = session.Get<PersonDetail>(1);
+				var personDetail = session.Query<PersonDetail>().Single();
 
 				Assert.IsNull(person2.PersonDetail);
 				Assert.IsNotNull(person1.PersonDetail);
