@@ -49,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				cm.Bag(x => x.Addresses, cp => { }, cr => { });
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping);
+			VerifyMapping(mapping, false, "Street", "Number", "Owner");
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				}));
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping);
+			VerifyMapping(mapping, false, "Street", "Number", "Owner");
 		}
 
 		[Test]
@@ -94,10 +94,10 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				}));
 			});
 			HbmMapping mapping = mapper.CompileMappingFor(new[] { typeof(Person) });
-			VerifyMapping(mapping);
+			VerifyMapping(mapping, true, "Street", "Number");
 		}
 
-		private void VerifyMapping(HbmMapping mapping)
+		private void VerifyMapping(HbmMapping mapping, bool hasParent, params string[] properties)
 		{
 			HbmClass rc = mapping.RootClasses.First(r => r.Name.Contains("Person"));
 			var relation = rc.Properties.First(p => p.Name == "Addresses");
@@ -108,10 +108,17 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			
 			// This test was modified because when the "owner" is an entity it can be mapped as many-to-one or as parent and without an explicit
 			// definition of the property representing the bidiretional-relation we can't know is the mapping element (many-to-one or parent)
-			elementRelation.Properties.Should().Have.Count.EqualTo(3);
-			elementRelation.Properties.Select(p => p.Name).Should().Have.SameValuesAs("Street", "Number", "Owner");
-			//elementRelation.Parent.Should().Not.Be.Null();
-			//elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			elementRelation.Properties.Should().Have.Count.EqualTo(properties.Length);
+			elementRelation.Properties.Select(p => p.Name).Should().Have.SameValuesAs(properties);
+			if (hasParent)
+			{
+				elementRelation.Parent.Should().Not.Be.Null();
+				elementRelation.Parent.name.Should().Be.EqualTo("Owner");
+			}
+			else
+			{
+				elementRelation.Parent.Should().Be.Null();
+			}
 			
 			// Nested
 			var propertyNestedRelation = elementRelation.Properties.FirstOrDefault(p => p.Name == "Number");

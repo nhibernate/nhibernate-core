@@ -198,6 +198,25 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapping.index.Should().Be("II");
 		}
 
+		[Test(Description = "NH-3618")]
+		public void SetUniqueToMultiColumn()
+		{
+			var hbmMapping = new HbmMapping();
+			var member = typeof(MyClass).GetProperty("Relation");
+			var mapping = new HbmManyToOne();
+			var mapper = new ManyToOneMapper(member, mapping, hbmMapping);
+			mapper.Columns(x => x.Name("pizza"), x => x.Name("pasta"));
+			mapper.Unique(true);
+			mapper.UniqueKey("AA");
+			mapper.Index("II");
+
+			Assert.That(mapping.Items, Is.Not.Null.And.Not.Empty);
+			Assert.IsNull(mapping.column);
+			Assert.IsTrue(mapping.unique);
+			Assert.That(mapping.uniquekey, Is.EqualTo("AA"));
+			Assert.That(mapping.index, Is.EqualTo("II"));
+		}
+
 		[Test]
 		public void WhenSetFetchModeToJoinThenSetFetch()
 		{

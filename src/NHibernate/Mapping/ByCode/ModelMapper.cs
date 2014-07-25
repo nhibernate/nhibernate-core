@@ -1151,9 +1151,12 @@ namespace NHibernate.Mapping.ByCode
 
 		protected MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, System.Type propertiesContainerType)
 		{
-			return modelInspector.IsComponent(propertiesContainerType)
-			       	? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
-			       	: null;
+			// if container is component, then all properties referencing container are assumed parent reference
+			if (modelInspector.IsComponent(propertiesContainerType))
+				return persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType);
+
+			// return the first non-many-to-one property
+			return persistentProperties.Where(pp => !modelInspector.IsManyToOne(pp)).FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType);
 		}
 
 		private void MapBag(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,

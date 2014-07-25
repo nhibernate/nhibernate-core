@@ -712,6 +712,10 @@
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Author.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Book.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Publisher.cs" />
+    <Compile Include="NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs" />
     <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
@@ -724,6 +728,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH3140\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3428\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3428\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3316\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3316\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Model.cs" />
     <Compile Include="NHSpecificTest\NH2297\CustomCompositeUserType.cs" />
