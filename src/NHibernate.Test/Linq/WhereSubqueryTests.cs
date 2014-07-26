@@ -598,7 +598,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test(Description = "NH-3190")]
-		public void CategoriesWithFirstProductIsNotDiscouned()
+		public void SubselectCanHaveBoolResult()
 		{
 			var result = (from c in db.Categories
 						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
