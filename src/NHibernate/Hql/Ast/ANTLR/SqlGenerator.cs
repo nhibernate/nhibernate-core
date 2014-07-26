@@ -308,11 +308,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			writer.CommaBetweenParameters(comma);
 		}
 
-	    private void StartQuery()
-	    {
-	        outputStack.Insert(0, writer);
-	        writer = new QueryWriter();
-	    }
+		private void StartQuery()
+		{
+			outputStack.Insert(0, writer);
+			writer = new QueryWriter();
+		}
 
 		private void EndQuery()
 		{
@@ -327,7 +327,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			Parameter skipParameter = null;
 			Parameter takeParameter = null;
-			if(queryWriter.SkipParameter != null)
+			if (queryWriter.SkipParameter != null)
 			{
 				queryWriter.SkipParameter.ExpectedType = NHibernateUtil.Int32;
 				queryWriter.SkipParameter.IsSkipParameter();
@@ -346,19 +346,23 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// The dialect can move the given parameters where he need, what it can't do is generates new parameters, losing the BackTrack.
 			var dialect = sessionFactory.Dialect;
 			return dialect.GetLimitString(queryWriter.ToSqlString(),
-			                              queryWriter.Skip.HasValue ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value) : null,
-			                              queryWriter.Take.HasValue ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value) : null,
+			                              queryWriter.Skip.HasValue
+				                              ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value)
+				                              : null,
+			                              queryWriter.Take.HasValue
+				                              ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value)
+				                              : null,
 			                              skipParameter,
 			                              takeParameter);
 		}
 
 		private void Skip(IASTNode node)
 		{
-			var queryWriter = (QueryWriter)writer;
+			var queryWriter = (QueryWriter) writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.SkipParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
+				queryWriter.SkipParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -367,11 +371,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Take(IASTNode node)
 		{
-			var queryWriter = (QueryWriter)writer;
+			var queryWriter = (QueryWriter) writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.TakeParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
+				queryWriter.TakeParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -419,54 +423,54 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		#endregion
 
-        #region Nested type: QueryWriter
+		#region Nested type: QueryWriter
 
-        /// <summary>
-        /// The default SQL writer.
-        /// </summary>
-        private class QueryWriter : ISqlWriter
-        {
-            private readonly SqlStringBuilder builder = new SqlStringBuilder();
+		/// <summary>
+		/// The default SQL writer.
+		/// </summary>
+		private class QueryWriter : ISqlWriter
+		{
+			private readonly SqlStringBuilder builder = new SqlStringBuilder();
 
-        	public IPageableParameterSpecification TakeParameter { get; set; }
-        	public IPageableParameterSpecification SkipParameter { get; set; }
-					public int? Skip { get; set; }
-					public int? Take { get; set; }
+			public IPageableParameterSpecification TakeParameter { get; set; }
+			public IPageableParameterSpecification SkipParameter { get; set; }
+			public int? Skip { get; set; }
+			public int? Take { get; set; }
 
-        	#region ISqlWriter Members
+			#region ISqlWriter Members
 
-            public void Clause(String clause)
-            {
-                builder.Add(clause);
-            }
+			public void Clause(String clause)
+			{
+				builder.Add(clause);
+			}
 
-            public void Clause(SqlString clause)
-            {
-                builder.Add(clause);
-            }
+			public void Clause(SqlString clause)
+			{
+				builder.Add(clause);
+			}
 
-        	public void PushParameter(Parameter parameter)
-        	{
-						builder.Add(parameter);
-        	}
+			public void PushParameter(Parameter parameter)
+			{
+				builder.Add(parameter);
+			}
 
-        	public void CommaBetweenParameters(String comma)
-            {
-                builder.Add(comma);
-            }
+			public void CommaBetweenParameters(String comma)
+			{
+				builder.Add(comma);
+			}
 
-            public SqlString ToSqlString()
-            {
-                return builder.ToSqlString();
-            }
+			public SqlString ToSqlString()
+			{
+				return builder.ToSqlString();
+			}
 
 
-            #endregion
-        }
+			#endregion
+		}
 
-        #endregion
+		#endregion
 
-        #region Nested type: FunctionArguments
+		#region Nested type: FunctionArguments
 
 		private class FunctionArguments : ISqlWriter
 		{
