@@ -107,7 +107,7 @@ namespace NHibernate.Dialect
 
 			if (orderIndex == 0)
 			{
-				result.Add("1");	// order by first column in select clause
+				result.Add("CURRENT_TIMESTAMP");
 			}
 
 			result.Add(") as __hibernate_sort_row ")
@@ -134,7 +134,7 @@ namespace NHibernate.Dialect
 			}
 			if (orderIndex == 0)
 			{
-				result.Add("1");	// order by first column in select
+				result.Add("CURRENT_TIMESTAMP");
 			}
 
 			result.Add(") as __hibernate_sort_row  FROM (")

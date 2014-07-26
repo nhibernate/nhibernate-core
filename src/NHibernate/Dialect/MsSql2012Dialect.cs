@@ -64,7 +64,7 @@ namespace NHibernate.Dialect
 			var result = new SqlStringBuilder(querySqlString);
 			if (!tokenEnum.TryParseUntil("order"))
 			{
-				result.Add(" ORDER BY 1");	// Order by first column in select clause
+				result.Add(" ORDER BY CURRENT_TIMESTAMP");
 			}
 
 			result.Add(" OFFSET ");
