@@ -4826,12 +4826,12 @@ namespace NHibernate.Test.Legacy
 			{
 				foo.Bytes = GetBytes("osama");
 				Assert.AreEqual(1,
-				                s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where 111 in foo.Bytes.elements").List()
-				                	.Count, "autoflush collection update");
+				                s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where 111 in elements(foo.Bytes)")
+				                 .List().Count, "autoflush collection update");
 				foo.Bytes[0] = 69;
 				Assert.AreEqual(1,
-				                s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where 69 in foo.Bytes.elements").List().
-				                	Count, "autoflush collection update");
+				                s.CreateQuery("from foo in class NHibernate.DomainModel.Foo where 69 in elements(foo.Bytes)")
+				                 .List().Count, "autoflush collection update");
 			}
 
 			s.Delete(foo);
