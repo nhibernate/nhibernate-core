@@ -501,5 +501,24 @@ namespace NHibernate.Test.Linq.ByMethod
 				return Item1.GetHashCode() ^ Item2.GetHashCode();
 			}
 		}
+
+
+		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
+		public void GroupByOrderByKeySelectToClass()
+		{
+			db.Products.GroupBy(x => x.Supplier.CompanyName)
+				.OrderBy(x => x.Key)
+				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
+				.ToList();
+		}
+
+
+		private class GroupInfo
+		{
+			public object Key { get; set; }
+			public int ItemCount { get; set; }
+			public bool HasSubgroups { get; set; }
+			public IEnumerable Items { get; set; }
+		}
 	}
 }
