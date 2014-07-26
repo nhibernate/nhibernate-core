@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3641
 
 		private static void DeleteAll<T>(ISession session)
 		{
-			session.CreateQuery("delete from " + typeof(T).Name + " where ChildInterface is null").ExecuteUpdate();
+			session.CreateQuery("delete from " + typeof(T).Name + " where ChildInterface is not null").ExecuteUpdate();
 			session.CreateQuery("delete from " + typeof(T).Name).ExecuteUpdate();
 		}
 
