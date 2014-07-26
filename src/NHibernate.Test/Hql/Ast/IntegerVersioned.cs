@@ -23,5 +23,7 @@ namespace NHibernate.Test.Hql.Ast
 			get { return name; }
 			set { name = value; }
 		}
+
+		public virtual string Data { get; set; }
 	}
 }
