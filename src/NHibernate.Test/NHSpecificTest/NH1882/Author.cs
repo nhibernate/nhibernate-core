@@ -1,5 +1,5 @@
 ﻿using System;
-using Iesi.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
@@ -7,12 +7,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 	{
 		public Author()
 		{
-			Books = new HashedSet<Book>();
+			Books = new HashSet<Book>();
 		}
 
 		public Author(String name)
 		{
-			Books = new HashedSet<Book>();
+			Books = new HashSet<Book>();
 			Name = name;
 		}
 
