@@ -793,32 +793,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		protected IASTNode LookupProperty(IASTNode dot, bool root, bool inSelect)
 		{
 			DotNode dotNode = (DotNode) dot;
-			FromReferenceNode lhs = dotNode.GetLhs();
-			IASTNode rhs = lhs.NextSibling;
-			switch (rhs.Type)
-			{
-				case ELEMENTS:
-				case INDICES:
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("lookupProperty() " + dotNode.Path + " => " + rhs.Text + "(" + lhs.Path + ")");
-					}
 
-					CollectionFunction f = (CollectionFunction) rhs;
-					// Re-arrange the tree so that the collection function is the root and the lhs is the path.
-
-					f.SetFirstChild(lhs);
-					lhs.NextSibling = null;
-					dotNode.SetFirstChild(f);
-
-					Resolve(lhs); // Don't forget to resolve the argument!
-					f.Resolve(inSelect); // Resolve the collection function now.
-					return f;
-				default:
-					// Resolve everything up to this dot, but don't resolve the placeholders yet.
-					dotNode.ResolveFirstChild();
-					return dotNode;
-			}
+			// Resolve everything up to this dot, but don't resolve the placeholders yet.
+			dotNode.ResolveFirstChild();
+			return dotNode;
 		}
 
 		static void ProcessIndex(IASTNode indexOp)
