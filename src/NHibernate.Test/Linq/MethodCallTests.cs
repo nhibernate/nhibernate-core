@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -34,6 +35,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesIntoObjectArray()
 		{
 			var result = db.Users
+				.Where(u => u.Name == "ayende")
 				.Select(u => new object[] {u.Id, u.Name, u.InvalidLoginAttempts})
 				.First();
 
@@ -46,7 +48,8 @@ namespace NHibernate.Test.Linq
 		public void CanSelectComponentsIntoObjectArray()
 		{
 			var result = db.Users
-				.Select(u => new object[] {u.Component, u.Component.OtherComponent})
+				.Where(u => u.Component.Property1 == "test1")
+				.Select(u => new object[] { u.Component, u.Component.OtherComponent })
 				.First();
 
 			Assert.That(result.Length, Is.EqualTo(2));
@@ -81,7 +84,8 @@ namespace NHibernate.Test.Linq
 			const string name = "Julian";
 
 			var result = db.Users
-				.Select(u => new object[] {u.Id, pi, name, DateTime.MinValue})
+				.OrderBy(u => u.Id)
+				.Select(u => new object[] { u.Id, pi, name, DateTime.MinValue })
 				.First();
 
 			Assert.That(result.Length, Is.EqualTo(4));
@@ -94,6 +98,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesFromAssociationsIntoObjectArray()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new object[] {u.Id, u.Role.Name, u.Role.Entity.Output})
 				.First();
 
@@ -105,8 +110,10 @@ namespace NHibernate.Test.Linq
 		[Test, Description("NH-2744")]
 		public void CanSelectPropertiesIntoNestedObjectArrays()
 		{
-			var query = db.Users.Select(u => new object[] {"Root", new object[] {"Sub1", u.Name, new object[] {"Sub2", u.Name}}});
-			var result = query.First();
+			var result = db.Users
+				.OrderBy(u => u.Id)
+				.Select(u => new object[] { "Root", new object[] { "Sub1", u.Name, new object[] { "Sub2", u.Name } } })
+				.First();
 
 			Assert.That(result.Length, Is.EqualTo(2));
 			Assert.That(result[0], Is.EqualTo("Root"));
