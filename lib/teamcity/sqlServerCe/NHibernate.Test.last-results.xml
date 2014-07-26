@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="623" failures="956" not-run="308" inconclusive="0" ignored="308" skipped="0" invalid="0">
-  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3649" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
+<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="565" failures="956" not-run="383" inconclusive="0" ignored="383" skipped="0" invalid="0">
+  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3655" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
   <test-suite type="Assembly" name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
     <results>
@@ -1276,13 +1276,10 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.FunctionsProperty" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.ICriteriaOfT_SimpleCriterion" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.IsType" executed="True" result="Success" success="True" asserts="8" />
-                          <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.MultiCriteria" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id99_1_, this_.Name as Name99_1_, this_.Age as Age99_1_, this_.BirthDate as BirthDate99_1_, this_.Blood as Blood99_1_, this_.MaidenName as MaidenName99_1_, this_.Anniversary as Annivers8_99_1_, this_.Father as Father99_1_, this_.class as class99_1_, child1_.Id as Id100_0_, child1_.Nickname as Nickname100_0_, child1_.Age as Age100_0_, child1_.Parent as Parent100_0_ FROM Person this_ inner join Child child1_ on this_.Id=child1_.Parent ORDER BY child1_.Age desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;
-SELECT count(*) as y0_ FROM Person this_ inner join Child child1_ on this_.Id=child1_.Parent;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.MultiCriteria" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.OnClause" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.Criteria.Lambda.IntegrationFixture.OverrideEagerJoin" executed="True" result="Error" success="False" asserts="0">
@@ -1919,10 +1916,10 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
                         </results>
@@ -9566,11 +9563,6 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not initialize a co
                       <message><![CDATA[TestFixtureSetUp failed in LinqReadonlyTestsContext]]></message>
                     </failure>
                   </test-case>
-                  <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.CategoriesWithFirstProductIsNotDiscouned" executed="True" result="Failure" success="False" asserts="0">
-                    <failure>
-                      <message><![CDATA[TestFixtureSetUp failed in LinqReadonlyTestsContext]]></message>
-                    </failure>
-                  </test-case>
                   <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.HqlOrderLinesWithImpliedJoinAndSubQuery" executed="True" result="Failure" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[TestFixtureSetUp failed in LinqReadonlyTestsContext]]></message>
@@ -9662,6 +9654,11 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not initialize a co
                     </failure>
                   </test-case>
                   <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubqueryWhereFailingTest3" executed="True" result="Failure" success="False" asserts="0">
+                    <failure>
+                      <message><![CDATA[TestFixtureSetUp failed in LinqReadonlyTestsContext]]></message>
+                    </failure>
+                  </test-case>
+                  <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubselectCanHaveBoolResult" executed="True" result="Failure" success="False" asserts="0">
                     <failure>
                       <message><![CDATA[TestFixtureSetUp failed in LinqReadonlyTestsContext]]></message>
                     </failure>
@@ -10428,6 +10425,11 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not initialize a co
                           <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithComponentsTest.ComponentMappingJustOnceDemo" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
+                      <test-suite type="TestFixture" name="ClassWithoutNamespaceTests" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithoutNamespaceTests.ShouldBeAbleToMapClassWithoutNamespace" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
                       <test-suite type="TestFixture" name="ColumnsNamingConvetions" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ColumnsNamingConvetions.MapClassWithConventions" executed="True" result="Success" success="True" asserts="0" />
@@ -10949,6 +10951,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not initialize a co
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetNotFoundWithIgnoreMode" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetPropertyRefName" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetUpdate" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.SetUniqueToMultiColumn" description="NH-3618" executed="True" result="Success" success="True" asserts="5" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenForceClassRelationToIncompatibleTypeThenThrows" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesMoreThanOnesThenMergeColumn" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesThenSetPlainValues" executed="True" result="Success" success="True" asserts="0" />
@@ -11680,11 +11683,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="DataReaderWrapperTest" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="DataReaderWrapperTest" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture.CanUseDatareadersGetValue" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture.CanUseDatareadersGetValue" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.DataReaderWrapperTest.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -11955,167 +11965,126 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   <test-suite type="Namespace" name="FileStreamSql2008" executed="True" result="Inconclusive" success="False" asserts="0" />
                   <test-suite type="Namespace" name="Futures" executed="True" result="Failure" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="FallbackFixture" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
-                        </reason>
+                      <test-suite type="TestFixture" name="FallbackFixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupported" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupported" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.AssertionFailure : null identifier]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupported" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.AssertionFailure : null identifier]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupported" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.AssertionFailure : null identifier]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupported" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.AssertionFailure : null identifier]]></message>
+                            </failure>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="FutureCriteriaFixture" executed="True" result="Inconclusive" success="False" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
                             </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.CanUseFutureCriteria" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
                             </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.TwoFuturesRunInTwoRoundTrips" executed="False" result="Ignored">
                             <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
-                            </reason>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
-                            <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
-                            </reason>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
-                            <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
-                            </reason>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FallbackFixture.FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupported" executed="False" result="Ignored">
-                            <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.Futures.FallbackFixture does not apply to NHibernate.Dialect.MsSqlCe40Dialect]]></message>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
                             </reason>
                           </test-case>
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="FutureCriteriaFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="FutureQueryFixture" executed="True" result="Inconclusive" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1310_0_, this_.Name as Name1310_0_, this_.Parent as Parent1310_0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT count(*) as y0_ FROM Person this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.CanUseFutureCriteria" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1310_0_, this_.Name as Name1310_0_, this_.Parent as Parent1310_0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT this_.Id as Id1310_0_, this_.Name as Name1310_0_, this_.Parent as Parent1310_0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanExecuteMultipleQueryWithSameParameterName" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureCriteriaFixture.TwoFuturesRunInTwoRoundTrips" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanUseFutureQuery" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.TwoFuturesRunInTwoRoundTrips" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="FutureQueryFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="FutureQueryOverFixture" executed="True" result="Inconclusive" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1311_, person0_.Name as Name1311_, person0_.Parent as Parent1311_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select count(*) as col_0_0_ from Person person0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanExecuteMultipleQueryWithSameParameterName" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1311_, person0_.Name as Name1311_, person0_.Parent as Parent1311_ from Person person0_ where person0_.Id=?;
-select person0_.Id as Id1311_, person0_.Name as Name1311_, person0_.Parent as Parent1311_ from Person person0_ where person0_.Id<>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.CanUseFutureCriteria" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.CanUseFutureQuery" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1311_, person0_.Name as Name1311_, person0_.Parent as Parent1311_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select person0_.Id as Id1311_, person0_.Name as Name1311_, person0_.Parent as Parent1311_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.TwoFuturesRunInTwoRoundTrips" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryFixture.TwoFuturesRunInTwoRoundTrips" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="FutureQueryOverFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="LinqFutureFixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1312_0_, this_.Name as Name1312_0_, this_.Parent as Parent1312_0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT this_.Id as y0_ FROM Person this_;
-SELECT this_.Id as Id1312_0_, this_.Name as Name1312_0_, this_.Parent as Parent1312_0_ FROM Person this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.CanUseFutureCriteria" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1312_0_, this_.Name as Name1312_0_, this_.Parent as Parent1312_0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT this_.Id as y0_ FROM Person this_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.FutureQueryOverFixture.TwoFuturesRunInTwoRoundTrips" executed="True" result="Success" success="True" asserts="1" />
-                        </results>
-                      </test-suite>
-                      <test-suite type="TestFixture" name="LinqFutureFixture" executed="True" result="Failure" success="False" asserts="0">
-                        <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select person0_.Id as col_0_0_ from Person person0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanCombineSingleFutureValueWithEnumerableFutures" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanCombineSingleFutureValueWithFetchMany" description="NH-2385" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanExecuteMultipleQueriesOnSameExpression" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_ where person0_.Id=?;
-select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_ where person0_.Id<>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanExecuteMultipleQueriesOnSameExpression" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureFetchQuery" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1313_0_, children1_.Id as Id1313_1_, person0_.Name as Name1313_0_, person0_.Parent as Parent1313_0_, children1_.Name as Name1313_1_, children1_.Parent as Parent1313_1_, children1_.parent_id as parent4_0__, children1_.Id as Id0__, children1_.child_index as child5_0__ from Person person0_ left outer join Person children1_ on person0_.Id=children1_.parent_id;
-select person0_.Id as Id1313_0_, children1_.Id as Id1313_1_, person0_.Name as Name1313_0_, person0_.Parent as Parent1313_0_, children1_.Name as Name1313_1_, children1_.Parent as Parent1313_1_, children1_.parent_id as parent4_0__, children1_.Id as Id0__, children1_.child_index as child5_0__ from Person person0_ left outer join Person children1_ on person0_.Id=children1_.parent_id ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureFetchQuery" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureQuery" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureQuery" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureQueryWithAnonymousType" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as col_0_0_, person0_.Name as col_1_0_ from Person person0_;
-select person0_.Id as col_0_0_, person0_.Name as col_1_0_ from Person person0_ ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseFutureQueryWithAnonymousType" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseSkipAndFetchManyWithToFuture" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select person0_.Id as Id1313_0_, children1_.Id as Id1313_1_, person0_.Name as Name1313_0_, person0_.Parent as Parent1313_0_, children1_.Name as Name1313_1_, children1_.Parent as Parent1313_1_, children1_.parent_id as parent4_0__, children1_.Id as Id0__, children1_.child_index as child5_0__ from Person person0_ left outer join Person children1_ on person0_.Id=children1_.parent_id ORDER BY GETDATE() OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;
-select person0_.Id as Id1313_, person0_.Name as Name1313_, person0_.Parent as Parent1313_ from Person person0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseSkipAndFetchManyWithToFuture" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CanUseToFutureWithContains" executed="False" result="Ignored">
                             <reason>
@@ -12123,7 +12092,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                             </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.CoalesceShouldWorkForFutures" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.TwoFuturesRunInTwoRoundTrips" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.Futures.LinqFutureFixture.TwoFuturesRunInTwoRoundTrips" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                       <test-suite type="TestFixture" name="LinqToFutureValueFixture" executed="True" result="Success" success="True" asserts="0">
@@ -12659,17 +12632,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1253" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1253" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1253.Fixture.MultiQuerySingleInList" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select car0_.CarID as CarID1404_, car0_.Make as Make1404_, car0_.Model as Model1404_ from Cars car0_ where car0_.Make in (? , ?) or car0_.Model in (? , ?);
-select car0_.CarID as CarID1404_, car0_.Make as Make1404_, car0_.Model as Model1404_ from Cars car0_ where car0_.Make in (? , ?) or car0_.Model in (? , ?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1253.Fixture.MultiQuerySingleInList" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1253.Fixture.TestParametersWithTrailingNumbersMultipleInList" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1253.Fixture.TestParametersWithTrailingNumbersSingleInList" executed="True" result="Success" success="True" asserts="0" />
@@ -13411,13 +13381,28 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1508" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH1508" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowExceptionWhenHqlQueryIsGiven" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenNamedSqlQueryIsGiven" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenSqlQueryIsGiven" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowExceptionWhenHqlQueryIsGiven" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenNamedSqlQueryIsGiven" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1508.Fixture.DoesntThrowsExceptionWhenSqlQueryIsGiven" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1508.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -13727,15 +13712,17 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1609" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1609" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1609.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1609.Fixture.Test" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH1609.EntityA][SQL: INSERT INTO EntityA values ( )]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 30,Token in error = ) ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1609.Fixture.Test" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1609.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -14544,11 +14531,18 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1836" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH1836" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1836.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1836.Fixture.AliasToBeanTransformerShouldApplyCorrectlyToMultiQuery" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1836.Fixture.AliasToBeanTransformerShouldApplyCorrectlyToMultiQuery" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1836.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -14680,15 +14674,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1869" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1869" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1869.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1869.Fixture.Test" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH1869.Keyword][SQL: INSERT INTO Keywords values ( )]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 31,Token in error = ) ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1869.Fixture.Test" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1869.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -14704,17 +14700,26 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH1882" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestCollectionInitializingDuringFlush" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1882.TestCollectionInitializingDuringFlush.TestInitializationDuringFlush" executed="True" result="Success" success="True" asserts="4" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH1891" executed="True" result="Failure" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1891.Fixture.FormulaEscaping" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#75adadd0-ccba-4630-8045-a2ba0122db12][SQL: SELECT a0_.id as id1682_0_, a0_.FormulaConstraint as FormulaC2_1682_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_0_ FROM a a0_ WHERE a0_.id=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#618c7932-24b8-4dfa-b4f9-a374006f269c][SQL: SELECT a0_.id as id1685_0_, a0_.FormulaConstraint as FormulaC2_1685_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_0_ FROM a a0_ WHERE a0_.id=?]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 74,Token in error = select ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select a0_.id as id1682_, a0_.FormulaConstraint as FormulaC2_1682_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_ ]
-[SQL: select a0_.id as id1682_, a0_.FormulaConstraint as FormulaC2_1682_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_]
+[ select a0_.id as id1685_, a0_.FormulaConstraint as FormulaC2_1685_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_ ]
+[SQL: select a0_.id as id1685_, a0_.FormulaConstraint as FormulaC2_1685_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 70,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -14772,8 +14777,8 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1905.Fixture.Query" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select det0_.Id as Id1692_, det0_.IdMas as IdMas1692_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0 ]
-[SQL: select det0_.Id as Id1692_, det0_.IdMas as IdMas1692_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0]
+[ select det0_.Id as Id1695_, det0_.IdMas as IdMas1695_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0 ]
+[SQL: select det0_.Id as Id1695_, det0_.IdMas as IdMas1695_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 127,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -14879,18 +14884,18 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1925.Fixture.Query1" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select invoice0_.ID as ID1708_, invoice0_."Number" as Number2_1708_, invoice0_.CustomerID as CustomerID1708_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0 ]
+[ select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0 ]
   Name:name - Value:Joe
-[SQL: select invoice0_.ID as ID1708_, invoice0_."Number" as Number2_1708_, invoice0_.CustomerID as CustomerID1708_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0]
+[SQL: select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 228,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1925.Fixture.Query2" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select invoice0_.ID as ID1708_, invoice0_."Number" as Number2_1708_, invoice0_.CustomerID as CustomerID1708_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0 ]
+[ select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0 ]
   Name:name - Value:Joe
-[SQL: select invoice0_.ID as ID1708_, invoice0_."Number" as Number2_1708_, invoice0_.CustomerID as CustomerID1708_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0]
+[SQL: select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 228,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -15073,20 +15078,20 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithDifferentRegionsFuture" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithMixedCacheableAndNonCacheableFuture" executed="True" result="Error" success="False" asserts="0">
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithMixedCacheableAndNonCacheableFuture" executed="True" result="Failure" success="False" asserts="3">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1727_0_, this_.Name as Name1727_0_ FROM UserTable this_ WHERE (this_.Name = ?);
-SELECT count(*) as y0_ FROM UserTable this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
+                              <message><![CDATA[  query results should not come from cache
+  Expected: null
+  But was:  <NHibernate.Test.NHSpecificTest.NH1989.User>
+]]></message>
                             </failure>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithMixedCacheRegionsFuture" executed="True" result="Error" success="False" asserts="0">
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithMixedCacheRegionsFuture" executed="True" result="Failure" success="False" asserts="3">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1727_0_, this_.Name as Name1727_0_ FROM UserTable this_ WHERE (this_.Name = ?);
-SELECT count(*) as y0_ FROM UserTable this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
+                              <message><![CDATA[  query results should not come from cache
+  Expected: null
+  But was:  <NHibernate.Test.NHSpecificTest.NH1989.User>
+]]></message>
                             </failure>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1989.Fixture.SecondLevelCacheWithSingleCacheableFuture" executed="True" result="Success" success="True" asserts="2" />
@@ -15540,17 +15545,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2201" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2201" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2201.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2201.Fixture.CanUseMutliCriteriaAndFetchSelect" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1795_0_, this_.class as class1795_0_ FROM Parent this_;
-SELECT this_.Id as Id1795_0_, this_.class as class1795_0_ FROM Parent this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2201.Fixture.CanUseMutliCriteriaAndFetchSelect" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2201.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -15729,38 +15734,15 @@ SELECT this_.Id as Id1795_0_, this_.class as class1795_0_ FROM Parent this_;
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2251" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2251" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.EnlistingFirstThePaginationAndThenTheRowCountDoesNotThrows" executed="True" result="Failure" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[Should Not throw NHibernate.Exceptions.GenericADOException.
-Not expected exception message:
-Failed to execute multi criteria[SQL: SELECT this_.Id as Id1816_0_, this_.Name as Name1816_0_, this_.Ord as Ord1816_0_ FROM Foo this_ WHERE this_.Name = ? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT count(*) as y0_ FROM Foo this_ WHERE this_.Name = ?;
-]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.FuturePagedHql" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select foo0_.Id as Id1816_, foo0_.Name as Name1816_, foo0_.Ord as Ord1816_ from Foo foo0_ where foo0_.Name like ? order by foo0_.Name OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;
-select foo0_.Id as Id1816_, foo0_.Name as Name1816_, foo0_.Ord as Ord1816_ from Foo foo0_ where foo0_.Name like ? order by foo0_.Name OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.EnlistingFirstThePaginationAndThenTheRowCountDoesNotThrows" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.FuturePagedHql" executed="True" result="Success" success="True" asserts="6" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.HqlWithOffsetAndLimit" executed="True" result="Success" success="True" asserts="3" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.MultiplePagingParametersInSingleQuery" executed="True" result="Success" success="True" asserts="4" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.WhenUseFutureSkipTakeThenNotThrow" executed="True" result="Failure" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[Should Not throw NHibernate.Exceptions.GenericADOException.
-Not expected exception message:
-Failed to execute multi criteria[SQL: SELECT count(*) as y0_ FROM Foo this_ WHERE this_.Name = ?;
-SELECT this_.Id as Id1816_0_, this_.Name as Name1816_0_, this_.Ord as Ord1816_0_ FROM Foo this_ WHERE this_.Name = ? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.WhenUseFutureSkipTakeThenNotThrow" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -15999,8 +15981,8 @@ alter table nhibernate.dbo_Aclass  drop constraint Aclasses_Id_FK
                         <results>
                           <test-suite type="ParameterizedTest" name="InvalidCustomCompositeUserTypeThrowsMeaningfulException" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsNames.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsTypes.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
+                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsNames.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
                             </results>
                           </test-suite>
                         </results>
@@ -16138,7 +16120,7 @@ alter table nhibernate.dbo_Aclass  drop constraint Aclasses_Id_FK
 Not expected exception message:
 could not execute query
 [ SELECT this_.Name as y0_, (SELECT sum(this_0_.Dollars) as y0_ FROM Forum this_0_ WHERE not (this_0_.Id = this_.Id) and this_0_.Id in (SELECT f2_.Id as y0_ FROM MemberGroup this_0_0_ inner join Group2Members members4_ on this_0_0_.Id=members4_.GroupId inner join Person m1_ on members4_.PersonId=m1_.Id inner join Group2Forums forums6_ on this_0_0_.Id=forums6_.GroupId inner join Forum f2_ on forums6_.ForumId=f2_.Id WHERE m1_.Id = this_.Id)) as y1_ FROM Person this_ WHERE this_.Id in (@p0, @p1) ]
-  Name:cp0 - Value:32d6a3b3-c62c-44b8-b771-2cb579f54c84  Name:cp1 - Value:0f9657ef-1d66-45d3-8962-8ea3351bc43c
+  Name:cp0 - Value:0bd7634c-e19a-4f63-a122-63582664fb67  Name:cp1 - Value:99a2b7ba-8c2a-4fbc-83d2-a944de63ce8c
 [SQL: SELECT this_.Name as y0_, (SELECT sum(this_0_.Dollars) as y0_ FROM Forum this_0_ WHERE not (this_0_.Id = this_.Id) and this_0_.Id in (SELECT f2_.Id as y0_ FROM MemberGroup this_0_0_ inner join Group2Members members4_ on this_0_0_.Id=members4_.GroupId inner join Person m1_ on members4_.PersonId=m1_.Id inner join Group2Forums forums6_ on this_0_0_.Id=forums6_.GroupId inner join Forum f2_ on forums6_.ForumId=f2_.Id WHERE m1_.Id = this_.Id)) as y1_ FROM Person this_ WHERE this_.Id in (@p0, @p1)]]]></message>
                             </failure>
                           </test-case>
@@ -16298,12 +16280,20 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2404" executed="True" result="Success" success="True" asserts="0">
+                  <test-suite type="Namespace" name="NH2404" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Inconclusive" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2404.Fixture.ProjectionsShouldWorkWithHqlAndFutures" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2404.Fixture.ProjectionsShouldWorkWithLinqProviderAndFutures" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2404.Fixture.ProjectionsShouldWorkWithHqlAndFutures" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Not applicable for dialects that do not support multiple queries]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2404.Fixture.ProjectionsShouldWorkWithLinqProviderAndFutures" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Not applicable for dialects that do not support multiple queries]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -16389,42 +16379,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2467" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2467" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="NH2467Test" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="NH2467Test" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnFuturePaging" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id1891_0_, this_.Data as Data1891_0_ FROM DomainClass this_ WHERE this_.Data = ? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-SELECT count(*) as y0_ FROM DomainClass this_ WHERE this_.Data = ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnFuturePagingUsingHql" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select domainclas0_.Id as Id1891_, domainclas0_.Data as Data1891_ from DomainClass domainclas0_ where domainclas0_.Data=? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select count(domainclas0_.Id) as col_0_0_ from DomainClass domainclas0_ where domainclas0_.Data=?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnReversedFuturePaging" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT count(*) as y0_ FROM DomainClass this_ WHERE this_.Data = ?;
-SELECT this_.Id as Id1891_0_, this_.Data as Data1891_0_ FROM DomainClass this_ WHERE this_.Data = ? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnReversedFuturePagingUsingHql" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select domainclas0_.Id as Id1891_, domainclas0_.Data as Data1891_ from DomainClass domainclas0_ where domainclas0_.Data=? ORDER BY GETDATE() OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY;
-select count(domainclas0_.Id) as col_0_0_ from DomainClass domainclas0_ where domainclas0_.Data=?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnFuturePaging" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnFuturePagingUsingHql" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnReversedFuturePaging" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2467.NH2467Test.ShouldNotThrowOnReversedFuturePagingUsingHql" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                     </results>
@@ -16858,7 +16820,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares2" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F69 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16866,7 +16828,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfBothSidesJoin" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F69 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16874,7 +16836,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfNothingJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F69 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16882,7 +16844,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfOneSideJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F69 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -17214,8 +17176,8 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2760.Fixture.ShouldBeAbleToSelectUserGroupAndOrderByUserCount" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select usergroup0_.Id as Id2026_, usergroup0_.Name as Name2026_, usergroup0_.Other as Other2026_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc ]
-[SQL: select usergroup0_.Id as Id2026_, usergroup0_.Name as Name2026_, usergroup0_.Other as Other2026_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc]
+[ select usergroup0_.Id as Id2029_, usergroup0_.Name as Name2029_, usergroup0_.Other as Other2029_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc ]
+[SQL: select usergroup0_.Id as Id2029_, usergroup0_.Name as Name2029_, usergroup0_.Other as Other2029_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 135,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -17524,25 +17486,22 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH2959" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH2959" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2959.Fixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2959.Fixture.CanUsePolymorphicCriteriaInMultiCriteria" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2074_0_, this_.Name as Name2074_0_ FROM DerivedEntity this_;
-SELECT this_.Id as Id2075_0_, this_.Name as Name2075_0_ FROM AnotherDerivedEntity this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2959.Fixture.CanUsePolymorphicCriteriaInMultiCriteria" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2959.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2959.Fixture.CanUsePolymorphicQueryInMultiQuery" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select derivedent0_.Id as Id2074_, derivedent0_.Name as Name2074_ from DerivedEntity derivedent0_;
-select anotherder0_.Id as Id2075_, anotherder0_.Name as Name2075_ from AnotherDerivedEntity anotherder0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2959.Fixture.CanUsePolymorphicQueryInMultiQuery" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH2959.Fixture does not apply with the current session-factory configuration]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -17876,6 +17835,15 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3316" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3316.ByCodeFixture.Test_That_Parent_Property_Can_Be_Persisted_And_Retrieved" executed="True" result="Success" success="True" asserts="3" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3324" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
@@ -18012,6 +17980,20 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3614" executed="True" result="Failure" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3614.Fixture.CanProjectListOfStrings" executed="True" result="Error" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH3614.Entity][SQL: INSERT INTO Entity values ( )]
+  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 29,Token in error = ) ]]]></message>
+                            </failure>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH364" executed="True" result="Failure" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
@@ -18040,6 +18022,16 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                             </failure>
                           </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3641" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyConcrete" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyInterface" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                     </results>
@@ -18903,8 +18895,16 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiCriteriaShouldThrowUserException" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiHqlShouldThrowUserException" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiCriteriaShouldThrowUserException" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.MultiHqlShouldThrowUserException" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Driver NHibernate.Driver.SqlServerCeDriver does not support multi-queries]]></message>
+                            </reason>
+                          </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.Fixture.NormalCriteriaShouldThrowUserException" executed="True" result="Failure" success="False" asserts="1">
                             <failure>
                               <message><![CDATA[  Expected: <NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery.UnitTestException>
@@ -19082,18 +19082,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.ProjectionFixtures.Fixture.LimitingResultSetOnQueryThatIsOrderedByProjection" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2341_0_, this_.Area as Area2341_0_, this_.Parent as Parent2341_0_, this_.ParentArea as ParentArea2341_0_, this_.Type as Type2341_0_, this_.Name as Name2341_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY ]
+[ SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY ]
   Name:cp0 - Value:0  Name:cp1 - Value:Smart
-[SQL: SELECT this_.Id as Id2341_0_, this_.Area as Area2341_0_, this_.Parent as Parent2341_0_, this_.ParentArea as ParentArea2341_0_, this_.Type as Type2341_0_, this_.Name as Name2341_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY]
+[SQL: SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 232,Token in error = SELECT ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ProjectionFixtures.Fixture.QueryingWithParemetersAndParaemtersInOrderBy" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2341_0_, this_.Area as Area2341_0_, this_.Parent as Parent2341_0_, this_.ParentArea as ParentArea2341_0_, this_.Type as Type2341_0_, this_.Name as Name2341_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY ]
+[ SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY ]
   Name:cp0 - Value:ayende  Name:cp1 - Value:0  Name:cp2 - Value:Smart
-[SQL: SELECT this_.Id as Id2341_0_, this_.Area as Area2341_0_, this_.Parent as Parent2341_0_, this_.ParentArea as ParentArea2341_0_, this_.Type as Type2341_0_, this_.Name as Name2341_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY]
+[SQL: SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 256,Token in error = SELECT ]]]></message>
                         </failure>
                       </test-case>
@@ -19255,7 +19255,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="QueryTest" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="QueryTest" executed="True" result="Success" success="True" asserts="0">
                 <results>
                   <test-suite type="TestFixture" name="AggregateReturnTypesFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
@@ -19282,296 +19282,264 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.QueryTest.DetachedQueryFixture.Serializable" executed="True" result="Success" success="True" asserts="0" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="MultiCriteriaFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="MultiCriteriaFixture" executed="False" result="Ignored">
+                    <reason>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                    </reason>
                     <results>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddCriteriaWithKeyAndRetrieveResultsWithKey" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id < ?;
-SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddCriteriaWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddDetachedCriteriaWithKeyAndRetrieveResultsWithKey" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id < ?;
-SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanAddDetachedCriteriaWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_;
-SELECT count(*) as y0_ FROM Item this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip_InTransaction" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_;
-SELECT count(*) as y0_ FROM Item this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanExecuteMultiplyQueriesInSingleRoundTrip_InTransaction" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetMultiQueryFromSecondLevelCache" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-SELECT count(*) as y0_ FROM Item this_ WHERE this_.Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetResultInAGenericList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_;
-SELECT count(*) as y0_ FROM Item this_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanGetResultInAGenericList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddDetachedCriteriaWithKeyThatAlreadyExists" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveDetachedCriteriaResultWithUnknownKey" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-SELECT count(*) as y0_ FROM Item this_ WHERE this_.Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSetParameterList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id in (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-SELECT count(*) as y0_ FROM Item this_ WHERE this_.Id in (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotAddDetachedCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseWithParameterizedQueriesAndLimit" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-SELECT count(*) as y0_ FROM Item this_ WHERE this_.Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi criteria[SQL: SELECT this_.Id as Id2349_0_, this_.Name as Name2349_0_, this_.ParentId as ParentId2349_0_ FROM Item this_ WHERE this_.Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-SELECT count(*) as y0_ FROM Item this_ WHERE this_.Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = SELECT ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanNotRetrieveDetachedCriteriaResultWithUnknownKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSetParameterList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="MultipleMixedQueriesFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="MultipleMixedQueriesFixture" executed="False" result="Ignored">
+                    <reason>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                    </reason>
                     <results>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id < ?;
-select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM;
-select count(*) as col_0_0_ from Item item0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetResultsInAGenericList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_;
-select count(*) as count from ITEM;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanGetResultsInAGenericList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotAddQueryWithKeyThatAlreadyExists" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotRetrieveQueryResultWithUnknownKey" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_;
-select * from ITEM where Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotAddQueryWithKeyThatAlreadyExists" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_;
-select * from ITEM where Id = ? or Id = ?;
-select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_ where item0_.Id=?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanNotRetrieveQueryResultWithUnknownKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSetParameterList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id in (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-select count(*) as col_0_0_ from Item item0_ where item0_.Id in (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id > ? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select * from ITEM where Id in (?);
-select * from ITEM where Id in (?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseSetParameterList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2351_, item0_.Name as Name2351_, item0_.ParentId as ParentId2351_ from Item item0_ where item0_.Id>? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as count from ITEM where Id > ?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.ExecutingQueryThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleMixedQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleMixedQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="MultipleQueriesFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="MultipleQueriesFixture" executed="False" result="Ignored">
+                    <reason>
+                      <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                    </reason>
                     <results>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id<?;
-select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanAddIQueryWithKeyAndRetrieveResultsWithKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-select count(*) as col_0_0_ from Item item0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanExecuteMultiplyQueriesInSingleRoundTrip" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id>? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-select count(*) as col_0_0_ from Item item0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericListClass" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-select item1_.Id as Id2353_, item1_.Name as Name2353_, item1_.ParentId as ParentId2353_ from Item item0_ inner join Item item1_ on item0_.ParentId=item1_.Id;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanGetResultsInAGenericListClass" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id=?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotAddCriteriaWithKeyThatAlreadyExists" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_;
-select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id=? or item0_.Id=?;
-select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id=?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanNotRetrieveCriteriaResultWithUnknownKey" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id>? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSetParameterList" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id in (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?);
-select count(*) as col_0_0_ from Item item0_ where item0_.Id in (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanSpecifyParameterOnMultiQueryWhenItIsNotUsedInAllQueries_MoreThanOneParameter" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id>? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiCriteriaTransformsResults" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id in (?);
-select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id in (?);
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseSetParameterList" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select item0_.Id as Id2353_, item0_.Name as Name2353_, item0_.ParentId as ParentId2353_ from Item item0_ where item0_.Id>? ORDER BY GETDATE() OFFSET ? ROWS;
-select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]]]></message>
-                        </failure>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.CanUseWithParameterizedQueriesAndLimit" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiCriteriaTransformsResults" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.ExecutingCriteriaThroughMultiQueryTransformsResults_When_setting_on_multi_query_directly" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillGiveReasonableErrorIfBadParameterName" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.NH_1085_WillIgnoreParametersIfDoesNotAppearInQuery" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultipleQueriesFixture.TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueries" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultipleQueriesFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
                       </test-case>
                     </results>
                   </test-suite>
@@ -19609,139 +19577,139 @@ select count(*) as col_0_0_ from Item item0_ where item0_.Id>?;
                     <results>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.DetachedCriteria" executed="True" result="Error" success="False" asserts="5">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.Test.ReadOnly.Student.Enrolments#232][SQL: SELECT enrolments0_.studentId as studentId1_, enrolments0_.CourseCode as CourseCode1_, enrolments0_.studentId as studentId2359_0_, enrolments0_.CourseCode as CourseCode2359_0_, enrolments0_.courseCode as courseCode2359_0_, enrolments0_.Semester as Semester2359_0_, enrolments0_."year" as year4_2359_0_ FROM Enrolment enrolments0_ WHERE enrolments0_.studentId=?]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_0_ ]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.Test.ReadOnly.Student.Enrolments#232][SQL: SELECT enrolments0_.studentId as studentId1_, enrolments0_.CourseCode as CourseCode1_, enrolments0_.studentId as studentId2367_0_, enrolments0_.CourseCode as CourseCode2367_0_, enrolments0_.courseCode as courseCode2367_0_, enrolments0_.Semester as Semester2367_0_, enrolments0_."year" as year4_2367_0_ FROM Enrolment enrolments0_ WHERE enrolments0_.studentId=?]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_0_ ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyEntity" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyProxyInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyProxyNotInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionDefaultCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionModifiableCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionReadOnlyCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsExistingModifiableProxyInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsExistingModifiableProxyNotInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsModifiableExistingEntity" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionDefaultCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionModifiableCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionReadOnlyCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.Subselect" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.TwoAliasesCache" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.ReadOnly.Student#666][SQL: INSERT INTO Student (Name, preferredCourseCode, studentId) VALUES (?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = Student,Constraint name = PK__Student__00000000000074CE ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = Student,Constraint name = PK__Student__000000000000750C ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2359_, enrolment0_.CourseCode as CourseCode2359_, enrolment0_.courseCode as courseCode2359_, enrolment0_.Semester as Semester2359_, enrolment0_."year" as year4_2359_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2359_ ]]]></message>
+[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
                         </failure>
                       </test-case>
                     </results>
@@ -20472,7 +20440,7 @@ Parameter name: typecode]]></message>
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="Stats" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="Stats" executed="True" result="Success" success="True" asserts="0">
                 <results>
                   <test-suite type="TestFixture" name="SessionStatsFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
@@ -20480,18 +20448,10 @@ Parameter name: typecode]]></message>
                       <test-case name="NHibernate.Test.Stats.SessionStatsFixture.SessionStatistics" executed="True" result="Success" success="True" asserts="8" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="StatsFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="StatsFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Stats.StatsFixture.CollectionFetchVsLoad" executed="True" result="Success" success="True" asserts="18" />
-                      <test-case name="NHibernate.Test.Stats.StatsFixture.IncrementQueryExecutionCount_WhenExplicitQueryIsExecuted" executed="True" result="Error" success="False" asserts="2">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : Failed to execute multi query[SQL: select country0_.Id as Id2423_, country0_.Name as Name2423_ from Country country0_;
-select continent0_.Id as Id2422_, continent0_.Name as Name2422_ from Continent continent0_;
-]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 2,Token line offset = 1,Token in error = select ]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Stats.StatsFixture.IncrementQueryExecutionCount_WhenExplicitQueryIsExecuted" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Stats.StatsFixture.QueryStatGathering" executed="True" result="Success" success="True" asserts="18" />
                     </results>
                   </test-suite>
@@ -20560,14 +20520,14 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="SystemTransactions" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="SystemTransactions" executed="True" result="Success" success="True" asserts="0">
                 <results>
                   <test-suite type="TestFixture" name="TransactionFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionFixture.CanUseSystemTransactionsToCommit" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="TransactionNotificationFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="TransactionNotificationFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.AfterBegin" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.Complete" executed="True" result="Success" success="True" asserts="2" />
@@ -20580,18 +20540,10 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransaction(False)" executed="True" result="Success" success="True" asserts="3" />
                         </results>
                       </test-suite>
-                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransactionWithOwnConnection" description="NH2128" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransactionWithOwnConnection" description="NH2128" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(True)" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.InvalidOperationException : The connection object can not be enlisted in transaction scope.]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(False)" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[System.InvalidOperationException : The connection object can not be enlisted in transaction scope.]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(False)" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.TwoTransactionScopesInsideOneSession" executed="True" result="Success" success="True" asserts="3" />

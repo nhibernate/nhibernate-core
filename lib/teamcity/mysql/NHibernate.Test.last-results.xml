@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" errors="35" failures="13" not-run="371" inconclusive="0" ignored="371" skipped="0" invalid="0">
-  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3643" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
+<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="30" failures="12" not-run="367" inconclusive="0" ignored="367" skipped="0" invalid="0">
+  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3655" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
+  <test-suite type="Assembly" name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
     <results>
       <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" asserts="0">
         <results>
@@ -430,9 +430,9 @@
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="Component" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="Component" executed="True" result="Success" success="True" asserts="0">
                 <results>
-                  <test-suite type="Namespace" name="Basic" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="Basic" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="ComponentTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
@@ -454,16 +454,10 @@
                           <test-case name="NHibernate.Test.Component.Basic.ComponentTest.TestUpdateFalse" executed="True" result="Success" success="True" asserts="4" />
                         </results>
                       </test-suite>
-                      <test-suite type="TestFixture" name="ComponentWithUniqueConstraintTests" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="ComponentWithUniqueConstraintTests" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.Component.Basic.ComponentWithUniqueConstraintTests.CanBePersistedWithUniqueValues" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.Component.Basic.ComponentWithUniqueConstraintTests.CannotBePersistedWithNonUniqueValues" executed="True" result="Failure" success="False" asserts="3">
-                            <failure>
-                              <message><![CDATA[  Expected: String containing "unique", ignoring case and String containing "constraint", ignoring case
-  But was:  "Duplicate entry 'Bill-2000-01-01 00:00:00' for key 'Name'"
-]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.Component.Basic.ComponentWithUniqueConstraintTests.CannotBePersistedWithNonUniqueValues" executed="True" result="Success" success="True" asserts="3" />
                         </results>
                       </test-suite>
                     </results>
@@ -963,6 +957,21 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                                   <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
                                 </reason>
                               </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL55Dialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL55InnoDBDialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL5InnoDBDialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle8iDialect)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle9iDialect)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle10gDialect)" executed="True" result="Success" success="True" asserts="0" />
@@ -1032,6 +1041,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MsSqlCe40Dialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQLDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL5Dialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL55Dialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL55InnoDBDialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL5InnoDBDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle8iDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle9iDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle10gDialect)" executed="True" result="Success" success="True" asserts="1" />
@@ -1115,10 +1127,10 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
@@ -2440,20 +2452,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.DayMonthYear" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Extract" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.HourMinuteSecond" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Iif" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[NHibernate.Dialect.MySQL5Dialectdoesn't support iif function.]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Iif" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Length" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Locate" executed="True" result="Error" success="False" asserts="1">
-                        <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select animal0_.Id as Id1445_, animal0_.Description as Descript2_1445_, animal0_.BodyWeight as BodyWeight1445_, animal0_1_.name_first as name2_1446_, animal0_1_.name_initial as name3_1446_, animal0_1_.name_last as name4_1446_, animal0_1_.NickName as NickName1446_, animal0_1_.Birthdate as Birthdate1446_, case when animal0_1_.animalId is not null then 1 when animal0_.Id is not null then 0 end as clazz_ from Animal animal0_ left outer join Human animal0_1_ on animal0_.Id=animal0_1_.animalId where locate('bc', animal0_.Description, )=2 ]
-[SQL: select animal0_.Id as Id1445_, animal0_.Description as Descript2_1445_, animal0_.BodyWeight as BodyWeight1445_, animal0_1_.name_first as name2_1446_, animal0_1_.name_initial as name3_1446_, animal0_1_.name_last as name4_1446_, animal0_1_.NickName as NickName1446_, animal0_1_.Birthdate as Birthdate1446_, case when animal0_1_.animalId is not null then 1 when animal0_.Id is not null then 0 end as clazz_ from Animal animal0_ left outer join Human animal0_1_ on animal0_.Id=animal0_1_.animalId where locate('bc', animal0_.Description, )=2]
-  ----> MySql.Data.MySqlClient.MySqlException : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')=2' at line 1]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Locate" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Lower" executed="True" result="Error" success="False" asserts="2">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
@@ -2463,11 +2464,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Mod" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.Hql.HQLFunctions.NH1725" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object.]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Hql.HQLFunctions.NH1725" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Nullif" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.ParameterLikeArgument" executed="False" result="Ignored">
                         <reason>
@@ -3927,7 +3924,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.EnumTests.CanQueryOnEnumStoredAsString_Small_1" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="FunctionTests" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="FunctionTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Linq.FunctionTests.CharIndexFunction" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.Coalesce" executed="True" result="Success" success="True" asserts="1" />
@@ -3936,11 +3933,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.FunctionTests.LeftFunction" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.LikeFunction" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.LikeFunctionUserDefined" executed="True" result="Success" success="True" asserts="2" />
-                      <test-case name="NHibernate.Test.Linq.FunctionTests.ReplaceFunction" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[NHibernate.QueryException : No data type for node: MethodNode ( method replace ( expr_list ( employee0_.FirstName employee0_.EmployeeId FirstName ) ? ? ) ) [.Select[NHibernate.DomainModel.Northwind.Entities.Employee,<>f__AnonymousType12`4[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]](.Where[NHibernate.DomainModel.Northwind.Entities.Employee](NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Employee], Quote((e, ) => (e.FirstName.StartsWith(p1, ))), ), Quote((e, ) => (new <>f__AnonymousType12`4(e.FirstName, e.FirstName.Replace(p2, p3, ), .Replace(e.FirstName, p4, p5, ), .ReplaceExtension(e.FirstName, p6, p7, ), ))), )]]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.FunctionTests.ReplaceFunction" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.SubstringFunction1" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.SubstringFunction2" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.FunctionTests.ToStringFunction" executed="True" result="Success" success="True" asserts="1" />
@@ -4500,71 +4493,36 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                   <test-suite type="TestFixture" name="LoggingTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
+                      <test-case name="NHibernate.Test.Linq.LoggingTests.CanLogLinqExpressionWithoutInitializingContainedProxy" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.LoggingTests.PageBetweenProjections" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="MathTests" executed="True" result="Inconclusive" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="MathTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-case name="NHibernate.Test.Linq.MathTests.AcosTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'acos' function]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.AsinTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'asin' function]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.Atan2Test" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'atan2' function]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.AtanTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'atan' function]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.MathTests.AcosTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.AsinTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.Atan2Test" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.AtanTest" executed="True" result="Success" success="True" asserts="11" />
                       <test-case name="NHibernate.Test.Linq.MathTests.CoshTest" executed="False" result="Ignored">
                         <reason>
                           <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'cosh' function]]></message>
                         </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.CosTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'cos' function]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllNegativeTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'sign' function]]></message>
-                        </reason>
-                      </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllPositiveTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'sign' function]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.MathTests.CosTest" executed="True" result="Success" success="True" asserts="11" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllNegativeTest" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.MathTests.SignAllPositiveTest" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.MathTests.SinhTest" executed="False" result="Ignored">
                         <reason>
                           <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'sinh' function]]></message>
                         </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.SinTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'sin' function]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.MathTests.SinTest" executed="True" result="Success" success="True" asserts="11" />
                       <test-case name="NHibernate.Test.Linq.MathTests.TanhTest" executed="False" result="Ignored">
                         <reason>
                           <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'tanh' function]]></message>
                         </reason>
                       </test-case>
-                      <test-case name="NHibernate.Test.Linq.MathTests.TanTest" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[Dialect NHibernate.Dialect.MySQL5Dialect does not support 'tan' function]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.MathTests.TanTest" executed="True" result="Success" success="True" asserts="11" />
                     </results>
                   </test-suite>
                   <test-suite type="TestFixture" name="MethodCallTests" executed="True" result="Failure" success="False" asserts="0">
@@ -4905,9 +4863,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.OrdersWithSubquery8" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.OrdersWithSubqueryWithJoin" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubquery" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningBoolFirstOrDefaultEq" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEq" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[Not fixed yet.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningStringFirstOrDefaultEq" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubqueryWhereFailingTest" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubqueryWhereFailingTest2" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubqueryWhereFailingTest3" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubselectCanHaveBoolResult" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithArray" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithSecondLevelClosure" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.TimeSheetsSubQueryWithAsQueryableWithArray" executed="True" result="Success" success="True" asserts="1" />
@@ -5157,6 +5123,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeJoinAttributesMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeJoinedSubclassAttributesMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeListPropertiesMapper" executed="True" result="Success" success="True" asserts="0" />
+                      <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToAnyMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToManyMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToOneMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeMapKeyManyToManyMapper" executed="True" result="Success" success="True" asserts="0" />
@@ -5292,6 +5259,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="ClassWithComponentsTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithComponentsTest.ComponentMappingJustOnceDemo" executed="True" result="Success" success="True" asserts="0" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="ClassWithoutNamespaceTests" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithoutNamespaceTests.ShouldBeAbleToMapClassWithoutNamespace" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                       <test-suite type="TestFixture" name="ColumnsNamingConvetions" executed="True" result="Success" success="True" asserts="0">
@@ -5467,6 +5439,29 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInClass" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapIdWhenIdIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="NH3140" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-suite type="ParameterizedTest" name="ExplicitColumnNameIsAlwaysMapped" executed="True" result="Success" success="True" asserts="0">
+                                <results>
+                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;DifferentFromBar&quot;)" executed="True" result="Success" success="True" asserts="2" />
+                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;Bar&quot;)" executed="True" result="Success" success="True" asserts="2" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="NH3280" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="OneToOneToInheritedProperty" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3280.OneToOneToInheritedProperty.ShouldConfigureSessionCorrectly" executed="True" result="Success" success="True" asserts="4" />
                             </results>
                           </test-suite>
                         </results>
@@ -5792,6 +5787,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetNotFoundWithIgnoreMode" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetPropertyRefName" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetUpdate" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.SetUniqueToMultiColumn" description="NH-3618" executed="True" result="Success" success="True" asserts="5" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenForceClassRelationToIncompatibleTypeThenThrows" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesMoreThanOnesThenMergeColumn" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesThenSetPlainValues" executed="True" result="Success" success="True" asserts="0" />
@@ -7253,9 +7249,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1280" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1280" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="NH1280Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="NH1280Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.HavingOnEqProjection" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.HavingOnGtCount" executed="True" result="Success" success="True" asserts="1" />
@@ -7266,11 +7262,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.NestedSubqueriesShouldStayInOrder" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.NonHavingOnEqProperty" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.NotExpressionShouldNotAddCriteriaTwice" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.SubstringShouldUseAllParameters" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.HibernateException : Current dialect NHibernate.Dialect.MySQL5Dialect doesn't support the function: LEFT]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1280.NH1280Fixture.SubstringShouldUseAllParameters" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                     </results>
@@ -8628,9 +8620,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1792.Fixture.PageWithDetachedCriteriaSubqueryWithOrderBy" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id5039_0_, this_.Name as Name5039_0_ FROM Product this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Product this_0_ ORDER BY this_0_.Name desc limit ?p0) and this_.Id > ?p1 limit ?p2 ]
+[ SELECT this_.Id as Id5043_0_, this_.Name as Name5043_0_ FROM Product this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Product this_0_ ORDER BY this_0_.Name desc limit ?p0) and this_.Id > ?p1 limit ?p2 ]
   Name:take_0 - Value:5  Name:cp1 - Value:0
-[SQL: SELECT this_.Id as Id5039_0_, this_.Name as Name5039_0_ FROM Product this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Product this_0_ ORDER BY this_0_.Name desc limit ?p0) and this_.Id > ?p1 limit ?p2]
+[SQL: SELECT this_.Id as Id5043_0_, this_.Name as Name5043_0_ FROM Product this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Product this_0_ ORDER BY this_0_.Name desc limit ?p0) and this_.Id > ?p1 limit ?p2]
   ----> MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery']]></message>
                             </failure>
                           </test-case>
@@ -8827,17 +8819,17 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH1857" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH1857" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="FullJoinTest" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="FullJoinTest" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1857.FullJoinTest does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                        </reason>
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH1857.FullJoinTest.TestFullJoin" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select employee0_.Id as Id5095_0_, department1_.Id as Id5094_1_, employee0_.Name as Name5095_0_, employee0_.CompanyJoinDate as CompanyJ3_5095_0_, employee0_.Department as Department5095_0_, department1_.Name as Name5094_1_ from Employee employee0_ full outer join Department department1_ on employee0_.Department=department1_.Id ]
-[SQL: select employee0_.Id as Id5095_0_, department1_.Id as Id5094_1_, employee0_.Name as Name5095_0_, employee0_.CompanyJoinDate as CompanyJ3_5095_0_, employee0_.Department as Department5095_0_, department1_.Name as Name5094_1_ from Employee employee0_ full outer join Department department1_ on employee0_.Department=department1_.Id]
-  ----> MySql.Data.MySqlClient.MySqlException : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'full outer join Department department1_ on employee0_.Department=department1_.Id' at line 1]]></message>
-                            </failure>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1857.FullJoinTest.TestFullJoin" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH1857.FullJoinTest does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                            </reason>
                           </test-case>
                         </results>
                       </test-suite>
@@ -8900,6 +8892,15 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1877.Fixture.CanGroupByWithPropertyName" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1877.Fixture.CanGroupByWithSqlFunctionProjection" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH1882" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestCollectionInitializingDuringFlush" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1882.TestCollectionInitializingDuringFlush.TestInitializationDuringFlush" executed="True" result="Success" success="True" asserts="4" />
                         </results>
                       </test-suite>
                     </results>
@@ -9809,9 +9810,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2251.Fixture.MultiplePagingParametersInSingleQuery" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id5361_0_, this_.Name as Name5361_0_, this_.Ord as Ord5361_0_ FROM Foo this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Foo this_0_ WHERE this_0_.Name like ?p0 ORDER BY this_0_.Ord asc limit ?p1, ?p2) and this_.Name like ?p3 ORDER BY this_.Ord asc limit ?p4, ?p5 ]
+[ SELECT this_.Id as Id5369_0_, this_.Name as Name5369_0_, this_.Ord as Ord5369_0_ FROM Foo this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Foo this_0_ WHERE this_0_.Name like ?p0 ORDER BY this_0_.Ord asc limit ?p1, ?p2) and this_.Name like ?p3 ORDER BY this_.Ord asc limit ?p4, ?p5 ]
   Name:cp0 - Value:1%  Name:skip_1 - Value:1  Name:take_2 - Value:7  Name:cp3 - Value:%0
-[SQL: SELECT this_.Id as Id5361_0_, this_.Name as Name5361_0_, this_.Ord as Ord5361_0_ FROM Foo this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Foo this_0_ WHERE this_0_.Name like ?p0 ORDER BY this_0_.Ord asc limit ?p1, ?p2) and this_.Name like ?p3 ORDER BY this_.Ord asc limit ?p4, ?p5]
+[SQL: SELECT this_.Id as Id5369_0_, this_.Name as Name5369_0_, this_.Ord as Ord5369_0_ FROM Foo this_ WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM Foo this_0_ WHERE this_0_.Name like ?p0 ORDER BY this_0_.Ord asc limit ?p1, ?p2) and this_.Name like ?p3 ORDER BY this_.Ord asc limit ?p4, ?p5]
   ----> MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery']]></message>
                             </failure>
                           </test-case>
@@ -9939,9 +9940,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2296.Fixture.Test" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load collection by subselect: [NHibernate.Test.NHSpecificTest.NH2296.Order.Products#System.Object[]]
-[ SELECT products0_.Order_id as Order3_1_, products0_.Id as Id1_, products0_.Id as Id5387_0_, products0_.StatusReason as StatusRe2_5387_0_, products0_.Order_id as Order3_5387_0_ FROM `Product` products0_ WHERE products0_.Order_id in (select order0_.Id from `Order` order0_ limit ?p0) ]
+[ SELECT products0_.Order_id as Order3_1_, products0_.Id as Id1_, products0_.Id as Id5395_0_, products0_.StatusReason as StatusRe2_5395_0_, products0_.Order_id as Order3_5395_0_ FROM `Product` products0_ WHERE products0_.Order_id in (select order0_.Id from `Order` order0_ limit ?p0) ]
   Name:nhsubselecttake - Value:2
-[SQL: SELECT products0_.Order_id as Order3_1_, products0_.Id as Id1_, products0_.Id as Id5387_0_, products0_.StatusReason as StatusRe2_5387_0_, products0_.Order_id as Order3_5387_0_ FROM `Product` products0_ WHERE products0_.Order_id in (select order0_.Id from `Order` order0_ limit ?p0)]
+[SQL: SELECT products0_.Order_id as Order3_1_, products0_.Id as Id1_, products0_.Id as Id5395_0_, products0_.StatusReason as StatusRe2_5395_0_, products0_.Order_id as Order3_5395_0_ FROM `Product` products0_ WHERE products0_.Order_id in (select order0_.Id from `Order` order0_ limit ?p0)]
   ----> MySql.Data.MySqlClient.MySqlException : This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery']]></message>
                             </failure>
                           </test-case>
@@ -9955,8 +9956,8 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-suite type="ParameterizedTest" name="InvalidCustomCompositeUserTypeThrowsMeaningfulException" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsNames.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsTypes.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
+                              <test-case name="NHibernate.Test.NHSpecificTest.NH2297.Fixture.InvalidCustomCompositeUserTypeThrowsMeaningfulException(&quot;.MappingsNames.hbm.xml&quot;)" executed="True" result="Success" success="True" asserts="0" />
                             </results>
                           </test-suite>
                         </results>
@@ -10942,9 +10943,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                               <message><![CDATA[The action (c => c.List()) Should Not throw NHibernate.Exceptions.GenericADOException.
 Not expected exception message:
 could not execute query
-[ SELECT this_.Id as Id5727_1_, this_.Name as Name5727_1_, children2_.T1Id as T3_3_, children2_.Id as Id3_, children2_.Id as Id5728_0_, children2_.Name as Name5728_0_, children2_.T1Id as T3_5728_0_ FROM T1 this_ left outer join T2 children2_ on this_.Id=children2_.T1Id and ?p0=children2_.Name WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM T1 this_0_ ORDER BY this_0_.Id asc limit ?p1, ?p2) ]
+[ SELECT this_.Id as Id5735_1_, this_.Name as Name5735_1_, children2_.T1Id as T3_3_, children2_.Id as Id3_, children2_.Id as Id5736_0_, children2_.Name as Name5736_0_, children2_.T1Id as T3_5736_0_ FROM T1 this_ left outer join T2 children2_ on this_.Id=children2_.T1Id and ?p0=children2_.Name WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM T1 this_0_ ORDER BY this_0_.Id asc limit ?p1, ?p2) ]
   Name:skip_0 - Value:3  Name:take_1 - Value:7
-[SQL: SELECT this_.Id as Id5727_1_, this_.Name as Name5727_1_, children2_.T1Id as T3_3_, children2_.Id as Id3_, children2_.Id as Id5728_0_, children2_.Name as Name5728_0_, children2_.T1Id as T3_5728_0_ FROM T1 this_ left outer join T2 children2_ on this_.Id=children2_.T1Id and ?p0=children2_.Name WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM T1 this_0_ ORDER BY this_0_.Id asc limit ?p1, ?p2)]]]></message>
+[SQL: SELECT this_.Id as Id5735_1_, this_.Name as Name5735_1_, children2_.T1Id as T3_3_, children2_.Id as Id3_, children2_.Id as Id5736_0_, children2_.Name as Name5736_0_, children2_.T1Id as T3_5736_0_ FROM T1 this_ left outer join T2 children2_ on this_.Id=children2_.T1Id and ?p0=children2_.Name WHERE this_.Id in (SELECT this_0_.Id as y0_ FROM T1 this_0_ ORDER BY this_0_.Id asc limit ?p1, ?p2)]]]></message>
                             </failure>
                           </test-case>
                         </results>
@@ -11234,6 +11235,15 @@ could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2923" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ExtraLazyFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2923.ExtraLazyFixture.ShouldNotThrowException" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH295" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="JoinedSubclassFixture" executed="True" result="Success" success="True" asserts="0">
@@ -11456,23 +11466,16 @@ could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH3138" executed="True" result="Inconclusive" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH3138" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="FixtureByCode" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
-                        </reason>
+                      <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingAliasedFunction" executed="False" result="Ignored">
                             <reason>
                               <message><![CDATA[Failing]]></message>
                             </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingFunctionWithCommaSeparatedParameters" executed="False" result="Ignored">
-                            <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
-                            </reason>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingFunctionWithCommaSeparatedParameters" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -11549,6 +11552,42 @@ could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3234" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3234.Fixture.ShouldNotFailWhenAddingNewLevels" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3234.Fixture.ShouldNotFailWhenReplacingLevels" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3237" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_DateTimes" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Decimals" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Doubles" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Floats" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Ints" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Longs" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Strings" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_That_DateTimeOffset_UserType_Can_Be_Used_For_Max_And_Min_Aggregates" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_That_Enum_Type_Can_Be_Used_For_Max_And_Min_Aggregates" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3316" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3316.ByCodeFixture.Test_That_Parent_Property_Can_Be_Persisted_And_Retrieved" executed="True" result="Success" success="True" asserts="3" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3324" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
@@ -11565,7 +11604,7 @@ could not execute query
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3332.TestJoinsWithSameTable.TestJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : unable to select generated column values[SQL: SELECT culture_.RowVersionId as RowVersi3_5915_ FROM Culture culture_ WHERE culture_.CountryCode=? and culture_.LanguageCode=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : unable to select generated column values[SQL: SELECT culture_.RowVersionId as RowVersi3_5937_ FROM Culture culture_ WHERE culture_.CountryCode=? and culture_.LanguageCode=?]
   ----> MySql.Data.MySqlClient.MySqlException : GetBytes can only be called on binary or guid columns]]></message>
                             </failure>
                           </test-case>
@@ -11600,6 +11639,22 @@ could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3405" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3405.Fixture does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3405.Fixture.CanLoadEntityWithXDocument" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3405.Fixture does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3408" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -11607,6 +11662,32 @@ could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayProperty" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.SelectBytePropertyWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3428" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3428.Fixture does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3428.Fixture.QueryFailsWhenDistinctOrderedResultIsPagedPastPageOne" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3428.Fixture does not apply to NHibernate.Dialect.MySQL5Dialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3436" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContains" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContainsInParallel" executed="True" result="Success" success="True" asserts="33" />
                         </results>
                       </test-suite>
                     </results>
@@ -11629,6 +11710,24 @@ could not execute query
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3505" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3505.Fixture.StatelessSessionLazyUpdate" executed="True" result="Success" success="True" asserts="4" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3614" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3614.Fixture.CanProjectListOfStrings" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH364" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -11637,6 +11736,16 @@ could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Delete" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Insert" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Update" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3641" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyConcrete" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyInterface" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                     </results>
@@ -13418,6 +13527,18 @@ could not execute query
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.NoTransaction" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.OneTransactionScopesInsideOneSession" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="2" />
+                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransaction" description="NH2128, NH3572" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransaction(True)" executed="True" result="Success" success="True" asserts="3" />
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransaction(False)" executed="True" result="Success" success="True" asserts="3" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransactionWithOwnConnection" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.TwoTransactionScopesInsideOneSession" executed="True" result="Success" success="True" asserts="3" />
                     </results>
                   </test-suite>
@@ -13510,9 +13631,21 @@ could not execute query
                   <test-suite type="TestFixture" name="TransactionNotificationFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.AfterBegin" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Commit" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Commit" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.NoTransaction" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="3" />
+                      <test-suite type="Theory" name="ShouldNotifyAfterTransaction" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransaction(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransaction(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="Theory" name="ShouldNotifyAfterTransactionWithOwnConnection" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransactionWithOwnConnection(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransactionWithOwnConnection(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
                     </results>
                   </test-suite>
                 </results>
