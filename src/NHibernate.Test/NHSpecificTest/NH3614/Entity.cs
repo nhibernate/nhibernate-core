@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 {
 	public class Entity
 	{
-		public virtual int Id { get; protected set; }
+		public virtual Guid Id { get; protected set; }
 		public virtual IList<string> SomeStrings { get; set; }
 	}
 }

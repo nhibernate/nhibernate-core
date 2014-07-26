@@ -4,9 +4,9 @@
 	namespace="NHibernate.Test.NHSpecificTest.NH3614">
 
 <class name="Entity">
-	<id name="Id">
-		<generator class="native" />
-	</id>
+    <id name="Id" type="guid">
+        <generator class="guid.comb" />
+    </id>
 
 	<bag name="SomeStrings" table="SomeStrings" cascade="all-delete-orphan" >
 		<key>
