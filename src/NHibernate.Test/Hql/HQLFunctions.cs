@@ -744,13 +744,21 @@ namespace NHibernate.Test.Hql
 					}
 					else
 					{
-						string msgToCheck =
-							"Column 'Animal.BodyWeight' is invalid in the HAVING clause because it is not contained in either an aggregate function or the GROUP BY clause.";
-						// This test raises an exception in SQL Server because named 
-						// parameters internally are always positional (@p0, @p1, etc.)
-						// and named differently hence they mismatch between GROUP BY and HAVING clauses.
-						if (!ex.InnerException.Message.Equals(msgToCheck))
-							throw;
+						if (Dialect is FirebirdDialect)
+						{
+							if (!ex.InnerException.Message.Contains("SQL error code = -104"))
+								throw;
+						}
+						else
+						{
+							string msgToCheck =
+								"Column 'Animal.BodyWeight' is invalid in the HAVING clause because it is not contained in either an aggregate function or the GROUP BY clause.";
+							// This test raises an exception in SQL Server because named 
+							// parameters internally are always positional (@p0, @p1, etc.)
+							// and named differently hence they mismatch between GROUP BY and HAVING clauses.
+							if (!ex.InnerException.Message.Equals(msgToCheck))
+								throw;
+						}
 					}
 				}
 
