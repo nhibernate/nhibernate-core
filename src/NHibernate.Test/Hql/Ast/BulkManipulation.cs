@@ -228,7 +228,10 @@ namespace NHibernate.Test.Hql.Ast
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into IntegerVersioned ( name ) select name from IntegerVersioned").ExecuteUpdate();
+			int count =
+				s.CreateQuery("insert into IntegerVersioned ( name, Data ) select name, Data from IntegerVersioned where id = :id")
+					.SetInt64("id", entity.Id)
+					.ExecuteUpdate();
 			t.Commit();
 			s.Close();
 
@@ -277,7 +280,10 @@ namespace NHibernate.Test.Hql.Ast
 			s = OpenSession();
 			t = s.BeginTransaction();
 			int count =
-				s.CreateQuery("insert into TimestampVersioned ( name ) select name from TimestampVersioned").ExecuteUpdate();
+				s.CreateQuery(
+					"insert into TimestampVersioned ( name, Data ) select name, Data from TimestampVersioned where id = :id")
+					.SetInt64("id", entity.Id)
+					.ExecuteUpdate();
 			t.Commit();
 			s.Close();
 
@@ -393,59 +399,81 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void IncrementCounterVersion()
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			IntegerVersioned entity;
 
-			var entity = new IntegerVersioned {Name = "int-vers"};
-			s.Save(entity);
-			t.Commit();
-			s.Close();
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				entity = new IntegerVersioned {Name = "int-vers", Data = "foo"};
+				s.Save(entity);
+				t.Commit();
+			}
 
 			int initialVersion = entity.Version;
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			int count = s.CreateQuery("update versioned IntegerVersioned set name = name").ExecuteUpdate();
-			Assert.That(count, Is.EqualTo(1), "incorrect exec count");
-			t.Commit();
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction t = s.BeginTransaction())
+				{
+					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
+					int count = s.CreateQuery("update versioned IntegerVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')")
+						.ExecuteUpdate();
+					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
+					t.Commit();
+				}
 
-			t = s.BeginTransaction();
-			entity = s.Load<IntegerVersioned>(entity.Id);
+				using (ITransaction t = s.BeginTransaction())
+				{
+					entity = s.Get<IntegerVersioned>(entity.Id);
+					s.Delete(entity);
+					t.Commit();
+				}
+			}
+
 			Assert.That(entity.Version, Is.EqualTo(initialVersion + 1), "version not incremented");
-
-			s.Delete(entity);
-			t.Commit();
-			s.Close();
+			Assert.That(entity.Name, Is.EqualTo("int-versupd"));
+			Assert.That(entity.Data, Is.EqualTo("fooupd"));
 		}
 
 		[Test]
 		public void IncrementTimestampVersion()
 		{
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			TimestampVersioned entity;
 
-			var entity = new TimestampVersioned {Name = "ts-vers"};
-			s.Save(entity);
-			t.Commit();
-			s.Close();
+			using (ISession s = OpenSession())
+			using(ITransaction t = s.BeginTransaction())
+			{
+				entity = new TimestampVersioned { Name = "ts-vers", Data = "foo" };
+				s.Save(entity);
+				t.Commit();
+			}
 
 			DateTime initialVersion = entity.Version;
 
 			Thread.Sleep(1300);
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			int count = s.CreateQuery("update versioned TimestampVersioned set name = name").ExecuteUpdate();
-			Assert.That(count, Is.EqualTo(1), "incorrect exec count");
-			t.Commit();
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction t = s.BeginTransaction())
+				{
+					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
+					int count = s.CreateQuery("update versioned TimestampVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')")
+						.ExecuteUpdate();
+					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
+					t.Commit();
+				}
 
-			t = s.BeginTransaction();
-			entity = s.Load<TimestampVersioned>(entity.Id);
+				using (ITransaction t = s.BeginTransaction())
+				{
+					entity = s.Load<TimestampVersioned>(entity.Id);
+					s.Delete(entity);
+					t.Commit();
+				}
+			}
+
 			Assert.That(entity.Version, Is.GreaterThan(initialVersion), "version not incremented");
-
-			s.Delete(entity);
-			t.Commit();
-			s.Close();
+			Assert.That(entity.Name, Is.EqualTo("ts-versupd"));
+			Assert.That(entity.Data, Is.EqualTo("fooupd"));
 		}
 
 		[Test]

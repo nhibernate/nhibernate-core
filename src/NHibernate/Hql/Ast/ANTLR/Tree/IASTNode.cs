@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		int ChildCount { get; }
 		int ChildIndex { get; }
 		IASTNode Parent { get; set; }
-		IASTNode NextSibling { get; set; }
+		IASTNode NextSibling { get; /*set;*/ }
 		IASTNode GetChild(int index);
 		IASTNode GetFirstChild();
 		void SetFirstChild(IASTNode newChild);
