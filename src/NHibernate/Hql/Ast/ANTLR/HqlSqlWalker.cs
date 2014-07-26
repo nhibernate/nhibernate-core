@@ -229,9 +229,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				EvaluateAssignment(eq, persister, 0);
 
 				IASTNode setClause = updateStatement.SetClause;
-				IASTNode currentFirstSetElement = setClause.GetFirstChild();
-				setClause.SetFirstChild(eq);
-				eq.NextSibling= currentFirstSetElement;
+				setClause.InsertChild(0, eq);
 			}
 		}
 
@@ -296,9 +294,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				if (idSelectExprNode != null)
 				{
-					IASTNode currentFirstSelectExprNode = selectClause.GetFirstChild();
-					selectClause.SetFirstChild(idSelectExprNode);
-					idSelectExprNode.NextSibling= currentFirstSelectExprNode;
+					selectClause.InsertChild(0, idSelectExprNode);
 
 					insertStatement.IntoClause.PrependIdColumnSpec();
 				}
@@ -343,9 +339,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					}
 				}
 
-				IASTNode currentFirstSelectExprNode = selectClause.GetFirstChild();
-				selectClause.SetFirstChild(versionValueNode);
-				versionValueNode.NextSibling = currentFirstSelectExprNode;
+				selectClause.InsertChild(0, versionValueNode);
 
 				insertStatement.IntoClause.PrependVersionColumnSpec();
 			}
