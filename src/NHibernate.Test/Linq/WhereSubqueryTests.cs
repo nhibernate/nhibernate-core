@@ -564,7 +564,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test]
-		public void CategoriesWithFirstProductIsNotDiscouned()
+		public void SubselectCanHaveBoolResult()
 		{
 			//NH-3190
 			var result = (from c in db.Categories
