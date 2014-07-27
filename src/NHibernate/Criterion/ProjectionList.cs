@@ -89,33 +89,6 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
-		public string[] GetColumnAliases(int loc)
-		{
-			IList<string> aliases = new List<string>(Length);
-
-			for (int i = 0; i < Length; i++)
-			{
-				String[] colAliases = this[i].GetColumnAliases(loc);
-				foreach (string alias in colAliases)
-					aliases.Add(alias);
-				loc += colAliases.Length;
-			}
-			string[] result = new string[aliases.Count];
-			aliases.CopyTo(result, 0);
-			return result;
-		}
-
-		public string[] GetColumnAliases(string alias, int loc)
-		{
-			for (int i = 0; i < Length; i++)
-			{
-				String[] result = this[i].GetColumnAliases(alias, loc);
-				if (result != null) return result;
-				loc += this[i].GetColumnAliases(loc).Length;
-			}
-			return null;
-		}
-		
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var result = new List<string>(Length);

@@ -31,7 +31,7 @@ namespace NHibernate.Criterion
 				parameter = criteriaQuery.GetColumn(criteria, propertyName);
 			}
 			string expression = string.Format("{0}(cast({1} as {2})) as {3}", aggregate, parameter, sqlType,
-			                                  GetColumnAliases(loc)[0]);
+			                                  GetColumnAliases(loc, criteria, criteriaQuery)[0]);
 			return new SqlString(expression);
 		}
 

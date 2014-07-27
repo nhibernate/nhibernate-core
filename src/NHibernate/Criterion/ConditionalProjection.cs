@@ -49,7 +49,8 @@ namespace NHibernate.Criterion
 			ifTrue = SqlStringHelper.RemoveAsAliasesFromSql(ifTrue);
 			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery, enabledFilters);
 			ifFalse = SqlStringHelper.RemoveAsAliasesFromSql(ifFalse);
-			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ", GetColumnAliases(position)[0]);
+			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
+			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

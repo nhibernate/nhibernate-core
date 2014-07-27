@@ -41,18 +41,6 @@ namespace NHibernate.Criterion
 				: null;
 		}
 
-		public virtual string[] GetColumnAliases(int loc)
-		{
-			return projection.GetColumnAliases(loc);
-		}
-
-		public virtual string[] GetColumnAliases(string alias, int loc)
-		{
-			return this.alias.Equals(alias)
-				? GetColumnAliases(loc)
-				: null;
-		}
-		
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return projection.GetColumnAliases(position, criteria, criteriaQuery);

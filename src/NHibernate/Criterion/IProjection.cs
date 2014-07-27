@@ -50,21 +50,6 @@ namespace NHibernate.Criterion
 		IType[] GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery);
 
 		/// <summary>
-		/// Get the SQL select clause column aliases for a particular user-visible alias
-		/// </summary>
-		/// <param name="loc"></param>
-		/// <returns></returns>
-		string[] GetColumnAliases(int loc);
-
-		/// <summary>
-		/// Get the SQL select clause column aliases for a particular user-visible alias
-		/// </summary>
-		/// <param name="alias"></param>
-		/// <param name="loc"></param>
-		/// <returns></returns>
-		string[] GetColumnAliases(string alias, int loc);
-
-		/// <summary>
 		/// Get the user-visible aliases for this projection (ie. the ones that will be passed to the ResultTransformer)
 		/// </summary>
 		string[] Aliases { get; }
