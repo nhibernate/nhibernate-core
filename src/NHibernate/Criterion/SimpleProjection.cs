@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// A single-column projection that may be aliased
 	/// </summary>
 	[Serializable]
-	public abstract class SimpleProjection : IEnhancedProjection
+	public abstract class SimpleProjection : IProjection
 	{
 		public IProjection As(string alias)
 		{

@@ -84,7 +84,7 @@ namespace NHibernate.Criterion
 			return new SqlString(
 				sqlFunction.Render(arguments, criteriaQuery.Factory),
 				" as ",
-				GetColumnAliases(position)[0]);
+				GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
 		private ISQLFunction GetFunction(ICriteriaQuery criteriaQuery)
