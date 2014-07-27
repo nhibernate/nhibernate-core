@@ -92,6 +92,46 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+        [Test]
+        public void AggregateDistinctCount()
+        {
+            using (ISession s = OpenSession())
+            {
+                Animal a1 = new Animal("a1", 20);
+                Animal a2 = new Animal("a2", 10);
+                s.Save(a1);
+                s.Save(a2);
+                s.Flush();
+            }
+            using (ISession s = OpenSession())
+            {
+                // Count in select
+                object result = s.CreateQuery("select count(distinct concat(a.Description,'number')) from Animal a").UniqueResult();
+                Assert.AreEqual(typeof(long), result.GetType());
+                Assert.AreEqual(2, result);
+            }
+        }
+
+        [Test]
+        public void AggregateNoDistinctCount()
+        {
+            using (ISession s = OpenSession())
+            {
+                Animal a1 = new Animal("a1", 20);
+                Animal a2 = new Animal("a2", 10);
+                s.Save(a1);
+                s.Save(a2);
+                s.Flush();
+            }
+            using (ISession s = OpenSession())
+            {
+                // Count in select
+                object result = s.CreateQuery("select count(concat(a.Description,'number')) from Animal a").UniqueResult();
+                Assert.AreEqual(typeof(long), result.GetType());
+                Assert.AreEqual(2, result);
+            }
+        }
+
 		[Test]
 		public void AggregateAvg()
 		{
