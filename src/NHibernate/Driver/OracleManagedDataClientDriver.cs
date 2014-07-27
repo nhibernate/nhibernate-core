@@ -36,13 +36,13 @@ namespace NHibernate.Driver
 				connectionTypeName,
 				commandTypeName)
 		{
-			var oracleCommandType = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleCommand", driverAssemblyName, false);
+			var oracleCommandType = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleCommand", driverAssemblyName, true);
 			oracleCommandBindByName = oracleCommandType.GetProperty("BindByName");
 
-			var parameterType = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleParameter", driverAssemblyName, false);
+			var parameterType = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleParameter", driverAssemblyName, true);
 			oracleDbType = parameterType.GetProperty("OracleDbType");
 
-			var oracleDbTypeEnum = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleDbType", driverAssemblyName, false);
+			var oracleDbTypeEnum = ReflectHelper.TypeFromAssembly("Oracle.ManagedDataAccess.Client.OracleDbType", driverAssemblyName, true);
 			oracleDbTypeRefCursor = Enum.Parse(oracleDbTypeEnum, "RefCursor");
 			oracleDbTypeXmlType = Enum.Parse(oracleDbTypeEnum, "XmlType");
 			oracleDbTypeBlob = Enum.Parse(oracleDbTypeEnum, "Blob");
