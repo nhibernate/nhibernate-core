@@ -7,7 +7,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class Distinct : IEnhancedProjection
+	public class Distinct : IProjection
 	{
 		private readonly IProjection projection;
 
@@ -44,9 +44,7 @@ namespace NHibernate.Criterion
 		
 		public virtual string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return projection is IEnhancedProjection
-				? ((IEnhancedProjection)projection).GetColumnAliases(position, criteria, criteriaQuery)
-				: GetColumnAliases(position);
+			return projection.GetColumnAliases(position, criteria, criteriaQuery);
 		}
 
 		public virtual string[] GetColumnAliases(string alias, int loc)
@@ -56,9 +54,7 @@ namespace NHibernate.Criterion
 		
 		public virtual string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return projection is IEnhancedProjection
-				? ((IEnhancedProjection)projection).GetColumnAliases(alias, position, criteria, criteriaQuery)
-				: GetColumnAliases(alias, position);
+			return projection.GetColumnAliases(alias, position, criteria, criteriaQuery);
 		}
 
 		public virtual string[] Aliases

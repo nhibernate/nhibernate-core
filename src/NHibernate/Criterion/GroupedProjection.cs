@@ -50,9 +50,7 @@ namespace NHibernate.Criterion
 
 		public string[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return projection is IEnhancedProjection
-				? ((IEnhancedProjection)projection).GetColumnAliases(position, criteria, criteriaQuery)
-				: this.GetColumnAliases(position);
+			return projection.GetColumnAliases(position, criteria, criteriaQuery);
 		}
 
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)

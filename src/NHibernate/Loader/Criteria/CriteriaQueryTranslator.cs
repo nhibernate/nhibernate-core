@@ -179,12 +179,7 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] ProjectedColumnAliases
 		{
-			get
-			{
-				return rootCriteria.Projection is IEnhancedProjection
-					? ((IEnhancedProjection)rootCriteria.Projection).GetColumnAliases(0, rootCriteria, this)
-					: rootCriteria.Projection.GetColumnAliases(0);
-			}
+			get { return rootCriteria.Projection.GetColumnAliases(0, rootCriteria, this); }
 		}
 
 		public string[] ProjectedAliases
@@ -818,11 +813,7 @@ namespace NHibernate.Loader.Criteria
 			string[] projectionColumns = null;
 
 			if (projection != null)
-			{
-				projectionColumns = projection is IEnhancedProjection
-					? ((IEnhancedProjection)projection).GetColumnAliases(propertyName, 0, subcriteria, this)
-					: projection.GetColumnAliases(propertyName, 0);
-			}
+				projectionColumns = projection.GetColumnAliases(propertyName, 0, subcriteria, this);
 
 			if (projectionColumns == null)
 			{
