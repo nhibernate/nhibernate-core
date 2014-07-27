@@ -1,0 +1,31 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH1863">
+
+    <class name="Customer" table="Customer">
+        <id name="Id" column="Id">
+            <generator class="native" />
+        </id>
+        <property name="Name" not-null="true" />
+
+        <set name='Categories' lazy='false' fetch='join'>
+            <key column='Category_Id' />
+            <one-to-many class='Category' />
+            <filter name='onlyActive' condition=':activeFlag = IsActive' />
+        </set>
+
+    </class>
+
+    <class name="Category" table="Category">
+        <id name="Id" column="Id">
+            <generator class="native" />
+        </id>
+        <property name="IsActive" not-null="true" />
+
+        <filter name="onlyActive" condition=":activeFlag = IsActive" />
+    </class>
+
+    <filter-def name="onlyActive">
+        <filter-param name="activeFlag" type="int"/>
+    </filter-def>
+
+</hibernate-mapping>
