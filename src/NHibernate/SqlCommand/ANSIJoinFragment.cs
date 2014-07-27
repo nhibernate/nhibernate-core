@@ -1,4 +1,3 @@
-using System;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -8,8 +7,8 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class ANSIJoinFragment : JoinFragment
 	{
-		private SqlStringBuilder buffer = new SqlStringBuilder();
-		private readonly SqlStringBuilder conditions = new SqlStringBuilder();
+		private SqlStringBuilder _fromFragment = new SqlStringBuilder();
+		private readonly SqlStringBuilder _whereFragment = new SqlStringBuilder();
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType)
 		{
@@ -17,7 +16,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-									 SqlString on)
+		                             SqlString on)
 		{
 			string joinString;
 			switch (joinType)
@@ -38,61 +37,63 @@ namespace NHibernate.SqlCommand
 					throw new AssertionFailure("undefined join type");
 			}
 
-			buffer.Add(joinString + tableName + ' ' + alias + " on ");
+			_fromFragment.Add(joinString + tableName + ' ' + alias + " on ");
 
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
-				buffer.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
+				_fromFragment.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
 				if (j < fkColumns.Length - 1)
 				{
-					buffer.Add(" and ");
+					_fromFragment.Add(" and ");
 				}
 			}
 
-			AddCondition(buffer, on);
+			AddCondition(_fromFragment, on);
 		}
 
 		public override SqlString ToFromFragmentString
 		{
-			get { return buffer.ToSqlString(); }
+			get { return _fromFragment.ToSqlString(); }
 		}
 
 		public override SqlString ToWhereFragmentString
 		{
-			get { return conditions.ToSqlString(); }
+			get { return _whereFragment.ToSqlString(); }
 		}
 
 		public override void AddJoins(SqlString fromFragment, SqlString whereFragment)
 		{
-			buffer.Add(fromFragment);
+			_fromFragment.Add(fromFragment);
 			//where fragment must be empty!
 		}
 
 		public JoinFragment Copy()
 		{
-			ANSIJoinFragment copy = new ANSIJoinFragment();
-			copy.buffer = new SqlStringBuilder(buffer.ToSqlString());
+			var copy = new ANSIJoinFragment
+			{
+				_fromFragment = new SqlStringBuilder(_fromFragment.ToSqlString())
+			};
 			return copy;
 		}
 
 		public override void AddCrossJoin(string tableName, string alias)
 		{
-			buffer.Add(StringHelper.CommaSpace + tableName + " " + alias);
+			_fromFragment.Add(StringHelper.CommaSpace + tableName + " " + alias);
 		}
 
 		public override bool AddCondition(string condition)
 		{
-			return AddCondition(conditions, condition);
+			return AddCondition(_whereFragment, condition);
 		}
 
 		public override bool AddCondition(SqlString condition)
 		{
-			return AddCondition(conditions, condition);
+			return AddCondition(_whereFragment, condition);
 		}
 
 		public override void AddFromFragmentString(SqlString fromFragmentString)
 		{
-			buffer.Add(fromFragmentString);
+			_fromFragment.Add(fromFragmentString);
 		}
 	}
 }
