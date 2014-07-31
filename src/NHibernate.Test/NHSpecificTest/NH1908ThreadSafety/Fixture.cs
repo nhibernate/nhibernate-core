@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 
@@ -44,7 +45,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1908ThreadSafety
 				thread.Join();
 			}
 
-			Assert.AreEqual(0, errors.Count);
+			Console.WriteLine("Detected {0} errors in threads. Displaying the first three (if any):", errors.Count);
+			foreach (var exception in errors.Take(3))
+				Console.WriteLine(exception);
+
+			Assert.AreEqual(0, errors.Count, "number of threads with exceptions");
 		}
 
 		private void ScenarioRunningWithMultiThreading()
