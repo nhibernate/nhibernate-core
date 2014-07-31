@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" errors="59" failures="32" not-run="418" inconclusive="0" ignored="418" skipped="0" invalid="0">
-  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3643" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
+<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="61" failures="32" not-run="424" inconclusive="0" ignored="424" skipped="0" invalid="0">
+  <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3655" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="../../build/NHibernate-3.3.3.GA-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
+  <test-suite type="Assembly" name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
     <results>
       <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" asserts="0">
         <results>
@@ -931,6 +931,21 @@ Parameter name: index]]></message>
                                   <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
                                 </reason>
                               </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL55Dialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL55InnoDBDialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.MySQL5InnoDBDialect)" executed="False" result="Ignored">
+                                <reason>
+                                  <message><![CDATA[This test applies only to dialects that support sequences.]]></message>
+                                </reason>
+                              </test-case>
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle8iDialect)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle9iDialect)" executed="True" result="Success" success="True" asserts="0" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SequenceSupportFixture.DialectSupportingSequencesMustFullfillSequenceContract(NHibernate.Dialect.Oracle10gDialect)" executed="True" result="Success" success="True" asserts="0" />
@@ -1000,6 +1015,9 @@ Parameter name: index]]></message>
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MsSqlCe40Dialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQLDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL5Dialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL55Dialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL55InnoDBDialect)" executed="True" result="Success" success="True" asserts="1" />
+                              <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.MySQL5InnoDBDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle8iDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle9iDialect)" executed="True" result="Success" success="True" asserts="1" />
                               <test-case name="NHibernate.Test.DialectTest.FunctionTests.SubstringSupportFixture.DialectShouldUseCorrectSubstringImplementation(NHibernate.Dialect.Oracle10gDialect)" executed="True" result="Success" success="True" asserts="1" />
@@ -1079,11 +1097,11 @@ Parameter name: index]]></message>
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
                         </results>
@@ -2338,7 +2356,7 @@ Positional parameters:  #0>1
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="HQLFunctions" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="HQLFunctions" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Abs" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.AggregateAvg" executed="True" result="Success" success="True" asserts="4" />
@@ -2363,20 +2381,12 @@ Positional parameters:  #0>1
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.DayMonthYear" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Extract" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.HourMinuteSecond" executed="True" result="Success" success="True" asserts="0" />
-                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Iif" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[NHibernate.Dialect.Oracle10gDialectdoesn't support iif function.]]></message>
-                        </reason>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Hql.HQLFunctions.Iif" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Length" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Locate" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Lower" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Mod" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.Hql.HQLFunctions.NH1725" executed="True" result="Error" success="False" asserts="0">
-                        <failure>
-                          <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object.]]></message>
-                        </failure>
-                      </test-case>
+                      <test-case name="NHibernate.Test.Hql.HQLFunctions.NH1725" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.Nullif" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Hql.HQLFunctions.ParameterLikeArgument" executed="False" result="Ignored">
                         <reason>
@@ -4443,6 +4453,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                   </test-suite>
                   <test-suite type="TestFixture" name="LoggingTests" executed="True" result="Success" success="True" asserts="0">
                     <results>
+                      <test-case name="NHibernate.Test.Linq.LoggingTests.CanLogLinqExpressionWithoutInitializingContainedProxy" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Linq.LoggingTests.PageBetweenProjections" executed="True" result="Success" success="True" asserts="1" />
                     </results>
                   </test-suite>
@@ -4788,6 +4799,29 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.OrdersWithSubquery8" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.OrdersWithSubqueryWithJoin" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubquery" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningBoolFirstOrDefaultEq" executed="True" result="Error" success="False" asserts="0">
+                        <failure>
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
+[ select product0_.ProductId as ProductId4204_, product0_.ProductName as ProductN2_4204_, product0_.SupplierId as SupplierId4204_, product0_.CategoryId as CategoryId4204_, product0_.QuantityPerUnit as Quantity5_4204_, product0_.UnitPrice as UnitPrice4204_, product0_.UnitsInStock as UnitsInS7_4204_, product0_.UnitsOnOrder as UnitsOnO8_4204_, product0_.ReorderLevel as ReorderL9_4204_, product0_.Discontinued as Discont10_4204_, product0_.ShippingWeight as Shippin11_4204_ from Products product0_ where (select Discontinued from ( select product0_.Discontinued from Categories productcat1_ where productcat1_.CategoryName=:p0 and productcat1_.CategoryId=product0_.CategoryId ) where rownum <=1)=:p1 ]
+  Name:p1 - Value:Confections  Name:p2 - Value:False
+[SQL: select product0_.ProductId as ProductId4204_, product0_.ProductName as ProductN2_4204_, product0_.SupplierId as SupplierId4204_, product0_.CategoryId as CategoryId4204_, product0_.QuantityPerUnit as Quantity5_4204_, product0_.UnitPrice as UnitPrice4204_, product0_.UnitsInStock as UnitsInS7_4204_, product0_.UnitsOnOrder as UnitsOnO8_4204_, product0_.ReorderLevel as ReorderL9_4204_, product0_.Discontinued as Discont10_4204_, product0_.ShippingWeight as Shippin11_4204_ from Products product0_ where (select Discontinued from ( select product0_.Discontinued from Categories productcat1_ where productcat1_.CategoryName=:p0 and productcat1_.CategoryId=product0_.CategoryId ) where rownum <=1)=:p1]
+  ----> Oracle.DataAccess.Client.OracleException : ORA-00904: "PRODUCT0_"."CATEGORYID": invalid identifier]]></message>
+                        </failure>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEq" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[Not fixed yet.]]></message>
+                        </reason>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.ProductsWithSubqueryReturningStringFirstOrDefaultEq" executed="True" result="Error" success="False" asserts="0">
+                        <failure>
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
+[ select product0_.ProductId as ProductId4204_, product0_.ProductName as ProductN2_4204_, product0_.SupplierId as SupplierId4204_, product0_.CategoryId as CategoryId4204_, product0_.QuantityPerUnit as Quantity5_4204_, product0_.UnitPrice as UnitPrice4204_, product0_.UnitsInStock as UnitsInS7_4204_, product0_.UnitsOnOrder as UnitsOnO8_4204_, product0_.ReorderLevel as ReorderL9_4204_, product0_.Discontinued as Discont10_4204_, product0_.ShippingWeight as Shippin11_4204_ from Products product0_ where (select ProductName from ( select product0_.ProductName from Categories productcat1_ where productcat1_.CategoryName=:p0 and productcat1_.CategoryId=product0_.CategoryId ) where rownum <=1)=product0_.ProductName ]
+  Name:p1 - Value:Confections
+[SQL: select product0_.ProductId as ProductId4204_, product0_.ProductName as ProductN2_4204_, product0_.SupplierId as SupplierId4204_, product0_.CategoryId as CategoryId4204_, product0_.QuantityPerUnit as Quantity5_4204_, product0_.UnitPrice as UnitPrice4204_, product0_.UnitsInStock as UnitsInS7_4204_, product0_.UnitsOnOrder as UnitsOnO8_4204_, product0_.ReorderLevel as ReorderL9_4204_, product0_.Discontinued as Discont10_4204_, product0_.ShippingWeight as Shippin11_4204_ from Products product0_ where (select ProductName from ( select product0_.ProductName from Categories productcat1_ where productcat1_.CategoryName=:p0 and productcat1_.CategoryId=product0_.CategoryId ) where rownum <=1)=product0_.ProductName]
+  ----> Oracle.DataAccess.Client.OracleException : ORA-00904: "PRODUCT0_"."CATEGORYID": invalid identifier]]></message>
+                        </failure>
+                      </test-case>
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubqueryWhereFailingTest" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
@@ -4810,6 +4844,15 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
 [ select orderline0_.Discount as col_0_0_, (select Phone from ( select shipper3_.Phone from Orders order2_ left outer join Shippers shipper3_ on order2_.ShipVia=shipper3_.ShipperId where order2_.ShipVia=order1_.ShipVia ) where rownum <=1) as col_1_0_ from OrderLines orderline0_ left outer join Orders order1_ on orderline0_.OrderId=order1_.OrderId ]
 [SQL: select orderline0_.Discount as col_0_0_, (select Phone from ( select shipper3_.Phone from Orders order2_ left outer join Shippers shipper3_ on order2_.ShipVia=shipper3_.ShipperId where order2_.ShipVia=order1_.ShipVia ) where rownum <=1) as col_1_0_ from OrderLines orderline0_ left outer join Orders order1_ on orderline0_.OrderId=order1_.OrderId]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00904: "ORDER1_"."SHIPVIA": invalid identifier]]></message>
+                        </failure>
+                      </test-case>
+                      <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.SubselectCanHaveBoolResult" executed="True" result="Error" success="False" asserts="0">
+                        <failure>
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
+[ select productcat0_.CategoryId as CategoryId4205_, productcat0_.CategoryName as Category2_4205_, productcat0_.Description as Descript3_4205_ from Categories productcat0_ where (select Discontinued from ( select products1_.Discontinued from Products products1_ where productcat0_.CategoryId=products1_.CategoryId order by products1_.ProductId asc ) where rownum <=1)=:p0 ]
+  Name:p1 - Value:False
+[SQL: select productcat0_.CategoryId as CategoryId4205_, productcat0_.CategoryName as Category2_4205_, productcat0_.Description as Descript3_4205_ from Categories productcat0_ where (select Discontinued from ( select products1_.Discontinued from Products products1_ where productcat0_.CategoryId=products1_.CategoryId order by products1_.ProductId asc ) where rownum <=1)=:p0]
+  ----> Oracle.DataAccess.Client.OracleException : ORA-00904: "PRODUCTCAT0_"."CATEGORYID": invalid identifier]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Linq.WhereSubqueryTests.TimeSheetsSubQueryWithAsQueryableAndExternalPredicateWithArray" executed="True" result="Success" success="True" asserts="1" />
@@ -5119,6 +5162,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeJoinAttributesMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeJoinedSubclassAttributesMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeListPropertiesMapper" executed="True" result="Success" success="True" asserts="0" />
+                      <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToAnyMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToManyMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeManyToOneMapper" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.MappingByCode.CustomizerHolderMergeTest.MergeShouldMergeMapKeyManyToManyMapper" executed="True" result="Success" success="True" asserts="0" />
@@ -5254,6 +5298,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="ClassWithComponentsTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithComponentsTest.ComponentMappingJustOnceDemo" executed="True" result="Success" success="True" asserts="0" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="TestFixture" name="ClassWithoutNamespaceTests" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.MappingByCode.ExpliticMappingTests.ClassWithoutNamespaceTests.ShouldBeAbleToMapClassWithoutNamespace" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                       <test-suite type="TestFixture" name="ColumnsNamingConvetions" executed="True" result="Success" success="True" asserts="0">
@@ -5429,6 +5478,29 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapComponentAsIdWhenComponentIsDeclaredInClass" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3105.Fixture.CanMapIdWhenIdIsDeclaredInBaseClass" executed="True" result="Success" success="True" asserts="2" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="NH3140" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-suite type="ParameterizedTest" name="ExplicitColumnNameIsAlwaysMapped" executed="True" result="Success" success="True" asserts="0">
+                                <results>
+                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;Bar&quot;)" executed="True" result="Success" success="True" asserts="2" />
+                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;DifferentFromBar&quot;)" executed="True" result="Success" success="True" asserts="2" />
+                                </results>
+                              </test-suite>
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="NH3280" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="OneToOneToInheritedProperty" executed="True" result="Success" success="True" asserts="0">
+                            <results>
+                              <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3280.OneToOneToInheritedProperty.ShouldConfigureSessionCorrectly" executed="True" result="Success" success="True" asserts="4" />
                             </results>
                           </test-suite>
                         </results>
@@ -5754,6 +5826,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetNotFoundWithIgnoreMode" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetPropertyRefName" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.CanSetUpdate" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.SetUniqueToMultiColumn" description="NH-3618" executed="True" result="Success" success="True" asserts="5" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenForceClassRelationToIncompatibleTypeThenThrows" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesMoreThanOnesThenMergeColumn" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.MappingByCode.MappersTests.ManyToOneMapperTest.WhenSetBasicColumnValuesThenSetPlainValues" executed="True" result="Success" success="True" asserts="0" />
@@ -7138,16 +7211,16 @@ ORDER BY Name
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1192.Fixture.BitwiseAndWorksCorrectly" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select objecta0_.Id as Id4628_, objecta0_.Name as Name4628_, objecta0_.FontType as FontType4628_ from ObjectA objecta0_ where objecta0_.FontType&1>0 ]
-[SQL: select objecta0_.Id as Id4628_, objecta0_.Name as Name4628_, objecta0_.FontType as FontType4628_ from ObjectA objecta0_ where objecta0_.FontType&1>0]
+[ select objecta0_.Id as Id4632_, objecta0_.Name as Name4632_, objecta0_.FontType as FontType4632_ from ObjectA objecta0_ where objecta0_.FontType&1>0 ]
+[SQL: select objecta0_.Id as Id4632_, objecta0_.Name as Name4632_, objecta0_.FontType as FontType4632_ from ObjectA objecta0_ where objecta0_.FontType&1>0]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00920: invalid relational operator]]></message>
                             </failure>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1192.Fixture.BitwiseOrWorksCorrectly" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select objecta0_.Id as Id4628_, objecta0_.Name as Name4628_, objecta0_.FontType as FontType4628_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2 ]
-[SQL: select objecta0_.Id as Id4628_, objecta0_.Name as Name4628_, objecta0_.FontType as FontType4628_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2]
+[ select objecta0_.Id as Id4632_, objecta0_.Name as Name4632_, objecta0_.FontType as FontType4632_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2 ]
+[SQL: select objecta0_.Id as Id4632_, objecta0_.Name as Name4632_, objecta0_.FontType as FontType4632_ from ObjectA objecta0_ where objecta0_.FontType|2=1|2]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00996: the concatenate operator is ||, not |]]></message>
                             </failure>
                           </test-case>
@@ -8702,9 +8775,9 @@ ORDER BY Name
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1792.Fixture.PageWithRawSqlSubqueryWithOrderBy" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select Id5047_0_,Name5047_0_ from ( SELECT this_.Id as Id5047_0_, this_.Name as Name5047_0_ FROM Product this_ WHERE this_.Id in (Select  p.Id from Product p order by Name) and this_.Id > :p0 ) where rownum <=:p1 ]
+[ select Id5051_0_,Name5051_0_ from ( SELECT this_.Id as Id5051_0_, this_.Name as Name5051_0_ FROM Product this_ WHERE this_.Id in (Select  p.Id from Product p order by Name) and this_.Id > :p0 ) where rownum <=:p1 ]
   Name:cp0 - Value:0
-[SQL: select Id5047_0_,Name5047_0_ from ( SELECT this_.Id as Id5047_0_, this_.Name as Name5047_0_ FROM Product this_ WHERE this_.Id in (Select  p.Id from Product p order by Name) and this_.Id > :p0 ) where rownum <=:p1]
+[SQL: select Id5051_0_,Name5051_0_ from ( SELECT this_.Id as Id5051_0_, this_.Name as Name5051_0_ FROM Product this_ WHERE this_.Id in (Select  p.Id from Product p order by Name) and this_.Id > :p0 ) where rownum <=:p1]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00907: missing right parenthesis]]></message>
                             </failure>
                           </test-case>
@@ -8816,9 +8889,9 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1831.Fixture.CorrectPrecedenceForBitwiseOperators" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select documentty0_.oid as oid5084_, documentty0_.systemAction as systemAc2_5084_ from documents_documenttype documentty0_ where documentty0_.systemAction&:p0=:p0 ]
+[ select documentty0_.oid as oid5088_, documentty0_.systemAction as systemAc2_5088_ from documents_documenttype documentty0_ where documentty0_.systemAction&:p0=:p0 ]
   Name:sysAct - Value:Denunciation
-[SQL: select documentty0_.oid as oid5084_, documentty0_.systemAction as systemAc2_5084_ from documents_documenttype documentty0_ where documentty0_.systemAction&:p0=:p0]
+[SQL: select documentty0_.oid as oid5088_, documentty0_.systemAction as systemAc2_5088_ from documents_documenttype documentty0_ where documentty0_.systemAction&:p0=:p0]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00920: invalid relational operator]]></message>
                             </failure>
                           </test-case>
@@ -8832,7 +8905,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1834.Fixture.OneToManyPropertyWithFormulaNodeShouldWorkLikeFormulaAttrib" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1834.B#1][SQL: SELECT b0_.Id as Id5087_1_, (select max(A.Id) from A) as formula58_1_, (select max(A.Id) from A) as formula59_1_, a1_.Id as Id5086_0_ FROM B b0_ left outer join A a1_ on (select max(A.Id) from A)=a1_.Id WHERE b0_.Id=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1834.B#1][SQL: SELECT b0_.Id as Id5091_1_, (select max(A.Id) from A) as formula58_1_, (select max(A.Id) from A) as formula59_1_, a1_.Id as Id5090_0_ FROM B b0_ left outer join A a1_ on (select max(A.Id) from A)=a1_.Id WHERE b0_.Id=?]
   ----> Oracle.DataAccess.Client.OracleException : ORA-01799: a column may not be outer-joined to a subquery]]></message>
                             </failure>
                           </test-case>
@@ -8946,6 +9019,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH1863" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithCategoryWhenFilterIsDisabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithCategoryWhenFilterIsEnabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithNoCategoryWhenFilterIsDisabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithNoCategoryWhenFilterIsEnabled" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH1864" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -9001,6 +9086,15 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1877.Fixture.CanGroupByWithPropertyName" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1877.Fixture.CanGroupByWithSqlFunctionProjection" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH1882" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestCollectionInitializingDuringFlush" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1882.TestCollectionInitializingDuringFlush.TestInitializationDuringFlush" executed="True" result="Success" success="True" asserts="4" />
                         </results>
                       </test-suite>
                     </results>
@@ -9482,6 +9576,24 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2049" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture2049" executed="True" result="Inconclusive" success="False" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2049.Fixture2049.CanCriteriaQueryWithFilterOnJoinClassBaseClassProperty" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Known bug NH-2049.]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2049.Fixture2049.CanHqlQueryWithFilterOnJoinClassBaseClassProperty" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Known bug NH-2049.]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH2055" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
@@ -9722,12 +9834,12 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH2192.Fixture.HqlIsThreadsafe_UsingPool" executed="True" result="Error" success="False" asserts="33">
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2192.Fixture.HqlIsThreadsafe_UsingPool" executed="True" result="Error" success="False" asserts="29">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select contentite0_.Id as Id5330_, contentite0_.Name as Name5330_ from ContentItem contentite0_ where contentite0_.Name=? ]
+[ select contentite0_.Id as Id5350_, contentite0_.Name as Name5350_ from ContentItem contentite0_ where contentite0_.Name=? ]
   Name:v1 - Value:Test
-[SQL: select contentite0_.Id as Id5330_, contentite0_.Name as Name5330_ from ContentItem contentite0_ where contentite0_.Name=?]
+[SQL: select contentite0_.Id as Id5350_, contentite0_.Name as Name5350_ from ContentItem contentite0_ where contentite0_.Name=?]
   ----> Oracle.DataAccess.Client.OracleException : Connection request timed out]]></message>
                             </failure>
                           </test-case>
@@ -11370,6 +11482,15 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH2923" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ExtraLazyFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2923.ExtraLazyFixture.ShouldNotThrowException" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH295" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="JoinedSubclassFixture" executed="True" result="Success" success="True" asserts="0">
@@ -11603,23 +11724,16 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH3138" executed="True" result="Inconclusive" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH3138" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="FixtureByCode" executed="False" result="Ignored">
-                        <reason>
-                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
-                        </reason>
+                      <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingAliasedFunction" executed="False" result="Ignored">
                             <reason>
                               <message><![CDATA[Failing]]></message>
                             </reason>
                           </test-case>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingFunctionWithCommaSeparatedParameters" executed="False" result="Ignored">
-                            <reason>
-                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
-                            </reason>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3138.FixtureByCode.PageQueryWithDistinctAndOrderByContainingFunctionWithCommaSeparatedParameters" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -11696,6 +11810,42 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3234" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3234.Fixture.ShouldNotFailWhenAddingNewLevels" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3234.Fixture.ShouldNotFailWhenReplacingLevels" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3237" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_DateTimes" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Decimals" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Doubles" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Floats" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Ints" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Longs" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_Max_And_Min_Aggregates_Work_For_Strings" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_That_DateTimeOffset_UserType_Can_Be_Used_For_Max_And_Min_Aggregates" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3237.ByCodeFixture.Test_That_Enum_Type_Can_Be_Used_For_Max_And_Min_Aggregates" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3316" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3316.ByCodeFixture.Test_That_Parent_Property_Can_Be_Persisted_And_Retrieved" executed="True" result="Success" success="True" asserts="3" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3324" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="FixtureByCode" executed="True" result="Success" success="True" asserts="0">
@@ -11742,6 +11892,22 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3405" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3405.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3405.Fixture.CanLoadEntityWithXDocument" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3405.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3408" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -11749,6 +11915,32 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayProperty" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.ProjectAnonymousTypeWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3408.Fixture.SelectBytePropertyWithArrayPropertyWhenByteArrayContains" executed="True" result="Success" success="True" asserts="0" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3428" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3428.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                        </reason>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3428.Fixture.QueryFailsWhenDistinctOrderedResultIsPagedPastPageOne" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[NHibernate.Test.NHSpecificTest.NH3428.Fixture does not apply to NHibernate.Dialect.Oracle10gDialect]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3436" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContains" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContainsInParallel" executed="True" result="Success" success="True" asserts="33" />
                         </results>
                       </test-suite>
                     </results>
@@ -11771,6 +11963,24 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3505" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3505.Fixture.StatelessSessionLazyUpdate" executed="True" result="Success" success="True" asserts="4" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3614" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3614.Fixture.CanProjectListOfStrings" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH364" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -11779,6 +11989,16 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Delete" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Insert" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH364.Fixture.IdBagWithCompositeElementThatContainsAManyToOne_Update" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3641" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="TestFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyConcrete" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3641.TestFixture.TrueOrChildPropertyInterface" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                     </results>
@@ -12614,9 +12834,9 @@ TearDown : Oracle.DataAccess.Client.OracleException : ORA-00911: invalid charact
                       <test-case name="NHibernate.Test.Pagination.PaginationFixture.PagingWithLock_NH2255" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select Id6307_0_,xval6307_0_,yval6307_0_,Descript4_6307_0_ from ( select row_.*, rownum rownum_ from ( SELECT this_.Id as Id6307_0_, this_.xval as xval6307_0_, this_.yval as yval6307_0_, this_.Description as Descript4_6307_0_ FROM DataPoint this_ WHERE this_.xval > :p0 ORDER BY this_.xval asc ) row_ where rownum <=:p1) where rownum_ >:p2 for update of this_.Id ]
+[ select Id6354_0_,xval6354_0_,yval6354_0_,Descript4_6354_0_ from ( select row_.*, rownum rownum_ from ( SELECT this_.Id as Id6354_0_, this_.xval as xval6354_0_, this_.yval as yval6354_0_, this_.Description as Descript4_6354_0_ FROM DataPoint this_ WHERE this_.xval > :p0 ORDER BY this_.xval asc ) row_ where rownum <=:p1) where rownum_ >:p2 for update of this_.Id ]
   Name:cp0 - Value:4.1
-[SQL: select Id6307_0_,xval6307_0_,yval6307_0_,Descript4_6307_0_ from ( select row_.*, rownum rownum_ from ( SELECT this_.Id as Id6307_0_, this_.xval as xval6307_0_, this_.yval as yval6307_0_, this_.Description as Descript4_6307_0_ FROM DataPoint this_ WHERE this_.xval > :p0 ORDER BY this_.xval asc ) row_ where rownum <=:p1) where rownum_ >:p2 for update of this_.Id]
+[SQL: select Id6354_0_,xval6354_0_,yval6354_0_,Descript4_6354_0_ from ( select row_.*, rownum rownum_ from ( SELECT this_.Id as Id6354_0_, this_.xval as xval6354_0_, this_.yval as yval6354_0_, this_.Description as Descript4_6354_0_ FROM DataPoint this_ WHERE this_.xval > :p0 ORDER BY this_.xval asc ) row_ where rownum <=:p1) where rownum_ >:p2 for update of this_.Id]
   ----> Oracle.DataAccess.Client.OracleException : ORA-00904: "THIS_"."ID": invalid identifier
 TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -13791,24 +14011,24 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.Subselect.ClassSubselectFixture.EntitySubselect" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select being0_.bid as bid6518_, being0_.ident as ident6518_, being0_.loc as loc6518_, being0_.Species as Species6518_ from ( select bid, name as ident, address as loc, 'human' as species
+[ select being0_.bid as bid6565_, being0_.ident as ident6565_, being0_.loc as loc6565_, being0_.Species as Species6565_ from ( select bid, name as ident, address as loc, 'human' as species
       from humans
       union
       select bid, ident, planet as loc, species
       from aliens ) being0_ ]
-[SQL: select being0_.bid as bid6518_, being0_.ident as ident6518_, being0_.loc as loc6518_, being0_.Species as Species6518_ from ( select bid, name as ident, address as loc, 'human' as species
+[SQL: select being0_.bid as bid6565_, being0_.ident as ident6565_, being0_.loc as loc6565_, being0_.Species as Species6565_ from ( select bid, name as ident, address as loc, 'human' as species
       from humans
       union
       select bid, ident, planet as loc, species
       from aliens ) being0_]
   ----> Oracle.DataAccess.Client.OracleException : ORA-12704: character set mismatch
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select being0_.bid as bid6518_, being0_.ident as ident6518_, being0_.loc as loc6518_, being0_.Species as Species6518_ from ( select bid, name as ident, address as loc, 'human' as species
+[ select being0_.bid as bid6565_, being0_.ident as ident6565_, being0_.loc as loc6565_, being0_.Species as Species6565_ from ( select bid, name as ident, address as loc, 'human' as species
       from humans
       union
       select bid, ident, planet as loc, species
       from aliens ) being0_ ]
-[SQL: select being0_.bid as bid6518_, being0_.ident as ident6518_, being0_.loc as loc6518_, being0_.Species as Species6518_ from ( select bid, name as ident, address as loc, 'human' as species
+[SQL: select being0_.bid as bid6565_, being0_.ident as ident6565_, being0_.loc as loc6565_, being0_.Species as Species6565_ from ( select bid, name as ident, address as loc, 'human' as species
       from humans
       union
       select bid, ident, planet as loc, species
@@ -13848,6 +14068,18 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.NoTransaction" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.OneTransactionScopesInsideOneSession" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="2" />
+                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransaction" description="NH2128, NH3572" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransaction(True)" executed="True" result="Success" success="True" asserts="3" />
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransaction(False)" executed="True" result="Success" success="True" asserts="3" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="Theory" name="ShouldNotifyAfterDistributedTransactionWithOwnConnection" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.ShouldNotifyAfterDistributedTransactionWithOwnConnection(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
                       <test-case name="NHibernate.Test.SystemTransactions.TransactionNotificationFixture.TwoTransactionScopesInsideOneSession" executed="True" result="Success" success="True" asserts="3" />
                     </results>
                   </test-suite>
@@ -13992,9 +14224,21 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                   <test-suite type="TestFixture" name="TransactionNotificationFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.AfterBegin" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Commit" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Commit" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.NoTransaction" executed="True" result="Success" success="True" asserts="3" />
-                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="2" />
+                      <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.Rollback" executed="True" result="Success" success="True" asserts="3" />
+                      <test-suite type="Theory" name="ShouldNotifyAfterTransaction" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransaction(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransaction(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                      <test-suite type="Theory" name="ShouldNotifyAfterTransactionWithOwnConnection" description="NH2128" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransactionWithOwnConnection(True)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.TransactionTest.TransactionNotificationFixture.ShouldNotifyAfterTransactionWithOwnConnection(False)" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
                     </results>
                   </test-suite>
                 </results>
