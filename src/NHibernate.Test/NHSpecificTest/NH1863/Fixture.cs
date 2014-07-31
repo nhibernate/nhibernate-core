@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 			using (ISession session = OpenSession())
 			{
 				IFilter filter = session.EnableFilter("onlyActive");
-				filter.SetParameter("activeFlag", 1);
+				filter.SetParameter("activeFlag", true);
 
 				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasCategoryCriteria.Add(Restrictions.Eq("Name", "HasCategory"));
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 			using (ISession session = OpenSession())
 			{
 				IFilter filter = session.EnableFilter("onlyActive");
-				filter.SetParameter("activeFlag", 1);
+				filter.SetParameter("activeFlag", true);
 
 				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasNoCategoryCriteria.Add(Restrictions.Eq("Name", "HasNoCategory"));
