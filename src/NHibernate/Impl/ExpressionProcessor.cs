@@ -200,6 +200,11 @@ namespace NHibernate.Impl
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(int)), ProjectionsExtensions.ProcessIntAbs);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(double)), ProjectionsExtensions.ProcessDoubleAbs);
 			RegisterCustomProjection(() => ProjectionsExtensions.Abs(default(Int64)), ProjectionsExtensions.ProcessInt64Abs);
+
+			RegisterCustomProjection(() => Math.Round(default(double)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(decimal)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(double), default(int)), ProjectionsExtensions.ProcessRound);
+			RegisterCustomProjection(() => Math.Round(default(decimal), default(int)), ProjectionsExtensions.ProcessRound);
 		}
 
 		private static ICriterion Eq(ProjectionInfo property, object value)

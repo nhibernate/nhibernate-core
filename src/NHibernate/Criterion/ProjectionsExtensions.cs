@@ -245,6 +245,20 @@ namespace NHibernate.Criterion
 			return Projections.SqlFunction("abs", NHibernateUtil.Int64, property);
 		}
 
+
+		internal static IProjection ProcessRound(MethodCallExpression methodCallExpression)
+		{
+			IProjection innerProjection =
+				ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]).AsProjection();
+
+			IProjection digitsProjection = Projections.Constant(0);
+			if (methodCallExpression.Arguments.Count > 1)
+				digitsProjection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[1]).AsProjection();
+
+			return Projections.SqlFunction("round", NHibernateUtil.Double, innerProjection, digitsProjection);
+		}
+
+
 		/// <summary>
 		/// Project SQL function abs()
 		/// Note: throws an exception outside of a QueryOver expression

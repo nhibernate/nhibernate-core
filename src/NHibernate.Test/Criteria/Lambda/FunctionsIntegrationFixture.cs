@@ -113,11 +113,76 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var sqrtOfAge = s.QueryOver<Person>()
 					.Where(p => p.Name == "p1")
-					.Select(p => p.Age.Sqrt())
+					.Select(p => Math.Round(p.Age.Sqrt(), 2))
 					.SingleOrDefault<object>();
 
 				sqrtOfAge.Should().Be.InstanceOf<double>();
 				string.Format("{0:0.00}", sqrtOfAge).Should().Be((9.49).ToString());
+			}
+		}
+
+
+		[Test]
+		public void RoundDoubleWithOneArgument()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var roundedValue = s.QueryOver<Person>()
+				                    .Where(p => p.Name == "p1")
+				                    .Select(p => Math.Round(p.Age.Sqrt()))
+				                    .SingleOrDefault<object>();
+
+				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.EqualTo(9));
+			}
+		}
+
+		[Test]
+		public void RoundDecimalWithOneArgument()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var roundedValue = s.QueryOver<Person>()
+				                    .Where(p => p.Name == "p1")
+				                    .Select(p => Math.Round((decimal) p.Age.Sqrt()))
+				                    .SingleOrDefault<object>();
+
+				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.EqualTo(9));
+			}
+		}
+
+		[Test]
+		public void RoundDoubleWithTwoArguments()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var roundedValue = s.QueryOver<Person>()
+									.Where(p => p.Name == "p1")
+									.Select(p => Math.Round(p.Age.Sqrt() , 3))
+									.SingleOrDefault<object>();
+
+				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
+			}
+		}
+
+		[Test]
+		public void RoundDecimalWithTwoArguments()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var roundedValue = s.QueryOver<Person>()
+				                    .Where(p => p.Name == "p1")
+				                    .Select(p => Math.Round((decimal) p.Age.Sqrt(), 3))
+				                    .SingleOrDefault<object>();
+
+				roundedValue.Should().Be.InstanceOf<double>();
+				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
 			}
 		}
 
