@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 
 
 		[Test]
-		[KnownBug("Known bug NH-2049.", "NHibernate.Exceptions.GenericADOException")]
+		[KnownBug("Known bug NH-2049.")]
 		public void CanCriteriaQueryWithFilterOnJoinClassBaseClassProperty()
 		{
 			using (ISession session = OpenSession())
