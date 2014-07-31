@@ -25,7 +25,7 @@
     </class>
 
     <filter-def name="onlyActive">
-        <filter-param name="activeFlag" type="int"/>
+        <filter-param name="activeFlag" type="bool"/>
     </filter-def>
 
 </hibernate-mapping>
