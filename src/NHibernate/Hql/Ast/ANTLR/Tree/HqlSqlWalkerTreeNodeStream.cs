@@ -4,7 +4,7 @@ using Antlr.Runtime.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class HqlSqlWalkerTreeNodeStream : CommonTreeNodeStream
+	public class HqlSqlWalkerTreeNodeStream : BufferedTreeNodeStream
 	{
 		public HqlSqlWalkerTreeNodeStream(object tree) : base(tree) {}
 

@@ -393,7 +393,6 @@ negatedExpression
 	: NOT x=negatedExpression
 		-> ^({NegateNode($x.tree)})
 	| equalityExpression
-		-> ^(equalityExpression)
 	;
 
 //## OP: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE;
@@ -509,9 +508,9 @@ multiplyExpression
 unaryExpression
 	: m=MINUS mu=unaryExpression -> ^(UNARY_MINUS[$m] $mu)
 	| p=PLUS pu=unaryExpression -> ^(UNARY_PLUS[$p] $pu)
-	| c=caseExpression -> ^($c)
-	| q=quantifiedExpression -> ^($q) 
-	| a=atom -> ^($a)
+	| caseExpression
+	| quantifiedExpression
+	| atom
 	;
 	
 caseExpression
