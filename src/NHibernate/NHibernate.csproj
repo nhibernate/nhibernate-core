@@ -197,6 +197,13 @@
     <Compile Include="Engine\UnsavedValueFactory.cs" />
     <Compile Include="Engine\Versioning.cs" />
     <Compile Include="Event\Default\EventCache.cs" />
+    <Compile Include="Event\EntityListener.cs" />
+    <Compile Include="Event\PostDelete.cs" />
+    <Compile Include="Event\PostInsert.cs" />
+    <Compile Include="Event\PostUpdate.cs" />
+    <Compile Include="Event\PreDelete.cs" />
+    <Compile Include="Event\PreInsert.cs" />
+    <Compile Include="Event\PreUpdate.cs" />
     <Compile Include="Exceptions\ADOExceptionHelper.cs" />
     <Compile Include="Criterion\AbstractCriterion.cs" />
     <Compile Include="Criterion\AndExpression.cs" />

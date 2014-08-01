@@ -56,6 +56,8 @@ namespace NHibernate.Event
 			eventInterfaceFromType = new UnmodifiableDictionary<ListenerType, System.Type>(eventInterfaceFromType);
 		}
 
+	    private static readonly EntityListener defaultEventEntityListener = new EntityListener();
+
 		private ILoadEventListener[] loadEventListeners = new ILoadEventListener[] {new DefaultLoadEventListener()};
 
 		private ISaveOrUpdateEventListener[] saveOrUpdateEventListeners = new ISaveOrUpdateEventListener[]
@@ -99,12 +101,12 @@ namespace NHibernate.Event
 		private IPreLoadEventListener[] preLoadEventListeners = new IPreLoadEventListener[]
 		                                                        	{new DefaultPreLoadEventListener()};
 
-		private IPreDeleteEventListener[] preDeleteEventListeners = new IPreDeleteEventListener[] {};
-		private IPreUpdateEventListener[] preUpdateEventListeners = new IPreUpdateEventListener[] {};
-		private IPreInsertEventListener[] preInsertEventListeners = new IPreInsertEventListener[] {};
-		private IPostDeleteEventListener[] postDeleteEventListeners = new IPostDeleteEventListener[] {};
-		private IPostUpdateEventListener[] postUpdateEventListeners = new IPostUpdateEventListener[] {};
-		private IPostInsertEventListener[] postInsertEventListeners = new IPostInsertEventListener[] {};
+        private IPreDeleteEventListener[] preDeleteEventListeners = new IPreDeleteEventListener[] { defaultEventEntityListener };
+        private IPreUpdateEventListener[] preUpdateEventListeners = new IPreUpdateEventListener[] { defaultEventEntityListener };
+        private IPreInsertEventListener[] preInsertEventListeners = new IPreInsertEventListener[] { defaultEventEntityListener };
+        private IPostDeleteEventListener[] postDeleteEventListeners = new IPostDeleteEventListener[] { defaultEventEntityListener };
+        private IPostUpdateEventListener[] postUpdateEventListeners = new IPostUpdateEventListener[] { defaultEventEntityListener };
+        private IPostInsertEventListener[] postInsertEventListeners = new IPostInsertEventListener[] { defaultEventEntityListener };
 		private IPostDeleteEventListener[] postCommitDeleteEventListeners = new IPostDeleteEventListener[] {};
 		private IPostUpdateEventListener[] postCommitUpdateEventListeners = new IPostUpdateEventListener[] {};
 		private IPostInsertEventListener[] postCommitInsertEventListeners = new IPostInsertEventListener[] {};
