@@ -38,7 +38,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override object GetParent(object t)
 		{
-			throw new System.NotImplementedException();
+		    return ((ITree) t).Parent;
 		}
 
 		public override void SetParent(object t, object parent)
