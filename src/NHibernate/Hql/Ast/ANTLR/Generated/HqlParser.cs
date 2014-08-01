@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 Hql.g 2014-08-01 01:42:46
+// $ANTLR 3.5.0.2 Hql.g 2014-08-01 01:55:01
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -10438,7 +10438,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	[Conditional("ANTLR_TRACE")]
 	protected virtual void LeaveRule_expressionOrVector() {}
 	// $ANTLR start "expressionOrVector"
-	// Hql.g:565:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) ;
+	// Hql.g:565:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e;
 	[GrammarRule("expressionOrVector")]
 	private AstParserRuleReturnScope<IASTNode, IToken> expressionOrVector()
 	{
@@ -10459,7 +10459,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		DebugLocation(565, 1);
 		try
 		{
-			// Hql.g:566:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> ^( $e) )
+			// Hql.g:566:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e)
 			DebugEnterAlt(1);
 			// Hql.g:566:4: e= expression (v= vectorExpr )?
 			{
@@ -10535,17 +10535,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				}
 
 			}
-			else // 568:2: -> ^( $e)
+			else // 568:2: -> $e
 			{
-				DebugLocation(568, 5);
-				// Hql.g:568:5: ^( $e)
-				{
-				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(568, 8);
-				root_1 = (IASTNode)adaptor.BecomeRoot(stream_e.NextNode(), root_1);
-
-				adaptor.AddChild(root_0, root_1);
-				}
+				DebugLocation(568, 6);
+				adaptor.AddChild(root_0, stream_e.NextTree());
 
 			}
 
@@ -10617,9 +10610,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			root_0 = (IASTNode)adaptor.Nil();
 
 			DebugLocation(572, 9);
-			COMMA257=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2971); 
+			COMMA257=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2969); 
 			DebugLocation(572, 11);
-			PushFollow(Follow._expression_in_vectorExpr2974);
+			PushFollow(Follow._expression_in_vectorExpr2972);
 			expression258=expression();
 			PopFollow();
 
@@ -10647,9 +10640,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:572:23: COMMA ! expression
 					{
 					DebugLocation(572, 28);
-					COMMA259=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2977); 
+					COMMA259=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2975); 
 					DebugLocation(572, 30);
-					PushFollow(Follow._expression_in_vectorExpr2980);
+					PushFollow(Follow._expression_in_vectorExpr2978);
 					expression260=expression();
 					PopFollow();
 
@@ -10764,7 +10757,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(579, 4);
-				PushFollow(Follow._identifier_in_identPrimary2996);
+				PushFollow(Follow._identifier_in_identPrimary2994);
 				identifier261=identifier();
 				PopFollow();
 
@@ -10801,7 +10794,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						// Hql.g:580:31: DOT ^ ( identifier |o= OBJECT )
 						{
 						DebugLocation(580, 34);
-						DOT262=(IToken)Match(input,DOT,Follow._DOT_in_identPrimary3014); 
+						DOT262=(IToken)Match(input,DOT,Follow._DOT_in_identPrimary3012); 
 						DOT262_tree = (IASTNode)adaptor.Create(DOT262);
 						root_0 = (IASTNode)adaptor.BecomeRoot(DOT262_tree, root_0);
 
@@ -10836,7 +10829,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							// Hql.g:580:38: identifier
 							{
 							DebugLocation(580, 38);
-							PushFollow(Follow._identifier_in_identPrimary3019);
+							PushFollow(Follow._identifier_in_identPrimary3017);
 							identifier263=identifier();
 							PopFollow();
 
@@ -10849,7 +10842,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							// Hql.g:580:51: o= OBJECT
 							{
 							DebugLocation(580, 52);
-							o=(IToken)Match(input,OBJECT,Follow._OBJECT_in_identPrimary3025); 
+							o=(IToken)Match(input,OBJECT,Follow._OBJECT_in_identPrimary3023); 
 							o_tree = (IASTNode)adaptor.Create(o);
 							adaptor.AddChild(root_0, o_tree);
 
@@ -10900,20 +10893,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:581:8: op= OPEN ^ exprList CLOSE !
 					{
 					DebugLocation(581, 10);
-					op=(IToken)Match(input,OPEN,Follow._OPEN_in_identPrimary3043); 
+					op=(IToken)Match(input,OPEN,Follow._OPEN_in_identPrimary3041); 
 					op_tree = (IASTNode)adaptor.Create(op);
 					root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
 
 					DebugLocation(581, 17);
 					 op.Type = METHOD_CALL;
 					DebugLocation(581, 44);
-					PushFollow(Follow._exprList_in_identPrimary3048);
+					PushFollow(Follow._exprList_in_identPrimary3046);
 					exprList264=exprList();
 					PopFollow();
 
 					adaptor.AddChild(root_0, exprList264.Tree);
 					DebugLocation(581, 58);
-					CLOSE265=(IToken)Match(input,CLOSE,Follow._CLOSE_in_identPrimary3050); 
+					CLOSE265=(IToken)Match(input,CLOSE,Follow._CLOSE_in_identPrimary3048); 
 
 					}
 
@@ -10934,7 +10927,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(584, 4);
-				PushFollow(Follow._aggregate_in_identPrimary3066);
+				PushFollow(Follow._aggregate_in_identPrimary3064);
 				aggregate266=aggregate();
 				PopFollow();
 
@@ -11102,7 +11095,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:593:6: op= SUM
 					{
 					DebugLocation(593, 8);
-					op=(IToken)Match(input,SUM,Follow._SUM_in_aggregate3087);  
+					op=(IToken)Match(input,SUM,Follow._SUM_in_aggregate3085);  
 					stream_SUM.Add(op);
 
 
@@ -11113,7 +11106,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:593:15: op= AVG
 					{
 					DebugLocation(593, 17);
-					op=(IToken)Match(input,AVG,Follow._AVG_in_aggregate3093);  
+					op=(IToken)Match(input,AVG,Follow._AVG_in_aggregate3091);  
 					stream_AVG.Add(op);
 
 
@@ -11124,7 +11117,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:593:24: op= MAX
 					{
 					DebugLocation(593, 26);
-					op=(IToken)Match(input,MAX,Follow._MAX_in_aggregate3099);  
+					op=(IToken)Match(input,MAX,Follow._MAX_in_aggregate3097);  
 					stream_MAX.Add(op);
 
 
@@ -11135,7 +11128,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:593:33: op= MIN
 					{
 					DebugLocation(593, 35);
-					op=(IToken)Match(input,MIN,Follow._MIN_in_aggregate3105);  
+					op=(IToken)Match(input,MIN,Follow._MIN_in_aggregate3103);  
 					stream_MIN.Add(op);
 
 
@@ -11146,17 +11139,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				} finally { DebugExitSubRule(94); }
 
 				DebugLocation(593, 42);
-				OPEN267=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3109);  
+				OPEN267=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3107);  
 				stream_OPEN.Add(OPEN267);
 
 				DebugLocation(593, 47);
-				PushFollow(Follow._additiveExpression_in_aggregate3111);
+				PushFollow(Follow._additiveExpression_in_aggregate3109);
 				additiveExpression268=additiveExpression();
 				PopFollow();
 
 				stream_additiveExpression.Add(additiveExpression268.Tree);
 				DebugLocation(593, 66);
-				CLOSE269=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3113);  
+				CLOSE269=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3111);  
 				stream_CLOSE.Add(CLOSE269);
 
 
@@ -11200,11 +11193,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:596:5: COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE
 				{
 				DebugLocation(596, 5);
-				COUNT270=(IToken)Match(input,COUNT,Follow._COUNT_in_aggregate3132);  
+				COUNT270=(IToken)Match(input,COUNT,Follow._COUNT_in_aggregate3130);  
 				stream_COUNT.Add(COUNT270);
 
 				DebugLocation(596, 11);
-				OPEN271=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3134);  
+				OPEN271=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3132);  
 				stream_OPEN.Add(OPEN271);
 
 				DebugLocation(596, 16);
@@ -11238,7 +11231,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:596:18: s= STAR
 					{
 					DebugLocation(596, 19);
-					s=(IToken)Match(input,STAR,Follow._STAR_in_aggregate3140);  
+					s=(IToken)Match(input,STAR,Follow._STAR_in_aggregate3138);  
 					stream_STAR.Add(s);
 
 
@@ -11249,7 +11242,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:596:27: p= aggregateDistinctAll
 					{
 					DebugLocation(596, 28);
-					PushFollow(Follow._aggregateDistinctAll_in_aggregate3146);
+					PushFollow(Follow._aggregateDistinctAll_in_aggregate3144);
 					p=aggregateDistinctAll();
 					PopFollow();
 
@@ -11262,7 +11255,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				} finally { DebugExitSubRule(95); }
 
 				DebugLocation(596, 52);
-				CLOSE272=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3150);  
+				CLOSE272=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3148);  
 				stream_CLOSE.Add(CLOSE272);
 
 
@@ -11333,7 +11326,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(599, 5);
-				PushFollow(Follow._collectionExpr_in_aggregate3182);
+				PushFollow(Follow._collectionExpr_in_aggregate3180);
 				collectionExpr273=collectionExpr();
 				PopFollow();
 
@@ -11480,7 +11473,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:603:28: path
 				{
 				DebugLocation(603, 28);
-				PushFollow(Follow._path_in_aggregateDistinctAll3208);
+				PushFollow(Follow._path_in_aggregateDistinctAll3206);
 				path275=path();
 				PopFollow();
 
@@ -11493,7 +11486,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:603:35: collectionExpr
 				{
 				DebugLocation(603, 35);
-				PushFollow(Follow._collectionExpr_in_aggregateDistinctAll3212);
+				PushFollow(Follow._collectionExpr_in_aggregateDistinctAll3210);
 				collectionExpr276=collectionExpr();
 				PopFollow();
 
@@ -11607,7 +11600,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:609:5: ELEMENTS ^
 				{
 				DebugLocation(609, 13);
-				ELEMENTS277=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionExpr3231); 
+				ELEMENTS277=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionExpr3229); 
 				ELEMENTS277_tree = (IASTNode)adaptor.Create(ELEMENTS277);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS277_tree, root_0);
 
@@ -11619,7 +11612,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:609:17: INDICES ^
 				{
 				DebugLocation(609, 24);
-				INDICES278=(IToken)Match(input,INDICES,Follow._INDICES_in_collectionExpr3236); 
+				INDICES278=(IToken)Match(input,INDICES,Follow._INDICES_in_collectionExpr3234); 
 				INDICES278_tree = (IASTNode)adaptor.Create(INDICES278);
 				root_0 = (IASTNode)adaptor.BecomeRoot(INDICES278_tree, root_0);
 
@@ -11631,15 +11624,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			} finally { DebugExitSubRule(99); }
 
 			DebugLocation(609, 31);
-			OPEN279=(IToken)Match(input,OPEN,Follow._OPEN_in_collectionExpr3240); 
+			OPEN279=(IToken)Match(input,OPEN,Follow._OPEN_in_collectionExpr3238); 
 			DebugLocation(609, 33);
-			PushFollow(Follow._path_in_collectionExpr3243);
+			PushFollow(Follow._path_in_collectionExpr3241);
 			path280=path();
 			PopFollow();
 
 			adaptor.AddChild(root_0, path280.Tree);
 			DebugLocation(609, 43);
-			CLOSE281=(IToken)Match(input,CLOSE,Follow._CLOSE_in_collectionExpr3245); 
+			CLOSE281=(IToken)Match(input,CLOSE,Follow._CLOSE_in_collectionExpr3243); 
 
 			}
 
@@ -11743,7 +11736,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(613, 4);
-				PushFollow(Follow._collectionExpr_in_compoundExpr3300);
+				PushFollow(Follow._collectionExpr_in_compoundExpr3298);
 				collectionExpr282=collectionExpr();
 				PopFollow();
 
@@ -11758,7 +11751,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				root_0 = (IASTNode)adaptor.Nil();
 
 				DebugLocation(614, 4);
-				PushFollow(Follow._path_in_compoundExpr3305);
+				PushFollow(Follow._path_in_compoundExpr3303);
 				path283=path();
 				PopFollow();
 
@@ -11778,7 +11771,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:615:5: OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !
 				{
 				DebugLocation(615, 9);
-				OPEN284=(IToken)Match(input,OPEN,Follow._OPEN_in_compoundExpr3311); 
+				OPEN284=(IToken)Match(input,OPEN,Follow._OPEN_in_compoundExpr3309); 
 				DebugLocation(615, 11);
 				// Hql.g:615:11: ( subQuery | ( expression ( COMMA ! expression )* ) )
 				int alt101=2;
@@ -11810,7 +11803,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:615:13: subQuery
 					{
 					DebugLocation(615, 13);
-					PushFollow(Follow._subQuery_in_compoundExpr3316);
+					PushFollow(Follow._subQuery_in_compoundExpr3314);
 					subQuery285=subQuery();
 					PopFollow();
 
@@ -11828,7 +11821,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:615:25: expression ( COMMA ! expression )*
 					{
 					DebugLocation(615, 25);
-					PushFollow(Follow._expression_in_compoundExpr3321);
+					PushFollow(Follow._expression_in_compoundExpr3319);
 					expression286=expression();
 					PopFollow();
 
@@ -11856,9 +11849,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							// Hql.g:615:37: COMMA ! expression
 							{
 							DebugLocation(615, 42);
-							COMMA287=(IToken)Match(input,COMMA,Follow._COMMA_in_compoundExpr3324); 
+							COMMA287=(IToken)Match(input,COMMA,Follow._COMMA_in_compoundExpr3322); 
 							DebugLocation(615, 44);
-							PushFollow(Follow._expression_in_compoundExpr3327);
+							PushFollow(Follow._expression_in_compoundExpr3325);
 							expression288=expression();
 							PopFollow();
 
@@ -11888,7 +11881,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				} finally { DebugExitSubRule(101); }
 
 				DebugLocation(615, 65);
-				CLOSE289=(IToken)Match(input,CLOSE,Follow._CLOSE_in_compoundExpr3334); 
+				CLOSE289=(IToken)Match(input,CLOSE,Follow._CLOSE_in_compoundExpr3332); 
 
 				}
 
@@ -12004,7 +11997,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:624:5: TRAILING
 				{
 				DebugLocation(624, 5);
-				TRAILING290=(IToken)Match(input,TRAILING,Follow._TRAILING_in_exprList3353); 
+				TRAILING290=(IToken)Match(input,TRAILING,Follow._TRAILING_in_exprList3351); 
 				TRAILING290_tree = (IASTNode)adaptor.Create(TRAILING290);
 				adaptor.AddChild(root_0, TRAILING290_tree);
 
@@ -12018,7 +12011,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:625:10: LEADING
 				{
 				DebugLocation(625, 10);
-				LEADING291=(IToken)Match(input,LEADING,Follow._LEADING_in_exprList3366); 
+				LEADING291=(IToken)Match(input,LEADING,Follow._LEADING_in_exprList3364); 
 				LEADING291_tree = (IASTNode)adaptor.Create(LEADING291);
 				adaptor.AddChild(root_0, LEADING291_tree);
 
@@ -12032,7 +12025,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:626:10: BOTH
 				{
 				DebugLocation(626, 10);
-				BOTH292=(IToken)Match(input,BOTH,Follow._BOTH_in_exprList3379); 
+				BOTH292=(IToken)Match(input,BOTH,Follow._BOTH_in_exprList3377); 
 				BOTH292_tree = (IASTNode)adaptor.Create(BOTH292);
 				adaptor.AddChild(root_0, BOTH292_tree);
 
@@ -12068,7 +12061,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:629:5: expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
 				{
 				DebugLocation(629, 5);
-				PushFollow(Follow._expression_in_exprList3403);
+				PushFollow(Follow._expression_in_exprList3401);
 				expression293=expression();
 				PopFollow();
 
@@ -12128,9 +12121,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							// Hql.g:629:19: COMMA ! expression
 							{
 							DebugLocation(629, 24);
-							COMMA294=(IToken)Match(input,COMMA,Follow._COMMA_in_exprList3408); 
+							COMMA294=(IToken)Match(input,COMMA,Follow._COMMA_in_exprList3406); 
 							DebugLocation(629, 26);
-							PushFollow(Follow._expression_in_exprList3411);
+							PushFollow(Follow._expression_in_exprList3409);
 							expression295=expression();
 							PopFollow();
 
@@ -12162,12 +12155,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:630:9: f= FROM expression
 					{
 					DebugLocation(630, 10);
-					f=(IToken)Match(input,FROM,Follow._FROM_in_exprList3426); 
+					f=(IToken)Match(input,FROM,Follow._FROM_in_exprList3424); 
 					f_tree = (IASTNode)adaptor.Create(f);
 					adaptor.AddChild(root_0, f_tree);
 
 					DebugLocation(630, 16);
-					PushFollow(Follow._expression_in_exprList3428);
+					PushFollow(Follow._expression_in_exprList3426);
 					expression296=expression();
 					PopFollow();
 
@@ -12182,9 +12175,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:631:9: AS ! identifier
 					{
 					DebugLocation(631, 11);
-					AS297=(IToken)Match(input,AS,Follow._AS_in_exprList3440); 
+					AS297=(IToken)Match(input,AS,Follow._AS_in_exprList3438); 
 					DebugLocation(631, 13);
-					PushFollow(Follow._identifier_in_exprList3443);
+					PushFollow(Follow._identifier_in_exprList3441);
 					identifier298=identifier();
 					PopFollow();
 
@@ -12204,12 +12197,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:632:7: f2= FROM expression
 				{
 				DebugLocation(632, 9);
-				f2=(IToken)Match(input,FROM,Follow._FROM_in_exprList3457); 
+				f2=(IToken)Match(input,FROM,Follow._FROM_in_exprList3455); 
 				f2_tree = (IASTNode)adaptor.Create(f2);
 				adaptor.AddChild(root_0, f2_tree);
 
 				DebugLocation(632, 15);
-				PushFollow(Follow._expression_in_exprList3459);
+				PushFollow(Follow._expression_in_exprList3457);
 				expression299=expression();
 				PopFollow();
 
@@ -12292,7 +12285,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			root_0 = (IASTNode)adaptor.Nil();
 
 			DebugLocation(637, 4);
-			PushFollow(Follow._innerSubQuery_in_subQuery3479);
+			PushFollow(Follow._innerSubQuery_in_subQuery3477);
 			innerSubQuery300=innerSubQuery();
 			PopFollow();
 
@@ -12320,12 +12313,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:637:19: UNION ^ innerSubQuery
 					{
 					DebugLocation(637, 24);
-					UNION301=(IToken)Match(input,UNION,Follow._UNION_in_subQuery3482); 
+					UNION301=(IToken)Match(input,UNION,Follow._UNION_in_subQuery3480); 
 					UNION301_tree = (IASTNode)adaptor.Create(UNION301);
 					root_0 = (IASTNode)adaptor.BecomeRoot(UNION301_tree, root_0);
 
 					DebugLocation(637, 26);
-					PushFollow(Follow._innerSubQuery_in_subQuery3485);
+					PushFollow(Follow._innerSubQuery_in_subQuery3483);
 					innerSubQuery302=innerSubQuery();
 					PopFollow();
 
@@ -12403,7 +12396,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:641:4: queryRule
 			{
 			DebugLocation(641, 4);
-			PushFollow(Follow._queryRule_in_innerSubQuery3499);
+			PushFollow(Follow._queryRule_in_innerSubQuery3497);
 			queryRule303=queryRule();
 			PopFollow();
 
@@ -12586,7 +12579,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			root_0 = (IASTNode)adaptor.Nil();
 
 			DebugLocation(669, 4);
-			PushFollow(Follow._identifier_in_path3587);
+			PushFollow(Follow._identifier_in_path3585);
 			identifier305=identifier();
 			PopFollow();
 
@@ -12614,14 +12607,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:669:17: DOT ^ identifier
 					{
 					DebugLocation(669, 20);
-					DOT306=(IToken)Match(input,DOT,Follow._DOT_in_path3591); 
+					DOT306=(IToken)Match(input,DOT,Follow._DOT_in_path3589); 
 					DOT306_tree = (IASTNode)adaptor.Create(DOT306);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT306_tree, root_0);
 
 					DebugLocation(669, 22);
 					 WeakKeywords(); 
 					DebugLocation(669, 42);
-					PushFollow(Follow._identifier_in_path3596);
+					PushFollow(Follow._identifier_in_path3594);
 					identifier307=identifier();
 					PopFollow();
 
@@ -12702,7 +12695,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			root_0 = (IASTNode)adaptor.Nil();
 
 			DebugLocation(675, 4);
-			IDENT308=(IToken)Match(input,IDENT,Follow._IDENT_in_identifier3612); 
+			IDENT308=(IToken)Match(input,IDENT,Follow._IDENT_in_identifier3610); 
 			IDENT308_tree = (IASTNode)adaptor.Create(IDENT308);
 			adaptor.AddChild(root_0, IDENT308_tree);
 
@@ -13025,66 +13018,66 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		public static readonly BitSet _NUM_INT_in_primaryExpression2908 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _expression_in_expressionOrVector2926 = new BitSet(new ulong[]{0x1000002UL});
 		public static readonly BitSet _vectorExpr_in_expressionOrVector2932 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COMMA_in_vectorExpr2971 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_vectorExpr2974 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_vectorExpr2977 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_vectorExpr2980 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _identifier_in_identPrimary2996 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _DOT_in_identPrimary3014 = new BitSet(new ulong[]{0x80000000000000UL,0x20000000UL});
-		public static readonly BitSet _identifier_in_identPrimary3019 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _OBJECT_in_identPrimary3025 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_identPrimary3043 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
-		public static readonly BitSet _exprList_in_identPrimary3048 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_identPrimary3050 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _aggregate_in_identPrimary3066 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SUM_in_aggregate3087 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _AVG_in_aggregate3093 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _MAX_in_aggregate3099 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _MIN_in_aggregate3105 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_aggregate3109 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _additiveExpression_in_aggregate3111 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_aggregate3113 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COUNT_in_aggregate3132 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_aggregate3134 = new BitSet(new ulong[]{0x1080000480000040UL,0x10000000000000UL});
-		public static readonly BitSet _STAR_in_aggregate3140 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _aggregateDistinctAll_in_aggregate3146 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_aggregate3150 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_aggregate3182 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_aggregateDistinctAll3208 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_aggregateDistinctAll3212 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ELEMENTS_in_collectionExpr3231 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _INDICES_in_collectionExpr3236 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_collectionExpr3240 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_collectionExpr3243 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_collectionExpr3245 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_compoundExpr3300 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_compoundExpr3305 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OPEN_in_compoundExpr3311 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
-		public static readonly BitSet _subQuery_in_compoundExpr3316 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _expression_in_compoundExpr3321 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _COMMA_in_compoundExpr3324 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_compoundExpr3327 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _CLOSE_in_compoundExpr3334 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _TRAILING_in_exprList3353 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _LEADING_in_exprList3366 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _BOTH_in_exprList3379 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3403 = new BitSet(new ulong[]{0x1000001000202UL});
-		public static readonly BitSet _COMMA_in_exprList3408 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3411 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _FROM_in_exprList3426 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3428 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _AS_in_exprList3440 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_exprList3443 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FROM_in_exprList3457 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3459 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _innerSubQuery_in_subQuery3479 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
-		public static readonly BitSet _UNION_in_subQuery3482 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
-		public static readonly BitSet _innerSubQuery_in_subQuery3485 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
-		public static readonly BitSet _queryRule_in_innerSubQuery3499 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_path3587 = new BitSet(new ulong[]{0x200000002UL});
-		public static readonly BitSet _DOT_in_path3591 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_path3596 = new BitSet(new ulong[]{0x200000002UL});
-		public static readonly BitSet _IDENT_in_identifier3612 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COMMA_in_vectorExpr2969 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_vectorExpr2972 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_vectorExpr2975 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_vectorExpr2978 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _identifier_in_identPrimary2994 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _DOT_in_identPrimary3012 = new BitSet(new ulong[]{0x80000000000000UL,0x20000000UL});
+		public static readonly BitSet _identifier_in_identPrimary3017 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _OBJECT_in_identPrimary3023 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_identPrimary3041 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
+		public static readonly BitSet _exprList_in_identPrimary3046 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_identPrimary3048 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _aggregate_in_identPrimary3064 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SUM_in_aggregate3085 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _AVG_in_aggregate3091 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _MAX_in_aggregate3097 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _MIN_in_aggregate3103 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_aggregate3107 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _additiveExpression_in_aggregate3109 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_aggregate3111 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COUNT_in_aggregate3130 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_aggregate3132 = new BitSet(new ulong[]{0x1080000480000040UL,0x10000000000000UL});
+		public static readonly BitSet _STAR_in_aggregate3138 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _aggregateDistinctAll_in_aggregate3144 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_aggregate3148 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_aggregate3180 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_aggregateDistinctAll3206 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_aggregateDistinctAll3210 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELEMENTS_in_collectionExpr3229 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _INDICES_in_collectionExpr3234 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_collectionExpr3238 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_collectionExpr3241 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_collectionExpr3243 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_compoundExpr3298 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_compoundExpr3303 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OPEN_in_compoundExpr3309 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
+		public static readonly BitSet _subQuery_in_compoundExpr3314 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _expression_in_compoundExpr3319 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _COMMA_in_compoundExpr3322 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_compoundExpr3325 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _CLOSE_in_compoundExpr3332 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _TRAILING_in_exprList3351 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _LEADING_in_exprList3364 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _BOTH_in_exprList3377 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3401 = new BitSet(new ulong[]{0x1000001000202UL});
+		public static readonly BitSet _COMMA_in_exprList3406 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3409 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _FROM_in_exprList3424 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3426 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _AS_in_exprList3438 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_exprList3441 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FROM_in_exprList3455 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3457 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _innerSubQuery_in_subQuery3477 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
+		public static readonly BitSet _UNION_in_subQuery3480 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
+		public static readonly BitSet _innerSubQuery_in_subQuery3483 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
+		public static readonly BitSet _queryRule_in_innerSubQuery3497 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_path3585 = new BitSet(new ulong[]{0x200000002UL});
+		public static readonly BitSet _DOT_in_path3589 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_path3594 = new BitSet(new ulong[]{0x200000002UL});
+		public static readonly BitSet _IDENT_in_identifier3610 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }

@@ -565,7 +565,7 @@ primaryExpression
 expressionOrVector!
 	: e=expression ( v=vectorExpr )? 
 	-> {v != null}? ^(VECTOR_EXPR["{vector}"] $e $v)
-	-> ^($e)
+	-> $e
 	;
 
 vectorExpr
