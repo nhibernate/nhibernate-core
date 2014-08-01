@@ -84,6 +84,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
 
 			RegisterFunction("cast", new SQLiteCastFunction());
+
+			RegisterFunction("round", new StandardSQLFunction("round"));
 		}
 
 		protected virtual void RegisterKeywords()
