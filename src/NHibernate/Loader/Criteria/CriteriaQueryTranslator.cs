@@ -35,10 +35,10 @@ namespace NHibernate.Loader.Criteria
 
 		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
-		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
-		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
-		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
-		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
+		private readonly IDictionary<string,  ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
+        private readonly IDictionary<string,  IList<ICriteria>> associationPathCriteriaMap = new LinkedHashMap<string, IList<ICriteria>>();
+		private readonly IDictionary<string,  IList<JoinType>> associationPathJoinTypesMap = new LinkedHashMap<string, IList<JoinType>>();
+		private readonly IDictionary<string, IList<ICriterion>> withClauseMap = new Dictionary<string, IList<ICriterion>>();
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private SessionFactoryHelper helper;
 
@@ -247,20 +247,33 @@ namespace NHibernate.Loader.Criteria
 			return associationPathCriteriaMap.ContainsKey(path);
 		}
 
-		public JoinType GetJoinType(string path)
+	    public int CountAliasByPath(string path)
+	    {
+	        IList<JoinType> result;
+	        if (associationPathJoinTypesMap.TryGetValue(path, out result))
+	            return result.Count;
+	        return 0;
+	    }
+
+	    public JoinType GetJoinType(string path,int index)
 		{
-			JoinType result;
+			IList<JoinType> result;
 			if (associationPathJoinTypesMap.TryGetValue(path, out result))
-				return result;
+				return result[index];
 			return JoinType.InnerJoin;
 		}
 
-		public ICriteria GetCriteria(string path)
+		public ICriteria GetCriteria(string path,int aliasIndex)
 		{
-			ICriteria result;
+			IList<ICriteria> result;
 			associationPathCriteriaMap.TryGetValue(path, out result);
-			logger.DebugFormat("getCriteria for path={0} crit={1}", path, result);
-			return result;
+		    if (ReferenceEquals(result, null))
+		    {
+               logger.DebugFormat("getCriteria for path={0} crit={1}", path, "null");
+		        return null;
+		    }
+		    logger.DebugFormat("getCriteria for path={0} crit={1}", path, result[aliasIndex]);
+			return result[aliasIndex];
 		}
 
 		private void CreateAliasCriteriaMap()
@@ -282,7 +295,7 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 		}
-
+        
 		private void CreateAssociationPathCriteriaMap()
 		{
 			foreach (CriteriaImpl.Subcriteria crit in rootCriteria.IterateSubcriteria())
@@ -290,7 +303,9 @@ namespace NHibernate.Loader.Criteria
 				string wholeAssociationPath = GetWholeAssociationPath(crit);
 				try
 				{
-					associationPathCriteriaMap.Add(wholeAssociationPath, crit);
+                    if (!associationPathCriteriaMap.ContainsKey(wholeAssociationPath))
+                        associationPathCriteriaMap.Add(wholeAssociationPath,new List<ICriteria>());
+					associationPathCriteriaMap[wholeAssociationPath].Add( crit);
 				}
 				catch (ArgumentException ae)
 				{
@@ -299,7 +314,8 @@ namespace NHibernate.Loader.Criteria
 
 				try
 				{
-					associationPathJoinTypesMap.Add(wholeAssociationPath, crit.JoinType);
+                    if (!associationPathJoinTypesMap.ContainsKey(wholeAssociationPath)) associationPathJoinTypesMap.Add(wholeAssociationPath,new List<JoinType>());
+					associationPathJoinTypesMap[wholeAssociationPath].Add( crit.JoinType);
 				}
 				catch (ArgumentException ae)
 				{
@@ -308,10 +324,10 @@ namespace NHibernate.Loader.Criteria
 
 				try
 				{
-					if (crit.WithClause != null)
-					{
-						withClauseMap.Add(wholeAssociationPath, crit.WithClause);
-					}
+                    if (!withClauseMap.ContainsKey(wholeAssociationPath)) withClauseMap.Add(wholeAssociationPath,new List<ICriterion>());
+					
+					withClauseMap[wholeAssociationPath].Add(crit.WithClause);
+					
 				}
 				catch (ArgumentException ae)
 				{
@@ -369,18 +385,22 @@ namespace NHibernate.Loader.Criteria
 			nameCriteriaInfoMap.Add(rootProvider.Name, rootProvider);
 
 
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (KeyValuePair<string, IList<ICriteria>> me in associationPathCriteriaMap)
 			{
 				ICriteriaInfoProvider info = GetPathInfo(me.Key);
-				criteriaInfoMap.Add(me.Value, info);
-				nameCriteriaInfoMap[info.Name] =  info;
+			    foreach (var criteria in me.Value)
+			    {
+                    criteriaInfoMap.Add(criteria, info);
+			    }
+
+			    nameCriteriaInfoMap[info.Name] =  info;
 			}
 		}
 
 
 		private void CreateCriteriaCollectionPersisters()
 		{
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (KeyValuePair<string, IList<ICriteria>> me in associationPathCriteriaMap)
 			{
 				NHibernate_Persister_Entity.IJoinable joinable = GetPathJoinable(me.Key);
 				if (joinable != null && joinable.IsCollection)
@@ -701,12 +721,12 @@ namespace NHibernate.Loader.Criteria
 			return propertyName;
 		}
 
-		public SqlString GetWithClause(string path, IDictionary<string, IFilter> enabledFilters)
+		public SqlString GetWithClause(string path, int index, IDictionary<string, IFilter> enabledFilters)
 		{
-			ICriterion crit;
+			IList<ICriterion> crit;
 			if (withClauseMap.TryGetValue(path, out crit))
 			{
-				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this, enabledFilters);
+				return crit[index] == null ? null : crit[index].ToSqlString(GetCriteria(path,index), this, enabledFilters);
 			}
 			return null;
 		}

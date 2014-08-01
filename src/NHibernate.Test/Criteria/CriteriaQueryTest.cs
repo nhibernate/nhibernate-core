@@ -2929,6 +2929,96 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
+        [Test]
+        public void MultiAliasToOnePathJoinCriterion()
+        {
+            using (ISession session = this.OpenSession())
+            {
+                using (ITransaction t = session.BeginTransaction())
+                {
+                    Course courseA = new Course();
+					courseA.CourseCode = "HIB-A";
+					courseA.Description = "Hibernate Training A";
+					session.Persist(courseA);
+
+                    Course courseB = new Course();
+                    courseB.CourseCode = "HIB-B";
+                    courseB.Description = "Hibernate Training B";
+					session.Persist(courseB);
+
+                    Student johnDoe = new Student();
+                    johnDoe.Name = "John Doe";
+                    johnDoe.StudentNumber = 235;
+                    johnDoe.PreferredCourse = null;                                       
+                    session.Persist(johnDoe);
+                    var emp1 = new Enrolment()
+                    {
+                        CourseCode = courseA.CourseCode,
+                        Course = courseA,
+                        Semester = 1,
+                        Student = johnDoe,
+                        StudentNumber = johnDoe.StudentNumber
+                    };
+                    session.Persist(emp1);
+
+                    var emp2 = new Enrolment()
+                    {
+                        CourseCode = courseB.CourseCode,
+                        Course = courseB,
+                        Semester = 2,
+                        Student = johnDoe,
+                        StudentNumber = johnDoe.StudentNumber
+                    };
+                    session.Persist(emp2);
+
+                    Student mark = new Student();
+                    mark.Name = "mark Tim";
+                    mark.StudentNumber = 236;
+                    mark.PreferredCourse = null;                
+                    session.Persist(mark);
+                    session.Flush();
+
+                    
+                    IList<object[]> result = session.CreateCriteria<Student>()
+                        .CreateAlias("Enrolments", "ep1", JoinType.LeftOuterJoin,
+                            Restrictions.Eq("ep1.CourseCode", "HIB-A"))
+                            .CreateAlias("Enrolments", "ep2", JoinType.LeftOuterJoin,
+                            Restrictions.Eq("ep2.CourseCode", "HIB-B"))
+                        .SetProjection(Projections.ProjectionList().Add(Property.ForName("ep1.Semester")).Add(Property.ForName("ep2.Semester")))
+                        .AddOrder(Order.Asc("ep1.CourseCode"))
+                        .List<object[]>();
+
+                    // can't be sure of NULL comparison ordering aside from they should
+                    // either come first or last
+                    if (result[0][0] == null)
+                    {
+                        Assert.AreEqual(result[1][0],1);
+                        Assert.AreEqual(result[1][1], 2);
+                        
+                    }
+                    else
+                    {
+                        Assert.IsNull(result[1][0]);
+                        Assert.IsNull(result[1][1]);
+                        Assert.AreEqual(result[0][0], 1);
+                        Assert.AreEqual(result[0][1], 2);
+                    }
+
+                 
+               
+                    session.Delete(emp1);
+                    session.Delete(emp2);
+                    session.Delete(johnDoe);
+                    session.Delete(mark);
+                    session.Delete(courseA);
+                    session.Delete(courseB);
+               
+
+                    t.Commit();
+                }
+            }
+        }
+
 		[Test]
 		public void IgnoreCase()
 		{
