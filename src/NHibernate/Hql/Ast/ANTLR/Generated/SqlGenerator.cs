@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 SqlGenerator.g 2014-08-03 13:46:15
+// $ANTLR 3.5.0.2 SqlGenerator.g 2014-08-03 19:45:43
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -5717,7 +5717,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_arithmeticExpr();
 	partial void LeaveRule_arithmeticExpr();
 	// $ANTLR start "arithmeticExpr"
-	// SqlGenerator.g:293:1: arithmeticExpr : ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
+	// SqlGenerator.g:293:1: arithmeticExpr : ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS nestedExprAfterMinusDiv ) | caseExpr );
 	[GrammarRule("arithmeticExpr")]
 	private void arithmeticExpr()
 	{
@@ -5728,7 +5728,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		DebugLocation(293, 1);
 		try
 		{
-			// SqlGenerator.g:294:2: ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
+			// SqlGenerator.g:294:2: ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS nestedExprAfterMinusDiv ) | caseExpr )
 			int alt55=5;
 			try { DebugEnterDecision(55, false);
 			switch (input.LA(1))
@@ -5814,7 +5814,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// SqlGenerator.g:298:4: ^( UNARY_MINUS expr )
+				// SqlGenerator.g:298:4: ^( UNARY_MINUS nestedExprAfterMinusDiv )
 				{
 				DebugLocation(298, 4);
 				DebugLocation(298, 6);
@@ -5828,8 +5828,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(298, 32);
-				PushFollow(Follow._expr_in_arithmeticExpr1659);
-				expr();
+				PushFollow(Follow._nestedExprAfterMinusDiv_in_arithmeticExpr1659);
+				nestedExprAfterMinusDiv();
 				PopFollow();
 				if (state.failed) return;
 
@@ -8407,7 +8407,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		public static readonly BitSet _bitwiseExpr_in_arithmeticExpr1643 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _multiplicativeExpr_in_arithmeticExpr1648 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _UNARY_MINUS_in_arithmeticExpr1655 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_arithmeticExpr1659 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _nestedExprAfterMinusDiv_in_arithmeticExpr1659 = new BitSet(new ulong[]{0x8UL});
 		public static readonly BitSet _caseExpr_in_arithmeticExpr1665 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _PLUS_in_additiveExpr1677 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _expr_in_additiveExpr1679 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x208080UL});

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 HqlSqlWalker.g 2014-08-03 13:46:14
+// $ANTLR 3.5.0.2 HqlSqlWalker.g 2014-08-03 19:45:42
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219

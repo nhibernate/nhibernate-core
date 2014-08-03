@@ -33,9 +33,10 @@ namespace NHibernate
 				clrTypeToNHibernateType[type.ReturnedClass] = type;
 			}
 
-			// There are multiple possibilites for boolean. Override so that we
-			// use the most natural mapping.
+			// There are multiple possibilites for boolean and strings.
+			// Override so that we use the most natural mapping.
 			clrTypeToNHibernateType[Boolean.ReturnedClass] = Boolean;
+			clrTypeToNHibernateType[String.ReturnedClass] = String;
 		}
 
 		/// <summary>

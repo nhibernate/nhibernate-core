@@ -1,10 +1,16 @@
 Build 4.0.0.XXXX
 =============================
 
-** Known BREAKING CHANGES from NH4.0.0.Alpha2 to 4.0.0.Alpha1
+** Known BREAKING CHANGES from NH4.0.0.Alpha2 to 4.0.0.GA
 
     The interface IEnhancedProjection was removed and its methods moved to IProjection.
     Two other overloads of the GetColumnAliases() methods was removed from IProjection.
+
+    ##### Possible Breaking Changes #####
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
 
 Build 4.0.0.Alpha2
 =============================
@@ -170,6 +176,14 @@ Build 4.0.0.Alpha1
 
 Build 3.4.0.CR1
 =============================
+** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
+
+    ##### Possible Breaking Changes #####
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
+
 
 ** Sub-task
     * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  

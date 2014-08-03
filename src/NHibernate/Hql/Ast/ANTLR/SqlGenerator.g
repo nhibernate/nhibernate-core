@@ -295,7 +295,7 @@ arithmeticExpr
 	| bitwiseExpr
 	| multiplicativeExpr
 //	| ^(CONCAT { Out("("); } expr ( { Out("||"); } expr )+ { Out(")"); } )
-	| ^(UNARY_MINUS { Out("-"); } expr)
+	| ^(UNARY_MINUS { Out("-"); } nestedExprAfterMinusDiv)
 	| caseExpr
 	;
 
