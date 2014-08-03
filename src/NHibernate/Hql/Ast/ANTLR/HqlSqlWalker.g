@@ -2,7 +2,7 @@ tree grammar HqlSqlWalker;
 
 options
 {
-	language=CSharp2;
+	language=CSharp3;
 	output=AST;
 	tokenVocab=Hql;
 	ASTLabelType=IASTNode;

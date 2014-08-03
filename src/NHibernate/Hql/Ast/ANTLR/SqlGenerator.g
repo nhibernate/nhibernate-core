@@ -11,7 +11,7 @@ tree grammar SqlGenerator;
 
 options 
 {
-	language=CSharp2;
+	language=CSharp3;
 	tokenVocab=HqlSqlWalker;
 	ASTLabelType=IASTNode;
 	output=None;

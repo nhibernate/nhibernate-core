@@ -8,14 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 Hql.g 2014-08-01 01:55:01
+// $ANTLR 3.5.0.2 Hql.g 2014-08-03 13:46:13
 
 // The variable 'variable' is assigned but its value is never used.
-#pragma warning disable 168, 219
+#pragma warning disable 219
 // Unreachable code detected.
 #pragma warning disable 162
 // Missing XML comment for publicly visible type or member 'Type_or_Member'
 #pragma warning disable 1591
+// CLS compliance checking will not be performed on 'type' because it is not visible from outside this assembly.
+#pragma warning disable 3019
 
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -24,7 +26,6 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Misc;
-using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 
 
 using Antlr.Runtime.Tree;
@@ -172,26 +173,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	public const int T__133=133;
 	public const int T__134=134;
 
-	#if ANTLR_DEBUG
-	private static readonly bool[] decisionCanBacktrack =
-		new bool[]
-		{
-			false, // invalid decision
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false
-		};
-	#else
-	private static readonly bool[] decisionCanBacktrack = new bool[0];
-	#endif
 	public HqlParser(ITokenStream input)
 		: this(input, new RecognizerSharedState())
 	{
@@ -199,8 +180,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	public HqlParser(ITokenStream input, RecognizerSharedState state)
 		: base(input, state)
 	{
+		ITreeAdaptor treeAdaptor = default(ITreeAdaptor);
+		CreateTreeAdaptor(ref treeAdaptor);
+		TreeAdaptor = treeAdaptor ?? new CommonTreeAdaptor();
 		OnCreated();
 	}
+	// Implement this function in your helper file to use a custom tree adaptor
+	partial void CreateTreeAdaptor(ref ITreeAdaptor adaptor);
+
 	private ITreeAdaptor adaptor;
 
 	public ITreeAdaptor TreeAdaptor
@@ -220,19 +207,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	public override string GrammarFileName { get { return "Hql.g"; } }
 
 
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void OnCreated() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
+	partial void OnCreated();
+	partial void EnterRule(string ruleName, int ruleIndex);
+	partial void LeaveRule(string ruleName, int ruleIndex);
 
 	#region Rules
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_statement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_statement() {}
+	partial void EnterRule_statement();
+	partial void LeaveRule_statement();
 	// $ANTLR start "statement"
 	// Hql.g:129:8: public statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF !;
 	[GrammarRule("statement")]
@@ -241,19 +222,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_statement();
 		EnterRule("statement", 1);
 		TraceIn("statement", 1);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken EOF5 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> updateStatement1 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> deleteStatement2 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> selectStatement3 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> insertStatement4 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken EOF5 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> updateStatement1 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> deleteStatement2 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> selectStatement3 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> insertStatement4 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode EOF5_tree = default(IASTNode);
-
+		IASTNode EOF5_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "statement");
 		DebugLocation(129, 1);
 		try
@@ -268,7 +248,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:130:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
 			int alt1=4;
 			try { DebugEnterSubRule(1);
-			try { DebugEnterDecision(1, decisionCanBacktrack[1]);
+			try { DebugEnterDecision(1, false);
 			switch (input.LA(1))
 			{
 			case UPDATE:
@@ -383,7 +363,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -391,19 +371,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("statement", 1);
 			LeaveRule("statement", 1);
 			LeaveRule_statement();
-	    }
-	 	DebugLocation(131, 1);
+		}
+		DebugLocation(131, 1);
 		} finally { DebugExitRule(GrammarFileName, "statement"); }
 		return retval;
 
 	}
 	// $ANTLR end "statement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_updateStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_updateStatement() {}
+	partial void EnterRule_updateStatement();
+	partial void LeaveRule_updateStatement();
 	// $ANTLR start "updateStatement"
 	// Hql.g:133:1: updateStatement : UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
 	[GrammarRule("updateStatement")]
@@ -412,20 +389,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_updateStatement();
 		EnterRule("updateStatement", 2);
 		TraceIn("updateStatement", 2);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken UPDATE6 = default(IToken);
-	    IToken VERSIONED7 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause8 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> setClause9 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> whereClause10 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken UPDATE6 = default(IToken);
+		IToken VERSIONED7 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause8 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> setClause9 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> whereClause10 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode UPDATE6_tree = default(IASTNode);
-	    IASTNode VERSIONED7_tree = default(IASTNode);
-
+		IASTNode UPDATE6_tree = default(IASTNode);
+		IASTNode VERSIONED7_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "updateStatement");
 		DebugLocation(133, 1);
 		try
@@ -440,12 +416,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			UPDATE6=(IToken)Match(input,UPDATE,Follow._UPDATE_in_updateStatement641); 
 			UPDATE6_tree = (IASTNode)adaptor.Create(UPDATE6);
 			root_0 = (IASTNode)adaptor.BecomeRoot(UPDATE6_tree, root_0);
-
 			DebugLocation(134, 12);
 			// Hql.g:134:12: ( VERSIONED )?
 			int alt2=2;
 			try { DebugEnterSubRule(2);
-			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
+			try { DebugEnterDecision(2, false);
 			int LA2_1 = input.LA(1);
 
 			if ((LA2_1==VERSIONED))
@@ -463,7 +438,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				VERSIONED7=(IToken)Match(input,VERSIONED,Follow._VERSIONED_in_updateStatement645); 
 				VERSIONED7_tree = (IASTNode)adaptor.Create(VERSIONED7);
 				adaptor.AddChild(root_0, VERSIONED7_tree);
-
 
 				}
 				break;
@@ -487,7 +461,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:137:3: ( whereClause )?
 			int alt3=2;
 			try { DebugEnterSubRule(3);
-			try { DebugEnterDecision(3, decisionCanBacktrack[3]);
+			try { DebugEnterDecision(3, false);
 			int LA3_1 = input.LA(1);
 
 			if ((LA3_1==WHERE))
@@ -527,7 +501,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -535,19 +509,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("updateStatement", 2);
 			LeaveRule("updateStatement", 2);
 			LeaveRule_updateStatement();
-	    }
-	 	DebugLocation(138, 1);
+		}
+		DebugLocation(138, 1);
 		} finally { DebugExitRule(GrammarFileName, "updateStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "updateStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_setClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_setClause() {}
+	partial void EnterRule_setClause();
+	partial void LeaveRule_setClause();
 	// $ANTLR start "setClause"
 	// Hql.g:140:1: setClause : ( SET ^ assignment ( COMMA ! assignment )* ) ;
 	[GrammarRule("setClause")]
@@ -556,19 +527,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_setClause();
 		EnterRule("setClause", 3);
 		TraceIn("setClause", 3);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken SET11 = default(IToken);
-	    IToken COMMA13 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> assignment12 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> assignment14 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken SET11 = default(IToken);
+		IToken COMMA13 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> assignment12 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> assignment14 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode SET11_tree = default(IASTNode);
-	    IASTNode COMMA13_tree = default(IASTNode);
-
+		IASTNode SET11_tree = default(IASTNode);
+		IASTNode COMMA13_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "setClause");
 		DebugLocation(140, 1);
 		try
@@ -588,7 +558,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			SET11=(IToken)Match(input,SET,Follow._SET_in_setClause674); 
 			SET11_tree = (IASTNode)adaptor.Create(SET11);
 			root_0 = (IASTNode)adaptor.BecomeRoot(SET11_tree, root_0);
-
 			DebugLocation(141, 10);
 			PushFollow(Follow._assignment_in_setClause677);
 			assignment12=assignment();
@@ -601,7 +570,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt4=2;
-				try { DebugEnterDecision(4, decisionCanBacktrack[4]);
+				try { DebugEnterDecision(4, false);
 				int LA4_1 = input.LA(1);
 
 				if ((LA4_1==COMMA))
@@ -655,7 +624,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -663,19 +632,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("setClause", 3);
 			LeaveRule("setClause", 3);
 			LeaveRule_setClause();
-	    }
-	 	DebugLocation(142, 1);
+		}
+		DebugLocation(142, 1);
 		} finally { DebugExitRule(GrammarFileName, "setClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "setClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_assignment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_assignment() {}
+	partial void EnterRule_assignment();
+	partial void LeaveRule_assignment();
 	// $ANTLR start "assignment"
 	// Hql.g:144:1: assignment : stateField EQ ^ newValue ;
 	[GrammarRule("assignment")]
@@ -684,17 +650,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_assignment();
 		EnterRule("assignment", 4);
 		TraceIn("assignment", 4);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken EQ16 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> stateField15 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> newValue17 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken EQ16 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> stateField15 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> newValue17 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode EQ16_tree = default(IASTNode);
-
+		IASTNode EQ16_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "assignment");
 		DebugLocation(144, 1);
 		try
@@ -715,7 +680,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			EQ16=(IToken)Match(input,EQ,Follow._EQ_in_assignment699); 
 			EQ16_tree = (IASTNode)adaptor.Create(EQ16);
 			root_0 = (IASTNode)adaptor.BecomeRoot(EQ16_tree, root_0);
-
 			DebugLocation(145, 19);
 			PushFollow(Follow._newValue_in_assignment702);
 			newValue17=newValue();
@@ -735,7 +699,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -743,19 +707,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("assignment", 4);
 			LeaveRule("assignment", 4);
 			LeaveRule_assignment();
-	    }
-	 	DebugLocation(146, 1);
+		}
+		DebugLocation(146, 1);
 		} finally { DebugExitRule(GrammarFileName, "assignment"); }
 		return retval;
 
 	}
 	// $ANTLR end "assignment"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_stateField() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_stateField() {}
+	partial void EnterRule_stateField();
+	partial void LeaveRule_stateField();
 	// $ANTLR start "stateField"
 	// Hql.g:150:1: stateField : path ;
 	[GrammarRule("stateField")]
@@ -764,13 +725,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_stateField();
 		EnterRule("stateField", 5);
 		TraceIn("stateField", 5);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> path18 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> path18 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "stateField");
 		DebugLocation(150, 1);
@@ -801,7 +761,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -809,19 +769,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("stateField", 5);
 			LeaveRule("stateField", 5);
 			LeaveRule_stateField();
-	    }
-	 	DebugLocation(152, 1);
+		}
+		DebugLocation(152, 1);
 		} finally { DebugExitRule(GrammarFileName, "stateField"); }
 		return retval;
 
 	}
 	// $ANTLR end "stateField"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_newValue() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_newValue() {}
+	partial void EnterRule_newValue();
+	partial void LeaveRule_newValue();
 	// $ANTLR start "newValue"
 	// Hql.g:156:1: newValue : concatenation ;
 	[GrammarRule("newValue")]
@@ -830,13 +787,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_newValue();
 		EnterRule("newValue", 6);
 		TraceIn("newValue", 6);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation19 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation19 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "newValue");
 		DebugLocation(156, 1);
@@ -867,7 +823,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -875,19 +831,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("newValue", 6);
 			LeaveRule("newValue", 6);
 			LeaveRule_newValue();
-	    }
-	 	DebugLocation(158, 1);
+		}
+		DebugLocation(158, 1);
 		} finally { DebugExitRule(GrammarFileName, "newValue"); }
 		return retval;
 
 	}
 	// $ANTLR end "newValue"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_deleteStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_deleteStatement() {}
+	partial void EnterRule_deleteStatement();
+	partial void LeaveRule_deleteStatement();
 	// $ANTLR start "deleteStatement"
 	// Hql.g:160:1: deleteStatement : DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )? ;
 	[GrammarRule("deleteStatement")]
@@ -896,17 +849,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_deleteStatement();
 		EnterRule("deleteStatement", 7);
 		TraceIn("deleteStatement", 7);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken DELETE20 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause21 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> whereClause22 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken DELETE20 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause21 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> whereClause22 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode DELETE20_tree = default(IASTNode);
-
+		IASTNode DELETE20_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "deleteStatement");
 		DebugLocation(160, 1);
 		try
@@ -921,7 +873,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			DELETE20=(IToken)Match(input,DELETE,Follow._DELETE_in_deleteStatement739); 
 			DELETE20_tree = (IASTNode)adaptor.Create(DELETE20);
 			root_0 = (IASTNode)adaptor.BecomeRoot(DELETE20_tree, root_0);
-
 			DebugLocation(162, 3);
 			// Hql.g:162:3: ( optionalFromTokenFromClause )
 			DebugEnterAlt(1);
@@ -940,7 +891,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:163:3: ( whereClause )?
 			int alt5=2;
 			try { DebugEnterSubRule(5);
-			try { DebugEnterDecision(5, decisionCanBacktrack[5]);
+			try { DebugEnterDecision(5, false);
 			int LA5_1 = input.LA(1);
 
 			if ((LA5_1==WHERE))
@@ -980,7 +931,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -988,19 +939,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("deleteStatement", 7);
 			LeaveRule("deleteStatement", 7);
 			LeaveRule_deleteStatement();
-	    }
-	 	DebugLocation(164, 1);
+		}
+		DebugLocation(164, 1);
 		} finally { DebugExitRule(GrammarFileName, "deleteStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "deleteStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_optionalFromTokenFromClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_optionalFromTokenFromClause() {}
+	partial void EnterRule_optionalFromTokenFromClause();
+	partial void LeaveRule_optionalFromTokenFromClause();
 	// $ANTLR start "optionalFromTokenFromClause"
 	// Hql.g:168:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
 	[GrammarRule("optionalFromTokenFromClause")]
@@ -1009,18 +957,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_optionalFromTokenFromClause();
 		EnterRule("optionalFromTokenFromClause", 8);
 		TraceIn("optionalFromTokenFromClause", 8);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause223 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path24 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> asAlias25 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause223 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path24 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> asAlias25 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_optionalFromTokenFromClause2=new RewriteRuleSubtreeStream(adaptor,"rule optionalFromTokenFromClause2");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
-	    RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
+		RewriteRuleSubtreeStream stream_optionalFromTokenFromClause2=new RewriteRuleSubtreeStream(adaptor,"rule optionalFromTokenFromClause2");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
 		try { DebugEnterRule(GrammarFileName, "optionalFromTokenFromClause");
 		DebugLocation(168, 1);
 		try
@@ -1045,7 +993,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:169:38: ( asAlias )?
 			int alt6=2;
 			try { DebugEnterSubRule(6);
-			try { DebugEnterDecision(6, decisionCanBacktrack[6]);
+			try { DebugEnterDecision(6, false);
 			int LA6_1 = input.LA(1);
 
 			if ((LA6_1==AS||LA6_1==IDENT))
@@ -1137,7 +1085,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1145,19 +1093,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("optionalFromTokenFromClause", 8);
 			LeaveRule("optionalFromTokenFromClause", 8);
 			LeaveRule_optionalFromTokenFromClause();
-	    }
-	 	DebugLocation(171, 1);
+		}
+		DebugLocation(171, 1);
 		} finally { DebugExitRule(GrammarFileName, "optionalFromTokenFromClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "optionalFromTokenFromClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_optionalFromTokenFromClause2() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_optionalFromTokenFromClause2() {}
+	partial void EnterRule_optionalFromTokenFromClause2();
+	partial void LeaveRule_optionalFromTokenFromClause2();
 	// $ANTLR start "optionalFromTokenFromClause2"
 	// Hql.g:173:1: optionalFromTokenFromClause2 : ( FROM )? ;
 	[GrammarRule("optionalFromTokenFromClause2")]
@@ -1166,15 +1111,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_optionalFromTokenFromClause2();
 		EnterRule("optionalFromTokenFromClause2", 9);
 		TraceIn("optionalFromTokenFromClause2", 9);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken FROM26 = default(IToken);
+		IToken FROM26 = default(IToken);
 
-	    IASTNode FROM26_tree = default(IASTNode);
-
+		IASTNode FROM26_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "optionalFromTokenFromClause2");
 		DebugLocation(173, 1);
 		try
@@ -1189,7 +1133,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:174:4: ( FROM )?
 			int alt7=2;
 			try { DebugEnterSubRule(7);
-			try { DebugEnterDecision(7, decisionCanBacktrack[7]);
+			try { DebugEnterDecision(7, false);
 			int LA7_1 = input.LA(1);
 
 			if ((LA7_1==FROM))
@@ -1207,7 +1151,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				FROM26=(IToken)Match(input,FROM,Follow._FROM_in_optionalFromTokenFromClause2802); 
 				FROM26_tree = (IASTNode)adaptor.Create(FROM26);
 				adaptor.AddChild(root_0, FROM26_tree);
-
 
 				}
 				break;
@@ -1228,7 +1171,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1236,19 +1179,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("optionalFromTokenFromClause2", 9);
 			LeaveRule("optionalFromTokenFromClause2", 9);
 			LeaveRule_optionalFromTokenFromClause2();
-	    }
-	 	DebugLocation(175, 1);
+		}
+		DebugLocation(175, 1);
 		} finally { DebugExitRule(GrammarFileName, "optionalFromTokenFromClause2"); }
 		return retval;
 
 	}
 	// $ANTLR end "optionalFromTokenFromClause2"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectStatement() {}
+	partial void EnterRule_selectStatement();
+	partial void LeaveRule_selectStatement();
 	// $ANTLR start "selectStatement"
 	// Hql.g:177:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
 	[GrammarRule("selectStatement")]
@@ -1257,14 +1197,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_selectStatement();
 		EnterRule("selectStatement", 10);
 		TraceIn("selectStatement", 10);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> q = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> q = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
+		RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
 		try { DebugEnterRule(GrammarFileName, "selectStatement");
 		DebugLocation(177, 1);
 		try
@@ -1326,7 +1266,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1334,19 +1274,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("selectStatement", 10);
 			LeaveRule("selectStatement", 10);
 			LeaveRule_selectStatement();
-	    }
-	 	DebugLocation(180, 1);
+		}
+		DebugLocation(180, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_insertStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_insertStatement() {}
+	partial void EnterRule_insertStatement();
+	partial void LeaveRule_insertStatement();
 	// $ANTLR start "insertStatement"
 	// Hql.g:182:1: insertStatement : INSERT ^ intoClause selectStatement ;
 	[GrammarRule("insertStatement")]
@@ -1355,17 +1292,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_insertStatement();
 		EnterRule("insertStatement", 11);
 		TraceIn("insertStatement", 11);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken INSERT27 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> intoClause28 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> selectStatement29 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken INSERT27 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> intoClause28 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> selectStatement29 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode INSERT27_tree = default(IASTNode);
-
+		IASTNode INSERT27_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "insertStatement");
 		DebugLocation(182, 1);
 		try
@@ -1380,7 +1316,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			INSERT27=(IToken)Match(input,INSERT,Follow._INSERT_in_insertStatement845); 
 			INSERT27_tree = (IASTNode)adaptor.Create(INSERT27);
 			root_0 = (IASTNode)adaptor.BecomeRoot(INSERT27_tree, root_0);
-
 			DebugLocation(186, 12);
 			PushFollow(Follow._intoClause_in_insertStatement848);
 			intoClause28=intoClause();
@@ -1406,7 +1341,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1414,19 +1349,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("insertStatement", 11);
 			LeaveRule("insertStatement", 11);
 			LeaveRule_insertStatement();
-	    }
-	 	DebugLocation(187, 1);
+		}
+		DebugLocation(187, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "insertStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_intoClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_intoClause() {}
+	partial void EnterRule_intoClause();
+	partial void LeaveRule_intoClause();
 	// $ANTLR start "intoClause"
 	// Hql.g:189:1: intoClause : INTO ^ path insertablePropertySpec ;
 	[GrammarRule("intoClause")]
@@ -1435,17 +1367,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_intoClause();
 		EnterRule("intoClause", 12);
 		TraceIn("intoClause", 12);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken INTO30 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path31 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> insertablePropertySpec32 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken INTO30 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path31 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> insertablePropertySpec32 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode INTO30_tree = default(IASTNode);
-
+		IASTNode INTO30_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "intoClause");
 		DebugLocation(189, 1);
 		try
@@ -1460,7 +1391,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			INTO30=(IToken)Match(input,INTO,Follow._INTO_in_intoClause861); 
 			INTO30_tree = (IASTNode)adaptor.Create(INTO30);
 			root_0 = (IASTNode)adaptor.BecomeRoot(INTO30_tree, root_0);
-
 			DebugLocation(190, 10);
 			PushFollow(Follow._path_in_intoClause864);
 			path31=path();
@@ -1488,7 +1418,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1496,19 +1426,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("intoClause", 12);
 			LeaveRule("intoClause", 12);
 			LeaveRule_intoClause();
-	    }
-	 	DebugLocation(191, 1);
+		}
+		DebugLocation(191, 1);
 		} finally { DebugExitRule(GrammarFileName, "intoClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "intoClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_insertablePropertySpec() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_insertablePropertySpec() {}
+	partial void EnterRule_insertablePropertySpec();
+	partial void LeaveRule_insertablePropertySpec();
 	// $ANTLR start "insertablePropertySpec"
 	// Hql.g:193:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
 	[GrammarRule("insertablePropertySpec")]
@@ -1517,24 +1444,24 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_insertablePropertySpec();
 		EnterRule("insertablePropertySpec", 13);
 		TraceIn("insertablePropertySpec", 13);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken OPEN33 = default(IToken);
-	    IToken COMMA35 = default(IToken);
-	    IToken CLOSE37 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> primaryExpression34 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> primaryExpression36 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken OPEN33 = default(IToken);
+		IToken COMMA35 = default(IToken);
+		IToken CLOSE37 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> primaryExpression34 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> primaryExpression36 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode OPEN33_tree = default(IASTNode);
-	    IASTNode COMMA35_tree = default(IASTNode);
-	    IASTNode CLOSE37_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
-	    RewriteRuleITokenStream stream_COMMA=new RewriteRuleITokenStream(adaptor,"token COMMA");
-	    RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
-	    RewriteRuleSubtreeStream stream_primaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
+		IASTNode OPEN33_tree = default(IASTNode);
+		IASTNode COMMA35_tree = default(IASTNode);
+		IASTNode CLOSE37_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
+		RewriteRuleITokenStream stream_COMMA=new RewriteRuleITokenStream(adaptor,"token COMMA");
+		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
+		RewriteRuleSubtreeStream stream_primaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
 		try { DebugEnterRule(GrammarFileName, "insertablePropertySpec");
 		DebugLocation(193, 1);
 		try
@@ -1559,7 +1486,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt8=2;
-				try { DebugEnterDecision(8, decisionCanBacktrack[8]);
+				try { DebugEnterDecision(8, false);
 				int LA8_1 = input.LA(1);
 
 				if ((LA8_1==COMMA))
@@ -1656,7 +1583,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1664,19 +1591,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("insertablePropertySpec", 13);
 			LeaveRule("insertablePropertySpec", 13);
 			LeaveRule_insertablePropertySpec();
-	    }
-	 	DebugLocation(196, 1);
+		}
+		DebugLocation(196, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertablePropertySpec"); }
 		return retval;
 
 	}
 	// $ANTLR end "insertablePropertySpec"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_queryRule() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_queryRule() {}
+	partial void EnterRule_queryRule();
+	partial void LeaveRule_queryRule();
 	// $ANTLR start "queryRule"
 	// Hql.g:201:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? ;
 	[GrammarRule("queryRule")]
@@ -1685,19 +1609,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_queryRule();
 		EnterRule("queryRule", 14);
 		TraceIn("queryRule", 14);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> selectFrom38 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> whereClause39 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> groupByClause40 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> havingClause41 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> orderByClause42 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> skipClause43 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> takeClause44 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> selectFrom38 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> whereClause39 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> groupByClause40 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> havingClause41 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> orderByClause42 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> skipClause43 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> takeClause44 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "queryRule");
 		DebugLocation(201, 2);
@@ -1719,7 +1642,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:203:3: ( whereClause )?
 			int alt9=2;
 			try { DebugEnterSubRule(9);
-			try { DebugEnterDecision(9, decisionCanBacktrack[9]);
+			try { DebugEnterDecision(9, false);
 			int LA9_1 = input.LA(1);
 
 			if ((LA9_1==WHERE))
@@ -1750,7 +1673,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:204:3: ( groupByClause )?
 			int alt10=2;
 			try { DebugEnterSubRule(10);
-			try { DebugEnterDecision(10, decisionCanBacktrack[10]);
+			try { DebugEnterDecision(10, false);
 			int LA10_1 = input.LA(1);
 
 			if ((LA10_1==GROUP))
@@ -1781,7 +1704,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:205:3: ( havingClause )?
 			int alt11=2;
 			try { DebugEnterSubRule(11);
-			try { DebugEnterDecision(11, decisionCanBacktrack[11]);
+			try { DebugEnterDecision(11, false);
 			int LA11_1 = input.LA(1);
 
 			if ((LA11_1==HAVING))
@@ -1812,7 +1735,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:206:3: ( orderByClause )?
 			int alt12=2;
 			try { DebugEnterSubRule(12);
-			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
+			try { DebugEnterDecision(12, false);
 			int LA12_1 = input.LA(1);
 
 			if ((LA12_1==ORDER))
@@ -1843,7 +1766,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:207:3: ( skipClause )?
 			int alt13=2;
 			try { DebugEnterSubRule(13);
-			try { DebugEnterDecision(13, decisionCanBacktrack[13]);
+			try { DebugEnterDecision(13, false);
 			int LA13_1 = input.LA(1);
 
 			if ((LA13_1==SKIP))
@@ -1874,7 +1797,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:208:3: ( takeClause )?
 			int alt14=2;
 			try { DebugEnterSubRule(14);
-			try { DebugEnterDecision(14, decisionCanBacktrack[14]);
+			try { DebugEnterDecision(14, false);
 			int LA14_1 = input.LA(1);
 
 			if ((LA14_1==TAKE))
@@ -1914,7 +1837,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -1922,19 +1845,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("queryRule", 14);
 			LeaveRule("queryRule", 14);
 			LeaveRule_queryRule();
-	    }
-	 	DebugLocation(209, 2);
+		}
+		DebugLocation(209, 2);
 		} finally { DebugExitRule(GrammarFileName, "queryRule"); }
 		return retval;
 
 	}
 	// $ANTLR end "queryRule"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectFrom() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectFrom() {}
+	partial void EnterRule_selectFrom();
+	partial void LeaveRule_selectFrom();
 	// $ANTLR start "selectFrom"
 	// Hql.g:211:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
 	[GrammarRule("selectFrom")]
@@ -1943,16 +1863,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_selectFrom();
 		EnterRule("selectFrom", 15);
 		TraceIn("selectFrom", 15);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> s = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> f = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> s = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> f = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_selectClause=new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
-	    RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
+		RewriteRuleSubtreeStream stream_selectClause=new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
+		RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
 		try { DebugEnterRule(GrammarFileName, "selectFrom");
 		DebugLocation(211, 1);
 		try
@@ -1965,7 +1885,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:212:5: (s= selectClause )?
 			int alt15=2;
 			try { DebugEnterSubRule(15);
-			try { DebugEnterDecision(15, decisionCanBacktrack[15]);
+			try { DebugEnterDecision(15, false);
 			int LA15_1 = input.LA(1);
 
 			if ((LA15_1==SELECT))
@@ -1996,7 +1916,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:212:23: (f= fromClause )?
 			int alt16=2;
 			try { DebugEnterSubRule(16);
-			try { DebugEnterDecision(16, decisionCanBacktrack[16]);
+			try { DebugEnterDecision(16, false);
 			int LA16_1 = input.LA(1);
 
 			if ((LA16_1==FROM))
@@ -2116,7 +2036,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -2124,19 +2044,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("selectFrom", 15);
 			LeaveRule("selectFrom", 15);
 			LeaveRule_selectFrom();
-	    }
-	 	DebugLocation(219, 1);
+		}
+		DebugLocation(219, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectFrom"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectFrom"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectClause() {}
+	partial void EnterRule_selectClause();
+	partial void LeaveRule_selectClause();
 	// $ANTLR start "selectClause"
 	// Hql.g:222:1: selectClause : SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
 	[GrammarRule("selectClause")]
@@ -2145,20 +2062,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_selectClause();
 		EnterRule("selectClause", 16);
 		TraceIn("selectClause", 16);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken SELECT45 = default(IToken);
-	    IToken DISTINCT46 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> selectedPropertiesList47 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> newExpression48 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> selectObject49 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken SELECT45 = default(IToken);
+		IToken DISTINCT46 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> selectedPropertiesList47 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> newExpression48 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> selectObject49 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode SELECT45_tree = default(IASTNode);
-	    IASTNode DISTINCT46_tree = default(IASTNode);
-
+		IASTNode SELECT45_tree = default(IASTNode);
+		IASTNode DISTINCT46_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectClause");
 		DebugLocation(222, 1);
 		try
@@ -2173,14 +2089,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			SELECT45=(IToken)Match(input,SELECT,Follow._SELECT_in_selectClause1032); 
 			SELECT45_tree = (IASTNode)adaptor.Create(SELECT45);
 			root_0 = (IASTNode)adaptor.BecomeRoot(SELECT45_tree, root_0);
-
 			DebugLocation(224, 3);
 			 WeakKeywords(); 
 			DebugLocation(225, 3);
 			// Hql.g:225:3: ( DISTINCT )?
 			int alt17=2;
 			try { DebugEnterSubRule(17);
-			try { DebugEnterDecision(17, decisionCanBacktrack[17]);
+			try { DebugEnterDecision(17, false);
 			int LA17_1 = input.LA(1);
 
 			if ((LA17_1==DISTINCT))
@@ -2199,7 +2114,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				DISTINCT46_tree = (IASTNode)adaptor.Create(DISTINCT46);
 				adaptor.AddChild(root_0, DISTINCT46_tree);
 
-
 				}
 				break;
 
@@ -2210,7 +2124,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:225:15: ( selectedPropertiesList | newExpression | selectObject )
 			int alt18=3;
 			try { DebugEnterSubRule(18);
-			try { DebugEnterDecision(18, decisionCanBacktrack[18]);
+			try { DebugEnterDecision(18, false);
 			switch (input.LA(1))
 			{
 			case ALL:
@@ -2324,7 +2238,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -2332,19 +2246,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("selectClause", 16);
 			LeaveRule("selectClause", 16);
 			LeaveRule_selectClause();
-	    }
-	 	DebugLocation(226, 1);
+		}
+		DebugLocation(226, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_newExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_newExpression() {}
+	partial void EnterRule_newExpression();
+	partial void LeaveRule_newExpression();
 	// $ANTLR start "newExpression"
 	// Hql.g:228:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
 	[GrammarRule("newExpression")]
@@ -2353,25 +2264,25 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_newExpression();
 		EnterRule("newExpression", 17);
 		TraceIn("newExpression", 17);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken op = default(IToken);
-	    IToken NEW50 = default(IToken);
-	    IToken CLOSE53 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path51 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> selectedPropertiesList52 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken op = default(IToken);
+		IToken NEW50 = default(IToken);
+		IToken CLOSE53 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path51 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> selectedPropertiesList52 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode op_tree = default(IASTNode);
-	    IASTNode NEW50_tree = default(IASTNode);
-	    IASTNode CLOSE53_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_NEW=new RewriteRuleITokenStream(adaptor,"token NEW");
-	    RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
-	    RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
-	    RewriteRuleSubtreeStream stream_selectedPropertiesList=new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
+		IASTNode op_tree = default(IASTNode);
+		IASTNode NEW50_tree = default(IASTNode);
+		IASTNode CLOSE53_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_NEW=new RewriteRuleITokenStream(adaptor,"token NEW");
+		RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
+		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_selectedPropertiesList=new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
 		try { DebugEnterRule(GrammarFileName, "newExpression");
 		DebugLocation(228, 1);
 		try
@@ -2460,7 +2371,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -2468,19 +2379,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("newExpression", 17);
 			LeaveRule("newExpression", 17);
 			LeaveRule_newExpression();
-	    }
-	 	DebugLocation(231, 1);
+		}
+		DebugLocation(231, 1);
 		} finally { DebugExitRule(GrammarFileName, "newExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "newExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectObject() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectObject() {}
+	partial void EnterRule_selectObject();
+	partial void LeaveRule_selectObject();
 	// $ANTLR start "selectObject"
 	// Hql.g:233:1: selectObject : OBJECT ^ OPEN ! identifier CLOSE !;
 	[GrammarRule("selectObject")]
@@ -2489,20 +2397,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_selectObject();
 		EnterRule("selectObject", 18);
 		TraceIn("selectObject", 18);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken OBJECT54 = default(IToken);
-	    IToken OPEN55 = default(IToken);
-	    IToken CLOSE57 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier56 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken OBJECT54 = default(IToken);
+		IToken OPEN55 = default(IToken);
+		IToken CLOSE57 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier56 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode OBJECT54_tree = default(IASTNode);
-	    IASTNode OPEN55_tree = default(IASTNode);
-	    IASTNode CLOSE57_tree = default(IASTNode);
-
+		IASTNode OBJECT54_tree = default(IASTNode);
+		IASTNode OPEN55_tree = default(IASTNode);
+		IASTNode CLOSE57_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectObject");
 		DebugLocation(233, 3);
 		try
@@ -2517,7 +2424,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			OBJECT54=(IToken)Match(input,OBJECT,Follow._OBJECT_in_selectObject1109); 
 			OBJECT54_tree = (IASTNode)adaptor.Create(OBJECT54);
 			root_0 = (IASTNode)adaptor.BecomeRoot(OBJECT54_tree, root_0);
-
 			DebugLocation(234, 18);
 			OPEN55=(IToken)Match(input,OPEN,Follow._OPEN_in_selectObject1112); 
 			DebugLocation(234, 20);
@@ -2541,7 +2447,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -2549,19 +2455,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("selectObject", 18);
 			LeaveRule("selectObject", 18);
 			LeaveRule_selectObject();
-	    }
-	 	DebugLocation(235, 3);
+		}
+		DebugLocation(235, 3);
 		} finally { DebugExitRule(GrammarFileName, "selectObject"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectObject"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromClause() {}
+	partial void EnterRule_fromClause();
+	partial void LeaveRule_fromClause();
 	// $ANTLR start "fromClause"
 	// Hql.g:241:1: fromClause : FROM ^ fromRange ( fromJoin | COMMA ! fromRange )* ;
 	[GrammarRule("fromClause")]
@@ -2570,20 +2473,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_fromClause();
 		EnterRule("fromClause", 19);
 		TraceIn("fromClause", 19);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken FROM58 = default(IToken);
-	    IToken COMMA61 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> fromRange59 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> fromJoin60 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> fromRange62 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken FROM58 = default(IToken);
+		IToken COMMA61 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> fromRange59 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> fromJoin60 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> fromRange62 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode FROM58_tree = default(IASTNode);
-	    IASTNode COMMA61_tree = default(IASTNode);
-
+		IASTNode FROM58_tree = default(IASTNode);
+		IASTNode COMMA61_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "fromClause");
 		DebugLocation(241, 1);
 		try
@@ -2598,7 +2500,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			FROM58=(IToken)Match(input,FROM,Follow._FROM_in_fromClause1135); 
 			FROM58_tree = (IASTNode)adaptor.Create(FROM58);
 			root_0 = (IASTNode)adaptor.BecomeRoot(FROM58_tree, root_0);
-
 			DebugLocation(242, 10);
 			 WeakKeywords(); 
 			DebugLocation(242, 30);
@@ -2613,7 +2514,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt19=3;
-				try { DebugEnterDecision(19, decisionCanBacktrack[19]);
+				try { DebugEnterDecision(19, false);
 				int LA19_1 = input.LA(1);
 
 				if ((LA19_1==FULL||LA19_1==INNER||LA19_1==JOIN||LA19_1==LEFT||LA19_1==RIGHT))
@@ -2683,7 +2584,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -2691,19 +2592,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("fromClause", 19);
 			LeaveRule("fromClause", 19);
 			LeaveRule_fromClause();
-	    }
-	 	DebugLocation(243, 1);
+		}
+		DebugLocation(243, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromJoin() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromJoin() {}
+	partial void EnterRule_fromJoin();
+	partial void LeaveRule_fromJoin();
 	// $ANTLR start "fromJoin"
 	// Hql.g:245:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? );
 	[GrammarRule("fromJoin")]
@@ -2712,58 +2610,57 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_fromJoin();
 		EnterRule("fromJoin", 20);
 		TraceIn("fromJoin", 20);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken set63 = default(IToken);
-	    IToken OUTER64 = default(IToken);
-	    IToken FULL65 = default(IToken);
-	    IToken INNER66 = default(IToken);
-	    IToken JOIN67 = default(IToken);
-	    IToken FETCH68 = default(IToken);
-	    IToken set73 = default(IToken);
-	    IToken OUTER74 = default(IToken);
-	    IToken FULL75 = default(IToken);
-	    IToken INNER76 = default(IToken);
-	    IToken JOIN77 = default(IToken);
-	    IToken FETCH78 = default(IToken);
-	    IToken ELEMENTS79 = default(IToken);
-	    IToken OPEN80 = default(IToken);
-	    IToken CLOSE82 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path69 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> asAlias70 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> propertyFetch71 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> withClause72 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path81 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> asAlias83 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> propertyFetch84 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> withClause85 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken set63 = default(IToken);
+		IToken OUTER64 = default(IToken);
+		IToken FULL65 = default(IToken);
+		IToken INNER66 = default(IToken);
+		IToken JOIN67 = default(IToken);
+		IToken FETCH68 = default(IToken);
+		IToken set73 = default(IToken);
+		IToken OUTER74 = default(IToken);
+		IToken FULL75 = default(IToken);
+		IToken INNER76 = default(IToken);
+		IToken JOIN77 = default(IToken);
+		IToken FETCH78 = default(IToken);
+		IToken ELEMENTS79 = default(IToken);
+		IToken OPEN80 = default(IToken);
+		IToken CLOSE82 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path69 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> asAlias70 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> propertyFetch71 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> withClause72 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path81 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> asAlias83 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> propertyFetch84 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> withClause85 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode set63_tree = default(IASTNode);
-	    IASTNode OUTER64_tree = default(IASTNode);
-	    IASTNode FULL65_tree = default(IASTNode);
-	    IASTNode INNER66_tree = default(IASTNode);
-	    IASTNode JOIN67_tree = default(IASTNode);
-	    IASTNode FETCH68_tree = default(IASTNode);
-	    IASTNode set73_tree = default(IASTNode);
-	    IASTNode OUTER74_tree = default(IASTNode);
-	    IASTNode FULL75_tree = default(IASTNode);
-	    IASTNode INNER76_tree = default(IASTNode);
-	    IASTNode JOIN77_tree = default(IASTNode);
-	    IASTNode FETCH78_tree = default(IASTNode);
-	    IASTNode ELEMENTS79_tree = default(IASTNode);
-	    IASTNode OPEN80_tree = default(IASTNode);
-	    IASTNode CLOSE82_tree = default(IASTNode);
-
+		IASTNode set63_tree = default(IASTNode);
+		IASTNode OUTER64_tree = default(IASTNode);
+		IASTNode FULL65_tree = default(IASTNode);
+		IASTNode INNER66_tree = default(IASTNode);
+		IASTNode JOIN67_tree = default(IASTNode);
+		IASTNode FETCH68_tree = default(IASTNode);
+		IASTNode set73_tree = default(IASTNode);
+		IASTNode OUTER74_tree = default(IASTNode);
+		IASTNode FULL75_tree = default(IASTNode);
+		IASTNode INNER76_tree = default(IASTNode);
+		IASTNode JOIN77_tree = default(IASTNode);
+		IASTNode FETCH78_tree = default(IASTNode);
+		IASTNode ELEMENTS79_tree = default(IASTNode);
+		IASTNode OPEN80_tree = default(IASTNode);
+		IASTNode CLOSE82_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "fromJoin");
 		DebugLocation(245, 1);
 		try
 		{
 			// Hql.g:246:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? )
 			int alt32=2;
-			try { DebugEnterDecision(32, decisionCanBacktrack[32]);
+			try { DebugEnterDecision(32, false);
 			switch (input.LA(1))
 			{
 			case LEFT:
@@ -2791,14 +2688,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							{
 								alt32 = 2;
 							}
-
 							else
 							{
 								NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 5);
 								DebugRecognitionException(nvae);
 								throw nvae;
 							}
-
 							}
 							break;
 						case IDENT:
@@ -2820,14 +2715,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						}
 
 					}
-
 					else
 					{
 						NoViableAltException nvae = new NoViableAltException("", 32, 5, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 				}
 				else if ((LA32_2==JOIN))
 				{
@@ -2845,14 +2738,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						{
 							alt32 = 2;
 						}
-
 						else
 						{
 							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
-
 						}
 						break;
 					case IDENT:
@@ -2874,14 +2765,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					}
 
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 32, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				}
 				break;
 			case FULL:
@@ -2904,14 +2793,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						{
 							alt32 = 2;
 						}
-
 						else
 						{
 							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
-
 						}
 						break;
 					case IDENT:
@@ -2933,14 +2820,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					}
 
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 32, 2, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				}
 				break;
 			case INNER:
@@ -2963,14 +2848,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						{
 							alt32 = 2;
 						}
-
 						else
 						{
 							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
-
 						}
 						break;
 					case IDENT:
@@ -2992,14 +2875,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					}
 
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 32, 3, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				}
 				break;
 			case JOIN:
@@ -3018,14 +2899,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					{
 						alt32 = 2;
 					}
-
 					else
 					{
 						NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 					}
 					break;
 				case IDENT:
@@ -3069,7 +2948,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:246:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
 				int alt21=4;
 				try { DebugEnterSubRule(21);
-				try { DebugEnterDecision(21, decisionCanBacktrack[21]);
+				try { DebugEnterDecision(21, false);
 				switch (input.LA(1))
 				{
 				case LEFT:
@@ -3122,7 +3001,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:246:25: ( OUTER )?
 					int alt20=2;
 					try { DebugEnterSubRule(20);
-					try { DebugEnterDecision(20, decisionCanBacktrack[20]);
+					try { DebugEnterDecision(20, false);
 					int LA20_1 = input.LA(1);
 
 					if ((LA20_1==OUTER))
@@ -3140,7 +3019,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						OUTER64=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1182); 
 						OUTER64_tree = (IASTNode)adaptor.Create(OUTER64);
 						adaptor.AddChild(root_0, OUTER64_tree);
-
 
 						}
 						break;
@@ -3163,7 +3041,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					FULL65_tree = (IASTNode)adaptor.Create(FULL65);
 					adaptor.AddChild(root_0, FULL65_tree);
 
-
 					}
 					break;
 				case 3:
@@ -3175,7 +3052,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					INNER66_tree = (IASTNode)adaptor.Create(INNER66);
 					adaptor.AddChild(root_0, INNER66_tree);
 
-
 					}
 					break;
 
@@ -3186,12 +3062,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				JOIN67=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1199); 
 				JOIN67_tree = (IASTNode)adaptor.Create(JOIN67);
 				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN67_tree, root_0);
-
 				DebugLocation(246, 60);
 				// Hql.g:246:60: ( FETCH )?
 				int alt22=2;
 				try { DebugEnterSubRule(22);
-				try { DebugEnterDecision(22, decisionCanBacktrack[22]);
+				try { DebugEnterDecision(22, false);
 				int LA22_1 = input.LA(1);
 
 				if ((LA22_1==FETCH))
@@ -3210,7 +3085,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					FETCH68_tree = (IASTNode)adaptor.Create(FETCH68);
 					adaptor.AddChild(root_0, FETCH68_tree);
 
-
 					}
 					break;
 
@@ -3227,7 +3101,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:246:74: ( asAlias )?
 				int alt23=2;
 				try { DebugEnterSubRule(23);
-				try { DebugEnterDecision(23, decisionCanBacktrack[23]);
+				try { DebugEnterDecision(23, false);
 				int LA23_1 = input.LA(1);
 
 				if ((LA23_1==AS||LA23_1==IDENT))
@@ -3258,7 +3132,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:246:85: ( propertyFetch )?
 				int alt24=2;
 				try { DebugEnterSubRule(24);
-				try { DebugEnterDecision(24, decisionCanBacktrack[24]);
+				try { DebugEnterDecision(24, false);
 				int LA24_1 = input.LA(1);
 
 				if ((LA24_1==FETCH))
@@ -3289,7 +3163,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:246:102: ( withClause )?
 				int alt25=2;
 				try { DebugEnterSubRule(25);
-				try { DebugEnterDecision(25, decisionCanBacktrack[25]);
+				try { DebugEnterDecision(25, false);
 				int LA25_1 = input.LA(1);
 
 				if ((LA25_1==WITH))
@@ -3329,7 +3203,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:247:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
 				int alt27=4;
 				try { DebugEnterSubRule(27);
-				try { DebugEnterDecision(27, decisionCanBacktrack[27]);
+				try { DebugEnterDecision(27, false);
 				switch (input.LA(1))
 				{
 				case LEFT:
@@ -3382,7 +3256,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:247:25: ( OUTER )?
 					int alt26=2;
 					try { DebugEnterSubRule(26);
-					try { DebugEnterDecision(26, decisionCanBacktrack[26]);
+					try { DebugEnterDecision(26, false);
 					int LA26_1 = input.LA(1);
 
 					if ((LA26_1==OUTER))
@@ -3400,7 +3274,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						OUTER74=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1242); 
 						OUTER74_tree = (IASTNode)adaptor.Create(OUTER74);
 						adaptor.AddChild(root_0, OUTER74_tree);
-
 
 						}
 						break;
@@ -3423,7 +3296,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					FULL75_tree = (IASTNode)adaptor.Create(FULL75);
 					adaptor.AddChild(root_0, FULL75_tree);
 
-
 					}
 					break;
 				case 3:
@@ -3435,7 +3307,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					INNER76_tree = (IASTNode)adaptor.Create(INNER76);
 					adaptor.AddChild(root_0, INNER76_tree);
 
-
 					}
 					break;
 
@@ -3446,12 +3317,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				JOIN77=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1259); 
 				JOIN77_tree = (IASTNode)adaptor.Create(JOIN77);
 				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN77_tree, root_0);
-
 				DebugLocation(247, 60);
 				// Hql.g:247:60: ( FETCH )?
 				int alt28=2;
 				try { DebugEnterSubRule(28);
-				try { DebugEnterDecision(28, decisionCanBacktrack[28]);
+				try { DebugEnterDecision(28, false);
 				int LA28_1 = input.LA(1);
 
 				if ((LA28_1==FETCH))
@@ -3469,7 +3339,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					FETCH78=(IToken)Match(input,FETCH,Follow._FETCH_in_fromJoin1263); 
 					FETCH78_tree = (IASTNode)adaptor.Create(FETCH78);
 					adaptor.AddChild(root_0, FETCH78_tree);
-
 
 					}
 					break;
@@ -3493,7 +3362,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:247:97: ( asAlias )?
 				int alt29=2;
 				try { DebugEnterSubRule(29);
-				try { DebugEnterDecision(29, decisionCanBacktrack[29]);
+				try { DebugEnterDecision(29, false);
 				int LA29_1 = input.LA(1);
 
 				if ((LA29_1==AS||LA29_1==IDENT))
@@ -3524,7 +3393,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:247:108: ( propertyFetch )?
 				int alt30=2;
 				try { DebugEnterSubRule(30);
-				try { DebugEnterDecision(30, decisionCanBacktrack[30]);
+				try { DebugEnterDecision(30, false);
 				int LA30_1 = input.LA(1);
 
 				if ((LA30_1==FETCH))
@@ -3555,7 +3424,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:247:125: ( withClause )?
 				int alt31=2;
 				try { DebugEnterSubRule(31);
-				try { DebugEnterDecision(31, decisionCanBacktrack[31]);
+				try { DebugEnterDecision(31, false);
 				int LA31_1 = input.LA(1);
 
 				if ((LA31_1==WITH))
@@ -3597,7 +3466,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -3605,19 +3474,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("fromJoin", 20);
 			LeaveRule("fromJoin", 20);
 			LeaveRule_fromJoin();
-	    }
-	 	DebugLocation(248, 1);
+		}
+		DebugLocation(248, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromJoin"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromJoin"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_withClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_withClause() {}
+	partial void EnterRule_withClause();
+	partial void LeaveRule_withClause();
 	// $ANTLR start "withClause"
 	// Hql.g:250:1: withClause : WITH ^ logicalExpression ;
 	[GrammarRule("withClause")]
@@ -3626,16 +3492,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_withClause();
 		EnterRule("withClause", 21);
 		TraceIn("withClause", 21);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken WITH86 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalExpression87 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken WITH86 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalExpression87 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode WITH86_tree = default(IASTNode);
-
+		IASTNode WITH86_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "withClause");
 		DebugLocation(250, 1);
 		try
@@ -3650,7 +3515,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			WITH86=(IToken)Match(input,WITH,Follow._WITH_in_withClause1302); 
 			WITH86_tree = (IASTNode)adaptor.Create(WITH86);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WITH86_tree, root_0);
-
 			DebugLocation(251, 10);
 			PushFollow(Follow._logicalExpression_in_withClause1305);
 			logicalExpression87=logicalExpression();
@@ -3670,7 +3534,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -3678,19 +3542,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("withClause", 21);
 			LeaveRule("withClause", 21);
 			LeaveRule_withClause();
-	    }
-	 	DebugLocation(252, 1);
+		}
+		DebugLocation(252, 1);
 		} finally { DebugExitRule(GrammarFileName, "withClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "withClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromRange() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromRange() {}
+	partial void EnterRule_fromRange();
+	partial void LeaveRule_fromRange();
 	// $ANTLR start "fromRange"
 	// Hql.g:254:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
 	[GrammarRule("fromRange")]
@@ -3699,16 +3560,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_fromRange();
 		EnterRule("fromRange", 22);
 		TraceIn("fromRange", 22);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> fromClassOrOuterQueryPath88 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> inClassDeclaration89 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> inCollectionDeclaration90 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> inCollectionElementsDeclaration91 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> fromClassOrOuterQueryPath88 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> inClassDeclaration89 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> inCollectionDeclaration90 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> inCollectionElementsDeclaration91 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "fromRange");
 		DebugLocation(254, 1);
@@ -3716,7 +3576,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			// Hql.g:255:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
 			int alt33=4;
-			try { DebugEnterDecision(33, decisionCanBacktrack[33]);
+			try { DebugEnterDecision(33, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
@@ -3739,23 +3599,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					{
 						alt33 = 2;
 					}
-
 					else
 					{
 						NoViableAltException nvae = new NoViableAltException("", 33, 5, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 33, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				}
 				break;
 			case IN:
@@ -3851,7 +3707,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -3859,19 +3715,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("fromRange", 22);
 			LeaveRule("fromRange", 22);
 			LeaveRule_fromRange();
-	    }
-	 	DebugLocation(259, 1);
+		}
+		DebugLocation(259, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromRange"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromRange"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromClassOrOuterQueryPath() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromClassOrOuterQueryPath() {}
+	partial void EnterRule_fromClassOrOuterQueryPath();
+	partial void LeaveRule_fromClassOrOuterQueryPath();
 	// $ANTLR start "fromClassOrOuterQueryPath"
 	// Hql.g:261:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
 	[GrammarRule("fromClassOrOuterQueryPath")]
@@ -3880,18 +3733,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_fromClassOrOuterQueryPath();
 		EnterRule("fromClassOrOuterQueryPath", 23);
 		TraceIn("fromClassOrOuterQueryPath", 23);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> path92 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> asAlias93 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> propertyFetch94 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path92 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> asAlias93 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> propertyFetch94 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
-	    RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
-	    RewriteRuleSubtreeStream stream_propertyFetch=new RewriteRuleSubtreeStream(adaptor,"rule propertyFetch");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
+		RewriteRuleSubtreeStream stream_propertyFetch=new RewriteRuleSubtreeStream(adaptor,"rule propertyFetch");
 		try { DebugEnterRule(GrammarFileName, "fromClassOrOuterQueryPath");
 		DebugLocation(261, 1);
 		try
@@ -3912,7 +3765,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:262:29: ( asAlias )?
 			int alt34=2;
 			try { DebugEnterSubRule(34);
-			try { DebugEnterDecision(34, decisionCanBacktrack[34]);
+			try { DebugEnterDecision(34, false);
 			int LA34_1 = input.LA(1);
 
 			if ((LA34_1==AS||LA34_1==IDENT))
@@ -3943,7 +3796,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:262:40: ( propertyFetch )?
 			int alt35=2;
 			try { DebugEnterSubRule(35);
-			try { DebugEnterDecision(35, decisionCanBacktrack[35]);
+			try { DebugEnterDecision(35, false);
 			int LA35_1 = input.LA(1);
 
 			if ((LA35_1==FETCH))
@@ -4034,7 +3887,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4042,19 +3895,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("fromClassOrOuterQueryPath", 23);
 			LeaveRule("fromClassOrOuterQueryPath", 23);
 			LeaveRule_fromClassOrOuterQueryPath();
-	    }
-	 	DebugLocation(264, 1);
+		}
+		DebugLocation(264, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClassOrOuterQueryPath"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromClassOrOuterQueryPath"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inClassDeclaration() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inClassDeclaration() {}
+	partial void EnterRule_inClassDeclaration();
+	partial void LeaveRule_inClassDeclaration();
 	// $ANTLR start "inClassDeclaration"
 	// Hql.g:266:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
 	[GrammarRule("inClassDeclaration")]
@@ -4063,22 +3913,22 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_inClassDeclaration();
 		EnterRule("inClassDeclaration", 24);
 		TraceIn("inClassDeclaration", 24);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken IN96 = default(IToken);
-	    IToken CLASS97 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> alias95 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path98 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken IN96 = default(IToken);
+		IToken CLASS97 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> alias95 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path98 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode IN96_tree = default(IASTNode);
-	    IASTNode CLASS97_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
-	    RewriteRuleITokenStream stream_CLASS=new RewriteRuleITokenStream(adaptor,"token CLASS");
-	    RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		IASTNode IN96_tree = default(IASTNode);
+		IASTNode CLASS97_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
+		RewriteRuleITokenStream stream_CLASS=new RewriteRuleITokenStream(adaptor,"token CLASS");
+		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "inClassDeclaration");
 		DebugLocation(266, 1);
 		try
@@ -4101,7 +3951,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:267:13: ( CLASS )?
 			int alt36=2;
 			try { DebugEnterSubRule(36);
-			try { DebugEnterDecision(36, decisionCanBacktrack[36]);
+			try { DebugEnterDecision(36, false);
 			int LA36_1 = input.LA(1);
 
 			if ((LA36_1==CLASS))
@@ -4180,7 +4030,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4188,19 +4038,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("inClassDeclaration", 24);
 			LeaveRule("inClassDeclaration", 24);
 			LeaveRule_inClassDeclaration();
-	    }
-	 	DebugLocation(269, 1);
+		}
+		DebugLocation(269, 1);
 		} finally { DebugExitRule(GrammarFileName, "inClassDeclaration"); }
 		return retval;
 
 	}
 	// $ANTLR end "inClassDeclaration"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inCollectionDeclaration() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inCollectionDeclaration() {}
+	partial void EnterRule_inCollectionDeclaration();
+	partial void LeaveRule_inCollectionDeclaration();
 	// $ANTLR start "inCollectionDeclaration"
 	// Hql.g:271:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
 	[GrammarRule("inCollectionDeclaration")]
@@ -4209,25 +4056,25 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_inCollectionDeclaration();
 		EnterRule("inCollectionDeclaration", 25);
 		TraceIn("inCollectionDeclaration", 25);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken IN99 = default(IToken);
-	    IToken OPEN100 = default(IToken);
-	    IToken CLOSE102 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path101 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> alias103 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken IN99 = default(IToken);
+		IToken OPEN100 = default(IToken);
+		IToken CLOSE102 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path101 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> alias103 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode IN99_tree = default(IASTNode);
-	    IASTNode OPEN100_tree = default(IASTNode);
-	    IASTNode CLOSE102_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
-	    RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
-	    RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
-	    RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
+		IASTNode IN99_tree = default(IASTNode);
+		IASTNode OPEN100_tree = default(IASTNode);
+		IASTNode CLOSE102_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
+		RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
+		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
 		try { DebugEnterRule(GrammarFileName, "inCollectionDeclaration");
 		DebugLocation(271, 4);
 		try
@@ -4310,7 +4157,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4318,19 +4165,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("inCollectionDeclaration", 25);
 			LeaveRule("inCollectionDeclaration", 25);
 			LeaveRule_inCollectionDeclaration();
-	    }
-	 	DebugLocation(274, 4);
+		}
+		DebugLocation(274, 4);
 		} finally { DebugExitRule(GrammarFileName, "inCollectionDeclaration"); }
 		return retval;
 
 	}
 	// $ANTLR end "inCollectionDeclaration"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inCollectionElementsDeclaration() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inCollectionElementsDeclaration() {}
+	partial void EnterRule_inCollectionElementsDeclaration();
+	partial void LeaveRule_inCollectionElementsDeclaration();
 	// $ANTLR start "inCollectionElementsDeclaration"
 	// Hql.g:276:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
 	[GrammarRule("inCollectionElementsDeclaration")]
@@ -4339,46 +4183,46 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_inCollectionElementsDeclaration();
 		EnterRule("inCollectionElementsDeclaration", 26);
 		TraceIn("inCollectionElementsDeclaration", 26);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken IN105 = default(IToken);
-	    IToken ELEMENTS106 = default(IToken);
-	    IToken OPEN107 = default(IToken);
-	    IToken CLOSE109 = default(IToken);
-	    IToken ELEMENTS110 = default(IToken);
-	    IToken OPEN111 = default(IToken);
-	    IToken CLOSE113 = default(IToken);
-	    IToken AS114 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> alias104 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path108 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path112 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> alias115 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken IN105 = default(IToken);
+		IToken ELEMENTS106 = default(IToken);
+		IToken OPEN107 = default(IToken);
+		IToken CLOSE109 = default(IToken);
+		IToken ELEMENTS110 = default(IToken);
+		IToken OPEN111 = default(IToken);
+		IToken CLOSE113 = default(IToken);
+		IToken AS114 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> alias104 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path108 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path112 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> alias115 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode IN105_tree = default(IASTNode);
-	    IASTNode ELEMENTS106_tree = default(IASTNode);
-	    IASTNode OPEN107_tree = default(IASTNode);
-	    IASTNode CLOSE109_tree = default(IASTNode);
-	    IASTNode ELEMENTS110_tree = default(IASTNode);
-	    IASTNode OPEN111_tree = default(IASTNode);
-	    IASTNode CLOSE113_tree = default(IASTNode);
-	    IASTNode AS114_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
-	    RewriteRuleITokenStream stream_ELEMENTS=new RewriteRuleITokenStream(adaptor,"token ELEMENTS");
-	    RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
-	    RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
-	    RewriteRuleITokenStream stream_AS=new RewriteRuleITokenStream(adaptor,"token AS");
-	    RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		IASTNode IN105_tree = default(IASTNode);
+		IASTNode ELEMENTS106_tree = default(IASTNode);
+		IASTNode OPEN107_tree = default(IASTNode);
+		IASTNode CLOSE109_tree = default(IASTNode);
+		IASTNode ELEMENTS110_tree = default(IASTNode);
+		IASTNode OPEN111_tree = default(IASTNode);
+		IASTNode CLOSE113_tree = default(IASTNode);
+		IASTNode AS114_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_IN=new RewriteRuleITokenStream(adaptor,"token IN");
+		RewriteRuleITokenStream stream_ELEMENTS=new RewriteRuleITokenStream(adaptor,"token ELEMENTS");
+		RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
+		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
+		RewriteRuleITokenStream stream_AS=new RewriteRuleITokenStream(adaptor,"token AS");
+		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "inCollectionElementsDeclaration");
 		DebugLocation(276, 4);
 		try
 		{
 			// Hql.g:277:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
 			int alt37=2;
-			try { DebugEnterDecision(37, decisionCanBacktrack[37]);
+			try { DebugEnterDecision(37, false);
 			int LA37_1 = input.LA(1);
 
 			if ((LA37_1==IDENT))
@@ -4389,14 +4233,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt37 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 37, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(37); }
 			switch (alt37)
 			{
@@ -4556,7 +4398,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4564,19 +4406,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("inCollectionElementsDeclaration", 26);
 			LeaveRule("inCollectionElementsDeclaration", 26);
 			LeaveRule_inCollectionElementsDeclaration();
-	    }
-	 	DebugLocation(281, 4);
+		}
+		DebugLocation(281, 4);
 		} finally { DebugExitRule(GrammarFileName, "inCollectionElementsDeclaration"); }
 		return retval;
 
 	}
 	// $ANTLR end "inCollectionElementsDeclaration"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_asAlias() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_asAlias() {}
+	partial void EnterRule_asAlias();
+	partial void LeaveRule_asAlias();
 	// $ANTLR start "asAlias"
 	// Hql.g:284:1: asAlias : ( AS !)? alias ;
 	[GrammarRule("asAlias")]
@@ -4585,16 +4424,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_asAlias();
 		EnterRule("asAlias", 27);
 		TraceIn("asAlias", 27);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken AS116 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> alias117 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken AS116 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> alias117 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode AS116_tree = default(IASTNode);
-
+		IASTNode AS116_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "asAlias");
 		DebugLocation(284, 1);
 		try
@@ -4609,7 +4447,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:285:4: ( AS !)?
 			int alt38=2;
 			try { DebugEnterSubRule(38);
-			try { DebugEnterDecision(38, decisionCanBacktrack[38]);
+			try { DebugEnterDecision(38, false);
 			int LA38_1 = input.LA(1);
 
 			if ((LA38_1==AS))
@@ -4651,7 +4489,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4659,19 +4497,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("asAlias", 27);
 			LeaveRule("asAlias", 27);
 			LeaveRule_asAlias();
-	    }
-	 	DebugLocation(286, 1);
+		}
+		DebugLocation(286, 1);
 		} finally { DebugExitRule(GrammarFileName, "asAlias"); }
 		return retval;
 
 	}
 	// $ANTLR end "asAlias"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_alias() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_alias() {}
+	partial void EnterRule_alias();
+	partial void LeaveRule_alias();
 	// $ANTLR start "alias"
 	// Hql.g:287:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
 	[GrammarRule("alias")]
@@ -4680,14 +4515,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_alias();
 		EnterRule("alias", 28);
 		TraceIn("alias", 28);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> i = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> i = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
+		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "alias");
 		DebugLocation(287, 1);
 		try
@@ -4745,7 +4580,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4753,19 +4588,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("alias", 28);
 			LeaveRule("alias", 28);
 			LeaveRule_alias();
-	    }
-	 	DebugLocation(290, 1);
+		}
+		DebugLocation(290, 1);
 		} finally { DebugExitRule(GrammarFileName, "alias"); }
 		return retval;
 
 	}
 	// $ANTLR end "alias"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyFetch() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyFetch() {}
+	partial void EnterRule_propertyFetch();
+	partial void LeaveRule_propertyFetch();
 	// $ANTLR start "propertyFetch"
 	// Hql.g:292:1: propertyFetch : FETCH ALL ! PROPERTIES !;
 	[GrammarRule("propertyFetch")]
@@ -4774,19 +4606,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_propertyFetch();
 		EnterRule("propertyFetch", 29);
 		TraceIn("propertyFetch", 29);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken FETCH118 = default(IToken);
-	    IToken ALL119 = default(IToken);
-	    IToken PROPERTIES120 = default(IToken);
+		IToken FETCH118 = default(IToken);
+		IToken ALL119 = default(IToken);
+		IToken PROPERTIES120 = default(IToken);
 
-	    IASTNode FETCH118_tree = default(IASTNode);
-	    IASTNode ALL119_tree = default(IASTNode);
-	    IASTNode PROPERTIES120_tree = default(IASTNode);
-
+		IASTNode FETCH118_tree = default(IASTNode);
+		IASTNode ALL119_tree = default(IASTNode);
+		IASTNode PROPERTIES120_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "propertyFetch");
 		DebugLocation(292, 1);
 		try
@@ -4801,7 +4632,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			FETCH118=(IToken)Match(input,FETCH,Follow._FETCH_in_propertyFetch1570); 
 			FETCH118_tree = (IASTNode)adaptor.Create(FETCH118);
 			adaptor.AddChild(root_0, FETCH118_tree);
-
 			DebugLocation(293, 13);
 			ALL119=(IToken)Match(input,ALL,Follow._ALL_in_propertyFetch1572); 
 			DebugLocation(293, 25);
@@ -4819,7 +4649,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4827,19 +4657,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("propertyFetch", 29);
 			LeaveRule("propertyFetch", 29);
 			LeaveRule_propertyFetch();
-	    }
-	 	DebugLocation(294, 1);
+		}
+		DebugLocation(294, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyFetch"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyFetch"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_groupByClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_groupByClause() {}
+	partial void EnterRule_groupByClause();
+	partial void LeaveRule_groupByClause();
 	// $ANTLR start "groupByClause"
 	// Hql.g:296:1: groupByClause : GROUP ^ 'by' ! expression ( COMMA ! expression )* ;
 	[GrammarRule("groupByClause")]
@@ -4848,21 +4675,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_groupByClause();
 		EnterRule("groupByClause", 30);
 		TraceIn("groupByClause", 30);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken GROUP121 = default(IToken);
-	    IToken string_literal122 = default(IToken);
-	    IToken COMMA124 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression123 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression125 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken GROUP121 = default(IToken);
+		IToken string_literal122 = default(IToken);
+		IToken COMMA124 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> expression123 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression125 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode GROUP121_tree = default(IASTNode);
-	    IASTNode string_literal122_tree = default(IASTNode);
-	    IASTNode COMMA124_tree = default(IASTNode);
-
+		IASTNode GROUP121_tree = default(IASTNode);
+		IASTNode string_literal122_tree = default(IASTNode);
+		IASTNode COMMA124_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "groupByClause");
 		DebugLocation(296, 1);
 		try
@@ -4877,7 +4703,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			GROUP121=(IToken)Match(input,GROUP,Follow._GROUP_in_groupByClause1587); 
 			GROUP121_tree = (IASTNode)adaptor.Create(GROUP121);
 			root_0 = (IASTNode)adaptor.BecomeRoot(GROUP121_tree, root_0);
-
 			DebugLocation(298, 7);
 			string_literal122=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_groupByClause1593); 
 			DebugLocation(298, 9);
@@ -4892,7 +4717,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt39=2;
-				try { DebugEnterDecision(39, decisionCanBacktrack[39]);
+				try { DebugEnterDecision(39, false);
 				int LA39_1 = input.LA(1);
 
 				if ((LA39_1==COMMA))
@@ -4943,7 +4768,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -4951,19 +4776,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("groupByClause", 30);
 			LeaveRule("groupByClause", 30);
 			LeaveRule_groupByClause();
-	    }
-	 	DebugLocation(299, 1);
+		}
+		DebugLocation(299, 1);
 		} finally { DebugExitRule(GrammarFileName, "groupByClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "groupByClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderByClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderByClause() {}
+	partial void EnterRule_orderByClause();
+	partial void LeaveRule_orderByClause();
 	// $ANTLR start "orderByClause"
 	// Hql.g:301:1: orderByClause : ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )* ;
 	[GrammarRule("orderByClause")]
@@ -4972,21 +4794,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_orderByClause();
 		EnterRule("orderByClause", 31);
 		TraceIn("orderByClause", 31);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken ORDER126 = default(IToken);
-	    IToken string_literal127 = default(IToken);
-	    IToken COMMA129 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> orderElement128 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> orderElement130 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken ORDER126 = default(IToken);
+		IToken string_literal127 = default(IToken);
+		IToken COMMA129 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> orderElement128 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> orderElement130 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode ORDER126_tree = default(IASTNode);
-	    IASTNode string_literal127_tree = default(IASTNode);
-	    IASTNode COMMA129_tree = default(IASTNode);
-
+		IASTNode ORDER126_tree = default(IASTNode);
+		IASTNode string_literal127_tree = default(IASTNode);
+		IASTNode COMMA129_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "orderByClause");
 		DebugLocation(301, 1);
 		try
@@ -5001,7 +4822,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			ORDER126=(IToken)Match(input,ORDER,Follow._ORDER_in_orderByClause1617); 
 			ORDER126_tree = (IASTNode)adaptor.Create(ORDER126);
 			root_0 = (IASTNode)adaptor.BecomeRoot(ORDER126_tree, root_0);
-
 			DebugLocation(302, 15);
 			string_literal127=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_orderByClause1620); 
 			DebugLocation(302, 17);
@@ -5016,7 +4836,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt40=2;
-				try { DebugEnterDecision(40, decisionCanBacktrack[40]);
+				try { DebugEnterDecision(40, false);
 				int LA40_1 = input.LA(1);
 
 				if ((LA40_1==COMMA))
@@ -5067,7 +4887,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5075,19 +4895,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("orderByClause", 31);
 			LeaveRule("orderByClause", 31);
 			LeaveRule_orderByClause();
-	    }
-	 	DebugLocation(303, 1);
+		}
+		DebugLocation(303, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderByClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "orderByClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_skipClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_skipClause() {}
+	partial void EnterRule_skipClause();
+	partial void LeaveRule_skipClause();
 	// $ANTLR start "skipClause"
 	// Hql.g:305:1: skipClause : SKIP ^ ( NUM_INT | parameter ) ;
 	[GrammarRule("skipClause")]
@@ -5096,18 +4913,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_skipClause();
 		EnterRule("skipClause", 32);
 		TraceIn("skipClause", 32);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken SKIP131 = default(IToken);
-	    IToken NUM_INT132 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> parameter133 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken SKIP131 = default(IToken);
+		IToken NUM_INT132 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> parameter133 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode SKIP131_tree = default(IASTNode);
-	    IASTNode NUM_INT132_tree = default(IASTNode);
-
+		IASTNode SKIP131_tree = default(IASTNode);
+		IASTNode NUM_INT132_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "skipClause");
 		DebugLocation(305, 1);
 		try
@@ -5122,12 +4938,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			SKIP131=(IToken)Match(input,SKIP,Follow._SKIP_in_skipClause1644); 
 			SKIP131_tree = (IASTNode)adaptor.Create(SKIP131);
 			root_0 = (IASTNode)adaptor.BecomeRoot(SKIP131_tree, root_0);
-
 			DebugLocation(306, 10);
 			// Hql.g:306:10: ( NUM_INT | parameter )
 			int alt41=2;
 			try { DebugEnterSubRule(41);
-			try { DebugEnterDecision(41, decisionCanBacktrack[41]);
+			try { DebugEnterDecision(41, false);
 			int LA41_1 = input.LA(1);
 
 			if ((LA41_1==NUM_INT))
@@ -5138,14 +4953,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt41 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 41, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(41); }
 			switch (alt41)
 			{
@@ -5157,7 +4970,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				NUM_INT132=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_skipClause1648); 
 				NUM_INT132_tree = (IASTNode)adaptor.Create(NUM_INT132);
 				adaptor.AddChild(root_0, NUM_INT132_tree);
-
 
 				}
 				break;
@@ -5191,7 +5003,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5199,19 +5011,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("skipClause", 32);
 			LeaveRule("skipClause", 32);
 			LeaveRule_skipClause();
-	    }
-	 	DebugLocation(307, 1);
+		}
+		DebugLocation(307, 1);
 		} finally { DebugExitRule(GrammarFileName, "skipClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "skipClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_takeClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_takeClause() {}
+	partial void EnterRule_takeClause();
+	partial void LeaveRule_takeClause();
 	// $ANTLR start "takeClause"
 	// Hql.g:309:1: takeClause : TAKE ^ ( NUM_INT | parameter ) ;
 	[GrammarRule("takeClause")]
@@ -5220,18 +5029,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_takeClause();
 		EnterRule("takeClause", 33);
 		TraceIn("takeClause", 33);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken TAKE134 = default(IToken);
-	    IToken NUM_INT135 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> parameter136 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken TAKE134 = default(IToken);
+		IToken NUM_INT135 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> parameter136 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode TAKE134_tree = default(IASTNode);
-	    IASTNode NUM_INT135_tree = default(IASTNode);
-
+		IASTNode TAKE134_tree = default(IASTNode);
+		IASTNode NUM_INT135_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "takeClause");
 		DebugLocation(309, 1);
 		try
@@ -5246,12 +5054,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TAKE134=(IToken)Match(input,TAKE,Follow._TAKE_in_takeClause1664); 
 			TAKE134_tree = (IASTNode)adaptor.Create(TAKE134);
 			root_0 = (IASTNode)adaptor.BecomeRoot(TAKE134_tree, root_0);
-
 			DebugLocation(310, 10);
 			// Hql.g:310:10: ( NUM_INT | parameter )
 			int alt42=2;
 			try { DebugEnterSubRule(42);
-			try { DebugEnterDecision(42, decisionCanBacktrack[42]);
+			try { DebugEnterDecision(42, false);
 			int LA42_1 = input.LA(1);
 
 			if ((LA42_1==NUM_INT))
@@ -5262,14 +5069,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt42 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 42, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(42); }
 			switch (alt42)
 			{
@@ -5281,7 +5086,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				NUM_INT135=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_takeClause1668); 
 				NUM_INT135_tree = (IASTNode)adaptor.Create(NUM_INT135);
 				adaptor.AddChild(root_0, NUM_INT135_tree);
-
 
 				}
 				break;
@@ -5315,7 +5119,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5323,19 +5127,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("takeClause", 33);
 			LeaveRule("takeClause", 33);
 			LeaveRule_takeClause();
-	    }
-	 	DebugLocation(311, 1);
+		}
+		DebugLocation(311, 1);
 		} finally { DebugExitRule(GrammarFileName, "takeClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "takeClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_parameter() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_parameter() {}
+	partial void EnterRule_parameter();
+	partial void LeaveRule_parameter();
 	// $ANTLR start "parameter"
 	// Hql.g:313:1: parameter : ( COLON ^ identifier | PARAM ^ ( NUM_INT )? );
 	[GrammarRule("parameter")]
@@ -5344,27 +5145,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_parameter();
 		EnterRule("parameter", 34);
 		TraceIn("parameter", 34);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken COLON137 = default(IToken);
-	    IToken PARAM139 = default(IToken);
-	    IToken NUM_INT140 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier138 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken COLON137 = default(IToken);
+		IToken PARAM139 = default(IToken);
+		IToken NUM_INT140 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier138 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode COLON137_tree = default(IASTNode);
-	    IASTNode PARAM139_tree = default(IASTNode);
-	    IASTNode NUM_INT140_tree = default(IASTNode);
-
+		IASTNode COLON137_tree = default(IASTNode);
+		IASTNode PARAM139_tree = default(IASTNode);
+		IASTNode NUM_INT140_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "parameter");
 		DebugLocation(313, 1);
 		try
 		{
 			// Hql.g:314:2: ( COLON ^ identifier | PARAM ^ ( NUM_INT )? )
 			int alt44=2;
-			try { DebugEnterDecision(44, decisionCanBacktrack[44]);
+			try { DebugEnterDecision(44, false);
 			int LA44_1 = input.LA(1);
 
 			if ((LA44_1==COLON))
@@ -5375,14 +5175,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt44 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 44, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(44); }
 			switch (alt44)
 			{
@@ -5396,7 +5194,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				COLON137=(IToken)Match(input,COLON,Follow._COLON_in_parameter1684); 
 				COLON137_tree = (IASTNode)adaptor.Create(COLON137);
 				root_0 = (IASTNode)adaptor.BecomeRoot(COLON137_tree, root_0);
-
 				DebugLocation(314, 11);
 				PushFollow(Follow._identifier_in_parameter1687);
 				identifier138=identifier();
@@ -5416,12 +5213,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				PARAM139=(IToken)Match(input,PARAM,Follow._PARAM_in_parameter1692); 
 				PARAM139_tree = (IASTNode)adaptor.Create(PARAM139);
 				root_0 = (IASTNode)adaptor.BecomeRoot(PARAM139_tree, root_0);
-
 				DebugLocation(315, 11);
 				// Hql.g:315:11: ( NUM_INT )?
 				int alt43=2;
 				try { DebugEnterSubRule(43);
-				try { DebugEnterDecision(43, decisionCanBacktrack[43]);
+				try { DebugEnterDecision(43, false);
 				int LA43_1 = input.LA(1);
 
 				if ((LA43_1==NUM_INT))
@@ -5439,7 +5235,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					NUM_INT140=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_parameter1696); 
 					NUM_INT140_tree = (IASTNode)adaptor.Create(NUM_INT140);
 					adaptor.AddChild(root_0, NUM_INT140_tree);
-
 
 					}
 					break;
@@ -5462,7 +5257,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5470,19 +5265,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("parameter", 34);
 			LeaveRule("parameter", 34);
 			LeaveRule_parameter();
-	    }
-	 	DebugLocation(316, 1);
+		}
+		DebugLocation(316, 1);
 		} finally { DebugExitRule(GrammarFileName, "parameter"); }
 		return retval;
 
 	}
 	// $ANTLR end "parameter"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderElement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderElement() {}
+	partial void EnterRule_orderElement();
+	partial void LeaveRule_orderElement();
 	// $ANTLR start "orderElement"
 	// Hql.g:318:1: orderElement : expression ( ascendingOrDescending )? ;
 	[GrammarRule("orderElement")]
@@ -5491,14 +5283,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_orderElement();
 		EnterRule("orderElement", 35);
 		TraceIn("orderElement", 35);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> expression141 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> ascendingOrDescending142 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> expression141 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> ascendingOrDescending142 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "orderElement");
 		DebugLocation(318, 1);
@@ -5520,7 +5311,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:319:15: ( ascendingOrDescending )?
 			int alt45=2;
 			try { DebugEnterSubRule(45);
-			try { DebugEnterDecision(45, decisionCanBacktrack[45]);
+			try { DebugEnterDecision(45, false);
 			int LA45_1 = input.LA(1);
 
 			if ((LA45_1==ASCENDING||LA45_1==DESCENDING||(LA45_1>=133 && LA45_1<=134)))
@@ -5560,7 +5351,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5568,19 +5359,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("orderElement", 35);
 			LeaveRule("orderElement", 35);
 			LeaveRule_orderElement();
-	    }
-	 	DebugLocation(320, 1);
+		}
+		DebugLocation(320, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderElement"); }
 		return retval;
 
 	}
 	// $ANTLR end "orderElement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_ascendingOrDescending() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_ascendingOrDescending() {}
+	partial void EnterRule_ascendingOrDescending();
+	partial void LeaveRule_ascendingOrDescending();
 	// $ANTLR start "ascendingOrDescending"
 	// Hql.g:322:1: ascendingOrDescending : ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
 	[GrammarRule("ascendingOrDescending")]
@@ -5589,28 +5377,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_ascendingOrDescending();
 		EnterRule("ascendingOrDescending", 36);
 		TraceIn("ascendingOrDescending", 36);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken a = default(IToken);
-	    IToken d = default(IToken);
+		IToken a = default(IToken);
+		IToken d = default(IToken);
 
-	    IASTNode a_tree = default(IASTNode);
-	    IASTNode d_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_ASCENDING=new RewriteRuleITokenStream(adaptor,"token ASCENDING");
-	    RewriteRuleITokenStream stream_133=new RewriteRuleITokenStream(adaptor,"token 133");
-	    RewriteRuleITokenStream stream_DESCENDING=new RewriteRuleITokenStream(adaptor,"token DESCENDING");
-	    RewriteRuleITokenStream stream_134=new RewriteRuleITokenStream(adaptor,"token 134");
-
+		IASTNode a_tree = default(IASTNode);
+		IASTNode d_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_ASCENDING=new RewriteRuleITokenStream(adaptor,"token ASCENDING");
+		RewriteRuleITokenStream stream_133=new RewriteRuleITokenStream(adaptor,"token 133");
+		RewriteRuleITokenStream stream_DESCENDING=new RewriteRuleITokenStream(adaptor,"token DESCENDING");
+		RewriteRuleITokenStream stream_134=new RewriteRuleITokenStream(adaptor,"token 134");
 		try { DebugEnterRule(GrammarFileName, "ascendingOrDescending");
 		DebugLocation(322, 1);
 		try
 		{
 			// Hql.g:323:2: ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
 			int alt48=2;
-			try { DebugEnterDecision(48, decisionCanBacktrack[48]);
+			try { DebugEnterDecision(48, false);
 			int LA48_1 = input.LA(1);
 
 			if ((LA48_1==ASCENDING||LA48_1==133))
@@ -5621,14 +5408,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt48 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 48, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(48); }
 			switch (alt48)
 			{
@@ -5640,7 +5425,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:323:4: (a= 'asc' |a= 'ascending' )
 				int alt46=2;
 				try { DebugEnterSubRule(46);
-				try { DebugEnterDecision(46, decisionCanBacktrack[46]);
+				try { DebugEnterDecision(46, false);
 				int LA46_1 = input.LA(1);
 
 				if ((LA46_1==ASCENDING))
@@ -5651,14 +5436,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt46 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 46, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(46); }
 				switch (alt46)
 				{
@@ -5729,7 +5512,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:325:4: (d= 'desc' |d= 'descending' )
 				int alt47=2;
 				try { DebugEnterSubRule(47);
-				try { DebugEnterDecision(47, decisionCanBacktrack[47]);
+				try { DebugEnterDecision(47, false);
 				int LA47_1 = input.LA(1);
 
 				if ((LA47_1==DESCENDING))
@@ -5740,14 +5523,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt47 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 47, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(47); }
 				switch (alt47)
 				{
@@ -5822,7 +5603,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5830,19 +5611,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("ascendingOrDescending", 36);
 			LeaveRule("ascendingOrDescending", 36);
 			LeaveRule_ascendingOrDescending();
-	    }
-	 	DebugLocation(327, 1);
+		}
+		DebugLocation(327, 1);
 		} finally { DebugExitRule(GrammarFileName, "ascendingOrDescending"); }
 		return retval;
 
 	}
 	// $ANTLR end "ascendingOrDescending"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_havingClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_havingClause() {}
+	partial void EnterRule_havingClause();
+	partial void LeaveRule_havingClause();
 	// $ANTLR start "havingClause"
 	// Hql.g:329:1: havingClause : HAVING ^ logicalExpression ;
 	[GrammarRule("havingClause")]
@@ -5851,16 +5629,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_havingClause();
 		EnterRule("havingClause", 37);
 		TraceIn("havingClause", 37);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken HAVING143 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalExpression144 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken HAVING143 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalExpression144 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode HAVING143_tree = default(IASTNode);
-
+		IASTNode HAVING143_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "havingClause");
 		DebugLocation(329, 1);
 		try
@@ -5875,7 +5652,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			HAVING143=(IToken)Match(input,HAVING,Follow._HAVING_in_havingClause1784); 
 			HAVING143_tree = (IASTNode)adaptor.Create(HAVING143);
 			root_0 = (IASTNode)adaptor.BecomeRoot(HAVING143_tree, root_0);
-
 			DebugLocation(330, 12);
 			PushFollow(Follow._logicalExpression_in_havingClause1787);
 			logicalExpression144=logicalExpression();
@@ -5895,7 +5671,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5903,19 +5679,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("havingClause", 37);
 			LeaveRule("havingClause", 37);
 			LeaveRule_havingClause();
-	    }
-	 	DebugLocation(331, 1);
+		}
+		DebugLocation(331, 1);
 		} finally { DebugExitRule(GrammarFileName, "havingClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "havingClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whereClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whereClause() {}
+	partial void EnterRule_whereClause();
+	partial void LeaveRule_whereClause();
 	// $ANTLR start "whereClause"
 	// Hql.g:333:1: whereClause : WHERE ^ logicalExpression ;
 	[GrammarRule("whereClause")]
@@ -5924,16 +5697,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_whereClause();
 		EnterRule("whereClause", 38);
 		TraceIn("whereClause", 38);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken WHERE145 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalExpression146 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken WHERE145 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalExpression146 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode WHERE145_tree = default(IASTNode);
-
+		IASTNode WHERE145_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "whereClause");
 		DebugLocation(333, 1);
 		try
@@ -5948,7 +5720,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			WHERE145=(IToken)Match(input,WHERE,Follow._WHERE_in_whereClause1798); 
 			WHERE145_tree = (IASTNode)adaptor.Create(WHERE145);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHERE145_tree, root_0);
-
 			DebugLocation(334, 11);
 			PushFollow(Follow._logicalExpression_in_whereClause1801);
 			logicalExpression146=logicalExpression();
@@ -5968,7 +5739,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -5976,19 +5747,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("whereClause", 38);
 			LeaveRule("whereClause", 38);
 			LeaveRule_whereClause();
-	    }
-	 	DebugLocation(335, 1);
+		}
+		DebugLocation(335, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "whereClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectedPropertiesList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectedPropertiesList() {}
+	partial void EnterRule_selectedPropertiesList();
+	partial void LeaveRule_selectedPropertiesList();
 	// $ANTLR start "selectedPropertiesList"
 	// Hql.g:337:1: selectedPropertiesList : aliasedExpression ( COMMA ! aliasedExpression )* ;
 	[GrammarRule("selectedPropertiesList")]
@@ -5997,17 +5765,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_selectedPropertiesList();
 		EnterRule("selectedPropertiesList", 39);
 		TraceIn("selectedPropertiesList", 39);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken COMMA148 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> aliasedExpression147 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> aliasedExpression149 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken COMMA148 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> aliasedExpression147 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> aliasedExpression149 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode COMMA148_tree = default(IASTNode);
-
+		IASTNode COMMA148_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectedPropertiesList");
 		DebugLocation(337, 1);
 		try
@@ -6030,7 +5797,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt49=2;
-				try { DebugEnterDecision(49, decisionCanBacktrack[49]);
+				try { DebugEnterDecision(49, false);
 				int LA49_1 = input.LA(1);
 
 				if ((LA49_1==COMMA))
@@ -6081,7 +5848,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6089,19 +5856,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("selectedPropertiesList", 39);
 			LeaveRule("selectedPropertiesList", 39);
 			LeaveRule_selectedPropertiesList();
-	    }
-	 	DebugLocation(339, 1);
+		}
+		DebugLocation(339, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectedPropertiesList"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectedPropertiesList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aliasedExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aliasedExpression() {}
+	partial void EnterRule_aliasedExpression();
+	partial void LeaveRule_aliasedExpression();
 	// $ANTLR start "aliasedExpression"
 	// Hql.g:341:1: aliasedExpression : expression ( AS ^ identifier )? ;
 	[GrammarRule("aliasedExpression")]
@@ -6110,17 +5874,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_aliasedExpression();
 		EnterRule("aliasedExpression", 40);
 		TraceIn("aliasedExpression", 40);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken AS151 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression150 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier152 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken AS151 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> expression150 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier152 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode AS151_tree = default(IASTNode);
-
+		IASTNode AS151_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aliasedExpression");
 		DebugLocation(341, 1);
 		try
@@ -6141,7 +5904,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:342:15: ( AS ^ identifier )?
 			int alt50=2;
 			try { DebugEnterSubRule(50);
-			try { DebugEnterDecision(50, decisionCanBacktrack[50]);
+			try { DebugEnterDecision(50, false);
 			int LA50_1 = input.LA(1);
 
 			if ((LA50_1==AS))
@@ -6159,7 +5922,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				AS151=(IToken)Match(input,AS,Follow._AS_in_aliasedExpression1838); 
 				AS151_tree = (IASTNode)adaptor.Create(AS151);
 				root_0 = (IASTNode)adaptor.BecomeRoot(AS151_tree, root_0);
-
 				DebugLocation(342, 21);
 				PushFollow(Follow._identifier_in_aliasedExpression1841);
 				identifier152=identifier();
@@ -6186,7 +5948,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6194,19 +5956,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("aliasedExpression", 40);
 			LeaveRule("aliasedExpression", 40);
 			LeaveRule_aliasedExpression();
-	    }
-	 	DebugLocation(343, 1);
+		}
+		DebugLocation(343, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasedExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "aliasedExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_logicalExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_logicalExpression() {}
+	partial void EnterRule_logicalExpression();
+	partial void LeaveRule_logicalExpression();
 	// $ANTLR start "logicalExpression"
 	// Hql.g:370:1: logicalExpression : expression ;
 	[GrammarRule("logicalExpression")]
@@ -6215,13 +5974,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_logicalExpression();
 		EnterRule("logicalExpression", 41);
 		TraceIn("logicalExpression", 41);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> expression153 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> expression153 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "logicalExpression");
 		DebugLocation(370, 1);
@@ -6252,7 +6010,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6260,19 +6018,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("logicalExpression", 41);
 			LeaveRule("logicalExpression", 41);
 			LeaveRule_logicalExpression();
-	    }
-	 	DebugLocation(372, 1);
+		}
+		DebugLocation(372, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "logicalExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_expression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_expression() {}
+	partial void EnterRule_expression();
+	partial void LeaveRule_expression();
 	// $ANTLR start "expression"
 	// Hql.g:375:1: expression : logicalOrExpression ;
 	[GrammarRule("expression")]
@@ -6281,13 +6036,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_expression();
 		EnterRule("expression", 42);
 		TraceIn("expression", 42);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalOrExpression154 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
+		AstParserRuleReturnScope<IASTNode, IToken> logicalOrExpression154 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "expression");
 		DebugLocation(375, 1);
@@ -6318,7 +6072,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6326,19 +6080,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("expression", 42);
 			LeaveRule("expression", 42);
 			LeaveRule_expression();
-	    }
-	 	DebugLocation(377, 1);
+		}
+		DebugLocation(377, 1);
 		} finally { DebugExitRule(GrammarFileName, "expression"); }
 		return retval;
 
 	}
 	// $ANTLR end "expression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_logicalOrExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_logicalOrExpression() {}
+	partial void EnterRule_logicalOrExpression();
+	partial void LeaveRule_logicalOrExpression();
 	// $ANTLR start "logicalOrExpression"
 	// Hql.g:380:1: logicalOrExpression : logicalAndExpression ( OR ^ logicalAndExpression )* ;
 	[GrammarRule("logicalOrExpression")]
@@ -6347,17 +6098,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_logicalOrExpression();
 		EnterRule("logicalOrExpression", 43);
 		TraceIn("logicalOrExpression", 43);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken OR156 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression155 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression157 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken OR156 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression155 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression157 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode OR156_tree = default(IASTNode);
-
+		IASTNode OR156_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "logicalOrExpression");
 		DebugLocation(380, 1);
 		try
@@ -6380,7 +6130,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt51=2;
-				try { DebugEnterDecision(51, decisionCanBacktrack[51]);
+				try { DebugEnterDecision(51, false);
 				int LA51_1 = input.LA(1);
 
 				if ((LA51_1==OR))
@@ -6400,7 +6150,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					OR156=(IToken)Match(input,OR,Follow._OR_in_logicalOrExpression1908); 
 					OR156_tree = (IASTNode)adaptor.Create(OR156);
 					root_0 = (IASTNode)adaptor.BecomeRoot(OR156_tree, root_0);
-
 					DebugLocation(381, 31);
 					PushFollow(Follow._logicalAndExpression_in_logicalOrExpression1911);
 					logicalAndExpression157=logicalAndExpression();
@@ -6434,7 +6183,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6442,19 +6191,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("logicalOrExpression", 43);
 			LeaveRule("logicalOrExpression", 43);
 			LeaveRule_logicalOrExpression();
-	    }
-	 	DebugLocation(382, 1);
+		}
+		DebugLocation(382, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalOrExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "logicalOrExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_logicalAndExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_logicalAndExpression() {}
+	partial void EnterRule_logicalAndExpression();
+	partial void LeaveRule_logicalAndExpression();
 	// $ANTLR start "logicalAndExpression"
 	// Hql.g:385:1: logicalAndExpression : negatedExpression ( AND ^ negatedExpression )* ;
 	[GrammarRule("logicalAndExpression")]
@@ -6463,17 +6209,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_logicalAndExpression();
 		EnterRule("logicalAndExpression", 44);
 		TraceIn("logicalAndExpression", 44);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken AND159 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> negatedExpression158 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> negatedExpression160 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken AND159 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression158 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression160 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode AND159_tree = default(IASTNode);
-
+		IASTNode AND159_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "logicalAndExpression");
 		DebugLocation(385, 1);
 		try
@@ -6496,7 +6241,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt52=2;
-				try { DebugEnterDecision(52, decisionCanBacktrack[52]);
+				try { DebugEnterDecision(52, false);
 				int LA52_1 = input.LA(1);
 
 				if ((LA52_1==AND))
@@ -6516,7 +6261,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					AND159=(IToken)Match(input,AND,Follow._AND_in_logicalAndExpression1930); 
 					AND159_tree = (IASTNode)adaptor.Create(AND159);
 					root_0 = (IASTNode)adaptor.BecomeRoot(AND159_tree, root_0);
-
 					DebugLocation(386, 29);
 					PushFollow(Follow._negatedExpression_in_logicalAndExpression1933);
 					negatedExpression160=negatedExpression();
@@ -6550,7 +6294,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6558,19 +6302,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("logicalAndExpression", 44);
 			LeaveRule("logicalAndExpression", 44);
 			LeaveRule_logicalAndExpression();
-	    }
-	 	DebugLocation(387, 1);
+		}
+		DebugLocation(387, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalAndExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "logicalAndExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_negatedExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_negatedExpression() {}
+	partial void EnterRule_negatedExpression();
+	partial void LeaveRule_negatedExpression();
 	// $ANTLR start "negatedExpression"
 	// Hql.g:391:1: negatedExpression : ( NOT x= negatedExpression -> ^() | equalityExpression );
 	[GrammarRule("negatedExpression")]
@@ -6579,26 +6320,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_negatedExpression();
 		EnterRule("negatedExpression", 45);
 		TraceIn("negatedExpression", 45);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken NOT161 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> x = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> equalityExpression162 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken NOT161 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> x = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> equalityExpression162 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode NOT161_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_NOT=new RewriteRuleITokenStream(adaptor,"token NOT");
-	    RewriteRuleSubtreeStream stream_negatedExpression=new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
-	     WeakKeywords(); 
+		IASTNode NOT161_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_NOT=new RewriteRuleITokenStream(adaptor,"token NOT");
+		RewriteRuleSubtreeStream stream_negatedExpression=new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
+		 WeakKeywords(); 
 		try { DebugEnterRule(GrammarFileName, "negatedExpression");
 		DebugLocation(391, 1);
 		try
 		{
 			// Hql.g:393:2: ( NOT x= negatedExpression -> ^() | equalityExpression )
 			int alt53=2;
-			try { DebugEnterDecision(53, decisionCanBacktrack[53]);
+			try { DebugEnterDecision(53, false);
 			int LA53_1 = input.LA(1);
 
 			if ((LA53_1==NOT))
@@ -6609,14 +6350,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt53 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 53, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(53); }
 			switch (alt53)
 			{
@@ -6694,7 +6433,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6702,19 +6441,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("negatedExpression", 45);
 			LeaveRule("negatedExpression", 45);
 			LeaveRule_negatedExpression();
-	    }
-	 	DebugLocation(396, 1);
+		}
+		DebugLocation(396, 1);
 		} finally { DebugExitRule(GrammarFileName, "negatedExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "negatedExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_equalityExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_equalityExpression() {}
+	partial void EnterRule_equalityExpression();
+	partial void LeaveRule_equalityExpression();
 	// $ANTLR start "equalityExpression"
 	// Hql.g:401:1: equalityExpression : x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )* ;
 	[GrammarRule("equalityExpression")]
@@ -6723,25 +6459,24 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_equalityExpression();
 		EnterRule("equalityExpression", 46);
 		TraceIn("equalityExpression", 46);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken isx = default(IToken);
-	    IToken ne = default(IToken);
-	    IToken EQ163 = default(IToken);
-	    IToken NOT164 = default(IToken);
-	    IToken NE165 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> x = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> y = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken isx = default(IToken);
+		IToken ne = default(IToken);
+		IToken EQ163 = default(IToken);
+		IToken NOT164 = default(IToken);
+		IToken NE165 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> x = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> y = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode isx_tree = default(IASTNode);
-	    IASTNode ne_tree = default(IASTNode);
-	    IASTNode EQ163_tree = default(IASTNode);
-	    IASTNode NOT164_tree = default(IASTNode);
-	    IASTNode NE165_tree = default(IASTNode);
-
+		IASTNode isx_tree = default(IASTNode);
+		IASTNode ne_tree = default(IASTNode);
+		IASTNode EQ163_tree = default(IASTNode);
+		IASTNode NOT164_tree = default(IASTNode);
+		IASTNode NE165_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "equalityExpression");
 		DebugLocation(401, 1);
 		try
@@ -6764,7 +6499,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt56=2;
-				try { DebugEnterDecision(56, decisionCanBacktrack[56]);
+				try { DebugEnterDecision(56, false);
 				int LA56_1 = input.LA(1);
 
 				if ((LA56_1==EQ||LA56_1==IS||LA56_1==NE||LA56_1==SQL_NE))
@@ -6784,7 +6519,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:407:3: ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^)
 					int alt55=4;
 					try { DebugEnterSubRule(55);
-					try { DebugEnterDecision(55, decisionCanBacktrack[55]);
+					try { DebugEnterDecision(55, false);
 					switch (input.LA(1))
 					{
 					case EQ:
@@ -6827,7 +6562,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						EQ163_tree = (IASTNode)adaptor.Create(EQ163);
 						root_0 = (IASTNode)adaptor.BecomeRoot(EQ163_tree, root_0);
 
-
 						}
 						break;
 					case 2:
@@ -6838,14 +6572,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						isx=(IToken)Match(input,IS,Follow._IS_in_equalityExpression2010); 
 						isx_tree = (IASTNode)adaptor.Create(isx);
 						root_0 = (IASTNode)adaptor.BecomeRoot(isx_tree, root_0);
-
 						DebugLocation(408, 13);
 						 isx.Type = EQ; 
 						DebugLocation(408, 33);
 						// Hql.g:408:33: ( NOT !)?
 						int alt54=2;
 						try { DebugEnterSubRule(54);
-						try { DebugEnterDecision(54, decisionCanBacktrack[54]);
+						try { DebugEnterDecision(54, false);
 						int LA54_1 = input.LA(1);
 
 						if ((LA54_1==NOT))
@@ -6882,7 +6615,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						NE165_tree = (IASTNode)adaptor.Create(NE165);
 						root_0 = (IASTNode)adaptor.BecomeRoot(NE165_tree, root_0);
 
-
 						}
 						break;
 					case 4:
@@ -6893,7 +6625,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						ne=(IToken)Match(input,SQL_NE,Follow._SQL_NE_in_equalityExpression2037); 
 						ne_tree = (IASTNode)adaptor.Create(ne);
 						root_0 = (IASTNode)adaptor.BecomeRoot(ne_tree, root_0);
-
 						DebugLocation(410, 16);
 						 ne.Type = NE; 
 
@@ -6940,7 +6671,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -6948,19 +6679,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("equalityExpression", 46);
 			LeaveRule("equalityExpression", 46);
 			LeaveRule_equalityExpression();
-	    }
-	 	DebugLocation(412, 1);
+		}
+		DebugLocation(412, 1);
 		} finally { DebugExitRule(GrammarFileName, "equalityExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "equalityExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_relationalExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_relationalExpression() {}
+	partial void EnterRule_relationalExpression();
+	partial void LeaveRule_relationalExpression();
 	// $ANTLR start "relationalExpression"
 	// Hql.g:418:1: relationalExpression : concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) ) ;
 	[GrammarRule("relationalExpression")]
@@ -6969,40 +6697,39 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_relationalExpression();
 		EnterRule("relationalExpression", 47);
 		TraceIn("relationalExpression", 47);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken n = default(IToken);
-	    IToken i = default(IToken);
-	    IToken b = default(IToken);
-	    IToken l = default(IToken);
-	    IToken LT167 = default(IToken);
-	    IToken GT168 = default(IToken);
-	    IToken LE169 = default(IToken);
-	    IToken GE170 = default(IToken);
-	    IToken MEMBER176 = default(IToken);
-	    IToken OF177 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> p = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation166 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression171 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> inList172 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> betweenList173 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation174 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> likeEscape175 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken n = default(IToken);
+		IToken i = default(IToken);
+		IToken b = default(IToken);
+		IToken l = default(IToken);
+		IToken LT167 = default(IToken);
+		IToken GT168 = default(IToken);
+		IToken LE169 = default(IToken);
+		IToken GE170 = default(IToken);
+		IToken MEMBER176 = default(IToken);
+		IToken OF177 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> p = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation166 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression171 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> inList172 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> betweenList173 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation174 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> likeEscape175 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode n_tree = default(IASTNode);
-	    IASTNode i_tree = default(IASTNode);
-	    IASTNode b_tree = default(IASTNode);
-	    IASTNode l_tree = default(IASTNode);
-	    IASTNode LT167_tree = default(IASTNode);
-	    IASTNode GT168_tree = default(IASTNode);
-	    IASTNode LE169_tree = default(IASTNode);
-	    IASTNode GE170_tree = default(IASTNode);
-	    IASTNode MEMBER176_tree = default(IASTNode);
-	    IASTNode OF177_tree = default(IASTNode);
-
+		IASTNode n_tree = default(IASTNode);
+		IASTNode i_tree = default(IASTNode);
+		IASTNode b_tree = default(IASTNode);
+		IASTNode l_tree = default(IASTNode);
+		IASTNode LT167_tree = default(IASTNode);
+		IASTNode GT168_tree = default(IASTNode);
+		IASTNode LE169_tree = default(IASTNode);
+		IASTNode GE170_tree = default(IASTNode);
+		IASTNode MEMBER176_tree = default(IASTNode);
+		IASTNode OF177_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "relationalExpression");
 		DebugLocation(418, 1);
 		try
@@ -7023,7 +6750,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:419:18: ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) )
 			int alt62=2;
 			try { DebugEnterSubRule(62);
-			try { DebugEnterDecision(62, decisionCanBacktrack[62]);
+			try { DebugEnterDecision(62, false);
 			int LA62_1 = input.LA(1);
 
 			if ((LA62_1==EOF||LA62_1==AND||(LA62_1>=AS && LA62_1<=ASCENDING)||(LA62_1>=CLOSE && LA62_1<=CLOSE_BRACKET)||LA62_1==COMMA||LA62_1==DESCENDING||LA62_1==ELSE||(LA62_1>=END && LA62_1<=EQ)||(LA62_1>=FROM && LA62_1<=HAVING)||LA62_1==INNER||LA62_1==IS||(LA62_1>=JOIN && LA62_1<=LE)||LA62_1==LEFT||LA62_1==LT||LA62_1==NE||(LA62_1>=OR && LA62_1<=ORDER)||LA62_1==RIGHT||LA62_1==SKIP||LA62_1==SQL_NE||(LA62_1>=TAKE && LA62_1<=THEN)||LA62_1==UNION||(LA62_1>=WHEN && LA62_1<=WHERE)||(LA62_1>=133 && LA62_1<=134)))
@@ -7034,14 +6761,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt62 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 62, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(62); }
 			switch (alt62)
 			{
@@ -7060,7 +6785,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				while (true)
 				{
 					int alt58=2;
-					try { DebugEnterDecision(58, decisionCanBacktrack[58]);
+					try { DebugEnterDecision(58, false);
 					int LA58_1 = input.LA(1);
 
 					if ((LA58_1==GE||LA58_1==GT||LA58_1==LE||LA58_1==LT))
@@ -7080,7 +6805,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						// Hql.g:420:7: ( LT ^| GT ^| LE ^| GE ^)
 						int alt57=4;
 						try { DebugEnterSubRule(57);
-						try { DebugEnterDecision(57, decisionCanBacktrack[57]);
+						try { DebugEnterDecision(57, false);
 						switch (input.LA(1))
 						{
 						case LT:
@@ -7123,7 +6848,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							LT167_tree = (IASTNode)adaptor.Create(LT167);
 							root_0 = (IASTNode)adaptor.BecomeRoot(LT167_tree, root_0);
 
-
 							}
 							break;
 						case 2:
@@ -7134,7 +6858,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							GT168=(IToken)Match(input,GT,Follow._GT_in_relationalExpression2082); 
 							GT168_tree = (IASTNode)adaptor.Create(GT168);
 							root_0 = (IASTNode)adaptor.BecomeRoot(GT168_tree, root_0);
-
 
 							}
 							break;
@@ -7147,7 +6870,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							LE169_tree = (IASTNode)adaptor.Create(LE169);
 							root_0 = (IASTNode)adaptor.BecomeRoot(LE169_tree, root_0);
 
-
 							}
 							break;
 						case 4:
@@ -7158,7 +6880,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							GE170=(IToken)Match(input,GE,Follow._GE_in_relationalExpression2092); 
 							GE170_tree = (IASTNode)adaptor.Create(GE170);
 							root_0 = (IASTNode)adaptor.BecomeRoot(GE170_tree, root_0);
-
 
 							}
 							break;
@@ -7200,7 +6921,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:422:5: (n= NOT !)?
 				int alt59=2;
 				try { DebugEnterSubRule(59);
-				try { DebugEnterDecision(59, decisionCanBacktrack[59]);
+				try { DebugEnterDecision(59, false);
 				int LA59_1 = input.LA(1);
 
 				if ((LA59_1==NOT))
@@ -7227,7 +6948,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:422:15: ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) )
 				int alt61=4;
 				try { DebugEnterSubRule(61);
-				try { DebugEnterDecision(61, decisionCanBacktrack[61]);
+				try { DebugEnterDecision(61, false);
 				switch (input.LA(1))
 				{
 				case IN:
@@ -7274,7 +6995,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					i=(IToken)Match(input,IN,Follow._IN_in_relationalExpression2135); 
 					i_tree = (IASTNode)adaptor.Create(i);
 					root_0 = (IASTNode)adaptor.BecomeRoot(i_tree, root_0);
-
 					DebugLocation(425, 11);
 
 										i.Type = (n == null) ? IN : NOT_IN;
@@ -7305,7 +7025,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					b=(IToken)Match(input,BETWEEN,Follow._BETWEEN_in_relationalExpression2155); 
 					b_tree = (IASTNode)adaptor.Create(b);
 					root_0 = (IASTNode)adaptor.BecomeRoot(b_tree, root_0);
-
 					DebugLocation(430, 18);
 
 										b.Type = (n == null) ? BETWEEN : NOT_BETWEEN;
@@ -7336,7 +7055,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					l=(IToken)Match(input,LIKE,Follow._LIKE_in_relationalExpression2176); 
 					l_tree = (IASTNode)adaptor.Create(l);
 					root_0 = (IASTNode)adaptor.BecomeRoot(l_tree, root_0);
-
 					DebugLocation(435, 15);
 
 										l.Type = (n == null) ? LIKE : NOT_LIKE;
@@ -7375,7 +7093,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:440:15: ( OF !)?
 					int alt60=2;
 					try { DebugEnterSubRule(60);
-					try { DebugEnterDecision(60, decisionCanBacktrack[60]);
+					try { DebugEnterDecision(60, false);
 					int LA60_1 = input.LA(1);
 
 					if ((LA60_1==OF))
@@ -7437,7 +7155,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -7445,19 +7163,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("relationalExpression", 47);
 			LeaveRule("relationalExpression", 47);
 			LeaveRule_relationalExpression();
-	    }
-	 	DebugLocation(445, 1);
+		}
+		DebugLocation(445, 1);
 		} finally { DebugExitRule(GrammarFileName, "relationalExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "relationalExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_likeEscape() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_likeEscape() {}
+	partial void EnterRule_likeEscape();
+	partial void LeaveRule_likeEscape();
 	// $ANTLR start "likeEscape"
 	// Hql.g:447:1: likeEscape : ( ESCAPE ^ concatenation )? ;
 	[GrammarRule("likeEscape")]
@@ -7466,16 +7181,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_likeEscape();
 		EnterRule("likeEscape", 48);
 		TraceIn("likeEscape", 48);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken ESCAPE178 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation179 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken ESCAPE178 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation179 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode ESCAPE178_tree = default(IASTNode);
-
+		IASTNode ESCAPE178_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "likeEscape");
 		DebugLocation(447, 1);
 		try
@@ -7490,7 +7204,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:448:4: ( ESCAPE ^ concatenation )?
 			int alt63=2;
 			try { DebugEnterSubRule(63);
-			try { DebugEnterDecision(63, decisionCanBacktrack[63]);
+			try { DebugEnterDecision(63, false);
 			int LA63_1 = input.LA(1);
 
 			if ((LA63_1==ESCAPE))
@@ -7508,7 +7222,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				ESCAPE178=(IToken)Match(input,ESCAPE,Follow._ESCAPE_in_likeEscape2234); 
 				ESCAPE178_tree = (IASTNode)adaptor.Create(ESCAPE178);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE178_tree, root_0);
-
 				DebugLocation(448, 13);
 				PushFollow(Follow._concatenation_in_likeEscape2237);
 				concatenation179=concatenation();
@@ -7535,7 +7248,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -7543,19 +7256,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("likeEscape", 48);
 			LeaveRule("likeEscape", 48);
 			LeaveRule_likeEscape();
-	    }
-	 	DebugLocation(449, 1);
+		}
+		DebugLocation(449, 1);
 		} finally { DebugExitRule(GrammarFileName, "likeEscape"); }
 		return retval;
 
 	}
 	// $ANTLR end "likeEscape"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inList() {}
+	partial void EnterRule_inList();
+	partial void LeaveRule_inList();
 	// $ANTLR start "inList"
 	// Hql.g:451:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
 	[GrammarRule("inList")]
@@ -7564,14 +7274,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_inList();
 		EnterRule("inList", 49);
 		TraceIn("inList", 49);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> compoundExpr180 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> compoundExpr180 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_compoundExpr=new RewriteRuleSubtreeStream(adaptor,"rule compoundExpr");
+		RewriteRuleSubtreeStream stream_compoundExpr=new RewriteRuleSubtreeStream(adaptor,"rule compoundExpr");
 		try { DebugEnterRule(GrammarFileName, "inList");
 		DebugLocation(451, 1);
 		try
@@ -7632,7 +7342,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -7640,19 +7350,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("inList", 49);
 			LeaveRule("inList", 49);
 			LeaveRule_inList();
-	    }
-	 	DebugLocation(454, 1);
+		}
+		DebugLocation(454, 1);
 		} finally { DebugExitRule(GrammarFileName, "inList"); }
 		return retval;
 
 	}
 	// $ANTLR end "inList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_betweenList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_betweenList() {}
+	partial void EnterRule_betweenList();
+	partial void LeaveRule_betweenList();
 	// $ANTLR start "betweenList"
 	// Hql.g:456:1: betweenList : concatenation AND ! concatenation ;
 	[GrammarRule("betweenList")]
@@ -7661,17 +7368,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_betweenList();
 		EnterRule("betweenList", 50);
 		TraceIn("betweenList", 50);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken AND182 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation181 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> concatenation183 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken AND182 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation181 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation183 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode AND182_tree = default(IASTNode);
-
+		IASTNode AND182_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "betweenList");
 		DebugLocation(456, 1);
 		try
@@ -7709,7 +7415,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -7717,19 +7423,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("betweenList", 50);
 			LeaveRule("betweenList", 50);
 			LeaveRule_betweenList();
-	    }
-	 	DebugLocation(458, 1);
+		}
+		DebugLocation(458, 1);
 		} finally { DebugExitRule(GrammarFileName, "betweenList"); }
 		return retval;
 
 	}
 	// $ANTLR end "betweenList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_concatenation() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_concatenation() {}
+	partial void EnterRule_concatenation();
+	partial void LeaveRule_concatenation();
 	// $ANTLR start "concatenation"
 	// Hql.g:461:1: concatenation : a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )? ;
 	[GrammarRule("concatenation")]
@@ -7738,20 +7441,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_concatenation();
 		EnterRule("concatenation", 51);
 		TraceIn("concatenation", 51);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken c = default(IToken);
-	    IToken CONCAT185 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> a = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression184 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression186 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken c = default(IToken);
+		IToken CONCAT185 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> a = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression184 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression186 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode c_tree = default(IASTNode);
-	    IASTNode CONCAT185_tree = default(IASTNode);
-
+		IASTNode c_tree = default(IASTNode);
+		IASTNode CONCAT185_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "concatenation");
 		DebugLocation(461, 1);
 		try
@@ -7772,7 +7474,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:473:2: (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )?
 			int alt65=2;
 			try { DebugEnterSubRule(65);
-			try { DebugEnterDecision(65, decisionCanBacktrack[65]);
+			try { DebugEnterDecision(65, false);
 			int LA65_1 = input.LA(1);
 
 			if ((LA65_1==CONCAT))
@@ -7790,7 +7492,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				c=(IToken)Match(input,CONCAT,Follow._CONCAT_in_concatenation2303); 
 				c_tree = (IASTNode)adaptor.Create(c);
 				root_0 = (IASTNode)adaptor.BecomeRoot(c_tree, root_0);
-
 				DebugLocation(473, 14);
 				 c.Type = EXPR_LIST; c.Text = "concatList"; 
 				DebugLocation(474, 4);
@@ -7805,7 +7506,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				while (true)
 				{
 					int alt64=2;
-					try { DebugEnterDecision(64, decisionCanBacktrack[64]);
+					try { DebugEnterDecision(64, false);
 					int LA64_1 = input.LA(1);
 
 					if ((LA64_1==CONCAT))
@@ -7873,7 +7574,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -7881,19 +7582,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("concatenation", 51);
 			LeaveRule("concatenation", 51);
 			LeaveRule_concatenation();
-	    }
-	 	DebugLocation(477, 1);
+		}
+		DebugLocation(477, 1);
 		} finally { DebugExitRule(GrammarFileName, "concatenation"); }
 		return retval;
 
 	}
 	// $ANTLR end "concatenation"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_bitwiseNotExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_bitwiseNotExpression() {}
+	partial void EnterRule_bitwiseNotExpression();
+	partial void LeaveRule_bitwiseNotExpression();
 	// $ANTLR start "bitwiseNotExpression"
 	// Hql.g:480:1: bitwiseNotExpression : ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression );
 	[GrammarRule("bitwiseNotExpression")]
@@ -7902,24 +7600,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_bitwiseNotExpression();
 		EnterRule("bitwiseNotExpression", 52);
 		TraceIn("bitwiseNotExpression", 52);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken BNOT187 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseOrExpression188 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseOrExpression189 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken BNOT187 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseOrExpression188 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseOrExpression189 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode BNOT187_tree = default(IASTNode);
-
+		IASTNode BNOT187_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseNotExpression");
 		DebugLocation(480, 1);
 		try
 		{
 			// Hql.g:481:2: ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression )
 			int alt66=2;
-			try { DebugEnterDecision(66, decisionCanBacktrack[66]);
+			try { DebugEnterDecision(66, false);
 			int LA66_1 = input.LA(1);
 
 			if ((LA66_1==BNOT))
@@ -7930,14 +7627,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt66 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 66, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(66); }
 			switch (alt66)
 			{
@@ -7956,7 +7651,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				BNOT187=(IToken)Match(input,BNOT,Follow._BNOT_in_bitwiseNotExpression2346); 
 				BNOT187_tree = (IASTNode)adaptor.Create(BNOT187);
 				root_0 = (IASTNode)adaptor.BecomeRoot(BNOT187_tree, root_0);
-
 				DebugLocation(481, 11);
 				PushFollow(Follow._bitwiseOrExpression_in_bitwiseNotExpression2349);
 				bitwiseOrExpression188=bitwiseOrExpression();
@@ -7996,7 +7690,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8004,19 +7698,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("bitwiseNotExpression", 52);
 			LeaveRule("bitwiseNotExpression", 52);
 			LeaveRule_bitwiseNotExpression();
-	    }
-	 	DebugLocation(483, 1);
+		}
+		DebugLocation(483, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseNotExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "bitwiseNotExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_bitwiseOrExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_bitwiseOrExpression() {}
+	partial void EnterRule_bitwiseOrExpression();
+	partial void LeaveRule_bitwiseOrExpression();
 	// $ANTLR start "bitwiseOrExpression"
 	// Hql.g:485:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )* ;
 	[GrammarRule("bitwiseOrExpression")]
@@ -8025,17 +7716,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_bitwiseOrExpression();
 		EnterRule("bitwiseOrExpression", 53);
 		TraceIn("bitwiseOrExpression", 53);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken BOR191 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression190 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression192 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken BOR191 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression190 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression192 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode BOR191_tree = default(IASTNode);
-
+		IASTNode BOR191_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseOrExpression");
 		DebugLocation(485, 1);
 		try
@@ -8058,7 +7748,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt67=2;
-				try { DebugEnterDecision(67, decisionCanBacktrack[67]);
+				try { DebugEnterDecision(67, false);
 				int LA67_1 = input.LA(1);
 
 				if ((LA67_1==BOR))
@@ -8078,7 +7768,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					BOR191=(IToken)Match(input,BOR,Follow._BOR_in_bitwiseOrExpression2370); 
 					BOR191_tree = (IASTNode)adaptor.Create(BOR191);
 					root_0 = (IASTNode)adaptor.BecomeRoot(BOR191_tree, root_0);
-
 					DebugLocation(486, 31);
 					PushFollow(Follow._bitwiseXOrExpression_in_bitwiseOrExpression2373);
 					bitwiseXOrExpression192=bitwiseXOrExpression();
@@ -8112,7 +7801,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8120,19 +7809,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("bitwiseOrExpression", 53);
 			LeaveRule("bitwiseOrExpression", 53);
 			LeaveRule_bitwiseOrExpression();
-	    }
-	 	DebugLocation(487, 1);
+		}
+		DebugLocation(487, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseOrExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "bitwiseOrExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_bitwiseXOrExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_bitwiseXOrExpression() {}
+	partial void EnterRule_bitwiseXOrExpression();
+	partial void LeaveRule_bitwiseXOrExpression();
 	// $ANTLR start "bitwiseXOrExpression"
 	// Hql.g:489:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )* ;
 	[GrammarRule("bitwiseXOrExpression")]
@@ -8141,17 +7827,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_bitwiseXOrExpression();
 		EnterRule("bitwiseXOrExpression", 54);
 		TraceIn("bitwiseXOrExpression", 54);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken BXOR194 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression193 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression195 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken BXOR194 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression193 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression195 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode BXOR194_tree = default(IASTNode);
-
+		IASTNode BXOR194_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseXOrExpression");
 		DebugLocation(489, 1);
 		try
@@ -8174,7 +7859,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt68=2;
-				try { DebugEnterDecision(68, decisionCanBacktrack[68]);
+				try { DebugEnterDecision(68, false);
 				int LA68_1 = input.LA(1);
 
 				if ((LA68_1==BXOR))
@@ -8194,7 +7879,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					BXOR194=(IToken)Match(input,BXOR,Follow._BXOR_in_bitwiseXOrExpression2390); 
 					BXOR194_tree = (IASTNode)adaptor.Create(BXOR194);
 					root_0 = (IASTNode)adaptor.BecomeRoot(BXOR194_tree, root_0);
-
 					DebugLocation(490, 32);
 					PushFollow(Follow._bitwiseAndExpression_in_bitwiseXOrExpression2393);
 					bitwiseAndExpression195=bitwiseAndExpression();
@@ -8228,7 +7912,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8236,19 +7920,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("bitwiseXOrExpression", 54);
 			LeaveRule("bitwiseXOrExpression", 54);
 			LeaveRule_bitwiseXOrExpression();
-	    }
-	 	DebugLocation(491, 1);
+		}
+		DebugLocation(491, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseXOrExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "bitwiseXOrExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_bitwiseAndExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_bitwiseAndExpression() {}
+	partial void EnterRule_bitwiseAndExpression();
+	partial void LeaveRule_bitwiseAndExpression();
 	// $ANTLR start "bitwiseAndExpression"
 	// Hql.g:493:1: bitwiseAndExpression : additiveExpression ( BAND ^ additiveExpression )* ;
 	[GrammarRule("bitwiseAndExpression")]
@@ -8257,17 +7938,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_bitwiseAndExpression();
 		EnterRule("bitwiseAndExpression", 55);
 		TraceIn("bitwiseAndExpression", 55);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken BAND197 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> additiveExpression196 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> additiveExpression198 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken BAND197 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression196 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression198 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode BAND197_tree = default(IASTNode);
-
+		IASTNode BAND197_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseAndExpression");
 		DebugLocation(493, 1);
 		try
@@ -8290,7 +7970,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt69=2;
-				try { DebugEnterDecision(69, decisionCanBacktrack[69]);
+				try { DebugEnterDecision(69, false);
 				int LA69_1 = input.LA(1);
 
 				if ((LA69_1==BAND))
@@ -8310,7 +7990,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					BAND197=(IToken)Match(input,BAND,Follow._BAND_in_bitwiseAndExpression2410); 
 					BAND197_tree = (IASTNode)adaptor.Create(BAND197);
 					root_0 = (IASTNode)adaptor.BecomeRoot(BAND197_tree, root_0);
-
 					DebugLocation(494, 30);
 					PushFollow(Follow._additiveExpression_in_bitwiseAndExpression2413);
 					additiveExpression198=additiveExpression();
@@ -8344,7 +8023,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8352,19 +8031,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("bitwiseAndExpression", 55);
 			LeaveRule("bitwiseAndExpression", 55);
 			LeaveRule_bitwiseAndExpression();
-	    }
-	 	DebugLocation(495, 1);
+		}
+		DebugLocation(495, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseAndExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "bitwiseAndExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_additiveExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_additiveExpression() {}
+	partial void EnterRule_additiveExpression();
+	partial void LeaveRule_additiveExpression();
 	// $ANTLR start "additiveExpression"
 	// Hql.g:498:1: additiveExpression : multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )* ;
 	[GrammarRule("additiveExpression")]
@@ -8373,19 +8049,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_additiveExpression();
 		EnterRule("additiveExpression", 56);
 		TraceIn("additiveExpression", 56);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken PLUS200 = default(IToken);
-	    IToken MINUS201 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> multiplyExpression199 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> multiplyExpression202 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken PLUS200 = default(IToken);
+		IToken MINUS201 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> multiplyExpression199 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> multiplyExpression202 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode PLUS200_tree = default(IASTNode);
-	    IASTNode MINUS201_tree = default(IASTNode);
-
+		IASTNode PLUS200_tree = default(IASTNode);
+		IASTNode MINUS201_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "additiveExpression");
 		DebugLocation(498, 1);
 		try
@@ -8408,7 +8083,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt71=2;
-				try { DebugEnterDecision(71, decisionCanBacktrack[71]);
+				try { DebugEnterDecision(71, false);
 				int LA71_1 = input.LA(1);
 
 				if ((LA71_1==MINUS||LA71_1==PLUS))
@@ -8428,7 +8103,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:499:25: ( PLUS ^| MINUS ^)
 					int alt70=2;
 					try { DebugEnterSubRule(70);
-					try { DebugEnterDecision(70, decisionCanBacktrack[70]);
+					try { DebugEnterDecision(70, false);
 					int LA70_1 = input.LA(1);
 
 					if ((LA70_1==PLUS))
@@ -8439,14 +8114,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					{
 						alt70 = 2;
 					}
-
 					else
 					{
 						NoViableAltException nvae = new NoViableAltException("", 70, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 					} finally { DebugExitDecision(70); }
 					switch (alt70)
 					{
@@ -8459,7 +8132,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						PLUS200_tree = (IASTNode)adaptor.Create(PLUS200);
 						root_0 = (IASTNode)adaptor.BecomeRoot(PLUS200_tree, root_0);
 
-
 						}
 						break;
 					case 2:
@@ -8470,7 +8142,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						MINUS201=(IToken)Match(input,MINUS,Follow._MINUS_in_additiveExpression2438); 
 						MINUS201_tree = (IASTNode)adaptor.Create(MINUS201);
 						root_0 = (IASTNode)adaptor.BecomeRoot(MINUS201_tree, root_0);
-
 
 						}
 						break;
@@ -8511,7 +8182,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8519,19 +8190,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("additiveExpression", 56);
 			LeaveRule("additiveExpression", 56);
 			LeaveRule_additiveExpression();
-	    }
-	 	DebugLocation(500, 1);
+		}
+		DebugLocation(500, 1);
 		} finally { DebugExitRule(GrammarFileName, "additiveExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "additiveExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_multiplyExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_multiplyExpression() {}
+	partial void EnterRule_multiplyExpression();
+	partial void LeaveRule_multiplyExpression();
 	// $ANTLR start "multiplyExpression"
 	// Hql.g:503:1: multiplyExpression : unaryExpression ( ( STAR ^| DIV ^) unaryExpression )* ;
 	[GrammarRule("multiplyExpression")]
@@ -8540,19 +8208,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_multiplyExpression();
 		EnterRule("multiplyExpression", 57);
 		TraceIn("multiplyExpression", 57);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken STAR204 = default(IToken);
-	    IToken DIV205 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> unaryExpression203 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> unaryExpression206 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken STAR204 = default(IToken);
+		IToken DIV205 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> unaryExpression203 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> unaryExpression206 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode STAR204_tree = default(IASTNode);
-	    IASTNode DIV205_tree = default(IASTNode);
-
+		IASTNode STAR204_tree = default(IASTNode);
+		IASTNode DIV205_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "multiplyExpression");
 		DebugLocation(503, 1);
 		try
@@ -8575,7 +8242,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt73=2;
-				try { DebugEnterDecision(73, decisionCanBacktrack[73]);
+				try { DebugEnterDecision(73, false);
 				int LA73_1 = input.LA(1);
 
 				if ((LA73_1==DIV||LA73_1==STAR))
@@ -8595,7 +8262,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:504:22: ( STAR ^| DIV ^)
 					int alt72=2;
 					try { DebugEnterSubRule(72);
-					try { DebugEnterDecision(72, decisionCanBacktrack[72]);
+					try { DebugEnterDecision(72, false);
 					int LA72_1 = input.LA(1);
 
 					if ((LA72_1==STAR))
@@ -8606,14 +8273,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					{
 						alt72 = 2;
 					}
-
 					else
 					{
 						NoViableAltException nvae = new NoViableAltException("", 72, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 					} finally { DebugExitDecision(72); }
 					switch (alt72)
 					{
@@ -8626,7 +8291,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						STAR204_tree = (IASTNode)adaptor.Create(STAR204);
 						root_0 = (IASTNode)adaptor.BecomeRoot(STAR204_tree, root_0);
 
-
 						}
 						break;
 					case 2:
@@ -8637,7 +8301,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						DIV205=(IToken)Match(input,DIV,Follow._DIV_in_multiplyExpression2469); 
 						DIV205_tree = (IASTNode)adaptor.Create(DIV205);
 						root_0 = (IASTNode)adaptor.BecomeRoot(DIV205_tree, root_0);
-
 
 						}
 						break;
@@ -8678,7 +8341,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8686,19 +8349,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("multiplyExpression", 57);
 			LeaveRule("multiplyExpression", 57);
 			LeaveRule_multiplyExpression();
-	    }
-	 	DebugLocation(505, 1);
+		}
+		DebugLocation(505, 1);
 		} finally { DebugExitRule(GrammarFileName, "multiplyExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "multiplyExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_unaryExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_unaryExpression() {}
+	partial void EnterRule_unaryExpression();
+	partial void LeaveRule_unaryExpression();
 	// $ANTLR start "unaryExpression"
 	// Hql.g:508:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom );
 	[GrammarRule("unaryExpression")]
@@ -8707,31 +8367,31 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_unaryExpression();
 		EnterRule("unaryExpression", 58);
 		TraceIn("unaryExpression", 58);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken m = default(IToken);
-	    IToken p = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> mu = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> pu = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> caseExpression207 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> quantifiedExpression208 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> atom209 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken m = default(IToken);
+		IToken p = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> mu = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> pu = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> caseExpression207 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> quantifiedExpression208 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> atom209 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode m_tree = default(IASTNode);
-	    IASTNode p_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_MINUS=new RewriteRuleITokenStream(adaptor,"token MINUS");
-	    RewriteRuleITokenStream stream_PLUS=new RewriteRuleITokenStream(adaptor,"token PLUS");
-	    RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
+		IASTNode m_tree = default(IASTNode);
+		IASTNode p_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_MINUS=new RewriteRuleITokenStream(adaptor,"token MINUS");
+		RewriteRuleITokenStream stream_PLUS=new RewriteRuleITokenStream(adaptor,"token PLUS");
+		RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
 		try { DebugEnterRule(GrammarFileName, "unaryExpression");
 		DebugLocation(508, 1);
 		try
 		{
 			// Hql.g:509:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom )
 			int alt74=5;
-			try { DebugEnterDecision(74, decisionCanBacktrack[74]);
+			try { DebugEnterDecision(74, false);
 			switch (input.LA(1))
 			{
 			case MINUS:
@@ -8952,7 +8612,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -8960,19 +8620,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("unaryExpression", 58);
 			LeaveRule("unaryExpression", 58);
 			LeaveRule_unaryExpression();
-	    }
-	 	DebugLocation(514, 1);
+		}
+		DebugLocation(514, 1);
 		} finally { DebugExitRule(GrammarFileName, "unaryExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "unaryExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_caseExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_caseExpression() {}
+	partial void EnterRule_caseExpression();
+	partial void LeaveRule_caseExpression();
 	// $ANTLR start "caseExpression"
 	// Hql.g:516:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
 	[GrammarRule("caseExpression")]
@@ -8981,38 +8638,38 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_caseExpression();
 		EnterRule("caseExpression", 59);
 		TraceIn("caseExpression", 59);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken CASE210 = default(IToken);
-	    IToken END213 = default(IToken);
-	    IToken CASE214 = default(IToken);
-	    IToken END218 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> whenClause211 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> elseClause212 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> unaryExpression215 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> altWhenClause216 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> elseClause217 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken CASE210 = default(IToken);
+		IToken END213 = default(IToken);
+		IToken CASE214 = default(IToken);
+		IToken END218 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> whenClause211 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> elseClause212 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> unaryExpression215 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> altWhenClause216 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> elseClause217 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode CASE210_tree = default(IASTNode);
-	    IASTNode END213_tree = default(IASTNode);
-	    IASTNode CASE214_tree = default(IASTNode);
-	    IASTNode END218_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_CASE=new RewriteRuleITokenStream(adaptor,"token CASE");
-	    RewriteRuleITokenStream stream_END=new RewriteRuleITokenStream(adaptor,"token END");
-	    RewriteRuleSubtreeStream stream_whenClause=new RewriteRuleSubtreeStream(adaptor,"rule whenClause");
-	    RewriteRuleSubtreeStream stream_elseClause=new RewriteRuleSubtreeStream(adaptor,"rule elseClause");
-	    RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
-	    RewriteRuleSubtreeStream stream_altWhenClause=new RewriteRuleSubtreeStream(adaptor,"rule altWhenClause");
+		IASTNode CASE210_tree = default(IASTNode);
+		IASTNode END213_tree = default(IASTNode);
+		IASTNode CASE214_tree = default(IASTNode);
+		IASTNode END218_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_CASE=new RewriteRuleITokenStream(adaptor,"token CASE");
+		RewriteRuleITokenStream stream_END=new RewriteRuleITokenStream(adaptor,"token END");
+		RewriteRuleSubtreeStream stream_whenClause=new RewriteRuleSubtreeStream(adaptor,"rule whenClause");
+		RewriteRuleSubtreeStream stream_elseClause=new RewriteRuleSubtreeStream(adaptor,"rule elseClause");
+		RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
+		RewriteRuleSubtreeStream stream_altWhenClause=new RewriteRuleSubtreeStream(adaptor,"rule altWhenClause");
 		try { DebugEnterRule(GrammarFileName, "caseExpression");
 		DebugLocation(516, 1);
 		try
 		{
 			// Hql.g:517:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
 			int alt79=2;
-			try { DebugEnterDecision(79, decisionCanBacktrack[79]);
+			try { DebugEnterDecision(79, false);
 			int LA79_1 = input.LA(1);
 
 			if ((LA79_1==CASE))
@@ -9027,23 +8684,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt79 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 79, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 79, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(79); }
 			switch (alt79)
 			{
@@ -9062,7 +8715,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				while (true)
 				{
 					int alt75=2;
-					try { DebugEnterDecision(75, decisionCanBacktrack[75]);
+					try { DebugEnterDecision(75, false);
 					int LA75_1 = input.LA(1);
 
 					if ((LA75_1==WHEN))
@@ -9107,7 +8760,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:517:23: ( elseClause )?
 				int alt76=2;
 				try { DebugEnterSubRule(76);
-				try { DebugEnterDecision(76, decisionCanBacktrack[76]);
+				try { DebugEnterDecision(76, false);
 				int LA76_1 = input.LA(1);
 
 				if ((LA76_1==ELSE))
@@ -9214,7 +8867,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				while (true)
 				{
 					int alt77=2;
-					try { DebugEnterDecision(77, decisionCanBacktrack[77]);
+					try { DebugEnterDecision(77, false);
 					int LA77_1 = input.LA(1);
 
 					if ((LA77_1==WHEN))
@@ -9259,7 +8912,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:519:42: ( elseClause )?
 				int alt78=2;
 				try { DebugEnterSubRule(78);
-				try { DebugEnterDecision(78, decisionCanBacktrack[78]);
+				try { DebugEnterDecision(78, false);
 				int LA78_1 = input.LA(1);
 
 				if ((LA78_1==ELSE))
@@ -9359,7 +9012,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -9367,19 +9020,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("caseExpression", 59);
 			LeaveRule("caseExpression", 59);
 			LeaveRule_caseExpression();
-	    }
-	 	DebugLocation(521, 1);
+		}
+		DebugLocation(521, 1);
 		} finally { DebugExitRule(GrammarFileName, "caseExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "caseExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whenClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whenClause() {}
+	partial void EnterRule_whenClause();
+	partial void LeaveRule_whenClause();
 	// $ANTLR start "whenClause"
 	// Hql.g:523:1: whenClause : ( WHEN ^ logicalExpression THEN ! expression ) ;
 	[GrammarRule("whenClause")]
@@ -9388,19 +9038,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_whenClause();
 		EnterRule("whenClause", 60);
 		TraceIn("whenClause", 60);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken WHEN219 = default(IToken);
-	    IToken THEN221 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> logicalExpression220 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression222 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken WHEN219 = default(IToken);
+		IToken THEN221 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> logicalExpression220 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression222 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode WHEN219_tree = default(IASTNode);
-	    IASTNode THEN221_tree = default(IASTNode);
-
+		IASTNode WHEN219_tree = default(IASTNode);
+		IASTNode THEN221_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "whenClause");
 		DebugLocation(523, 1);
 		try
@@ -9420,7 +9069,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			WHEN219=(IToken)Match(input,WHEN,Follow._WHEN_in_whenClause2629); 
 			WHEN219_tree = (IASTNode)adaptor.Create(WHEN219);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN219_tree, root_0);
-
 			DebugLocation(524, 11);
 			PushFollow(Follow._logicalExpression_in_whenClause2632);
 			logicalExpression220=logicalExpression();
@@ -9451,7 +9099,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -9459,19 +9107,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("whenClause", 60);
 			LeaveRule("whenClause", 60);
 			LeaveRule_whenClause();
-	    }
-	 	DebugLocation(525, 1);
+		}
+		DebugLocation(525, 1);
 		} finally { DebugExitRule(GrammarFileName, "whenClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "whenClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_altWhenClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_altWhenClause() {}
+	partial void EnterRule_altWhenClause();
+	partial void LeaveRule_altWhenClause();
 	// $ANTLR start "altWhenClause"
 	// Hql.g:527:1: altWhenClause : ( WHEN ^ unaryExpression THEN ! expression ) ;
 	[GrammarRule("altWhenClause")]
@@ -9480,19 +9125,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_altWhenClause();
 		EnterRule("altWhenClause", 61);
 		TraceIn("altWhenClause", 61);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken WHEN223 = default(IToken);
-	    IToken THEN225 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> unaryExpression224 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression226 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken WHEN223 = default(IToken);
+		IToken THEN225 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> unaryExpression224 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression226 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode WHEN223_tree = default(IASTNode);
-	    IASTNode THEN225_tree = default(IASTNode);
-
+		IASTNode WHEN223_tree = default(IASTNode);
+		IASTNode THEN225_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "altWhenClause");
 		DebugLocation(527, 1);
 		try
@@ -9512,7 +9156,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			WHEN223=(IToken)Match(input,WHEN,Follow._WHEN_in_altWhenClause2651); 
 			WHEN223_tree = (IASTNode)adaptor.Create(WHEN223);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN223_tree, root_0);
-
 			DebugLocation(528, 11);
 			PushFollow(Follow._unaryExpression_in_altWhenClause2654);
 			unaryExpression224=unaryExpression();
@@ -9543,7 +9186,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -9551,19 +9194,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("altWhenClause", 61);
 			LeaveRule("altWhenClause", 61);
 			LeaveRule_altWhenClause();
-	    }
-	 	DebugLocation(529, 1);
+		}
+		DebugLocation(529, 1);
 		} finally { DebugExitRule(GrammarFileName, "altWhenClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "altWhenClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_elseClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_elseClause() {}
+	partial void EnterRule_elseClause();
+	partial void LeaveRule_elseClause();
 	// $ANTLR start "elseClause"
 	// Hql.g:531:1: elseClause : ( ELSE ^ expression ) ;
 	[GrammarRule("elseClause")]
@@ -9572,16 +9212,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_elseClause();
 		EnterRule("elseClause", 62);
 		TraceIn("elseClause", 62);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken ELSE227 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression228 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken ELSE227 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> expression228 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode ELSE227_tree = default(IASTNode);
-
+		IASTNode ELSE227_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "elseClause");
 		DebugLocation(531, 1);
 		try
@@ -9601,7 +9240,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			ELSE227=(IToken)Match(input,ELSE,Follow._ELSE_in_elseClause2673); 
 			ELSE227_tree = (IASTNode)adaptor.Create(ELSE227);
 			root_0 = (IASTNode)adaptor.BecomeRoot(ELSE227_tree, root_0);
-
 			DebugLocation(532, 11);
 			PushFollow(Follow._expression_in_elseClause2676);
 			expression228=expression();
@@ -9624,7 +9262,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -9632,19 +9270,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("elseClause", 62);
 			LeaveRule("elseClause", 62);
 			LeaveRule_elseClause();
-	    }
-	 	DebugLocation(533, 1);
+		}
+		DebugLocation(533, 1);
 		} finally { DebugExitRule(GrammarFileName, "elseClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "elseClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_quantifiedExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_quantifiedExpression() {}
+	partial void EnterRule_quantifiedExpression();
+	partial void LeaveRule_quantifiedExpression();
 	// $ANTLR start "quantifiedExpression"
 	// Hql.g:535:1: quantifiedExpression : ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) ) ;
 	[GrammarRule("quantifiedExpression")]
@@ -9653,28 +9288,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_quantifiedExpression();
 		EnterRule("quantifiedExpression", 63);
 		TraceIn("quantifiedExpression", 63);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken SOME229 = default(IToken);
-	    IToken EXISTS230 = default(IToken);
-	    IToken ALL231 = default(IToken);
-	    IToken ANY232 = default(IToken);
-	    IToken OPEN235 = default(IToken);
-	    IToken CLOSE237 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier233 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> collectionExpr234 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> subQuery236 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken SOME229 = default(IToken);
+		IToken EXISTS230 = default(IToken);
+		IToken ALL231 = default(IToken);
+		IToken ANY232 = default(IToken);
+		IToken OPEN235 = default(IToken);
+		IToken CLOSE237 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier233 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> collectionExpr234 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> subQuery236 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode SOME229_tree = default(IASTNode);
-	    IASTNode EXISTS230_tree = default(IASTNode);
-	    IASTNode ALL231_tree = default(IASTNode);
-	    IASTNode ANY232_tree = default(IASTNode);
-	    IASTNode OPEN235_tree = default(IASTNode);
-	    IASTNode CLOSE237_tree = default(IASTNode);
-
+		IASTNode SOME229_tree = default(IASTNode);
+		IASTNode EXISTS230_tree = default(IASTNode);
+		IASTNode ALL231_tree = default(IASTNode);
+		IASTNode ANY232_tree = default(IASTNode);
+		IASTNode OPEN235_tree = default(IASTNode);
+		IASTNode CLOSE237_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "quantifiedExpression");
 		DebugLocation(535, 1);
 		try
@@ -9689,7 +9323,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:536:4: ( SOME ^| EXISTS ^| ALL ^| ANY ^)
 			int alt80=4;
 			try { DebugEnterSubRule(80);
-			try { DebugEnterDecision(80, decisionCanBacktrack[80]);
+			try { DebugEnterDecision(80, false);
 			switch (input.LA(1))
 			{
 			case SOME:
@@ -9732,7 +9366,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				SOME229_tree = (IASTNode)adaptor.Create(SOME229);
 				root_0 = (IASTNode)adaptor.BecomeRoot(SOME229_tree, root_0);
 
-
 				}
 				break;
 			case 2:
@@ -9743,7 +9376,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				EXISTS230=(IToken)Match(input,EXISTS,Follow._EXISTS_in_quantifiedExpression2696); 
 				EXISTS230_tree = (IASTNode)adaptor.Create(EXISTS230);
 				root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS230_tree, root_0);
-
 
 				}
 				break;
@@ -9756,7 +9388,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				ALL231_tree = (IASTNode)adaptor.Create(ALL231);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ALL231_tree, root_0);
 
-
 				}
 				break;
 			case 4:
@@ -9768,7 +9399,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				ANY232_tree = (IASTNode)adaptor.Create(ANY232);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ANY232_tree, root_0);
 
-
 				}
 				break;
 
@@ -9779,7 +9409,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:537:2: ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) )
 			int alt81=3;
 			try { DebugEnterSubRule(81);
-			try { DebugEnterDecision(81, decisionCanBacktrack[81]);
+			try { DebugEnterDecision(81, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
@@ -9885,7 +9515,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -9893,19 +9523,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("quantifiedExpression", 63);
 			LeaveRule("quantifiedExpression", 63);
 			LeaveRule_quantifiedExpression();
-	    }
-	 	DebugLocation(538, 1);
+		}
+		DebugLocation(538, 1);
 		} finally { DebugExitRule(GrammarFileName, "quantifiedExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "quantifiedExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_atom() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_atom() {}
+	partial void EnterRule_atom();
+	partial void LeaveRule_atom();
 	// $ANTLR start "atom"
 	// Hql.g:543:1: atom : primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)* ;
 	[GrammarRule("atom")]
@@ -9914,27 +9541,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_atom();
 		EnterRule("atom", 64);
 		TraceIn("atom", 64);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken op = default(IToken);
-	    IToken lb = default(IToken);
-	    IToken DOT239 = default(IToken);
-	    IToken CLOSE242 = default(IToken);
-	    IToken CLOSE_BRACKET244 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> primaryExpression238 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier240 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> exprList241 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression243 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken op = default(IToken);
+		IToken lb = default(IToken);
+		IToken DOT239 = default(IToken);
+		IToken CLOSE242 = default(IToken);
+		IToken CLOSE_BRACKET244 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> primaryExpression238 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier240 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> exprList241 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression243 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode op_tree = default(IASTNode);
-	    IASTNode lb_tree = default(IASTNode);
-	    IASTNode DOT239_tree = default(IASTNode);
-	    IASTNode CLOSE242_tree = default(IASTNode);
-	    IASTNode CLOSE_BRACKET244_tree = default(IASTNode);
-
+		IASTNode op_tree = default(IASTNode);
+		IASTNode lb_tree = default(IASTNode);
+		IASTNode DOT239_tree = default(IASTNode);
+		IASTNode CLOSE242_tree = default(IASTNode);
+		IASTNode CLOSE_BRACKET244_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "atom");
 		DebugLocation(543, 1);
 		try
@@ -9957,7 +9583,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt83=3;
-				try { DebugEnterDecision(83, decisionCanBacktrack[83]);
+				try { DebugEnterDecision(83, false);
 				int LA83_1 = input.LA(1);
 
 				if ((LA83_1==DOT))
@@ -9981,7 +9607,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					DOT239=(IToken)Match(input,DOT,Follow._DOT_in_atom2761); 
 					DOT239_tree = (IASTNode)adaptor.Create(DOT239);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT239_tree, root_0);
-
 					DebugLocation(546, 9);
 					PushFollow(Follow._identifier_in_atom2764);
 					identifier240=identifier();
@@ -9992,7 +9617,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					// Hql.g:547:5: ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )?
 					int alt82=2;
 					try { DebugEnterSubRule(82);
-					try { DebugEnterDecision(82, decisionCanBacktrack[82]);
+					try { DebugEnterDecision(82, false);
 					int LA82_1 = input.LA(1);
 
 					if ((LA82_1==OPEN))
@@ -10015,7 +9640,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						op=(IToken)Match(input,OPEN,Follow._OPEN_in_atom2792); 
 						op_tree = (IASTNode)adaptor.Create(op);
 						root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
-
 						DebugLocation(548, 17);
 						op.Type = METHOD_CALL; 
 						DebugLocation(548, 44);
@@ -10047,7 +9671,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					lb=(IToken)Match(input,OPEN_BRACKET,Follow._OPEN_BRACKET_in_atom2813); 
 					lb_tree = (IASTNode)adaptor.Create(lb);
 					root_0 = (IASTNode)adaptor.BecomeRoot(lb_tree, root_0);
-
 					DebugLocation(549, 22);
 					lb.Type = INDEX_OP; 
 					DebugLocation(549, 46);
@@ -10085,7 +9708,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -10093,19 +9716,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("atom", 64);
 			LeaveRule("atom", 64);
 			LeaveRule_atom();
-	    }
-	 	DebugLocation(551, 1);
+		}
+		DebugLocation(551, 1);
 		} finally { DebugExitRule(GrammarFileName, "atom"); }
 		return retval;
 
 	}
 	// $ANTLR end "atom"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_primaryExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_primaryExpression() {}
+	partial void EnterRule_primaryExpression();
+	partial void LeaveRule_primaryExpression();
 	// $ANTLR start "primaryExpression"
 	// Hql.g:554:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? );
 	[GrammarRule("primaryExpression")]
@@ -10114,39 +9734,38 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_primaryExpression();
 		EnterRule("primaryExpression", 65);
 		TraceIn("primaryExpression", 65);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken DOT246 = default(IToken);
-	    IToken string_literal247 = default(IToken);
-	    IToken COLON249 = default(IToken);
-	    IToken OPEN251 = default(IToken);
-	    IToken CLOSE254 = default(IToken);
-	    IToken PARAM255 = default(IToken);
-	    IToken NUM_INT256 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identPrimary245 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> constant248 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier250 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expressionOrVector252 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> subQuery253 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken DOT246 = default(IToken);
+		IToken string_literal247 = default(IToken);
+		IToken COLON249 = default(IToken);
+		IToken OPEN251 = default(IToken);
+		IToken CLOSE254 = default(IToken);
+		IToken PARAM255 = default(IToken);
+		IToken NUM_INT256 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identPrimary245 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> constant248 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier250 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expressionOrVector252 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> subQuery253 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode DOT246_tree = default(IASTNode);
-	    IASTNode string_literal247_tree = default(IASTNode);
-	    IASTNode COLON249_tree = default(IASTNode);
-	    IASTNode OPEN251_tree = default(IASTNode);
-	    IASTNode CLOSE254_tree = default(IASTNode);
-	    IASTNode PARAM255_tree = default(IASTNode);
-	    IASTNode NUM_INT256_tree = default(IASTNode);
-
+		IASTNode DOT246_tree = default(IASTNode);
+		IASTNode string_literal247_tree = default(IASTNode);
+		IASTNode COLON249_tree = default(IASTNode);
+		IASTNode OPEN251_tree = default(IASTNode);
+		IASTNode CLOSE254_tree = default(IASTNode);
+		IASTNode PARAM255_tree = default(IASTNode);
+		IASTNode NUM_INT256_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "primaryExpression");
 		DebugLocation(554, 1);
 		try
 		{
 			// Hql.g:555:2: ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? )
 			int alt87=5;
-			try { DebugEnterDecision(87, decisionCanBacktrack[87]);
+			try { DebugEnterDecision(87, false);
 			switch (input.LA(1))
 			{
 			case AVG:
@@ -10217,7 +9836,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:555:19: ( options {greedy=true; } : DOT ^ 'class' )?
 				int alt84=2;
 				try { DebugEnterSubRule(84);
-				try { DebugEnterDecision(84, decisionCanBacktrack[84]);
+				try { DebugEnterDecision(84, false);
 				int LA84_1 = input.LA(1);
 
 				if ((LA84_1==DOT))
@@ -10240,12 +9859,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					DOT246=(IToken)Match(input,DOT,Follow._DOT_in_primaryExpression2853); 
 					DOT246_tree = (IASTNode)adaptor.Create(DOT246);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT246_tree, root_0);
-
 					DebugLocation(555, 51);
 					string_literal247=(IToken)Match(input,CLASS,Follow._CLASS_in_primaryExpression2856); 
 					string_literal247_tree = (IASTNode)adaptor.Create(string_literal247);
 					adaptor.AddChild(root_0, string_literal247_tree);
-
 
 					}
 					break;
@@ -10281,7 +9898,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				COLON249=(IToken)Match(input,COLON,Follow._COLON_in_primaryExpression2873); 
 				COLON249_tree = (IASTNode)adaptor.Create(COLON249);
 				root_0 = (IASTNode)adaptor.BecomeRoot(COLON249_tree, root_0);
-
 				DebugLocation(557, 13);
 				PushFollow(Follow._identifier_in_primaryExpression2876);
 				identifier250=identifier();
@@ -10303,7 +9919,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:559:12: ( expressionOrVector | subQuery )
 				int alt85=2;
 				try { DebugEnterSubRule(85);
-				try { DebugEnterDecision(85, decisionCanBacktrack[85]);
+				try { DebugEnterDecision(85, false);
 				int LA85_1 = input.LA(1);
 
 				if ((LA85_1==ALL||LA85_1==ANY||LA85_1==AVG||LA85_1==BNOT||LA85_1==CASE||LA85_1==COLON||LA85_1==COUNT||LA85_1==ELEMENTS||LA85_1==EMPTY||LA85_1==EXISTS||LA85_1==FALSE||LA85_1==IDENT||LA85_1==INDICES||LA85_1==MAX||(LA85_1>=MIN && LA85_1<=MINUS)||LA85_1==NOT||(LA85_1>=NULL && LA85_1<=NUM_LONG)||LA85_1==OPEN||(LA85_1>=PARAM && LA85_1<=PLUS)||LA85_1==QUOTED_String||LA85_1==SOME||LA85_1==SUM||LA85_1==TRUE))
@@ -10314,14 +9930,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt85 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 85, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(85); }
 				switch (alt85)
 				{
@@ -10370,12 +9984,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				PARAM255=(IToken)Match(input,PARAM,Follow._PARAM_in_primaryExpression2904); 
 				PARAM255_tree = (IASTNode)adaptor.Create(PARAM255);
 				root_0 = (IASTNode)adaptor.BecomeRoot(PARAM255_tree, root_0);
-
 				DebugLocation(560, 13);
 				// Hql.g:560:13: ( NUM_INT )?
 				int alt86=2;
 				try { DebugEnterSubRule(86);
-				try { DebugEnterDecision(86, decisionCanBacktrack[86]);
+				try { DebugEnterDecision(86, false);
 				int LA86_1 = input.LA(1);
 
 				if ((LA86_1==NUM_INT))
@@ -10393,7 +10006,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					NUM_INT256=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_primaryExpression2908); 
 					NUM_INT256_tree = (IASTNode)adaptor.Create(NUM_INT256);
 					adaptor.AddChild(root_0, NUM_INT256_tree);
-
 
 					}
 					break;
@@ -10416,7 +10028,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -10424,19 +10036,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("primaryExpression", 65);
 			LeaveRule("primaryExpression", 65);
 			LeaveRule_primaryExpression();
-	    }
-	 	DebugLocation(561, 1);
+		}
+		DebugLocation(561, 1);
 		} finally { DebugExitRule(GrammarFileName, "primaryExpression"); }
 		return retval;
 
 	}
 	// $ANTLR end "primaryExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_expressionOrVector() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_expressionOrVector() {}
+	partial void EnterRule_expressionOrVector();
+	partial void LeaveRule_expressionOrVector();
 	// $ANTLR start "expressionOrVector"
 	// Hql.g:565:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e;
 	[GrammarRule("expressionOrVector")]
@@ -10445,16 +10054,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_expressionOrVector();
 		EnterRule("expressionOrVector", 66);
 		TraceIn("expressionOrVector", 66);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> e = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> v = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> e = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> v = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
-	    RewriteRuleSubtreeStream stream_vectorExpr=new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
+		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
+		RewriteRuleSubtreeStream stream_vectorExpr=new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
 		try { DebugEnterRule(GrammarFileName, "expressionOrVector");
 		DebugLocation(565, 1);
 		try
@@ -10473,7 +10082,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:566:17: (v= vectorExpr )?
 			int alt88=2;
 			try { DebugEnterSubRule(88);
-			try { DebugEnterDecision(88, decisionCanBacktrack[88]);
+			try { DebugEnterDecision(88, false);
 			int LA88_1 = input.LA(1);
 
 			if ((LA88_1==COMMA))
@@ -10557,7 +10166,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -10565,19 +10174,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("expressionOrVector", 66);
 			LeaveRule("expressionOrVector", 66);
 			LeaveRule_expressionOrVector();
-	    }
-	 	DebugLocation(569, 1);
+		}
+		DebugLocation(569, 1);
 		} finally { DebugExitRule(GrammarFileName, "expressionOrVector"); }
 		return retval;
 
 	}
 	// $ANTLR end "expressionOrVector"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_vectorExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_vectorExpr() {}
+	partial void EnterRule_vectorExpr();
+	partial void LeaveRule_vectorExpr();
 	// $ANTLR start "vectorExpr"
 	// Hql.g:571:1: vectorExpr : COMMA ! expression ( COMMA ! expression )* ;
 	[GrammarRule("vectorExpr")]
@@ -10586,19 +10192,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_vectorExpr();
 		EnterRule("vectorExpr", 67);
 		TraceIn("vectorExpr", 67);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken COMMA257 = default(IToken);
-	    IToken COMMA259 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression258 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression260 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken COMMA257 = default(IToken);
+		IToken COMMA259 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> expression258 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression260 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode COMMA257_tree = default(IASTNode);
-	    IASTNode COMMA259_tree = default(IASTNode);
-
+		IASTNode COMMA257_tree = default(IASTNode);
+		IASTNode COMMA259_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "vectorExpr");
 		DebugLocation(571, 1);
 		try
@@ -10623,7 +10228,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt89=2;
-				try { DebugEnterDecision(89, decisionCanBacktrack[89]);
+				try { DebugEnterDecision(89, false);
 				int LA89_1 = input.LA(1);
 
 				if ((LA89_1==COMMA))
@@ -10674,7 +10279,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -10682,19 +10287,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("vectorExpr", 67);
 			LeaveRule("vectorExpr", 67);
 			LeaveRule_vectorExpr();
-	    }
-	 	DebugLocation(573, 1);
+		}
+		DebugLocation(573, 1);
 		} finally { DebugExitRule(GrammarFileName, "vectorExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "vectorExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_identPrimary() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_identPrimary() {}
+	partial void EnterRule_identPrimary();
+	partial void LeaveRule_identPrimary();
 	// $ANTLR start "identPrimary"
 	// Hql.g:578:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate );
 	[GrammarRule("identPrimary")]
@@ -10703,32 +10305,31 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_identPrimary();
 		EnterRule("identPrimary", 68);
 		TraceIn("identPrimary", 68);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken o = default(IToken);
-	    IToken op = default(IToken);
-	    IToken DOT262 = default(IToken);
-	    IToken CLOSE265 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier261 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier263 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> exprList264 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> aggregate266 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken o = default(IToken);
+		IToken op = default(IToken);
+		IToken DOT262 = default(IToken);
+		IToken CLOSE265 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier261 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier263 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> exprList264 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> aggregate266 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode o_tree = default(IASTNode);
-	    IASTNode op_tree = default(IASTNode);
-	    IASTNode DOT262_tree = default(IASTNode);
-	    IASTNode CLOSE265_tree = default(IASTNode);
-
+		IASTNode o_tree = default(IASTNode);
+		IASTNode op_tree = default(IASTNode);
+		IASTNode DOT262_tree = default(IASTNode);
+		IASTNode CLOSE265_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identPrimary");
 		DebugLocation(578, 1);
 		try
 		{
 			// Hql.g:579:2: ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate )
 			int alt93=2;
-			try { DebugEnterDecision(93, decisionCanBacktrack[93]);
+			try { DebugEnterDecision(93, false);
 			int LA93_1 = input.LA(1);
 
 			if ((LA93_1==IDENT))
@@ -10739,14 +10340,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt93 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 93, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(93); }
 			switch (alt93)
 			{
@@ -10770,7 +10369,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				while (true)
 				{
 					int alt91=2;
-					try { DebugEnterDecision(91, decisionCanBacktrack[91]);
+					try { DebugEnterDecision(91, false);
 					int LA91_1 = input.LA(1);
 
 					if ((LA91_1==DOT))
@@ -10797,12 +10396,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						DOT262=(IToken)Match(input,DOT,Follow._DOT_in_identPrimary3012); 
 						DOT262_tree = (IASTNode)adaptor.Create(DOT262);
 						root_0 = (IASTNode)adaptor.BecomeRoot(DOT262_tree, root_0);
-
 						DebugLocation(580, 36);
 						// Hql.g:580:36: ( identifier |o= OBJECT )
 						int alt90=2;
 						try { DebugEnterSubRule(90);
-						try { DebugEnterDecision(90, decisionCanBacktrack[90]);
+						try { DebugEnterDecision(90, false);
 						int LA90_1 = input.LA(1);
 
 						if ((LA90_1==IDENT))
@@ -10813,14 +10411,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						{
 							alt90 = 2;
 						}
-
 						else
 						{
 							NoViableAltException nvae = new NoViableAltException("", 90, 0, input, 1);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
-
 						} finally { DebugExitDecision(90); }
 						switch (alt90)
 						{
@@ -10845,7 +10441,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							o=(IToken)Match(input,OBJECT,Follow._OBJECT_in_identPrimary3023); 
 							o_tree = (IASTNode)adaptor.Create(o);
 							adaptor.AddChild(root_0, o_tree);
-
 							DebugLocation(580, 60);
 							 o.Type = IDENT; 
 
@@ -10873,7 +10468,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:581:4: ( (op= OPEN ^ exprList CLOSE !) )?
 				int alt92=2;
 				try { DebugEnterSubRule(92);
-				try { DebugEnterDecision(92, decisionCanBacktrack[92]);
+				try { DebugEnterDecision(92, false);
 				int LA92_1 = input.LA(1);
 
 				if ((LA92_1==OPEN))
@@ -10896,7 +10491,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					op=(IToken)Match(input,OPEN,Follow._OPEN_in_identPrimary3041); 
 					op_tree = (IASTNode)adaptor.Create(op);
 					root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
-
 					DebugLocation(581, 17);
 					 op.Type = METHOD_CALL;
 					DebugLocation(581, 44);
@@ -10947,7 +10541,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -10955,19 +10549,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("identPrimary", 68);
 			LeaveRule("identPrimary", 68);
 			LeaveRule_identPrimary();
-	    }
-	 	DebugLocation(585, 1);
+		}
+		DebugLocation(585, 1);
 		} finally { DebugExitRule(GrammarFileName, "identPrimary"); }
 		return retval;
 
 	}
 	// $ANTLR end "identPrimary"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aggregate() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aggregate() {}
+	partial void EnterRule_aggregate();
+	partial void LeaveRule_aggregate();
 	// $ANTLR start "aggregate"
 	// Hql.g:592:1: aggregate : ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
 	[GrammarRule("aggregate")]
@@ -10976,46 +10567,46 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_aggregate();
 		EnterRule("aggregate", 69);
 		TraceIn("aggregate", 69);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken op = default(IToken);
-	    IToken s = default(IToken);
-	    IToken OPEN267 = default(IToken);
-	    IToken CLOSE269 = default(IToken);
-	    IToken COUNT270 = default(IToken);
-	    IToken OPEN271 = default(IToken);
-	    IToken CLOSE272 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> p = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> additiveExpression268 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> collectionExpr273 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken op = default(IToken);
+		IToken s = default(IToken);
+		IToken OPEN267 = default(IToken);
+		IToken CLOSE269 = default(IToken);
+		IToken COUNT270 = default(IToken);
+		IToken OPEN271 = default(IToken);
+		IToken CLOSE272 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> p = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression268 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> collectionExpr273 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode op_tree = default(IASTNode);
-	    IASTNode s_tree = default(IASTNode);
-	    IASTNode OPEN267_tree = default(IASTNode);
-	    IASTNode CLOSE269_tree = default(IASTNode);
-	    IASTNode COUNT270_tree = default(IASTNode);
-	    IASTNode OPEN271_tree = default(IASTNode);
-	    IASTNode CLOSE272_tree = default(IASTNode);
-	    RewriteRuleITokenStream stream_SUM=new RewriteRuleITokenStream(adaptor,"token SUM");
-	    RewriteRuleITokenStream stream_AVG=new RewriteRuleITokenStream(adaptor,"token AVG");
-	    RewriteRuleITokenStream stream_MAX=new RewriteRuleITokenStream(adaptor,"token MAX");
-	    RewriteRuleITokenStream stream_MIN=new RewriteRuleITokenStream(adaptor,"token MIN");
-	    RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
-	    RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
-	    RewriteRuleITokenStream stream_COUNT=new RewriteRuleITokenStream(adaptor,"token COUNT");
-	    RewriteRuleITokenStream stream_STAR=new RewriteRuleITokenStream(adaptor,"token STAR");
-	    RewriteRuleSubtreeStream stream_additiveExpression=new RewriteRuleSubtreeStream(adaptor,"rule additiveExpression");
-	    RewriteRuleSubtreeStream stream_aggregateDistinctAll=new RewriteRuleSubtreeStream(adaptor,"rule aggregateDistinctAll");
+		IASTNode op_tree = default(IASTNode);
+		IASTNode s_tree = default(IASTNode);
+		IASTNode OPEN267_tree = default(IASTNode);
+		IASTNode CLOSE269_tree = default(IASTNode);
+		IASTNode COUNT270_tree = default(IASTNode);
+		IASTNode OPEN271_tree = default(IASTNode);
+		IASTNode CLOSE272_tree = default(IASTNode);
+		RewriteRuleITokenStream stream_SUM=new RewriteRuleITokenStream(adaptor,"token SUM");
+		RewriteRuleITokenStream stream_AVG=new RewriteRuleITokenStream(adaptor,"token AVG");
+		RewriteRuleITokenStream stream_MAX=new RewriteRuleITokenStream(adaptor,"token MAX");
+		RewriteRuleITokenStream stream_MIN=new RewriteRuleITokenStream(adaptor,"token MIN");
+		RewriteRuleITokenStream stream_OPEN=new RewriteRuleITokenStream(adaptor,"token OPEN");
+		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
+		RewriteRuleITokenStream stream_COUNT=new RewriteRuleITokenStream(adaptor,"token COUNT");
+		RewriteRuleITokenStream stream_STAR=new RewriteRuleITokenStream(adaptor,"token STAR");
+		RewriteRuleSubtreeStream stream_additiveExpression=new RewriteRuleSubtreeStream(adaptor,"rule additiveExpression");
+		RewriteRuleSubtreeStream stream_aggregateDistinctAll=new RewriteRuleSubtreeStream(adaptor,"rule aggregateDistinctAll");
 		try { DebugEnterRule(GrammarFileName, "aggregate");
 		DebugLocation(592, 1);
 		try
 		{
 			// Hql.g:593:2: ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
 			int alt96=3;
-			try { DebugEnterDecision(96, decisionCanBacktrack[96]);
+			try { DebugEnterDecision(96, false);
 			switch (input.LA(1))
 			{
 			case AVG:
@@ -11056,7 +10647,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:593:4: (op= SUM |op= AVG |op= MAX |op= MIN )
 				int alt94=4;
 				try { DebugEnterSubRule(94);
-				try { DebugEnterDecision(94, decisionCanBacktrack[94]);
+				try { DebugEnterDecision(94, false);
 				switch (input.LA(1))
 				{
 				case SUM:
@@ -11204,7 +10795,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:596:16: (s= STAR |p= aggregateDistinctAll )
 				int alt95=2;
 				try { DebugEnterSubRule(95);
-				try { DebugEnterDecision(95, decisionCanBacktrack[95]);
+				try { DebugEnterDecision(95, false);
 				int LA95_1 = input.LA(1);
 
 				if ((LA95_1==STAR))
@@ -11215,14 +10806,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt95 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 95, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(95); }
 				switch (alt95)
 				{
@@ -11346,7 +10935,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -11354,19 +10943,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("aggregate", 69);
 			LeaveRule("aggregate", 69);
 			LeaveRule_aggregate();
-	    }
-	 	DebugLocation(600, 1);
+		}
+		DebugLocation(600, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregate"); }
 		return retval;
 
 	}
 	// $ANTLR end "aggregate"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aggregateDistinctAll() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aggregateDistinctAll() {}
+	partial void EnterRule_aggregateDistinctAll();
+	partial void LeaveRule_aggregateDistinctAll();
 	// $ANTLR start "aggregateDistinctAll"
 	// Hql.g:602:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
 	[GrammarRule("aggregateDistinctAll")]
@@ -11375,17 +10961,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_aggregateDistinctAll();
 		EnterRule("aggregateDistinctAll", 70);
 		TraceIn("aggregateDistinctAll", 70);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken set274 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path275 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> collectionExpr276 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken set274 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path275 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> collectionExpr276 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode set274_tree = default(IASTNode);
-
+		IASTNode set274_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aggregateDistinctAll");
 		DebugLocation(602, 1);
 		try
@@ -11405,7 +10990,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:603:6: ( DISTINCT | ALL )?
 			int alt97=2;
 			try { DebugEnterSubRule(97);
-			try { DebugEnterDecision(97, decisionCanBacktrack[97]);
+			try { DebugEnterDecision(97, false);
 			int LA97_1 = input.LA(1);
 
 			if ((LA97_1==ALL||LA97_1==DISTINCT))
@@ -11446,7 +11031,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:603:26: ( path | collectionExpr )
 			int alt98=2;
 			try { DebugEnterSubRule(98);
-			try { DebugEnterDecision(98, decisionCanBacktrack[98]);
+			try { DebugEnterDecision(98, false);
 			int LA98_1 = input.LA(1);
 
 			if ((LA98_1==IDENT))
@@ -11457,14 +11042,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt98 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 98, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(98); }
 			switch (alt98)
 			{
@@ -11514,7 +11097,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -11522,19 +11105,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("aggregateDistinctAll", 70);
 			LeaveRule("aggregateDistinctAll", 70);
 			LeaveRule_aggregateDistinctAll();
-	    }
-	 	DebugLocation(604, 1);
+		}
+		DebugLocation(604, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregateDistinctAll"); }
 		return retval;
 
 	}
 	// $ANTLR end "aggregateDistinctAll"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_collectionExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_collectionExpr() {}
+	partial void EnterRule_collectionExpr();
+	partial void LeaveRule_collectionExpr();
 	// $ANTLR start "collectionExpr"
 	// Hql.g:608:1: collectionExpr : ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !;
 	[GrammarRule("collectionExpr")]
@@ -11543,22 +11123,21 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_collectionExpr();
 		EnterRule("collectionExpr", 71);
 		TraceIn("collectionExpr", 71);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken ELEMENTS277 = default(IToken);
-	    IToken INDICES278 = default(IToken);
-	    IToken OPEN279 = default(IToken);
-	    IToken CLOSE281 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> path280 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken ELEMENTS277 = default(IToken);
+		IToken INDICES278 = default(IToken);
+		IToken OPEN279 = default(IToken);
+		IToken CLOSE281 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> path280 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode ELEMENTS277_tree = default(IASTNode);
-	    IASTNode INDICES278_tree = default(IASTNode);
-	    IASTNode OPEN279_tree = default(IASTNode);
-	    IASTNode CLOSE281_tree = default(IASTNode);
-
+		IASTNode ELEMENTS277_tree = default(IASTNode);
+		IASTNode INDICES278_tree = default(IASTNode);
+		IASTNode OPEN279_tree = default(IASTNode);
+		IASTNode CLOSE281_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "collectionExpr");
 		DebugLocation(608, 1);
 		try
@@ -11573,7 +11152,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:609:4: ( ELEMENTS ^| INDICES ^)
 			int alt99=2;
 			try { DebugEnterSubRule(99);
-			try { DebugEnterDecision(99, decisionCanBacktrack[99]);
+			try { DebugEnterDecision(99, false);
 			int LA99_1 = input.LA(1);
 
 			if ((LA99_1==ELEMENTS))
@@ -11584,14 +11163,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 				alt99 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 99, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(99); }
 			switch (alt99)
 			{
@@ -11604,7 +11181,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				ELEMENTS277_tree = (IASTNode)adaptor.Create(ELEMENTS277);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS277_tree, root_0);
 
-
 				}
 				break;
 			case 2:
@@ -11615,7 +11191,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				INDICES278=(IToken)Match(input,INDICES,Follow._INDICES_in_collectionExpr3234); 
 				INDICES278_tree = (IASTNode)adaptor.Create(INDICES278);
 				root_0 = (IASTNode)adaptor.BecomeRoot(INDICES278_tree, root_0);
-
 
 				}
 				break;
@@ -11646,7 +11221,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -11654,19 +11229,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("collectionExpr", 71);
 			LeaveRule("collectionExpr", 71);
 			LeaveRule_collectionExpr();
-	    }
-	 	DebugLocation(610, 1);
+		}
+		DebugLocation(610, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "collectionExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_compoundExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_compoundExpr() {}
+	partial void EnterRule_compoundExpr();
+	partial void LeaveRule_compoundExpr();
 	// $ANTLR start "compoundExpr"
 	// Hql.g:612:1: compoundExpr : ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) );
 	[GrammarRule("compoundExpr")]
@@ -11675,31 +11247,30 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_compoundExpr();
 		EnterRule("compoundExpr", 72);
 		TraceIn("compoundExpr", 72);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken OPEN284 = default(IToken);
-	    IToken COMMA287 = default(IToken);
-	    IToken CLOSE289 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> collectionExpr282 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> path283 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> subQuery285 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression286 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression288 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken OPEN284 = default(IToken);
+		IToken COMMA287 = default(IToken);
+		IToken CLOSE289 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> collectionExpr282 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> path283 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> subQuery285 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression286 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression288 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode OPEN284_tree = default(IASTNode);
-	    IASTNode COMMA287_tree = default(IASTNode);
-	    IASTNode CLOSE289_tree = default(IASTNode);
-
+		IASTNode OPEN284_tree = default(IASTNode);
+		IASTNode COMMA287_tree = default(IASTNode);
+		IASTNode CLOSE289_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "compoundExpr");
 		DebugLocation(612, 1);
 		try
 		{
 			// Hql.g:613:2: ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) )
 			int alt102=3;
-			try { DebugEnterDecision(102, decisionCanBacktrack[102]);
+			try { DebugEnterDecision(102, false);
 			switch (input.LA(1))
 			{
 			case ELEMENTS:
@@ -11776,7 +11347,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:615:11: ( subQuery | ( expression ( COMMA ! expression )* ) )
 				int alt101=2;
 				try { DebugEnterSubRule(101);
-				try { DebugEnterDecision(101, decisionCanBacktrack[101]);
+				try { DebugEnterDecision(101, false);
 				int LA101_1 = input.LA(1);
 
 				if ((LA101_1==EOF||LA101_1==CLOSE||LA101_1==FROM||LA101_1==GROUP||LA101_1==HAVING||LA101_1==ORDER||LA101_1==SELECT||LA101_1==SKIP||LA101_1==TAKE||LA101_1==UNION||LA101_1==WHERE))
@@ -11787,14 +11358,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 					alt101 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 101, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(101); }
 				switch (alt101)
 				{
@@ -11832,7 +11401,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					while (true)
 					{
 						int alt100=2;
-						try { DebugEnterDecision(100, decisionCanBacktrack[100]);
+						try { DebugEnterDecision(100, false);
 						int LA100_1 = input.LA(1);
 
 						if ((LA100_1==COMMA))
@@ -11900,7 +11469,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -11908,19 +11477,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("compoundExpr", 72);
 			LeaveRule("compoundExpr", 72);
 			LeaveRule_compoundExpr();
-	    }
-	 	DebugLocation(616, 1);
+		}
+		DebugLocation(616, 1);
 		} finally { DebugExitRule(GrammarFileName, "compoundExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "compoundExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_exprList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_exprList() {}
+	partial void EnterRule_exprList();
+	partial void LeaveRule_exprList();
 	// $ANTLR start "exprList"
 	// Hql.g:618:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )? ;
 	[GrammarRule("exprList")]
@@ -11929,32 +11495,31 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_exprList();
 		EnterRule("exprList", 73);
 		TraceIn("exprList", 73);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken f = default(IToken);
-	    IToken f2 = default(IToken);
-	    IToken TRAILING290 = default(IToken);
-	    IToken LEADING291 = default(IToken);
-	    IToken BOTH292 = default(IToken);
-	    IToken COMMA294 = default(IToken);
-	    IToken AS297 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression293 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression295 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression296 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier298 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> expression299 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken f = default(IToken);
+		IToken f2 = default(IToken);
+		IToken TRAILING290 = default(IToken);
+		IToken LEADING291 = default(IToken);
+		IToken BOTH292 = default(IToken);
+		IToken COMMA294 = default(IToken);
+		IToken AS297 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> expression293 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression295 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression296 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier298 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> expression299 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode f_tree = default(IASTNode);
-	    IASTNode f2_tree = default(IASTNode);
-	    IASTNode TRAILING290_tree = default(IASTNode);
-	    IASTNode LEADING291_tree = default(IASTNode);
-	    IASTNode BOTH292_tree = default(IASTNode);
-	    IASTNode COMMA294_tree = default(IASTNode);
-	    IASTNode AS297_tree = default(IASTNode);
-
+		IASTNode f_tree = default(IASTNode);
+		IASTNode f2_tree = default(IASTNode);
+		IASTNode TRAILING290_tree = default(IASTNode);
+		IASTNode LEADING291_tree = default(IASTNode);
+		IASTNode BOTH292_tree = default(IASTNode);
+		IASTNode COMMA294_tree = default(IASTNode);
+		IASTNode AS297_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "exprList");
 		DebugLocation(618, 1);
 		try
@@ -11969,7 +11534,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:624:4: ( TRAILING | LEADING | BOTH )?
 			int alt103=4;
 			try { DebugEnterSubRule(103);
-			try { DebugEnterDecision(103, decisionCanBacktrack[103]);
+			try { DebugEnterDecision(103, false);
 			switch (input.LA(1))
 			{
 			case TRAILING:
@@ -12000,7 +11565,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				TRAILING290=(IToken)Match(input,TRAILING,Follow._TRAILING_in_exprList3351); 
 				TRAILING290_tree = (IASTNode)adaptor.Create(TRAILING290);
 				adaptor.AddChild(root_0, TRAILING290_tree);
-
 				DebugLocation(624, 14);
 				TRAILING290.Type = IDENT;
 
@@ -12014,7 +11578,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				LEADING291=(IToken)Match(input,LEADING,Follow._LEADING_in_exprList3364); 
 				LEADING291_tree = (IASTNode)adaptor.Create(LEADING291);
 				adaptor.AddChild(root_0, LEADING291_tree);
-
 				DebugLocation(625, 18);
 				LEADING291.Type = IDENT;
 
@@ -12028,7 +11591,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				BOTH292=(IToken)Match(input,BOTH,Follow._BOTH_in_exprList3377); 
 				BOTH292_tree = (IASTNode)adaptor.Create(BOTH292);
 				adaptor.AddChild(root_0, BOTH292_tree);
-
 				DebugLocation(626, 15);
 				BOTH292.Type = IDENT;
 
@@ -12042,7 +11604,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			// Hql.g:628:4: ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )?
 			int alt106=3;
 			try { DebugEnterSubRule(106);
-			try { DebugEnterDecision(106, decisionCanBacktrack[106]);
+			try { DebugEnterDecision(106, false);
 			int LA106_1 = input.LA(1);
 
 			if ((LA106_1==ALL||LA106_1==ANY||LA106_1==AVG||LA106_1==BNOT||LA106_1==CASE||LA106_1==COLON||LA106_1==COUNT||LA106_1==ELEMENTS||LA106_1==EMPTY||LA106_1==EXISTS||LA106_1==FALSE||LA106_1==IDENT||LA106_1==INDICES||LA106_1==MAX||(LA106_1>=MIN && LA106_1<=MINUS)||LA106_1==NOT||(LA106_1>=NULL && LA106_1<=NUM_LONG)||LA106_1==OPEN||(LA106_1>=PARAM && LA106_1<=PLUS)||LA106_1==QUOTED_String||LA106_1==SOME||LA106_1==SUM||LA106_1==TRUE))
@@ -12070,7 +11632,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				// Hql.g:629:16: ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
 				int alt105=4;
 				try { DebugEnterSubRule(105);
-				try { DebugEnterDecision(105, decisionCanBacktrack[105]);
+				try { DebugEnterDecision(105, false);
 				switch (input.LA(1))
 				{
 				case COMMA:
@@ -12104,7 +11666,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					while (true)
 					{
 						int alt104=2;
-						try { DebugEnterDecision(104, decisionCanBacktrack[104]);
+						try { DebugEnterDecision(104, false);
 						int LA104_1 = input.LA(1);
 
 						if ((LA104_1==COMMA))
@@ -12158,7 +11720,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					f=(IToken)Match(input,FROM,Follow._FROM_in_exprList3424); 
 					f_tree = (IASTNode)adaptor.Create(f);
 					adaptor.AddChild(root_0, f_tree);
-
 					DebugLocation(630, 16);
 					PushFollow(Follow._expression_in_exprList3426);
 					expression296=expression();
@@ -12200,7 +11761,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				f2=(IToken)Match(input,FROM,Follow._FROM_in_exprList3455); 
 				f2_tree = (IASTNode)adaptor.Create(f2);
 				adaptor.AddChild(root_0, f2_tree);
-
 				DebugLocation(632, 15);
 				PushFollow(Follow._expression_in_exprList3457);
 				expression299=expression();
@@ -12234,7 +11794,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -12242,19 +11802,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("exprList", 73);
 			LeaveRule("exprList", 73);
 			LeaveRule_exprList();
-	    }
-	 	DebugLocation(634, 1);
+		}
+		DebugLocation(634, 1);
 		} finally { DebugExitRule(GrammarFileName, "exprList"); }
 		return retval;
 
 	}
 	// $ANTLR end "exprList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_subQuery() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_subQuery() {}
+	partial void EnterRule_subQuery();
+	partial void LeaveRule_subQuery();
 	// $ANTLR start "subQuery"
 	// Hql.g:636:1: subQuery : innerSubQuery ( UNION ^ innerSubQuery )* ;
 	[GrammarRule("subQuery")]
@@ -12263,17 +11820,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_subQuery();
 		EnterRule("subQuery", 74);
 		TraceIn("subQuery", 74);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken UNION301 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> innerSubQuery300 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> innerSubQuery302 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken UNION301 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> innerSubQuery300 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> innerSubQuery302 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode UNION301_tree = default(IASTNode);
-
+		IASTNode UNION301_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "subQuery");
 		DebugLocation(636, 1);
 		try
@@ -12296,7 +11852,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt107=2;
-				try { DebugEnterDecision(107, decisionCanBacktrack[107]);
+				try { DebugEnterDecision(107, false);
 				int LA107_1 = input.LA(1);
 
 				if ((LA107_1==UNION))
@@ -12316,7 +11872,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					UNION301=(IToken)Match(input,UNION,Follow._UNION_in_subQuery3480); 
 					UNION301_tree = (IASTNode)adaptor.Create(UNION301);
 					root_0 = (IASTNode)adaptor.BecomeRoot(UNION301_tree, root_0);
-
 					DebugLocation(637, 26);
 					PushFollow(Follow._innerSubQuery_in_subQuery3483);
 					innerSubQuery302=innerSubQuery();
@@ -12350,7 +11905,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -12358,19 +11913,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("subQuery", 74);
 			LeaveRule("subQuery", 74);
 			LeaveRule_subQuery();
-	    }
-	 	DebugLocation(638, 1);
+		}
+		DebugLocation(638, 1);
 		} finally { DebugExitRule(GrammarFileName, "subQuery"); }
 		return retval;
 
 	}
 	// $ANTLR end "subQuery"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_innerSubQuery() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_innerSubQuery() {}
+	partial void EnterRule_innerSubQuery();
+	partial void LeaveRule_innerSubQuery();
 	// $ANTLR start "innerSubQuery"
 	// Hql.g:640:1: innerSubQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
 	[GrammarRule("innerSubQuery")]
@@ -12379,14 +11931,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_innerSubQuery();
 		EnterRule("innerSubQuery", 75);
 		TraceIn("innerSubQuery", 75);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    AstParserRuleReturnScope<IASTNode, IToken> queryRule303 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> queryRule303 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
+		RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
 		try { DebugEnterRule(GrammarFileName, "innerSubQuery");
 		DebugLocation(640, 1);
 		try
@@ -12447,7 +11999,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -12455,19 +12007,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("innerSubQuery", 75);
 			LeaveRule("innerSubQuery", 75);
 			LeaveRule_innerSubQuery();
-	    }
-	 	DebugLocation(643, 1);
+		}
+		DebugLocation(643, 1);
 		} finally { DebugExitRule(GrammarFileName, "innerSubQuery"); }
 		return retval;
 
 	}
 	// $ANTLR end "innerSubQuery"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_constant() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_constant() {}
+	partial void EnterRule_constant();
+	partial void LeaveRule_constant();
 	// $ANTLR start "constant"
 	// Hql.g:645:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
 	[GrammarRule("constant")]
@@ -12476,15 +12025,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_constant();
 		EnterRule("constant", 76);
 		TraceIn("constant", 76);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken set304 = default(IToken);
+		IToken set304 = default(IToken);
 
-	    IASTNode set304_tree = default(IASTNode);
-
+		IASTNode set304_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constant");
 		DebugLocation(645, 1);
 		try
@@ -12524,7 +12072,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -12532,19 +12080,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("constant", 76);
 			LeaveRule("constant", 76);
 			LeaveRule_constant();
-	    }
-	 	DebugLocation(656, 1);
+		}
+		DebugLocation(656, 1);
 		} finally { DebugExitRule(GrammarFileName, "constant"); }
 		return retval;
 
 	}
 	// $ANTLR end "constant"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_path() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_path() {}
+	partial void EnterRule_path();
+	partial void LeaveRule_path();
 	// $ANTLR start "path"
 	// Hql.g:664:1: path : identifier ( DOT ^ identifier )* ;
 	[GrammarRule("path")]
@@ -12553,20 +12098,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_path();
 		EnterRule("path", 77);
 		TraceIn("path", 77);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken DOT306 = default(IToken);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier305 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-	    AstParserRuleReturnScope<IASTNode, IToken> identifier307 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken DOT306 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier305 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> identifier307 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-	    IASTNode DOT306_tree = default(IASTNode);
+		IASTNode DOT306_tree = default(IASTNode);
 
-
-	    // TODO - need to clean up DotIdent - suspect that DotIdent2 supersedes the other one, but need to do the analysis
-	    //HandleDotIdent2();
+		// TODO - need to clean up DotIdent - suspect that DotIdent2 supersedes the other one, but need to do the analysis
+		//HandleDotIdent2();
 
 		try { DebugEnterRule(GrammarFileName, "path");
 		DebugLocation(664, 1);
@@ -12590,7 +12134,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			while (true)
 			{
 				int alt108=2;
-				try { DebugEnterDecision(108, decisionCanBacktrack[108]);
+				try { DebugEnterDecision(108, false);
 				int LA108_1 = input.LA(1);
 
 				if ((LA108_1==DOT))
@@ -12610,7 +12154,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					DOT306=(IToken)Match(input,DOT,Follow._DOT_in_path3589); 
 					DOT306_tree = (IASTNode)adaptor.Create(DOT306);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT306_tree, root_0);
-
 					DebugLocation(669, 22);
 					 WeakKeywords(); 
 					DebugLocation(669, 42);
@@ -12646,7 +12189,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		{
 			ReportError(re);
 			Recover(input,re);
-		retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
 
 		}
 		finally
@@ -12654,19 +12197,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("path", 77);
 			LeaveRule("path", 77);
 			LeaveRule_path();
-	    }
-	 	DebugLocation(670, 1);
+		}
+		DebugLocation(670, 1);
 		} finally { DebugExitRule(GrammarFileName, "path"); }
 		return retval;
 
 	}
 	// $ANTLR end "path"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_identifier() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_identifier() {}
+	partial void EnterRule_identifier();
+	partial void LeaveRule_identifier();
 	// $ANTLR start "identifier"
 	// Hql.g:674:1: identifier : IDENT ;
 	[GrammarRule("identifier")]
@@ -12675,15 +12215,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		EnterRule_identifier();
 		EnterRule("identifier", 78);
 		TraceIn("identifier", 78);
-	    AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-	    retval.Start = (IToken)input.LT(1);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IToken IDENT308 = default(IToken);
+		IToken IDENT308 = default(IToken);
 
-	    IASTNode IDENT308_tree = default(IASTNode);
-
+		IASTNode IDENT308_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identifier");
 		DebugLocation(674, 1);
 		try
@@ -12698,7 +12237,6 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			IDENT308=(IToken)Match(input,IDENT,Follow._IDENT_in_identifier3610); 
 			IDENT308_tree = (IASTNode)adaptor.Create(IDENT308);
 			adaptor.AddChild(root_0, IDENT308_tree);
-
 
 			}
 
@@ -12720,8 +12258,8 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			TraceOut("identifier", 78);
 			LeaveRule("identifier", 78);
 			LeaveRule_identifier();
-	    }
-	 	DebugLocation(676, 1);
+		}
+		DebugLocation(676, 1);
 		} finally { DebugExitRule(GrammarFileName, "identifier"); }
 		return retval;
 

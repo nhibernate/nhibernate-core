@@ -8,14 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 SqlGenerator.g 2013-10-19 15:35:59
+// $ANTLR 3.5.0.2 SqlGenerator.g 2014-08-03 13:46:15
 
 // The variable 'variable' is assigned but its value is never used.
-#pragma warning disable 168, 219
+#pragma warning disable 219
 // Unreachable code detected.
 #pragma warning disable 162
 // Missing XML comment for publicly visible type or member 'Type_or_Member'
 #pragma warning disable 1591
+// CLS compliance checking will not be performed on 'type' because it is not visible from outside this assembly.
+#pragma warning disable 3019
 
 
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -26,7 +28,6 @@ using Antlr.Runtime;
 using Antlr.Runtime.Misc;
 using Antlr.Runtime.Tree;
 using RewriteRuleITokenStream = Antlr.Runtime.Tree.RewriteRuleTokenStream;
-using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 
 namespace  NHibernate.Hql.Ast.ANTLR 
 {
@@ -194,23 +195,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 	public const int SQL_TOKEN=149;
 	public const int THETA_JOINS=150;
 
-	#if ANTLR_DEBUG
-	private static readonly bool[] decisionCanBacktrack =
-		new bool[]
-		{
-			false, // invalid decision
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, true, true, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false
-		};
-	#else
-	private static readonly bool[] decisionCanBacktrack = new bool[0];
-	#endif
 	public SqlGenerator(ITreeNodeStream input)
 		: this(input, new RecognizerSharedState())
 	{
@@ -225,19 +209,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 	public override string GrammarFileName { get { return "SqlGenerator.g"; } }
 
 
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void OnCreated() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
+	partial void OnCreated();
+	partial void EnterRule(string ruleName, int ruleIndex);
+	partial void LeaveRule(string ruleName, int ruleIndex);
 
 	#region Rules
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_statement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_statement() {}
+	partial void EnterRule_statement();
+	partial void LeaveRule_statement();
 	// $ANTLR start "statement"
 	// SqlGenerator.g:27:8: public statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
 	[GrammarRule("statement")]
@@ -252,7 +230,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:28:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
 			int alt1=4;
-			try { DebugEnterDecision(1, decisionCanBacktrack[1]);
+			try { DebugEnterDecision(1, false);
 			switch (input.LA(1))
 			{
 			case SELECT:
@@ -348,19 +326,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("statement", 1);
 			LeaveRule("statement", 1);
 			LeaveRule_statement();
-	    }
-	 	DebugLocation(32, 1);
+		}
+		DebugLocation(32, 1);
 		} finally { DebugExitRule(GrammarFileName, "statement"); }
 		return;
 
 	}
 	// $ANTLR end "statement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectStatement() {}
+	partial void EnterRule_selectStatement();
+	partial void LeaveRule_selectStatement();
 	// $ANTLR start "selectStatement"
 	// SqlGenerator.g:34:1: selectStatement : ^( SELECT selectClause from ( ^( WHERE whereExpr ) )? ( ^( GROUP groupExprs ) )? ( ^( HAVING booleanExpr[false] ) )? ( ^( ORDER orderExprs ) )? ( ^( SKIP si= limitValue ) )? ( ^( TAKE ti= limitValue ) )? ) ;
 	[GrammarRule("selectStatement")]
@@ -369,8 +344,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectStatement();
 		EnterRule("selectStatement", 2);
 		TraceIn("selectStatement", 2);
-	    TreeRuleReturnScope<IASTNode> si = default(TreeRuleReturnScope<IASTNode>);
-	    TreeRuleReturnScope<IASTNode> ti = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> si = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> ti = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "selectStatement");
 		DebugLocation(34, 1);
@@ -405,7 +380,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:38:3: ( ^( WHERE whereExpr ) )?
 			int alt2=2;
 			try { DebugEnterSubRule(2);
-			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
+			try { DebugEnterDecision(2, false);
 			int LA2_1 = input.LA(1);
 
 			if ((LA2_1==WHERE))
@@ -449,7 +424,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:39:3: ( ^( GROUP groupExprs ) )?
 			int alt3=2;
 			try { DebugEnterSubRule(3);
-			try { DebugEnterDecision(3, decisionCanBacktrack[3]);
+			try { DebugEnterDecision(3, false);
 			int LA3_1 = input.LA(1);
 
 			if ((LA3_1==GROUP))
@@ -493,7 +468,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:40:3: ( ^( HAVING booleanExpr[false] ) )?
 			int alt4=2;
 			try { DebugEnterSubRule(4);
-			try { DebugEnterDecision(4, decisionCanBacktrack[4]);
+			try { DebugEnterDecision(4, false);
 			int LA4_1 = input.LA(1);
 
 			if ((LA4_1==HAVING))
@@ -537,7 +512,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:41:3: ( ^( ORDER orderExprs ) )?
 			int alt5=2;
 			try { DebugEnterSubRule(5);
-			try { DebugEnterDecision(5, decisionCanBacktrack[5]);
+			try { DebugEnterDecision(5, false);
 			int LA5_1 = input.LA(1);
 
 			if ((LA5_1==ORDER))
@@ -581,7 +556,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:42:3: ( ^( SKIP si= limitValue ) )?
 			int alt6=2;
 			try { DebugEnterSubRule(6);
-			try { DebugEnterDecision(6, decisionCanBacktrack[6]);
+			try { DebugEnterDecision(6, false);
 			int LA6_1 = input.LA(1);
 
 			if ((LA6_1==SKIP))
@@ -624,7 +599,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:43:3: ( ^( TAKE ti= limitValue ) )?
 			int alt7=2;
 			try { DebugEnterSubRule(7);
-			try { DebugEnterDecision(7, decisionCanBacktrack[7]);
+			try { DebugEnterDecision(7, false);
 			int LA7_1 = input.LA(1);
 
 			if ((LA7_1==TAKE))
@@ -685,19 +660,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectStatement", 2);
 			LeaveRule("selectStatement", 2);
 			LeaveRule_selectStatement();
-	    }
-	 	DebugLocation(46, 1);
+		}
+		DebugLocation(46, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectStatement"); }
 		return;
 
 	}
 	// $ANTLR end "selectStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_updateStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_updateStatement() {}
+	partial void EnterRule_updateStatement();
+	partial void LeaveRule_updateStatement();
 	// $ANTLR start "updateStatement"
 	// SqlGenerator.g:51:1: updateStatement : ^( UPDATE ^( FROM fromTable ) setClause ( whereClause )? ) ;
 	[GrammarRule("updateStatement")]
@@ -747,7 +719,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:55:3: ( whereClause )?
 			int alt8=2;
 			try { DebugEnterSubRule(8);
-			try { DebugEnterDecision(8, decisionCanBacktrack[8]);
+			try { DebugEnterDecision(8, false);
 			int LA8_1 = input.LA(1);
 
 			if ((LA8_1==WHERE))
@@ -790,19 +762,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("updateStatement", 3);
 			LeaveRule("updateStatement", 3);
 			LeaveRule_updateStatement();
-	    }
-	 	DebugLocation(57, 1);
+		}
+		DebugLocation(57, 1);
 		} finally { DebugExitRule(GrammarFileName, "updateStatement"); }
 		return;
 
 	}
 	// $ANTLR end "updateStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_deleteStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_deleteStatement() {}
+	partial void EnterRule_deleteStatement();
+	partial void LeaveRule_deleteStatement();
 	// $ANTLR start "deleteStatement"
 	// SqlGenerator.g:59:1: deleteStatement : ^( DELETE from ( whereClause )? ) ;
 	[GrammarRule("deleteStatement")]
@@ -839,7 +808,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:63:3: ( whereClause )?
 			int alt9=2;
 			try { DebugEnterSubRule(9);
-			try { DebugEnterDecision(9, decisionCanBacktrack[9]);
+			try { DebugEnterDecision(9, false);
 			int LA9_1 = input.LA(1);
 
 			if ((LA9_1==WHERE))
@@ -882,19 +851,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("deleteStatement", 4);
 			LeaveRule("deleteStatement", 4);
 			LeaveRule_deleteStatement();
-	    }
-	 	DebugLocation(65, 1);
+		}
+		DebugLocation(65, 1);
 		} finally { DebugExitRule(GrammarFileName, "deleteStatement"); }
 		return;
 
 	}
 	// $ANTLR end "deleteStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_insertStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_insertStatement() {}
+	partial void EnterRule_insertStatement();
+	partial void LeaveRule_insertStatement();
 	// $ANTLR start "insertStatement"
 	// SqlGenerator.g:67:1: insertStatement : ^( INSERT ^(i= INTO ( . )* ) selectStatement ) ;
 	[GrammarRule("insertStatement")]
@@ -903,7 +869,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_insertStatement();
 		EnterRule("insertStatement", 5);
 		TraceIn("insertStatement", 5);
-	    IASTNode i = default(IASTNode);
+		IASTNode i = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "insertStatement");
 		DebugLocation(67, 1);
@@ -943,7 +909,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt10=2;
-					try { DebugEnterDecision(10, decisionCanBacktrack[10]);
+					try { DebugEnterDecision(10, false);
 					int LA10_1 = input.LA(1);
 
 					if (((LA10_1>=AGGREGATE && LA10_1<=THETA_JOINS)))
@@ -1005,19 +971,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("insertStatement", 5);
 			LeaveRule("insertStatement", 5);
 			LeaveRule_insertStatement();
-	    }
-	 	DebugLocation(72, 1);
+		}
+		DebugLocation(72, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertStatement"); }
 		return;
 
 	}
 	// $ANTLR end "insertStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_setClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_setClause() {}
+	partial void EnterRule_setClause();
+	partial void LeaveRule_setClause();
 	// $ANTLR start "setClause"
 	// SqlGenerator.g:74:1: setClause : ^( SET comparisonExpr[false] ( comparisonExpr[false] )* ) ;
 	[GrammarRule("setClause")]
@@ -1056,7 +1019,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt11=2;
-				try { DebugEnterDecision(11, decisionCanBacktrack[11]);
+				try { DebugEnterDecision(11, false);
 				int LA11_1 = input.LA(1);
 
 				if ((LA11_1==BETWEEN||LA11_1==EQ||LA11_1==EXISTS||LA11_1==GE||LA11_1==GT||LA11_1==IN||(LA11_1>=IS_NOT_NULL && LA11_1<=IS_NULL)||LA11_1==LE||LA11_1==LIKE||LA11_1==LT||LA11_1==NE||(LA11_1>=NOT_BETWEEN && LA11_1<=NOT_LIKE)))
@@ -1113,19 +1076,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("setClause", 6);
 			LeaveRule("setClause", 6);
 			LeaveRule_setClause();
-	    }
-	 	DebugLocation(78, 1);
+		}
+		DebugLocation(78, 1);
 		} finally { DebugExitRule(GrammarFileName, "setClause"); }
 		return;
 
 	}
 	// $ANTLR end "setClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whereClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whereClause() {}
+	partial void EnterRule_whereClause();
+	partial void LeaveRule_whereClause();
 	// $ANTLR start "whereClause"
 	// SqlGenerator.g:80:8: public whereClause : ^( WHERE whereClauseExpr ) ;
 	[GrammarRule("whereClause")]
@@ -1175,19 +1135,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("whereClause", 7);
 			LeaveRule("whereClause", 7);
 			LeaveRule_whereClause();
-	    }
-	 	DebugLocation(82, 1);
+		}
+		DebugLocation(82, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClause"); }
 		return;
 
 	}
 	// $ANTLR end "whereClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whereClauseExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whereClauseExpr() {}
+	partial void EnterRule_whereClauseExpr();
+	partial void LeaveRule_whereClauseExpr();
 	// $ANTLR start "whereClauseExpr"
 	// SqlGenerator.g:84:1: whereClauseExpr : ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] );
 	[GrammarRule("whereClauseExpr")]
@@ -1202,7 +1159,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:85:2: ( ( SQL_TOKEN )=> conditionList | booleanExpr[ false ] )
 			int alt12=2;
-			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
+			try { DebugEnterDecision(12, false);
 			int LA12_1 = input.LA(1);
 
 			if ((LA12_1==SQL_TOKEN))
@@ -1217,7 +1174,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt12 = 2;
 				}
-
 				else
 				{
 					if (state.backtracking>0) {state.failed=true; return;}
@@ -1225,13 +1181,11 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 			}
 			else if ((LA12_1==AND||LA12_1==BETWEEN||LA12_1==EQ||LA12_1==EXISTS||LA12_1==GE||LA12_1==GT||LA12_1==IN||(LA12_1>=IS_NOT_NULL && LA12_1<=IS_NULL)||LA12_1==LE||LA12_1==LIKE||LA12_1==LT||LA12_1==METHOD_CALL||LA12_1==NE||(LA12_1>=NOT && LA12_1<=NOT_LIKE)||LA12_1==OR))
 			{
 				alt12 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -1239,7 +1193,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(12); }
 			switch (alt12)
 			{
@@ -1280,19 +1233,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("whereClauseExpr", 8);
 			LeaveRule("whereClauseExpr", 8);
 			LeaveRule_whereClauseExpr();
-	    }
-	 	DebugLocation(87, 1);
+		}
+		DebugLocation(87, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClauseExpr"); }
 		return;
 
 	}
 	// $ANTLR end "whereClauseExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderExprs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderExprs() {}
+	partial void EnterRule_orderExprs();
+	partial void LeaveRule_orderExprs();
 	// $ANTLR start "orderExprs"
 	// SqlGenerator.g:89:1: orderExprs : ( expr ) (dir= orderDirection )? ( orderExprs )? ;
 	[GrammarRule("orderExprs")]
@@ -1301,7 +1251,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_orderExprs();
 		EnterRule("orderExprs", 9);
 		TraceIn("orderExprs", 9);
-	    TreeRuleReturnScope<IASTNode> dir = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> dir = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "orderExprs");
 		DebugLocation(89, 1);
@@ -1328,7 +1278,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:91:13: (dir= orderDirection )?
 			int alt13=2;
 			try { DebugEnterSubRule(13);
-			try { DebugEnterDecision(13, decisionCanBacktrack[13]);
+			try { DebugEnterDecision(13, false);
 			int LA13_1 = input.LA(1);
 
 			if ((LA13_1==ASCENDING||LA13_1==DESCENDING))
@@ -1363,7 +1313,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:91:66: ( orderExprs )?
 			int alt14=2;
 			try { DebugEnterSubRule(14);
-			try { DebugEnterDecision(14, decisionCanBacktrack[14]);
+			try { DebugEnterDecision(14, false);
 			int LA14_1 = input.LA(1);
 
 			if ((LA14_1==AGGREGATE||LA14_1==ALL||LA14_1==ANY||LA14_1==BAND||(LA14_1>=BNOT && LA14_1<=BOR)||(LA14_1>=BXOR && LA14_1<=CASE2)||LA14_1==CONSTANT||LA14_1==COUNT||(LA14_1>=DIV && LA14_1<=DOT)||LA14_1==FALSE||LA14_1==IDENT||LA14_1==INDEX_OP||LA14_1==JAVA_CONSTANT||LA14_1==METHOD_CALL||LA14_1==MINUS||(LA14_1>=NULL && LA14_1<=NUM_LONG)||(LA14_1>=PARAM && LA14_1<=PLUS)||LA14_1==QUOTED_String||LA14_1==SELECT||LA14_1==SOME||LA14_1==STAR||(LA14_1>=TRUE && LA14_1<=UNARY_MINUS)||LA14_1==UNION||LA14_1==VECTOR_EXPR||LA14_1==ALIAS_REF||LA14_1==NAMED_PARAM||LA14_1==SQL_TOKEN))
@@ -1408,19 +1358,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("orderExprs", 9);
 			LeaveRule("orderExprs", 9);
 			LeaveRule_orderExprs();
-	    }
-	 	DebugLocation(92, 1);
+		}
+		DebugLocation(92, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderExprs"); }
 		return;
 
 	}
 	// $ANTLR end "orderExprs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_groupExprs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_groupExprs() {}
+	partial void EnterRule_groupExprs();
+	partial void LeaveRule_groupExprs();
 	// $ANTLR start "groupExprs"
 	// SqlGenerator.g:94:1: groupExprs : expr ( groupExprs )? ;
 	[GrammarRule("groupExprs")]
@@ -1446,7 +1393,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:96:9: ( groupExprs )?
 			int alt15=2;
 			try { DebugEnterSubRule(15);
-			try { DebugEnterDecision(15, decisionCanBacktrack[15]);
+			try { DebugEnterDecision(15, false);
 			int LA15_1 = input.LA(1);
 
 			if ((LA15_1==AGGREGATE||LA15_1==ALL||LA15_1==ANY||LA15_1==BAND||(LA15_1>=BNOT && LA15_1<=BOR)||(LA15_1>=BXOR && LA15_1<=CASE2)||LA15_1==CONSTANT||LA15_1==COUNT||(LA15_1>=DIV && LA15_1<=DOT)||LA15_1==FALSE||LA15_1==IDENT||LA15_1==INDEX_OP||LA15_1==JAVA_CONSTANT||LA15_1==METHOD_CALL||LA15_1==MINUS||(LA15_1>=NULL && LA15_1<=NUM_LONG)||(LA15_1>=PARAM && LA15_1<=PLUS)||LA15_1==QUOTED_String||LA15_1==SELECT||LA15_1==SOME||LA15_1==STAR||(LA15_1>=TRUE && LA15_1<=UNARY_MINUS)||LA15_1==UNION||LA15_1==VECTOR_EXPR||LA15_1==ALIAS_REF||LA15_1==NAMED_PARAM||LA15_1==SQL_TOKEN))
@@ -1491,19 +1438,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("groupExprs", 10);
 			LeaveRule("groupExprs", 10);
 			LeaveRule_groupExprs();
-	    }
-	 	DebugLocation(97, 1);
+		}
+		DebugLocation(97, 1);
 		} finally { DebugExitRule(GrammarFileName, "groupExprs"); }
 		return;
 
 	}
 	// $ANTLR end "groupExprs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderDirection() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderDirection() {}
+	partial void EnterRule_orderDirection();
+	partial void LeaveRule_orderDirection();
 	// $ANTLR start "orderDirection"
 	// SqlGenerator.g:99:1: orderDirection : ( ASCENDING | DESCENDING );
 	[GrammarRule("orderDirection")]
@@ -1512,8 +1456,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_orderDirection();
 		EnterRule("orderDirection", 11);
 		TraceIn("orderDirection", 11);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
 		try { DebugEnterRule(GrammarFileName, "orderDirection");
 		DebugLocation(99, 1);
@@ -1551,19 +1495,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("orderDirection", 11);
 			LeaveRule("orderDirection", 11);
 			LeaveRule_orderDirection();
-	    }
-	 	DebugLocation(102, 1);
+		}
+		DebugLocation(102, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderDirection"); }
 		return retval;
 
 	}
 	// $ANTLR end "orderDirection"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whereExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whereExpr() {}
+	partial void EnterRule_whereExpr();
+	partial void LeaveRule_whereExpr();
 	// $ANTLR start "whereExpr"
 	// SqlGenerator.g:104:8: public whereExpr : ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] );
 	[GrammarRule("whereExpr")]
@@ -1578,7 +1519,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:108:2: ( filters ( thetaJoins )? ( booleanExpr[ true ] )? | thetaJoins ( booleanExpr[ true ] )? | booleanExpr[false] )
 			int alt19=3;
-			try { DebugEnterDecision(19, decisionCanBacktrack[19]);
+			try { DebugEnterDecision(19, false);
 			switch (input.LA(1))
 			{
 			case FILTERS:
@@ -1640,7 +1581,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:109:3: ( thetaJoins )?
 				int alt16=2;
 				try { DebugEnterSubRule(16);
-				try { DebugEnterDecision(16, decisionCanBacktrack[16]);
+				try { DebugEnterDecision(16, false);
 				int LA16_1 = input.LA(1);
 
 				if ((LA16_1==THETA_JOINS))
@@ -1675,7 +1616,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:110:3: ( booleanExpr[ true ] )?
 				int alt17=2;
 				try { DebugEnterSubRule(17);
-				try { DebugEnterDecision(17, decisionCanBacktrack[17]);
+				try { DebugEnterDecision(17, false);
 				int LA17_1 = input.LA(1);
 
 				if ((LA17_1==AND||LA17_1==BETWEEN||LA17_1==EQ||LA17_1==EXISTS||LA17_1==GE||LA17_1==GT||LA17_1==IN||(LA17_1>=IS_NOT_NULL && LA17_1<=IS_NULL)||LA17_1==LE||LA17_1==LIKE||LA17_1==LT||LA17_1==METHOD_CALL||LA17_1==NE||(LA17_1>=NOT && LA17_1<=NOT_LIKE)||LA17_1==OR||LA17_1==SQL_TOKEN))
@@ -1722,7 +1663,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:112:3: ( booleanExpr[ true ] )?
 				int alt18=2;
 				try { DebugEnterSubRule(18);
-				try { DebugEnterDecision(18, decisionCanBacktrack[18]);
+				try { DebugEnterDecision(18, false);
 				int LA18_1 = input.LA(1);
 
 				if ((LA18_1==AND||LA18_1==BETWEEN||LA18_1==EQ||LA18_1==EXISTS||LA18_1==GE||LA18_1==GT||LA18_1==IN||(LA18_1>=IS_NOT_NULL && LA18_1<=IS_NULL)||LA18_1==LE||LA18_1==LIKE||LA18_1==LT||LA18_1==METHOD_CALL||LA18_1==NE||(LA18_1>=NOT && LA18_1<=NOT_LIKE)||LA18_1==OR||LA18_1==SQL_TOKEN))
@@ -1781,19 +1722,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("whereExpr", 12);
 			LeaveRule("whereExpr", 12);
 			LeaveRule_whereExpr();
-	    }
-	 	DebugLocation(114, 1);
+		}
+		DebugLocation(114, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereExpr"); }
 		return;
 
 	}
 	// $ANTLR end "whereExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_filters() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_filters() {}
+	partial void EnterRule_filters();
+	partial void LeaveRule_filters();
 	// $ANTLR start "filters"
 	// SqlGenerator.g:116:1: filters : ^( FILTERS conditionList ) ;
 	[GrammarRule("filters")]
@@ -1837,19 +1775,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("filters", 13);
 			LeaveRule("filters", 13);
 			LeaveRule_filters();
-	    }
-	 	DebugLocation(118, 1);
+		}
+		DebugLocation(118, 1);
 		} finally { DebugExitRule(GrammarFileName, "filters"); }
 		return;
 
 	}
 	// $ANTLR end "filters"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_thetaJoins() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_thetaJoins() {}
+	partial void EnterRule_thetaJoins();
+	partial void LeaveRule_thetaJoins();
 	// $ANTLR start "thetaJoins"
 	// SqlGenerator.g:120:1: thetaJoins : ^( THETA_JOINS conditionList ) ;
 	[GrammarRule("thetaJoins")]
@@ -1893,19 +1828,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("thetaJoins", 14);
 			LeaveRule("thetaJoins", 14);
 			LeaveRule_thetaJoins();
-	    }
-	 	DebugLocation(122, 1);
+		}
+		DebugLocation(122, 1);
 		} finally { DebugExitRule(GrammarFileName, "thetaJoins"); }
 		return;
 
 	}
 	// $ANTLR end "thetaJoins"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_conditionList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_conditionList() {}
+	partial void EnterRule_conditionList();
+	partial void LeaveRule_conditionList();
 	// $ANTLR start "conditionList"
 	// SqlGenerator.g:124:1: conditionList : sqlToken ( conditionList )? ;
 	[GrammarRule("conditionList")]
@@ -1931,7 +1863,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:125:13: ( conditionList )?
 			int alt20=2;
 			try { DebugEnterSubRule(20);
-			try { DebugEnterDecision(20, decisionCanBacktrack[20]);
+			try { DebugEnterDecision(20, false);
 			int LA20_1 = input.LA(1);
 
 			if ((LA20_1==SQL_TOKEN))
@@ -1976,19 +1908,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("conditionList", 15);
 			LeaveRule("conditionList", 15);
 			LeaveRule_conditionList();
-	    }
-	 	DebugLocation(126, 1);
+		}
+		DebugLocation(126, 1);
 		} finally { DebugExitRule(GrammarFileName, "conditionList"); }
 		return;
 
 	}
 	// $ANTLR end "conditionList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectClause() {}
+	partial void EnterRule_selectClause();
+	partial void LeaveRule_selectClause();
 	// $ANTLR start "selectClause"
 	// SqlGenerator.g:128:1: selectClause : ^( SELECT_CLAUSE ( distinctOrAll )? ( selectColumn )+ ) ;
 	[GrammarRule("selectClause")]
@@ -2014,7 +1943,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:129:20: ( distinctOrAll )?
 			int alt21=2;
 			try { DebugEnterSubRule(21);
-			try { DebugEnterDecision(21, decisionCanBacktrack[21]);
+			try { DebugEnterDecision(21, false);
 			int LA21_1 = input.LA(1);
 
 			if ((LA21_1==ALL||LA21_1==DISTINCT))
@@ -2047,7 +1976,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt22=2;
-				try { DebugEnterDecision(22, decisionCanBacktrack[22]);
+				try { DebugEnterDecision(22, false);
 				int LA22_1 = input.LA(1);
 
 				if ((LA22_1==AGGREGATE||LA22_1==BAND||(LA22_1>=BNOT && LA22_1<=BOR)||(LA22_1>=BXOR && LA22_1<=CASE2)||(LA22_1>=CONSTANT && LA22_1<=COUNT)||(LA22_1>=DIV && LA22_1<=DOT)||LA22_1==FALSE||LA22_1==IDENT||LA22_1==JAVA_CONSTANT||LA22_1==METHOD_CALL||LA22_1==MINUS||(LA22_1>=NUM_DECIMAL && LA22_1<=NUM_LONG)||(LA22_1>=PARAM && LA22_1<=PLUS)||LA22_1==QUOTED_String||LA22_1==SELECT||LA22_1==STAR||(LA22_1>=TRUE && LA22_1<=UNARY_MINUS)||LA22_1==ALIAS_REF||LA22_1==NAMED_PARAM||(LA22_1>=SELECT_EXPR && LA22_1<=SQL_TOKEN)))
@@ -2105,19 +2034,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectClause", 16);
 			LeaveRule("selectClause", 16);
 			LeaveRule_selectClause();
-	    }
-	 	DebugLocation(130, 1);
+		}
+		DebugLocation(130, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectClause"); }
 		return;
 
 	}
 	// $ANTLR end "selectClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectColumn() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectColumn() {}
+	partial void EnterRule_selectColumn();
+	partial void LeaveRule_selectColumn();
 	// $ANTLR start "selectColumn"
 	// SqlGenerator.g:132:1: selectColumn : p= selectExpr (sc= SELECT_COLUMNS )? ;
 	[GrammarRule("selectColumn")]
@@ -2126,8 +2052,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectColumn();
 		EnterRule("selectColumn", 17);
 		TraceIn("selectColumn", 17);
-	    IASTNode sc = default(IASTNode);
-	    TreeRuleReturnScope<IASTNode> p = default(TreeRuleReturnScope<IASTNode>);
+		IASTNode sc = default(IASTNode);
+		TreeRuleReturnScope<IASTNode> p = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "selectColumn");
 		DebugLocation(132, 1);
@@ -2146,7 +2072,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:133:17: (sc= SELECT_COLUMNS )?
 			int alt23=2;
 			try { DebugEnterSubRule(23);
-			try { DebugEnterDecision(23, decisionCanBacktrack[23]);
+			try { DebugEnterDecision(23, false);
 			int LA23_1 = input.LA(1);
 
 			if ((LA23_1==SELECT_COLUMNS))
@@ -2193,19 +2119,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectColumn", 17);
 			LeaveRule("selectColumn", 17);
 			LeaveRule_selectColumn();
-	    }
-	 	DebugLocation(134, 1);
+		}
+		DebugLocation(134, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectColumn"); }
 		return;
 
 	}
 	// $ANTLR end "selectColumn"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectExpr() {}
+	partial void EnterRule_selectExpr();
+	partial void LeaveRule_selectExpr();
 	// $ANTLR start "selectExpr"
 	// SqlGenerator.g:136:1: selectExpr : (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate |c= constant | arithmeticExpr | parameter | selectStatement );
 	[GrammarRule("selectExpr")]
@@ -2214,11 +2137,11 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectExpr();
 		EnterRule("selectExpr", 18);
 		TraceIn("selectExpr", 18);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
-	    TreeRuleReturnScope<IASTNode> c = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> c = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "selectExpr");
 		DebugLocation(136, 1);
@@ -2226,7 +2149,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:137:2: (e= selectAtom | count | ^( CONSTRUCTOR ( DOT | IDENT ) ( selectColumn )+ ) | methodCall | aggregate |c= constant | arithmeticExpr | parameter | selectStatement )
 			int alt25=9;
-			try { DebugEnterDecision(25, decisionCanBacktrack[25]);
+			try { DebugEnterDecision(25, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -2369,7 +2292,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt24=2;
-					try { DebugEnterDecision(24, decisionCanBacktrack[24]);
+					try { DebugEnterDecision(24, false);
 					int LA24_1 = input.LA(1);
 
 					if ((LA24_1==AGGREGATE||LA24_1==BAND||(LA24_1>=BNOT && LA24_1<=BOR)||(LA24_1>=BXOR && LA24_1<=CASE2)||(LA24_1>=CONSTANT && LA24_1<=COUNT)||(LA24_1>=DIV && LA24_1<=DOT)||LA24_1==FALSE||LA24_1==IDENT||LA24_1==JAVA_CONSTANT||LA24_1==METHOD_CALL||LA24_1==MINUS||(LA24_1>=NUM_DECIMAL && LA24_1<=NUM_LONG)||(LA24_1>=PARAM && LA24_1<=PLUS)||LA24_1==QUOTED_String||LA24_1==SELECT||LA24_1==STAR||(LA24_1>=TRUE && LA24_1<=UNARY_MINUS)||LA24_1==ALIAS_REF||LA24_1==NAMED_PARAM||(LA24_1>=SELECT_EXPR && LA24_1<=SQL_TOKEN)))
@@ -2516,19 +2439,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectExpr", 18);
 			LeaveRule("selectExpr", 18);
 			LeaveRule_selectExpr();
-	    }
-	 	DebugLocation(148, 1);
+		}
+		DebugLocation(148, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_count() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_count() {}
+	partial void EnterRule_count();
+	partial void LeaveRule_count();
 	// $ANTLR start "count"
 	// SqlGenerator.g:150:1: count : ^( COUNT ( distinctOrAll )? countExpr ) ;
 	[GrammarRule("count")]
@@ -2560,7 +2480,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:151:32: ( distinctOrAll )?
 			int alt26=2;
 			try { DebugEnterSubRule(26);
-			try { DebugEnterDecision(26, decisionCanBacktrack[26]);
+			try { DebugEnterDecision(26, false);
 			int LA26_1 = input.LA(1);
 
 			if ((LA26_1==ALL||LA26_1==DISTINCT))
@@ -2613,19 +2533,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("count", 19);
 			LeaveRule("count", 19);
 			LeaveRule_count();
-	    }
-	 	DebugLocation(152, 1);
+		}
+		DebugLocation(152, 1);
 		} finally { DebugExitRule(GrammarFileName, "count"); }
 		return;
 
 	}
 	// $ANTLR end "count"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_distinctOrAll() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_distinctOrAll() {}
+	partial void EnterRule_distinctOrAll();
+	partial void LeaveRule_distinctOrAll();
 	// $ANTLR start "distinctOrAll"
 	// SqlGenerator.g:154:1: distinctOrAll : ( DISTINCT | ^( ALL ( . )* ) );
 	[GrammarRule("distinctOrAll")]
@@ -2640,7 +2557,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:155:2: ( DISTINCT | ^( ALL ( . )* ) )
 			int alt28=2;
-			try { DebugEnterDecision(28, decisionCanBacktrack[28]);
+			try { DebugEnterDecision(28, false);
 			int LA28_1 = input.LA(1);
 
 			if ((LA28_1==DISTINCT))
@@ -2651,7 +2568,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt28 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -2659,7 +2575,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(28); }
 			switch (alt28)
 			{
@@ -2694,7 +2609,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt27=2;
-						try { DebugEnterDecision(27, decisionCanBacktrack[27]);
+						try { DebugEnterDecision(27, false);
 						int LA27_1 = input.LA(1);
 
 						if (((LA27_1>=AGGREGATE && LA27_1<=THETA_JOINS)))
@@ -2755,19 +2670,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("distinctOrAll", 20);
 			LeaveRule("distinctOrAll", 20);
 			LeaveRule_distinctOrAll();
-	    }
-	 	DebugLocation(157, 1);
+		}
+		DebugLocation(157, 1);
 		} finally { DebugExitRule(GrammarFileName, "distinctOrAll"); }
 		return;
 
 	}
 	// $ANTLR end "distinctOrAll"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_countExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_countExpr() {}
+	partial void EnterRule_countExpr();
+	partial void LeaveRule_countExpr();
 	// $ANTLR start "countExpr"
 	// SqlGenerator.g:159:1: countExpr : ( ROW_STAR | simpleExpr );
 	[GrammarRule("countExpr")]
@@ -2782,7 +2694,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:161:2: ( ROW_STAR | simpleExpr )
 			int alt29=2;
-			try { DebugEnterDecision(29, decisionCanBacktrack[29]);
+			try { DebugEnterDecision(29, false);
 			int LA29_1 = input.LA(1);
 
 			if ((LA29_1==ROW_STAR))
@@ -2793,7 +2705,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt29 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -2801,7 +2712,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(29); }
 			switch (alt29)
 			{
@@ -2844,19 +2754,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("countExpr", 21);
 			LeaveRule("countExpr", 21);
 			LeaveRule_countExpr();
-	    }
-	 	DebugLocation(163, 1);
+		}
+		DebugLocation(163, 1);
 		} finally { DebugExitRule(GrammarFileName, "countExpr"); }
 		return;
 
 	}
 	// $ANTLR end "countExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectAtom() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectAtom() {}
+	partial void EnterRule_selectAtom();
+	partial void LeaveRule_selectAtom();
 	// $ANTLR start "selectAtom"
 	// SqlGenerator.g:165:1: selectAtom : ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) );
 	[GrammarRule("selectAtom")]
@@ -2865,8 +2772,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectAtom();
 		EnterRule("selectAtom", 22);
 		TraceIn("selectAtom", 22);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
 		try { DebugEnterRule(GrammarFileName, "selectAtom");
 		DebugLocation(165, 1);
@@ -2874,7 +2781,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:166:2: ( ^( DOT ( . )* ) | ^( SQL_TOKEN ( . )* ) | ^( ALIAS_REF ( . )* ) | ^( SELECT_EXPR ( . )* ) )
 			int alt34=4;
-			try { DebugEnterDecision(34, decisionCanBacktrack[34]);
+			try { DebugEnterDecision(34, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -2926,7 +2833,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt30=2;
-						try { DebugEnterDecision(30, decisionCanBacktrack[30]);
+						try { DebugEnterDecision(30, false);
 						int LA30_1 = input.LA(1);
 
 						if (((LA30_1>=AGGREGATE && LA30_1<=THETA_JOINS)))
@@ -2986,7 +2893,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt31=2;
-						try { DebugEnterDecision(31, decisionCanBacktrack[31]);
+						try { DebugEnterDecision(31, false);
 						int LA31_1 = input.LA(1);
 
 						if (((LA31_1>=AGGREGATE && LA31_1<=THETA_JOINS)))
@@ -3046,7 +2953,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt32=2;
-						try { DebugEnterDecision(32, decisionCanBacktrack[32]);
+						try { DebugEnterDecision(32, false);
 						int LA32_1 = input.LA(1);
 
 						if (((LA32_1>=AGGREGATE && LA32_1<=THETA_JOINS)))
@@ -3106,7 +3013,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt33=2;
-						try { DebugEnterDecision(33, decisionCanBacktrack[33]);
+						try { DebugEnterDecision(33, false);
 						int LA33_1 = input.LA(1);
 
 						if (((LA33_1>=AGGREGATE && LA33_1<=THETA_JOINS)))
@@ -3162,19 +3069,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectAtom", 22);
 			LeaveRule("selectAtom", 22);
 			LeaveRule_selectAtom();
-	    }
-	 	DebugLocation(170, 1);
+		}
+		DebugLocation(170, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectAtom"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectAtom"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_from() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_from() {}
+	partial void EnterRule_from();
+	partial void LeaveRule_from();
 	// $ANTLR start "from"
 	// SqlGenerator.g:177:1: from : ^(f= FROM ( fromTable )* ) ;
 	[GrammarRule("from")]
@@ -3183,7 +3087,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_from();
 		EnterRule("from", 23);
 		TraceIn("from", 23);
-	    IASTNode f = default(IASTNode);
+		IASTNode f = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "from");
 		DebugLocation(177, 1);
@@ -3212,7 +3116,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt35=2;
-					try { DebugEnterDecision(35, decisionCanBacktrack[35]);
+					try { DebugEnterDecision(35, false);
 					int LA35_1 = input.LA(1);
 
 					if ((LA35_1==FROM_FRAGMENT||LA35_1==JOIN_FRAGMENT))
@@ -3265,19 +3169,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("from", 23);
 			LeaveRule("from", 23);
 			LeaveRule_from();
-	    }
-	 	DebugLocation(180, 1);
+		}
+		DebugLocation(180, 1);
 		} finally { DebugExitRule(GrammarFileName, "from"); }
 		return;
 
 	}
 	// $ANTLR end "from"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromTable() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromTable() {}
+	partial void EnterRule_fromTable();
+	partial void LeaveRule_fromTable();
 	// $ANTLR start "fromTable"
 	// SqlGenerator.g:182:1: fromTable : ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) );
 	[GrammarRule("fromTable")]
@@ -3286,7 +3187,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_fromTable();
 		EnterRule("fromTable", 24);
 		TraceIn("fromTable", 24);
-	    IASTNode a = default(IASTNode);
+		IASTNode a = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "fromTable");
 		DebugLocation(182, 1);
@@ -3294,7 +3195,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:187:2: ( ^(a= FROM_FRAGMENT ( tableJoin[ a ] )* ) | ^(a= JOIN_FRAGMENT ( tableJoin[ a ] )* ) )
 			int alt38=2;
-			try { DebugEnterDecision(38, decisionCanBacktrack[38]);
+			try { DebugEnterDecision(38, false);
 			int LA38_1 = input.LA(1);
 
 			if ((LA38_1==FROM_FRAGMENT))
@@ -3305,7 +3206,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt38 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -3313,7 +3213,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(38); }
 			switch (alt38)
 			{
@@ -3340,7 +3239,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt36=2;
-						try { DebugEnterDecision(36, decisionCanBacktrack[36]);
+						try { DebugEnterDecision(36, false);
 						int LA36_1 = input.LA(1);
 
 						if ((LA36_1==FROM_FRAGMENT||LA36_1==JOIN_FRAGMENT))
@@ -3405,7 +3304,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt37=2;
-						try { DebugEnterDecision(37, decisionCanBacktrack[37]);
+						try { DebugEnterDecision(37, false);
 						int LA37_1 = input.LA(1);
 
 						if ((LA37_1==FROM_FRAGMENT||LA37_1==JOIN_FRAGMENT))
@@ -3466,19 +3365,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("fromTable", 24);
 			LeaveRule("fromTable", 24);
 			LeaveRule_fromTable();
-	    }
-	 	DebugLocation(189, 1);
+		}
+		DebugLocation(189, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromTable"); }
 		return;
 
 	}
 	// $ANTLR end "fromTable"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_tableJoin() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_tableJoin() {}
+	partial void EnterRule_tableJoin();
+	partial void LeaveRule_tableJoin();
 	// $ANTLR start "tableJoin"
 	// SqlGenerator.g:191:1: tableJoin[ IASTNode parent ] : ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) );
 	[GrammarRule("tableJoin")]
@@ -3487,8 +3383,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_tableJoin();
 		EnterRule("tableJoin", 25);
 		TraceIn("tableJoin", 25);
-	    IASTNode c = default(IASTNode);
-	    IASTNode d = default(IASTNode);
+		IASTNode c = default(IASTNode);
+		IASTNode d = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "tableJoin");
 		DebugLocation(191, 1);
@@ -3496,7 +3392,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:192:2: ( ^(c= JOIN_FRAGMENT ( tableJoin[ c ] )* ) | ^(d= FROM_FRAGMENT ( tableJoin[ d ] )* ) )
 			int alt41=2;
-			try { DebugEnterDecision(41, decisionCanBacktrack[41]);
+			try { DebugEnterDecision(41, false);
 			int LA41_1 = input.LA(1);
 
 			if ((LA41_1==JOIN_FRAGMENT))
@@ -3507,7 +3403,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt41 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -3515,7 +3410,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(41); }
 			switch (alt41)
 			{
@@ -3542,7 +3436,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt39=2;
-						try { DebugEnterDecision(39, decisionCanBacktrack[39]);
+						try { DebugEnterDecision(39, false);
 						int LA39_1 = input.LA(1);
 
 						if ((LA39_1==FROM_FRAGMENT||LA39_1==JOIN_FRAGMENT))
@@ -3607,7 +3501,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt40=2;
-						try { DebugEnterDecision(40, decisionCanBacktrack[40]);
+						try { DebugEnterDecision(40, false);
 						int LA40_1 = input.LA(1);
 
 						if ((LA40_1==FROM_FRAGMENT||LA40_1==JOIN_FRAGMENT))
@@ -3662,19 +3556,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("tableJoin", 25);
 			LeaveRule("tableJoin", 25);
 			LeaveRule_tableJoin();
-	    }
-	 	DebugLocation(194, 1);
+		}
+		DebugLocation(194, 1);
 		} finally { DebugExitRule(GrammarFileName, "tableJoin"); }
 		return;
 
 	}
 	// $ANTLR end "tableJoin"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_booleanOp() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_booleanOp() {}
+	partial void EnterRule_booleanOp();
+	partial void LeaveRule_booleanOp();
 	// $ANTLR start "booleanOp"
 	// SqlGenerator.g:196:1: booleanOp[ bool parens ] : ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) );
 	[GrammarRule("booleanOp")]
@@ -3689,7 +3580,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:197:2: ( ^( AND booleanExpr[true] booleanExpr[true] ) | ^( OR booleanExpr[false] booleanExpr[false] ) | ^( NOT booleanExpr[false] ) )
 			int alt42=3;
-			try { DebugEnterDecision(42, decisionCanBacktrack[42]);
+			try { DebugEnterDecision(42, false);
 			switch (input.LA(1))
 			{
 			case AND:
@@ -3834,19 +3725,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("booleanOp", 26);
 			LeaveRule("booleanOp", 26);
 			LeaveRule_booleanOp();
-	    }
-	 	DebugLocation(200, 1);
+		}
+		DebugLocation(200, 1);
 		} finally { DebugExitRule(GrammarFileName, "booleanOp"); }
 		return;
 
 	}
 	// $ANTLR end "booleanOp"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_booleanExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_booleanExpr() {}
+	partial void EnterRule_booleanExpr();
+	partial void LeaveRule_booleanExpr();
 	// $ANTLR start "booleanExpr"
 	// SqlGenerator.g:202:1: booleanExpr[ bool parens ] : ( booleanOp[ parens ] | comparisonExpr[ parens ] | methodCall |st= SQL_TOKEN );
 	[GrammarRule("booleanExpr")]
@@ -3855,7 +3743,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_booleanExpr();
 		EnterRule("booleanExpr", 27);
 		TraceIn("booleanExpr", 27);
-	    IASTNode st = default(IASTNode);
+		IASTNode st = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "booleanExpr");
 		DebugLocation(202, 1);
@@ -3863,7 +3751,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:203:2: ( booleanOp[ parens ] | comparisonExpr[ parens ] | methodCall |st= SQL_TOKEN )
 			int alt43=4;
-			try { DebugEnterDecision(43, decisionCanBacktrack[43]);
+			try { DebugEnterDecision(43, false);
 			switch (input.LA(1))
 			{
 			case AND:
@@ -3977,19 +3865,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("booleanExpr", 27);
 			LeaveRule("booleanExpr", 27);
 			LeaveRule_booleanExpr();
-	    }
-	 	DebugLocation(207, 1);
+		}
+		DebugLocation(207, 1);
 		} finally { DebugExitRule(GrammarFileName, "booleanExpr"); }
 		return;
 
 	}
 	// $ANTLR end "booleanExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_comparisonExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_comparisonExpr() {}
+	partial void EnterRule_comparisonExpr();
+	partial void LeaveRule_comparisonExpr();
 	// $ANTLR start "comparisonExpr"
 	// SqlGenerator.g:209:8: public comparisonExpr[ bool parens ] : ( binaryComparisonExpression | exoticComparisonExpression );
 	[GrammarRule("comparisonExpr")]
@@ -4004,7 +3889,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:210:2: ( binaryComparisonExpression | exoticComparisonExpression )
 			int alt44=2;
-			try { DebugEnterDecision(44, decisionCanBacktrack[44]);
+			try { DebugEnterDecision(44, false);
 			int LA44_1 = input.LA(1);
 
 			if ((LA44_1==EQ||LA44_1==GE||LA44_1==GT||LA44_1==LE||LA44_1==LT||LA44_1==NE))
@@ -4015,7 +3900,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt44 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -4023,7 +3907,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(44); }
 			switch (alt44)
 			{
@@ -4074,19 +3957,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("comparisonExpr", 28);
 			LeaveRule("comparisonExpr", 28);
 			LeaveRule_comparisonExpr();
-	    }
-	 	DebugLocation(212, 1);
+		}
+		DebugLocation(212, 1);
 		} finally { DebugExitRule(GrammarFileName, "comparisonExpr"); }
 		return;
 
 	}
 	// $ANTLR end "comparisonExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_binaryComparisonExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_binaryComparisonExpression() {}
+	partial void EnterRule_binaryComparisonExpression();
+	partial void LeaveRule_binaryComparisonExpression();
 	// $ANTLR start "binaryComparisonExpression"
 	// SqlGenerator.g:214:1: binaryComparisonExpression : ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) );
 	[GrammarRule("binaryComparisonExpression")]
@@ -4101,7 +3981,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:215:2: ( ^( EQ expr expr ) | ^( NE expr expr ) | ^( GT expr expr ) | ^( GE expr expr ) | ^( LT expr expr ) | ^( LE expr expr ) )
 			int alt45=6;
-			try { DebugEnterDecision(45, decisionCanBacktrack[45]);
+			try { DebugEnterDecision(45, false);
 			switch (input.LA(1))
 			{
 			case EQ:
@@ -4339,19 +4219,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("binaryComparisonExpression", 29);
 			LeaveRule("binaryComparisonExpression", 29);
 			LeaveRule_binaryComparisonExpression();
-	    }
-	 	DebugLocation(221, 1);
+		}
+		DebugLocation(221, 1);
 		} finally { DebugExitRule(GrammarFileName, "binaryComparisonExpression"); }
 		return;
 
 	}
 	// $ANTLR end "binaryComparisonExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_exoticComparisonExpression() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_exoticComparisonExpression() {}
+	partial void EnterRule_exoticComparisonExpression();
+	partial void LeaveRule_exoticComparisonExpression();
 	// $ANTLR start "exoticComparisonExpression"
 	// SqlGenerator.g:223:1: exoticComparisonExpression : ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) );
 	[GrammarRule("exoticComparisonExpression")]
@@ -4366,7 +4243,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:224:2: ( ^( LIKE expr expr likeEscape ) | ^( NOT_LIKE expr expr likeEscape ) | ^( BETWEEN expr expr expr ) | ^( NOT_BETWEEN expr expr expr ) | ^( IN expr inList ) | ^( NOT_IN expr inList ) | ^( EXISTS quantified ) | ^( IS_NULL expr ) | ^( IS_NOT_NULL expr ) )
 			int alt46=9;
-			try { DebugEnterDecision(46, decisionCanBacktrack[46]);
+			try { DebugEnterDecision(46, false);
 			switch (input.LA(1))
 			{
 			case LIKE:
@@ -4725,19 +4602,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("exoticComparisonExpression", 30);
 			LeaveRule("exoticComparisonExpression", 30);
 			LeaveRule_exoticComparisonExpression();
-	    }
-	 	DebugLocation(233, 1);
+		}
+		DebugLocation(233, 1);
 		} finally { DebugExitRule(GrammarFileName, "exoticComparisonExpression"); }
 		return;
 
 	}
 	// $ANTLR end "exoticComparisonExpression"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_likeEscape() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_likeEscape() {}
+	partial void EnterRule_likeEscape();
+	partial void LeaveRule_likeEscape();
 	// $ANTLR start "likeEscape"
 	// SqlGenerator.g:235:1: likeEscape : ( ^( ESCAPE expr ) )? ;
 	[GrammarRule("likeEscape")]
@@ -4758,7 +4632,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:236:4: ( ^( ESCAPE expr ) )?
 			int alt47=2;
 			try { DebugEnterSubRule(47);
-			try { DebugEnterDecision(47, decisionCanBacktrack[47]);
+			try { DebugEnterDecision(47, false);
 			int LA47_1 = input.LA(1);
 
 			if ((LA47_1==ESCAPE))
@@ -4812,19 +4686,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("likeEscape", 31);
 			LeaveRule("likeEscape", 31);
 			LeaveRule_likeEscape();
-	    }
-	 	DebugLocation(237, 1);
+		}
+		DebugLocation(237, 1);
 		} finally { DebugExitRule(GrammarFileName, "likeEscape"); }
 		return;
 
 	}
 	// $ANTLR end "likeEscape"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inList() {}
+	partial void EnterRule_inList();
+	partial void LeaveRule_inList();
 	// $ANTLR start "inList"
 	// SqlGenerator.g:239:1: inList : ^( IN_LIST ( parenSelect | simpleExprList ) ) ;
 	[GrammarRule("inList")]
@@ -4858,7 +4729,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:240:28: ( parenSelect | simpleExprList )
 				int alt48=2;
 				try { DebugEnterSubRule(48);
-				try { DebugEnterDecision(48, decisionCanBacktrack[48]);
+				try { DebugEnterDecision(48, false);
 				int LA48_1 = input.LA(1);
 
 				if ((LA48_1==SELECT||LA48_1==UNION))
@@ -4869,7 +4740,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt48 = 2;
 				}
-
 				else
 				{
 					if (state.backtracking>0) {state.failed=true; return;}
@@ -4877,7 +4747,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(48); }
 				switch (alt48)
 				{
@@ -4927,19 +4796,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("inList", 32);
 			LeaveRule("inList", 32);
 			LeaveRule_inList();
-	    }
-	 	DebugLocation(241, 1);
+		}
+		DebugLocation(241, 1);
 		} finally { DebugExitRule(GrammarFileName, "inList"); }
 		return;
 
 	}
 	// $ANTLR end "inList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_simpleExprList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_simpleExprList() {}
+	partial void EnterRule_simpleExprList();
+	partial void LeaveRule_simpleExprList();
 	// $ANTLR start "simpleExprList"
 	// SqlGenerator.g:243:1: simpleExprList : (e= simpleExpr )* ;
 	[GrammarRule("simpleExprList")]
@@ -4948,7 +4814,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_simpleExprList();
 		EnterRule("simpleExprList", 33);
 		TraceIn("simpleExprList", 33);
-	    TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "simpleExprList");
 		DebugLocation(243, 1);
@@ -4969,7 +4835,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt49=2;
-				try { DebugEnterDecision(49, decisionCanBacktrack[49]);
+				try { DebugEnterDecision(49, false);
 				int LA49_1 = input.LA(1);
 
 				if ((LA49_1==AGGREGATE||LA49_1==BAND||(LA49_1>=BNOT && LA49_1<=BOR)||(LA49_1>=BXOR && LA49_1<=CASE2)||LA49_1==CONSTANT||LA49_1==COUNT||(LA49_1>=DIV && LA49_1<=DOT)||LA49_1==FALSE||LA49_1==IDENT||LA49_1==INDEX_OP||LA49_1==JAVA_CONSTANT||LA49_1==METHOD_CALL||LA49_1==MINUS||(LA49_1>=NULL && LA49_1<=NUM_LONG)||(LA49_1>=PARAM && LA49_1<=PLUS)||LA49_1==QUOTED_String||LA49_1==STAR||(LA49_1>=TRUE && LA49_1<=UNARY_MINUS)||LA49_1==ALIAS_REF||LA49_1==NAMED_PARAM||LA49_1==SQL_TOKEN))
@@ -5028,19 +4894,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("simpleExprList", 33);
 			LeaveRule("simpleExprList", 33);
 			LeaveRule_simpleExprList();
-	    }
-	 	DebugLocation(245, 1);
+		}
+		DebugLocation(245, 1);
 		} finally { DebugExitRule(GrammarFileName, "simpleExprList"); }
 		return;
 
 	}
 	// $ANTLR end "simpleExprList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_expr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_expr() {}
+	partial void EnterRule_expr();
+	partial void LeaveRule_expr();
 	// $ANTLR start "expr"
 	// SqlGenerator.g:248:1: expr : ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) );
 	[GrammarRule("expr")]
@@ -5049,10 +4912,10 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_expr();
 		EnterRule("expr", 34);
 		TraceIn("expr", 34);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> e = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "expr");
 		DebugLocation(248, 1);
@@ -5060,7 +4923,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:249:2: ( simpleExpr | ^( VECTOR_EXPR (e= expr )* ) | parenSelect | ^( ANY quantified ) | ^( ALL quantified ) | ^( SOME quantified ) )
 			int alt51=6;
-			try { DebugEnterDecision(51, decisionCanBacktrack[51]);
+			try { DebugEnterDecision(51, false);
 			switch (input.LA(1))
 			{
 			case AGGREGATE:
@@ -5172,7 +5035,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt50=2;
-						try { DebugEnterDecision(50, decisionCanBacktrack[50]);
+						try { DebugEnterDecision(50, false);
 						int LA50_1 = input.LA(1);
 
 						if ((LA50_1==AGGREGATE||LA50_1==ALL||LA50_1==ANY||LA50_1==BAND||(LA50_1>=BNOT && LA50_1<=BOR)||(LA50_1>=BXOR && LA50_1<=CASE2)||LA50_1==CONSTANT||LA50_1==COUNT||(LA50_1>=DIV && LA50_1<=DOT)||LA50_1==FALSE||LA50_1==IDENT||LA50_1==INDEX_OP||LA50_1==JAVA_CONSTANT||LA50_1==METHOD_CALL||LA50_1==MINUS||(LA50_1>=NULL && LA50_1<=NUM_LONG)||(LA50_1>=PARAM && LA50_1<=PLUS)||LA50_1==QUOTED_String||LA50_1==SELECT||LA50_1==SOME||LA50_1==STAR||(LA50_1>=TRUE && LA50_1<=UNARY_MINUS)||LA50_1==UNION||LA50_1==VECTOR_EXPR||LA50_1==ALIAS_REF||LA50_1==NAMED_PARAM||LA50_1==SQL_TOKEN))
@@ -5327,19 +5190,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("expr", 34);
 			LeaveRule("expr", 34);
 			LeaveRule_expr();
-	    }
-	 	DebugLocation(255, 1);
+		}
+		DebugLocation(255, 1);
 		} finally { DebugExitRule(GrammarFileName, "expr"); }
 		return retval;
 
 	}
 	// $ANTLR end "expr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_quantified() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_quantified() {}
+	partial void EnterRule_quantified();
+	partial void LeaveRule_quantified();
 	// $ANTLR start "quantified"
 	// SqlGenerator.g:257:1: quantified : ( sqlToken | selectStatement ) ;
 	[GrammarRule("quantified")]
@@ -5365,7 +5225,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:258:18: ( sqlToken | selectStatement )
 			int alt52=2;
 			try { DebugEnterSubRule(52);
-			try { DebugEnterDecision(52, decisionCanBacktrack[52]);
+			try { DebugEnterDecision(52, false);
 			int LA52_1 = input.LA(1);
 
 			if ((LA52_1==SQL_TOKEN))
@@ -5376,7 +5236,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt52 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -5384,7 +5243,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(52); }
 			switch (alt52)
 			{
@@ -5435,19 +5293,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("quantified", 35);
 			LeaveRule("quantified", 35);
 			LeaveRule_quantified();
-	    }
-	 	DebugLocation(259, 1);
+		}
+		DebugLocation(259, 1);
 		} finally { DebugExitRule(GrammarFileName, "quantified"); }
 		return;
 
 	}
 	// $ANTLR end "quantified"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_parenSelect() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_parenSelect() {}
+	partial void EnterRule_parenSelect();
+	partial void LeaveRule_parenSelect();
 	// $ANTLR start "parenSelect"
 	// SqlGenerator.g:261:1: parenSelect : ( selectStatement | ^( UNION selectStatement parenSelect ) );
 	[GrammarRule("parenSelect")]
@@ -5462,7 +5317,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:262:2: ( selectStatement | ^( UNION selectStatement parenSelect ) )
 			int alt53=2;
-			try { DebugEnterDecision(53, decisionCanBacktrack[53]);
+			try { DebugEnterDecision(53, false);
 			int LA53_1 = input.LA(1);
 
 			if ((LA53_1==SELECT))
@@ -5473,7 +5328,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt53 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -5481,7 +5335,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(53); }
 			switch (alt53)
 			{
@@ -5556,19 +5409,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("parenSelect", 36);
 			LeaveRule("parenSelect", 36);
 			LeaveRule_parenSelect();
-	    }
-	 	DebugLocation(264, 1);
+		}
+		DebugLocation(264, 1);
 		} finally { DebugExitRule(GrammarFileName, "parenSelect"); }
 		return;
 
 	}
 	// $ANTLR end "parenSelect"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_simpleExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_simpleExpr() {}
+	partial void EnterRule_simpleExpr();
+	partial void LeaveRule_simpleExpr();
 	// $ANTLR start "simpleExpr"
 	// SqlGenerator.g:267:8: public simpleExpr : (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr );
 	[GrammarRule("simpleExpr")]
@@ -5577,10 +5427,10 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_simpleExpr();
 		EnterRule("simpleExpr", 37);
 		TraceIn("simpleExpr", 37);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    TreeRuleReturnScope<IASTNode> c = default(TreeRuleReturnScope<IASTNode>);
+		TreeRuleReturnScope<IASTNode> c = default(TreeRuleReturnScope<IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "simpleExpr");
 		DebugLocation(267, 1);
@@ -5588,7 +5438,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:268:2: (c= constant | NULL | addrExpr | sqlToken | aggregate | methodCall | count | parameter | arithmeticExpr )
 			int alt54=9;
-			try { DebugEnterDecision(54, decisionCanBacktrack[54]);
+			try { DebugEnterDecision(54, false);
 			switch (input.LA(1))
 			{
 			case CONSTANT:
@@ -5799,19 +5649,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("simpleExpr", 37);
 			LeaveRule("simpleExpr", 37);
 			LeaveRule_simpleExpr();
-	    }
-	 	DebugLocation(277, 1);
+		}
+		DebugLocation(277, 1);
 		} finally { DebugExitRule(GrammarFileName, "simpleExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "simpleExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_constant() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_constant() {}
+	partial void EnterRule_constant();
+	partial void LeaveRule_constant();
 	// $ANTLR start "constant"
 	// SqlGenerator.g:279:1: constant : ( NUM_DOUBLE | NUM_DECIMAL | NUM_FLOAT | NUM_INT | NUM_LONG | QUOTED_String | CONSTANT | JAVA_CONSTANT | TRUE | FALSE | IDENT );
 	[GrammarRule("constant")]
@@ -5820,8 +5667,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_constant();
 		EnterRule("constant", 38);
 		TraceIn("constant", 38);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
 		try { DebugEnterRule(GrammarFileName, "constant");
 		DebugLocation(279, 1);
@@ -5859,19 +5706,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("constant", 38);
 			LeaveRule("constant", 38);
 			LeaveRule_constant();
-	    }
-	 	DebugLocation(291, 1);
+		}
+		DebugLocation(291, 1);
 		} finally { DebugExitRule(GrammarFileName, "constant"); }
 		return retval;
 
 	}
 	// $ANTLR end "constant"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_arithmeticExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_arithmeticExpr() {}
+	partial void EnterRule_arithmeticExpr();
+	partial void LeaveRule_arithmeticExpr();
 	// $ANTLR start "arithmeticExpr"
 	// SqlGenerator.g:293:1: arithmeticExpr : ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr );
 	[GrammarRule("arithmeticExpr")]
@@ -5886,7 +5730,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:294:2: ( additiveExpr | bitwiseExpr | multiplicativeExpr | ^( UNARY_MINUS expr ) | caseExpr )
 			int alt55=5;
-			try { DebugEnterDecision(55, decisionCanBacktrack[55]);
+			try { DebugEnterDecision(55, false);
 			switch (input.LA(1))
 			{
 			case MINUS:
@@ -6019,19 +5863,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("arithmeticExpr", 39);
 			LeaveRule("arithmeticExpr", 39);
 			LeaveRule_arithmeticExpr();
-	    }
-	 	DebugLocation(300, 1);
+		}
+		DebugLocation(300, 1);
 		} finally { DebugExitRule(GrammarFileName, "arithmeticExpr"); }
 		return;
 
 	}
 	// $ANTLR end "arithmeticExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_additiveExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_additiveExpr() {}
+	partial void EnterRule_additiveExpr();
+	partial void LeaveRule_additiveExpr();
 	// $ANTLR start "additiveExpr"
 	// SqlGenerator.g:302:1: additiveExpr : ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) );
 	[GrammarRule("additiveExpr")]
@@ -6046,7 +5887,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:303:2: ( ^( PLUS expr expr ) | ^( MINUS expr nestedExprAfterMinusDiv ) )
 			int alt56=2;
-			try { DebugEnterDecision(56, decisionCanBacktrack[56]);
+			try { DebugEnterDecision(56, false);
 			int LA56_1 = input.LA(1);
 
 			if ((LA56_1==PLUS))
@@ -6057,7 +5898,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt56 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -6065,7 +5905,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(56); }
 			switch (alt56)
 			{
@@ -6142,19 +5981,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("additiveExpr", 40);
 			LeaveRule("additiveExpr", 40);
 			LeaveRule_additiveExpr();
-	    }
-	 	DebugLocation(305, 1);
+		}
+		DebugLocation(305, 1);
 		} finally { DebugExitRule(GrammarFileName, "additiveExpr"); }
 		return;
 
 	}
 	// $ANTLR end "additiveExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_bitwiseExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_bitwiseExpr() {}
+	partial void EnterRule_bitwiseExpr();
+	partial void LeaveRule_bitwiseExpr();
 	// $ANTLR start "bitwiseExpr"
 	// SqlGenerator.g:307:1: bitwiseExpr : ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) );
 	[GrammarRule("bitwiseExpr")]
@@ -6169,7 +6005,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:308:2: ( ^( BAND expr nestedExpr ) | ^( BOR expr nestedExpr ) | ^( BXOR expr nestedExpr ) | ^( BNOT nestedExpr ) )
 			int alt57=4;
-			try { DebugEnterDecision(57, decisionCanBacktrack[57]);
+			try { DebugEnterDecision(57, false);
 			switch (input.LA(1))
 			{
 			case BAND:
@@ -6333,19 +6169,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("bitwiseExpr", 41);
 			LeaveRule("bitwiseExpr", 41);
 			LeaveRule_bitwiseExpr();
-	    }
-	 	DebugLocation(312, 1);
+		}
+		DebugLocation(312, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseExpr"); }
 		return;
 
 	}
 	// $ANTLR end "bitwiseExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_multiplicativeExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_multiplicativeExpr() {}
+	partial void EnterRule_multiplicativeExpr();
+	partial void LeaveRule_multiplicativeExpr();
 	// $ANTLR start "multiplicativeExpr"
 	// SqlGenerator.g:314:1: multiplicativeExpr : ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) );
 	[GrammarRule("multiplicativeExpr")]
@@ -6360,7 +6193,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:315:2: ( ^( STAR nestedExpr nestedExpr ) | ^( DIV nestedExpr nestedExprAfterMinusDiv ) )
 			int alt58=2;
-			try { DebugEnterDecision(58, decisionCanBacktrack[58]);
+			try { DebugEnterDecision(58, false);
 			int LA58_1 = input.LA(1);
 
 			if ((LA58_1==STAR))
@@ -6371,7 +6204,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt58 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -6379,7 +6211,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(58); }
 			switch (alt58)
 			{
@@ -6456,19 +6287,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("multiplicativeExpr", 42);
 			LeaveRule("multiplicativeExpr", 42);
 			LeaveRule_multiplicativeExpr();
-	    }
-	 	DebugLocation(317, 1);
+		}
+		DebugLocation(317, 1);
 		} finally { DebugExitRule(GrammarFileName, "multiplicativeExpr"); }
 		return;
 
 	}
 	// $ANTLR end "multiplicativeExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_nestedExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_nestedExpr() {}
+	partial void EnterRule_nestedExpr();
+	partial void LeaveRule_nestedExpr();
 	// $ANTLR start "nestedExpr"
 	// SqlGenerator.g:319:1: nestedExpr : ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr );
 	[GrammarRule("nestedExpr")]
@@ -6483,7 +6311,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:321:2: ( ( additiveExpr )=> additiveExpr | ( bitwiseExpr )=> bitwiseExpr | expr )
 			int alt59=3;
-			try { DebugEnterDecision(59, decisionCanBacktrack[59]);
+			try { DebugEnterDecision(59, false);
 			switch (input.LA(1))
 			{
 			case PLUS:
@@ -6498,7 +6326,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 1, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case MINUS:
@@ -6513,7 +6347,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 2, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BAND:
@@ -6528,7 +6368,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 3, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BOR:
@@ -6543,7 +6389,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 4, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BXOR:
@@ -6558,7 +6410,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 5, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BNOT:
@@ -6573,7 +6431,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt59 = 3;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 59, 6, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case AGGREGATE:
@@ -6693,19 +6557,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("nestedExpr", 43);
 			LeaveRule("nestedExpr", 43);
 			LeaveRule_nestedExpr();
-	    }
-	 	DebugLocation(324, 1);
+		}
+		DebugLocation(324, 1);
 		} finally { DebugExitRule(GrammarFileName, "nestedExpr"); }
 		return;
 
 	}
 	// $ANTLR end "nestedExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_nestedExprAfterMinusDiv() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_nestedExprAfterMinusDiv() {}
+	partial void EnterRule_nestedExprAfterMinusDiv();
+	partial void LeaveRule_nestedExprAfterMinusDiv();
 	// $ANTLR start "nestedExprAfterMinusDiv"
 	// SqlGenerator.g:326:1: nestedExprAfterMinusDiv : ( ( arithmeticExpr )=> arithmeticExpr | expr );
 	[GrammarRule("nestedExprAfterMinusDiv")]
@@ -6720,7 +6581,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:328:2: ( ( arithmeticExpr )=> arithmeticExpr | expr )
 			int alt60=2;
-			try { DebugEnterDecision(60, decisionCanBacktrack[60]);
+			try { DebugEnterDecision(60, false);
 			switch (input.LA(1))
 			{
 			case PLUS:
@@ -6735,7 +6596,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 1, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case MINUS:
@@ -6750,7 +6617,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 2, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BAND:
@@ -6765,7 +6638,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 3, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BOR:
@@ -6780,7 +6659,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 4, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BXOR:
@@ -6795,7 +6680,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 5, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case BNOT:
@@ -6810,7 +6701,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 6, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case STAR:
@@ -6825,7 +6722,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 7, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case DIV:
@@ -6840,7 +6743,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 8, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case UNARY_MINUS:
@@ -6855,7 +6764,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 9, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case CASE:
@@ -6870,7 +6785,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 10, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case CASE2:
@@ -6885,7 +6806,13 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 					alt60 = 2;
 				}
-
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 60, 11, input, 2);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
 				}
 				break;
 			case AGGREGATE:
@@ -6978,19 +6905,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("nestedExprAfterMinusDiv", 44);
 			LeaveRule("nestedExprAfterMinusDiv", 44);
 			LeaveRule_nestedExprAfterMinusDiv();
-	    }
-	 	DebugLocation(330, 1);
+		}
+		DebugLocation(330, 1);
 		} finally { DebugExitRule(GrammarFileName, "nestedExprAfterMinusDiv"); }
 		return;
 
 	}
 	// $ANTLR end "nestedExprAfterMinusDiv"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_caseExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_caseExpr() {}
+	partial void EnterRule_caseExpr();
+	partial void LeaveRule_caseExpr();
 	// $ANTLR start "caseExpr"
 	// SqlGenerator.g:332:1: caseExpr : ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
 	[GrammarRule("caseExpr")]
@@ -7005,7 +6929,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:333:2: ( ^( CASE ( ^( WHEN booleanExpr[false] expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
 			int alt65=2;
-			try { DebugEnterDecision(65, decisionCanBacktrack[65]);
+			try { DebugEnterDecision(65, false);
 			int LA65_1 = input.LA(1);
 
 			if ((LA65_1==CASE))
@@ -7016,7 +6940,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt65 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -7024,7 +6947,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(65); }
 			switch (alt65)
 			{
@@ -7050,7 +6972,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt61=2;
-					try { DebugEnterDecision(61, decisionCanBacktrack[61]);
+					try { DebugEnterDecision(61, false);
 					int LA61_1 = input.LA(1);
 
 					if ((LA61_1==WHEN))
@@ -7119,7 +7041,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:335:3: ( ^( ELSE expr ) )?
 				int alt62=2;
 				try { DebugEnterSubRule(62);
-				try { DebugEnterDecision(62, decisionCanBacktrack[62]);
+				try { DebugEnterDecision(62, false);
 				int LA62_1 = input.LA(1);
 
 				if ((LA62_1==ELSE))
@@ -7197,7 +7119,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt63=2;
-					try { DebugEnterDecision(63, decisionCanBacktrack[63]);
+					try { DebugEnterDecision(63, false);
 					int LA63_1 = input.LA(1);
 
 					if ((LA63_1==WHEN))
@@ -7266,7 +7188,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:339:3: ( ^( ELSE expr ) )?
 				int alt64=2;
 				try { DebugEnterSubRule(64);
-				try { DebugEnterDecision(64, decisionCanBacktrack[64]);
+				try { DebugEnterDecision(64, false);
 				int LA64_1 = input.LA(1);
 
 				if ((LA64_1==ELSE))
@@ -7330,19 +7252,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("caseExpr", 45);
 			LeaveRule("caseExpr", 45);
 			LeaveRule_caseExpr();
-	    }
-	 	DebugLocation(341, 1);
+		}
+		DebugLocation(341, 1);
 		} finally { DebugExitRule(GrammarFileName, "caseExpr"); }
 		return;
 
 	}
 	// $ANTLR end "caseExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aggregate() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aggregate() {}
+	partial void EnterRule_aggregate();
+	partial void LeaveRule_aggregate();
 	// $ANTLR start "aggregate"
 	// SqlGenerator.g:343:1: aggregate : ^(a= AGGREGATE expr ) ;
 	[GrammarRule("aggregate")]
@@ -7351,7 +7270,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_aggregate();
 		EnterRule("aggregate", 46);
 		TraceIn("aggregate", 46);
-	    IASTNode a = default(IASTNode);
+		IASTNode a = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "aggregate");
 		DebugLocation(343, 1);
@@ -7399,19 +7318,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("aggregate", 46);
 			LeaveRule("aggregate", 46);
 			LeaveRule_aggregate();
-	    }
-	 	DebugLocation(345, 1);
+		}
+		DebugLocation(345, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregate"); }
 		return;
 
 	}
 	// $ANTLR end "aggregate"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_methodCall() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_methodCall() {}
+	partial void EnterRule_methodCall();
+	partial void LeaveRule_methodCall();
 	// $ANTLR start "methodCall"
 	// SqlGenerator.g:348:1: methodCall : ^(m= METHOD_CALL i= METHOD_NAME ( ^( EXPR_LIST ( arguments )? ) )? ) ;
 	[GrammarRule("methodCall")]
@@ -7420,8 +7336,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_methodCall();
 		EnterRule("methodCall", 47);
 		TraceIn("methodCall", 47);
-	    IASTNode m = default(IASTNode);
-	    IASTNode i = default(IASTNode);
+		IASTNode m = default(IASTNode);
+		IASTNode i = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "methodCall");
 		DebugLocation(348, 1);
@@ -7447,7 +7363,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:350:3: ( ^( EXPR_LIST ( arguments )? ) )?
 			int alt67=2;
 			try { DebugEnterSubRule(67);
-			try { DebugEnterDecision(67, decisionCanBacktrack[67]);
+			try { DebugEnterDecision(67, false);
 			int LA67_1 = input.LA(1);
 
 			if ((LA67_1==EXPR_LIST))
@@ -7472,7 +7388,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					// SqlGenerator.g:350:17: ( arguments )?
 					int alt66=2;
 					try { DebugEnterSubRule(66);
-					try { DebugEnterDecision(66, decisionCanBacktrack[66]);
+					try { DebugEnterDecision(66, false);
 					int LA66_1 = input.LA(1);
 
 					if ((LA66_1==AGGREGATE||LA66_1==ALL||LA66_1==ANY||(LA66_1>=BAND && LA66_1<=BOR)||(LA66_1>=BXOR && LA66_1<=CASE2)||LA66_1==CONSTANT||LA66_1==COUNT||(LA66_1>=DIV && LA66_1<=DOT)||LA66_1==EQ||LA66_1==EXISTS||LA66_1==FALSE||LA66_1==GE||LA66_1==GT||LA66_1==IDENT||(LA66_1>=IN && LA66_1<=INDEX_OP)||(LA66_1>=IS_NOT_NULL && LA66_1<=JAVA_CONSTANT)||LA66_1==LE||LA66_1==LIKE||LA66_1==LT||LA66_1==METHOD_CALL||(LA66_1>=MINUS && LA66_1<=NE)||(LA66_1>=NOT_BETWEEN && LA66_1<=NUM_LONG)||(LA66_1>=PARAM && LA66_1<=PLUS)||LA66_1==QUOTED_String||LA66_1==SELECT||LA66_1==SOME||LA66_1==STAR||(LA66_1>=TRUE && LA66_1<=UNARY_MINUS)||LA66_1==UNION||LA66_1==VECTOR_EXPR||LA66_1==ALIAS_REF||LA66_1==NAMED_PARAM||LA66_1==SQL_TOKEN))
@@ -7531,19 +7447,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("methodCall", 47);
 			LeaveRule("methodCall", 47);
 			LeaveRule_methodCall();
-	    }
-	 	DebugLocation(352, 1);
+		}
+		DebugLocation(352, 1);
 		} finally { DebugExitRule(GrammarFileName, "methodCall"); }
 		return;
 
 	}
 	// $ANTLR end "methodCall"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_arguments() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_arguments() {}
+	partial void EnterRule_arguments();
+	partial void LeaveRule_arguments();
 	// $ANTLR start "arguments"
 	// SqlGenerator.g:354:1: arguments : ( expr | comparisonExpr[true] ) ( ( expr | comparisonExpr[true] ) )* ;
 	[GrammarRule("arguments")]
@@ -7564,7 +7477,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:355:4: ( expr | comparisonExpr[true] )
 			int alt68=2;
 			try { DebugEnterSubRule(68);
-			try { DebugEnterDecision(68, decisionCanBacktrack[68]);
+			try { DebugEnterDecision(68, false);
 			int LA68_1 = input.LA(1);
 
 			if ((LA68_1==AGGREGATE||LA68_1==ALL||LA68_1==ANY||LA68_1==BAND||(LA68_1>=BNOT && LA68_1<=BOR)||(LA68_1>=BXOR && LA68_1<=CASE2)||LA68_1==CONSTANT||LA68_1==COUNT||(LA68_1>=DIV && LA68_1<=DOT)||LA68_1==FALSE||LA68_1==IDENT||LA68_1==INDEX_OP||LA68_1==JAVA_CONSTANT||LA68_1==METHOD_CALL||LA68_1==MINUS||(LA68_1>=NULL && LA68_1<=NUM_LONG)||(LA68_1>=PARAM && LA68_1<=PLUS)||LA68_1==QUOTED_String||LA68_1==SELECT||LA68_1==SOME||LA68_1==STAR||(LA68_1>=TRUE && LA68_1<=UNARY_MINUS)||LA68_1==UNION||LA68_1==VECTOR_EXPR||LA68_1==ALIAS_REF||LA68_1==NAMED_PARAM||LA68_1==SQL_TOKEN))
@@ -7575,7 +7488,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt68 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -7583,7 +7495,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(68); }
 			switch (alt68)
 			{
@@ -7621,7 +7532,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt70=2;
-				try { DebugEnterDecision(70, decisionCanBacktrack[70]);
+				try { DebugEnterDecision(70, false);
 				int LA70_1 = input.LA(1);
 
 				if ((LA70_1==AGGREGATE||LA70_1==ALL||LA70_1==ANY||(LA70_1>=BAND && LA70_1<=BOR)||(LA70_1>=BXOR && LA70_1<=CASE2)||LA70_1==CONSTANT||LA70_1==COUNT||(LA70_1>=DIV && LA70_1<=DOT)||LA70_1==EQ||LA70_1==EXISTS||LA70_1==FALSE||LA70_1==GE||LA70_1==GT||LA70_1==IDENT||(LA70_1>=IN && LA70_1<=INDEX_OP)||(LA70_1>=IS_NOT_NULL && LA70_1<=JAVA_CONSTANT)||LA70_1==LE||LA70_1==LIKE||LA70_1==LT||LA70_1==METHOD_CALL||(LA70_1>=MINUS && LA70_1<=NE)||(LA70_1>=NOT_BETWEEN && LA70_1<=NUM_LONG)||(LA70_1>=PARAM && LA70_1<=PLUS)||LA70_1==QUOTED_String||LA70_1==SELECT||LA70_1==SOME||LA70_1==STAR||(LA70_1>=TRUE && LA70_1<=UNARY_MINUS)||LA70_1==UNION||LA70_1==VECTOR_EXPR||LA70_1==ALIAS_REF||LA70_1==NAMED_PARAM||LA70_1==SQL_TOKEN))
@@ -7646,7 +7557,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					// SqlGenerator.g:355:70: ( expr | comparisonExpr[true] )
 					int alt69=2;
 					try { DebugEnterSubRule(69);
-					try { DebugEnterDecision(69, decisionCanBacktrack[69]);
+					try { DebugEnterDecision(69, false);
 					int LA69_1 = input.LA(1);
 
 					if ((LA69_1==AGGREGATE||LA69_1==ALL||LA69_1==ANY||LA69_1==BAND||(LA69_1>=BNOT && LA69_1<=BOR)||(LA69_1>=BXOR && LA69_1<=CASE2)||LA69_1==CONSTANT||LA69_1==COUNT||(LA69_1>=DIV && LA69_1<=DOT)||LA69_1==FALSE||LA69_1==IDENT||LA69_1==INDEX_OP||LA69_1==JAVA_CONSTANT||LA69_1==METHOD_CALL||LA69_1==MINUS||(LA69_1>=NULL && LA69_1<=NUM_LONG)||(LA69_1>=PARAM && LA69_1<=PLUS)||LA69_1==QUOTED_String||LA69_1==SELECT||LA69_1==SOME||LA69_1==STAR||(LA69_1>=TRUE && LA69_1<=UNARY_MINUS)||LA69_1==UNION||LA69_1==VECTOR_EXPR||LA69_1==ALIAS_REF||LA69_1==NAMED_PARAM||LA69_1==SQL_TOKEN))
@@ -7657,7 +7568,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					{
 						alt69 = 2;
 					}
-
 					else
 					{
 						if (state.backtracking>0) {state.failed=true; return;}
@@ -7665,7 +7575,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-
 					} finally { DebugExitDecision(69); }
 					switch (alt69)
 					{
@@ -7725,19 +7634,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("arguments", 48);
 			LeaveRule("arguments", 48);
 			LeaveRule_arguments();
-	    }
-	 	DebugLocation(356, 1);
+		}
+		DebugLocation(356, 1);
 		} finally { DebugExitRule(GrammarFileName, "arguments"); }
 		return;
 
 	}
 	// $ANTLR end "arguments"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_parameter() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_parameter() {}
+	partial void EnterRule_parameter();
+	partial void LeaveRule_parameter();
 	// $ANTLR start "parameter"
 	// SqlGenerator.g:358:1: parameter : (n= NAMED_PARAM |p= PARAM );
 	[GrammarRule("parameter")]
@@ -7746,8 +7652,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_parameter();
 		EnterRule("parameter", 49);
 		TraceIn("parameter", 49);
-	    IASTNode n = default(IASTNode);
-	    IASTNode p = default(IASTNode);
+		IASTNode n = default(IASTNode);
+		IASTNode p = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "parameter");
 		DebugLocation(358, 1);
@@ -7755,7 +7661,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:359:2: (n= NAMED_PARAM |p= PARAM )
 			int alt71=2;
-			try { DebugEnterDecision(71, decisionCanBacktrack[71]);
+			try { DebugEnterDecision(71, false);
 			int LA71_1 = input.LA(1);
 
 			if ((LA71_1==NAMED_PARAM))
@@ -7766,7 +7672,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 				alt71 = 2;
 			}
-
 			else
 			{
 				if (state.backtracking>0) {state.failed=true; return;}
@@ -7774,7 +7679,6 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(71); }
 			switch (alt71)
 			{
@@ -7819,19 +7723,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("parameter", 49);
 			LeaveRule("parameter", 49);
 			LeaveRule_parameter();
-	    }
-	 	DebugLocation(361, 1);
+		}
+		DebugLocation(361, 1);
 		} finally { DebugExitRule(GrammarFileName, "parameter"); }
 		return;
 
 	}
 	// $ANTLR end "parameter"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_limitValue() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_limitValue() {}
+	partial void EnterRule_limitValue();
+	partial void LeaveRule_limitValue();
 	// $ANTLR start "limitValue"
 	// SqlGenerator.g:363:1: limitValue : ( NUM_INT | NAMED_PARAM | PARAM );
 	[GrammarRule("limitValue")]
@@ -7840,8 +7741,8 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_limitValue();
 		EnterRule("limitValue", 50);
 		TraceIn("limitValue", 50);
-	    TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		TreeRuleReturnScope<IASTNode> retval = new TreeRuleReturnScope<IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
 		try { DebugEnterRule(GrammarFileName, "limitValue");
 		DebugLocation(363, 1);
@@ -7879,19 +7780,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("limitValue", 50);
 			LeaveRule("limitValue", 50);
 			LeaveRule_limitValue();
-	    }
-	 	DebugLocation(367, 1);
+		}
+		DebugLocation(367, 1);
 		} finally { DebugExitRule(GrammarFileName, "limitValue"); }
 		return retval;
 
 	}
 	// $ANTLR end "limitValue"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExpr() {}
+	partial void EnterRule_addrExpr();
+	partial void LeaveRule_addrExpr();
 	// $ANTLR start "addrExpr"
 	// SqlGenerator.g:369:1: addrExpr : ( ^(r= DOT . . ) |i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) );
 	[GrammarRule("addrExpr")]
@@ -7900,9 +7798,9 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExpr();
 		EnterRule("addrExpr", 51);
 		TraceIn("addrExpr", 51);
-	    IASTNode r = default(IASTNode);
-	    IASTNode i = default(IASTNode);
-	    IASTNode j = default(IASTNode);
+		IASTNode r = default(IASTNode);
+		IASTNode i = default(IASTNode);
+		IASTNode j = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "addrExpr");
 		DebugLocation(369, 1);
@@ -7910,7 +7808,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		{
 			// SqlGenerator.g:370:2: ( ^(r= DOT . . ) |i= ALIAS_REF | ^(j= INDEX_OP ( . )* ) )
 			int alt73=3;
-			try { DebugEnterDecision(73, decisionCanBacktrack[73]);
+			try { DebugEnterDecision(73, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -7995,7 +7893,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					while (true)
 					{
 						int alt72=2;
-						try { DebugEnterDecision(72, decisionCanBacktrack[72]);
+						try { DebugEnterDecision(72, false);
 						int LA72_1 = input.LA(1);
 
 						if (((LA72_1>=AGGREGATE && LA72_1<=THETA_JOINS)))
@@ -8056,19 +7954,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExpr", 51);
 			LeaveRule("addrExpr", 51);
 			LeaveRule_addrExpr();
-	    }
-	 	DebugLocation(373, 1);
+		}
+		DebugLocation(373, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExpr"); }
 		return;
 
 	}
 	// $ANTLR end "addrExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_sqlToken() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_sqlToken() {}
+	partial void EnterRule_sqlToken();
+	partial void LeaveRule_sqlToken();
 	// $ANTLR start "sqlToken"
 	// SqlGenerator.g:375:1: sqlToken : ^(t= SQL_TOKEN ( . )* ) ;
 	[GrammarRule("sqlToken")]
@@ -8077,7 +7972,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		EnterRule_sqlToken();
 		EnterRule("sqlToken", 52);
 		TraceIn("sqlToken", 52);
-	    IASTNode t = default(IASTNode);
+		IASTNode t = default(IASTNode);
 
 		try { DebugEnterRule(GrammarFileName, "sqlToken");
 		DebugLocation(375, 1);
@@ -8106,7 +8001,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt74=2;
-					try { DebugEnterDecision(74, decisionCanBacktrack[74]);
+					try { DebugEnterDecision(74, false);
 					int LA74_1 = input.LA(1);
 
 					if (((LA74_1>=AGGREGATE && LA74_1<=THETA_JOINS)))
@@ -8160,17 +8055,16 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			TraceOut("sqlToken", 52);
 			LeaveRule("sqlToken", 52);
 			LeaveRule_sqlToken();
-	    }
-	 	DebugLocation(377, 1);
+		}
+		DebugLocation(377, 1);
 		} finally { DebugExitRule(GrammarFileName, "sqlToken"); }
 		return;
 
 	}
 	// $ANTLR end "sqlToken"
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_synpred1_SqlGenerator_fragment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_synpred1_SqlGenerator_fragment() {}
+
+	partial void EnterRule_synpred1_SqlGenerator_fragment();
+	partial void LeaveRule_synpred1_SqlGenerator_fragment();
 
 	// $ANTLR start synpred1_SqlGenerator
 	private void synpred1_SqlGenerator_fragment()
@@ -8198,10 +8092,9 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		}
 	}
 	// $ANTLR end synpred1_SqlGenerator
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_synpred2_SqlGenerator_fragment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_synpred2_SqlGenerator_fragment() {}
+
+	partial void EnterRule_synpred2_SqlGenerator_fragment();
+	partial void LeaveRule_synpred2_SqlGenerator_fragment();
 
 	// $ANTLR start synpred2_SqlGenerator
 	private void synpred2_SqlGenerator_fragment()
@@ -8232,10 +8125,9 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		}
 	}
 	// $ANTLR end synpred2_SqlGenerator
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_synpred3_SqlGenerator_fragment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_synpred3_SqlGenerator_fragment() {}
+
+	partial void EnterRule_synpred3_SqlGenerator_fragment();
+	partial void LeaveRule_synpred3_SqlGenerator_fragment();
 
 	// $ANTLR start synpred3_SqlGenerator
 	private void synpred3_SqlGenerator_fragment()
@@ -8266,10 +8158,9 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		}
 	}
 	// $ANTLR end synpred3_SqlGenerator
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_synpred4_SqlGenerator_fragment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_synpred4_SqlGenerator_fragment() {}
+
+	partial void EnterRule_synpred4_SqlGenerator_fragment();
+	partial void LeaveRule_synpred4_SqlGenerator_fragment();
 
 	// $ANTLR start synpred4_SqlGenerator
 	private void synpred4_SqlGenerator_fragment()
