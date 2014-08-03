@@ -32,12 +32,13 @@ tokens
 
 @header
 {
+using System;
 using System.Text;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 }
 
 // The main statement rule.
-statement
+public statement
 	: selectStatement | updateStatement | deleteStatement | insertStatement
 	;
 

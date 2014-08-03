@@ -3,7 +3,6 @@ using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	[CLSCompliant(false)]
 	public partial class HqlLexer
 	{
 		public override IToken Emit()

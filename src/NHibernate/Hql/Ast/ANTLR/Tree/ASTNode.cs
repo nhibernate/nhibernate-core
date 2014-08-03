@@ -396,7 +396,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	        throw new NotImplementedException();
 	    }
 
-	    public IList GetAncestors()
+	    public IList<ITree> GetAncestors()
 	    {
 	        throw new NotImplementedException();
 	    }

@@ -276,29 +276,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				return;
 			}
-			if (rhsNode.Text == null)
-			{
-				var lhsNodeMetaType = lhsNode.DataType as MetaType;
-				if (lhsNodeMetaType != null)
-				{
-					string className = SessionFactoryHelper.GetImportedClassName(rhsNode.OriginalText);
 
-					object discriminatorValue = lhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-					rhsNode.Text = discriminatorValue.ToString();
-					return;
-				}
+			var lhsNodeMetaType = lhsNode.DataType as MetaType;
+			if (lhsNodeMetaType != null)
+			{
+				string className = SessionFactoryHelper.GetImportedClassName(rhsNode.OriginalText);
+
+				object discriminatorValue = lhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
+				rhsNode.Text = discriminatorValue.ToString();
+				return;
 			}
-			if (lhsNode.Text == null)
-			{
-				var rhsNodeMetaType = rhsNode.DataType as MetaType;
-				if (rhsNodeMetaType != null)
-				{
-					string className = SessionFactoryHelper.GetImportedClassName(lhsNode.OriginalText);
 
-					object discriminatorValue = rhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-					lhsNode.Text = discriminatorValue.ToString();
-					return;
-				}
+			var rhsNodeMetaType = rhsNode.DataType as MetaType;
+			if (rhsNodeMetaType != null)
+			{
+				string className = SessionFactoryHelper.GetImportedClassName(lhsNode.OriginalText);
+
+				object discriminatorValue = rhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
+				lhsNode.Text = discriminatorValue.ToString();
+				return;
 			}
 		}
 	}
