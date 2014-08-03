@@ -449,6 +449,16 @@ namespace NHibernate.Dialect
 			return new OracleDataBaseSchema(connection);
 		}
 
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// Timestamps are DateTime, which in this dialect maps to Oracle DATE,
+				// which doesn't support fractional seconds.
+				return TimeSpan.TicksPerSecond;
+			}
+		}
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList

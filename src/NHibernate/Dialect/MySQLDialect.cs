@@ -377,5 +377,14 @@ namespace NHibernate.Dialect
 			}
 			return result;
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// MySQL before version 5.6.4 does not support fractional seconds.
+				return TimeSpan.TicksPerSecond;
+			}
+		}
 	}
 }

@@ -305,7 +305,7 @@ namespace NHibernate.Test.Hql.Ast
 
 					// assert
 					Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-										.Add(Restrictions.Eq("bodyWeight", 5.7f)).UniqueResult<int>());
+					                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResult<int>());
 
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
 					s.Transaction.Commit();
