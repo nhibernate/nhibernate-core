@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Engine.Query;
@@ -308,6 +309,30 @@ namespace NHibernate.Test.Hql.Ast
 					s.CreateQuery("delete from Animal").ExecuteUpdate();
 					s.Transaction.Commit();
 				}
+			}
+		}
+
+
+		[Test]
+		public void UnaryMinusBeforeParenthesesHandledCorrectly()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction txn = s.BeginTransaction())
+			{
+				s.Save(new Animal {Description = "cat1", BodyWeight = 1});
+
+				// NH-2290: Unary minus before parentheses wasn't handled correctly (this query returned 0).
+				int actual = s.CreateQuery("select -(1+1) from Animal as h")
+					.List<int>().Single();
+				Assert.That(actual, Is.EqualTo(-2));
+
+				// This was the workaround, which of course should still work.
+				int actualWorkaround = s.CreateQuery("select -1*(1+1) from Animal as h")
+					.List<int>().Single();
+				Assert.That(actualWorkaround, Is.EqualTo(-2));
+
+				s.CreateQuery("delete from Animal").ExecuteUpdate();
+				txn.Commit();
 			}
 		}
 	}
