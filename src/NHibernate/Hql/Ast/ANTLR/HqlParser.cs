@@ -7,7 +7,6 @@ using RecognitionException = Antlr.Runtime.RecognitionException;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	[CLSCompliant(false)]
 	public partial class HqlParser
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParser));

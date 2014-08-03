@@ -18,7 +18,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Author: Joshua Davis, Steve Ebersole
 	/// Ported By: Steve Strong
 	/// </summary>
-	[CLSCompliant(false)]
 	public partial class SqlGenerator : IErrorReporter
 	{
 		private readonly List<IParameterSpecification> collectedParameters = new List<IParameterSpecification>();
