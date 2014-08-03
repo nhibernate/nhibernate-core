@@ -8,14 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 HqlSqlWalker.g 2013-10-19 15:35:58
+// $ANTLR 3.5.0.2 HqlSqlWalker.g 2014-08-03 13:32:01
 
 // The variable 'variable' is assigned but its value is never used.
-#pragma warning disable 168, 219
+#pragma warning disable 219
 // Unreachable code detected.
 #pragma warning disable 162
 // Missing XML comment for publicly visible type or member 'Type_or_Member'
 #pragma warning disable 1591
+// CLS compliance checking will not be performed on 'type' because it is not visible from outside this assembly.
+#pragma warning disable 3019
 
 
 using System;
@@ -28,7 +30,6 @@ using Antlr.Runtime;
 using Antlr.Runtime.Misc;
 using Antlr.Runtime.Tree;
 using RewriteRuleITokenStream = Antlr.Runtime.Tree.RewriteRuleTokenStream;
-using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 
 
 
@@ -190,23 +191,6 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	public const int SQL_TOKEN=149;
 	public const int THETA_JOINS=150;
 
-	#if ANTLR_DEBUG
-	private static readonly bool[] decisionCanBacktrack =
-		new bool[]
-		{
-			false, // invalid decision
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false, false, false, false, false, false, false, false, false, false, 
-			false
-		};
-	#else
-	private static readonly bool[] decisionCanBacktrack = new bool[0];
-	#endif
 	public HqlSqlWalker(ITreeNodeStream input)
 		: this(input, new RecognizerSharedState())
 	{
@@ -214,8 +198,14 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	public HqlSqlWalker(ITreeNodeStream input, RecognizerSharedState state)
 		: base(input, state)
 	{
+		ITreeAdaptor treeAdaptor = default(ITreeAdaptor);
+		CreateTreeAdaptor(ref treeAdaptor);
+		TreeAdaptor = treeAdaptor ?? new CommonTreeAdaptor();
 		OnCreated();
 	}
+	// Implement this function in your helper file to use a custom tree adaptor
+	partial void CreateTreeAdaptor(ref ITreeAdaptor adaptor);
+
 	private ITreeAdaptor adaptor;
 
 	public ITreeAdaptor TreeAdaptor
@@ -235,19 +225,13 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	public override string GrammarFileName { get { return "HqlSqlWalker.g"; } }
 
 
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void OnCreated() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
+	partial void OnCreated();
+	partial void EnterRule(string ruleName, int ruleIndex);
+	partial void LeaveRule(string ruleName, int ruleIndex);
 
 	#region Rules
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_statement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_statement() {}
+	partial void EnterRule_statement();
+	partial void LeaveRule_statement();
 	// $ANTLR start "statement"
 	// HqlSqlWalker.g:41:8: public statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
 	[GrammarRule("statement")]
@@ -256,19 +240,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_statement();
 		EnterRule("statement", 1);
 		TraceIn("statement", 1);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> selectStatement1 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> updateStatement2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> deleteStatement3 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> insertStatement4 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> selectStatement1 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> updateStatement2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> deleteStatement3 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> insertStatement4 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "statement");
 		DebugLocation(41, 1);
@@ -276,7 +259,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:42:2: ( selectStatement | updateStatement | deleteStatement | insertStatement )
 			int alt1=4;
-			try { DebugEnterDecision(1, decisionCanBacktrack[1]);
+			try { DebugEnterDecision(1, false);
 			switch (input.LA(1))
 			{
 			case QUERY:
@@ -398,19 +381,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("statement", 1);
 			LeaveRule("statement", 1);
 			LeaveRule_statement();
-	    }
-	 	DebugLocation(43, 1);
+		}
+		DebugLocation(43, 1);
 		} finally { DebugExitRule(GrammarFileName, "statement"); }
 		return retval;
 
 	}
 	// $ANTLR end "statement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectStatement() {}
+	partial void EnterRule_selectStatement();
+	partial void LeaveRule_selectStatement();
 	// $ANTLR start "selectStatement"
 	// HqlSqlWalker.g:45:1: selectStatement : query ;
 	[GrammarRule("selectStatement")]
@@ -419,16 +399,15 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectStatement();
 		EnterRule("selectStatement", 2);
 		TraceIn("selectStatement", 2);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query5 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query5 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "selectStatement");
 		DebugLocation(45, 1);
@@ -465,19 +444,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectStatement", 2);
 			LeaveRule("selectStatement", 2);
 			LeaveRule_selectStatement();
-	    }
-	 	DebugLocation(47, 1);
+		}
+		DebugLocation(47, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_updateStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_updateStatement() {}
+	partial void EnterRule_updateStatement();
+	partial void LeaveRule_updateStatement();
 	// $ANTLR start "updateStatement"
 	// HqlSqlWalker.g:52:1: updateStatement : ^(u= UPDATE (v= VERSIONED )? f= fromClause s= setClause (w= whereClause )? ) -> ^( $u $f $s ( $w)? ) ;
 	[GrammarRule("updateStatement")]
@@ -486,27 +462,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_updateStatement();
 		EnterRule("updateStatement", 3);
 		TraceIn("updateStatement", 3);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode u = default(IASTNode);
-	    IASTNode v = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> f = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> s = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> w = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode u = default(IASTNode);
+		IASTNode v = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> f = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> s = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> w = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode u_tree = default(IASTNode);
-	    IASTNode v_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_UPDATE=new RewriteRuleNodeStream(adaptor,"token UPDATE");
-	    RewriteRuleNodeStream stream_VERSIONED=new RewriteRuleNodeStream(adaptor,"token VERSIONED");
-	    RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
-	    RewriteRuleSubtreeStream stream_setClause=new RewriteRuleSubtreeStream(adaptor,"rule setClause");
-	    RewriteRuleSubtreeStream stream_whereClause=new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
+		IASTNode u_tree = default(IASTNode);
+		IASTNode v_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_UPDATE=new RewriteRuleNodeStream(adaptor,"token UPDATE");
+		RewriteRuleNodeStream stream_VERSIONED=new RewriteRuleNodeStream(adaptor,"token VERSIONED");
+		RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
+		RewriteRuleSubtreeStream stream_setClause=new RewriteRuleSubtreeStream(adaptor,"rule setClause");
+		RewriteRuleSubtreeStream stream_whereClause=new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
 		try { DebugEnterRule(GrammarFileName, "updateStatement");
 		DebugLocation(52, 1);
 		try
@@ -538,7 +514,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:59:57: (v= VERSIONED )?
 			int alt2=2;
 			try { DebugEnterSubRule(2);
-			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
+			try { DebugEnterDecision(2, false);
 			int LA2_1 = input.LA(1);
 
 			if ((LA2_1==VERSIONED))
@@ -567,28 +543,24 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			} finally { DebugExitSubRule(2); }
 
 			DebugLocation(59, 73);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._fromClause_in_updateStatement230);
 			f=fromClause();
 			PopFollow();
 
 			stream_fromClause.Add(f.Tree);
-
 			DebugLocation(59, 86);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._setClause_in_updateStatement234);
 			s=setClause();
 			PopFollow();
 
 			stream_setClause.Add(s.Tree);
-
 			DebugLocation(59, 97);
 			// HqlSqlWalker.g:59:97: (w= whereClause )?
 			int alt3=2;
 			try { DebugEnterSubRule(3);
-			try { DebugEnterDecision(3, decisionCanBacktrack[3]);
+			try { DebugEnterDecision(3, false);
 			int LA3_1 = input.LA(1);
 
 			if ((LA3_1==WHERE))
@@ -603,14 +575,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:59:98: w= whereClause
 				{
 				DebugLocation(59, 99);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._whereClause_in_updateStatement239);
 				w=whereClause();
 				PopFollow();
 
 				stream_whereClause.Add(w.Tree);
-
 
 				}
 				break;
@@ -694,19 +664,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("updateStatement", 3);
 			LeaveRule("updateStatement", 3);
 			LeaveRule_updateStatement();
-	    }
-	 	DebugLocation(61, 1);
+		}
+		DebugLocation(61, 1);
 		} finally { DebugExitRule(GrammarFileName, "updateStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "updateStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_deleteStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_deleteStatement() {}
+	partial void EnterRule_deleteStatement();
+	partial void LeaveRule_deleteStatement();
 	// $ANTLR start "deleteStatement"
 	// HqlSqlWalker.g:63:1: deleteStatement : ^( DELETE fromClause ( whereClause )? ) ;
 	[GrammarRule("deleteStatement")]
@@ -715,20 +682,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_deleteStatement();
 		EnterRule("deleteStatement", 4);
 		TraceIn("deleteStatement", 4);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode DELETE6 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> fromClause7 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> whereClause8 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode DELETE6 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> fromClause7 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> whereClause8 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode DELETE6_tree = default(IASTNode);
-
+		IASTNode DELETE6_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "deleteStatement");
 		DebugLocation(63, 1);
 		try
@@ -773,7 +739,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:69:66: ( whereClause )?
 			int alt4=2;
 			try { DebugEnterSubRule(4);
-			try { DebugEnterDecision(4, decisionCanBacktrack[4]);
+			try { DebugEnterDecision(4, false);
 			int LA4_1 = input.LA(1);
 
 			if ((LA4_1==WHERE))
@@ -830,19 +796,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("deleteStatement", 4);
 			LeaveRule("deleteStatement", 4);
 			LeaveRule_deleteStatement();
-	    }
-	 	DebugLocation(70, 1);
+		}
+		DebugLocation(70, 1);
 		} finally { DebugExitRule(GrammarFileName, "deleteStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "deleteStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_insertStatement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_insertStatement() {}
+	partial void EnterRule_insertStatement();
+	partial void LeaveRule_insertStatement();
 	// $ANTLR start "insertStatement"
 	// HqlSqlWalker.g:72:1: insertStatement : ^( INSERT intoClause query ) ;
 	[GrammarRule("insertStatement")]
@@ -851,20 +814,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_insertStatement();
 		EnterRule("insertStatement", 5);
 		TraceIn("insertStatement", 5);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode INSERT9 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> intoClause10 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query11 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode INSERT9 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> intoClause10 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query11 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode INSERT9_tree = default(IASTNode);
-
+		IASTNode INSERT9_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "insertStatement");
 		DebugLocation(72, 1);
 		try
@@ -941,19 +903,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("insertStatement", 5);
 			LeaveRule("insertStatement", 5);
 			LeaveRule_insertStatement();
-	    }
-	 	DebugLocation(82, 1);
+		}
+		DebugLocation(82, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertStatement"); }
 		return retval;
 
 	}
 	// $ANTLR end "insertStatement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_intoClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_intoClause() {}
+	partial void EnterRule_intoClause();
+	partial void LeaveRule_intoClause();
 	// $ANTLR start "intoClause"
 	// HqlSqlWalker.g:84:1: intoClause : ^( INTO (p= path ) ps= insertablePropertySpec ) ;
 	[GrammarRule("intoClause")]
@@ -962,20 +921,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_intoClause();
 		EnterRule("intoClause", 6);
 		TraceIn("intoClause", 6);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode INTO12 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> ps = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode INTO12 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> ps = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode INTO12_tree = default(IASTNode);
-
+		IASTNode INTO12_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "intoClause");
 		DebugLocation(84, 1);
 		try
@@ -1058,19 +1016,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("intoClause", 6);
 			LeaveRule("intoClause", 6);
 			LeaveRule_intoClause();
-	    }
-	 	DebugLocation(89, 1);
+		}
+		DebugLocation(89, 1);
 		} finally { DebugExitRule(GrammarFileName, "intoClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "intoClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_insertablePropertySpec() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_insertablePropertySpec() {}
+	partial void EnterRule_insertablePropertySpec();
+	partial void LeaveRule_insertablePropertySpec();
 	// $ANTLR start "insertablePropertySpec"
 	// HqlSqlWalker.g:91:1: insertablePropertySpec : ^( RANGE ( IDENT )+ ) ;
 	[GrammarRule("insertablePropertySpec")]
@@ -1079,20 +1034,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_insertablePropertySpec();
 		EnterRule("insertablePropertySpec", 7);
 		TraceIn("insertablePropertySpec", 7);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode RANGE13 = default(IASTNode);
-	    IASTNode IDENT14 = default(IASTNode);
+		IASTNode RANGE13 = default(IASTNode);
+		IASTNode IDENT14 = default(IASTNode);
 
-	    IASTNode RANGE13_tree = default(IASTNode);
-	    IASTNode IDENT14_tree = default(IASTNode);
-
+		IASTNode RANGE13_tree = default(IASTNode);
+		IASTNode IDENT14_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "insertablePropertySpec");
 		DebugLocation(91, 1);
 		try
@@ -1128,7 +1082,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt5=2;
-				try { DebugEnterDecision(5, decisionCanBacktrack[5]);
+				try { DebugEnterDecision(5, false);
 				int LA5_1 = input.LA(1);
 
 				if ((LA5_1==IDENT))
@@ -1194,19 +1148,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("insertablePropertySpec", 7);
 			LeaveRule("insertablePropertySpec", 7);
 			LeaveRule_insertablePropertySpec();
-	    }
-	 	DebugLocation(93, 1);
+		}
+		DebugLocation(93, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertablePropertySpec"); }
 		return retval;
 
 	}
 	// $ANTLR end "insertablePropertySpec"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_setClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_setClause() {}
+	partial void EnterRule_setClause();
+	partial void LeaveRule_setClause();
 	// $ANTLR start "setClause"
 	// HqlSqlWalker.g:95:1: setClause : ^( SET ( assignment )* ) ;
 	[GrammarRule("setClause")]
@@ -1215,19 +1166,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_setClause();
 		EnterRule("setClause", 8);
 		TraceIn("setClause", 8);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode SET15 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> assignment16 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode SET15 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> assignment16 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode SET15_tree = default(IASTNode);
-
+		IASTNode SET15_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "setClause");
 		DebugLocation(95, 1);
 		try
@@ -1259,54 +1209,54 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			 HandleClauseStart( SET ); 
 
 			if (input.LA(1) == TokenTypes.Down) {
-			    Match(input, TokenTypes.Down, null); 
-			    DebugLocation(96, 41);
-			    // HqlSqlWalker.g:96:41: ( assignment )*
-			    try { DebugEnterSubRule(6);
-			    while (true)
-			    {
-			    	int alt6=2;
-			    	try { DebugEnterDecision(6, decisionCanBacktrack[6]);
-			    	int LA6_1 = input.LA(1);
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(96, 41);
+				// HqlSqlWalker.g:96:41: ( assignment )*
+				try { DebugEnterSubRule(6);
+				while (true)
+				{
+					int alt6=2;
+					try { DebugEnterDecision(6, false);
+					int LA6_1 = input.LA(1);
 
-			    	if ((LA6_1==EQ))
-			    	{
-			    		alt6 = 1;
-			    	}
-
-
-			    	} finally { DebugExitDecision(6); }
-			    	switch ( alt6 )
-			    	{
-			    	case 1:
-			    		DebugEnterAlt(1);
-			    		// HqlSqlWalker.g:96:42: assignment
-			    		{
-			    		DebugLocation(96, 42);
-
-			    		_last = (IASTNode)input.LT(1);
-			    		PushFollow(Follow._assignment_in_setClause402);
-			    		assignment16=assignment();
-			    		PopFollow();
-
-			    		adaptor.AddChild(root_1, assignment16.Tree);
+					if ((LA6_1==EQ))
+					{
+						alt6 = 1;
+					}
 
 
-			    		}
-			    		break;
+					} finally { DebugExitDecision(6); }
+					switch ( alt6 )
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// HqlSqlWalker.g:96:42: assignment
+						{
+						DebugLocation(96, 42);
 
-			    	default:
-			    		goto loop6;
-			    	}
-			    }
+						_last = (IASTNode)input.LT(1);
+						PushFollow(Follow._assignment_in_setClause402);
+						assignment16=assignment();
+						PopFollow();
 
-			    loop6:
-			    	;
-
-			    } finally { DebugExitSubRule(6); }
+						adaptor.AddChild(root_1, assignment16.Tree);
 
 
-			    Match(input, TokenTypes.Up, null); 
+						}
+						break;
+
+					default:
+						goto loop6;
+					}
+				}
+
+				loop6:
+					;
+
+				} finally { DebugExitSubRule(6); }
+
+
+				Match(input, TokenTypes.Up, null); 
 			}
 			adaptor.AddChild(root_0, root_1);
 			_last = _save_last_1;
@@ -1328,19 +1278,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("setClause", 8);
 			LeaveRule("setClause", 8);
 			LeaveRule_setClause();
-	    }
-	 	DebugLocation(97, 1);
+		}
+		DebugLocation(97, 1);
 		} finally { DebugExitRule(GrammarFileName, "setClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "setClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_assignment() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_assignment() {}
+	partial void EnterRule_assignment();
+	partial void LeaveRule_assignment();
 	// $ANTLR start "assignment"
 	// HqlSqlWalker.g:99:1: assignment : ^( EQ (p= propertyRef ) ( newValue ) ) ;
 	[GrammarRule("assignment")]
@@ -1349,20 +1296,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_assignment();
 		EnterRule("assignment", 9);
 		TraceIn("assignment", 9);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode EQ17 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> newValue18 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode EQ17 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> newValue18 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode EQ17_tree = default(IASTNode);
-
+		IASTNode EQ17_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "assignment");
 		DebugLocation(99, 1);
 		try
@@ -1452,19 +1398,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("assignment", 9);
 			LeaveRule("assignment", 9);
 			LeaveRule_assignment();
-	    }
-	 	DebugLocation(106, 1);
+		}
+		DebugLocation(106, 1);
 		} finally { DebugExitRule(GrammarFileName, "assignment"); }
 		return retval;
 
 	}
 	// $ANTLR end "assignment"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_newValue() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_newValue() {}
+	partial void EnterRule_newValue();
+	partial void LeaveRule_newValue();
 	// $ANTLR start "newValue"
 	// HqlSqlWalker.g:109:1: newValue : ( expr | query );
 	[GrammarRule("newValue")]
@@ -1473,17 +1416,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_newValue();
 		EnterRule("newValue", 10);
 		TraceIn("newValue", 10);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr19 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query20 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr19 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query20 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "newValue");
 		DebugLocation(109, 1);
@@ -1491,7 +1433,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:110:2: ( expr | query )
 			int alt7=2;
-			try { DebugEnterDecision(7, decisionCanBacktrack[7]);
+			try { DebugEnterDecision(7, false);
 			int LA7_1 = input.LA(1);
 
 			if ((LA7_1==AGGREGATE||LA7_1==BAND||(LA7_1>=BNOT && LA7_1<=BOR)||(LA7_1>=BXOR && LA7_1<=CASE2)||LA7_1==COLON||LA7_1==COUNT||(LA7_1>=DIV && LA7_1<=DOT)||LA7_1==FALSE||LA7_1==IDENT||LA7_1==INDEX_OP||LA7_1==JAVA_CONSTANT||LA7_1==METHOD_CALL||LA7_1==MINUS||(LA7_1>=NULL && LA7_1<=NUM_LONG)||(LA7_1>=PARAM && LA7_1<=PLUS)||LA7_1==QUOTED_String||LA7_1==STAR||(LA7_1>=TRUE && LA7_1<=UNARY_MINUS)||LA7_1==VECTOR_EXPR||LA7_1==WEIRD_IDENT))
@@ -1502,14 +1444,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt7 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 7, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(7); }
 			switch (alt7)
 			{
@@ -1564,19 +1504,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("newValue", 10);
 			LeaveRule("newValue", 10);
 			LeaveRule_newValue();
-	    }
-	 	DebugLocation(111, 1);
+		}
+		DebugLocation(111, 1);
 		} finally { DebugExitRule(GrammarFileName, "newValue"); }
 		return retval;
 
 	}
 	// $ANTLR end "newValue"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_query() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_query() {}
+	partial void EnterRule_query();
+	partial void LeaveRule_query();
 	// $ANTLR start "query"
 	// HqlSqlWalker.g:113:1: query : ( unionedQuery | ^( UNION unionedQuery query ) );
 	[GrammarRule("query")]
@@ -1585,28 +1522,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_query();
 		EnterRule("query", 11);
 		TraceIn("query", 11);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode UNION22 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> unionedQuery21 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> unionedQuery23 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query24 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode UNION22 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> unionedQuery21 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> unionedQuery23 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query24 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode UNION22_tree = default(IASTNode);
-
+		IASTNode UNION22_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "query");
 		DebugLocation(113, 1);
 		try
 		{
 			// HqlSqlWalker.g:114:2: ( unionedQuery | ^( UNION unionedQuery query ) )
 			int alt8=2;
-			try { DebugEnterDecision(8, decisionCanBacktrack[8]);
+			try { DebugEnterDecision(8, false);
 			int LA8_1 = input.LA(1);
 
 			if ((LA8_1==QUERY))
@@ -1617,14 +1553,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt8 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 8, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(8); }
 			switch (alt8)
 			{
@@ -1712,19 +1646,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("query", 11);
 			LeaveRule("query", 11);
 			LeaveRule_query();
-	    }
-	 	DebugLocation(116, 1);
+		}
+		DebugLocation(116, 1);
 		} finally { DebugExitRule(GrammarFileName, "query"); }
 		return retval;
 
 	}
 	// $ANTLR end "query"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_unionedQuery() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_unionedQuery() {}
+	partial void EnterRule_unionedQuery();
+	partial void LeaveRule_unionedQuery();
 	// $ANTLR start "unionedQuery"
 	// HqlSqlWalker.g:120:1: unionedQuery : ^( QUERY ^( SELECT_FROM f= fromClause (s= selectClause )? ) (w= whereClause )? (g= groupClause )? (h= havingClause )? (o= orderClause )? (sk= skipClause )? (tk= takeClause )? ) -> ^( SELECT ( $s)? $f ( $w)? ( $g)? ( $h)? ( $o)? ( $sk)? ( $tk)? ) ;
 	[GrammarRule("unionedQuery")]
@@ -1733,37 +1664,37 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_unionedQuery();
 		EnterRule("unionedQuery", 12);
 		TraceIn("unionedQuery", 12);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode QUERY25 = default(IASTNode);
-	    IASTNode SELECT_FROM26 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> f = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> s = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> w = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> g = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> h = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> o = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> sk = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> tk = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode QUERY25 = default(IASTNode);
+		IASTNode SELECT_FROM26 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> f = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> s = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> w = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> g = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> h = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> o = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> sk = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> tk = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode QUERY25_tree = default(IASTNode);
-	    IASTNode SELECT_FROM26_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_QUERY=new RewriteRuleNodeStream(adaptor,"token QUERY");
-	    RewriteRuleNodeStream stream_SELECT_FROM=new RewriteRuleNodeStream(adaptor,"token SELECT_FROM");
-	    RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
-	    RewriteRuleSubtreeStream stream_selectClause=new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
-	    RewriteRuleSubtreeStream stream_whereClause=new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
-	    RewriteRuleSubtreeStream stream_groupClause=new RewriteRuleSubtreeStream(adaptor,"rule groupClause");
-	    RewriteRuleSubtreeStream stream_havingClause=new RewriteRuleSubtreeStream(adaptor,"rule havingClause");
-	    RewriteRuleSubtreeStream stream_orderClause=new RewriteRuleSubtreeStream(adaptor,"rule orderClause");
-	    RewriteRuleSubtreeStream stream_skipClause=new RewriteRuleSubtreeStream(adaptor,"rule skipClause");
-	    RewriteRuleSubtreeStream stream_takeClause=new RewriteRuleSubtreeStream(adaptor,"rule takeClause");
+		IASTNode QUERY25_tree = default(IASTNode);
+		IASTNode SELECT_FROM26_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_QUERY=new RewriteRuleNodeStream(adaptor,"token QUERY");
+		RewriteRuleNodeStream stream_SELECT_FROM=new RewriteRuleNodeStream(adaptor,"token SELECT_FROM");
+		RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
+		RewriteRuleSubtreeStream stream_selectClause=new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
+		RewriteRuleSubtreeStream stream_whereClause=new RewriteRuleSubtreeStream(adaptor,"rule whereClause");
+		RewriteRuleSubtreeStream stream_groupClause=new RewriteRuleSubtreeStream(adaptor,"rule groupClause");
+		RewriteRuleSubtreeStream stream_havingClause=new RewriteRuleSubtreeStream(adaptor,"rule havingClause");
+		RewriteRuleSubtreeStream stream_orderClause=new RewriteRuleSubtreeStream(adaptor,"rule orderClause");
+		RewriteRuleSubtreeStream stream_skipClause=new RewriteRuleSubtreeStream(adaptor,"rule skipClause");
+		RewriteRuleSubtreeStream stream_takeClause=new RewriteRuleSubtreeStream(adaptor,"rule takeClause");
 		try { DebugEnterRule(GrammarFileName, "unionedQuery");
 		DebugLocation(120, 1);
 		try
@@ -1808,19 +1739,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(130, 6);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._fromClause_in_unionedQuery525);
 			f=fromClause();
 			PopFollow();
 
 			stream_fromClause.Add(f.Tree);
-
 			DebugLocation(131, 5);
 			// HqlSqlWalker.g:131:5: (s= selectClause )?
 			int alt9=2;
 			try { DebugEnterSubRule(9);
-			try { DebugEnterDecision(9, decisionCanBacktrack[9]);
+			try { DebugEnterDecision(9, false);
 			int LA9_1 = input.LA(1);
 
 			if ((LA9_1==SELECT))
@@ -1835,14 +1764,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:131:6: s= selectClause
 				{
 				DebugLocation(131, 7);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._selectClause_in_unionedQuery534);
 				s=selectClause();
 				PopFollow();
 
 				stream_selectClause.Add(s.Tree);
-
 
 				}
 				break;
@@ -1860,7 +1787,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:133:4: (w= whereClause )?
 			int alt10=2;
 			try { DebugEnterSubRule(10);
-			try { DebugEnterDecision(10, decisionCanBacktrack[10]);
+			try { DebugEnterDecision(10, false);
 			int LA10_1 = input.LA(1);
 
 			if ((LA10_1==WHERE))
@@ -1875,14 +1802,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:133:5: w= whereClause
 				{
 				DebugLocation(133, 6);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._whereClause_in_unionedQuery549);
 				w=whereClause();
 				PopFollow();
 
 				stream_whereClause.Add(w.Tree);
-
 
 				}
 				break;
@@ -1894,7 +1819,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:134:4: (g= groupClause )?
 			int alt11=2;
 			try { DebugEnterSubRule(11);
-			try { DebugEnterDecision(11, decisionCanBacktrack[11]);
+			try { DebugEnterDecision(11, false);
 			int LA11_1 = input.LA(1);
 
 			if ((LA11_1==GROUP))
@@ -1909,14 +1834,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:134:5: g= groupClause
 				{
 				DebugLocation(134, 6);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._groupClause_in_unionedQuery559);
 				g=groupClause();
 				PopFollow();
 
 				stream_groupClause.Add(g.Tree);
-
 
 				}
 				break;
@@ -1928,7 +1851,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:135:4: (h= havingClause )?
 			int alt12=2;
 			try { DebugEnterSubRule(12);
-			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
+			try { DebugEnterDecision(12, false);
 			int LA12_1 = input.LA(1);
 
 			if ((LA12_1==HAVING))
@@ -1943,14 +1866,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:135:5: h= havingClause
 				{
 				DebugLocation(135, 6);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._havingClause_in_unionedQuery569);
 				h=havingClause();
 				PopFollow();
 
 				stream_havingClause.Add(h.Tree);
-
 
 				}
 				break;
@@ -1962,7 +1883,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:136:4: (o= orderClause )?
 			int alt13=2;
 			try { DebugEnterSubRule(13);
-			try { DebugEnterDecision(13, decisionCanBacktrack[13]);
+			try { DebugEnterDecision(13, false);
 			int LA13_1 = input.LA(1);
 
 			if ((LA13_1==ORDER))
@@ -1977,14 +1898,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:136:5: o= orderClause
 				{
 				DebugLocation(136, 6);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._orderClause_in_unionedQuery579);
 				o=orderClause();
 				PopFollow();
 
 				stream_orderClause.Add(o.Tree);
-
 
 				}
 				break;
@@ -1996,7 +1915,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:137:4: (sk= skipClause )?
 			int alt14=2;
 			try { DebugEnterSubRule(14);
-			try { DebugEnterDecision(14, decisionCanBacktrack[14]);
+			try { DebugEnterDecision(14, false);
 			int LA14_1 = input.LA(1);
 
 			if ((LA14_1==SKIP))
@@ -2011,14 +1930,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:137:5: sk= skipClause
 				{
 				DebugLocation(137, 7);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._skipClause_in_unionedQuery589);
 				sk=skipClause();
 				PopFollow();
 
 				stream_skipClause.Add(sk.Tree);
-
 
 				}
 				break;
@@ -2030,7 +1947,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:138:4: (tk= takeClause )?
 			int alt15=2;
 			try { DebugEnterSubRule(15);
-			try { DebugEnterDecision(15, decisionCanBacktrack[15]);
+			try { DebugEnterDecision(15, false);
 			int LA15_1 = input.LA(1);
 
 			if ((LA15_1==TAKE))
@@ -2045,14 +1962,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:138:5: tk= takeClause
 				{
 				DebugLocation(138, 7);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._takeClause_in_unionedQuery599);
 				tk=takeClause();
 				PopFollow();
 
 				stream_takeClause.Add(tk.Tree);
-
 
 				}
 				break;
@@ -2192,19 +2107,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("unionedQuery", 12);
 			LeaveRule("unionedQuery", 12);
 			LeaveRule_unionedQuery();
-	    }
-	 	DebugLocation(141, 1);
+		}
+		DebugLocation(141, 1);
 		} finally { DebugExitRule(GrammarFileName, "unionedQuery"); }
 		return retval;
 
 	}
 	// $ANTLR end "unionedQuery"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderClause() {}
+	partial void EnterRule_orderClause();
+	partial void LeaveRule_orderClause();
 	// $ANTLR start "orderClause"
 	// HqlSqlWalker.g:143:1: orderClause : ^( ORDER ( orderExprs | query ( ASCENDING | DESCENDING )? ) ) ;
 	[GrammarRule("orderClause")]
@@ -2213,22 +2125,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_orderClause();
 		EnterRule("orderClause", 13);
 		TraceIn("orderClause", 13);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode ORDER27 = default(IASTNode);
-	    IASTNode set30 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs28 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query29 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode ORDER27 = default(IASTNode);
+		IASTNode set30 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs28 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query29 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode ORDER27_tree = default(IASTNode);
-	    IASTNode set30_tree = default(IASTNode);
-
+		IASTNode ORDER27_tree = default(IASTNode);
+		IASTNode set30_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "orderClause");
 		DebugLocation(143, 1);
 		try
@@ -2264,7 +2175,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:144:44: ( orderExprs | query ( ASCENDING | DESCENDING )? )
 			int alt17=2;
 			try { DebugEnterSubRule(17);
-			try { DebugEnterDecision(17, decisionCanBacktrack[17]);
+			try { DebugEnterDecision(17, false);
 			int LA17_1 = input.LA(1);
 
 			if ((LA17_1==AGGREGATE||LA17_1==BAND||(LA17_1>=BNOT && LA17_1<=BOR)||(LA17_1>=BXOR && LA17_1<=CASE2)||LA17_1==COLON||LA17_1==COUNT||(LA17_1>=DIV && LA17_1<=DOT)||LA17_1==FALSE||LA17_1==IDENT||LA17_1==INDEX_OP||LA17_1==JAVA_CONSTANT||LA17_1==METHOD_CALL||LA17_1==MINUS||(LA17_1>=NULL && LA17_1<=NUM_LONG)||(LA17_1>=PARAM && LA17_1<=PLUS)||LA17_1==QUOTED_String||LA17_1==STAR||(LA17_1>=TRUE && LA17_1<=UNARY_MINUS)||LA17_1==VECTOR_EXPR||LA17_1==WEIRD_IDENT))
@@ -2275,14 +2186,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt17 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 17, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(17); }
 			switch (alt17)
 			{
@@ -2319,7 +2228,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:144:64: ( ASCENDING | DESCENDING )?
 				int alt16=2;
 				try { DebugEnterSubRule(16);
-				try { DebugEnterDecision(16, decisionCanBacktrack[16]);
+				try { DebugEnterDecision(16, false);
 				int LA16_1 = input.LA(1);
 
 				if ((LA16_1==ASCENDING||LA16_1==DESCENDING))
@@ -2391,19 +2300,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("orderClause", 13);
 			LeaveRule("orderClause", 13);
 			LeaveRule_orderClause();
-	    }
-	 	DebugLocation(145, 1);
+		}
+		DebugLocation(145, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "orderClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_orderExprs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_orderExprs() {}
+	partial void EnterRule_orderExprs();
+	partial void LeaveRule_orderExprs();
 	// $ANTLR start "orderExprs"
 	// HqlSqlWalker.g:147:1: orderExprs : expr ( ASCENDING | DESCENDING )? ( orderExprs )? ;
 	[GrammarRule("orderExprs")]
@@ -2412,20 +2318,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_orderExprs();
 		EnterRule("orderExprs", 14);
 		TraceIn("orderExprs", 14);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode set32 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr31 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs33 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode set32 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr31 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> orderExprs33 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode set32_tree = default(IASTNode);
-
+		IASTNode set32_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "orderExprs");
 		DebugLocation(147, 1);
 		try
@@ -2449,7 +2354,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:148:9: ( ASCENDING | DESCENDING )?
 			int alt18=2;
 			try { DebugEnterSubRule(18);
-			try { DebugEnterDecision(18, decisionCanBacktrack[18]);
+			try { DebugEnterDecision(18, false);
 			int LA18_1 = input.LA(1);
 
 			if ((LA18_1==ASCENDING||LA18_1==DESCENDING))
@@ -2496,7 +2401,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:148:37: ( orderExprs )?
 			int alt19=2;
 			try { DebugEnterSubRule(19);
-			try { DebugEnterDecision(19, decisionCanBacktrack[19]);
+			try { DebugEnterDecision(19, false);
 			int LA19_1 = input.LA(1);
 
 			if ((LA19_1==AGGREGATE||LA19_1==BAND||(LA19_1>=BNOT && LA19_1<=BOR)||(LA19_1>=BXOR && LA19_1<=CASE2)||LA19_1==COLON||LA19_1==COUNT||(LA19_1>=DIV && LA19_1<=DOT)||LA19_1==FALSE||LA19_1==IDENT||LA19_1==INDEX_OP||LA19_1==JAVA_CONSTANT||LA19_1==METHOD_CALL||LA19_1==MINUS||(LA19_1>=NULL && LA19_1<=NUM_LONG)||(LA19_1>=PARAM && LA19_1<=PLUS)||LA19_1==QUOTED_String||LA19_1==STAR||(LA19_1>=TRUE && LA19_1<=UNARY_MINUS)||LA19_1==VECTOR_EXPR||LA19_1==WEIRD_IDENT))
@@ -2542,19 +2447,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("orderExprs", 14);
 			LeaveRule("orderExprs", 14);
 			LeaveRule_orderExprs();
-	    }
-	 	DebugLocation(149, 1);
+		}
+		DebugLocation(149, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderExprs"); }
 		return retval;
 
 	}
 	// $ANTLR end "orderExprs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_skipClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_skipClause() {}
+	partial void EnterRule_skipClause();
+	partial void LeaveRule_skipClause();
 	// $ANTLR start "skipClause"
 	// HqlSqlWalker.g:151:1: skipClause : ^( SKIP ( NUM_INT | parameter ) ) ;
 	[GrammarRule("skipClause")]
@@ -2563,21 +2465,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_skipClause();
 		EnterRule("skipClause", 15);
 		TraceIn("skipClause", 15);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode SKIP34 = default(IASTNode);
-	    IASTNode NUM_INT35 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> parameter36 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode SKIP34 = default(IASTNode);
+		IASTNode NUM_INT35 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter36 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode SKIP34_tree = default(IASTNode);
-	    IASTNode NUM_INT35_tree = default(IASTNode);
-
+		IASTNode SKIP34_tree = default(IASTNode);
+		IASTNode NUM_INT35_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "skipClause");
 		DebugLocation(151, 1);
 		try
@@ -2610,7 +2511,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:152:11: ( NUM_INT | parameter )
 			int alt20=2;
 			try { DebugEnterSubRule(20);
-			try { DebugEnterDecision(20, decisionCanBacktrack[20]);
+			try { DebugEnterDecision(20, false);
 			int LA20_1 = input.LA(1);
 
 			if ((LA20_1==NUM_INT))
@@ -2621,14 +2522,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt20 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 20, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(20); }
 			switch (alt20)
 			{
@@ -2690,19 +2589,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("skipClause", 15);
 			LeaveRule("skipClause", 15);
 			LeaveRule_skipClause();
-	    }
-	 	DebugLocation(153, 1);
+		}
+		DebugLocation(153, 1);
 		} finally { DebugExitRule(GrammarFileName, "skipClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "skipClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_takeClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_takeClause() {}
+	partial void EnterRule_takeClause();
+	partial void LeaveRule_takeClause();
 	// $ANTLR start "takeClause"
 	// HqlSqlWalker.g:155:1: takeClause : ^( TAKE ( NUM_INT | parameter ) ) ;
 	[GrammarRule("takeClause")]
@@ -2711,21 +2607,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_takeClause();
 		EnterRule("takeClause", 16);
 		TraceIn("takeClause", 16);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode TAKE37 = default(IASTNode);
-	    IASTNode NUM_INT38 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> parameter39 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode TAKE37 = default(IASTNode);
+		IASTNode NUM_INT38 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter39 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode TAKE37_tree = default(IASTNode);
-	    IASTNode NUM_INT38_tree = default(IASTNode);
-
+		IASTNode TAKE37_tree = default(IASTNode);
+		IASTNode NUM_INT38_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "takeClause");
 		DebugLocation(155, 1);
 		try
@@ -2758,7 +2653,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:156:11: ( NUM_INT | parameter )
 			int alt21=2;
 			try { DebugEnterSubRule(21);
-			try { DebugEnterDecision(21, decisionCanBacktrack[21]);
+			try { DebugEnterDecision(21, false);
 			int LA21_1 = input.LA(1);
 
 			if ((LA21_1==NUM_INT))
@@ -2769,14 +2664,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt21 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 21, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(21); }
 			switch (alt21)
 			{
@@ -2838,19 +2731,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("takeClause", 16);
 			LeaveRule("takeClause", 16);
 			LeaveRule_takeClause();
-	    }
-	 	DebugLocation(157, 1);
+		}
+		DebugLocation(157, 1);
 		} finally { DebugExitRule(GrammarFileName, "takeClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "takeClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_groupClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_groupClause() {}
+	partial void EnterRule_groupClause();
+	partial void LeaveRule_groupClause();
 	// $ANTLR start "groupClause"
 	// HqlSqlWalker.g:159:1: groupClause : ^( GROUP ( expr )+ ) ;
 	[GrammarRule("groupClause")]
@@ -2859,19 +2749,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_groupClause();
 		EnterRule("groupClause", 17);
 		TraceIn("groupClause", 17);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode GROUP40 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr41 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode GROUP40 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr41 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode GROUP40_tree = default(IASTNode);
-
+		IASTNode GROUP40_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "groupClause");
 		DebugLocation(159, 1);
 		try
@@ -2910,7 +2799,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt22=2;
-				try { DebugEnterDecision(22, decisionCanBacktrack[22]);
+				try { DebugEnterDecision(22, false);
 				int LA22_1 = input.LA(1);
 
 				if ((LA22_1==AGGREGATE||LA22_1==BAND||(LA22_1>=BNOT && LA22_1<=BOR)||(LA22_1>=BXOR && LA22_1<=CASE2)||LA22_1==COLON||LA22_1==COUNT||(LA22_1>=DIV && LA22_1<=DOT)||LA22_1==FALSE||LA22_1==IDENT||LA22_1==INDEX_OP||LA22_1==JAVA_CONSTANT||LA22_1==METHOD_CALL||LA22_1==MINUS||(LA22_1>=NULL && LA22_1<=NUM_LONG)||(LA22_1>=PARAM && LA22_1<=PLUS)||LA22_1==QUOTED_String||LA22_1==STAR||(LA22_1>=TRUE && LA22_1<=UNARY_MINUS)||LA22_1==VECTOR_EXPR||LA22_1==WEIRD_IDENT))
@@ -2976,19 +2865,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("groupClause", 17);
 			LeaveRule("groupClause", 17);
 			LeaveRule_groupClause();
-	    }
-	 	DebugLocation(161, 1);
+		}
+		DebugLocation(161, 1);
 		} finally { DebugExitRule(GrammarFileName, "groupClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "groupClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_havingClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_havingClause() {}
+	partial void EnterRule_havingClause();
+	partial void LeaveRule_havingClause();
 	// $ANTLR start "havingClause"
 	// HqlSqlWalker.g:163:1: havingClause : ^( HAVING logicalExpr ) ;
 	[GrammarRule("havingClause")]
@@ -2997,19 +2883,18 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_havingClause();
 		EnterRule("havingClause", 18);
 		TraceIn("havingClause", 18);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode HAVING42 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr43 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode HAVING42 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr43 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode HAVING42_tree = default(IASTNode);
-
+		IASTNode HAVING42_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "havingClause");
 		DebugLocation(163, 1);
 		try
@@ -3069,19 +2954,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("havingClause", 18);
 			LeaveRule("havingClause", 18);
 			LeaveRule_havingClause();
-	    }
-	 	DebugLocation(165, 1);
+		}
+		DebugLocation(165, 1);
 		} finally { DebugExitRule(GrammarFileName, "havingClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "havingClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectClause() {}
+	partial void EnterRule_selectClause();
+	partial void LeaveRule_selectClause();
 	// $ANTLR start "selectClause"
 	// HqlSqlWalker.g:167:1: selectClause : ^( SELECT (d= DISTINCT )? x= selectExprList ) -> ^( SELECT_CLAUSE[\"{select clause}\"] ( $d)? $x) ;
 	[GrammarRule("selectClause")]
@@ -3090,23 +2972,23 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectClause();
 		EnterRule("selectClause", 19);
 		TraceIn("selectClause", 19);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode d = default(IASTNode);
-	    IASTNode SELECT44 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode d = default(IASTNode);
+		IASTNode SELECT44 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode d_tree = default(IASTNode);
-	    IASTNode SELECT44_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_SELECT=new RewriteRuleNodeStream(adaptor,"token SELECT");
-	    RewriteRuleNodeStream stream_DISTINCT=new RewriteRuleNodeStream(adaptor,"token DISTINCT");
-	    RewriteRuleSubtreeStream stream_selectExprList=new RewriteRuleSubtreeStream(adaptor,"rule selectExprList");
+		IASTNode d_tree = default(IASTNode);
+		IASTNode SELECT44_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_SELECT=new RewriteRuleNodeStream(adaptor,"token SELECT");
+		RewriteRuleNodeStream stream_DISTINCT=new RewriteRuleNodeStream(adaptor,"token DISTINCT");
+		RewriteRuleSubtreeStream stream_selectExprList=new RewriteRuleSubtreeStream(adaptor,"rule selectExprList");
 		try { DebugEnterRule(GrammarFileName, "selectClause");
 		DebugLocation(167, 1);
 		try
@@ -3138,7 +3020,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:168:68: (d= DISTINCT )?
 			int alt23=2;
 			try { DebugEnterSubRule(23);
-			try { DebugEnterDecision(23, decisionCanBacktrack[23]);
+			try { DebugEnterDecision(23, false);
 			int LA23_1 = input.LA(1);
 
 			if ((LA23_1==DISTINCT))
@@ -3167,14 +3049,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			} finally { DebugExitSubRule(23); }
 
 			DebugLocation(168, 83);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._selectExprList_in_selectClause808);
 			x=selectExprList();
 			PopFollow();
 
 			stream_selectExprList.Add(x.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -3241,19 +3121,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectClause", 19);
 			LeaveRule("selectClause", 19);
 			LeaveRule_selectClause();
-	    }
-	 	DebugLocation(170, 1);
+		}
+		DebugLocation(170, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectExprList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectExprList() {}
+	partial void EnterRule_selectExprList();
+	partial void LeaveRule_selectExprList();
 	// $ANTLR start "selectExprList"
 	// HqlSqlWalker.g:172:1: selectExprList : ( selectExpr | aliasedSelectExpr )+ ;
 	[GrammarRule("selectExprList")]
@@ -3262,22 +3139,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectExprList();
 		EnterRule("selectExprList", 20);
 		TraceIn("selectExprList", 20);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr45 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr46 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr45 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr46 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 
-
-	    		bool oldInSelect = _inSelect;
-	    		_inSelect = true;
-	    	
+				bool oldInSelect = _inSelect;
+				_inSelect = true;
+			
 		try { DebugEnterRule(GrammarFileName, "selectExprList");
 		DebugLocation(172, 1);
 		try
@@ -3295,7 +3171,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt24=3;
-				try { DebugEnterDecision(24, decisionCanBacktrack[24]);
+				try { DebugEnterDecision(24, false);
 				int LA24_1 = input.LA(1);
 
 				if ((LA24_1==AGGREGATE||LA24_1==ALL||LA24_1==BAND||(LA24_1>=BNOT && LA24_1<=BOR)||(LA24_1>=BXOR && LA24_1<=CASE2)||LA24_1==COLON||(LA24_1>=CONSTRUCTOR && LA24_1<=COUNT)||(LA24_1>=DIV && LA24_1<=ELEMENTS)||LA24_1==IDENT||LA24_1==INDICES||LA24_1==METHOD_CALL||LA24_1==MINUS||(LA24_1>=NUM_DECIMAL && LA24_1<=OBJECT)||(LA24_1>=PARAM && LA24_1<=PLUS)||(LA24_1>=QUERY && LA24_1<=QUOTED_String)||LA24_1==STAR||LA24_1==UNARY_MINUS||LA24_1==UNION||LA24_1==WEIRD_IDENT))
@@ -3379,19 +3255,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectExprList", 20);
 			LeaveRule("selectExprList", 20);
 			LeaveRule_selectExprList();
-	    }
-	 	DebugLocation(179, 1);
+		}
+		DebugLocation(179, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectExprList"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectExprList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aliasedSelectExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aliasedSelectExpr() {}
+	partial void EnterRule_aliasedSelectExpr();
+	partial void LeaveRule_aliasedSelectExpr();
 	// $ANTLR start "aliasedSelectExpr"
 	// HqlSqlWalker.g:181:1: aliasedSelectExpr : ^( AS se= selectExpr i= identifier ) ;
 	[GrammarRule("aliasedSelectExpr")]
@@ -3400,20 +3273,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_aliasedSelectExpr();
 		EnterRule("aliasedSelectExpr", 21);
 		TraceIn("aliasedSelectExpr", 21);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode AS47 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> se = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode AS47 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> se = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode AS47_tree = default(IASTNode);
-
+		IASTNode AS47_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aliasedSelectExpr");
 		DebugLocation(181, 1);
 		try
@@ -3486,19 +3358,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("aliasedSelectExpr", 21);
 			LeaveRule("aliasedSelectExpr", 21);
 			LeaveRule_aliasedSelectExpr();
-	    }
-	 	DebugLocation(187, 1);
+		}
+		DebugLocation(187, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasedSelectExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "aliasedSelectExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_selectExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_selectExpr() {}
+	partial void EnterRule_selectExpr();
+	partial void LeaveRule_selectExpr();
 	// $ANTLR start "selectExpr"
 	// HqlSqlWalker.g:189:1: selectExpr : (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query );
 	[GrammarRule("selectExpr")]
@@ -3507,38 +3376,37 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_selectExpr();
 		EnterRule("selectExpr", 22);
 		TraceIn("selectExpr", 22);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode ALL48 = default(IASTNode);
-	    IASTNode OBJECT49 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> ar2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> ar3 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> con = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall50 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> parameter51 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> count52 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction53 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> literal54 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr55 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query56 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode ALL48 = default(IASTNode);
+		IASTNode OBJECT49 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> ar2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> ar3 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> con = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall50 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter51 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> count52 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction53 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> literal54 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr55 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query56 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode ALL48_tree = default(IASTNode);
-	    IASTNode OBJECT49_tree = default(IASTNode);
-
+		IASTNode ALL48_tree = default(IASTNode);
+		IASTNode OBJECT49_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectExpr");
 		DebugLocation(189, 1);
 		try
 		{
 			// HqlSqlWalker.g:190:2: (p= propertyRef | ^( ALL ar2= aliasRef ) | ^( OBJECT ar3= aliasRef ) |con= constructor | functionCall | parameter | count | collectionFunction | literal | arithmeticExpr | query )
 			int alt25=11;
-			try { DebugEnterDecision(25, decisionCanBacktrack[25]);
+			try { DebugEnterDecision(25, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -3897,19 +3765,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("selectExpr", 22);
 			LeaveRule("selectExpr", 22);
 			LeaveRule_selectExpr();
-	    }
-	 	DebugLocation(201, 1);
+		}
+		DebugLocation(201, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "selectExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_count() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_count() {}
+	partial void EnterRule_count();
+	partial void LeaveRule_count();
 	// $ANTLR start "count"
 	// HqlSqlWalker.g:203:1: count : ^( COUNT ( DISTINCT | ALL )? ( aggregateExpr | ROW_STAR ) ) ;
 	[GrammarRule("count")]
@@ -3918,23 +3783,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_count();
 		EnterRule("count", 23);
 		TraceIn("count", 23);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode COUNT57 = default(IASTNode);
-	    IASTNode set58 = default(IASTNode);
-	    IASTNode ROW_STAR60 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr59 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode COUNT57 = default(IASTNode);
+		IASTNode set58 = default(IASTNode);
+		IASTNode ROW_STAR60 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr59 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode COUNT57_tree = default(IASTNode);
-	    IASTNode set58_tree = default(IASTNode);
-	    IASTNode ROW_STAR60_tree = default(IASTNode);
-
+		IASTNode COUNT57_tree = default(IASTNode);
+		IASTNode set58_tree = default(IASTNode);
+		IASTNode ROW_STAR60_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "count");
 		DebugLocation(203, 1);
 		try
@@ -3967,7 +3831,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:204:12: ( DISTINCT | ALL )?
 			int alt26=2;
 			try { DebugEnterSubRule(26);
-			try { DebugEnterDecision(26, decisionCanBacktrack[26]);
+			try { DebugEnterDecision(26, false);
 			int LA26_1 = input.LA(1);
 
 			if ((LA26_1==ALL||LA26_1==DISTINCT))
@@ -4014,7 +3878,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:204:32: ( aggregateExpr | ROW_STAR )
 			int alt27=2;
 			try { DebugEnterSubRule(27);
-			try { DebugEnterDecision(27, decisionCanBacktrack[27]);
+			try { DebugEnterDecision(27, false);
 			int LA27_1 = input.LA(1);
 
 			if ((LA27_1==AGGREGATE||LA27_1==BAND||(LA27_1>=BNOT && LA27_1<=BOR)||(LA27_1>=BXOR && LA27_1<=CASE2)||LA27_1==COLON||LA27_1==COUNT||(LA27_1>=DIV && LA27_1<=ELEMENTS)||LA27_1==FALSE||LA27_1==IDENT||(LA27_1>=INDEX_OP && LA27_1<=INDICES)||LA27_1==JAVA_CONSTANT||LA27_1==METHOD_CALL||LA27_1==MINUS||(LA27_1>=NULL && LA27_1<=NUM_LONG)||(LA27_1>=PARAM && LA27_1<=PLUS)||LA27_1==QUOTED_String||LA27_1==STAR||(LA27_1>=TRUE && LA27_1<=UNARY_MINUS)||LA27_1==VECTOR_EXPR||LA27_1==WEIRD_IDENT))
@@ -4025,14 +3889,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt27 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 27, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(27); }
 			switch (alt27)
 			{
@@ -4094,19 +3956,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("count", 23);
 			LeaveRule("count", 23);
 			LeaveRule_count();
-	    }
-	 	DebugLocation(205, 1);
+		}
+		DebugLocation(205, 1);
 		} finally { DebugExitRule(GrammarFileName, "count"); }
 		return retval;
 
 	}
 	// $ANTLR end "count"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_constructor() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_constructor() {}
+	partial void EnterRule_constructor();
+	partial void LeaveRule_constructor();
 	// $ANTLR start "constructor"
 	// HqlSqlWalker.g:207:1: constructor : ^( CONSTRUCTOR path ( selectExpr | aliasedSelectExpr )* ) ;
 	[GrammarRule("constructor")]
@@ -4115,21 +3974,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_constructor();
 		EnterRule("constructor", 24);
 		TraceIn("constructor", 24);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode CONSTRUCTOR61 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> path62 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr63 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr64 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CONSTRUCTOR61 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> path62 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> selectExpr63 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aliasedSelectExpr64 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode CONSTRUCTOR61_tree = default(IASTNode);
-
+		IASTNode CONSTRUCTOR61_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constructor");
 		DebugLocation(207, 1);
 		try
@@ -4173,7 +4031,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt28=3;
-				try { DebugEnterDecision(28, decisionCanBacktrack[28]);
+				try { DebugEnterDecision(28, false);
 				int LA28_1 = input.LA(1);
 
 				if ((LA28_1==AGGREGATE||LA28_1==ALL||LA28_1==BAND||(LA28_1>=BNOT && LA28_1<=BOR)||(LA28_1>=BXOR && LA28_1<=CASE2)||LA28_1==COLON||(LA28_1>=CONSTRUCTOR && LA28_1<=COUNT)||(LA28_1>=DIV && LA28_1<=ELEMENTS)||LA28_1==IDENT||LA28_1==INDICES||LA28_1==METHOD_CALL||LA28_1==MINUS||(LA28_1>=NUM_DECIMAL && LA28_1<=OBJECT)||(LA28_1>=PARAM && LA28_1<=PLUS)||(LA28_1>=QUERY && LA28_1<=QUOTED_String)||LA28_1==STAR||LA28_1==UNARY_MINUS||LA28_1==UNION||LA28_1==WEIRD_IDENT))
@@ -4254,19 +4112,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("constructor", 24);
 			LeaveRule("constructor", 24);
 			LeaveRule_constructor();
-	    }
-	 	DebugLocation(209, 1);
+		}
+		DebugLocation(209, 1);
 		} finally { DebugExitRule(GrammarFileName, "constructor"); }
 		return retval;
 
 	}
 	// $ANTLR end "constructor"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aggregateExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aggregateExpr() {}
+	partial void EnterRule_aggregateExpr();
+	partial void LeaveRule_aggregateExpr();
 	// $ANTLR start "aggregateExpr"
 	// HqlSqlWalker.g:211:1: aggregateExpr : ( expr | collectionFunction );
 	[GrammarRule("aggregateExpr")]
@@ -4275,17 +4130,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_aggregateExpr();
 		EnterRule("aggregateExpr", 25);
 		TraceIn("aggregateExpr", 25);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr65 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction66 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr65 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction66 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "aggregateExpr");
 		DebugLocation(211, 1);
@@ -4293,7 +4147,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:212:2: ( expr | collectionFunction )
 			int alt29=2;
-			try { DebugEnterDecision(29, decisionCanBacktrack[29]);
+			try { DebugEnterDecision(29, false);
 			int LA29_1 = input.LA(1);
 
 			if ((LA29_1==AGGREGATE||LA29_1==BAND||(LA29_1>=BNOT && LA29_1<=BOR)||(LA29_1>=BXOR && LA29_1<=CASE2)||LA29_1==COLON||LA29_1==COUNT||(LA29_1>=DIV && LA29_1<=DOT)||LA29_1==FALSE||LA29_1==IDENT||LA29_1==INDEX_OP||LA29_1==JAVA_CONSTANT||LA29_1==METHOD_CALL||LA29_1==MINUS||(LA29_1>=NULL && LA29_1<=NUM_LONG)||(LA29_1>=PARAM && LA29_1<=PLUS)||LA29_1==QUOTED_String||LA29_1==STAR||(LA29_1>=TRUE && LA29_1<=UNARY_MINUS)||LA29_1==VECTOR_EXPR||LA29_1==WEIRD_IDENT))
@@ -4304,14 +4158,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt29 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 29, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(29); }
 			switch (alt29)
 			{
@@ -4366,19 +4218,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("aggregateExpr", 25);
 			LeaveRule("aggregateExpr", 25);
 			LeaveRule_aggregateExpr();
-	    }
-	 	DebugLocation(214, 1);
+		}
+		DebugLocation(214, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregateExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "aggregateExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromClause() {}
+	partial void EnterRule_fromClause();
+	partial void LeaveRule_fromClause();
 	// $ANTLR start "fromClause"
 	// HqlSqlWalker.g:217:1: fromClause : ^(f= FROM fromElementList ) ;
 	[GrammarRule("fromClause")]
@@ -4387,24 +4236,23 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_fromClause();
 		EnterRule("fromClause", 26);
 		TraceIn("fromClause", 26);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode f = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> fromElementList67 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode f = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElementList67 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode f_tree = default(IASTNode);
+		IASTNode f_tree = default(IASTNode);
 
-
-	    		// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
-	    		// the ouput AST (#fromClause) has not been built yet.
-	    		PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
-	    	
+				// NOTE: This references the INPUT AST! (see http://www.antlr.org/doc/trees.html#Action Translation)
+				// the ouput AST (#fromClause) has not been built yet.
+				PrepareFromClauseInputTree((IASTNode) input.LT(1), input);
+			
 		try { DebugEnterRule(GrammarFileName, "fromClause");
 		DebugLocation(217, 1);
 		try
@@ -4467,19 +4315,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("fromClause", 26);
 			LeaveRule("fromClause", 26);
 			LeaveRule_fromClause();
-	    }
-	 	DebugLocation(224, 1);
+		}
+		DebugLocation(224, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromElementList() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromElementList() {}
+	partial void EnterRule_fromElementList();
+	partial void LeaveRule_fromElementList();
 	// $ANTLR start "fromElementList"
 	// HqlSqlWalker.g:226:1: fromElementList : ( fromElement )+ ;
 	[GrammarRule("fromElementList")]
@@ -4488,21 +4333,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_fromElementList();
 		EnterRule("fromElementList", 27);
 		TraceIn("fromElementList", 27);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> fromElement68 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> fromElement68 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 
-
-	    		bool oldInFrom = _inFrom;
-	    		_inFrom = true;
-	    		
+				bool oldInFrom = _inFrom;
+				_inFrom = true;
+				
 		try { DebugEnterRule(GrammarFileName, "fromElementList");
 		DebugLocation(226, 1);
 		try
@@ -4520,7 +4364,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			while (true)
 			{
 				int alt30=2;
-				try { DebugEnterDecision(30, decisionCanBacktrack[30]);
+				try { DebugEnterDecision(30, false);
 				int LA30_1 = input.LA(1);
 
 				if ((LA30_1==FILTER_ENTITY||LA30_1==JOIN||LA30_1==RANGE))
@@ -4584,19 +4428,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("fromElementList", 27);
 			LeaveRule("fromElementList", 27);
 			LeaveRule_fromElementList();
-	    }
-	 	DebugLocation(233, 1);
+		}
+		DebugLocation(233, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromElementList"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromElementList"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_fromElement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_fromElement() {}
+	partial void EnterRule_fromElement();
+	partial void LeaveRule_fromElement();
 	// $ANTLR start "fromElement"
 	// HqlSqlWalker.g:235:1: fromElement : ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() );
 	[GrammarRule("fromElement")]
@@ -4605,35 +4446,35 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_fromElement();
 		EnterRule("fromElement", 28);
 		TraceIn("fromElement", 28);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode a = default(IASTNode);
-	    IASTNode pf = default(IASTNode);
-	    IASTNode fe = default(IASTNode);
-	    IASTNode a3 = default(IASTNode);
-	    IASTNode RANGE69 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> je = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode a = default(IASTNode);
+		IASTNode pf = default(IASTNode);
+		IASTNode fe = default(IASTNode);
+		IASTNode a3 = default(IASTNode);
+		IASTNode RANGE69 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> je = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode a_tree = default(IASTNode);
-	    IASTNode pf_tree = default(IASTNode);
-	    IASTNode fe_tree = default(IASTNode);
-	    IASTNode a3_tree = default(IASTNode);
-	    IASTNode RANGE69_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_RANGE=new RewriteRuleNodeStream(adaptor,"token RANGE");
-	    RewriteRuleNodeStream stream_ALIAS=new RewriteRuleNodeStream(adaptor,"token ALIAS");
-	    RewriteRuleNodeStream stream_FETCH=new RewriteRuleNodeStream(adaptor,"token FETCH");
-	    RewriteRuleNodeStream stream_FILTER_ENTITY=new RewriteRuleNodeStream(adaptor,"token FILTER_ENTITY");
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
-	    RewriteRuleSubtreeStream stream_joinElement=new RewriteRuleSubtreeStream(adaptor,"rule joinElement");
+		IASTNode a_tree = default(IASTNode);
+		IASTNode pf_tree = default(IASTNode);
+		IASTNode fe_tree = default(IASTNode);
+		IASTNode a3_tree = default(IASTNode);
+		IASTNode RANGE69_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_RANGE=new RewriteRuleNodeStream(adaptor,"token RANGE");
+		RewriteRuleNodeStream stream_ALIAS=new RewriteRuleNodeStream(adaptor,"token ALIAS");
+		RewriteRuleNodeStream stream_FETCH=new RewriteRuleNodeStream(adaptor,"token FETCH");
+		RewriteRuleNodeStream stream_FILTER_ENTITY=new RewriteRuleNodeStream(adaptor,"token FILTER_ENTITY");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_joinElement=new RewriteRuleSubtreeStream(adaptor,"rule joinElement");
 
-	       IASTNode fromElement = null;
+		   IASTNode fromElement = null;
 
 		try { DebugEnterRule(GrammarFileName, "fromElement");
 		DebugLocation(235, 1);
@@ -4641,7 +4482,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:240:2: ( ^( RANGE p= path (a= ALIAS )? (pf= FETCH )? ) -> {fromElement != null}? ^() ->|je= joinElement ->|fe= FILTER_ENTITY a3= ALIAS -> ^() )
 			int alt33=3;
-			try { DebugEnterDecision(33, decisionCanBacktrack[33]);
+			try { DebugEnterDecision(33, false);
 			switch (input.LA(1))
 			{
 			case RANGE:
@@ -4691,19 +4532,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				Match(input, TokenTypes.Down, null); 
 				DebugLocation(240, 13);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._path_in_fromElement1131);
 				p=path();
 				PopFollow();
 
 				stream_path.Add(p.Tree);
-
 				DebugLocation(240, 19);
 				// HqlSqlWalker.g:240:19: (a= ALIAS )?
 				int alt31=2;
 				try { DebugEnterSubRule(31);
-				try { DebugEnterDecision(31, decisionCanBacktrack[31]);
+				try { DebugEnterDecision(31, false);
 				int LA31_1 = input.LA(1);
 
 				if ((LA31_1==ALIAS))
@@ -4735,7 +4574,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:240:30: (pf= FETCH )?
 				int alt32=2;
 				try { DebugEnterSubRule(32);
-				try { DebugEnterDecision(32, decisionCanBacktrack[32]);
+				try { DebugEnterDecision(32, false);
 				int LA32_1 = input.LA(1);
 
 				if ((LA32_1==FETCH))
@@ -4815,14 +4654,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:243:4: je= joinElement
 				{
 				DebugLocation(243, 6);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._joinElement_in_fromElement1170);
 				je=joinElement();
 				PopFollow();
 
 				stream_joinElement.Add(je.Tree);
-
 
 
 				{
@@ -4914,19 +4751,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("fromElement", 28);
 			LeaveRule("fromElement", 28);
 			LeaveRule_fromElement();
-	    }
-	 	DebugLocation(248, 1);
+		}
+		DebugLocation(248, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromElement"); }
 		return retval;
 
 	}
 	// $ANTLR end "fromElement"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_joinElement() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_joinElement() {}
+	partial void EnterRule_joinElement();
+	partial void LeaveRule_joinElement();
 	// $ANTLR start "joinElement"
 	// HqlSqlWalker.g:250:1: joinElement : ^( JOIN (j= joinType )? (f= FETCH )? pRef= propertyRef (a= ALIAS )? (pf= FETCH )? ( ^( (with= WITH ) ( . )* ) )? ) ;
 	[GrammarRule("joinElement")]
@@ -4935,30 +4769,29 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_joinElement();
 		EnterRule("joinElement", 29);
 		TraceIn("joinElement", 29);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode f = default(IASTNode);
-	    IASTNode a = default(IASTNode);
-	    IASTNode pf = default(IASTNode);
-	    IASTNode with = default(IASTNode);
-	    IASTNode JOIN70 = default(IASTNode);
-	    IASTNode wildcard71 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> j = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> pRef = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode f = default(IASTNode);
+		IASTNode a = default(IASTNode);
+		IASTNode pf = default(IASTNode);
+		IASTNode with = default(IASTNode);
+		IASTNode JOIN70 = default(IASTNode);
+		IASTNode wildcard71 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> j = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> pRef = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode f_tree = default(IASTNode);
-	    IASTNode a_tree = default(IASTNode);
-	    IASTNode pf_tree = default(IASTNode);
-	    IASTNode with_tree = default(IASTNode);
-	    IASTNode JOIN70_tree = default(IASTNode);
-	    IASTNode wildcard71_tree = default(IASTNode);
-
+		IASTNode f_tree = default(IASTNode);
+		IASTNode a_tree = default(IASTNode);
+		IASTNode pf_tree = default(IASTNode);
+		IASTNode with_tree = default(IASTNode);
+		IASTNode JOIN70_tree = default(IASTNode);
+		IASTNode wildcard71_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "joinElement");
 		DebugLocation(250, 1);
 		try
@@ -4991,7 +4824,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:254:11: (j= joinType )?
 			int alt34=2;
 			try { DebugEnterSubRule(34);
-			try { DebugEnterDecision(34, decisionCanBacktrack[34]);
+			try { DebugEnterDecision(34, false);
 			int LA34_1 = input.LA(1);
 
 			if ((LA34_1==FULL||LA34_1==INNER||LA34_1==LEFT||LA34_1==RIGHT))
@@ -5027,7 +4860,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:254:56: (f= FETCH )?
 			int alt35=2;
 			try { DebugEnterSubRule(35);
-			try { DebugEnterDecision(35, decisionCanBacktrack[35]);
+			try { DebugEnterDecision(35, false);
 			int LA35_1 = input.LA(1);
 
 			if ((LA35_1==FETCH))
@@ -5070,7 +4903,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:254:84: (a= ALIAS )?
 			int alt36=2;
 			try { DebugEnterSubRule(36);
-			try { DebugEnterDecision(36, decisionCanBacktrack[36]);
+			try { DebugEnterDecision(36, false);
 			int LA36_1 = input.LA(1);
 
 			if ((LA36_1==ALIAS))
@@ -5104,7 +4937,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:254:95: (pf= FETCH )?
 			int alt37=2;
 			try { DebugEnterSubRule(37);
-			try { DebugEnterDecision(37, decisionCanBacktrack[37]);
+			try { DebugEnterDecision(37, false);
 			int LA37_1 = input.LA(1);
 
 			if ((LA37_1==FETCH))
@@ -5138,7 +4971,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:254:107: ( ^( (with= WITH ) ( . )* ) )?
 			int alt39=2;
 			try { DebugEnterSubRule(39);
-			try { DebugEnterDecision(39, decisionCanBacktrack[39]);
+			try { DebugEnterDecision(39, false);
 			int LA39_1 = input.LA(1);
 
 			if ((LA39_1==WITH))
@@ -5178,58 +5011,58 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 				if (input.LA(1) == TokenTypes.Down) {
-				    Match(input, TokenTypes.Down, null); 
-				    DebugLocation(254, 122);
-				    // HqlSqlWalker.g:254:122: ( . )*
-				    try { DebugEnterSubRule(38);
-				    while (true)
-				    {
-				    	int alt38=2;
-				    	try { DebugEnterDecision(38, decisionCanBacktrack[38]);
-				    	int LA38_1 = input.LA(1);
+					Match(input, TokenTypes.Down, null); 
+					DebugLocation(254, 122);
+					// HqlSqlWalker.g:254:122: ( . )*
+					try { DebugEnterSubRule(38);
+					while (true)
+					{
+						int alt38=2;
+						try { DebugEnterDecision(38, false);
+						int LA38_1 = input.LA(1);
 
-				    	if (((LA38_1>=AGGREGATE && LA38_1<=THETA_JOINS)))
-				    	{
-				    		alt38 = 1;
-				    	}
-				    	else if ((LA38_1==UP))
-				    	{
-				    		alt38 = 2;
-				    	}
-
-
-				    	} finally { DebugExitDecision(38); }
-				    	switch ( alt38 )
-				    	{
-				    	case 1:
-				    		DebugEnterAlt(1);
-				    		// HqlSqlWalker.g:254:122: .
-				    		{
-				    		DebugLocation(254, 122);
-
-				    		_last = (IASTNode)input.LT(1);
-				    		wildcard71=(IASTNode)input.LT(1);
-
-				    		MatchAny(input); 
-				    		wildcard71_tree = (IASTNode)adaptor.DupTree(wildcard71);
-				    		adaptor.AddChild(root_2, wildcard71_tree);
+						if (((LA38_1>=AGGREGATE && LA38_1<=THETA_JOINS)))
+						{
+							alt38 = 1;
+						}
+						else if ((LA38_1==UP))
+						{
+							alt38 = 2;
+						}
 
 
-				    		}
-				    		break;
+						} finally { DebugExitDecision(38); }
+						switch ( alt38 )
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// HqlSqlWalker.g:254:122: .
+							{
+							DebugLocation(254, 122);
 
-				    	default:
-				    		goto loop38;
-				    	}
-				    }
+							_last = (IASTNode)input.LT(1);
+							wildcard71=(IASTNode)input.LT(1);
 
-				    loop38:
-				    	;
-
-				    } finally { DebugExitSubRule(38); }
+							MatchAny(input); 
+							wildcard71_tree = (IASTNode)adaptor.DupTree(wildcard71);
+							adaptor.AddChild(root_2, wildcard71_tree);
 
 
-				    Match(input, TokenTypes.Up, null); 
+							}
+							break;
+
+						default:
+							goto loop38;
+						}
+					}
+
+					loop38:
+						;
+
+					} finally { DebugExitSubRule(38); }
+
+
+					Match(input, TokenTypes.Up, null); 
 				}
 				adaptor.AddChild(root_1, root_2);
 				_last = _save_last_2;
@@ -5269,8 +5102,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("joinElement", 29);
 			LeaveRule("joinElement", 29);
 			LeaveRule_joinElement();
-	    }
-	 	DebugLocation(259, 1);
+		}
+		DebugLocation(259, 1);
 		} finally { DebugExitRule(GrammarFileName, "joinElement"); }
 		return retval;
 
@@ -5280,13 +5113,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	private sealed partial class joinType_return : AstTreeRuleReturnScope<IASTNode, IASTNode>
 	{
 		public int j;
+		public joinType_return(HqlSqlWalker grammar) {OnCreated(grammar);}
+		partial void OnCreated(HqlSqlWalker grammar);
 	}
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_joinType() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_joinType() {}
+	partial void EnterRule_joinType();
+	partial void LeaveRule_joinType();
 	// $ANTLR start "joinType"
 	// HqlSqlWalker.g:263:1: joinType returns [int j] : ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER );
 	[GrammarRule("joinType")]
@@ -5295,28 +5127,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_joinType();
 		EnterRule("joinType", 30);
 		TraceIn("joinType", 30);
-	    HqlSqlWalker.joinType_return retval = new HqlSqlWalker.joinType_return();
-	    retval.Start = (IASTNode)input.LT(1);
+		HqlSqlWalker.joinType_return retval = new HqlSqlWalker.joinType_return(this);
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode left = default(IASTNode);
-	    IASTNode right = default(IASTNode);
-	    IASTNode outer = default(IASTNode);
-	    IASTNode FULL72 = default(IASTNode);
-	    IASTNode INNER73 = default(IASTNode);
+		IASTNode left = default(IASTNode);
+		IASTNode right = default(IASTNode);
+		IASTNode outer = default(IASTNode);
+		IASTNode FULL72 = default(IASTNode);
+		IASTNode INNER73 = default(IASTNode);
 
-	    IASTNode left_tree = default(IASTNode);
-	    IASTNode right_tree = default(IASTNode);
-	    IASTNode outer_tree = default(IASTNode);
-	    IASTNode FULL72_tree = default(IASTNode);
-	    IASTNode INNER73_tree = default(IASTNode);
+		IASTNode left_tree = default(IASTNode);
+		IASTNode right_tree = default(IASTNode);
+		IASTNode outer_tree = default(IASTNode);
+		IASTNode FULL72_tree = default(IASTNode);
+		IASTNode INNER73_tree = default(IASTNode);
 
-
-	       retval.j = INNER;
+		   retval.j = INNER;
 
 		try { DebugEnterRule(GrammarFileName, "joinType");
 		DebugLocation(263, 1);
@@ -5324,7 +5155,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:267:2: ( ( (left= LEFT |right= RIGHT ) (outer= OUTER )? ) | FULL | INNER )
 			int alt42=3;
-			try { DebugEnterDecision(42, decisionCanBacktrack[42]);
+			try { DebugEnterDecision(42, false);
 			switch (input.LA(1))
 			{
 			case LEFT:
@@ -5369,7 +5200,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:267:6: (left= LEFT |right= RIGHT )
 				int alt40=2;
 				try { DebugEnterSubRule(40);
-				try { DebugEnterDecision(40, decisionCanBacktrack[40]);
+				try { DebugEnterDecision(40, false);
 				int LA40_1 = input.LA(1);
 
 				if ((LA40_1==LEFT))
@@ -5380,14 +5211,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				{
 					alt40 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 40, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(40); }
 				switch (alt40)
 				{
@@ -5431,7 +5260,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:267:32: (outer= OUTER )?
 				int alt41=2;
 				try { DebugEnterSubRule(41);
-				try { DebugEnterDecision(41, decisionCanBacktrack[41]);
+				try { DebugEnterDecision(41, false);
 				int LA41_1 = input.LA(1);
 
 				if ((LA41_1==OUTER))
@@ -5532,8 +5361,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("joinType", 30);
 			LeaveRule("joinType", 30);
 			LeaveRule_joinType();
-	    }
-	 	DebugLocation(279, 1);
+		}
+		DebugLocation(279, 1);
 		} finally { DebugExitRule(GrammarFileName, "joinType"); }
 		return retval;
 
@@ -5543,13 +5372,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	private sealed partial class path_return : AstTreeRuleReturnScope<IASTNode, IASTNode>
 	{
 		public String p;
+		public path_return(HqlSqlWalker grammar) {OnCreated(grammar);}
+		partial void OnCreated(HqlSqlWalker grammar);
 	}
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_path() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_path() {}
+	partial void EnterRule_path();
+	partial void LeaveRule_path();
 	// $ANTLR start "path"
 	// HqlSqlWalker.g:283:1: path returns [String p] : (a= identifier | ^( DOT x= path y= identifier ) );
 	[GrammarRule("path")]
@@ -5558,28 +5386,27 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_path();
 		EnterRule("path", 31);
 		TraceIn("path", 31);
-	    HqlSqlWalker.path_return retval = new HqlSqlWalker.path_return();
-	    retval.Start = (IASTNode)input.LT(1);
+		HqlSqlWalker.path_return retval = new HqlSqlWalker.path_return(this);
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode DOT74 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> a = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> y = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode DOT74 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> a = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> x = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> y = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode DOT74_tree = default(IASTNode);
-
+		IASTNode DOT74_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "path");
 		DebugLocation(283, 1);
 		try
 		{
 			// HqlSqlWalker.g:284:2: (a= identifier | ^( DOT x= path y= identifier ) )
 			int alt43=2;
-			try { DebugEnterDecision(43, decisionCanBacktrack[43]);
+			try { DebugEnterDecision(43, false);
 			int LA43_1 = input.LA(1);
 
 			if ((LA43_1==IDENT||LA43_1==WEIRD_IDENT))
@@ -5590,14 +5417,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt43 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 43, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(43); }
 			switch (alt43)
 			{
@@ -5693,19 +5518,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("path", 31);
 			LeaveRule("path", 31);
 			LeaveRule_path();
-	    }
-	 	DebugLocation(290, 1);
+		}
+		DebugLocation(290, 1);
 		} finally { DebugExitRule(GrammarFileName, "path"); }
 		return retval;
 
 	}
 	// $ANTLR end "path"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_pathAsIdent() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_pathAsIdent() {}
+	partial void EnterRule_pathAsIdent();
+	partial void LeaveRule_pathAsIdent();
 	// $ANTLR start "pathAsIdent"
 	// HqlSqlWalker.g:293:1: pathAsIdent : path -> ^( IDENT[$path.p] ) ;
 	[GrammarRule("pathAsIdent")]
@@ -5714,17 +5536,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_pathAsIdent();
 		EnterRule("pathAsIdent", 32);
 		TraceIn("pathAsIdent", 32);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> path75 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> path75 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
+		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "pathAsIdent");
 		DebugLocation(293, 4);
 		try
@@ -5734,14 +5556,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:294:7: path
 			{
 			DebugLocation(294, 7);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._path_in_pathAsIdent1391);
 			path75=path();
 			PopFollow();
 
 			stream_path.Add(path75.Tree);
-
 
 
 			{
@@ -5788,19 +5608,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("pathAsIdent", 32);
 			LeaveRule("pathAsIdent", 32);
 			LeaveRule_pathAsIdent();
-	    }
-	 	DebugLocation(296, 4);
+		}
+		DebugLocation(296, 4);
 		} finally { DebugExitRule(GrammarFileName, "pathAsIdent"); }
 		return retval;
 
 	}
 	// $ANTLR end "pathAsIdent"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_withClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_withClause() {}
+	partial void EnterRule_withClause();
+	partial void LeaveRule_withClause();
 	// $ANTLR start "withClause"
 	// HqlSqlWalker.g:298:1: withClause : ^(w= WITH b= logicalExpr ) -> ^( $w $b) ;
 	[GrammarRule("withClause")]
@@ -5809,20 +5626,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_withClause();
 		EnterRule("withClause", 33);
 		TraceIn("withClause", 33);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode w = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> b = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode w = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> b = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode w_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_WITH=new RewriteRuleNodeStream(adaptor,"token WITH");
-	    RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
+		IASTNode w_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_WITH=new RewriteRuleNodeStream(adaptor,"token WITH");
+		RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
 		try { DebugEnterRule(GrammarFileName, "withClause");
 		DebugLocation(298, 1);
 		try
@@ -5851,14 +5668,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(305, 45);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._logicalExpr_in_withClause1438);
 			b=logicalExpr();
 			PopFollow();
 
 			stream_logicalExpr.Add(b.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -5916,19 +5731,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("withClause", 33);
 			LeaveRule("withClause", 33);
 			LeaveRule_withClause();
-	    }
-	 	DebugLocation(307, 1);
+		}
+		DebugLocation(307, 1);
 		} finally { DebugExitRule(GrammarFileName, "withClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "withClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_whereClause() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_whereClause() {}
+	partial void EnterRule_whereClause();
+	partial void LeaveRule_whereClause();
 	// $ANTLR start "whereClause"
 	// HqlSqlWalker.g:309:1: whereClause : ^(w= WHERE b= logicalExpr ) -> ^( $w $b) ;
 	[GrammarRule("whereClause")]
@@ -5937,20 +5749,20 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_whereClause();
 		EnterRule("whereClause", 34);
 		TraceIn("whereClause", 34);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode w = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> b = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode w = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> b = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode w_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_WHERE=new RewriteRuleNodeStream(adaptor,"token WHERE");
-	    RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
+		IASTNode w_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_WHERE=new RewriteRuleNodeStream(adaptor,"token WHERE");
+		RewriteRuleSubtreeStream stream_logicalExpr=new RewriteRuleSubtreeStream(adaptor,"rule logicalExpr");
 		try { DebugEnterRule(GrammarFileName, "whereClause");
 		DebugLocation(309, 1);
 		try
@@ -5979,14 +5791,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(310, 47);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._logicalExpr_in_whereClause1472);
 			b=logicalExpr();
 			PopFollow();
 
 			stream_logicalExpr.Add(b.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -6044,19 +5854,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("whereClause", 34);
 			LeaveRule("whereClause", 34);
 			LeaveRule_whereClause();
-	    }
-	 	DebugLocation(312, 1);
+		}
+		DebugLocation(312, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClause"); }
 		return retval;
 
 	}
 	// $ANTLR end "whereClause"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_logicalExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_logicalExpr() {}
+	partial void EnterRule_logicalExpr();
+	partial void LeaveRule_logicalExpr();
 	// $ANTLR start "logicalExpr"
 	// HqlSqlWalker.g:314:1: logicalExpr : ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath );
 	[GrammarRule("logicalExpr")]
@@ -6065,37 +5872,36 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_logicalExpr();
 		EnterRule("logicalExpr", 35);
 		TraceIn("logicalExpr", 35);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode AND76 = default(IASTNode);
-	    IASTNode OR79 = default(IASTNode);
-	    IASTNode NOT82 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr77 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr78 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr80 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr81 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr83 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr84 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall85 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalPath86 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode AND76 = default(IASTNode);
+		IASTNode OR79 = default(IASTNode);
+		IASTNode NOT82 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr77 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr78 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr80 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr81 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr83 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr84 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall85 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalPath86 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode AND76_tree = default(IASTNode);
-	    IASTNode OR79_tree = default(IASTNode);
-	    IASTNode NOT82_tree = default(IASTNode);
-
+		IASTNode AND76_tree = default(IASTNode);
+		IASTNode OR79_tree = default(IASTNode);
+		IASTNode NOT82_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "logicalExpr");
 		DebugLocation(314, 1);
 		try
 		{
 			// HqlSqlWalker.g:315:2: ( ^( AND logicalExpr logicalExpr ) | ^( OR logicalExpr logicalExpr ) | ^( NOT logicalExpr ) | comparisonExpr | functionCall | logicalPath )
 			int alt44=6;
-			try { DebugEnterDecision(44, decisionCanBacktrack[44]);
+			try { DebugEnterDecision(44, false);
 			switch (input.LA(1))
 			{
 			case AND:
@@ -6370,19 +6176,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("logicalExpr", 35);
 			LeaveRule("logicalExpr", 35);
 			LeaveRule_logicalExpr();
-	    }
-	 	DebugLocation(321, 1);
+		}
+		DebugLocation(321, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "logicalExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_logicalPath() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_logicalPath() {}
+	partial void EnterRule_logicalPath();
+	partial void LeaveRule_logicalPath();
 	// $ANTLR start "logicalPath"
 	// HqlSqlWalker.g:323:1: logicalPath : p= addrExpr[ true ] -> ^( EQ $p TRUE ) ;
 	[GrammarRule("logicalPath")]
@@ -6391,17 +6194,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_logicalPath();
 		EnterRule("logicalPath", 36);
 		TraceIn("logicalPath", 36);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    RewriteRuleSubtreeStream stream_addrExpr=new RewriteRuleSubtreeStream(adaptor,"rule addrExpr");
+		RewriteRuleSubtreeStream stream_addrExpr=new RewriteRuleSubtreeStream(adaptor,"rule addrExpr");
 		try { DebugEnterRule(GrammarFileName, "logicalPath");
 		DebugLocation(323, 1);
 		try
@@ -6411,14 +6214,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:327:4: p= addrExpr[ true ]
 			{
 			DebugLocation(327, 5);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._addrExpr_in_logicalPath1557);
 			p=addrExpr(true);
 			PopFollow();
 
 			stream_addrExpr.Add(p.Tree);
-
 			DebugLocation(327, 24);
 			Resolve((p!=null?((IASTNode)p.Tree):default(IASTNode)));
 
@@ -6476,19 +6277,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("logicalPath", 36);
 			LeaveRule("logicalPath", 36);
 			LeaveRule_logicalPath();
-	    }
-	 	DebugLocation(328, 1);
+		}
+		DebugLocation(328, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalPath"); }
 		return retval;
 
 	}
 	// $ANTLR end "logicalPath"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_comparisonExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_comparisonExpr() {}
+	partial void EnterRule_comparisonExpr();
+	partial void LeaveRule_comparisonExpr();
 	// $ANTLR start "comparisonExpr"
 	// HqlSqlWalker.g:331:1: comparisonExpr : ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) ) ;
 	[GrammarRule("comparisonExpr")]
@@ -6497,82 +6295,81 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_comparisonExpr();
 		EnterRule("comparisonExpr", 37);
 		TraceIn("comparisonExpr", 37);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode EQ87 = default(IASTNode);
-	    IASTNode NE90 = default(IASTNode);
-	    IASTNode LT93 = default(IASTNode);
-	    IASTNode GT96 = default(IASTNode);
-	    IASTNode LE99 = default(IASTNode);
-	    IASTNode GE102 = default(IASTNode);
-	    IASTNode LIKE105 = default(IASTNode);
-	    IASTNode ESCAPE108 = default(IASTNode);
-	    IASTNode NOT_LIKE110 = default(IASTNode);
-	    IASTNode ESCAPE113 = default(IASTNode);
-	    IASTNode BETWEEN115 = default(IASTNode);
-	    IASTNode NOT_BETWEEN119 = default(IASTNode);
-	    IASTNode IN123 = default(IASTNode);
-	    IASTNode NOT_IN126 = default(IASTNode);
-	    IASTNode IS_NULL129 = default(IASTNode);
-	    IASTNode IS_NOT_NULL131 = default(IASTNode);
-	    IASTNode EXISTS133 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery88 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery89 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery91 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery92 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery94 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery95 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery97 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery98 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery100 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery101 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery103 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery104 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery106 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr107 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr109 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery111 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr112 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr114 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery116 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery117 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery118 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery120 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery121 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery122 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery124 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs125 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery127 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs128 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery130 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery132 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr134 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect135 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode EQ87 = default(IASTNode);
+		IASTNode NE90 = default(IASTNode);
+		IASTNode LT93 = default(IASTNode);
+		IASTNode GT96 = default(IASTNode);
+		IASTNode LE99 = default(IASTNode);
+		IASTNode GE102 = default(IASTNode);
+		IASTNode LIKE105 = default(IASTNode);
+		IASTNode ESCAPE108 = default(IASTNode);
+		IASTNode NOT_LIKE110 = default(IASTNode);
+		IASTNode ESCAPE113 = default(IASTNode);
+		IASTNode BETWEEN115 = default(IASTNode);
+		IASTNode NOT_BETWEEN119 = default(IASTNode);
+		IASTNode IN123 = default(IASTNode);
+		IASTNode NOT_IN126 = default(IASTNode);
+		IASTNode IS_NULL129 = default(IASTNode);
+		IASTNode IS_NOT_NULL131 = default(IASTNode);
+		IASTNode EXISTS133 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery88 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery89 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery91 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery92 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery94 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery95 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery97 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery98 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery100 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery101 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery103 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery104 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery106 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr107 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr109 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery111 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr112 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr114 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery116 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery117 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery118 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery120 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery121 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery122 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery124 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs125 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery127 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> inRhs128 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery130 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery132 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr134 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect135 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode EQ87_tree = default(IASTNode);
-	    IASTNode NE90_tree = default(IASTNode);
-	    IASTNode LT93_tree = default(IASTNode);
-	    IASTNode GT96_tree = default(IASTNode);
-	    IASTNode LE99_tree = default(IASTNode);
-	    IASTNode GE102_tree = default(IASTNode);
-	    IASTNode LIKE105_tree = default(IASTNode);
-	    IASTNode ESCAPE108_tree = default(IASTNode);
-	    IASTNode NOT_LIKE110_tree = default(IASTNode);
-	    IASTNode ESCAPE113_tree = default(IASTNode);
-	    IASTNode BETWEEN115_tree = default(IASTNode);
-	    IASTNode NOT_BETWEEN119_tree = default(IASTNode);
-	    IASTNode IN123_tree = default(IASTNode);
-	    IASTNode NOT_IN126_tree = default(IASTNode);
-	    IASTNode IS_NULL129_tree = default(IASTNode);
-	    IASTNode IS_NOT_NULL131_tree = default(IASTNode);
-	    IASTNode EXISTS133_tree = default(IASTNode);
-
+		IASTNode EQ87_tree = default(IASTNode);
+		IASTNode NE90_tree = default(IASTNode);
+		IASTNode LT93_tree = default(IASTNode);
+		IASTNode GT96_tree = default(IASTNode);
+		IASTNode LE99_tree = default(IASTNode);
+		IASTNode GE102_tree = default(IASTNode);
+		IASTNode LIKE105_tree = default(IASTNode);
+		IASTNode ESCAPE108_tree = default(IASTNode);
+		IASTNode NOT_LIKE110_tree = default(IASTNode);
+		IASTNode ESCAPE113_tree = default(IASTNode);
+		IASTNode BETWEEN115_tree = default(IASTNode);
+		IASTNode NOT_BETWEEN119_tree = default(IASTNode);
+		IASTNode IN123_tree = default(IASTNode);
+		IASTNode NOT_IN126_tree = default(IASTNode);
+		IASTNode IS_NULL129_tree = default(IASTNode);
+		IASTNode IS_NOT_NULL131_tree = default(IASTNode);
+		IASTNode EXISTS133_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "comparisonExpr");
 		DebugLocation(331, 1);
 		try
@@ -6587,7 +6384,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:336:2: ( ^( EQ exprOrSubquery exprOrSubquery ) | ^( NE exprOrSubquery exprOrSubquery ) | ^( LT exprOrSubquery exprOrSubquery ) | ^( GT exprOrSubquery exprOrSubquery ) | ^( LE exprOrSubquery exprOrSubquery ) | ^( GE exprOrSubquery exprOrSubquery ) | ^( LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( NOT_LIKE exprOrSubquery expr ( ^( ESCAPE expr ) )? ) | ^( BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery ) | ^( IN exprOrSubquery inRhs ) | ^( NOT_IN exprOrSubquery inRhs ) | ^( IS_NULL exprOrSubquery ) | ^( IS_NOT_NULL exprOrSubquery ) | ^( EXISTS ( expr | collectionFunctionOrSubselect ) ) )
 			int alt48=15;
 			try { DebugEnterSubRule(48);
-			try { DebugEnterDecision(48, decisionCanBacktrack[48]);
+			try { DebugEnterDecision(48, false);
 			switch (input.LA(1))
 			{
 			case EQ:
@@ -7014,7 +6811,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:342:31: ( ^( ESCAPE expr ) )?
 				int alt45=2;
 				try { DebugEnterSubRule(45);
-				try { DebugEnterDecision(45, decisionCanBacktrack[45]);
+				try { DebugEnterDecision(45, false);
 				int LA45_1 = input.LA(1);
 
 				if ((LA45_1==ESCAPE))
@@ -7121,7 +6918,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:343:35: ( ^( ESCAPE expr ) )?
 				int alt46=2;
 				try { DebugEnterSubRule(46);
-				try { DebugEnterDecision(46, decisionCanBacktrack[46]);
+				try { DebugEnterDecision(46, false);
 				int LA46_1 = input.LA(1);
 
 				if ((LA46_1==ESCAPE))
@@ -7504,7 +7301,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:352:13: ( expr | collectionFunctionOrSubselect )
 				int alt47=2;
 				try { DebugEnterSubRule(47);
-				try { DebugEnterDecision(47, decisionCanBacktrack[47]);
+				try { DebugEnterDecision(47, false);
 				int LA47_1 = input.LA(1);
 
 				if ((LA47_1==AGGREGATE||LA47_1==BAND||(LA47_1>=BNOT && LA47_1<=BOR)||(LA47_1>=BXOR && LA47_1<=CASE2)||LA47_1==COLON||LA47_1==COUNT||(LA47_1>=DIV && LA47_1<=DOT)||LA47_1==FALSE||LA47_1==IDENT||LA47_1==INDEX_OP||LA47_1==JAVA_CONSTANT||LA47_1==METHOD_CALL||LA47_1==MINUS||(LA47_1>=NULL && LA47_1<=NUM_LONG)||(LA47_1>=PARAM && LA47_1<=PLUS)||LA47_1==QUOTED_String||LA47_1==STAR||(LA47_1>=TRUE && LA47_1<=UNARY_MINUS)||LA47_1==VECTOR_EXPR||LA47_1==WEIRD_IDENT))
@@ -7515,14 +7312,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				{
 					alt47 = 2;
 				}
-
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 47, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-
 				} finally { DebugExitDecision(47); }
 				switch (alt47)
 				{
@@ -7594,19 +7389,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("comparisonExpr", 37);
 			LeaveRule("comparisonExpr", 37);
 			LeaveRule_comparisonExpr();
-	    }
-	 	DebugLocation(354, 1);
+		}
+		DebugLocation(354, 1);
 		} finally { DebugExitRule(GrammarFileName, "comparisonExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "comparisonExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_inRhs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_inRhs() {}
+	partial void EnterRule_inRhs();
+	partial void LeaveRule_inRhs();
 	// $ANTLR start "inRhs"
 	// HqlSqlWalker.g:356:1: inRhs : ^( IN_LIST ( collectionFunctionOrSubselect | ( expr )* ) ) ;
 	[GrammarRule("inRhs")]
@@ -7615,22 +7407,21 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_inRhs();
 		EnterRule("inRhs", 38);
 		TraceIn("inRhs", 38);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode IN_LIST136 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect137 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr138 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode IN_LIST136 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect137 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr138 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode IN_LIST136_tree = default(IASTNode);
-
-	    	int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
-	    	
+		IASTNode IN_LIST136_tree = default(IASTNode);
+			int UP = 99999;		// TODO - added this to get compile working.  It's bogus & should be removed
+			
 		try { DebugEnterRule(GrammarFileName, "inRhs");
 		DebugLocation(356, 1);
 		try
@@ -7659,107 +7450,105 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 			if (input.LA(1) == TokenTypes.Down) {
-			    Match(input, TokenTypes.Down, null); 
-			    DebugLocation(358, 14);
-			    // HqlSqlWalker.g:358:14: ( collectionFunctionOrSubselect | ( expr )* )
-			    int alt50=2;
-			    try { DebugEnterSubRule(50);
-			    try { DebugEnterDecision(50, decisionCanBacktrack[50]);
-			    int LA50_1 = input.LA(1);
+				Match(input, TokenTypes.Down, null); 
+				DebugLocation(358, 14);
+				// HqlSqlWalker.g:358:14: ( collectionFunctionOrSubselect | ( expr )* )
+				int alt50=2;
+				try { DebugEnterSubRule(50);
+				try { DebugEnterDecision(50, false);
+				int LA50_1 = input.LA(1);
 
-			    if ((LA50_1==ELEMENTS||LA50_1==INDICES||LA50_1==QUERY||LA50_1==UNION))
-			    {
-			    	alt50 = 1;
-			    }
-			    else if (((LA50_1>=UP && LA50_1<=AGGREGATE)||LA50_1==BAND||(LA50_1>=BNOT && LA50_1<=BOR)||(LA50_1>=BXOR && LA50_1<=CASE2)||LA50_1==COLON||LA50_1==COUNT||(LA50_1>=DIV && LA50_1<=DOT)||LA50_1==FALSE||LA50_1==IDENT||LA50_1==INDEX_OP||LA50_1==JAVA_CONSTANT||LA50_1==METHOD_CALL||LA50_1==MINUS||(LA50_1>=NULL && LA50_1<=NUM_LONG)||(LA50_1>=PARAM && LA50_1<=PLUS)||LA50_1==QUOTED_String||LA50_1==STAR||(LA50_1>=TRUE && LA50_1<=UNARY_MINUS)||LA50_1==VECTOR_EXPR||LA50_1==WEIRD_IDENT))
-			    {
-			    	alt50 = 2;
-			    }
+				if ((LA50_1==ELEMENTS||LA50_1==INDICES||LA50_1==QUERY||LA50_1==UNION))
+				{
+					alt50 = 1;
+				}
+				else if (((LA50_1>=UP && LA50_1<=AGGREGATE)||LA50_1==BAND||(LA50_1>=BNOT && LA50_1<=BOR)||(LA50_1>=BXOR && LA50_1<=CASE2)||LA50_1==COLON||LA50_1==COUNT||(LA50_1>=DIV && LA50_1<=DOT)||LA50_1==FALSE||LA50_1==IDENT||LA50_1==INDEX_OP||LA50_1==JAVA_CONSTANT||LA50_1==METHOD_CALL||LA50_1==MINUS||(LA50_1>=NULL && LA50_1<=NUM_LONG)||(LA50_1>=PARAM && LA50_1<=PLUS)||LA50_1==QUOTED_String||LA50_1==STAR||(LA50_1>=TRUE && LA50_1<=UNARY_MINUS)||LA50_1==VECTOR_EXPR||LA50_1==WEIRD_IDENT))
+				{
+					alt50 = 2;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 50, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				} finally { DebugExitDecision(50); }
+				switch (alt50)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// HqlSqlWalker.g:358:16: collectionFunctionOrSubselect
+					{
+					DebugLocation(358, 16);
 
-			    else
-			    {
-			    	NoViableAltException nvae = new NoViableAltException("", 50, 0, input, 1);
-			    	DebugRecognitionException(nvae);
-			    	throw nvae;
-			    }
+					_last = (IASTNode)input.LT(1);
+					PushFollow(Follow._collectionFunctionOrSubselect_in_inRhs1813);
+					collectionFunctionOrSubselect137=collectionFunctionOrSubselect();
+					PopFollow();
 
-			    } finally { DebugExitDecision(50); }
-			    switch (alt50)
-			    {
-			    case 1:
-			    	DebugEnterAlt(1);
-			    	// HqlSqlWalker.g:358:16: collectionFunctionOrSubselect
-			    	{
-			    	DebugLocation(358, 16);
-
-			    	_last = (IASTNode)input.LT(1);
-			    	PushFollow(Follow._collectionFunctionOrSubselect_in_inRhs1813);
-			    	collectionFunctionOrSubselect137=collectionFunctionOrSubselect();
-			    	PopFollow();
-
-			    	adaptor.AddChild(root_1, collectionFunctionOrSubselect137.Tree);
+					adaptor.AddChild(root_1, collectionFunctionOrSubselect137.Tree);
 
 
-			    	}
-			    	break;
-			    case 2:
-			    	DebugEnterAlt(2);
-			    	// HqlSqlWalker.g:358:48: ( expr )*
-			    	{
-			    	DebugLocation(358, 48);
-			    	// HqlSqlWalker.g:358:48: ( expr )*
-			    	try { DebugEnterSubRule(49);
-			    	while (true)
-			    	{
-			    		int alt49=2;
-			    		try { DebugEnterDecision(49, decisionCanBacktrack[49]);
-			    		int LA49_1 = input.LA(1);
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// HqlSqlWalker.g:358:48: ( expr )*
+					{
+					DebugLocation(358, 48);
+					// HqlSqlWalker.g:358:48: ( expr )*
+					try { DebugEnterSubRule(49);
+					while (true)
+					{
+						int alt49=2;
+						try { DebugEnterDecision(49, false);
+						int LA49_1 = input.LA(1);
 
-			    		if ((LA49_1==AGGREGATE||LA49_1==BAND||(LA49_1>=BNOT && LA49_1<=BOR)||(LA49_1>=BXOR && LA49_1<=CASE2)||LA49_1==COLON||LA49_1==COUNT||(LA49_1>=DIV && LA49_1<=DOT)||LA49_1==FALSE||LA49_1==IDENT||LA49_1==INDEX_OP||LA49_1==JAVA_CONSTANT||LA49_1==METHOD_CALL||LA49_1==MINUS||(LA49_1>=NULL && LA49_1<=NUM_LONG)||(LA49_1>=PARAM && LA49_1<=PLUS)||LA49_1==QUOTED_String||LA49_1==STAR||(LA49_1>=TRUE && LA49_1<=UNARY_MINUS)||LA49_1==VECTOR_EXPR||LA49_1==WEIRD_IDENT))
-			    		{
-			    			alt49 = 1;
-			    		}
-
-
-			    		} finally { DebugExitDecision(49); }
-			    		switch ( alt49 )
-			    		{
-			    		case 1:
-			    			DebugEnterAlt(1);
-			    			// HqlSqlWalker.g:358:48: expr
-			    			{
-			    			DebugLocation(358, 48);
-
-			    			_last = (IASTNode)input.LT(1);
-			    			PushFollow(Follow._expr_in_inRhs1817);
-			    			expr138=expr();
-			    			PopFollow();
-
-			    			adaptor.AddChild(root_1, expr138.Tree);
+						if ((LA49_1==AGGREGATE||LA49_1==BAND||(LA49_1>=BNOT && LA49_1<=BOR)||(LA49_1>=BXOR && LA49_1<=CASE2)||LA49_1==COLON||LA49_1==COUNT||(LA49_1>=DIV && LA49_1<=DOT)||LA49_1==FALSE||LA49_1==IDENT||LA49_1==INDEX_OP||LA49_1==JAVA_CONSTANT||LA49_1==METHOD_CALL||LA49_1==MINUS||(LA49_1>=NULL && LA49_1<=NUM_LONG)||(LA49_1>=PARAM && LA49_1<=PLUS)||LA49_1==QUOTED_String||LA49_1==STAR||(LA49_1>=TRUE && LA49_1<=UNARY_MINUS)||LA49_1==VECTOR_EXPR||LA49_1==WEIRD_IDENT))
+						{
+							alt49 = 1;
+						}
 
 
-			    			}
-			    			break;
+						} finally { DebugExitDecision(49); }
+						switch ( alt49 )
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// HqlSqlWalker.g:358:48: expr
+							{
+							DebugLocation(358, 48);
 
-			    		default:
-			    			goto loop49;
-			    		}
-			    	}
+							_last = (IASTNode)input.LT(1);
+							PushFollow(Follow._expr_in_inRhs1817);
+							expr138=expr();
+							PopFollow();
 
-			    	loop49:
-			    		;
-
-			    	} finally { DebugExitSubRule(49); }
-
-
-			    	}
-			    	break;
-
-			    }
-			    } finally { DebugExitSubRule(50); }
+							adaptor.AddChild(root_1, expr138.Tree);
 
 
-			    Match(input, TokenTypes.Up, null); 
+							}
+							break;
+
+						default:
+							goto loop49;
+						}
+					}
+
+					loop49:
+						;
+
+					} finally { DebugExitSubRule(49); }
+
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(50); }
+
+
+				Match(input, TokenTypes.Up, null); 
 			}
 			adaptor.AddChild(root_0, root_1);
 			_last = _save_last_1;
@@ -7781,19 +7570,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("inRhs", 38);
 			LeaveRule("inRhs", 38);
 			LeaveRule_inRhs();
-	    }
-	 	DebugLocation(359, 1);
+		}
+		DebugLocation(359, 1);
 		} finally { DebugExitRule(GrammarFileName, "inRhs"); }
 		return retval;
 
 	}
 	// $ANTLR end "inRhs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_exprOrSubquery() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_exprOrSubquery() {}
+	partial void EnterRule_exprOrSubquery();
+	partial void LeaveRule_exprOrSubquery();
 	// $ANTLR start "exprOrSubquery"
 	// HqlSqlWalker.g:361:1: exprOrSubquery : ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) );
 	[GrammarRule("exprOrSubquery")]
@@ -7802,34 +7588,33 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_exprOrSubquery();
 		EnterRule("exprOrSubquery", 39);
 		TraceIn("exprOrSubquery", 39);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode ANY141 = default(IASTNode);
-	    IASTNode ALL143 = default(IASTNode);
-	    IASTNode SOME145 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr139 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query140 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect142 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect144 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect146 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode ANY141 = default(IASTNode);
+		IASTNode ALL143 = default(IASTNode);
+		IASTNode SOME145 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr139 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query140 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect142 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect144 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunctionOrSubselect146 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode ANY141_tree = default(IASTNode);
-	    IASTNode ALL143_tree = default(IASTNode);
-	    IASTNode SOME145_tree = default(IASTNode);
-
+		IASTNode ANY141_tree = default(IASTNode);
+		IASTNode ALL143_tree = default(IASTNode);
+		IASTNode SOME145_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "exprOrSubquery");
 		DebugLocation(361, 1);
 		try
 		{
 			// HqlSqlWalker.g:362:2: ( expr | query | ^( ANY collectionFunctionOrSubselect ) | ^( ALL collectionFunctionOrSubselect ) | ^( SOME collectionFunctionOrSubselect ) )
 			int alt51=5;
-			try { DebugEnterDecision(51, decisionCanBacktrack[51]);
+			try { DebugEnterDecision(51, false);
 			switch (input.LA(1))
 			{
 			case AGGREGATE:
@@ -8076,19 +7861,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("exprOrSubquery", 39);
 			LeaveRule("exprOrSubquery", 39);
 			LeaveRule_exprOrSubquery();
-	    }
-	 	DebugLocation(367, 1);
+		}
+		DebugLocation(367, 1);
 		} finally { DebugExitRule(GrammarFileName, "exprOrSubquery"); }
 		return retval;
 
 	}
 	// $ANTLR end "exprOrSubquery"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_collectionFunctionOrSubselect() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_collectionFunctionOrSubselect() {}
+	partial void EnterRule_collectionFunctionOrSubselect();
+	partial void LeaveRule_collectionFunctionOrSubselect();
 	// $ANTLR start "collectionFunctionOrSubselect"
 	// HqlSqlWalker.g:369:1: collectionFunctionOrSubselect : ( collectionFunction | query );
 	[GrammarRule("collectionFunctionOrSubselect")]
@@ -8097,17 +7879,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_collectionFunctionOrSubselect();
 		EnterRule("collectionFunctionOrSubselect", 40);
 		TraceIn("collectionFunctionOrSubselect", 40);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction147 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query148 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> collectionFunction147 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query148 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "collectionFunctionOrSubselect");
 		DebugLocation(369, 1);
@@ -8115,7 +7896,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:370:2: ( collectionFunction | query )
 			int alt52=2;
-			try { DebugEnterDecision(52, decisionCanBacktrack[52]);
+			try { DebugEnterDecision(52, false);
 			int LA52_1 = input.LA(1);
 
 			if ((LA52_1==ELEMENTS||LA52_1==INDICES))
@@ -8126,14 +7907,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt52 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 52, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(52); }
 			switch (alt52)
 			{
@@ -8188,19 +7967,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("collectionFunctionOrSubselect", 40);
 			LeaveRule("collectionFunctionOrSubselect", 40);
 			LeaveRule_collectionFunctionOrSubselect();
-	    }
-	 	DebugLocation(372, 1);
+		}
+		DebugLocation(372, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionFunctionOrSubselect"); }
 		return retval;
 
 	}
 	// $ANTLR end "collectionFunctionOrSubselect"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_expr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_expr() {}
+	partial void EnterRule_expr();
+	partial void LeaveRule_expr();
 	// $ANTLR start "expr"
 	// HqlSqlWalker.g:374:1: expr : (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count );
 	[GrammarRule("expr")]
@@ -8209,32 +7985,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_expr();
 		EnterRule("expr", 41);
 		TraceIn("expr", 41);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode VECTOR_EXPR149 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> ae = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr150 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> constant151 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr152 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall153 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> parameter154 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> count155 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode VECTOR_EXPR149 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> ae = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr150 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> constant151 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> arithmeticExpr152 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> functionCall153 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> parameter154 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> count155 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode VECTOR_EXPR149_tree = default(IASTNode);
-
+		IASTNode VECTOR_EXPR149_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "expr");
 		DebugLocation(374, 1);
 		try
 		{
 			// HqlSqlWalker.g:375:2: (ae= addrExpr[ true ] | ^( VECTOR_EXPR ( expr )* ) | constant | arithmeticExpr | functionCall | parameter | count )
 			int alt54=7;
-			try { DebugEnterDecision(54, decisionCanBacktrack[54]);
+			try { DebugEnterDecision(54, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -8351,54 +8126,54 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 				if (input.LA(1) == TokenTypes.Down) {
-				    Match(input, TokenTypes.Down, null); 
-				    DebugLocation(376, 19);
-				    // HqlSqlWalker.g:376:19: ( expr )*
-				    try { DebugEnterSubRule(53);
-				    while (true)
-				    {
-				    	int alt53=2;
-				    	try { DebugEnterDecision(53, decisionCanBacktrack[53]);
-				    	int LA53_1 = input.LA(1);
+					Match(input, TokenTypes.Down, null); 
+					DebugLocation(376, 19);
+					// HqlSqlWalker.g:376:19: ( expr )*
+					try { DebugEnterSubRule(53);
+					while (true)
+					{
+						int alt53=2;
+						try { DebugEnterDecision(53, false);
+						int LA53_1 = input.LA(1);
 
-				    	if ((LA53_1==AGGREGATE||LA53_1==BAND||(LA53_1>=BNOT && LA53_1<=BOR)||(LA53_1>=BXOR && LA53_1<=CASE2)||LA53_1==COLON||LA53_1==COUNT||(LA53_1>=DIV && LA53_1<=DOT)||LA53_1==FALSE||LA53_1==IDENT||LA53_1==INDEX_OP||LA53_1==JAVA_CONSTANT||LA53_1==METHOD_CALL||LA53_1==MINUS||(LA53_1>=NULL && LA53_1<=NUM_LONG)||(LA53_1>=PARAM && LA53_1<=PLUS)||LA53_1==QUOTED_String||LA53_1==STAR||(LA53_1>=TRUE && LA53_1<=UNARY_MINUS)||LA53_1==VECTOR_EXPR||LA53_1==WEIRD_IDENT))
-				    	{
-				    		alt53 = 1;
-				    	}
-
-
-				    	} finally { DebugExitDecision(53); }
-				    	switch ( alt53 )
-				    	{
-				    	case 1:
-				    		DebugEnterAlt(1);
-				    		// HqlSqlWalker.g:376:20: expr
-				    		{
-				    		DebugLocation(376, 20);
-
-				    		_last = (IASTNode)input.LT(1);
-				    		PushFollow(Follow._expr_in_expr1911);
-				    		expr150=expr();
-				    		PopFollow();
-
-				    		adaptor.AddChild(root_1, expr150.Tree);
+						if ((LA53_1==AGGREGATE||LA53_1==BAND||(LA53_1>=BNOT && LA53_1<=BOR)||(LA53_1>=BXOR && LA53_1<=CASE2)||LA53_1==COLON||LA53_1==COUNT||(LA53_1>=DIV && LA53_1<=DOT)||LA53_1==FALSE||LA53_1==IDENT||LA53_1==INDEX_OP||LA53_1==JAVA_CONSTANT||LA53_1==METHOD_CALL||LA53_1==MINUS||(LA53_1>=NULL && LA53_1<=NUM_LONG)||(LA53_1>=PARAM && LA53_1<=PLUS)||LA53_1==QUOTED_String||LA53_1==STAR||(LA53_1>=TRUE && LA53_1<=UNARY_MINUS)||LA53_1==VECTOR_EXPR||LA53_1==WEIRD_IDENT))
+						{
+							alt53 = 1;
+						}
 
 
-				    		}
-				    		break;
+						} finally { DebugExitDecision(53); }
+						switch ( alt53 )
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// HqlSqlWalker.g:376:20: expr
+							{
+							DebugLocation(376, 20);
 
-				    	default:
-				    		goto loop53;
-				    	}
-				    }
+							_last = (IASTNode)input.LT(1);
+							PushFollow(Follow._expr_in_expr1911);
+							expr150=expr();
+							PopFollow();
 
-				    loop53:
-				    	;
-
-				    } finally { DebugExitSubRule(53); }
+							adaptor.AddChild(root_1, expr150.Tree);
 
 
-				    Match(input, TokenTypes.Up, null); 
+							}
+							break;
+
+						default:
+							goto loop53;
+						}
+					}
+
+					loop53:
+						;
+
+					} finally { DebugExitSubRule(53); }
+
+
+					Match(input, TokenTypes.Up, null); 
 				}
 				adaptor.AddChild(root_0, root_1);
 				_last = _save_last_1;
@@ -8512,19 +8287,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("expr", 41);
 			LeaveRule("expr", 41);
 			LeaveRule_expr();
-	    }
-	 	DebugLocation(382, 1);
+		}
+		DebugLocation(382, 1);
 		} finally { DebugExitRule(GrammarFileName, "expr"); }
 		return retval;
 
 	}
 	// $ANTLR end "expr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_arithmeticExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_arithmeticExpr() {}
+	partial void EnterRule_arithmeticExpr();
+	partial void LeaveRule_arithmeticExpr();
 	// $ANTLR start "arithmeticExpr"
 	// HqlSqlWalker.g:384:1: arithmeticExpr : ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr );
 	[GrammarRule("arithmeticExpr")]
@@ -8533,58 +8305,57 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_arithmeticExpr();
 		EnterRule("arithmeticExpr", 42);
 		TraceIn("arithmeticExpr", 42);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode PLUS156 = default(IASTNode);
-	    IASTNode MINUS159 = default(IASTNode);
-	    IASTNode DIV162 = default(IASTNode);
-	    IASTNode STAR165 = default(IASTNode);
-	    IASTNode BNOT168 = default(IASTNode);
-	    IASTNode BAND170 = default(IASTNode);
-	    IASTNode BOR173 = default(IASTNode);
-	    IASTNode BXOR176 = default(IASTNode);
-	    IASTNode UNARY_MINUS179 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> c = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery157 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery158 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery160 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery161 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery163 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery164 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery166 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery167 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery169 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery171 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery172 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery174 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery175 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery177 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery178 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery180 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode PLUS156 = default(IASTNode);
+		IASTNode MINUS159 = default(IASTNode);
+		IASTNode DIV162 = default(IASTNode);
+		IASTNode STAR165 = default(IASTNode);
+		IASTNode BNOT168 = default(IASTNode);
+		IASTNode BAND170 = default(IASTNode);
+		IASTNode BOR173 = default(IASTNode);
+		IASTNode BXOR176 = default(IASTNode);
+		IASTNode UNARY_MINUS179 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> c = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery157 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery158 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery160 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery161 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery163 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery164 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery166 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery167 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery169 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery171 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery172 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery174 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery175 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery177 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery178 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> exprOrSubquery180 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode PLUS156_tree = default(IASTNode);
-	    IASTNode MINUS159_tree = default(IASTNode);
-	    IASTNode DIV162_tree = default(IASTNode);
-	    IASTNode STAR165_tree = default(IASTNode);
-	    IASTNode BNOT168_tree = default(IASTNode);
-	    IASTNode BAND170_tree = default(IASTNode);
-	    IASTNode BOR173_tree = default(IASTNode);
-	    IASTNode BXOR176_tree = default(IASTNode);
-	    IASTNode UNARY_MINUS179_tree = default(IASTNode);
-
+		IASTNode PLUS156_tree = default(IASTNode);
+		IASTNode MINUS159_tree = default(IASTNode);
+		IASTNode DIV162_tree = default(IASTNode);
+		IASTNode STAR165_tree = default(IASTNode);
+		IASTNode BNOT168_tree = default(IASTNode);
+		IASTNode BAND170_tree = default(IASTNode);
+		IASTNode BOR173_tree = default(IASTNode);
+		IASTNode BXOR176_tree = default(IASTNode);
+		IASTNode UNARY_MINUS179_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "arithmeticExpr");
 		DebugLocation(384, 1);
 		try
 		{
 			// HqlSqlWalker.g:391:2: ( ^( PLUS exprOrSubquery exprOrSubquery ) | ^( MINUS exprOrSubquery exprOrSubquery ) | ^( DIV exprOrSubquery exprOrSubquery ) | ^( STAR exprOrSubquery exprOrSubquery ) | ^( BNOT exprOrSubquery ) | ^( BAND exprOrSubquery exprOrSubquery ) | ^( BOR exprOrSubquery exprOrSubquery ) | ^( BXOR exprOrSubquery exprOrSubquery ) | ^( UNARY_MINUS exprOrSubquery ) |c= caseExpr )
 			int alt55=10;
-			try { DebugEnterDecision(55, decisionCanBacktrack[55]);
+			try { DebugEnterDecision(55, false);
 			switch (input.LA(1))
 			{
 			case PLUS:
@@ -9129,19 +8900,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("arithmeticExpr", 42);
 			LeaveRule("arithmeticExpr", 42);
 			LeaveRule_arithmeticExpr();
-	    }
-	 	DebugLocation(402, 1);
+		}
+		DebugLocation(402, 1);
 		} finally { DebugExitRule(GrammarFileName, "arithmeticExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "arithmeticExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_caseExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_caseExpr() {}
+	partial void EnterRule_caseExpr();
+	partial void LeaveRule_caseExpr();
 	// $ANTLR start "caseExpr"
 	// HqlSqlWalker.g:404:1: caseExpr : ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) );
 	[GrammarRule("caseExpr")]
@@ -9150,42 +8918,41 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_caseExpr();
 		EnterRule("caseExpr", 43);
 		TraceIn("caseExpr", 43);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode CASE181 = default(IASTNode);
-	    IASTNode WHEN182 = default(IASTNode);
-	    IASTNode ELSE185 = default(IASTNode);
-	    IASTNode CASE2187 = default(IASTNode);
-	    IASTNode WHEN189 = default(IASTNode);
-	    IASTNode ELSE192 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr183 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr184 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr186 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr188 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr190 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr191 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr193 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CASE181 = default(IASTNode);
+		IASTNode WHEN182 = default(IASTNode);
+		IASTNode ELSE185 = default(IASTNode);
+		IASTNode CASE2187 = default(IASTNode);
+		IASTNode WHEN189 = default(IASTNode);
+		IASTNode ELSE192 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> logicalExpr183 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr184 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr186 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr188 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr190 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr191 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr193 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode CASE181_tree = default(IASTNode);
-	    IASTNode WHEN182_tree = default(IASTNode);
-	    IASTNode ELSE185_tree = default(IASTNode);
-	    IASTNode CASE2187_tree = default(IASTNode);
-	    IASTNode WHEN189_tree = default(IASTNode);
-	    IASTNode ELSE192_tree = default(IASTNode);
-
+		IASTNode CASE181_tree = default(IASTNode);
+		IASTNode WHEN182_tree = default(IASTNode);
+		IASTNode ELSE185_tree = default(IASTNode);
+		IASTNode CASE2187_tree = default(IASTNode);
+		IASTNode WHEN189_tree = default(IASTNode);
+		IASTNode ELSE192_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "caseExpr");
 		DebugLocation(404, 1);
 		try
 		{
 			// HqlSqlWalker.g:405:2: ( ^( CASE ( ^( WHEN logicalExpr expr ) )+ ( ^( ELSE expr ) )? ) | ^( CASE2 expr ( ^( WHEN expr expr ) )+ ( ^( ELSE expr ) )? ) )
 			int alt60=2;
-			try { DebugEnterDecision(60, decisionCanBacktrack[60]);
+			try { DebugEnterDecision(60, false);
 			int LA60_1 = input.LA(1);
 
 			if ((LA60_1==CASE))
@@ -9196,14 +8963,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt60 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 60, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(60); }
 			switch (alt60)
 			{
@@ -9241,7 +9006,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt56=2;
-					try { DebugEnterDecision(56, decisionCanBacktrack[56]);
+					try { DebugEnterDecision(56, false);
 					int LA56_1 = input.LA(1);
 
 					if ((LA56_1==WHEN))
@@ -9322,7 +9087,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:405:59: ( ^( ELSE expr ) )?
 				int alt57=2;
 				try { DebugEnterSubRule(57);
-				try { DebugEnterDecision(57, decisionCanBacktrack[57]);
+				try { DebugEnterDecision(57, false);
 				int LA57_1 = input.LA(1);
 
 				if ((LA57_1==ELSE))
@@ -9430,7 +9195,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				while (true)
 				{
 					int alt58=2;
-					try { DebugEnterDecision(58, decisionCanBacktrack[58]);
+					try { DebugEnterDecision(58, false);
 					int LA58_1 = input.LA(1);
 
 					if ((LA58_1==WHEN))
@@ -9511,7 +9276,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:406:58: ( ^( ELSE expr ) )?
 				int alt59=2;
 				try { DebugEnterSubRule(59);
-				try { DebugEnterDecision(59, decisionCanBacktrack[59]);
+				try { DebugEnterDecision(59, false);
 				int LA59_1 = input.LA(1);
 
 				if ((LA59_1==ELSE))
@@ -9591,19 +9356,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("caseExpr", 43);
 			LeaveRule("caseExpr", 43);
 			LeaveRule_caseExpr();
-	    }
-	 	DebugLocation(407, 1);
+		}
+		DebugLocation(407, 1);
 		} finally { DebugExitRule(GrammarFileName, "caseExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "caseExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_collectionFunction() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_collectionFunction() {}
+	partial void EnterRule_collectionFunction();
+	partial void LeaveRule_collectionFunction();
 	// $ANTLR start "collectionFunction"
 	// HqlSqlWalker.g:411:1: collectionFunction : ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) );
 	[GrammarRule("collectionFunction")]
@@ -9612,29 +9374,28 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_collectionFunction();
 		EnterRule("collectionFunction", 44);
 		TraceIn("collectionFunction", 44);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode e = default(IASTNode);
-	    IASTNode i = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p1 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode e = default(IASTNode);
+		IASTNode i = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p1 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode e_tree = default(IASTNode);
-	    IASTNode i_tree = default(IASTNode);
-
+		IASTNode e_tree = default(IASTNode);
+		IASTNode i_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "collectionFunction");
 		DebugLocation(411, 1);
 		try
 		{
 			// HqlSqlWalker.g:412:2: ( ^(e= ELEMENTS p1= propertyRef ) | ^(i= INDICES p2= propertyRef ) )
 			int alt61=2;
-			try { DebugEnterDecision(61, decisionCanBacktrack[61]);
+			try { DebugEnterDecision(61, false);
 			int LA61_1 = input.LA(1);
 
 			if ((LA61_1==ELEMENTS))
@@ -9645,14 +9406,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt61 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 61, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(61); }
 			switch (alt61)
 			{
@@ -9773,19 +9532,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("collectionFunction", 44);
 			LeaveRule("collectionFunction", 44);
 			LeaveRule_collectionFunction();
-	    }
-	 	DebugLocation(416, 1);
+		}
+		DebugLocation(416, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionFunction"); }
 		return retval;
 
 	}
 	// $ANTLR end "collectionFunction"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_functionCall() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_functionCall() {}
+	partial void EnterRule_functionCall();
+	partial void LeaveRule_functionCall();
 	// $ANTLR start "functionCall"
 	// HqlSqlWalker.g:418:1: functionCall : ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) );
 	[GrammarRule("functionCall")]
@@ -9794,34 +9550,33 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_functionCall();
 		EnterRule("functionCall", 45);
 		TraceIn("functionCall", 45);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode m = default(IASTNode);
-	    IASTNode EXPR_LIST195 = default(IASTNode);
-	    IASTNode AGGREGATE199 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> pathAsIdent194 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> expr196 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> query197 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr198 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr200 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode m = default(IASTNode);
+		IASTNode EXPR_LIST195 = default(IASTNode);
+		IASTNode AGGREGATE199 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> pathAsIdent194 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> expr196 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> query197 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> comparisonExpr198 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> aggregateExpr200 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode m_tree = default(IASTNode);
-	    IASTNode EXPR_LIST195_tree = default(IASTNode);
-	    IASTNode AGGREGATE199_tree = default(IASTNode);
-
+		IASTNode m_tree = default(IASTNode);
+		IASTNode EXPR_LIST195_tree = default(IASTNode);
+		IASTNode AGGREGATE199_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "functionCall");
 		DebugLocation(418, 1);
 		try
 		{
 			// HqlSqlWalker.g:419:2: ( ^(m= METHOD_CALL pathAsIdent ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )? ) | ^( AGGREGATE aggregateExpr ) )
 			int alt64=2;
-			try { DebugEnterDecision(64, decisionCanBacktrack[64]);
+			try { DebugEnterDecision(64, false);
 			int LA64_1 = input.LA(1);
 
 			if ((LA64_1==METHOD_CALL))
@@ -9832,14 +9587,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt64 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 64, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(64); }
 			switch (alt64)
 			{
@@ -9883,7 +9636,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 				// HqlSqlWalker.g:419:57: ( ^( EXPR_LIST ( expr | query | comparisonExpr )* ) )?
 				int alt63=2;
 				try { DebugEnterSubRule(63);
-				try { DebugEnterDecision(63, decisionCanBacktrack[63]);
+				try { DebugEnterDecision(63, false);
 				int LA63_1 = input.LA(1);
 
 				if ((LA63_1==EXPR_LIST))
@@ -9915,142 +9668,142 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 					if (input.LA(1) == TokenTypes.Down) {
-					    Match(input, TokenTypes.Down, null); 
-					    DebugLocation(419, 71);
-					    // HqlSqlWalker.g:419:71: ( expr | query | comparisonExpr )*
-					    try { DebugEnterSubRule(62);
-					    while (true)
-					    {
-					    	int alt62=4;
-					    	try { DebugEnterDecision(62, decisionCanBacktrack[62]);
-					    	switch (input.LA(1))
-					    	{
-					    	case AGGREGATE:
-					    	case BAND:
-					    	case BNOT:
-					    	case BOR:
-					    	case BXOR:
-					    	case CASE:
-					    	case CASE2:
-					    	case COLON:
-					    	case COUNT:
-					    	case DIV:
-					    	case DOT:
-					    	case FALSE:
-					    	case IDENT:
-					    	case INDEX_OP:
-					    	case JAVA_CONSTANT:
-					    	case METHOD_CALL:
-					    	case MINUS:
-					    	case NULL:
-					    	case NUM_DECIMAL:
-					    	case NUM_DOUBLE:
-					    	case NUM_FLOAT:
-					    	case NUM_INT:
-					    	case NUM_LONG:
-					    	case PARAM:
-					    	case PLUS:
-					    	case QUOTED_String:
-					    	case STAR:
-					    	case TRUE:
-					    	case UNARY_MINUS:
-					    	case VECTOR_EXPR:
-					    	case WEIRD_IDENT:
-					    		{
-					    		alt62 = 1;
-					    		}
-					    		break;
-					    	case QUERY:
-					    	case UNION:
-					    		{
-					    		alt62 = 2;
-					    		}
-					    		break;
-					    	case BETWEEN:
-					    	case EQ:
-					    	case EXISTS:
-					    	case GE:
-					    	case GT:
-					    	case IN:
-					    	case IS_NOT_NULL:
-					    	case IS_NULL:
-					    	case LE:
-					    	case LIKE:
-					    	case LT:
-					    	case NE:
-					    	case NOT_BETWEEN:
-					    	case NOT_IN:
-					    	case NOT_LIKE:
-					    		{
-					    		alt62 = 3;
-					    		}
-					    		break;
-					    	}
+						Match(input, TokenTypes.Down, null); 
+						DebugLocation(419, 71);
+						// HqlSqlWalker.g:419:71: ( expr | query | comparisonExpr )*
+						try { DebugEnterSubRule(62);
+						while (true)
+						{
+							int alt62=4;
+							try { DebugEnterDecision(62, false);
+							switch (input.LA(1))
+							{
+							case AGGREGATE:
+							case BAND:
+							case BNOT:
+							case BOR:
+							case BXOR:
+							case CASE:
+							case CASE2:
+							case COLON:
+							case COUNT:
+							case DIV:
+							case DOT:
+							case FALSE:
+							case IDENT:
+							case INDEX_OP:
+							case JAVA_CONSTANT:
+							case METHOD_CALL:
+							case MINUS:
+							case NULL:
+							case NUM_DECIMAL:
+							case NUM_DOUBLE:
+							case NUM_FLOAT:
+							case NUM_INT:
+							case NUM_LONG:
+							case PARAM:
+							case PLUS:
+							case QUOTED_String:
+							case STAR:
+							case TRUE:
+							case UNARY_MINUS:
+							case VECTOR_EXPR:
+							case WEIRD_IDENT:
+								{
+								alt62 = 1;
+								}
+								break;
+							case QUERY:
+							case UNION:
+								{
+								alt62 = 2;
+								}
+								break;
+							case BETWEEN:
+							case EQ:
+							case EXISTS:
+							case GE:
+							case GT:
+							case IN:
+							case IS_NOT_NULL:
+							case IS_NULL:
+							case LE:
+							case LIKE:
+							case LT:
+							case NE:
+							case NOT_BETWEEN:
+							case NOT_IN:
+							case NOT_LIKE:
+								{
+								alt62 = 3;
+								}
+								break;
+							}
 
-					    	} finally { DebugExitDecision(62); }
-					    	switch ( alt62 )
-					    	{
-					    	case 1:
-					    		DebugEnterAlt(1);
-					    		// HqlSqlWalker.g:419:72: expr
-					    		{
-					    		DebugLocation(419, 72);
+							} finally { DebugExitDecision(62); }
+							switch ( alt62 )
+							{
+							case 1:
+								DebugEnterAlt(1);
+								// HqlSqlWalker.g:419:72: expr
+								{
+								DebugLocation(419, 72);
 
-					    		_last = (IASTNode)input.LT(1);
-					    		PushFollow(Follow._expr_in_functionCall2227);
-					    		expr196=expr();
-					    		PopFollow();
+								_last = (IASTNode)input.LT(1);
+								PushFollow(Follow._expr_in_functionCall2227);
+								expr196=expr();
+								PopFollow();
 
-					    		adaptor.AddChild(root_2, expr196.Tree);
-
-
-					    		}
-					    		break;
-					    	case 2:
-					    		DebugEnterAlt(2);
-					    		// HqlSqlWalker.g:419:79: query
-					    		{
-					    		DebugLocation(419, 79);
-
-					    		_last = (IASTNode)input.LT(1);
-					    		PushFollow(Follow._query_in_functionCall2231);
-					    		query197=query();
-					    		PopFollow();
-
-					    		adaptor.AddChild(root_2, query197.Tree);
+								adaptor.AddChild(root_2, expr196.Tree);
 
 
-					    		}
-					    		break;
-					    	case 3:
-					    		DebugEnterAlt(3);
-					    		// HqlSqlWalker.g:419:87: comparisonExpr
-					    		{
-					    		DebugLocation(419, 87);
+								}
+								break;
+							case 2:
+								DebugEnterAlt(2);
+								// HqlSqlWalker.g:419:79: query
+								{
+								DebugLocation(419, 79);
 
-					    		_last = (IASTNode)input.LT(1);
-					    		PushFollow(Follow._comparisonExpr_in_functionCall2235);
-					    		comparisonExpr198=comparisonExpr();
-					    		PopFollow();
+								_last = (IASTNode)input.LT(1);
+								PushFollow(Follow._query_in_functionCall2231);
+								query197=query();
+								PopFollow();
 
-					    		adaptor.AddChild(root_2, comparisonExpr198.Tree);
-
-
-					    		}
-					    		break;
-
-					    	default:
-					    		goto loop62;
-					    	}
-					    }
-
-					    loop62:
-					    	;
-
-					    } finally { DebugExitSubRule(62); }
+								adaptor.AddChild(root_2, query197.Tree);
 
 
-					    Match(input, TokenTypes.Up, null); 
+								}
+								break;
+							case 3:
+								DebugEnterAlt(3);
+								// HqlSqlWalker.g:419:87: comparisonExpr
+								{
+								DebugLocation(419, 87);
+
+								_last = (IASTNode)input.LT(1);
+								PushFollow(Follow._comparisonExpr_in_functionCall2235);
+								comparisonExpr198=comparisonExpr();
+								PopFollow();
+
+								adaptor.AddChild(root_2, comparisonExpr198.Tree);
+
+
+								}
+								break;
+
+							default:
+								goto loop62;
+							}
+						}
+
+						loop62:
+							;
+
+						} finally { DebugExitSubRule(62); }
+
+
+						Match(input, TokenTypes.Up, null); 
 					}
 					adaptor.AddChild(root_1, root_2);
 					_last = _save_last_2;
@@ -10131,19 +9884,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("functionCall", 45);
 			LeaveRule("functionCall", 45);
 			LeaveRule_functionCall();
-	    }
-	 	DebugLocation(422, 1);
+		}
+		DebugLocation(422, 1);
 		} finally { DebugExitRule(GrammarFileName, "functionCall"); }
 		return retval;
 
 	}
 	// $ANTLR end "functionCall"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_constant() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_constant() {}
+	partial void EnterRule_constant();
+	partial void LeaveRule_constant();
 	// $ANTLR start "constant"
 	// HqlSqlWalker.g:424:1: constant : ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT );
 	[GrammarRule("constant")]
@@ -10152,32 +9902,31 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_constant();
 		EnterRule("constant", 46);
 		TraceIn("constant", 46);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode t = default(IASTNode);
-	    IASTNode f = default(IASTNode);
-	    IASTNode NULL202 = default(IASTNode);
-	    IASTNode JAVA_CONSTANT203 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> literal201 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode t = default(IASTNode);
+		IASTNode f = default(IASTNode);
+		IASTNode NULL202 = default(IASTNode);
+		IASTNode JAVA_CONSTANT203 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> literal201 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode t_tree = default(IASTNode);
-	    IASTNode f_tree = default(IASTNode);
-	    IASTNode NULL202_tree = default(IASTNode);
-	    IASTNode JAVA_CONSTANT203_tree = default(IASTNode);
-
+		IASTNode t_tree = default(IASTNode);
+		IASTNode f_tree = default(IASTNode);
+		IASTNode NULL202_tree = default(IASTNode);
+		IASTNode JAVA_CONSTANT203_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constant");
 		DebugLocation(424, 1);
 		try
 		{
 			// HqlSqlWalker.g:425:2: ( literal | NULL |t= TRUE |f= FALSE | JAVA_CONSTANT )
 			int alt65=5;
-			try { DebugEnterDecision(65, decisionCanBacktrack[65]);
+			try { DebugEnterDecision(65, false);
 			switch (input.LA(1))
 			{
 			case NUM_DECIMAL:
@@ -10330,19 +10079,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("constant", 46);
 			LeaveRule("constant", 46);
 			LeaveRule_constant();
-	    }
-	 	DebugLocation(430, 1);
+		}
+		DebugLocation(430, 1);
 		} finally { DebugExitRule(GrammarFileName, "constant"); }
 		return retval;
 
 	}
 	// $ANTLR end "constant"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_literal() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_literal() {}
+	partial void EnterRule_literal();
+	partial void LeaveRule_literal();
 	// $ANTLR start "literal"
 	// HqlSqlWalker.g:432:1: literal : ( numericLiteral | stringLiteral );
 	[GrammarRule("literal")]
@@ -10351,17 +10097,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_literal();
 		EnterRule("literal", 47);
 		TraceIn("literal", 47);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> numericLiteral204 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> stringLiteral205 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> numericLiteral204 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> stringLiteral205 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "literal");
 		DebugLocation(432, 1);
@@ -10369,7 +10114,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:433:2: ( numericLiteral | stringLiteral )
 			int alt66=2;
-			try { DebugEnterDecision(66, decisionCanBacktrack[66]);
+			try { DebugEnterDecision(66, false);
 			int LA66_1 = input.LA(1);
 
 			if (((LA66_1>=NUM_DECIMAL && LA66_1<=NUM_LONG)))
@@ -10380,14 +10125,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt66 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 66, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(66); }
 			switch (alt66)
 			{
@@ -10442,19 +10185,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("literal", 47);
 			LeaveRule("literal", 47);
 			LeaveRule_literal();
-	    }
-	 	DebugLocation(435, 1);
+		}
+		DebugLocation(435, 1);
 		} finally { DebugExitRule(GrammarFileName, "literal"); }
 		return retval;
 
 	}
 	// $ANTLR end "literal"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_numericLiteral() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_numericLiteral() {}
+	partial void EnterRule_numericLiteral();
+	partial void LeaveRule_numericLiteral();
 	// $ANTLR start "numericLiteral"
 	// HqlSqlWalker.g:437:1: numericLiteral : ( NUM_INT | NUM_LONG | NUM_FLOAT | NUM_DOUBLE | NUM_DECIMAL );
 	[GrammarRule("numericLiteral")]
@@ -10463,18 +10203,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_numericLiteral();
 		EnterRule("numericLiteral", 48);
 		TraceIn("numericLiteral", 48);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode set206 = default(IASTNode);
+		IASTNode set206 = default(IASTNode);
 
-	    IASTNode set206_tree = default(IASTNode);
-
+		IASTNode set206_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "numericLiteral");
 		DebugLocation(437, 1);
 		try
@@ -10528,19 +10267,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("numericLiteral", 48);
 			LeaveRule("numericLiteral", 48);
 			LeaveRule_numericLiteral();
-	    }
-	 	DebugLocation(447, 1);
+		}
+		DebugLocation(447, 1);
 		} finally { DebugExitRule(GrammarFileName, "numericLiteral"); }
 		return retval;
 
 	}
 	// $ANTLR end "numericLiteral"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_stringLiteral() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_stringLiteral() {}
+	partial void EnterRule_stringLiteral();
+	partial void LeaveRule_stringLiteral();
 	// $ANTLR start "stringLiteral"
 	// HqlSqlWalker.g:449:1: stringLiteral : QUOTED_String ;
 	[GrammarRule("stringLiteral")]
@@ -10549,18 +10285,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_stringLiteral();
 		EnterRule("stringLiteral", 49);
 		TraceIn("stringLiteral", 49);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode QUOTED_String207 = default(IASTNode);
+		IASTNode QUOTED_String207 = default(IASTNode);
 
-	    IASTNode QUOTED_String207_tree = default(IASTNode);
-
+		IASTNode QUOTED_String207_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "stringLiteral");
 		DebugLocation(449, 1);
 		try
@@ -10596,19 +10331,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("stringLiteral", 49);
 			LeaveRule("stringLiteral", 49);
 			LeaveRule_stringLiteral();
-	    }
-	 	DebugLocation(451, 1);
+		}
+		DebugLocation(451, 1);
 		} finally { DebugExitRule(GrammarFileName, "stringLiteral"); }
 		return retval;
 
 	}
 	// $ANTLR end "stringLiteral"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_identifier() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_identifier() {}
+	partial void EnterRule_identifier();
+	partial void LeaveRule_identifier();
 	// $ANTLR start "identifier"
 	// HqlSqlWalker.g:453:1: identifier : ( IDENT | WEIRD_IDENT ) ;
 	[GrammarRule("identifier")]
@@ -10617,18 +10349,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_identifier();
 		EnterRule("identifier", 50);
 		TraceIn("identifier", 50);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode set208 = default(IASTNode);
+		IASTNode set208 = default(IASTNode);
 
-	    IASTNode set208_tree = default(IASTNode);
-
+		IASTNode set208_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identifier");
 		DebugLocation(453, 1);
 		try
@@ -10679,19 +10410,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("identifier", 50);
 			LeaveRule("identifier", 50);
 			LeaveRule_identifier();
-	    }
-	 	DebugLocation(455, 1);
+		}
+		DebugLocation(455, 1);
 		} finally { DebugExitRule(GrammarFileName, "identifier"); }
 		return retval;
 
 	}
 	// $ANTLR end "identifier"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExpr() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExpr() {}
+	partial void EnterRule_addrExpr();
+	partial void LeaveRule_addrExpr();
 	// $ANTLR start "addrExpr"
 	// HqlSqlWalker.g:457:1: addrExpr[ bool root ] : ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] );
 	[GrammarRule("addrExpr")]
@@ -10700,18 +10428,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExpr();
 		EnterRule("addrExpr", 51);
 		TraceIn("addrExpr", 51);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprDot209 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIndex210 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIdent211 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprDot209 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIndex210 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExprIdent211 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "addrExpr");
 		DebugLocation(457, 2);
@@ -10719,7 +10446,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:458:2: ( addrExprDot[root] | addrExprIndex[root] | addrExprIdent[root] )
 			int alt67=3;
-			try { DebugEnterDecision(67, decisionCanBacktrack[67]);
+			try { DebugEnterDecision(67, false);
 			switch (input.LA(1))
 			{
 			case DOT:
@@ -10818,19 +10545,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExpr", 51);
 			LeaveRule("addrExpr", 51);
 			LeaveRule_addrExpr();
-	    }
-	 	DebugLocation(461, 2);
+		}
+		DebugLocation(461, 2);
 		} finally { DebugExitRule(GrammarFileName, "addrExpr"); }
 		return retval;
 
 	}
 	// $ANTLR end "addrExpr"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExprDot() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExprDot() {}
+	partial void EnterRule_addrExprDot();
+	partial void LeaveRule_addrExprDot();
 	// $ANTLR start "addrExprDot"
 	// HqlSqlWalker.g:463:1: addrExprDot[ bool root ] : ^(d= DOT lhs= addrExprLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
 	[GrammarRule("addrExprDot")]
@@ -10839,22 +10563,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExprDot();
 		EnterRule("addrExprDot", 52);
 		TraceIn("addrExprDot", 52);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode d = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> lhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> rhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode d = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> lhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> rhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode d_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_DOT=new RewriteRuleNodeStream(adaptor,"token DOT");
-	    RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
-	    RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
+		IASTNode d_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_DOT=new RewriteRuleNodeStream(adaptor,"token DOT");
+		RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
+		RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
 		try { DebugEnterRule(GrammarFileName, "addrExprDot");
 		DebugLocation(463, 1);
 		try
@@ -10880,23 +10604,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(468, 15);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._addrExprLhs_in_addrExprDot2433);
 			lhs=addrExprLhs();
 			PopFollow();
 
 			stream_addrExprLhs.Add(lhs.Tree);
-
 			DebugLocation(468, 31);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._propertyName_in_addrExprDot2437);
 			rhs=propertyName();
 			PopFollow();
 
 			stream_propertyName.Add(rhs.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -10960,19 +10680,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExprDot", 52);
 			LeaveRule("addrExprDot", 52);
 			LeaveRule_addrExprDot();
-	    }
-	 	DebugLocation(470, 1);
+		}
+		DebugLocation(470, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprDot"); }
 		return retval;
 
 	}
 	// $ANTLR end "addrExprDot"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExprIndex() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExprIndex() {}
+	partial void EnterRule_addrExprIndex();
+	partial void LeaveRule_addrExprIndex();
 	// $ANTLR start "addrExprIndex"
 	// HqlSqlWalker.g:472:1: addrExprIndex[ bool root ] : ^(i= INDEX_OP lhs2= addrExprLhs rhs2= expr ) -> ^( $i $lhs2 $rhs2) ;
 	[GrammarRule("addrExprIndex")]
@@ -10981,22 +10698,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExprIndex();
 		EnterRule("addrExprIndex", 53);
 		TraceIn("addrExprIndex", 53);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode i = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> lhs2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> rhs2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode i = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> lhs2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> rhs2 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode i_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_INDEX_OP=new RewriteRuleNodeStream(adaptor,"token INDEX_OP");
-	    RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
-	    RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
+		IASTNode i_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_INDEX_OP=new RewriteRuleNodeStream(adaptor,"token INDEX_OP");
+		RewriteRuleSubtreeStream stream_addrExprLhs=new RewriteRuleSubtreeStream(adaptor,"rule addrExprLhs");
+		RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
 		try { DebugEnterRule(GrammarFileName, "addrExprIndex");
 		DebugLocation(472, 1);
 		try
@@ -11022,23 +10739,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(478, 21);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._addrExprLhs_in_addrExprIndex2480);
 			lhs2=addrExprLhs();
 			PopFollow();
 
 			stream_addrExprLhs.Add(lhs2.Tree);
-
 			DebugLocation(478, 38);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._expr_in_addrExprIndex2484);
 			rhs2=expr();
 			PopFollow();
 
 			stream_expr.Add(rhs2.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -11102,19 +10815,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExprIndex", 53);
 			LeaveRule("addrExprIndex", 53);
 			LeaveRule_addrExprIndex();
-	    }
-	 	DebugLocation(480, 1);
+		}
+		DebugLocation(480, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprIndex"); }
 		return retval;
 
 	}
 	// $ANTLR end "addrExprIndex"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExprIdent() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExprIdent() {}
+	partial void EnterRule_addrExprIdent();
+	partial void LeaveRule_addrExprIdent();
 	// $ANTLR start "addrExprIdent"
 	// HqlSqlWalker.g:482:1: addrExprIdent[ bool root ] : p= identifier -> {IsNonQualifiedPropertyRef($p.tree)}? ^() -> ^() ;
 	[GrammarRule("addrExprIdent")]
@@ -11123,17 +10833,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExprIdent();
 		EnterRule("addrExprIdent", 54);
 		TraceIn("addrExprIdent", 54);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
+		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "addrExprIdent");
 		DebugLocation(482, 1);
 		try
@@ -11143,14 +10853,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			// HqlSqlWalker.g:483:4: p= identifier
 			{
 			DebugLocation(483, 5);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._identifier_in_addrExprIdent2516);
 			p=identifier();
 			PopFollow();
 
 			stream_identifier.Add(p.Tree);
-
 
 
 			{
@@ -11211,19 +10919,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExprIdent", 54);
 			LeaveRule("addrExprIdent", 54);
 			LeaveRule_addrExprIdent();
-	    }
-	 	DebugLocation(486, 1);
+		}
+		DebugLocation(486, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprIdent"); }
 		return retval;
 
 	}
 	// $ANTLR end "addrExprIdent"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_addrExprLhs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_addrExprLhs() {}
+	partial void EnterRule_addrExprLhs();
+	partial void LeaveRule_addrExprLhs();
 	// $ANTLR start "addrExprLhs"
 	// HqlSqlWalker.g:488:1: addrExprLhs : addrExpr[ false ] ;
 	[GrammarRule("addrExprLhs")]
@@ -11232,16 +10937,15 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_addrExprLhs();
 		EnterRule("addrExprLhs", 55);
 		TraceIn("addrExprLhs", 55);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> addrExpr212 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> addrExpr212 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "addrExprLhs");
 		DebugLocation(488, 1);
@@ -11278,19 +10982,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("addrExprLhs", 55);
 			LeaveRule("addrExprLhs", 55);
 			LeaveRule_addrExprLhs();
-	    }
-	 	DebugLocation(490, 1);
+		}
+		DebugLocation(490, 1);
 		} finally { DebugExitRule(GrammarFileName, "addrExprLhs"); }
 		return retval;
 
 	}
 	// $ANTLR end "addrExprLhs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyName() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyName() {}
+	partial void EnterRule_propertyName();
+	partial void LeaveRule_propertyName();
 	// $ANTLR start "propertyName"
 	// HqlSqlWalker.g:492:1: propertyName : ( identifier | CLASS | ELEMENTS | INDICES );
 	[GrammarRule("propertyName")]
@@ -11299,30 +11000,29 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_propertyName();
 		EnterRule("propertyName", 56);
 		TraceIn("propertyName", 56);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode CLASS214 = default(IASTNode);
-	    IASTNode ELEMENTS215 = default(IASTNode);
-	    IASTNode INDICES216 = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> identifier213 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode CLASS214 = default(IASTNode);
+		IASTNode ELEMENTS215 = default(IASTNode);
+		IASTNode INDICES216 = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> identifier213 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode CLASS214_tree = default(IASTNode);
-	    IASTNode ELEMENTS215_tree = default(IASTNode);
-	    IASTNode INDICES216_tree = default(IASTNode);
-
+		IASTNode CLASS214_tree = default(IASTNode);
+		IASTNode ELEMENTS215_tree = default(IASTNode);
+		IASTNode INDICES216_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "propertyName");
 		DebugLocation(492, 1);
 		try
 		{
 			// HqlSqlWalker.g:493:2: ( identifier | CLASS | ELEMENTS | INDICES )
 			int alt68=4;
-			try { DebugEnterDecision(68, decisionCanBacktrack[68]);
+			try { DebugEnterDecision(68, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
@@ -11444,19 +11144,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("propertyName", 56);
 			LeaveRule("propertyName", 56);
 			LeaveRule_propertyName();
-	    }
-	 	DebugLocation(497, 1);
+		}
+		DebugLocation(497, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyName"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyName"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyRef() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyRef() {}
+	partial void EnterRule_propertyRef();
+	partial void LeaveRule_propertyRef();
 	// $ANTLR start "propertyRef"
 	// HqlSqlWalker.g:499:1: propertyRef : ( propertyRefPath | propertyRefIdent );
 	[GrammarRule("propertyRef")]
@@ -11465,17 +11162,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_propertyRef();
 		EnterRule("propertyRef", 57);
 		TraceIn("propertyRef", 57);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefPath217 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefIdent218 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefPath217 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRefIdent218 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRef");
 		DebugLocation(499, 1);
@@ -11483,7 +11179,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		{
 			// HqlSqlWalker.g:500:2: ( propertyRefPath | propertyRefIdent )
 			int alt69=2;
-			try { DebugEnterDecision(69, decisionCanBacktrack[69]);
+			try { DebugEnterDecision(69, false);
 			int LA69_1 = input.LA(1);
 
 			if ((LA69_1==DOT))
@@ -11494,14 +11190,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt69 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 69, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(69); }
 			switch (alt69)
 			{
@@ -11556,19 +11250,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("propertyRef", 57);
 			LeaveRule("propertyRef", 57);
 			LeaveRule_propertyRef();
-	    }
-	 	DebugLocation(502, 1);
+		}
+		DebugLocation(502, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRef"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyRef"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyRefPath() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyRefPath() {}
+	partial void EnterRule_propertyRefPath();
+	partial void LeaveRule_propertyRefPath();
 	// $ANTLR start "propertyRefPath"
 	// HqlSqlWalker.g:504:1: propertyRefPath : ^(d= DOT lhs= propertyRefLhs rhs= propertyName ) -> ^( $d $lhs $rhs) ;
 	[GrammarRule("propertyRefPath")]
@@ -11577,22 +11268,22 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_propertyRefPath();
 		EnterRule("propertyRefPath", 58);
 		TraceIn("propertyRefPath", 58);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode d = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> lhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> rhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode d = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> lhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> rhs = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode d_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_DOT=new RewriteRuleNodeStream(adaptor,"token DOT");
-	    RewriteRuleSubtreeStream stream_propertyRefLhs=new RewriteRuleSubtreeStream(adaptor,"rule propertyRefLhs");
-	    RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
+		IASTNode d_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_DOT=new RewriteRuleNodeStream(adaptor,"token DOT");
+		RewriteRuleSubtreeStream stream_propertyRefLhs=new RewriteRuleSubtreeStream(adaptor,"rule propertyRefLhs");
+		RewriteRuleSubtreeStream stream_propertyName=new RewriteRuleSubtreeStream(adaptor,"rule propertyName");
 		try { DebugEnterRule(GrammarFileName, "propertyRefPath");
 		DebugLocation(504, 1);
 		try
@@ -11618,23 +11309,19 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); 
 			DebugLocation(509, 15);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._propertyRefLhs_in_propertyRefPath2613);
 			lhs=propertyRefLhs();
 			PopFollow();
 
 			stream_propertyRefLhs.Add(lhs.Tree);
-
 			DebugLocation(509, 34);
-
 			_last = (IASTNode)input.LT(1);
 			PushFollow(Follow._propertyName_in_propertyRefPath2617);
 			rhs=propertyName();
 			PopFollow();
 
 			stream_propertyName.Add(rhs.Tree);
-
 
 			Match(input, TokenTypes.Up, null); 
 			adaptor.AddChild(root_0, root_1);
@@ -11699,19 +11386,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("propertyRefPath", 58);
 			LeaveRule("propertyRefPath", 58);
 			LeaveRule_propertyRefPath();
-	    }
-	 	DebugLocation(511, 1);
+		}
+		DebugLocation(511, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefPath"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyRefPath"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyRefIdent() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyRefIdent() {}
+	partial void EnterRule_propertyRefIdent();
+	partial void LeaveRule_propertyRefIdent();
 	// $ANTLR start "propertyRefIdent"
 	// HqlSqlWalker.g:513:1: propertyRefIdent : p= identifier ;
 	[GrammarRule("propertyRefIdent")]
@@ -11720,16 +11404,15 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_propertyRefIdent();
 		EnterRule("propertyRefIdent", 59);
 		TraceIn("propertyRefIdent", 59);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> p = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRefIdent");
 		DebugLocation(513, 1);
@@ -11779,19 +11462,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("propertyRefIdent", 59);
 			LeaveRule("propertyRefIdent", 59);
 			LeaveRule_propertyRefIdent();
-	    }
-	 	DebugLocation(528, 1);
+		}
+		DebugLocation(528, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefIdent"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyRefIdent"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_propertyRefLhs() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_propertyRefLhs() {}
+	partial void EnterRule_propertyRefLhs();
+	partial void LeaveRule_propertyRefLhs();
 	// $ANTLR start "propertyRefLhs"
 	// HqlSqlWalker.g:530:1: propertyRefLhs : propertyRef ;
 	[GrammarRule("propertyRefLhs")]
@@ -11800,16 +11480,15 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_propertyRefLhs();
 		EnterRule("propertyRefLhs", 60);
 		TraceIn("propertyRefLhs", 60);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRef219 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> propertyRef219 = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "propertyRefLhs");
 		DebugLocation(530, 1);
@@ -11846,19 +11525,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("propertyRefLhs", 60);
 			LeaveRule("propertyRefLhs", 60);
 			LeaveRule_propertyRefLhs();
-	    }
-	 	DebugLocation(532, 1);
+		}
+		DebugLocation(532, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyRefLhs"); }
 		return retval;
 
 	}
 	// $ANTLR end "propertyRefLhs"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_aliasRef() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_aliasRef() {}
+	partial void EnterRule_aliasRef();
+	partial void LeaveRule_aliasRef();
 	// $ANTLR start "aliasRef"
 	// HqlSqlWalker.g:534:1: aliasRef : i= identifier ;
 	[GrammarRule("aliasRef")]
@@ -11867,16 +11543,15 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_aliasRef();
 		EnterRule("aliasRef", 61);
 		TraceIn("aliasRef", 61);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
-
+		AstTreeRuleReturnScope<IASTNode, IASTNode> i = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
 		try { DebugEnterRule(GrammarFileName, "aliasRef");
 		DebugLocation(534, 1);
@@ -11916,19 +11591,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("aliasRef", 61);
 			LeaveRule("aliasRef", 61);
 			LeaveRule_aliasRef();
-	    }
-	 	DebugLocation(541, 1);
+		}
+		DebugLocation(541, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasRef"); }
 		return retval;
 
 	}
 	// $ANTLR end "aliasRef"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_parameter() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_parameter() {}
+	partial void EnterRule_parameter();
+	partial void LeaveRule_parameter();
 	// $ANTLR start "parameter"
 	// HqlSqlWalker.g:543:1: parameter : ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() );
 	[GrammarRule("parameter")]
@@ -11937,33 +11609,33 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_parameter();
 		EnterRule("parameter", 62);
 		TraceIn("parameter", 62);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode c = default(IASTNode);
-	    IASTNode p = default(IASTNode);
-	    IASTNode n = default(IASTNode);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> a = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
+		IASTNode c = default(IASTNode);
+		IASTNode p = default(IASTNode);
+		IASTNode n = default(IASTNode);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> a = default(AstTreeRuleReturnScope<IASTNode, IASTNode>);
 
-	    IASTNode c_tree = default(IASTNode);
-	    IASTNode p_tree = default(IASTNode);
-	    IASTNode n_tree = default(IASTNode);
-	    RewriteRuleNodeStream stream_COLON=new RewriteRuleNodeStream(adaptor,"token COLON");
-	    RewriteRuleNodeStream stream_PARAM=new RewriteRuleNodeStream(adaptor,"token PARAM");
-	    RewriteRuleNodeStream stream_NUM_INT=new RewriteRuleNodeStream(adaptor,"token NUM_INT");
-	    RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
+		IASTNode c_tree = default(IASTNode);
+		IASTNode p_tree = default(IASTNode);
+		IASTNode n_tree = default(IASTNode);
+		RewriteRuleNodeStream stream_COLON=new RewriteRuleNodeStream(adaptor,"token COLON");
+		RewriteRuleNodeStream stream_PARAM=new RewriteRuleNodeStream(adaptor,"token PARAM");
+		RewriteRuleNodeStream stream_NUM_INT=new RewriteRuleNodeStream(adaptor,"token NUM_INT");
+		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "parameter");
 		DebugLocation(543, 1);
 		try
 		{
 			// HqlSqlWalker.g:544:2: ( ^(c= COLON a= identifier ) -> ^() | ^(p= PARAM (n= NUM_INT )? ) -> {n != null}? ^() -> ^() )
 			int alt71=2;
-			try { DebugEnterDecision(71, decisionCanBacktrack[71]);
+			try { DebugEnterDecision(71, false);
 			int LA71_1 = input.LA(1);
 
 			if ((LA71_1==COLON))
@@ -11974,14 +11646,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			{
 				alt71 = 2;
 			}
-
 			else
 			{
 				NoViableAltException nvae = new NoViableAltException("", 71, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-
 			} finally { DebugExitDecision(71); }
 			switch (alt71)
 			{
@@ -12006,14 +11676,12 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 				Match(input, TokenTypes.Down, null); 
 				DebugLocation(544, 15);
-
 				_last = (IASTNode)input.LT(1);
 				PushFollow(Follow._identifier_in_parameter2709);
 				a=identifier();
 				PopFollow();
 
 				stream_identifier.Add(a.Tree);
-
 
 				Match(input, TokenTypes.Up, null); 
 				adaptor.AddChild(root_0, root_1);
@@ -12073,41 +11741,41 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 				if (input.LA(1) == TokenTypes.Down) {
-				    Match(input, TokenTypes.Down, null); 
-				    DebugLocation(547, 14);
-				    // HqlSqlWalker.g:547:14: (n= NUM_INT )?
-				    int alt70=2;
-				    try { DebugEnterSubRule(70);
-				    try { DebugEnterDecision(70, decisionCanBacktrack[70]);
-				    int LA70_1 = input.LA(1);
+					Match(input, TokenTypes.Down, null); 
+					DebugLocation(547, 14);
+					// HqlSqlWalker.g:547:14: (n= NUM_INT )?
+					int alt70=2;
+					try { DebugEnterSubRule(70);
+					try { DebugEnterDecision(70, false);
+					int LA70_1 = input.LA(1);
 
-				    if ((LA70_1==NUM_INT))
-				    {
-				    	alt70 = 1;
-				    }
-				    } finally { DebugExitDecision(70); }
-				    switch (alt70)
-				    {
-				    case 1:
-				    	DebugEnterAlt(1);
-				    	// HqlSqlWalker.g:547:15: n= NUM_INT
-				    	{
-				    	DebugLocation(547, 16);
+					if ((LA70_1==NUM_INT))
+					{
+						alt70 = 1;
+					}
+					} finally { DebugExitDecision(70); }
+					switch (alt70)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// HqlSqlWalker.g:547:15: n= NUM_INT
+						{
+						DebugLocation(547, 16);
 
-				    	_last = (IASTNode)input.LT(1);
-				    	n=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_parameter2735); 
-				    	 
-				    	stream_NUM_INT.Add(n);
-
-
-				    	}
-				    	break;
-
-				    }
-				    } finally { DebugExitSubRule(70); }
+						_last = (IASTNode)input.LT(1);
+						n=(IASTNode)Match(input,NUM_INT,Follow._NUM_INT_in_parameter2735); 
+						 
+						stream_NUM_INT.Add(n);
 
 
-				    Match(input, TokenTypes.Up, null); 
+						}
+						break;
+
+					}
+					} finally { DebugExitSubRule(70); }
+
+
+					Match(input, TokenTypes.Up, null); 
 				}
 				adaptor.AddChild(root_0, root_1);
 				_last = _save_last_1;
@@ -12175,19 +11843,16 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("parameter", 62);
 			LeaveRule("parameter", 62);
 			LeaveRule_parameter();
-	    }
-	 	DebugLocation(550, 1);
+		}
+		DebugLocation(550, 1);
 		} finally { DebugExitRule(GrammarFileName, "parameter"); }
 		return retval;
 
 	}
 	// $ANTLR end "parameter"
 
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_numericInteger() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_numericInteger() {}
+	partial void EnterRule_numericInteger();
+	partial void LeaveRule_numericInteger();
 	// $ANTLR start "numericInteger"
 	// HqlSqlWalker.g:552:1: numericInteger : NUM_INT ;
 	[GrammarRule("numericInteger")]
@@ -12196,18 +11861,17 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		EnterRule_numericInteger();
 		EnterRule("numericInteger", 63);
 		TraceIn("numericInteger", 63);
-	    AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-	    retval.Start = (IASTNode)input.LT(1);
+		AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+		retval.Start = (IASTNode)input.LT(1);
 
-	    IASTNode root_0 = default(IASTNode);
+		IASTNode root_0 = default(IASTNode);
 
-	    IASTNode _first_0 = default(IASTNode);
-	    IASTNode _last = default(IASTNode);
+		IASTNode _first_0 = default(IASTNode);
+		IASTNode _last = default(IASTNode);
 
-	    IASTNode NUM_INT220 = default(IASTNode);
+		IASTNode NUM_INT220 = default(IASTNode);
 
-	    IASTNode NUM_INT220_tree = default(IASTNode);
-
+		IASTNode NUM_INT220_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "numericInteger");
 		DebugLocation(552, 1);
 		try
@@ -12243,8 +11907,8 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			TraceOut("numericInteger", 63);
 			LeaveRule("numericInteger", 63);
 			LeaveRule_numericInteger();
-	    }
-	 	DebugLocation(554, 1);
+		}
+		DebugLocation(554, 1);
 		} finally { DebugExitRule(GrammarFileName, "numericInteger"); }
 		return retval;
 

@@ -2,7 +2,7 @@ grammar Hql;
 
 options
 {
-	language=CSharp2;
+	language=CSharp3;
 	output=AST;
 	ASTLabelType=IASTNode;
 }

@@ -8,20 +8,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 Hql.g 2014-08-01 01:55:02
+// $ANTLR 3.5.0.2 Hql.g 2014-08-03 13:32:00
 
 // The variable 'variable' is assigned but its value is never used.
-#pragma warning disable 168, 219
+#pragma warning disable 219
 // Unreachable code detected.
 #pragma warning disable 162
 // Missing XML comment for publicly visible type or member 'Type_or_Member'
 #pragma warning disable 1591
+// CLS compliance checking will not be performed on 'type' because it is not visible from outside this assembly.
+#pragma warning disable 3019
 
 
 using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Misc;
-using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 
 namespace  NHibernate.Hql.Ast.ANTLR 
 {
@@ -162,8 +163,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 	public const int T__133=133;
 	public const int T__134=134;
 
-    // delegates
-    // delegators
+	// delegates
+	// delegators
 
 	public HqlLexer()
 	{
@@ -183,5866 +184,5651 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 	}
 	public override string GrammarFileName { get { return "Hql.g"; } }
 
-	private static readonly bool[] decisionCanBacktrack = new bool[0];
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void OnCreated() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule(string ruleName, int ruleIndex) {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ALL() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ALL() {}
-
-    // $ANTLR start "ALL"
-    [GrammarRule("ALL")]
-    private void mALL()
-    {
-    	EnterRule_ALL();
-    	EnterRule("ALL", 1);
-    	TraceIn("ALL", 1);
-    		try
-    		{
-    		int _type = ALL;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:9:5: ( 'all' )
-    		DebugEnterAlt(1);
-    		// Hql.g:9:7: 'all'
-    		{
-    		DebugLocation(9, 7);
-    		Match("all"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ALL", 1);
-    		LeaveRule("ALL", 1);
-    		LeaveRule_ALL();
-        }
-    }
-    // $ANTLR end "ALL"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_AND() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_AND() {}
-
-    // $ANTLR start "AND"
-    [GrammarRule("AND")]
-    private void mAND()
-    {
-    	EnterRule_AND();
-    	EnterRule("AND", 2);
-    	TraceIn("AND", 2);
-    		try
-    		{
-    		int _type = AND;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:10:5: ( 'and' )
-    		DebugEnterAlt(1);
-    		// Hql.g:10:7: 'and'
-    		{
-    		DebugLocation(10, 7);
-    		Match("and"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("AND", 2);
-    		LeaveRule("AND", 2);
-    		LeaveRule_AND();
-        }
-    }
-    // $ANTLR end "AND"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ANY() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ANY() {}
-
-    // $ANTLR start "ANY"
-    [GrammarRule("ANY")]
-    private void mANY()
-    {
-    	EnterRule_ANY();
-    	EnterRule("ANY", 3);
-    	TraceIn("ANY", 3);
-    		try
-    		{
-    		int _type = ANY;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:11:5: ( 'any' )
-    		DebugEnterAlt(1);
-    		// Hql.g:11:7: 'any'
-    		{
-    		DebugLocation(11, 7);
-    		Match("any"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ANY", 3);
-    		LeaveRule("ANY", 3);
-    		LeaveRule_ANY();
-        }
-    }
-    // $ANTLR end "ANY"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_AS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_AS() {}
-
-    // $ANTLR start "AS"
-    [GrammarRule("AS")]
-    private void mAS()
-    {
-    	EnterRule_AS();
-    	EnterRule("AS", 4);
-    	TraceIn("AS", 4);
-    		try
-    		{
-    		int _type = AS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:12:4: ( 'as' )
-    		DebugEnterAlt(1);
-    		// Hql.g:12:6: 'as'
-    		{
-    		DebugLocation(12, 6);
-    		Match("as"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("AS", 4);
-    		LeaveRule("AS", 4);
-    		LeaveRule_AS();
-        }
-    }
-    // $ANTLR end "AS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ASCENDING() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ASCENDING() {}
-
-    // $ANTLR start "ASCENDING"
-    [GrammarRule("ASCENDING")]
-    private void mASCENDING()
-    {
-    	EnterRule_ASCENDING();
-    	EnterRule("ASCENDING", 5);
-    	TraceIn("ASCENDING", 5);
-    		try
-    		{
-    		int _type = ASCENDING;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:13:11: ( 'asc' )
-    		DebugEnterAlt(1);
-    		// Hql.g:13:13: 'asc'
-    		{
-    		DebugLocation(13, 13);
-    		Match("asc"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ASCENDING", 5);
-    		LeaveRule("ASCENDING", 5);
-    		LeaveRule_ASCENDING();
-        }
-    }
-    // $ANTLR end "ASCENDING"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_AVG() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_AVG() {}
-
-    // $ANTLR start "AVG"
-    [GrammarRule("AVG")]
-    private void mAVG()
-    {
-    	EnterRule_AVG();
-    	EnterRule("AVG", 6);
-    	TraceIn("AVG", 6);
-    		try
-    		{
-    		int _type = AVG;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:14:5: ( 'avg' )
-    		DebugEnterAlt(1);
-    		// Hql.g:14:7: 'avg'
-    		{
-    		DebugLocation(14, 7);
-    		Match("avg"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("AVG", 6);
-    		LeaveRule("AVG", 6);
-    		LeaveRule_AVG();
-        }
-    }
-    // $ANTLR end "AVG"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BETWEEN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BETWEEN() {}
-
-    // $ANTLR start "BETWEEN"
-    [GrammarRule("BETWEEN")]
-    private void mBETWEEN()
-    {
-    	EnterRule_BETWEEN();
-    	EnterRule("BETWEEN", 7);
-    	TraceIn("BETWEEN", 7);
-    		try
-    		{
-    		int _type = BETWEEN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:15:9: ( 'between' )
-    		DebugEnterAlt(1);
-    		// Hql.g:15:11: 'between'
-    		{
-    		DebugLocation(15, 11);
-    		Match("between"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BETWEEN", 7);
-    		LeaveRule("BETWEEN", 7);
-    		LeaveRule_BETWEEN();
-        }
-    }
-    // $ANTLR end "BETWEEN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BOTH() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BOTH() {}
-
-    // $ANTLR start "BOTH"
-    [GrammarRule("BOTH")]
-    private void mBOTH()
-    {
-    	EnterRule_BOTH();
-    	EnterRule("BOTH", 8);
-    	TraceIn("BOTH", 8);
-    		try
-    		{
-    		int _type = BOTH;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:16:6: ( 'both' )
-    		DebugEnterAlt(1);
-    		// Hql.g:16:8: 'both'
-    		{
-    		DebugLocation(16, 8);
-    		Match("both"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BOTH", 8);
-    		LeaveRule("BOTH", 8);
-    		LeaveRule_BOTH();
-        }
-    }
-    // $ANTLR end "BOTH"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_CASE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_CASE() {}
-
-    // $ANTLR start "CASE"
-    [GrammarRule("CASE")]
-    private void mCASE()
-    {
-    	EnterRule_CASE();
-    	EnterRule("CASE", 9);
-    	TraceIn("CASE", 9);
-    		try
-    		{
-    		int _type = CASE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:17:6: ( 'case' )
-    		DebugEnterAlt(1);
-    		// Hql.g:17:8: 'case'
-    		{
-    		DebugLocation(17, 8);
-    		Match("case"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("CASE", 9);
-    		LeaveRule("CASE", 9);
-    		LeaveRule_CASE();
-        }
-    }
-    // $ANTLR end "CASE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_CLASS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_CLASS() {}
-
-    // $ANTLR start "CLASS"
-    [GrammarRule("CLASS")]
-    private void mCLASS()
-    {
-    	EnterRule_CLASS();
-    	EnterRule("CLASS", 10);
-    	TraceIn("CLASS", 10);
-    		try
-    		{
-    		int _type = CLASS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:18:7: ( 'class' )
-    		DebugEnterAlt(1);
-    		// Hql.g:18:9: 'class'
-    		{
-    		DebugLocation(18, 9);
-    		Match("class"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("CLASS", 10);
-    		LeaveRule("CLASS", 10);
-    		LeaveRule_CLASS();
-        }
-    }
-    // $ANTLR end "CLASS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_COUNT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_COUNT() {}
-
-    // $ANTLR start "COUNT"
-    [GrammarRule("COUNT")]
-    private void mCOUNT()
-    {
-    	EnterRule_COUNT();
-    	EnterRule("COUNT", 11);
-    	TraceIn("COUNT", 11);
-    		try
-    		{
-    		int _type = COUNT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:19:7: ( 'count' )
-    		DebugEnterAlt(1);
-    		// Hql.g:19:9: 'count'
-    		{
-    		DebugLocation(19, 9);
-    		Match("count"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("COUNT", 11);
-    		LeaveRule("COUNT", 11);
-    		LeaveRule_COUNT();
-        }
-    }
-    // $ANTLR end "COUNT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_DELETE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_DELETE() {}
-
-    // $ANTLR start "DELETE"
-    [GrammarRule("DELETE")]
-    private void mDELETE()
-    {
-    	EnterRule_DELETE();
-    	EnterRule("DELETE", 12);
-    	TraceIn("DELETE", 12);
-    		try
-    		{
-    		int _type = DELETE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:20:8: ( 'delete' )
-    		DebugEnterAlt(1);
-    		// Hql.g:20:10: 'delete'
-    		{
-    		DebugLocation(20, 10);
-    		Match("delete"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("DELETE", 12);
-    		LeaveRule("DELETE", 12);
-    		LeaveRule_DELETE();
-        }
-    }
-    // $ANTLR end "DELETE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_DESCENDING() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_DESCENDING() {}
-
-    // $ANTLR start "DESCENDING"
-    [GrammarRule("DESCENDING")]
-    private void mDESCENDING()
-    {
-    	EnterRule_DESCENDING();
-    	EnterRule("DESCENDING", 13);
-    	TraceIn("DESCENDING", 13);
-    		try
-    		{
-    		int _type = DESCENDING;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:21:12: ( 'desc' )
-    		DebugEnterAlt(1);
-    		// Hql.g:21:14: 'desc'
-    		{
-    		DebugLocation(21, 14);
-    		Match("desc"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("DESCENDING", 13);
-    		LeaveRule("DESCENDING", 13);
-    		LeaveRule_DESCENDING();
-        }
-    }
-    // $ANTLR end "DESCENDING"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_DISTINCT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_DISTINCT() {}
-
-    // $ANTLR start "DISTINCT"
-    [GrammarRule("DISTINCT")]
-    private void mDISTINCT()
-    {
-    	EnterRule_DISTINCT();
-    	EnterRule("DISTINCT", 14);
-    	TraceIn("DISTINCT", 14);
-    		try
-    		{
-    		int _type = DISTINCT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:22:10: ( 'distinct' )
-    		DebugEnterAlt(1);
-    		// Hql.g:22:12: 'distinct'
-    		{
-    		DebugLocation(22, 12);
-    		Match("distinct"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("DISTINCT", 14);
-    		LeaveRule("DISTINCT", 14);
-    		LeaveRule_DISTINCT();
-        }
-    }
-    // $ANTLR end "DISTINCT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ELEMENTS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ELEMENTS() {}
-
-    // $ANTLR start "ELEMENTS"
-    [GrammarRule("ELEMENTS")]
-    private void mELEMENTS()
-    {
-    	EnterRule_ELEMENTS();
-    	EnterRule("ELEMENTS", 15);
-    	TraceIn("ELEMENTS", 15);
-    		try
-    		{
-    		int _type = ELEMENTS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:23:10: ( 'elements' )
-    		DebugEnterAlt(1);
-    		// Hql.g:23:12: 'elements'
-    		{
-    		DebugLocation(23, 12);
-    		Match("elements"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ELEMENTS", 15);
-    		LeaveRule("ELEMENTS", 15);
-    		LeaveRule_ELEMENTS();
-        }
-    }
-    // $ANTLR end "ELEMENTS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ELSE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ELSE() {}
-
-    // $ANTLR start "ELSE"
-    [GrammarRule("ELSE")]
-    private void mELSE()
-    {
-    	EnterRule_ELSE();
-    	EnterRule("ELSE", 16);
-    	TraceIn("ELSE", 16);
-    		try
-    		{
-    		int _type = ELSE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:24:6: ( 'else' )
-    		DebugEnterAlt(1);
-    		// Hql.g:24:8: 'else'
-    		{
-    		DebugLocation(24, 8);
-    		Match("else"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ELSE", 16);
-    		LeaveRule("ELSE", 16);
-    		LeaveRule_ELSE();
-        }
-    }
-    // $ANTLR end "ELSE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_EMPTY() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_EMPTY() {}
-
-    // $ANTLR start "EMPTY"
-    [GrammarRule("EMPTY")]
-    private void mEMPTY()
-    {
-    	EnterRule_EMPTY();
-    	EnterRule("EMPTY", 17);
-    	TraceIn("EMPTY", 17);
-    		try
-    		{
-    		int _type = EMPTY;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:25:7: ( 'empty' )
-    		DebugEnterAlt(1);
-    		// Hql.g:25:9: 'empty'
-    		{
-    		DebugLocation(25, 9);
-    		Match("empty"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("EMPTY", 17);
-    		LeaveRule("EMPTY", 17);
-    		LeaveRule_EMPTY();
-        }
-    }
-    // $ANTLR end "EMPTY"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_END() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_END() {}
-
-    // $ANTLR start "END"
-    [GrammarRule("END")]
-    private void mEND()
-    {
-    	EnterRule_END();
-    	EnterRule("END", 18);
-    	TraceIn("END", 18);
-    		try
-    		{
-    		int _type = END;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:26:5: ( 'end' )
-    		DebugEnterAlt(1);
-    		// Hql.g:26:7: 'end'
-    		{
-    		DebugLocation(26, 7);
-    		Match("end"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("END", 18);
-    		LeaveRule("END", 18);
-    		LeaveRule_END();
-        }
-    }
-    // $ANTLR end "END"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ESCAPE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ESCAPE() {}
-
-    // $ANTLR start "ESCAPE"
-    [GrammarRule("ESCAPE")]
-    private void mESCAPE()
-    {
-    	EnterRule_ESCAPE();
-    	EnterRule("ESCAPE", 19);
-    	TraceIn("ESCAPE", 19);
-    		try
-    		{
-    		int _type = ESCAPE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:27:8: ( 'escape' )
-    		DebugEnterAlt(1);
-    		// Hql.g:27:10: 'escape'
-    		{
-    		DebugLocation(27, 10);
-    		Match("escape"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ESCAPE", 19);
-    		LeaveRule("ESCAPE", 19);
-    		LeaveRule_ESCAPE();
-        }
-    }
-    // $ANTLR end "ESCAPE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_EXISTS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_EXISTS() {}
-
-    // $ANTLR start "EXISTS"
-    [GrammarRule("EXISTS")]
-    private void mEXISTS()
-    {
-    	EnterRule_EXISTS();
-    	EnterRule("EXISTS", 20);
-    	TraceIn("EXISTS", 20);
-    		try
-    		{
-    		int _type = EXISTS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:28:8: ( 'exists' )
-    		DebugEnterAlt(1);
-    		// Hql.g:28:10: 'exists'
-    		{
-    		DebugLocation(28, 10);
-    		Match("exists"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("EXISTS", 20);
-    		LeaveRule("EXISTS", 20);
-    		LeaveRule_EXISTS();
-        }
-    }
-    // $ANTLR end "EXISTS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_FALSE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_FALSE() {}
-
-    // $ANTLR start "FALSE"
-    [GrammarRule("FALSE")]
-    private void mFALSE()
-    {
-    	EnterRule_FALSE();
-    	EnterRule("FALSE", 21);
-    	TraceIn("FALSE", 21);
-    		try
-    		{
-    		int _type = FALSE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:29:7: ( 'false' )
-    		DebugEnterAlt(1);
-    		// Hql.g:29:9: 'false'
-    		{
-    		DebugLocation(29, 9);
-    		Match("false"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("FALSE", 21);
-    		LeaveRule("FALSE", 21);
-    		LeaveRule_FALSE();
-        }
-    }
-    // $ANTLR end "FALSE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_FETCH() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_FETCH() {}
-
-    // $ANTLR start "FETCH"
-    [GrammarRule("FETCH")]
-    private void mFETCH()
-    {
-    	EnterRule_FETCH();
-    	EnterRule("FETCH", 22);
-    	TraceIn("FETCH", 22);
-    		try
-    		{
-    		int _type = FETCH;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:30:7: ( 'fetch' )
-    		DebugEnterAlt(1);
-    		// Hql.g:30:9: 'fetch'
-    		{
-    		DebugLocation(30, 9);
-    		Match("fetch"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("FETCH", 22);
-    		LeaveRule("FETCH", 22);
-    		LeaveRule_FETCH();
-        }
-    }
-    // $ANTLR end "FETCH"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_FROM() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_FROM() {}
-
-    // $ANTLR start "FROM"
-    [GrammarRule("FROM")]
-    private void mFROM()
-    {
-    	EnterRule_FROM();
-    	EnterRule("FROM", 23);
-    	TraceIn("FROM", 23);
-    		try
-    		{
-    		int _type = FROM;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:31:6: ( 'from' )
-    		DebugEnterAlt(1);
-    		// Hql.g:31:8: 'from'
-    		{
-    		DebugLocation(31, 8);
-    		Match("from"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("FROM", 23);
-    		LeaveRule("FROM", 23);
-    		LeaveRule_FROM();
-        }
-    }
-    // $ANTLR end "FROM"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_FULL() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_FULL() {}
-
-    // $ANTLR start "FULL"
-    [GrammarRule("FULL")]
-    private void mFULL()
-    {
-    	EnterRule_FULL();
-    	EnterRule("FULL", 24);
-    	TraceIn("FULL", 24);
-    		try
-    		{
-    		int _type = FULL;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:32:6: ( 'full' )
-    		DebugEnterAlt(1);
-    		// Hql.g:32:8: 'full'
-    		{
-    		DebugLocation(32, 8);
-    		Match("full"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("FULL", 24);
-    		LeaveRule("FULL", 24);
-    		LeaveRule_FULL();
-        }
-    }
-    // $ANTLR end "FULL"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_GROUP() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_GROUP() {}
-
-    // $ANTLR start "GROUP"
-    [GrammarRule("GROUP")]
-    private void mGROUP()
-    {
-    	EnterRule_GROUP();
-    	EnterRule("GROUP", 25);
-    	TraceIn("GROUP", 25);
-    		try
-    		{
-    		int _type = GROUP;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:33:7: ( 'group' )
-    		DebugEnterAlt(1);
-    		// Hql.g:33:9: 'group'
-    		{
-    		DebugLocation(33, 9);
-    		Match("group"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("GROUP", 25);
-    		LeaveRule("GROUP", 25);
-    		LeaveRule_GROUP();
-        }
-    }
-    // $ANTLR end "GROUP"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_HAVING() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_HAVING() {}
-
-    // $ANTLR start "HAVING"
-    [GrammarRule("HAVING")]
-    private void mHAVING()
-    {
-    	EnterRule_HAVING();
-    	EnterRule("HAVING", 26);
-    	TraceIn("HAVING", 26);
-    		try
-    		{
-    		int _type = HAVING;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:34:8: ( 'having' )
-    		DebugEnterAlt(1);
-    		// Hql.g:34:10: 'having'
-    		{
-    		DebugLocation(34, 10);
-    		Match("having"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("HAVING", 26);
-    		LeaveRule("HAVING", 26);
-    		LeaveRule_HAVING();
-        }
-    }
-    // $ANTLR end "HAVING"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_IN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_IN() {}
-
-    // $ANTLR start "IN"
-    [GrammarRule("IN")]
-    private void mIN()
-    {
-    	EnterRule_IN();
-    	EnterRule("IN", 27);
-    	TraceIn("IN", 27);
-    		try
-    		{
-    		int _type = IN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:35:4: ( 'in' )
-    		DebugEnterAlt(1);
-    		// Hql.g:35:6: 'in'
-    		{
-    		DebugLocation(35, 6);
-    		Match("in"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("IN", 27);
-    		LeaveRule("IN", 27);
-    		LeaveRule_IN();
-        }
-    }
-    // $ANTLR end "IN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_INDICES() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_INDICES() {}
-
-    // $ANTLR start "INDICES"
-    [GrammarRule("INDICES")]
-    private void mINDICES()
-    {
-    	EnterRule_INDICES();
-    	EnterRule("INDICES", 28);
-    	TraceIn("INDICES", 28);
-    		try
-    		{
-    		int _type = INDICES;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:36:9: ( 'indices' )
-    		DebugEnterAlt(1);
-    		// Hql.g:36:11: 'indices'
-    		{
-    		DebugLocation(36, 11);
-    		Match("indices"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("INDICES", 28);
-    		LeaveRule("INDICES", 28);
-    		LeaveRule_INDICES();
-        }
-    }
-    // $ANTLR end "INDICES"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_INNER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_INNER() {}
-
-    // $ANTLR start "INNER"
-    [GrammarRule("INNER")]
-    private void mINNER()
-    {
-    	EnterRule_INNER();
-    	EnterRule("INNER", 29);
-    	TraceIn("INNER", 29);
-    		try
-    		{
-    		int _type = INNER;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:37:7: ( 'inner' )
-    		DebugEnterAlt(1);
-    		// Hql.g:37:9: 'inner'
-    		{
-    		DebugLocation(37, 9);
-    		Match("inner"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("INNER", 29);
-    		LeaveRule("INNER", 29);
-    		LeaveRule_INNER();
-        }
-    }
-    // $ANTLR end "INNER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_INSERT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_INSERT() {}
-
-    // $ANTLR start "INSERT"
-    [GrammarRule("INSERT")]
-    private void mINSERT()
-    {
-    	EnterRule_INSERT();
-    	EnterRule("INSERT", 30);
-    	TraceIn("INSERT", 30);
-    		try
-    		{
-    		int _type = INSERT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:38:8: ( 'insert' )
-    		DebugEnterAlt(1);
-    		// Hql.g:38:10: 'insert'
-    		{
-    		DebugLocation(38, 10);
-    		Match("insert"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("INSERT", 30);
-    		LeaveRule("INSERT", 30);
-    		LeaveRule_INSERT();
-        }
-    }
-    // $ANTLR end "INSERT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_INTO() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_INTO() {}
-
-    // $ANTLR start "INTO"
-    [GrammarRule("INTO")]
-    private void mINTO()
-    {
-    	EnterRule_INTO();
-    	EnterRule("INTO", 31);
-    	TraceIn("INTO", 31);
-    		try
-    		{
-    		int _type = INTO;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:39:6: ( 'into' )
-    		DebugEnterAlt(1);
-    		// Hql.g:39:8: 'into'
-    		{
-    		DebugLocation(39, 8);
-    		Match("into"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("INTO", 31);
-    		LeaveRule("INTO", 31);
-    		LeaveRule_INTO();
-        }
-    }
-    // $ANTLR end "INTO"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_IS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_IS() {}
-
-    // $ANTLR start "IS"
-    [GrammarRule("IS")]
-    private void mIS()
-    {
-    	EnterRule_IS();
-    	EnterRule("IS", 32);
-    	TraceIn("IS", 32);
-    		try
-    		{
-    		int _type = IS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:40:4: ( 'is' )
-    		DebugEnterAlt(1);
-    		// Hql.g:40:6: 'is'
-    		{
-    		DebugLocation(40, 6);
-    		Match("is"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("IS", 32);
-    		LeaveRule("IS", 32);
-    		LeaveRule_IS();
-        }
-    }
-    // $ANTLR end "IS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_JOIN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_JOIN() {}
-
-    // $ANTLR start "JOIN"
-    [GrammarRule("JOIN")]
-    private void mJOIN()
-    {
-    	EnterRule_JOIN();
-    	EnterRule("JOIN", 33);
-    	TraceIn("JOIN", 33);
-    		try
-    		{
-    		int _type = JOIN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:41:6: ( 'join' )
-    		DebugEnterAlt(1);
-    		// Hql.g:41:8: 'join'
-    		{
-    		DebugLocation(41, 8);
-    		Match("join"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("JOIN", 33);
-    		LeaveRule("JOIN", 33);
-    		LeaveRule_JOIN();
-        }
-    }
-    // $ANTLR end "JOIN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LEADING() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LEADING() {}
-
-    // $ANTLR start "LEADING"
-    [GrammarRule("LEADING")]
-    private void mLEADING()
-    {
-    	EnterRule_LEADING();
-    	EnterRule("LEADING", 34);
-    	TraceIn("LEADING", 34);
-    		try
-    		{
-    		int _type = LEADING;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:42:9: ( 'leading' )
-    		DebugEnterAlt(1);
-    		// Hql.g:42:11: 'leading'
-    		{
-    		DebugLocation(42, 11);
-    		Match("leading"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LEADING", 34);
-    		LeaveRule("LEADING", 34);
-    		LeaveRule_LEADING();
-        }
-    }
-    // $ANTLR end "LEADING"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LEFT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LEFT() {}
-
-    // $ANTLR start "LEFT"
-    [GrammarRule("LEFT")]
-    private void mLEFT()
-    {
-    	EnterRule_LEFT();
-    	EnterRule("LEFT", 35);
-    	TraceIn("LEFT", 35);
-    		try
-    		{
-    		int _type = LEFT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:43:6: ( 'left' )
-    		DebugEnterAlt(1);
-    		// Hql.g:43:8: 'left'
-    		{
-    		DebugLocation(43, 8);
-    		Match("left"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LEFT", 35);
-    		LeaveRule("LEFT", 35);
-    		LeaveRule_LEFT();
-        }
-    }
-    // $ANTLR end "LEFT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LIKE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LIKE() {}
-
-    // $ANTLR start "LIKE"
-    [GrammarRule("LIKE")]
-    private void mLIKE()
-    {
-    	EnterRule_LIKE();
-    	EnterRule("LIKE", 36);
-    	TraceIn("LIKE", 36);
-    		try
-    		{
-    		int _type = LIKE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:44:6: ( 'like' )
-    		DebugEnterAlt(1);
-    		// Hql.g:44:8: 'like'
-    		{
-    		DebugLocation(44, 8);
-    		Match("like"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LIKE", 36);
-    		LeaveRule("LIKE", 36);
-    		LeaveRule_LIKE();
-        }
-    }
-    // $ANTLR end "LIKE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LITERAL_by() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LITERAL_by() {}
-
-    // $ANTLR start "LITERAL_by"
-    [GrammarRule("LITERAL_by")]
-    private void mLITERAL_by()
-    {
-    	EnterRule_LITERAL_by();
-    	EnterRule("LITERAL_by", 37);
-    	TraceIn("LITERAL_by", 37);
-    		try
-    		{
-    		int _type = LITERAL_by;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:45:12: ( 'by' )
-    		DebugEnterAlt(1);
-    		// Hql.g:45:14: 'by'
-    		{
-    		DebugLocation(45, 14);
-    		Match("by"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LITERAL_by", 37);
-    		LeaveRule("LITERAL_by", 37);
-    		LeaveRule_LITERAL_by();
-        }
-    }
-    // $ANTLR end "LITERAL_by"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_MAX() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_MAX() {}
-
-    // $ANTLR start "MAX"
-    [GrammarRule("MAX")]
-    private void mMAX()
-    {
-    	EnterRule_MAX();
-    	EnterRule("MAX", 38);
-    	TraceIn("MAX", 38);
-    		try
-    		{
-    		int _type = MAX;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:46:5: ( 'max' )
-    		DebugEnterAlt(1);
-    		// Hql.g:46:7: 'max'
-    		{
-    		DebugLocation(46, 7);
-    		Match("max"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("MAX", 38);
-    		LeaveRule("MAX", 38);
-    		LeaveRule_MAX();
-        }
-    }
-    // $ANTLR end "MAX"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_MEMBER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_MEMBER() {}
-
-    // $ANTLR start "MEMBER"
-    [GrammarRule("MEMBER")]
-    private void mMEMBER()
-    {
-    	EnterRule_MEMBER();
-    	EnterRule("MEMBER", 39);
-    	TraceIn("MEMBER", 39);
-    		try
-    		{
-    		int _type = MEMBER;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:47:8: ( 'member' )
-    		DebugEnterAlt(1);
-    		// Hql.g:47:10: 'member'
-    		{
-    		DebugLocation(47, 10);
-    		Match("member"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("MEMBER", 39);
-    		LeaveRule("MEMBER", 39);
-    		LeaveRule_MEMBER();
-        }
-    }
-    // $ANTLR end "MEMBER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_MIN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_MIN() {}
-
-    // $ANTLR start "MIN"
-    [GrammarRule("MIN")]
-    private void mMIN()
-    {
-    	EnterRule_MIN();
-    	EnterRule("MIN", 40);
-    	TraceIn("MIN", 40);
-    		try
-    		{
-    		int _type = MIN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:48:5: ( 'min' )
-    		DebugEnterAlt(1);
-    		// Hql.g:48:7: 'min'
-    		{
-    		DebugLocation(48, 7);
-    		Match("min"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("MIN", 40);
-    		LeaveRule("MIN", 40);
-    		LeaveRule_MIN();
-        }
-    }
-    // $ANTLR end "MIN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_NEW() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_NEW() {}
-
-    // $ANTLR start "NEW"
-    [GrammarRule("NEW")]
-    private void mNEW()
-    {
-    	EnterRule_NEW();
-    	EnterRule("NEW", 41);
-    	TraceIn("NEW", 41);
-    		try
-    		{
-    		int _type = NEW;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:49:5: ( 'new' )
-    		DebugEnterAlt(1);
-    		// Hql.g:49:7: 'new'
-    		{
-    		DebugLocation(49, 7);
-    		Match("new"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("NEW", 41);
-    		LeaveRule("NEW", 41);
-    		LeaveRule_NEW();
-        }
-    }
-    // $ANTLR end "NEW"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_NOT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_NOT() {}
-
-    // $ANTLR start "NOT"
-    [GrammarRule("NOT")]
-    private void mNOT()
-    {
-    	EnterRule_NOT();
-    	EnterRule("NOT", 42);
-    	TraceIn("NOT", 42);
-    		try
-    		{
-    		int _type = NOT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:50:5: ( 'not' )
-    		DebugEnterAlt(1);
-    		// Hql.g:50:7: 'not'
-    		{
-    		DebugLocation(50, 7);
-    		Match("not"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("NOT", 42);
-    		LeaveRule("NOT", 42);
-    		LeaveRule_NOT();
-        }
-    }
-    // $ANTLR end "NOT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_NULL() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_NULL() {}
-
-    // $ANTLR start "NULL"
-    [GrammarRule("NULL")]
-    private void mNULL()
-    {
-    	EnterRule_NULL();
-    	EnterRule("NULL", 43);
-    	TraceIn("NULL", 43);
-    		try
-    		{
-    		int _type = NULL;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:51:6: ( 'null' )
-    		DebugEnterAlt(1);
-    		// Hql.g:51:8: 'null'
-    		{
-    		DebugLocation(51, 8);
-    		Match("null"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("NULL", 43);
-    		LeaveRule("NULL", 43);
-    		LeaveRule_NULL();
-        }
-    }
-    // $ANTLR end "NULL"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OBJECT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OBJECT() {}
-
-    // $ANTLR start "OBJECT"
-    [GrammarRule("OBJECT")]
-    private void mOBJECT()
-    {
-    	EnterRule_OBJECT();
-    	EnterRule("OBJECT", 44);
-    	TraceIn("OBJECT", 44);
-    		try
-    		{
-    		int _type = OBJECT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:52:8: ( 'object' )
-    		DebugEnterAlt(1);
-    		// Hql.g:52:10: 'object'
-    		{
-    		DebugLocation(52, 10);
-    		Match("object"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OBJECT", 44);
-    		LeaveRule("OBJECT", 44);
-    		LeaveRule_OBJECT();
-        }
-    }
-    // $ANTLR end "OBJECT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OF() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OF() {}
-
-    // $ANTLR start "OF"
-    [GrammarRule("OF")]
-    private void mOF()
-    {
-    	EnterRule_OF();
-    	EnterRule("OF", 45);
-    	TraceIn("OF", 45);
-    		try
-    		{
-    		int _type = OF;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:53:4: ( 'of' )
-    		DebugEnterAlt(1);
-    		// Hql.g:53:6: 'of'
-    		{
-    		DebugLocation(53, 6);
-    		Match("of"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OF", 45);
-    		LeaveRule("OF", 45);
-    		LeaveRule_OF();
-        }
-    }
-    // $ANTLR end "OF"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ON() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ON() {}
-
-    // $ANTLR start "ON"
-    [GrammarRule("ON")]
-    private void mON()
-    {
-    	EnterRule_ON();
-    	EnterRule("ON", 46);
-    	TraceIn("ON", 46);
-    		try
-    		{
-    		int _type = ON;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:54:4: ( 'on' )
-    		DebugEnterAlt(1);
-    		// Hql.g:54:6: 'on'
-    		{
-    		DebugLocation(54, 6);
-    		Match("on"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ON", 46);
-    		LeaveRule("ON", 46);
-    		LeaveRule_ON();
-        }
-    }
-    // $ANTLR end "ON"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OR() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OR() {}
-
-    // $ANTLR start "OR"
-    [GrammarRule("OR")]
-    private void mOR()
-    {
-    	EnterRule_OR();
-    	EnterRule("OR", 47);
-    	TraceIn("OR", 47);
-    		try
-    		{
-    		int _type = OR;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:55:4: ( 'or' )
-    		DebugEnterAlt(1);
-    		// Hql.g:55:6: 'or'
-    		{
-    		DebugLocation(55, 6);
-    		Match("or"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OR", 47);
-    		LeaveRule("OR", 47);
-    		LeaveRule_OR();
-        }
-    }
-    // $ANTLR end "OR"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ORDER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ORDER() {}
-
-    // $ANTLR start "ORDER"
-    [GrammarRule("ORDER")]
-    private void mORDER()
-    {
-    	EnterRule_ORDER();
-    	EnterRule("ORDER", 48);
-    	TraceIn("ORDER", 48);
-    		try
-    		{
-    		int _type = ORDER;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:56:7: ( 'order' )
-    		DebugEnterAlt(1);
-    		// Hql.g:56:9: 'order'
-    		{
-    		DebugLocation(56, 9);
-    		Match("order"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("ORDER", 48);
-    		LeaveRule("ORDER", 48);
-    		LeaveRule_ORDER();
-        }
-    }
-    // $ANTLR end "ORDER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OUTER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OUTER() {}
-
-    // $ANTLR start "OUTER"
-    [GrammarRule("OUTER")]
-    private void mOUTER()
-    {
-    	EnterRule_OUTER();
-    	EnterRule("OUTER", 49);
-    	TraceIn("OUTER", 49);
-    		try
-    		{
-    		int _type = OUTER;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:57:7: ( 'outer' )
-    		DebugEnterAlt(1);
-    		// Hql.g:57:9: 'outer'
-    		{
-    		DebugLocation(57, 9);
-    		Match("outer"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OUTER", 49);
-    		LeaveRule("OUTER", 49);
-    		LeaveRule_OUTER();
-        }
-    }
-    // $ANTLR end "OUTER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_PROPERTIES() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_PROPERTIES() {}
-
-    // $ANTLR start "PROPERTIES"
-    [GrammarRule("PROPERTIES")]
-    private void mPROPERTIES()
-    {
-    	EnterRule_PROPERTIES();
-    	EnterRule("PROPERTIES", 50);
-    	TraceIn("PROPERTIES", 50);
-    		try
-    		{
-    		int _type = PROPERTIES;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:58:12: ( 'properties' )
-    		DebugEnterAlt(1);
-    		// Hql.g:58:14: 'properties'
-    		{
-    		DebugLocation(58, 14);
-    		Match("properties"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("PROPERTIES", 50);
-    		LeaveRule("PROPERTIES", 50);
-    		LeaveRule_PROPERTIES();
-        }
-    }
-    // $ANTLR end "PROPERTIES"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_RIGHT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_RIGHT() {}
-
-    // $ANTLR start "RIGHT"
-    [GrammarRule("RIGHT")]
-    private void mRIGHT()
-    {
-    	EnterRule_RIGHT();
-    	EnterRule("RIGHT", 51);
-    	TraceIn("RIGHT", 51);
-    		try
-    		{
-    		int _type = RIGHT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:59:7: ( 'right' )
-    		DebugEnterAlt(1);
-    		// Hql.g:59:9: 'right'
-    		{
-    		DebugLocation(59, 9);
-    		Match("right"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("RIGHT", 51);
-    		LeaveRule("RIGHT", 51);
-    		LeaveRule_RIGHT();
-        }
-    }
-    // $ANTLR end "RIGHT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SELECT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SELECT() {}
-
-    // $ANTLR start "SELECT"
-    [GrammarRule("SELECT")]
-    private void mSELECT()
-    {
-    	EnterRule_SELECT();
-    	EnterRule("SELECT", 52);
-    	TraceIn("SELECT", 52);
-    		try
-    		{
-    		int _type = SELECT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:60:8: ( 'select' )
-    		DebugEnterAlt(1);
-    		// Hql.g:60:10: 'select'
-    		{
-    		DebugLocation(60, 10);
-    		Match("select"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SELECT", 52);
-    		LeaveRule("SELECT", 52);
-    		LeaveRule_SELECT();
-        }
-    }
-    // $ANTLR end "SELECT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SET() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SET() {}
-
-    // $ANTLR start "SET"
-    [GrammarRule("SET")]
-    private void mSET()
-    {
-    	EnterRule_SET();
-    	EnterRule("SET", 53);
-    	TraceIn("SET", 53);
-    		try
-    		{
-    		int _type = SET;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:61:5: ( 'set' )
-    		DebugEnterAlt(1);
-    		// Hql.g:61:7: 'set'
-    		{
-    		DebugLocation(61, 7);
-    		Match("set"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SET", 53);
-    		LeaveRule("SET", 53);
-    		LeaveRule_SET();
-        }
-    }
-    // $ANTLR end "SET"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SKIP() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SKIP() {}
-
-    // $ANTLR start "SKIP"
-    [GrammarRule("SKIP")]
-    private void mSKIP()
-    {
-    	EnterRule_SKIP();
-    	EnterRule("SKIP", 54);
-    	TraceIn("SKIP", 54);
-    		try
-    		{
-    		int _type = SKIP;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:62:6: ( 'skip' )
-    		DebugEnterAlt(1);
-    		// Hql.g:62:8: 'skip'
-    		{
-    		DebugLocation(62, 8);
-    		Match("skip"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SKIP", 54);
-    		LeaveRule("SKIP", 54);
-    		LeaveRule_SKIP();
-        }
-    }
-    // $ANTLR end "SKIP"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SOME() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SOME() {}
-
-    // $ANTLR start "SOME"
-    [GrammarRule("SOME")]
-    private void mSOME()
-    {
-    	EnterRule_SOME();
-    	EnterRule("SOME", 55);
-    	TraceIn("SOME", 55);
-    		try
-    		{
-    		int _type = SOME;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:63:6: ( 'some' )
-    		DebugEnterAlt(1);
-    		// Hql.g:63:8: 'some'
-    		{
-    		DebugLocation(63, 8);
-    		Match("some"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SOME", 55);
-    		LeaveRule("SOME", 55);
-    		LeaveRule_SOME();
-        }
-    }
-    // $ANTLR end "SOME"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SUM() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SUM() {}
-
-    // $ANTLR start "SUM"
-    [GrammarRule("SUM")]
-    private void mSUM()
-    {
-    	EnterRule_SUM();
-    	EnterRule("SUM", 56);
-    	TraceIn("SUM", 56);
-    		try
-    		{
-    		int _type = SUM;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:64:5: ( 'sum' )
-    		DebugEnterAlt(1);
-    		// Hql.g:64:7: 'sum'
-    		{
-    		DebugLocation(64, 7);
-    		Match("sum"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SUM", 56);
-    		LeaveRule("SUM", 56);
-    		LeaveRule_SUM();
-        }
-    }
-    // $ANTLR end "SUM"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_TAKE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_TAKE() {}
-
-    // $ANTLR start "TAKE"
-    [GrammarRule("TAKE")]
-    private void mTAKE()
-    {
-    	EnterRule_TAKE();
-    	EnterRule("TAKE", 57);
-    	TraceIn("TAKE", 57);
-    		try
-    		{
-    		int _type = TAKE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:65:6: ( 'take' )
-    		DebugEnterAlt(1);
-    		// Hql.g:65:8: 'take'
-    		{
-    		DebugLocation(65, 8);
-    		Match("take"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("TAKE", 57);
-    		LeaveRule("TAKE", 57);
-    		LeaveRule_TAKE();
-        }
-    }
-    // $ANTLR end "TAKE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_THEN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_THEN() {}
-
-    // $ANTLR start "THEN"
-    [GrammarRule("THEN")]
-    private void mTHEN()
-    {
-    	EnterRule_THEN();
-    	EnterRule("THEN", 58);
-    	TraceIn("THEN", 58);
-    		try
-    		{
-    		int _type = THEN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:66:6: ( 'then' )
-    		DebugEnterAlt(1);
-    		// Hql.g:66:8: 'then'
-    		{
-    		DebugLocation(66, 8);
-    		Match("then"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("THEN", 58);
-    		LeaveRule("THEN", 58);
-    		LeaveRule_THEN();
-        }
-    }
-    // $ANTLR end "THEN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_TRAILING() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_TRAILING() {}
-
-    // $ANTLR start "TRAILING"
-    [GrammarRule("TRAILING")]
-    private void mTRAILING()
-    {
-    	EnterRule_TRAILING();
-    	EnterRule("TRAILING", 59);
-    	TraceIn("TRAILING", 59);
-    		try
-    		{
-    		int _type = TRAILING;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:67:10: ( 'trailing' )
-    		DebugEnterAlt(1);
-    		// Hql.g:67:12: 'trailing'
-    		{
-    		DebugLocation(67, 12);
-    		Match("trailing"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("TRAILING", 59);
-    		LeaveRule("TRAILING", 59);
-    		LeaveRule_TRAILING();
-        }
-    }
-    // $ANTLR end "TRAILING"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_TRUE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_TRUE() {}
-
-    // $ANTLR start "TRUE"
-    [GrammarRule("TRUE")]
-    private void mTRUE()
-    {
-    	EnterRule_TRUE();
-    	EnterRule("TRUE", 60);
-    	TraceIn("TRUE", 60);
-    		try
-    		{
-    		int _type = TRUE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:68:6: ( 'true' )
-    		DebugEnterAlt(1);
-    		// Hql.g:68:8: 'true'
-    		{
-    		DebugLocation(68, 8);
-    		Match("true"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("TRUE", 60);
-    		LeaveRule("TRUE", 60);
-    		LeaveRule_TRUE();
-        }
-    }
-    // $ANTLR end "TRUE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_UNION() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_UNION() {}
-
-    // $ANTLR start "UNION"
-    [GrammarRule("UNION")]
-    private void mUNION()
-    {
-    	EnterRule_UNION();
-    	EnterRule("UNION", 61);
-    	TraceIn("UNION", 61);
-    		try
-    		{
-    		int _type = UNION;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:69:7: ( 'union' )
-    		DebugEnterAlt(1);
-    		// Hql.g:69:9: 'union'
-    		{
-    		DebugLocation(69, 9);
-    		Match("union"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("UNION", 61);
-    		LeaveRule("UNION", 61);
-    		LeaveRule_UNION();
-        }
-    }
-    // $ANTLR end "UNION"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_UPDATE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_UPDATE() {}
-
-    // $ANTLR start "UPDATE"
-    [GrammarRule("UPDATE")]
-    private void mUPDATE()
-    {
-    	EnterRule_UPDATE();
-    	EnterRule("UPDATE", 62);
-    	TraceIn("UPDATE", 62);
-    		try
-    		{
-    		int _type = UPDATE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:70:8: ( 'update' )
-    		DebugEnterAlt(1);
-    		// Hql.g:70:10: 'update'
-    		{
-    		DebugLocation(70, 10);
-    		Match("update"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("UPDATE", 62);
-    		LeaveRule("UPDATE", 62);
-    		LeaveRule_UPDATE();
-        }
-    }
-    // $ANTLR end "UPDATE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_VERSIONED() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_VERSIONED() {}
-
-    // $ANTLR start "VERSIONED"
-    [GrammarRule("VERSIONED")]
-    private void mVERSIONED()
-    {
-    	EnterRule_VERSIONED();
-    	EnterRule("VERSIONED", 63);
-    	TraceIn("VERSIONED", 63);
-    		try
-    		{
-    		int _type = VERSIONED;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:71:11: ( 'versioned' )
-    		DebugEnterAlt(1);
-    		// Hql.g:71:13: 'versioned'
-    		{
-    		DebugLocation(71, 13);
-    		Match("versioned"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("VERSIONED", 63);
-    		LeaveRule("VERSIONED", 63);
-    		LeaveRule_VERSIONED();
-        }
-    }
-    // $ANTLR end "VERSIONED"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_WHEN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_WHEN() {}
-
-    // $ANTLR start "WHEN"
-    [GrammarRule("WHEN")]
-    private void mWHEN()
-    {
-    	EnterRule_WHEN();
-    	EnterRule("WHEN", 64);
-    	TraceIn("WHEN", 64);
-    		try
-    		{
-    		int _type = WHEN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:72:6: ( 'when' )
-    		DebugEnterAlt(1);
-    		// Hql.g:72:8: 'when'
-    		{
-    		DebugLocation(72, 8);
-    		Match("when"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("WHEN", 64);
-    		LeaveRule("WHEN", 64);
-    		LeaveRule_WHEN();
-        }
-    }
-    // $ANTLR end "WHEN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_WHERE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_WHERE() {}
-
-    // $ANTLR start "WHERE"
-    [GrammarRule("WHERE")]
-    private void mWHERE()
-    {
-    	EnterRule_WHERE();
-    	EnterRule("WHERE", 65);
-    	TraceIn("WHERE", 65);
-    		try
-    		{
-    		int _type = WHERE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:73:7: ( 'where' )
-    		DebugEnterAlt(1);
-    		// Hql.g:73:9: 'where'
-    		{
-    		DebugLocation(73, 9);
-    		Match("where"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("WHERE", 65);
-    		LeaveRule("WHERE", 65);
-    		LeaveRule_WHERE();
-        }
-    }
-    // $ANTLR end "WHERE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_WITH() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_WITH() {}
-
-    // $ANTLR start "WITH"
-    [GrammarRule("WITH")]
-    private void mWITH()
-    {
-    	EnterRule_WITH();
-    	EnterRule("WITH", 66);
-    	TraceIn("WITH", 66);
-    		try
-    		{
-    		int _type = WITH;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:74:6: ( 'with' )
-    		DebugEnterAlt(1);
-    		// Hql.g:74:8: 'with'
-    		{
-    		DebugLocation(74, 8);
-    		Match("with"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("WITH", 66);
-    		LeaveRule("WITH", 66);
-    		LeaveRule_WITH();
-        }
-    }
-    // $ANTLR end "WITH"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_T__133() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_T__133() {}
-
-    // $ANTLR start "T__133"
-    [GrammarRule("T__133")]
-    private void mT__133()
-    {
-    	EnterRule_T__133();
-    	EnterRule("T__133", 67);
-    	TraceIn("T__133", 67);
-    		try
-    		{
-    		int _type = T__133;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:75:8: ( 'ascending' )
-    		DebugEnterAlt(1);
-    		// Hql.g:75:10: 'ascending'
-    		{
-    		DebugLocation(75, 10);
-    		Match("ascending"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("T__133", 67);
-    		LeaveRule("T__133", 67);
-    		LeaveRule_T__133();
-        }
-    }
-    // $ANTLR end "T__133"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_T__134() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_T__134() {}
-
-    // $ANTLR start "T__134"
-    [GrammarRule("T__134")]
-    private void mT__134()
-    {
-    	EnterRule_T__134();
-    	EnterRule("T__134", 68);
-    	TraceIn("T__134", 68);
-    		try
-    		{
-    		int _type = T__134;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:76:8: ( 'descending' )
-    		DebugEnterAlt(1);
-    		// Hql.g:76:10: 'descending'
-    		{
-    		DebugLocation(76, 10);
-    		Match("descending"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("T__134", 68);
-    		LeaveRule("T__134", 68);
-    		LeaveRule_T__134();
-        }
-    }
-    // $ANTLR end "T__134"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_EQ() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_EQ() {}
-
-    // $ANTLR start "EQ"
-    [GrammarRule("EQ")]
-    private void mEQ()
-    {
-    	EnterRule_EQ();
-    	EnterRule("EQ", 69);
-    	TraceIn("EQ", 69);
-    		try
-    		{
-    		int _type = EQ;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:688:3: ( '=' )
-    		DebugEnterAlt(1);
-    		// Hql.g:688:5: '='
-    		{
-    		DebugLocation(688, 5);
-    		Match('='); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("EQ", 69);
-    		LeaveRule("EQ", 69);
-    		LeaveRule_EQ();
-        }
-    }
-    // $ANTLR end "EQ"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LT() {}
-
-    // $ANTLR start "LT"
-    [GrammarRule("LT")]
-    private void mLT()
-    {
-    	EnterRule_LT();
-    	EnterRule("LT", 70);
-    	TraceIn("LT", 70);
-    		try
-    		{
-    		int _type = LT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:689:3: ( '<' )
-    		DebugEnterAlt(1);
-    		// Hql.g:689:5: '<'
-    		{
-    		DebugLocation(689, 5);
-    		Match('<'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LT", 70);
-    		LeaveRule("LT", 70);
-    		LeaveRule_LT();
-        }
-    }
-    // $ANTLR end "LT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_GT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_GT() {}
-
-    // $ANTLR start "GT"
-    [GrammarRule("GT")]
-    private void mGT()
-    {
-    	EnterRule_GT();
-    	EnterRule("GT", 71);
-    	TraceIn("GT", 71);
-    		try
-    		{
-    		int _type = GT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:690:3: ( '>' )
-    		DebugEnterAlt(1);
-    		// Hql.g:690:5: '>'
-    		{
-    		DebugLocation(690, 5);
-    		Match('>'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("GT", 71);
-    		LeaveRule("GT", 71);
-    		LeaveRule_GT();
-        }
-    }
-    // $ANTLR end "GT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_SQL_NE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_SQL_NE() {}
-
-    // $ANTLR start "SQL_NE"
-    [GrammarRule("SQL_NE")]
-    private void mSQL_NE()
-    {
-    	EnterRule_SQL_NE();
-    	EnterRule("SQL_NE", 72);
-    	TraceIn("SQL_NE", 72);
-    		try
-    		{
-    		int _type = SQL_NE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:691:7: ( '<>' )
-    		DebugEnterAlt(1);
-    		// Hql.g:691:9: '<>'
-    		{
-    		DebugLocation(691, 9);
-    		Match("<>"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("SQL_NE", 72);
-    		LeaveRule("SQL_NE", 72);
-    		LeaveRule_SQL_NE();
-        }
-    }
-    // $ANTLR end "SQL_NE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_NE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_NE() {}
-
-    // $ANTLR start "NE"
-    [GrammarRule("NE")]
-    private void mNE()
-    {
-    	EnterRule_NE();
-    	EnterRule("NE", 73);
-    	TraceIn("NE", 73);
-    		try
-    		{
-    		int _type = NE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:692:3: ( '!=' | '^=' )
-    		int alt1=2;
-    		try { DebugEnterDecision(1, decisionCanBacktrack[1]);
-    		int LA1_1 = input.LA(1);
-
-    		if ((LA1_1=='!'))
-    		{
-    			alt1 = 1;
-    		}
-    		else if ((LA1_1=='^'))
-    		{
-    			alt1 = 2;
-    		}
-
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			NoViableAltException nvae = new NoViableAltException("", 1, 0, input, 1);
-    			DebugRecognitionException(nvae);
-    			throw nvae;
-    		}
-
-    		} finally { DebugExitDecision(1); }
-    		switch (alt1)
-    		{
-    		case 1:
-    			DebugEnterAlt(1);
-    			// Hql.g:692:5: '!='
-    			{
-    			DebugLocation(692, 5);
-    			Match("!="); if (state.failed) return;
-
-
-    			}
-    			break;
-    		case 2:
-    			DebugEnterAlt(2);
-    			// Hql.g:692:12: '^='
-    			{
-    			DebugLocation(692, 12);
-    			Match("^="); if (state.failed) return;
-
-
-    			}
-    			break;
-
-    		}
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("NE", 73);
-    		LeaveRule("NE", 73);
-    		LeaveRule_NE();
-        }
-    }
-    // $ANTLR end "NE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_LE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_LE() {}
-
-    // $ANTLR start "LE"
-    [GrammarRule("LE")]
-    private void mLE()
-    {
-    	EnterRule_LE();
-    	EnterRule("LE", 74);
-    	TraceIn("LE", 74);
-    		try
-    		{
-    		int _type = LE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:693:3: ( '<=' )
-    		DebugEnterAlt(1);
-    		// Hql.g:693:5: '<='
-    		{
-    		DebugLocation(693, 5);
-    		Match("<="); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("LE", 74);
-    		LeaveRule("LE", 74);
-    		LeaveRule_LE();
-        }
-    }
-    // $ANTLR end "LE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_GE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_GE() {}
-
-    // $ANTLR start "GE"
-    [GrammarRule("GE")]
-    private void mGE()
-    {
-    	EnterRule_GE();
-    	EnterRule("GE", 75);
-    	TraceIn("GE", 75);
-    		try
-    		{
-    		int _type = GE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:694:3: ( '>=' )
-    		DebugEnterAlt(1);
-    		// Hql.g:694:5: '>='
-    		{
-    		DebugLocation(694, 5);
-    		Match(">="); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("GE", 75);
-    		LeaveRule("GE", 75);
-    		LeaveRule_GE();
-        }
-    }
-    // $ANTLR end "GE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BOR() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BOR() {}
-
-    // $ANTLR start "BOR"
-    [GrammarRule("BOR")]
-    private void mBOR()
-    {
-    	EnterRule_BOR();
-    	EnterRule("BOR", 76);
-    	TraceIn("BOR", 76);
-    		try
-    		{
-    		int _type = BOR;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:696:5: ( '|' )
-    		DebugEnterAlt(1);
-    		// Hql.g:696:8: '|'
-    		{
-    		DebugLocation(696, 8);
-    		Match('|'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BOR", 76);
-    		LeaveRule("BOR", 76);
-    		LeaveRule_BOR();
-        }
-    }
-    // $ANTLR end "BOR"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BXOR() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BXOR() {}
-
-    // $ANTLR start "BXOR"
-    [GrammarRule("BXOR")]
-    private void mBXOR()
-    {
-    	EnterRule_BXOR();
-    	EnterRule("BXOR", 77);
-    	TraceIn("BXOR", 77);
-    		try
-    		{
-    		int _type = BXOR;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:697:6: ( '^' )
-    		DebugEnterAlt(1);
-    		// Hql.g:697:8: '^'
-    		{
-    		DebugLocation(697, 8);
-    		Match('^'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BXOR", 77);
-    		LeaveRule("BXOR", 77);
-    		LeaveRule_BXOR();
-        }
-    }
-    // $ANTLR end "BXOR"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BAND() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BAND() {}
-
-    // $ANTLR start "BAND"
-    [GrammarRule("BAND")]
-    private void mBAND()
-    {
-    	EnterRule_BAND();
-    	EnterRule("BAND", 78);
-    	TraceIn("BAND", 78);
-    		try
-    		{
-    		int _type = BAND;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:698:6: ( '&' )
-    		DebugEnterAlt(1);
-    		// Hql.g:698:8: '&'
-    		{
-    		DebugLocation(698, 8);
-    		Match('&'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BAND", 78);
-    		LeaveRule("BAND", 78);
-    		LeaveRule_BAND();
-        }
-    }
-    // $ANTLR end "BAND"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_BNOT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_BNOT() {}
-
-    // $ANTLR start "BNOT"
-    [GrammarRule("BNOT")]
-    private void mBNOT()
-    {
-    	EnterRule_BNOT();
-    	EnterRule("BNOT", 79);
-    	TraceIn("BNOT", 79);
-    		try
-    		{
-    		int _type = BNOT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:699:6: ( '!' )
-    		DebugEnterAlt(1);
-    		// Hql.g:699:8: '!'
-    		{
-    		DebugLocation(699, 8);
-    		Match('!'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("BNOT", 79);
-    		LeaveRule("BNOT", 79);
-    		LeaveRule_BNOT();
-        }
-    }
-    // $ANTLR end "BNOT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_COMMA() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_COMMA() {}
-
-    // $ANTLR start "COMMA"
-    [GrammarRule("COMMA")]
-    private void mCOMMA()
-    {
-    	EnterRule_COMMA();
-    	EnterRule("COMMA", 80);
-    	TraceIn("COMMA", 80);
-    		try
-    		{
-    		int _type = COMMA;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:701:6: ( ',' )
-    		DebugEnterAlt(1);
-    		// Hql.g:701:8: ','
-    		{
-    		DebugLocation(701, 8);
-    		Match(','); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("COMMA", 80);
-    		LeaveRule("COMMA", 80);
-    		LeaveRule_COMMA();
-        }
-    }
-    // $ANTLR end "COMMA"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OPEN() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OPEN() {}
-
-    // $ANTLR start "OPEN"
-    [GrammarRule("OPEN")]
-    private void mOPEN()
-    {
-    	EnterRule_OPEN();
-    	EnterRule("OPEN", 81);
-    	TraceIn("OPEN", 81);
-    		try
-    		{
-    		int _type = OPEN;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:703:5: ( '(' )
-    		DebugEnterAlt(1);
-    		// Hql.g:703:7: '('
-    		{
-    		DebugLocation(703, 7);
-    		Match('('); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OPEN", 81);
-    		LeaveRule("OPEN", 81);
-    		LeaveRule_OPEN();
-        }
-    }
-    // $ANTLR end "OPEN"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_CLOSE() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_CLOSE() {}
-
-    // $ANTLR start "CLOSE"
-    [GrammarRule("CLOSE")]
-    private void mCLOSE()
-    {
-    	EnterRule_CLOSE();
-    	EnterRule("CLOSE", 82);
-    	TraceIn("CLOSE", 82);
-    		try
-    		{
-    		int _type = CLOSE;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:704:6: ( ')' )
-    		DebugEnterAlt(1);
-    		// Hql.g:704:8: ')'
-    		{
-    		DebugLocation(704, 8);
-    		Match(')'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("CLOSE", 82);
-    		LeaveRule("CLOSE", 82);
-    		LeaveRule_CLOSE();
-        }
-    }
-    // $ANTLR end "CLOSE"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_OPEN_BRACKET() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_OPEN_BRACKET() {}
-
-    // $ANTLR start "OPEN_BRACKET"
-    [GrammarRule("OPEN_BRACKET")]
-    private void mOPEN_BRACKET()
-    {
-    	EnterRule_OPEN_BRACKET();
-    	EnterRule("OPEN_BRACKET", 83);
-    	TraceIn("OPEN_BRACKET", 83);
-    		try
-    		{
-    		int _type = OPEN_BRACKET;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:705:13: ( '[' )
-    		DebugEnterAlt(1);
-    		// Hql.g:705:15: '['
-    		{
-    		DebugLocation(705, 15);
-    		Match('['); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("OPEN_BRACKET", 83);
-    		LeaveRule("OPEN_BRACKET", 83);
-    		LeaveRule_OPEN_BRACKET();
-        }
-    }
-    // $ANTLR end "OPEN_BRACKET"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_CLOSE_BRACKET() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_CLOSE_BRACKET() {}
-
-    // $ANTLR start "CLOSE_BRACKET"
-    [GrammarRule("CLOSE_BRACKET")]
-    private void mCLOSE_BRACKET()
-    {
-    	EnterRule_CLOSE_BRACKET();
-    	EnterRule("CLOSE_BRACKET", 84);
-    	TraceIn("CLOSE_BRACKET", 84);
-    		try
-    		{
-    		int _type = CLOSE_BRACKET;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:706:14: ( ']' )
-    		DebugEnterAlt(1);
-    		// Hql.g:706:16: ']'
-    		{
-    		DebugLocation(706, 16);
-    		Match(']'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("CLOSE_BRACKET", 84);
-    		LeaveRule("CLOSE_BRACKET", 84);
-    		LeaveRule_CLOSE_BRACKET();
-        }
-    }
-    // $ANTLR end "CLOSE_BRACKET"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_CONCAT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_CONCAT() {}
-
-    // $ANTLR start "CONCAT"
-    [GrammarRule("CONCAT")]
-    private void mCONCAT()
-    {
-    	EnterRule_CONCAT();
-    	EnterRule("CONCAT", 85);
-    	TraceIn("CONCAT", 85);
-    		try
-    		{
-    		int _type = CONCAT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:708:7: ( '||' )
-    		DebugEnterAlt(1);
-    		// Hql.g:708:9: '||'
-    		{
-    		DebugLocation(708, 9);
-    		Match("||"); if (state.failed) return;
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("CONCAT", 85);
-    		LeaveRule("CONCAT", 85);
-    		LeaveRule_CONCAT();
-        }
-    }
-    // $ANTLR end "CONCAT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_PLUS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_PLUS() {}
-
-    // $ANTLR start "PLUS"
-    [GrammarRule("PLUS")]
-    private void mPLUS()
-    {
-    	EnterRule_PLUS();
-    	EnterRule("PLUS", 86);
-    	TraceIn("PLUS", 86);
-    		try
-    		{
-    		int _type = PLUS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:709:5: ( '+' )
-    		DebugEnterAlt(1);
-    		// Hql.g:709:7: '+'
-    		{
-    		DebugLocation(709, 7);
-    		Match('+'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("PLUS", 86);
-    		LeaveRule("PLUS", 86);
-    		LeaveRule_PLUS();
-        }
-    }
-    // $ANTLR end "PLUS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_MINUS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_MINUS() {}
-
-    // $ANTLR start "MINUS"
-    [GrammarRule("MINUS")]
-    private void mMINUS()
-    {
-    	EnterRule_MINUS();
-    	EnterRule("MINUS", 87);
-    	TraceIn("MINUS", 87);
-    		try
-    		{
-    		int _type = MINUS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:710:6: ( '-' )
-    		DebugEnterAlt(1);
-    		// Hql.g:710:8: '-'
-    		{
-    		DebugLocation(710, 8);
-    		Match('-'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("MINUS", 87);
-    		LeaveRule("MINUS", 87);
-    		LeaveRule_MINUS();
-        }
-    }
-    // $ANTLR end "MINUS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_STAR() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_STAR() {}
-
-    // $ANTLR start "STAR"
-    [GrammarRule("STAR")]
-    private void mSTAR()
-    {
-    	EnterRule_STAR();
-    	EnterRule("STAR", 88);
-    	TraceIn("STAR", 88);
-    		try
-    		{
-    		int _type = STAR;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:711:5: ( '*' )
-    		DebugEnterAlt(1);
-    		// Hql.g:711:7: '*'
-    		{
-    		DebugLocation(711, 7);
-    		Match('*'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("STAR", 88);
-    		LeaveRule("STAR", 88);
-    		LeaveRule_STAR();
-        }
-    }
-    // $ANTLR end "STAR"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_DIV() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_DIV() {}
-
-    // $ANTLR start "DIV"
-    [GrammarRule("DIV")]
-    private void mDIV()
-    {
-    	EnterRule_DIV();
-    	EnterRule("DIV", 89);
-    	TraceIn("DIV", 89);
-    		try
-    		{
-    		int _type = DIV;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:712:4: ( '/' )
-    		DebugEnterAlt(1);
-    		// Hql.g:712:6: '/'
-    		{
-    		DebugLocation(712, 6);
-    		Match('/'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("DIV", 89);
-    		LeaveRule("DIV", 89);
-    		LeaveRule_DIV();
-        }
-    }
-    // $ANTLR end "DIV"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_COLON() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_COLON() {}
-
-    // $ANTLR start "COLON"
-    [GrammarRule("COLON")]
-    private void mCOLON()
-    {
-    	EnterRule_COLON();
-    	EnterRule("COLON", 90);
-    	TraceIn("COLON", 90);
-    		try
-    		{
-    		int _type = COLON;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:713:6: ( ':' )
-    		DebugEnterAlt(1);
-    		// Hql.g:713:8: ':'
-    		{
-    		DebugLocation(713, 8);
-    		Match(':'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("COLON", 90);
-    		LeaveRule("COLON", 90);
-    		LeaveRule_COLON();
-        }
-    }
-    // $ANTLR end "COLON"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_PARAM() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_PARAM() {}
-
-    // $ANTLR start "PARAM"
-    [GrammarRule("PARAM")]
-    private void mPARAM()
-    {
-    	EnterRule_PARAM();
-    	EnterRule("PARAM", 91);
-    	TraceIn("PARAM", 91);
-    		try
-    		{
-    		int _type = PARAM;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:714:6: ( '?' )
-    		DebugEnterAlt(1);
-    		// Hql.g:714:8: '?'
-    		{
-    		DebugLocation(714, 8);
-    		Match('?'); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("PARAM", 91);
-    		LeaveRule("PARAM", 91);
-    		LeaveRule_PARAM();
-        }
-    }
-    // $ANTLR end "PARAM"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_IDENT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_IDENT() {}
-
-    // $ANTLR start "IDENT"
-    [GrammarRule("IDENT")]
-    private void mIDENT()
-    {
-    	EnterRule_IDENT();
-    	EnterRule("IDENT", 92);
-    	TraceIn("IDENT", 92);
-    		try
-    		{
-    		int _type = IDENT;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:717:2: ( ID_START_LETTER ( ID_LETTER )* )
-    		DebugEnterAlt(1);
-    		// Hql.g:717:4: ID_START_LETTER ( ID_LETTER )*
-    		{
-    		DebugLocation(717, 4);
-    		mID_START_LETTER(); if (state.failed) return;
-    		DebugLocation(717, 20);
-    		// Hql.g:717:20: ( ID_LETTER )*
-    		try { DebugEnterSubRule(2);
-    		while (true)
-    		{
-    			int alt2=2;
-    			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
-    			int LA2_1 = input.LA(1);
-
-    			if ((LA2_1=='$'||(LA2_1>='0' && LA2_1<='9')||(LA2_1>='A' && LA2_1<='Z')||LA2_1=='_'||(LA2_1>='a' && LA2_1<='z')||(LA2_1>='\u0080' && LA2_1<='\uFFFE')))
-    			{
-    				alt2 = 1;
-    			}
-
-
-    			} finally { DebugExitDecision(2); }
-    			switch ( alt2 )
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:
-    				{
-    				DebugLocation(717, 20);
-    				input.Consume();
-    				state.failed=false;
-
-    				}
-    				break;
-
-    			default:
-    				goto loop2;
-    			}
-    		}
-
-    		loop2:
-    			;
-
-    		} finally { DebugExitSubRule(2); }
-
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("IDENT", 92);
-    		LeaveRule("IDENT", 92);
-    		LeaveRule_IDENT();
-        }
-    }
-    // $ANTLR end "IDENT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ID_START_LETTER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ID_START_LETTER() {}
-
-    // $ANTLR start "ID_START_LETTER"
-    [GrammarRule("ID_START_LETTER")]
-    private void mID_START_LETTER()
-    {
-    	EnterRule_ID_START_LETTER();
-    	EnterRule("ID_START_LETTER", 93);
-    	TraceIn("ID_START_LETTER", 93);
-    		try
-    		{
-    		// Hql.g:723:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
-    		DebugEnterAlt(1);
-    		// Hql.g:
-    		{
-    		DebugLocation(723, 5);
-    		if (input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
-    		{
-    			input.Consume();
-    		state.failed=false;
-    		}
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			MismatchedSetException mse = new MismatchedSetException(null,input);
-    			DebugRecognitionException(mse);
-    			Recover(mse);
-    			throw mse;
-    		}
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("ID_START_LETTER", 93);
-    		LeaveRule("ID_START_LETTER", 93);
-    		LeaveRule_ID_START_LETTER();
-        }
-    }
-    // $ANTLR end "ID_START_LETTER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ID_LETTER() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ID_LETTER() {}
-
-    // $ANTLR start "ID_LETTER"
-    [GrammarRule("ID_LETTER")]
-    private void mID_LETTER()
-    {
-    	EnterRule_ID_LETTER();
-    	EnterRule("ID_LETTER", 94);
-    	TraceIn("ID_LETTER", 94);
-    		try
-    		{
-    		// Hql.g:732:5: ( ID_START_LETTER | '0' .. '9' )
-    		DebugEnterAlt(1);
-    		// Hql.g:
-    		{
-    		DebugLocation(732, 5);
-    		if (input.LA(1)=='$'||(input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
-    		{
-    			input.Consume();
-    		state.failed=false;
-    		}
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			MismatchedSetException mse = new MismatchedSetException(null,input);
-    			DebugRecognitionException(mse);
-    			Recover(mse);
-    			throw mse;
-    		}
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("ID_LETTER", 94);
-    		LeaveRule("ID_LETTER", 94);
-    		LeaveRule_ID_LETTER();
-        }
-    }
-    // $ANTLR end "ID_LETTER"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_QUOTED_String() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_QUOTED_String() {}
-
-    // $ANTLR start "QUOTED_String"
-    [GrammarRule("QUOTED_String")]
-    private void mQUOTED_String()
-    {
-    	EnterRule_QUOTED_String();
-    	EnterRule("QUOTED_String", 95);
-    	TraceIn("QUOTED_String", 95);
-    		try
-    		{
-    		int _type = QUOTED_String;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:736:4: ( '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\'' )
-    		DebugEnterAlt(1);
-    		// Hql.g:736:6: '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\''
-    		{
-    		DebugLocation(736, 6);
-    		Match('\''); if (state.failed) return;
-    		DebugLocation(736, 11);
-    		// Hql.g:736:11: ( ( ESCqs )=> ESCqs |~ '\\'' )*
-    		try { DebugEnterSubRule(3);
-    		while (true)
-    		{
-    			int alt3=3;
-    			try { DebugEnterDecision(3, decisionCanBacktrack[3]);
-    			int LA3_1 = input.LA(1);
-
-    			if ((LA3_1=='\''))
-    			{
-    				int LA3_2 = input.LA(2);
-
-    				if ((LA3_2=='\'') && (EvaluatePredicate(synpred1_Hql_fragment)))
-    				{
-    					alt3 = 1;
-    				}
-
-
-    			}
-    			else if (((LA3_1>='\u0000' && LA3_1<='&')||(LA3_1>='(' && LA3_1<='\uFFFF')))
-    			{
-    				alt3 = 2;
-    			}
-
-
-    			} finally { DebugExitDecision(3); }
-    			switch ( alt3 )
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:736:13: ( ESCqs )=> ESCqs
-    				{
-    				DebugLocation(736, 23);
-    				mESCqs(); if (state.failed) return;
-
-    				}
-    				break;
-    			case 2:
-    				DebugEnterAlt(2);
-    				// Hql.g:736:31: ~ '\\''
-    				{
-    				DebugLocation(736, 31);
-    				input.Consume();
-    				state.failed=false;
-
-    				}
-    				break;
-
-    			default:
-    				goto loop3;
-    			}
-    		}
-
-    		loop3:
-    			;
-
-    		} finally { DebugExitSubRule(3); }
-
-    		DebugLocation(736, 40);
-    		Match('\''); if (state.failed) return;
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("QUOTED_String", 95);
-    		LeaveRule("QUOTED_String", 95);
-    		LeaveRule_QUOTED_String();
-        }
-    }
-    // $ANTLR end "QUOTED_String"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_ESCqs() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_ESCqs() {}
-
-    // $ANTLR start "ESCqs"
-    [GrammarRule("ESCqs")]
-    private void mESCqs()
-    {
-    	EnterRule_ESCqs();
-    	EnterRule("ESCqs", 96);
-    	TraceIn("ESCqs", 96);
-    		try
-    		{
-    		// Hql.g:742:2: ( '\\'' '\\'' )
-    		DebugEnterAlt(1);
-    		// Hql.g:743:3: '\\'' '\\''
-    		{
-    		DebugLocation(743, 3);
-    		Match('\''); if (state.failed) return;
-    		DebugLocation(743, 8);
-    		Match('\''); if (state.failed) return;
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("ESCqs", 96);
-    		LeaveRule("ESCqs", 96);
-    		LeaveRule_ESCqs();
-        }
-    }
-    // $ANTLR end "ESCqs"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_WS() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_WS() {}
-
-    // $ANTLR start "WS"
-    [GrammarRule("WS")]
-    private void mWS()
-    {
-    	EnterRule_WS();
-    	EnterRule("WS", 97);
-    	TraceIn("WS", 97);
-    		try
-    		{
-    		int _type = WS;
-    		int _channel = DefaultTokenChannel;
-    		// Hql.g:745:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
-    		DebugEnterAlt(1);
-    		// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
-    		{
-    		DebugLocation(745, 9);
-    		// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
-    		int alt4=5;
-    		try { DebugEnterSubRule(4);
-    		try { DebugEnterDecision(4, decisionCanBacktrack[4]);
-    		switch (input.LA(1))
-    		{
-    		case ' ':
-    			{
-    			alt4 = 1;
-    			}
-    			break;
-    		case '\t':
-    			{
-    			alt4 = 2;
-    			}
-    			break;
-    		case '\r':
-    			{
-    			int LA4_2 = input.LA(2);
-
-    			if ((LA4_2=='\n'))
-    			{
-    				alt4 = 3;
-    			}
-
-    			else
-    			{
-    				alt4 = 5;
-    			}
-
-    			}
-    			break;
-    		case '\n':
-    			{
-    			alt4 = 4;
-    			}
-    			break;
-    		default:
-    			{
-    				if (state.backtracking>0) {state.failed=true; return;}
-    				NoViableAltException nvae = new NoViableAltException("", 4, 0, input, 1);
-    				DebugRecognitionException(nvae);
-    				throw nvae;
-    			}
-    		}
-
-    		} finally { DebugExitDecision(4); }
-    		switch (alt4)
-    		{
-    		case 1:
-    			DebugEnterAlt(1);
-    			// Hql.g:745:13: ' '
-    			{
-    			DebugLocation(745, 13);
-    			Match(' '); if (state.failed) return;
-
-    			}
-    			break;
-    		case 2:
-    			DebugEnterAlt(2);
-    			// Hql.g:746:7: '\\t'
-    			{
-    			DebugLocation(746, 7);
-    			Match('\t'); if (state.failed) return;
-
-    			}
-    			break;
-    		case 3:
-    			DebugEnterAlt(3);
-    			// Hql.g:747:7: '\\r' '\\n'
-    			{
-    			DebugLocation(747, 7);
-    			Match('\r'); if (state.failed) return;
-    			DebugLocation(747, 12);
-    			Match('\n'); if (state.failed) return;
-
-    			}
-    			break;
-    		case 4:
-    			DebugEnterAlt(4);
-    			// Hql.g:748:7: '\\n'
-    			{
-    			DebugLocation(748, 7);
-    			Match('\n'); if (state.failed) return;
-
-    			}
-    			break;
-    		case 5:
-    			DebugEnterAlt(5);
-    			// Hql.g:749:7: '\\r'
-    			{
-    			DebugLocation(749, 7);
-    			Match('\r'); if (state.failed) return;
-
-    			}
-    			break;
-
-    		}
-    		} finally { DebugExitSubRule(4); }
-
-    		DebugLocation(751, 3);
-    		if (state.backtracking == 0)
-    		{
-    			Skip();
-    		}
-
-    		}
-
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("WS", 97);
-    		LeaveRule("WS", 97);
-    		LeaveRule_WS();
-        }
-    }
-    // $ANTLR end "WS"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_NUM_INT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_NUM_INT() {}
-
-    // $ANTLR start "NUM_INT"
-    [GrammarRule("NUM_INT")]
-    private void mNUM_INT()
-    {
-    	EnterRule_NUM_INT();
-    	EnterRule("NUM_INT", 98);
-    	TraceIn("NUM_INT", 98);
-    		try
-    		{
-    		int _type = NUM_INT;
-    		int _channel = DefaultTokenChannel;
-    		CommonToken f1 = default(CommonToken);
-    		CommonToken f2 = default(CommonToken);
-    		CommonToken f3 = default(CommonToken);
-    		CommonToken f4 = default(CommonToken);
-
-    		bool isDecimal=false; IToken t=null;
-    		// Hql.g:758:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )? )
-    		int alt20=2;
-    		try { DebugEnterDecision(20, decisionCanBacktrack[20]);
-    		int LA20_1 = input.LA(1);
-
-    		if ((LA20_1=='.'))
-    		{
-    			alt20 = 1;
-    		}
-    		else if (((LA20_1>='0' && LA20_1<='9')))
-    		{
-    			alt20 = 2;
-    		}
-
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			NoViableAltException nvae = new NoViableAltException("", 20, 0, input, 1);
-    			DebugRecognitionException(nvae);
-    			throw nvae;
-    		}
-
-    		} finally { DebugExitDecision(20); }
-    		switch (alt20)
-    		{
-    		case 1:
-    			DebugEnterAlt(1);
-    			// Hql.g:758:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
-    			{
-    			DebugLocation(758, 6);
-    			Match('.'); if (state.failed) return;
-    			DebugLocation(758, 10);
-    			if (state.backtracking == 0)
-    			{
-    				_type = DOT;
-    			}
-    			DebugLocation(759, 4);
-    			// Hql.g:759:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
-    			int alt8=2;
-    			try { DebugEnterSubRule(8);
-    			try { DebugEnterDecision(8, decisionCanBacktrack[8]);
-    			int LA8_1 = input.LA(1);
-
-    			if (((LA8_1>='0' && LA8_1<='9')))
-    			{
-    				alt8 = 1;
-    			}
-    			} finally { DebugExitDecision(8); }
-    			switch (alt8)
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:759:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
-    				{
-    				DebugLocation(759, 6);
-    				// Hql.g:759:6: ( '0' .. '9' )+
-    				int cnt5=0;
-    				try { DebugEnterSubRule(5);
-    				while (true)
-    				{
-    					int alt5=2;
-    					try { DebugEnterDecision(5, decisionCanBacktrack[5]);
-    					int LA5_1 = input.LA(1);
-
-    					if (((LA5_1>='0' && LA5_1<='9')))
-    					{
-    						alt5 = 1;
-    					}
-
-
-    					} finally { DebugExitDecision(5); }
-    					switch (alt5)
-    					{
-    					case 1:
-    						DebugEnterAlt(1);
-    						// Hql.g:
-    						{
-    						DebugLocation(759, 6);
-    						input.Consume();
-    						state.failed=false;
-
-    						}
-    						break;
-
-    					default:
-    						if (cnt5 >= 1)
-    							goto loop5;
-
-    						if (state.backtracking>0) {state.failed=true; return;}
-    						EarlyExitException eee5 = new EarlyExitException( 5, input );
-    						DebugRecognitionException(eee5);
-    						throw eee5;
-    					}
-    					cnt5++;
-    				}
-    				loop5:
-    					;
-
-    				} finally { DebugExitSubRule(5); }
-
-    				DebugLocation(759, 18);
-    				// Hql.g:759:18: ( EXPONENT )?
-    				int alt6=2;
-    				try { DebugEnterSubRule(6);
-    				try { DebugEnterDecision(6, decisionCanBacktrack[6]);
-    				int LA6_1 = input.LA(1);
-
-    				if ((LA6_1=='e'))
-    				{
-    					alt6 = 1;
-    				}
-    				} finally { DebugExitDecision(6); }
-    				switch (alt6)
-    				{
-    				case 1:
-    					DebugEnterAlt(1);
-    					// Hql.g:759:19: EXPONENT
-    					{
-    					DebugLocation(759, 19);
-    					mEXPONENT(); if (state.failed) return;
-
-    					}
-    					break;
-
-    				}
-    				} finally { DebugExitSubRule(6); }
-
-    				DebugLocation(759, 30);
-    				// Hql.g:759:30: (f1= FLOAT_SUFFIX )?
-    				int alt7=2;
-    				try { DebugEnterSubRule(7);
-    				try { DebugEnterDecision(7, decisionCanBacktrack[7]);
-    				int LA7_1 = input.LA(1);
-
-    				if ((LA7_1=='d'||LA7_1=='f'||LA7_1=='m'))
-    				{
-    					alt7 = 1;
-    				}
-    				} finally { DebugExitDecision(7); }
-    				switch (alt7)
-    				{
-    				case 1:
-    					DebugEnterAlt(1);
-    					// Hql.g:759:31: f1= FLOAT_SUFFIX
-    					{
-    					DebugLocation(759, 33);
-    					int f1Start992 = CharIndex;
-    					int f1StartLine992 = Line;
-    					int f1StartCharPos992 = CharPositionInLine;
-    					mFLOAT_SUFFIX(); if (state.failed) return;
-    					f1 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f1Start992, CharIndex-1);
-    					f1.Line = f1StartLine992;
-    					f1.CharPositionInLine = f1StartCharPos992;
-    					DebugLocation(759, 47);
-    					if (state.backtracking == 0)
-    					{
-    						t=f1;
-    					}
-
-    					}
-    					break;
-
-    				}
-    				} finally { DebugExitSubRule(7); }
-
-    				DebugLocation(760, 5);
-    				if (state.backtracking == 0)
-    				{
-
-    										if (t != null && t.Text.ToUpperInvariant().IndexOf('F')>=0)
-    										{
-    											_type = NUM_FLOAT;
-    										}
-    										else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
-    										{
-    											_type = NUM_DECIMAL;
-    										}
-    										else
-    										{
-    											_type = NUM_DOUBLE; // assume double
-    										}
-    									
-    				}
-
-    				}
-    				break;
-
-    			}
-    			} finally { DebugExitSubRule(8); }
-
-
-    			}
-    			break;
-    		case 2:
-    			DebugEnterAlt(2);
-    			// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
-    			{
-    			DebugLocation(775, 4);
-    			// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
-    			int alt13=2;
-    			try { DebugEnterSubRule(13);
-    			try { DebugEnterDecision(13, decisionCanBacktrack[13]);
-    			int LA13_1 = input.LA(1);
-
-    			if ((LA13_1=='0'))
-    			{
-    				alt13 = 1;
-    			}
-    			else if (((LA13_1>='1' && LA13_1<='9')))
-    			{
-    				alt13 = 2;
-    			}
-
-    			else
-    			{
-    				if (state.backtracking>0) {state.failed=true; return;}
-    				NoViableAltException nvae = new NoViableAltException("", 13, 0, input, 1);
-    				DebugRecognitionException(nvae);
-    				throw nvae;
-    			}
-
-    			} finally { DebugExitDecision(13); }
-    			switch (alt13)
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:775:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
-    				{
-    				DebugLocation(775, 6);
-    				Match('0'); if (state.failed) return;
-    				DebugLocation(775, 10);
-    				if (state.backtracking == 0)
-    				{
-    					isDecimal = true;
-    				}
-    				DebugLocation(776, 4);
-    				// Hql.g:776:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
-    				int alt11=3;
-    				try { DebugEnterSubRule(11);
-    				try { DebugEnterDecision(11, decisionCanBacktrack[11]);
-    				int LA11_1 = input.LA(1);
-
-    				if ((LA11_1=='x'))
-    				{
-    					alt11 = 1;
-    				}
-    				else if (((LA11_1>='0' && LA11_1<='7')))
-    				{
-    					alt11 = 2;
-    				}
-    				} finally { DebugExitDecision(11); }
-    				switch (alt11)
-    				{
-    				case 1:
-    					DebugEnterAlt(1);
-    					// Hql.g:776:6: ( 'x' ) ( HEX_DIGIT )+
-    					{
-    					DebugLocation(776, 6);
-    					// Hql.g:776:6: ( 'x' )
-    					DebugEnterAlt(1);
-    					// Hql.g:776:7: 'x'
-    					{
-    					DebugLocation(776, 7);
-    					Match('x'); if (state.failed) return;
-
-    					}
-
-    					DebugLocation(777, 5);
-    					// Hql.g:777:5: ( HEX_DIGIT )+
-    					int cnt9=0;
-    					try { DebugEnterSubRule(9);
-    					while (true)
-    					{
-    						int alt9=2;
-    						try { DebugEnterDecision(9, decisionCanBacktrack[9]);
-    						switch (input.LA(1))
-    						{
-    						case 'e':
-    							{
-    							int LA9_2 = input.LA(2);
-
-    							if (((LA9_2>='0' && LA9_2<='9')))
-    							{
-    								int LA9_3 = input.LA(3);
-
-    								if ((!(((isDecimal)))))
-    								{
-    									alt9 = 1;
-    								}
-
-
-    							}
-
-    							else
-    							{
-    								alt9 = 1;
-    							}
-
-
-    							}
-    							break;
-    						case 'd':
-    						case 'f':
-    							{
-    							int LA9_2 = input.LA(2);
-
-    							if ((!(((isDecimal)))))
-    							{
-    								alt9 = 1;
-    							}
-
-
-    							}
-    							break;
-    						case '0':
-    						case '1':
-    						case '2':
-    						case '3':
-    						case '4':
-    						case '5':
-    						case '6':
-    						case '7':
-    						case '8':
-    						case '9':
-    						case 'a':
-    						case 'b':
-    						case 'c':
-    							{
-    							alt9 = 1;
-    							}
-    							break;
-    						}
-
-    						} finally { DebugExitDecision(9); }
-    						switch (alt9)
-    						{
-    						case 1:
-    							DebugEnterAlt(1);
-    							// Hql.g:
-    							{
-    							DebugLocation(777, 5);
-    							input.Consume();
-    							state.failed=false;
-
-    							}
-    							break;
-
-    						default:
-    							if (cnt9 >= 1)
-    								goto loop9;
-
-    							if (state.backtracking>0) {state.failed=true; return;}
-    							EarlyExitException eee9 = new EarlyExitException( 9, input );
-    							DebugRecognitionException(eee9);
-    							throw eee9;
-    						}
-    						cnt9++;
-    					}
-    					loop9:
-    						;
-
-    					} finally { DebugExitSubRule(9); }
-
-
-    					}
-    					break;
-    				case 2:
-    					DebugEnterAlt(2);
-    					// Hql.g:786:6: ( '0' .. '7' )+
-    					{
-    					DebugLocation(786, 6);
-    					// Hql.g:786:6: ( '0' .. '7' )+
-    					int cnt10=0;
-    					try { DebugEnterSubRule(10);
-    					while (true)
-    					{
-    						int alt10=2;
-    						try { DebugEnterDecision(10, decisionCanBacktrack[10]);
-    						int LA10_1 = input.LA(1);
-
-    						if (((LA10_1>='0' && LA10_1<='7')))
-    						{
-    							alt10 = 1;
-    						}
-
-
-    						} finally { DebugExitDecision(10); }
-    						switch (alt10)
-    						{
-    						case 1:
-    							DebugEnterAlt(1);
-    							// Hql.g:
-    							{
-    							DebugLocation(786, 6);
-    							input.Consume();
-    							state.failed=false;
-
-    							}
-    							break;
-
-    						default:
-    							if (cnt10 >= 1)
-    								goto loop10;
-
-    							if (state.backtracking>0) {state.failed=true; return;}
-    							EarlyExitException eee10 = new EarlyExitException( 10, input );
-    							DebugRecognitionException(eee10);
-    							throw eee10;
-    						}
-    						cnt10++;
-    					}
-    					loop10:
-    						;
-
-    					} finally { DebugExitSubRule(10); }
-
-
-    					}
-    					break;
-
-    				}
-    				} finally { DebugExitSubRule(11); }
-
-
-    				}
-    				break;
-    			case 2:
-    				DebugEnterAlt(2);
-    				// Hql.g:788:5: ( '1' .. '9' ) ( '0' .. '9' )*
-    				{
-    				DebugLocation(788, 5);
-    				input.Consume();
-    				state.failed=false;
-    				DebugLocation(788, 16);
-    				// Hql.g:788:16: ( '0' .. '9' )*
-    				try { DebugEnterSubRule(12);
-    				while (true)
-    				{
-    					int alt12=2;
-    					try { DebugEnterDecision(12, decisionCanBacktrack[12]);
-    					int LA12_1 = input.LA(1);
-
-    					if (((LA12_1>='0' && LA12_1<='9')))
-    					{
-    						alt12 = 1;
-    					}
-
-
-    					} finally { DebugExitDecision(12); }
-    					switch ( alt12 )
-    					{
-    					case 1:
-    						DebugEnterAlt(1);
-    						// Hql.g:
-    						{
-    						DebugLocation(788, 16);
-    						input.Consume();
-    						state.failed=false;
-
-    						}
-    						break;
-
-    					default:
-    						goto loop12;
-    					}
-    				}
-
-    				loop12:
-    					;
-
-    				} finally { DebugExitSubRule(12); }
-
-    				DebugLocation(788, 29);
-    				if (state.backtracking == 0)
-    				{
-    					isDecimal=true;
-    				}
-
-    				}
-    				break;
-
-    			}
-    			} finally { DebugExitSubRule(13); }
-
-    			DebugLocation(790, 3);
-    			// Hql.g:790:3: ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
-    			int alt19=3;
-    			try { DebugEnterSubRule(19);
-    			try { DebugEnterDecision(19, decisionCanBacktrack[19]);
-    			int LA19_1 = input.LA(1);
-
-    			if ((LA19_1=='l'))
-    			{
-    				alt19 = 1;
-    			}
-    			else if ((LA19_1=='.'||(LA19_1>='d' && LA19_1<='f')||LA19_1=='m'))
-    			{
-    				alt19 = 2;
-    			}
-    			} finally { DebugExitDecision(19); }
-    			switch (alt19)
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:790:5: ( 'l' )
-    				{
-    				DebugLocation(790, 5);
-    				// Hql.g:790:5: ( 'l' )
-    				DebugEnterAlt(1);
-    				// Hql.g:790:6: 'l'
-    				{
-    				DebugLocation(790, 6);
-    				Match('l'); if (state.failed) return;
-
-    				}
-
-    				DebugLocation(790, 11);
-    				if (state.backtracking == 0)
-    				{
-    					 _type = NUM_LONG; 
-    				}
-
-    				}
-    				break;
-    			case 2:
-    				DebugEnterAlt(2);
-    				// Hql.g:793:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
-    				{
-    				DebugLocation(793, 5);
-    				if (!((isDecimal)))
-    				{
-    					if (state.backtracking>0) {state.failed=true; return;}
-    					throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
-    				}
-    				DebugLocation(794, 4);
-    				// Hql.g:794:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
-    				int alt18=3;
-    				try { DebugEnterSubRule(18);
-    				try { DebugEnterDecision(18, decisionCanBacktrack[18]);
-    				switch (input.LA(1))
-    				{
-    				case '.':
-    					{
-    					alt18 = 1;
-    					}
-    					break;
-    				case 'e':
-    					{
-    					alt18 = 2;
-    					}
-    					break;
-    				case 'd':
-    				case 'f':
-    				case 'm':
-    					{
-    					alt18 = 3;
-    					}
-    					break;
-    				default:
-    					{
-    						if (state.backtracking>0) {state.failed=true; return;}
-    						NoViableAltException nvae = new NoViableAltException("", 18, 0, input, 1);
-    						DebugRecognitionException(nvae);
-    						throw nvae;
-    					}
-    				}
-
-    				} finally { DebugExitDecision(18); }
-    				switch (alt18)
-    				{
-    				case 1:
-    					DebugEnterAlt(1);
-    					// Hql.g:794:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
-    					{
-    					DebugLocation(794, 8);
-    					Match('.'); if (state.failed) return;
-    					DebugLocation(794, 12);
-    					// Hql.g:794:12: ( '0' .. '9' )*
-    					try { DebugEnterSubRule(14);
-    					while (true)
-    					{
-    						int alt14=2;
-    						try { DebugEnterDecision(14, decisionCanBacktrack[14]);
-    						int LA14_1 = input.LA(1);
-
-    						if (((LA14_1>='0' && LA14_1<='9')))
-    						{
-    							alt14 = 1;
-    						}
-
-
-    						} finally { DebugExitDecision(14); }
-    						switch ( alt14 )
-    						{
-    						case 1:
-    							DebugEnterAlt(1);
-    							// Hql.g:
-    							{
-    							DebugLocation(794, 12);
-    							input.Consume();
-    							state.failed=false;
-
-    							}
-    							break;
-
-    						default:
-    							goto loop14;
-    						}
-    					}
-
-    					loop14:
-    						;
-
-    					} finally { DebugExitSubRule(14); }
-
-    					DebugLocation(794, 24);
-    					// Hql.g:794:24: ( EXPONENT )?
-    					int alt15=2;
-    					try { DebugEnterSubRule(15);
-    					try { DebugEnterDecision(15, decisionCanBacktrack[15]);
-    					int LA15_1 = input.LA(1);
-
-    					if ((LA15_1=='e'))
-    					{
-    						alt15 = 1;
-    					}
-    					} finally { DebugExitDecision(15); }
-    					switch (alt15)
-    					{
-    					case 1:
-    						DebugEnterAlt(1);
-    						// Hql.g:794:25: EXPONENT
-    						{
-    						DebugLocation(794, 25);
-    						mEXPONENT(); if (state.failed) return;
-
-    						}
-    						break;
-
-    					}
-    					} finally { DebugExitSubRule(15); }
-
-    					DebugLocation(794, 36);
-    					// Hql.g:794:36: (f2= FLOAT_SUFFIX )?
-    					int alt16=2;
-    					try { DebugEnterSubRule(16);
-    					try { DebugEnterDecision(16, decisionCanBacktrack[16]);
-    					int LA16_1 = input.LA(1);
-
-    					if ((LA16_1=='d'||LA16_1=='f'||LA16_1=='m'))
-    					{
-    						alt16 = 1;
-    					}
-    					} finally { DebugExitDecision(16); }
-    					switch (alt16)
-    					{
-    					case 1:
-    						DebugEnterAlt(1);
-    						// Hql.g:794:37: f2= FLOAT_SUFFIX
-    						{
-    						DebugLocation(794, 39);
-    						int f2Start1194 = CharIndex;
-    						int f2StartLine1194 = Line;
-    						int f2StartCharPos1194 = CharPositionInLine;
-    						mFLOAT_SUFFIX(); if (state.failed) return;
-    						f2 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f2Start1194, CharIndex-1);
-    						f2.Line = f2StartLine1194;
-    						f2.CharPositionInLine = f2StartCharPos1194;
-    						DebugLocation(794, 53);
-    						if (state.backtracking == 0)
-    						{
-    							t=f2;
-    						}
-
-    						}
-    						break;
-
-    					}
-    					} finally { DebugExitSubRule(16); }
-
-
-    					}
-    					break;
-    				case 2:
-    					DebugEnterAlt(2);
-    					// Hql.g:795:8: EXPONENT (f3= FLOAT_SUFFIX )?
-    					{
-    					DebugLocation(795, 8);
-    					mEXPONENT(); if (state.failed) return;
-    					DebugLocation(795, 17);
-    					// Hql.g:795:17: (f3= FLOAT_SUFFIX )?
-    					int alt17=2;
-    					try { DebugEnterSubRule(17);
-    					try { DebugEnterDecision(17, decisionCanBacktrack[17]);
-    					int LA17_1 = input.LA(1);
-
-    					if ((LA17_1=='d'||LA17_1=='f'||LA17_1=='m'))
-    					{
-    						alt17 = 1;
-    					}
-    					} finally { DebugExitDecision(17); }
-    					switch (alt17)
-    					{
-    					case 1:
-    						DebugEnterAlt(1);
-    						// Hql.g:795:18: f3= FLOAT_SUFFIX
-    						{
-    						DebugLocation(795, 20);
-    						int f3Start1212 = CharIndex;
-    						int f3StartLine1212 = Line;
-    						int f3StartCharPos1212 = CharPositionInLine;
-    						mFLOAT_SUFFIX(); if (state.failed) return;
-    						f3 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f3Start1212, CharIndex-1);
-    						f3.Line = f3StartLine1212;
-    						f3.CharPositionInLine = f3StartCharPos1212;
-    						DebugLocation(795, 34);
-    						if (state.backtracking == 0)
-    						{
-    							t=f3;
-    						}
-
-    						}
-    						break;
-
-    					}
-    					} finally { DebugExitSubRule(17); }
-
-
-    					}
-    					break;
-    				case 3:
-    					DebugEnterAlt(3);
-    					// Hql.g:796:8: f4= FLOAT_SUFFIX
-    					{
-    					DebugLocation(796, 10);
-    					int f4Start1227 = CharIndex;
-    					int f4StartLine1227 = Line;
-    					int f4StartCharPos1227 = CharPositionInLine;
-    					mFLOAT_SUFFIX(); if (state.failed) return;
-    					f4 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f4Start1227, CharIndex-1);
-    					f4.Line = f4StartLine1227;
-    					f4.CharPositionInLine = f4StartCharPos1227;
-    					DebugLocation(796, 24);
-    					if (state.backtracking == 0)
-    					{
-    						t=f4;
-    					}
-
-    					}
-    					break;
-
-    				}
-    				} finally { DebugExitSubRule(18); }
-
-    				DebugLocation(798, 4);
-    				if (state.backtracking == 0)
-    				{
-
-    									if (t != null && t.Text.ToUpperInvariant().IndexOf('F') >= 0)
-    									{
-    										_type = NUM_FLOAT;
-    									}
-    									else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
-    									{
-    										_type = NUM_DECIMAL;
-    									}
-    									else
-    									{
-    										_type = NUM_DOUBLE; // assume double
-    									}
-    								
-    				}
-
-    				}
-    				break;
-
-    			}
-    			} finally { DebugExitSubRule(19); }
-
-
-    			}
-    			break;
-
-    		}
-    		state.type = _type;
-    		state.channel = _channel;
-    	}
-    	finally
-    	{
-    		TraceOut("NUM_INT", 98);
-    		LeaveRule("NUM_INT", 98);
-    		LeaveRule_NUM_INT();
-        }
-    }
-    // $ANTLR end "NUM_INT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_HEX_DIGIT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_HEX_DIGIT() {}
-
-    // $ANTLR start "HEX_DIGIT"
-    [GrammarRule("HEX_DIGIT")]
-    private void mHEX_DIGIT()
-    {
-    	EnterRule_HEX_DIGIT();
-    	EnterRule("HEX_DIGIT", 99);
-    	TraceIn("HEX_DIGIT", 99);
-    		try
-    		{
-    		// Hql.g:819:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
-    		DebugEnterAlt(1);
-    		// Hql.g:
-    		{
-    		DebugLocation(819, 2);
-    		if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='a' && input.LA(1)<='f'))
-    		{
-    			input.Consume();
-    		state.failed=false;
-    		}
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			MismatchedSetException mse = new MismatchedSetException(null,input);
-    			DebugRecognitionException(mse);
-    			Recover(mse);
-    			throw mse;
-    		}
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("HEX_DIGIT", 99);
-    		LeaveRule("HEX_DIGIT", 99);
-    		LeaveRule_HEX_DIGIT();
-        }
-    }
-    // $ANTLR end "HEX_DIGIT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_EXPONENT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_EXPONENT() {}
-
-    // $ANTLR start "EXPONENT"
-    [GrammarRule("EXPONENT")]
-    private void mEXPONENT()
-    {
-    	EnterRule_EXPONENT();
-    	EnterRule("EXPONENT", 100);
-    	TraceIn("EXPONENT", 100);
-    		try
-    		{
-    		// Hql.g:825:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-    		DebugEnterAlt(1);
-    		// Hql.g:825:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
-    		{
-    		DebugLocation(825, 4);
-    		// Hql.g:825:4: ( 'e' )
-    		DebugEnterAlt(1);
-    		// Hql.g:825:5: 'e'
-    		{
-    		DebugLocation(825, 5);
-    		Match('e'); if (state.failed) return;
-
-    		}
-
-    		DebugLocation(825, 10);
-    		// Hql.g:825:10: ( '+' | '-' )?
-    		int alt21=2;
-    		try { DebugEnterSubRule(21);
-    		try { DebugEnterDecision(21, decisionCanBacktrack[21]);
-    		int LA21_1 = input.LA(1);
-
-    		if ((LA21_1=='+'||LA21_1=='-'))
-    		{
-    			alt21 = 1;
-    		}
-    		} finally { DebugExitDecision(21); }
-    		switch (alt21)
-    		{
-    		case 1:
-    			DebugEnterAlt(1);
-    			// Hql.g:
-    			{
-    			DebugLocation(825, 10);
-    			input.Consume();
-    			state.failed=false;
-
-    			}
-    			break;
-
-    		}
-    		} finally { DebugExitSubRule(21); }
-
-    		DebugLocation(825, 21);
-    		// Hql.g:825:21: ( '0' .. '9' )+
-    		int cnt22=0;
-    		try { DebugEnterSubRule(22);
-    		while (true)
-    		{
-    			int alt22=2;
-    			try { DebugEnterDecision(22, decisionCanBacktrack[22]);
-    			int LA22_1 = input.LA(1);
-
-    			if (((LA22_1>='0' && LA22_1<='9')))
-    			{
-    				alt22 = 1;
-    			}
-
-
-    			} finally { DebugExitDecision(22); }
-    			switch (alt22)
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// Hql.g:
-    				{
-    				DebugLocation(825, 21);
-    				input.Consume();
-    				state.failed=false;
-
-    				}
-    				break;
-
-    			default:
-    				if (cnt22 >= 1)
-    					goto loop22;
-
-    				if (state.backtracking>0) {state.failed=true; return;}
-    				EarlyExitException eee22 = new EarlyExitException( 22, input );
-    				DebugRecognitionException(eee22);
-    				throw eee22;
-    			}
-    			cnt22++;
-    		}
-    		loop22:
-    			;
-
-    		} finally { DebugExitSubRule(22); }
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("EXPONENT", 100);
-    		LeaveRule("EXPONENT", 100);
-    		LeaveRule_EXPONENT();
-        }
-    }
-    // $ANTLR end "EXPONENT"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_FLOAT_SUFFIX() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_FLOAT_SUFFIX() {}
-
-    // $ANTLR start "FLOAT_SUFFIX"
-    [GrammarRule("FLOAT_SUFFIX")]
-    private void mFLOAT_SUFFIX()
-    {
-    	EnterRule_FLOAT_SUFFIX();
-    	EnterRule("FLOAT_SUFFIX", 101);
-    	TraceIn("FLOAT_SUFFIX", 101);
-    		try
-    		{
-    		// Hql.g:830:2: ( 'f' | 'd' | 'm' )
-    		DebugEnterAlt(1);
-    		// Hql.g:
-    		{
-    		DebugLocation(830, 2);
-    		if (input.LA(1)=='d'||input.LA(1)=='f'||input.LA(1)=='m')
-    		{
-    			input.Consume();
-    		state.failed=false;
-    		}
-    		else
-    		{
-    			if (state.backtracking>0) {state.failed=true; return;}
-    			MismatchedSetException mse = new MismatchedSetException(null,input);
-    			DebugRecognitionException(mse);
-    			Recover(mse);
-    			throw mse;
-    		}
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("FLOAT_SUFFIX", 101);
-    		LeaveRule("FLOAT_SUFFIX", 101);
-    		LeaveRule_FLOAT_SUFFIX();
-        }
-    }
-    // $ANTLR end "FLOAT_SUFFIX"
-
-    public override void mTokens()
-    {
-    	// Hql.g:1:8: ( ALL | AND | ANY | AS | ASCENDING | AVG | BETWEEN | BOTH | CASE | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ELSE | EMPTY | END | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEADING | LEFT | LIKE | LITERAL_by | MAX | MEMBER | MIN | NEW | NOT | NULL | OBJECT | OF | ON | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SKIP | SOME | SUM | TAKE | THEN | TRAILING | TRUE | UNION | UPDATE | VERSIONED | WHEN | WHERE | WITH | T__133 | T__134 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
-    	int alt23=95;
-    	try { DebugEnterDecision(23, decisionCanBacktrack[23]);
-    	try
-    	{
-    		alt23 = dfa23.Predict(input);
-    	}
-    	catch (NoViableAltException nvae)
-    	{
-    		DebugRecognitionException(nvae);
-    		throw;
-    	}
-    	} finally { DebugExitDecision(23); }
-    	switch (alt23)
-    	{
-    	case 1:
-    		DebugEnterAlt(1);
-    		// Hql.g:1:10: ALL
-    		{
-    		DebugLocation(1, 10);
-    		mALL(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 2:
-    		DebugEnterAlt(2);
-    		// Hql.g:1:14: AND
-    		{
-    		DebugLocation(1, 14);
-    		mAND(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 3:
-    		DebugEnterAlt(3);
-    		// Hql.g:1:18: ANY
-    		{
-    		DebugLocation(1, 18);
-    		mANY(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 4:
-    		DebugEnterAlt(4);
-    		// Hql.g:1:22: AS
-    		{
-    		DebugLocation(1, 22);
-    		mAS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 5:
-    		DebugEnterAlt(5);
-    		// Hql.g:1:25: ASCENDING
-    		{
-    		DebugLocation(1, 25);
-    		mASCENDING(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 6:
-    		DebugEnterAlt(6);
-    		// Hql.g:1:35: AVG
-    		{
-    		DebugLocation(1, 35);
-    		mAVG(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 7:
-    		DebugEnterAlt(7);
-    		// Hql.g:1:39: BETWEEN
-    		{
-    		DebugLocation(1, 39);
-    		mBETWEEN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 8:
-    		DebugEnterAlt(8);
-    		// Hql.g:1:47: BOTH
-    		{
-    		DebugLocation(1, 47);
-    		mBOTH(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 9:
-    		DebugEnterAlt(9);
-    		// Hql.g:1:52: CASE
-    		{
-    		DebugLocation(1, 52);
-    		mCASE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 10:
-    		DebugEnterAlt(10);
-    		// Hql.g:1:57: CLASS
-    		{
-    		DebugLocation(1, 57);
-    		mCLASS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 11:
-    		DebugEnterAlt(11);
-    		// Hql.g:1:63: COUNT
-    		{
-    		DebugLocation(1, 63);
-    		mCOUNT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 12:
-    		DebugEnterAlt(12);
-    		// Hql.g:1:69: DELETE
-    		{
-    		DebugLocation(1, 69);
-    		mDELETE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 13:
-    		DebugEnterAlt(13);
-    		// Hql.g:1:76: DESCENDING
-    		{
-    		DebugLocation(1, 76);
-    		mDESCENDING(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 14:
-    		DebugEnterAlt(14);
-    		// Hql.g:1:87: DISTINCT
-    		{
-    		DebugLocation(1, 87);
-    		mDISTINCT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 15:
-    		DebugEnterAlt(15);
-    		// Hql.g:1:96: ELEMENTS
-    		{
-    		DebugLocation(1, 96);
-    		mELEMENTS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 16:
-    		DebugEnterAlt(16);
-    		// Hql.g:1:105: ELSE
-    		{
-    		DebugLocation(1, 105);
-    		mELSE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 17:
-    		DebugEnterAlt(17);
-    		// Hql.g:1:110: EMPTY
-    		{
-    		DebugLocation(1, 110);
-    		mEMPTY(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 18:
-    		DebugEnterAlt(18);
-    		// Hql.g:1:116: END
-    		{
-    		DebugLocation(1, 116);
-    		mEND(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 19:
-    		DebugEnterAlt(19);
-    		// Hql.g:1:120: ESCAPE
-    		{
-    		DebugLocation(1, 120);
-    		mESCAPE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 20:
-    		DebugEnterAlt(20);
-    		// Hql.g:1:127: EXISTS
-    		{
-    		DebugLocation(1, 127);
-    		mEXISTS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 21:
-    		DebugEnterAlt(21);
-    		// Hql.g:1:134: FALSE
-    		{
-    		DebugLocation(1, 134);
-    		mFALSE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 22:
-    		DebugEnterAlt(22);
-    		// Hql.g:1:140: FETCH
-    		{
-    		DebugLocation(1, 140);
-    		mFETCH(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 23:
-    		DebugEnterAlt(23);
-    		// Hql.g:1:146: FROM
-    		{
-    		DebugLocation(1, 146);
-    		mFROM(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 24:
-    		DebugEnterAlt(24);
-    		// Hql.g:1:151: FULL
-    		{
-    		DebugLocation(1, 151);
-    		mFULL(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 25:
-    		DebugEnterAlt(25);
-    		// Hql.g:1:156: GROUP
-    		{
-    		DebugLocation(1, 156);
-    		mGROUP(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 26:
-    		DebugEnterAlt(26);
-    		// Hql.g:1:162: HAVING
-    		{
-    		DebugLocation(1, 162);
-    		mHAVING(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 27:
-    		DebugEnterAlt(27);
-    		// Hql.g:1:169: IN
-    		{
-    		DebugLocation(1, 169);
-    		mIN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 28:
-    		DebugEnterAlt(28);
-    		// Hql.g:1:172: INDICES
-    		{
-    		DebugLocation(1, 172);
-    		mINDICES(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 29:
-    		DebugEnterAlt(29);
-    		// Hql.g:1:180: INNER
-    		{
-    		DebugLocation(1, 180);
-    		mINNER(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 30:
-    		DebugEnterAlt(30);
-    		// Hql.g:1:186: INSERT
-    		{
-    		DebugLocation(1, 186);
-    		mINSERT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 31:
-    		DebugEnterAlt(31);
-    		// Hql.g:1:193: INTO
-    		{
-    		DebugLocation(1, 193);
-    		mINTO(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 32:
-    		DebugEnterAlt(32);
-    		// Hql.g:1:198: IS
-    		{
-    		DebugLocation(1, 198);
-    		mIS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 33:
-    		DebugEnterAlt(33);
-    		// Hql.g:1:201: JOIN
-    		{
-    		DebugLocation(1, 201);
-    		mJOIN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 34:
-    		DebugEnterAlt(34);
-    		// Hql.g:1:206: LEADING
-    		{
-    		DebugLocation(1, 206);
-    		mLEADING(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 35:
-    		DebugEnterAlt(35);
-    		// Hql.g:1:214: LEFT
-    		{
-    		DebugLocation(1, 214);
-    		mLEFT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 36:
-    		DebugEnterAlt(36);
-    		// Hql.g:1:219: LIKE
-    		{
-    		DebugLocation(1, 219);
-    		mLIKE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 37:
-    		DebugEnterAlt(37);
-    		// Hql.g:1:224: LITERAL_by
-    		{
-    		DebugLocation(1, 224);
-    		mLITERAL_by(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 38:
-    		DebugEnterAlt(38);
-    		// Hql.g:1:235: MAX
-    		{
-    		DebugLocation(1, 235);
-    		mMAX(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 39:
-    		DebugEnterAlt(39);
-    		// Hql.g:1:239: MEMBER
-    		{
-    		DebugLocation(1, 239);
-    		mMEMBER(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 40:
-    		DebugEnterAlt(40);
-    		// Hql.g:1:246: MIN
-    		{
-    		DebugLocation(1, 246);
-    		mMIN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 41:
-    		DebugEnterAlt(41);
-    		// Hql.g:1:250: NEW
-    		{
-    		DebugLocation(1, 250);
-    		mNEW(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 42:
-    		DebugEnterAlt(42);
-    		// Hql.g:1:254: NOT
-    		{
-    		DebugLocation(1, 254);
-    		mNOT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 43:
-    		DebugEnterAlt(43);
-    		// Hql.g:1:258: NULL
-    		{
-    		DebugLocation(1, 258);
-    		mNULL(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 44:
-    		DebugEnterAlt(44);
-    		// Hql.g:1:263: OBJECT
-    		{
-    		DebugLocation(1, 263);
-    		mOBJECT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 45:
-    		DebugEnterAlt(45);
-    		// Hql.g:1:270: OF
-    		{
-    		DebugLocation(1, 270);
-    		mOF(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 46:
-    		DebugEnterAlt(46);
-    		// Hql.g:1:273: ON
-    		{
-    		DebugLocation(1, 273);
-    		mON(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 47:
-    		DebugEnterAlt(47);
-    		// Hql.g:1:276: OR
-    		{
-    		DebugLocation(1, 276);
-    		mOR(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 48:
-    		DebugEnterAlt(48);
-    		// Hql.g:1:279: ORDER
-    		{
-    		DebugLocation(1, 279);
-    		mORDER(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 49:
-    		DebugEnterAlt(49);
-    		// Hql.g:1:285: OUTER
-    		{
-    		DebugLocation(1, 285);
-    		mOUTER(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 50:
-    		DebugEnterAlt(50);
-    		// Hql.g:1:291: PROPERTIES
-    		{
-    		DebugLocation(1, 291);
-    		mPROPERTIES(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 51:
-    		DebugEnterAlt(51);
-    		// Hql.g:1:302: RIGHT
-    		{
-    		DebugLocation(1, 302);
-    		mRIGHT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 52:
-    		DebugEnterAlt(52);
-    		// Hql.g:1:308: SELECT
-    		{
-    		DebugLocation(1, 308);
-    		mSELECT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 53:
-    		DebugEnterAlt(53);
-    		// Hql.g:1:315: SET
-    		{
-    		DebugLocation(1, 315);
-    		mSET(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 54:
-    		DebugEnterAlt(54);
-    		// Hql.g:1:319: SKIP
-    		{
-    		DebugLocation(1, 319);
-    		mSKIP(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 55:
-    		DebugEnterAlt(55);
-    		// Hql.g:1:324: SOME
-    		{
-    		DebugLocation(1, 324);
-    		mSOME(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 56:
-    		DebugEnterAlt(56);
-    		// Hql.g:1:329: SUM
-    		{
-    		DebugLocation(1, 329);
-    		mSUM(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 57:
-    		DebugEnterAlt(57);
-    		// Hql.g:1:333: TAKE
-    		{
-    		DebugLocation(1, 333);
-    		mTAKE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 58:
-    		DebugEnterAlt(58);
-    		// Hql.g:1:338: THEN
-    		{
-    		DebugLocation(1, 338);
-    		mTHEN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 59:
-    		DebugEnterAlt(59);
-    		// Hql.g:1:343: TRAILING
-    		{
-    		DebugLocation(1, 343);
-    		mTRAILING(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 60:
-    		DebugEnterAlt(60);
-    		// Hql.g:1:352: TRUE
-    		{
-    		DebugLocation(1, 352);
-    		mTRUE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 61:
-    		DebugEnterAlt(61);
-    		// Hql.g:1:357: UNION
-    		{
-    		DebugLocation(1, 357);
-    		mUNION(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 62:
-    		DebugEnterAlt(62);
-    		// Hql.g:1:363: UPDATE
-    		{
-    		DebugLocation(1, 363);
-    		mUPDATE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 63:
-    		DebugEnterAlt(63);
-    		// Hql.g:1:370: VERSIONED
-    		{
-    		DebugLocation(1, 370);
-    		mVERSIONED(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 64:
-    		DebugEnterAlt(64);
-    		// Hql.g:1:380: WHEN
-    		{
-    		DebugLocation(1, 380);
-    		mWHEN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 65:
-    		DebugEnterAlt(65);
-    		// Hql.g:1:385: WHERE
-    		{
-    		DebugLocation(1, 385);
-    		mWHERE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 66:
-    		DebugEnterAlt(66);
-    		// Hql.g:1:391: WITH
-    		{
-    		DebugLocation(1, 391);
-    		mWITH(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 67:
-    		DebugEnterAlt(67);
-    		// Hql.g:1:396: T__133
-    		{
-    		DebugLocation(1, 396);
-    		mT__133(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 68:
-    		DebugEnterAlt(68);
-    		// Hql.g:1:403: T__134
-    		{
-    		DebugLocation(1, 403);
-    		mT__134(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 69:
-    		DebugEnterAlt(69);
-    		// Hql.g:1:410: EQ
-    		{
-    		DebugLocation(1, 410);
-    		mEQ(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 70:
-    		DebugEnterAlt(70);
-    		// Hql.g:1:413: LT
-    		{
-    		DebugLocation(1, 413);
-    		mLT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 71:
-    		DebugEnterAlt(71);
-    		// Hql.g:1:416: GT
-    		{
-    		DebugLocation(1, 416);
-    		mGT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 72:
-    		DebugEnterAlt(72);
-    		// Hql.g:1:419: SQL_NE
-    		{
-    		DebugLocation(1, 419);
-    		mSQL_NE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 73:
-    		DebugEnterAlt(73);
-    		// Hql.g:1:426: NE
-    		{
-    		DebugLocation(1, 426);
-    		mNE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 74:
-    		DebugEnterAlt(74);
-    		// Hql.g:1:429: LE
-    		{
-    		DebugLocation(1, 429);
-    		mLE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 75:
-    		DebugEnterAlt(75);
-    		// Hql.g:1:432: GE
-    		{
-    		DebugLocation(1, 432);
-    		mGE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 76:
-    		DebugEnterAlt(76);
-    		// Hql.g:1:435: BOR
-    		{
-    		DebugLocation(1, 435);
-    		mBOR(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 77:
-    		DebugEnterAlt(77);
-    		// Hql.g:1:439: BXOR
-    		{
-    		DebugLocation(1, 439);
-    		mBXOR(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 78:
-    		DebugEnterAlt(78);
-    		// Hql.g:1:444: BAND
-    		{
-    		DebugLocation(1, 444);
-    		mBAND(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 79:
-    		DebugEnterAlt(79);
-    		// Hql.g:1:449: BNOT
-    		{
-    		DebugLocation(1, 449);
-    		mBNOT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 80:
-    		DebugEnterAlt(80);
-    		// Hql.g:1:454: COMMA
-    		{
-    		DebugLocation(1, 454);
-    		mCOMMA(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 81:
-    		DebugEnterAlt(81);
-    		// Hql.g:1:460: OPEN
-    		{
-    		DebugLocation(1, 460);
-    		mOPEN(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 82:
-    		DebugEnterAlt(82);
-    		// Hql.g:1:465: CLOSE
-    		{
-    		DebugLocation(1, 465);
-    		mCLOSE(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 83:
-    		DebugEnterAlt(83);
-    		// Hql.g:1:471: OPEN_BRACKET
-    		{
-    		DebugLocation(1, 471);
-    		mOPEN_BRACKET(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 84:
-    		DebugEnterAlt(84);
-    		// Hql.g:1:484: CLOSE_BRACKET
-    		{
-    		DebugLocation(1, 484);
-    		mCLOSE_BRACKET(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 85:
-    		DebugEnterAlt(85);
-    		// Hql.g:1:498: CONCAT
-    		{
-    		DebugLocation(1, 498);
-    		mCONCAT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 86:
-    		DebugEnterAlt(86);
-    		// Hql.g:1:505: PLUS
-    		{
-    		DebugLocation(1, 505);
-    		mPLUS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 87:
-    		DebugEnterAlt(87);
-    		// Hql.g:1:510: MINUS
-    		{
-    		DebugLocation(1, 510);
-    		mMINUS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 88:
-    		DebugEnterAlt(88);
-    		// Hql.g:1:516: STAR
-    		{
-    		DebugLocation(1, 516);
-    		mSTAR(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 89:
-    		DebugEnterAlt(89);
-    		// Hql.g:1:521: DIV
-    		{
-    		DebugLocation(1, 521);
-    		mDIV(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 90:
-    		DebugEnterAlt(90);
-    		// Hql.g:1:525: COLON
-    		{
-    		DebugLocation(1, 525);
-    		mCOLON(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 91:
-    		DebugEnterAlt(91);
-    		// Hql.g:1:531: PARAM
-    		{
-    		DebugLocation(1, 531);
-    		mPARAM(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 92:
-    		DebugEnterAlt(92);
-    		// Hql.g:1:537: IDENT
-    		{
-    		DebugLocation(1, 537);
-    		mIDENT(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 93:
-    		DebugEnterAlt(93);
-    		// Hql.g:1:543: QUOTED_String
-    		{
-    		DebugLocation(1, 543);
-    		mQUOTED_String(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 94:
-    		DebugEnterAlt(94);
-    		// Hql.g:1:557: WS
-    		{
-    		DebugLocation(1, 557);
-    		mWS(); if (state.failed) return;
-
-    		}
-    		break;
-    	case 95:
-    		DebugEnterAlt(95);
-    		// Hql.g:1:560: NUM_INT
-    		{
-    		DebugLocation(1, 560);
-    		mNUM_INT(); if (state.failed) return;
-
-    		}
-    		break;
-
-    	}
-
-    }
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_synpred1_Hql_fragment() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_synpred1_Hql_fragment() {}
-
-    // $ANTLR start synpred1_Hql
-    private void synpred1_Hql_fragment()
-    {
-    	EnterRule_synpred1_Hql_fragment();
-    	EnterRule("synpred1_Hql_fragment", 103);
-    	TraceIn("synpred1_Hql_fragment", 103);
-    	try
-    	{
-    		// Hql.g:736:13: ( ESCqs )
-    		DebugEnterAlt(1);
-    		// Hql.g:736:14: ESCqs
-    		{
-    		DebugLocation(736, 14);
-    		mESCqs(); if (state.failed) return;
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("synpred1_Hql_fragment", 103);
-    		LeaveRule("synpred1_Hql_fragment", 103);
-    		LeaveRule_synpred1_Hql_fragment();
-    	}
-    }
-    // $ANTLR end synpred1_Hql
+
+	partial void OnCreated();
+	partial void EnterRule(string ruleName, int ruleIndex);
+	partial void LeaveRule(string ruleName, int ruleIndex);
+
+	partial void EnterRule_ALL();
+	partial void LeaveRule_ALL();
+
+	// $ANTLR start "ALL"
+	[GrammarRule("ALL")]
+	private void mALL()
+	{
+		EnterRule_ALL();
+		EnterRule("ALL", 1);
+		TraceIn("ALL", 1);
+		try
+		{
+			int _type = ALL;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:9:5: ( 'all' )
+			DebugEnterAlt(1);
+			// Hql.g:9:7: 'all'
+			{
+			DebugLocation(9, 7);
+			Match("all"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ALL", 1);
+			LeaveRule("ALL", 1);
+			LeaveRule_ALL();
+		}
+	}
+	// $ANTLR end "ALL"
+
+	partial void EnterRule_AND();
+	partial void LeaveRule_AND();
+
+	// $ANTLR start "AND"
+	[GrammarRule("AND")]
+	private void mAND()
+	{
+		EnterRule_AND();
+		EnterRule("AND", 2);
+		TraceIn("AND", 2);
+		try
+		{
+			int _type = AND;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:10:5: ( 'and' )
+			DebugEnterAlt(1);
+			// Hql.g:10:7: 'and'
+			{
+			DebugLocation(10, 7);
+			Match("and"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("AND", 2);
+			LeaveRule("AND", 2);
+			LeaveRule_AND();
+		}
+	}
+	// $ANTLR end "AND"
+
+	partial void EnterRule_ANY();
+	partial void LeaveRule_ANY();
+
+	// $ANTLR start "ANY"
+	[GrammarRule("ANY")]
+	private void mANY()
+	{
+		EnterRule_ANY();
+		EnterRule("ANY", 3);
+		TraceIn("ANY", 3);
+		try
+		{
+			int _type = ANY;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:11:5: ( 'any' )
+			DebugEnterAlt(1);
+			// Hql.g:11:7: 'any'
+			{
+			DebugLocation(11, 7);
+			Match("any"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ANY", 3);
+			LeaveRule("ANY", 3);
+			LeaveRule_ANY();
+		}
+	}
+	// $ANTLR end "ANY"
+
+	partial void EnterRule_AS();
+	partial void LeaveRule_AS();
+
+	// $ANTLR start "AS"
+	[GrammarRule("AS")]
+	private void mAS()
+	{
+		EnterRule_AS();
+		EnterRule("AS", 4);
+		TraceIn("AS", 4);
+		try
+		{
+			int _type = AS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:12:4: ( 'as' )
+			DebugEnterAlt(1);
+			// Hql.g:12:6: 'as'
+			{
+			DebugLocation(12, 6);
+			Match("as"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("AS", 4);
+			LeaveRule("AS", 4);
+			LeaveRule_AS();
+		}
+	}
+	// $ANTLR end "AS"
+
+	partial void EnterRule_ASCENDING();
+	partial void LeaveRule_ASCENDING();
+
+	// $ANTLR start "ASCENDING"
+	[GrammarRule("ASCENDING")]
+	private void mASCENDING()
+	{
+		EnterRule_ASCENDING();
+		EnterRule("ASCENDING", 5);
+		TraceIn("ASCENDING", 5);
+		try
+		{
+			int _type = ASCENDING;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:13:11: ( 'asc' )
+			DebugEnterAlt(1);
+			// Hql.g:13:13: 'asc'
+			{
+			DebugLocation(13, 13);
+			Match("asc"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ASCENDING", 5);
+			LeaveRule("ASCENDING", 5);
+			LeaveRule_ASCENDING();
+		}
+	}
+	// $ANTLR end "ASCENDING"
+
+	partial void EnterRule_AVG();
+	partial void LeaveRule_AVG();
+
+	// $ANTLR start "AVG"
+	[GrammarRule("AVG")]
+	private void mAVG()
+	{
+		EnterRule_AVG();
+		EnterRule("AVG", 6);
+		TraceIn("AVG", 6);
+		try
+		{
+			int _type = AVG;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:14:5: ( 'avg' )
+			DebugEnterAlt(1);
+			// Hql.g:14:7: 'avg'
+			{
+			DebugLocation(14, 7);
+			Match("avg"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("AVG", 6);
+			LeaveRule("AVG", 6);
+			LeaveRule_AVG();
+		}
+	}
+	// $ANTLR end "AVG"
+
+	partial void EnterRule_BETWEEN();
+	partial void LeaveRule_BETWEEN();
+
+	// $ANTLR start "BETWEEN"
+	[GrammarRule("BETWEEN")]
+	private void mBETWEEN()
+	{
+		EnterRule_BETWEEN();
+		EnterRule("BETWEEN", 7);
+		TraceIn("BETWEEN", 7);
+		try
+		{
+			int _type = BETWEEN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:15:9: ( 'between' )
+			DebugEnterAlt(1);
+			// Hql.g:15:11: 'between'
+			{
+			DebugLocation(15, 11);
+			Match("between"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BETWEEN", 7);
+			LeaveRule("BETWEEN", 7);
+			LeaveRule_BETWEEN();
+		}
+	}
+	// $ANTLR end "BETWEEN"
+
+	partial void EnterRule_BOTH();
+	partial void LeaveRule_BOTH();
+
+	// $ANTLR start "BOTH"
+	[GrammarRule("BOTH")]
+	private void mBOTH()
+	{
+		EnterRule_BOTH();
+		EnterRule("BOTH", 8);
+		TraceIn("BOTH", 8);
+		try
+		{
+			int _type = BOTH;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:16:6: ( 'both' )
+			DebugEnterAlt(1);
+			// Hql.g:16:8: 'both'
+			{
+			DebugLocation(16, 8);
+			Match("both"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BOTH", 8);
+			LeaveRule("BOTH", 8);
+			LeaveRule_BOTH();
+		}
+	}
+	// $ANTLR end "BOTH"
+
+	partial void EnterRule_CASE();
+	partial void LeaveRule_CASE();
+
+	// $ANTLR start "CASE"
+	[GrammarRule("CASE")]
+	private void mCASE()
+	{
+		EnterRule_CASE();
+		EnterRule("CASE", 9);
+		TraceIn("CASE", 9);
+		try
+		{
+			int _type = CASE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:17:6: ( 'case' )
+			DebugEnterAlt(1);
+			// Hql.g:17:8: 'case'
+			{
+			DebugLocation(17, 8);
+			Match("case"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("CASE", 9);
+			LeaveRule("CASE", 9);
+			LeaveRule_CASE();
+		}
+	}
+	// $ANTLR end "CASE"
+
+	partial void EnterRule_CLASS();
+	partial void LeaveRule_CLASS();
+
+	// $ANTLR start "CLASS"
+	[GrammarRule("CLASS")]
+	private void mCLASS()
+	{
+		EnterRule_CLASS();
+		EnterRule("CLASS", 10);
+		TraceIn("CLASS", 10);
+		try
+		{
+			int _type = CLASS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:18:7: ( 'class' )
+			DebugEnterAlt(1);
+			// Hql.g:18:9: 'class'
+			{
+			DebugLocation(18, 9);
+			Match("class"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("CLASS", 10);
+			LeaveRule("CLASS", 10);
+			LeaveRule_CLASS();
+		}
+	}
+	// $ANTLR end "CLASS"
+
+	partial void EnterRule_COUNT();
+	partial void LeaveRule_COUNT();
+
+	// $ANTLR start "COUNT"
+	[GrammarRule("COUNT")]
+	private void mCOUNT()
+	{
+		EnterRule_COUNT();
+		EnterRule("COUNT", 11);
+		TraceIn("COUNT", 11);
+		try
+		{
+			int _type = COUNT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:19:7: ( 'count' )
+			DebugEnterAlt(1);
+			// Hql.g:19:9: 'count'
+			{
+			DebugLocation(19, 9);
+			Match("count"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("COUNT", 11);
+			LeaveRule("COUNT", 11);
+			LeaveRule_COUNT();
+		}
+	}
+	// $ANTLR end "COUNT"
+
+	partial void EnterRule_DELETE();
+	partial void LeaveRule_DELETE();
+
+	// $ANTLR start "DELETE"
+	[GrammarRule("DELETE")]
+	private void mDELETE()
+	{
+		EnterRule_DELETE();
+		EnterRule("DELETE", 12);
+		TraceIn("DELETE", 12);
+		try
+		{
+			int _type = DELETE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:20:8: ( 'delete' )
+			DebugEnterAlt(1);
+			// Hql.g:20:10: 'delete'
+			{
+			DebugLocation(20, 10);
+			Match("delete"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("DELETE", 12);
+			LeaveRule("DELETE", 12);
+			LeaveRule_DELETE();
+		}
+	}
+	// $ANTLR end "DELETE"
+
+	partial void EnterRule_DESCENDING();
+	partial void LeaveRule_DESCENDING();
+
+	// $ANTLR start "DESCENDING"
+	[GrammarRule("DESCENDING")]
+	private void mDESCENDING()
+	{
+		EnterRule_DESCENDING();
+		EnterRule("DESCENDING", 13);
+		TraceIn("DESCENDING", 13);
+		try
+		{
+			int _type = DESCENDING;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:21:12: ( 'desc' )
+			DebugEnterAlt(1);
+			// Hql.g:21:14: 'desc'
+			{
+			DebugLocation(21, 14);
+			Match("desc"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("DESCENDING", 13);
+			LeaveRule("DESCENDING", 13);
+			LeaveRule_DESCENDING();
+		}
+	}
+	// $ANTLR end "DESCENDING"
+
+	partial void EnterRule_DISTINCT();
+	partial void LeaveRule_DISTINCT();
+
+	// $ANTLR start "DISTINCT"
+	[GrammarRule("DISTINCT")]
+	private void mDISTINCT()
+	{
+		EnterRule_DISTINCT();
+		EnterRule("DISTINCT", 14);
+		TraceIn("DISTINCT", 14);
+		try
+		{
+			int _type = DISTINCT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:22:10: ( 'distinct' )
+			DebugEnterAlt(1);
+			// Hql.g:22:12: 'distinct'
+			{
+			DebugLocation(22, 12);
+			Match("distinct"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("DISTINCT", 14);
+			LeaveRule("DISTINCT", 14);
+			LeaveRule_DISTINCT();
+		}
+	}
+	// $ANTLR end "DISTINCT"
+
+	partial void EnterRule_ELEMENTS();
+	partial void LeaveRule_ELEMENTS();
+
+	// $ANTLR start "ELEMENTS"
+	[GrammarRule("ELEMENTS")]
+	private void mELEMENTS()
+	{
+		EnterRule_ELEMENTS();
+		EnterRule("ELEMENTS", 15);
+		TraceIn("ELEMENTS", 15);
+		try
+		{
+			int _type = ELEMENTS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:23:10: ( 'elements' )
+			DebugEnterAlt(1);
+			// Hql.g:23:12: 'elements'
+			{
+			DebugLocation(23, 12);
+			Match("elements"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ELEMENTS", 15);
+			LeaveRule("ELEMENTS", 15);
+			LeaveRule_ELEMENTS();
+		}
+	}
+	// $ANTLR end "ELEMENTS"
+
+	partial void EnterRule_ELSE();
+	partial void LeaveRule_ELSE();
+
+	// $ANTLR start "ELSE"
+	[GrammarRule("ELSE")]
+	private void mELSE()
+	{
+		EnterRule_ELSE();
+		EnterRule("ELSE", 16);
+		TraceIn("ELSE", 16);
+		try
+		{
+			int _type = ELSE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:24:6: ( 'else' )
+			DebugEnterAlt(1);
+			// Hql.g:24:8: 'else'
+			{
+			DebugLocation(24, 8);
+			Match("else"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ELSE", 16);
+			LeaveRule("ELSE", 16);
+			LeaveRule_ELSE();
+		}
+	}
+	// $ANTLR end "ELSE"
+
+	partial void EnterRule_EMPTY();
+	partial void LeaveRule_EMPTY();
+
+	// $ANTLR start "EMPTY"
+	[GrammarRule("EMPTY")]
+	private void mEMPTY()
+	{
+		EnterRule_EMPTY();
+		EnterRule("EMPTY", 17);
+		TraceIn("EMPTY", 17);
+		try
+		{
+			int _type = EMPTY;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:25:7: ( 'empty' )
+			DebugEnterAlt(1);
+			// Hql.g:25:9: 'empty'
+			{
+			DebugLocation(25, 9);
+			Match("empty"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("EMPTY", 17);
+			LeaveRule("EMPTY", 17);
+			LeaveRule_EMPTY();
+		}
+	}
+	// $ANTLR end "EMPTY"
+
+	partial void EnterRule_END();
+	partial void LeaveRule_END();
+
+	// $ANTLR start "END"
+	[GrammarRule("END")]
+	private void mEND()
+	{
+		EnterRule_END();
+		EnterRule("END", 18);
+		TraceIn("END", 18);
+		try
+		{
+			int _type = END;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:26:5: ( 'end' )
+			DebugEnterAlt(1);
+			// Hql.g:26:7: 'end'
+			{
+			DebugLocation(26, 7);
+			Match("end"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("END", 18);
+			LeaveRule("END", 18);
+			LeaveRule_END();
+		}
+	}
+	// $ANTLR end "END"
+
+	partial void EnterRule_ESCAPE();
+	partial void LeaveRule_ESCAPE();
+
+	// $ANTLR start "ESCAPE"
+	[GrammarRule("ESCAPE")]
+	private void mESCAPE()
+	{
+		EnterRule_ESCAPE();
+		EnterRule("ESCAPE", 19);
+		TraceIn("ESCAPE", 19);
+		try
+		{
+			int _type = ESCAPE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:27:8: ( 'escape' )
+			DebugEnterAlt(1);
+			// Hql.g:27:10: 'escape'
+			{
+			DebugLocation(27, 10);
+			Match("escape"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ESCAPE", 19);
+			LeaveRule("ESCAPE", 19);
+			LeaveRule_ESCAPE();
+		}
+	}
+	// $ANTLR end "ESCAPE"
+
+	partial void EnterRule_EXISTS();
+	partial void LeaveRule_EXISTS();
+
+	// $ANTLR start "EXISTS"
+	[GrammarRule("EXISTS")]
+	private void mEXISTS()
+	{
+		EnterRule_EXISTS();
+		EnterRule("EXISTS", 20);
+		TraceIn("EXISTS", 20);
+		try
+		{
+			int _type = EXISTS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:28:8: ( 'exists' )
+			DebugEnterAlt(1);
+			// Hql.g:28:10: 'exists'
+			{
+			DebugLocation(28, 10);
+			Match("exists"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("EXISTS", 20);
+			LeaveRule("EXISTS", 20);
+			LeaveRule_EXISTS();
+		}
+	}
+	// $ANTLR end "EXISTS"
+
+	partial void EnterRule_FALSE();
+	partial void LeaveRule_FALSE();
+
+	// $ANTLR start "FALSE"
+	[GrammarRule("FALSE")]
+	private void mFALSE()
+	{
+		EnterRule_FALSE();
+		EnterRule("FALSE", 21);
+		TraceIn("FALSE", 21);
+		try
+		{
+			int _type = FALSE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:29:7: ( 'false' )
+			DebugEnterAlt(1);
+			// Hql.g:29:9: 'false'
+			{
+			DebugLocation(29, 9);
+			Match("false"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("FALSE", 21);
+			LeaveRule("FALSE", 21);
+			LeaveRule_FALSE();
+		}
+	}
+	// $ANTLR end "FALSE"
+
+	partial void EnterRule_FETCH();
+	partial void LeaveRule_FETCH();
+
+	// $ANTLR start "FETCH"
+	[GrammarRule("FETCH")]
+	private void mFETCH()
+	{
+		EnterRule_FETCH();
+		EnterRule("FETCH", 22);
+		TraceIn("FETCH", 22);
+		try
+		{
+			int _type = FETCH;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:30:7: ( 'fetch' )
+			DebugEnterAlt(1);
+			// Hql.g:30:9: 'fetch'
+			{
+			DebugLocation(30, 9);
+			Match("fetch"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("FETCH", 22);
+			LeaveRule("FETCH", 22);
+			LeaveRule_FETCH();
+		}
+	}
+	// $ANTLR end "FETCH"
+
+	partial void EnterRule_FROM();
+	partial void LeaveRule_FROM();
+
+	// $ANTLR start "FROM"
+	[GrammarRule("FROM")]
+	private void mFROM()
+	{
+		EnterRule_FROM();
+		EnterRule("FROM", 23);
+		TraceIn("FROM", 23);
+		try
+		{
+			int _type = FROM;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:31:6: ( 'from' )
+			DebugEnterAlt(1);
+			// Hql.g:31:8: 'from'
+			{
+			DebugLocation(31, 8);
+			Match("from"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("FROM", 23);
+			LeaveRule("FROM", 23);
+			LeaveRule_FROM();
+		}
+	}
+	// $ANTLR end "FROM"
+
+	partial void EnterRule_FULL();
+	partial void LeaveRule_FULL();
+
+	// $ANTLR start "FULL"
+	[GrammarRule("FULL")]
+	private void mFULL()
+	{
+		EnterRule_FULL();
+		EnterRule("FULL", 24);
+		TraceIn("FULL", 24);
+		try
+		{
+			int _type = FULL;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:32:6: ( 'full' )
+			DebugEnterAlt(1);
+			// Hql.g:32:8: 'full'
+			{
+			DebugLocation(32, 8);
+			Match("full"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("FULL", 24);
+			LeaveRule("FULL", 24);
+			LeaveRule_FULL();
+		}
+	}
+	// $ANTLR end "FULL"
+
+	partial void EnterRule_GROUP();
+	partial void LeaveRule_GROUP();
+
+	// $ANTLR start "GROUP"
+	[GrammarRule("GROUP")]
+	private void mGROUP()
+	{
+		EnterRule_GROUP();
+		EnterRule("GROUP", 25);
+		TraceIn("GROUP", 25);
+		try
+		{
+			int _type = GROUP;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:33:7: ( 'group' )
+			DebugEnterAlt(1);
+			// Hql.g:33:9: 'group'
+			{
+			DebugLocation(33, 9);
+			Match("group"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("GROUP", 25);
+			LeaveRule("GROUP", 25);
+			LeaveRule_GROUP();
+		}
+	}
+	// $ANTLR end "GROUP"
+
+	partial void EnterRule_HAVING();
+	partial void LeaveRule_HAVING();
+
+	// $ANTLR start "HAVING"
+	[GrammarRule("HAVING")]
+	private void mHAVING()
+	{
+		EnterRule_HAVING();
+		EnterRule("HAVING", 26);
+		TraceIn("HAVING", 26);
+		try
+		{
+			int _type = HAVING;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:34:8: ( 'having' )
+			DebugEnterAlt(1);
+			// Hql.g:34:10: 'having'
+			{
+			DebugLocation(34, 10);
+			Match("having"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("HAVING", 26);
+			LeaveRule("HAVING", 26);
+			LeaveRule_HAVING();
+		}
+	}
+	// $ANTLR end "HAVING"
+
+	partial void EnterRule_IN();
+	partial void LeaveRule_IN();
+
+	// $ANTLR start "IN"
+	[GrammarRule("IN")]
+	private void mIN()
+	{
+		EnterRule_IN();
+		EnterRule("IN", 27);
+		TraceIn("IN", 27);
+		try
+		{
+			int _type = IN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:35:4: ( 'in' )
+			DebugEnterAlt(1);
+			// Hql.g:35:6: 'in'
+			{
+			DebugLocation(35, 6);
+			Match("in"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("IN", 27);
+			LeaveRule("IN", 27);
+			LeaveRule_IN();
+		}
+	}
+	// $ANTLR end "IN"
+
+	partial void EnterRule_INDICES();
+	partial void LeaveRule_INDICES();
+
+	// $ANTLR start "INDICES"
+	[GrammarRule("INDICES")]
+	private void mINDICES()
+	{
+		EnterRule_INDICES();
+		EnterRule("INDICES", 28);
+		TraceIn("INDICES", 28);
+		try
+		{
+			int _type = INDICES;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:36:9: ( 'indices' )
+			DebugEnterAlt(1);
+			// Hql.g:36:11: 'indices'
+			{
+			DebugLocation(36, 11);
+			Match("indices"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("INDICES", 28);
+			LeaveRule("INDICES", 28);
+			LeaveRule_INDICES();
+		}
+	}
+	// $ANTLR end "INDICES"
+
+	partial void EnterRule_INNER();
+	partial void LeaveRule_INNER();
+
+	// $ANTLR start "INNER"
+	[GrammarRule("INNER")]
+	private void mINNER()
+	{
+		EnterRule_INNER();
+		EnterRule("INNER", 29);
+		TraceIn("INNER", 29);
+		try
+		{
+			int _type = INNER;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:37:7: ( 'inner' )
+			DebugEnterAlt(1);
+			// Hql.g:37:9: 'inner'
+			{
+			DebugLocation(37, 9);
+			Match("inner"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("INNER", 29);
+			LeaveRule("INNER", 29);
+			LeaveRule_INNER();
+		}
+	}
+	// $ANTLR end "INNER"
+
+	partial void EnterRule_INSERT();
+	partial void LeaveRule_INSERT();
+
+	// $ANTLR start "INSERT"
+	[GrammarRule("INSERT")]
+	private void mINSERT()
+	{
+		EnterRule_INSERT();
+		EnterRule("INSERT", 30);
+		TraceIn("INSERT", 30);
+		try
+		{
+			int _type = INSERT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:38:8: ( 'insert' )
+			DebugEnterAlt(1);
+			// Hql.g:38:10: 'insert'
+			{
+			DebugLocation(38, 10);
+			Match("insert"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("INSERT", 30);
+			LeaveRule("INSERT", 30);
+			LeaveRule_INSERT();
+		}
+	}
+	// $ANTLR end "INSERT"
+
+	partial void EnterRule_INTO();
+	partial void LeaveRule_INTO();
+
+	// $ANTLR start "INTO"
+	[GrammarRule("INTO")]
+	private void mINTO()
+	{
+		EnterRule_INTO();
+		EnterRule("INTO", 31);
+		TraceIn("INTO", 31);
+		try
+		{
+			int _type = INTO;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:39:6: ( 'into' )
+			DebugEnterAlt(1);
+			// Hql.g:39:8: 'into'
+			{
+			DebugLocation(39, 8);
+			Match("into"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("INTO", 31);
+			LeaveRule("INTO", 31);
+			LeaveRule_INTO();
+		}
+	}
+	// $ANTLR end "INTO"
+
+	partial void EnterRule_IS();
+	partial void LeaveRule_IS();
+
+	// $ANTLR start "IS"
+	[GrammarRule("IS")]
+	private void mIS()
+	{
+		EnterRule_IS();
+		EnterRule("IS", 32);
+		TraceIn("IS", 32);
+		try
+		{
+			int _type = IS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:40:4: ( 'is' )
+			DebugEnterAlt(1);
+			// Hql.g:40:6: 'is'
+			{
+			DebugLocation(40, 6);
+			Match("is"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("IS", 32);
+			LeaveRule("IS", 32);
+			LeaveRule_IS();
+		}
+	}
+	// $ANTLR end "IS"
+
+	partial void EnterRule_JOIN();
+	partial void LeaveRule_JOIN();
+
+	// $ANTLR start "JOIN"
+	[GrammarRule("JOIN")]
+	private void mJOIN()
+	{
+		EnterRule_JOIN();
+		EnterRule("JOIN", 33);
+		TraceIn("JOIN", 33);
+		try
+		{
+			int _type = JOIN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:41:6: ( 'join' )
+			DebugEnterAlt(1);
+			// Hql.g:41:8: 'join'
+			{
+			DebugLocation(41, 8);
+			Match("join"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("JOIN", 33);
+			LeaveRule("JOIN", 33);
+			LeaveRule_JOIN();
+		}
+	}
+	// $ANTLR end "JOIN"
+
+	partial void EnterRule_LEADING();
+	partial void LeaveRule_LEADING();
+
+	// $ANTLR start "LEADING"
+	[GrammarRule("LEADING")]
+	private void mLEADING()
+	{
+		EnterRule_LEADING();
+		EnterRule("LEADING", 34);
+		TraceIn("LEADING", 34);
+		try
+		{
+			int _type = LEADING;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:42:9: ( 'leading' )
+			DebugEnterAlt(1);
+			// Hql.g:42:11: 'leading'
+			{
+			DebugLocation(42, 11);
+			Match("leading"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LEADING", 34);
+			LeaveRule("LEADING", 34);
+			LeaveRule_LEADING();
+		}
+	}
+	// $ANTLR end "LEADING"
+
+	partial void EnterRule_LEFT();
+	partial void LeaveRule_LEFT();
+
+	// $ANTLR start "LEFT"
+	[GrammarRule("LEFT")]
+	private void mLEFT()
+	{
+		EnterRule_LEFT();
+		EnterRule("LEFT", 35);
+		TraceIn("LEFT", 35);
+		try
+		{
+			int _type = LEFT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:43:6: ( 'left' )
+			DebugEnterAlt(1);
+			// Hql.g:43:8: 'left'
+			{
+			DebugLocation(43, 8);
+			Match("left"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LEFT", 35);
+			LeaveRule("LEFT", 35);
+			LeaveRule_LEFT();
+		}
+	}
+	// $ANTLR end "LEFT"
+
+	partial void EnterRule_LIKE();
+	partial void LeaveRule_LIKE();
+
+	// $ANTLR start "LIKE"
+	[GrammarRule("LIKE")]
+	private void mLIKE()
+	{
+		EnterRule_LIKE();
+		EnterRule("LIKE", 36);
+		TraceIn("LIKE", 36);
+		try
+		{
+			int _type = LIKE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:44:6: ( 'like' )
+			DebugEnterAlt(1);
+			// Hql.g:44:8: 'like'
+			{
+			DebugLocation(44, 8);
+			Match("like"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LIKE", 36);
+			LeaveRule("LIKE", 36);
+			LeaveRule_LIKE();
+		}
+	}
+	// $ANTLR end "LIKE"
+
+	partial void EnterRule_LITERAL_by();
+	partial void LeaveRule_LITERAL_by();
+
+	// $ANTLR start "LITERAL_by"
+	[GrammarRule("LITERAL_by")]
+	private void mLITERAL_by()
+	{
+		EnterRule_LITERAL_by();
+		EnterRule("LITERAL_by", 37);
+		TraceIn("LITERAL_by", 37);
+		try
+		{
+			int _type = LITERAL_by;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:45:12: ( 'by' )
+			DebugEnterAlt(1);
+			// Hql.g:45:14: 'by'
+			{
+			DebugLocation(45, 14);
+			Match("by"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LITERAL_by", 37);
+			LeaveRule("LITERAL_by", 37);
+			LeaveRule_LITERAL_by();
+		}
+	}
+	// $ANTLR end "LITERAL_by"
+
+	partial void EnterRule_MAX();
+	partial void LeaveRule_MAX();
+
+	// $ANTLR start "MAX"
+	[GrammarRule("MAX")]
+	private void mMAX()
+	{
+		EnterRule_MAX();
+		EnterRule("MAX", 38);
+		TraceIn("MAX", 38);
+		try
+		{
+			int _type = MAX;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:46:5: ( 'max' )
+			DebugEnterAlt(1);
+			// Hql.g:46:7: 'max'
+			{
+			DebugLocation(46, 7);
+			Match("max"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("MAX", 38);
+			LeaveRule("MAX", 38);
+			LeaveRule_MAX();
+		}
+	}
+	// $ANTLR end "MAX"
+
+	partial void EnterRule_MEMBER();
+	partial void LeaveRule_MEMBER();
+
+	// $ANTLR start "MEMBER"
+	[GrammarRule("MEMBER")]
+	private void mMEMBER()
+	{
+		EnterRule_MEMBER();
+		EnterRule("MEMBER", 39);
+		TraceIn("MEMBER", 39);
+		try
+		{
+			int _type = MEMBER;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:47:8: ( 'member' )
+			DebugEnterAlt(1);
+			// Hql.g:47:10: 'member'
+			{
+			DebugLocation(47, 10);
+			Match("member"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("MEMBER", 39);
+			LeaveRule("MEMBER", 39);
+			LeaveRule_MEMBER();
+		}
+	}
+	// $ANTLR end "MEMBER"
+
+	partial void EnterRule_MIN();
+	partial void LeaveRule_MIN();
+
+	// $ANTLR start "MIN"
+	[GrammarRule("MIN")]
+	private void mMIN()
+	{
+		EnterRule_MIN();
+		EnterRule("MIN", 40);
+		TraceIn("MIN", 40);
+		try
+		{
+			int _type = MIN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:48:5: ( 'min' )
+			DebugEnterAlt(1);
+			// Hql.g:48:7: 'min'
+			{
+			DebugLocation(48, 7);
+			Match("min"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("MIN", 40);
+			LeaveRule("MIN", 40);
+			LeaveRule_MIN();
+		}
+	}
+	// $ANTLR end "MIN"
+
+	partial void EnterRule_NEW();
+	partial void LeaveRule_NEW();
+
+	// $ANTLR start "NEW"
+	[GrammarRule("NEW")]
+	private void mNEW()
+	{
+		EnterRule_NEW();
+		EnterRule("NEW", 41);
+		TraceIn("NEW", 41);
+		try
+		{
+			int _type = NEW;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:49:5: ( 'new' )
+			DebugEnterAlt(1);
+			// Hql.g:49:7: 'new'
+			{
+			DebugLocation(49, 7);
+			Match("new"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("NEW", 41);
+			LeaveRule("NEW", 41);
+			LeaveRule_NEW();
+		}
+	}
+	// $ANTLR end "NEW"
+
+	partial void EnterRule_NOT();
+	partial void LeaveRule_NOT();
+
+	// $ANTLR start "NOT"
+	[GrammarRule("NOT")]
+	private void mNOT()
+	{
+		EnterRule_NOT();
+		EnterRule("NOT", 42);
+		TraceIn("NOT", 42);
+		try
+		{
+			int _type = NOT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:50:5: ( 'not' )
+			DebugEnterAlt(1);
+			// Hql.g:50:7: 'not'
+			{
+			DebugLocation(50, 7);
+			Match("not"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("NOT", 42);
+			LeaveRule("NOT", 42);
+			LeaveRule_NOT();
+		}
+	}
+	// $ANTLR end "NOT"
+
+	partial void EnterRule_NULL();
+	partial void LeaveRule_NULL();
+
+	// $ANTLR start "NULL"
+	[GrammarRule("NULL")]
+	private void mNULL()
+	{
+		EnterRule_NULL();
+		EnterRule("NULL", 43);
+		TraceIn("NULL", 43);
+		try
+		{
+			int _type = NULL;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:51:6: ( 'null' )
+			DebugEnterAlt(1);
+			// Hql.g:51:8: 'null'
+			{
+			DebugLocation(51, 8);
+			Match("null"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("NULL", 43);
+			LeaveRule("NULL", 43);
+			LeaveRule_NULL();
+		}
+	}
+	// $ANTLR end "NULL"
+
+	partial void EnterRule_OBJECT();
+	partial void LeaveRule_OBJECT();
+
+	// $ANTLR start "OBJECT"
+	[GrammarRule("OBJECT")]
+	private void mOBJECT()
+	{
+		EnterRule_OBJECT();
+		EnterRule("OBJECT", 44);
+		TraceIn("OBJECT", 44);
+		try
+		{
+			int _type = OBJECT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:52:8: ( 'object' )
+			DebugEnterAlt(1);
+			// Hql.g:52:10: 'object'
+			{
+			DebugLocation(52, 10);
+			Match("object"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OBJECT", 44);
+			LeaveRule("OBJECT", 44);
+			LeaveRule_OBJECT();
+		}
+	}
+	// $ANTLR end "OBJECT"
+
+	partial void EnterRule_OF();
+	partial void LeaveRule_OF();
+
+	// $ANTLR start "OF"
+	[GrammarRule("OF")]
+	private void mOF()
+	{
+		EnterRule_OF();
+		EnterRule("OF", 45);
+		TraceIn("OF", 45);
+		try
+		{
+			int _type = OF;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:53:4: ( 'of' )
+			DebugEnterAlt(1);
+			// Hql.g:53:6: 'of'
+			{
+			DebugLocation(53, 6);
+			Match("of"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OF", 45);
+			LeaveRule("OF", 45);
+			LeaveRule_OF();
+		}
+	}
+	// $ANTLR end "OF"
+
+	partial void EnterRule_ON();
+	partial void LeaveRule_ON();
+
+	// $ANTLR start "ON"
+	[GrammarRule("ON")]
+	private void mON()
+	{
+		EnterRule_ON();
+		EnterRule("ON", 46);
+		TraceIn("ON", 46);
+		try
+		{
+			int _type = ON;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:54:4: ( 'on' )
+			DebugEnterAlt(1);
+			// Hql.g:54:6: 'on'
+			{
+			DebugLocation(54, 6);
+			Match("on"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ON", 46);
+			LeaveRule("ON", 46);
+			LeaveRule_ON();
+		}
+	}
+	// $ANTLR end "ON"
+
+	partial void EnterRule_OR();
+	partial void LeaveRule_OR();
+
+	// $ANTLR start "OR"
+	[GrammarRule("OR")]
+	private void mOR()
+	{
+		EnterRule_OR();
+		EnterRule("OR", 47);
+		TraceIn("OR", 47);
+		try
+		{
+			int _type = OR;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:55:4: ( 'or' )
+			DebugEnterAlt(1);
+			// Hql.g:55:6: 'or'
+			{
+			DebugLocation(55, 6);
+			Match("or"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OR", 47);
+			LeaveRule("OR", 47);
+			LeaveRule_OR();
+		}
+	}
+	// $ANTLR end "OR"
+
+	partial void EnterRule_ORDER();
+	partial void LeaveRule_ORDER();
+
+	// $ANTLR start "ORDER"
+	[GrammarRule("ORDER")]
+	private void mORDER()
+	{
+		EnterRule_ORDER();
+		EnterRule("ORDER", 48);
+		TraceIn("ORDER", 48);
+		try
+		{
+			int _type = ORDER;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:56:7: ( 'order' )
+			DebugEnterAlt(1);
+			// Hql.g:56:9: 'order'
+			{
+			DebugLocation(56, 9);
+			Match("order"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("ORDER", 48);
+			LeaveRule("ORDER", 48);
+			LeaveRule_ORDER();
+		}
+	}
+	// $ANTLR end "ORDER"
+
+	partial void EnterRule_OUTER();
+	partial void LeaveRule_OUTER();
+
+	// $ANTLR start "OUTER"
+	[GrammarRule("OUTER")]
+	private void mOUTER()
+	{
+		EnterRule_OUTER();
+		EnterRule("OUTER", 49);
+		TraceIn("OUTER", 49);
+		try
+		{
+			int _type = OUTER;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:57:7: ( 'outer' )
+			DebugEnterAlt(1);
+			// Hql.g:57:9: 'outer'
+			{
+			DebugLocation(57, 9);
+			Match("outer"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OUTER", 49);
+			LeaveRule("OUTER", 49);
+			LeaveRule_OUTER();
+		}
+	}
+	// $ANTLR end "OUTER"
+
+	partial void EnterRule_PROPERTIES();
+	partial void LeaveRule_PROPERTIES();
+
+	// $ANTLR start "PROPERTIES"
+	[GrammarRule("PROPERTIES")]
+	private void mPROPERTIES()
+	{
+		EnterRule_PROPERTIES();
+		EnterRule("PROPERTIES", 50);
+		TraceIn("PROPERTIES", 50);
+		try
+		{
+			int _type = PROPERTIES;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:58:12: ( 'properties' )
+			DebugEnterAlt(1);
+			// Hql.g:58:14: 'properties'
+			{
+			DebugLocation(58, 14);
+			Match("properties"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("PROPERTIES", 50);
+			LeaveRule("PROPERTIES", 50);
+			LeaveRule_PROPERTIES();
+		}
+	}
+	// $ANTLR end "PROPERTIES"
+
+	partial void EnterRule_RIGHT();
+	partial void LeaveRule_RIGHT();
+
+	// $ANTLR start "RIGHT"
+	[GrammarRule("RIGHT")]
+	private void mRIGHT()
+	{
+		EnterRule_RIGHT();
+		EnterRule("RIGHT", 51);
+		TraceIn("RIGHT", 51);
+		try
+		{
+			int _type = RIGHT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:59:7: ( 'right' )
+			DebugEnterAlt(1);
+			// Hql.g:59:9: 'right'
+			{
+			DebugLocation(59, 9);
+			Match("right"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("RIGHT", 51);
+			LeaveRule("RIGHT", 51);
+			LeaveRule_RIGHT();
+		}
+	}
+	// $ANTLR end "RIGHT"
+
+	partial void EnterRule_SELECT();
+	partial void LeaveRule_SELECT();
+
+	// $ANTLR start "SELECT"
+	[GrammarRule("SELECT")]
+	private void mSELECT()
+	{
+		EnterRule_SELECT();
+		EnterRule("SELECT", 52);
+		TraceIn("SELECT", 52);
+		try
+		{
+			int _type = SELECT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:60:8: ( 'select' )
+			DebugEnterAlt(1);
+			// Hql.g:60:10: 'select'
+			{
+			DebugLocation(60, 10);
+			Match("select"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SELECT", 52);
+			LeaveRule("SELECT", 52);
+			LeaveRule_SELECT();
+		}
+	}
+	// $ANTLR end "SELECT"
+
+	partial void EnterRule_SET();
+	partial void LeaveRule_SET();
+
+	// $ANTLR start "SET"
+	[GrammarRule("SET")]
+	private void mSET()
+	{
+		EnterRule_SET();
+		EnterRule("SET", 53);
+		TraceIn("SET", 53);
+		try
+		{
+			int _type = SET;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:61:5: ( 'set' )
+			DebugEnterAlt(1);
+			// Hql.g:61:7: 'set'
+			{
+			DebugLocation(61, 7);
+			Match("set"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SET", 53);
+			LeaveRule("SET", 53);
+			LeaveRule_SET();
+		}
+	}
+	// $ANTLR end "SET"
+
+	partial void EnterRule_SKIP();
+	partial void LeaveRule_SKIP();
+
+	// $ANTLR start "SKIP"
+	[GrammarRule("SKIP")]
+	private void mSKIP()
+	{
+		EnterRule_SKIP();
+		EnterRule("SKIP", 54);
+		TraceIn("SKIP", 54);
+		try
+		{
+			int _type = SKIP;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:62:6: ( 'skip' )
+			DebugEnterAlt(1);
+			// Hql.g:62:8: 'skip'
+			{
+			DebugLocation(62, 8);
+			Match("skip"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SKIP", 54);
+			LeaveRule("SKIP", 54);
+			LeaveRule_SKIP();
+		}
+	}
+	// $ANTLR end "SKIP"
+
+	partial void EnterRule_SOME();
+	partial void LeaveRule_SOME();
+
+	// $ANTLR start "SOME"
+	[GrammarRule("SOME")]
+	private void mSOME()
+	{
+		EnterRule_SOME();
+		EnterRule("SOME", 55);
+		TraceIn("SOME", 55);
+		try
+		{
+			int _type = SOME;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:63:6: ( 'some' )
+			DebugEnterAlt(1);
+			// Hql.g:63:8: 'some'
+			{
+			DebugLocation(63, 8);
+			Match("some"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SOME", 55);
+			LeaveRule("SOME", 55);
+			LeaveRule_SOME();
+		}
+	}
+	// $ANTLR end "SOME"
+
+	partial void EnterRule_SUM();
+	partial void LeaveRule_SUM();
+
+	// $ANTLR start "SUM"
+	[GrammarRule("SUM")]
+	private void mSUM()
+	{
+		EnterRule_SUM();
+		EnterRule("SUM", 56);
+		TraceIn("SUM", 56);
+		try
+		{
+			int _type = SUM;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:64:5: ( 'sum' )
+			DebugEnterAlt(1);
+			// Hql.g:64:7: 'sum'
+			{
+			DebugLocation(64, 7);
+			Match("sum"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SUM", 56);
+			LeaveRule("SUM", 56);
+			LeaveRule_SUM();
+		}
+	}
+	// $ANTLR end "SUM"
+
+	partial void EnterRule_TAKE();
+	partial void LeaveRule_TAKE();
+
+	// $ANTLR start "TAKE"
+	[GrammarRule("TAKE")]
+	private void mTAKE()
+	{
+		EnterRule_TAKE();
+		EnterRule("TAKE", 57);
+		TraceIn("TAKE", 57);
+		try
+		{
+			int _type = TAKE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:65:6: ( 'take' )
+			DebugEnterAlt(1);
+			// Hql.g:65:8: 'take'
+			{
+			DebugLocation(65, 8);
+			Match("take"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("TAKE", 57);
+			LeaveRule("TAKE", 57);
+			LeaveRule_TAKE();
+		}
+	}
+	// $ANTLR end "TAKE"
+
+	partial void EnterRule_THEN();
+	partial void LeaveRule_THEN();
+
+	// $ANTLR start "THEN"
+	[GrammarRule("THEN")]
+	private void mTHEN()
+	{
+		EnterRule_THEN();
+		EnterRule("THEN", 58);
+		TraceIn("THEN", 58);
+		try
+		{
+			int _type = THEN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:66:6: ( 'then' )
+			DebugEnterAlt(1);
+			// Hql.g:66:8: 'then'
+			{
+			DebugLocation(66, 8);
+			Match("then"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("THEN", 58);
+			LeaveRule("THEN", 58);
+			LeaveRule_THEN();
+		}
+	}
+	// $ANTLR end "THEN"
+
+	partial void EnterRule_TRAILING();
+	partial void LeaveRule_TRAILING();
+
+	// $ANTLR start "TRAILING"
+	[GrammarRule("TRAILING")]
+	private void mTRAILING()
+	{
+		EnterRule_TRAILING();
+		EnterRule("TRAILING", 59);
+		TraceIn("TRAILING", 59);
+		try
+		{
+			int _type = TRAILING;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:67:10: ( 'trailing' )
+			DebugEnterAlt(1);
+			// Hql.g:67:12: 'trailing'
+			{
+			DebugLocation(67, 12);
+			Match("trailing"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("TRAILING", 59);
+			LeaveRule("TRAILING", 59);
+			LeaveRule_TRAILING();
+		}
+	}
+	// $ANTLR end "TRAILING"
+
+	partial void EnterRule_TRUE();
+	partial void LeaveRule_TRUE();
+
+	// $ANTLR start "TRUE"
+	[GrammarRule("TRUE")]
+	private void mTRUE()
+	{
+		EnterRule_TRUE();
+		EnterRule("TRUE", 60);
+		TraceIn("TRUE", 60);
+		try
+		{
+			int _type = TRUE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:68:6: ( 'true' )
+			DebugEnterAlt(1);
+			// Hql.g:68:8: 'true'
+			{
+			DebugLocation(68, 8);
+			Match("true"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("TRUE", 60);
+			LeaveRule("TRUE", 60);
+			LeaveRule_TRUE();
+		}
+	}
+	// $ANTLR end "TRUE"
+
+	partial void EnterRule_UNION();
+	partial void LeaveRule_UNION();
+
+	// $ANTLR start "UNION"
+	[GrammarRule("UNION")]
+	private void mUNION()
+	{
+		EnterRule_UNION();
+		EnterRule("UNION", 61);
+		TraceIn("UNION", 61);
+		try
+		{
+			int _type = UNION;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:69:7: ( 'union' )
+			DebugEnterAlt(1);
+			// Hql.g:69:9: 'union'
+			{
+			DebugLocation(69, 9);
+			Match("union"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("UNION", 61);
+			LeaveRule("UNION", 61);
+			LeaveRule_UNION();
+		}
+	}
+	// $ANTLR end "UNION"
+
+	partial void EnterRule_UPDATE();
+	partial void LeaveRule_UPDATE();
+
+	// $ANTLR start "UPDATE"
+	[GrammarRule("UPDATE")]
+	private void mUPDATE()
+	{
+		EnterRule_UPDATE();
+		EnterRule("UPDATE", 62);
+		TraceIn("UPDATE", 62);
+		try
+		{
+			int _type = UPDATE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:70:8: ( 'update' )
+			DebugEnterAlt(1);
+			// Hql.g:70:10: 'update'
+			{
+			DebugLocation(70, 10);
+			Match("update"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("UPDATE", 62);
+			LeaveRule("UPDATE", 62);
+			LeaveRule_UPDATE();
+		}
+	}
+	// $ANTLR end "UPDATE"
+
+	partial void EnterRule_VERSIONED();
+	partial void LeaveRule_VERSIONED();
+
+	// $ANTLR start "VERSIONED"
+	[GrammarRule("VERSIONED")]
+	private void mVERSIONED()
+	{
+		EnterRule_VERSIONED();
+		EnterRule("VERSIONED", 63);
+		TraceIn("VERSIONED", 63);
+		try
+		{
+			int _type = VERSIONED;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:71:11: ( 'versioned' )
+			DebugEnterAlt(1);
+			// Hql.g:71:13: 'versioned'
+			{
+			DebugLocation(71, 13);
+			Match("versioned"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("VERSIONED", 63);
+			LeaveRule("VERSIONED", 63);
+			LeaveRule_VERSIONED();
+		}
+	}
+	// $ANTLR end "VERSIONED"
+
+	partial void EnterRule_WHEN();
+	partial void LeaveRule_WHEN();
+
+	// $ANTLR start "WHEN"
+	[GrammarRule("WHEN")]
+	private void mWHEN()
+	{
+		EnterRule_WHEN();
+		EnterRule("WHEN", 64);
+		TraceIn("WHEN", 64);
+		try
+		{
+			int _type = WHEN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:72:6: ( 'when' )
+			DebugEnterAlt(1);
+			// Hql.g:72:8: 'when'
+			{
+			DebugLocation(72, 8);
+			Match("when"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("WHEN", 64);
+			LeaveRule("WHEN", 64);
+			LeaveRule_WHEN();
+		}
+	}
+	// $ANTLR end "WHEN"
+
+	partial void EnterRule_WHERE();
+	partial void LeaveRule_WHERE();
+
+	// $ANTLR start "WHERE"
+	[GrammarRule("WHERE")]
+	private void mWHERE()
+	{
+		EnterRule_WHERE();
+		EnterRule("WHERE", 65);
+		TraceIn("WHERE", 65);
+		try
+		{
+			int _type = WHERE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:73:7: ( 'where' )
+			DebugEnterAlt(1);
+			// Hql.g:73:9: 'where'
+			{
+			DebugLocation(73, 9);
+			Match("where"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("WHERE", 65);
+			LeaveRule("WHERE", 65);
+			LeaveRule_WHERE();
+		}
+	}
+	// $ANTLR end "WHERE"
+
+	partial void EnterRule_WITH();
+	partial void LeaveRule_WITH();
+
+	// $ANTLR start "WITH"
+	[GrammarRule("WITH")]
+	private void mWITH()
+	{
+		EnterRule_WITH();
+		EnterRule("WITH", 66);
+		TraceIn("WITH", 66);
+		try
+		{
+			int _type = WITH;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:74:6: ( 'with' )
+			DebugEnterAlt(1);
+			// Hql.g:74:8: 'with'
+			{
+			DebugLocation(74, 8);
+			Match("with"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("WITH", 66);
+			LeaveRule("WITH", 66);
+			LeaveRule_WITH();
+		}
+	}
+	// $ANTLR end "WITH"
+
+	partial void EnterRule_T__133();
+	partial void LeaveRule_T__133();
+
+	// $ANTLR start "T__133"
+	[GrammarRule("T__133")]
+	private void mT__133()
+	{
+		EnterRule_T__133();
+		EnterRule("T__133", 67);
+		TraceIn("T__133", 67);
+		try
+		{
+			int _type = T__133;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:75:8: ( 'ascending' )
+			DebugEnterAlt(1);
+			// Hql.g:75:10: 'ascending'
+			{
+			DebugLocation(75, 10);
+			Match("ascending"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("T__133", 67);
+			LeaveRule("T__133", 67);
+			LeaveRule_T__133();
+		}
+	}
+	// $ANTLR end "T__133"
+
+	partial void EnterRule_T__134();
+	partial void LeaveRule_T__134();
+
+	// $ANTLR start "T__134"
+	[GrammarRule("T__134")]
+	private void mT__134()
+	{
+		EnterRule_T__134();
+		EnterRule("T__134", 68);
+		TraceIn("T__134", 68);
+		try
+		{
+			int _type = T__134;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:76:8: ( 'descending' )
+			DebugEnterAlt(1);
+			// Hql.g:76:10: 'descending'
+			{
+			DebugLocation(76, 10);
+			Match("descending"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("T__134", 68);
+			LeaveRule("T__134", 68);
+			LeaveRule_T__134();
+		}
+	}
+	// $ANTLR end "T__134"
+
+	partial void EnterRule_EQ();
+	partial void LeaveRule_EQ();
+
+	// $ANTLR start "EQ"
+	[GrammarRule("EQ")]
+	private void mEQ()
+	{
+		EnterRule_EQ();
+		EnterRule("EQ", 69);
+		TraceIn("EQ", 69);
+		try
+		{
+			int _type = EQ;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:688:3: ( '=' )
+			DebugEnterAlt(1);
+			// Hql.g:688:5: '='
+			{
+			DebugLocation(688, 5);
+			Match('='); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("EQ", 69);
+			LeaveRule("EQ", 69);
+			LeaveRule_EQ();
+		}
+	}
+	// $ANTLR end "EQ"
+
+	partial void EnterRule_LT();
+	partial void LeaveRule_LT();
+
+	// $ANTLR start "LT"
+	[GrammarRule("LT")]
+	private void mLT()
+	{
+		EnterRule_LT();
+		EnterRule("LT", 70);
+		TraceIn("LT", 70);
+		try
+		{
+			int _type = LT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:689:3: ( '<' )
+			DebugEnterAlt(1);
+			// Hql.g:689:5: '<'
+			{
+			DebugLocation(689, 5);
+			Match('<'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LT", 70);
+			LeaveRule("LT", 70);
+			LeaveRule_LT();
+		}
+	}
+	// $ANTLR end "LT"
+
+	partial void EnterRule_GT();
+	partial void LeaveRule_GT();
+
+	// $ANTLR start "GT"
+	[GrammarRule("GT")]
+	private void mGT()
+	{
+		EnterRule_GT();
+		EnterRule("GT", 71);
+		TraceIn("GT", 71);
+		try
+		{
+			int _type = GT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:690:3: ( '>' )
+			DebugEnterAlt(1);
+			// Hql.g:690:5: '>'
+			{
+			DebugLocation(690, 5);
+			Match('>'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("GT", 71);
+			LeaveRule("GT", 71);
+			LeaveRule_GT();
+		}
+	}
+	// $ANTLR end "GT"
+
+	partial void EnterRule_SQL_NE();
+	partial void LeaveRule_SQL_NE();
+
+	// $ANTLR start "SQL_NE"
+	[GrammarRule("SQL_NE")]
+	private void mSQL_NE()
+	{
+		EnterRule_SQL_NE();
+		EnterRule("SQL_NE", 72);
+		TraceIn("SQL_NE", 72);
+		try
+		{
+			int _type = SQL_NE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:691:7: ( '<>' )
+			DebugEnterAlt(1);
+			// Hql.g:691:9: '<>'
+			{
+			DebugLocation(691, 9);
+			Match("<>"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("SQL_NE", 72);
+			LeaveRule("SQL_NE", 72);
+			LeaveRule_SQL_NE();
+		}
+	}
+	// $ANTLR end "SQL_NE"
+
+	partial void EnterRule_NE();
+	partial void LeaveRule_NE();
+
+	// $ANTLR start "NE"
+	[GrammarRule("NE")]
+	private void mNE()
+	{
+		EnterRule_NE();
+		EnterRule("NE", 73);
+		TraceIn("NE", 73);
+		try
+		{
+			int _type = NE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:692:3: ( '!=' | '^=' )
+			int alt1=2;
+			try { DebugEnterDecision(1, false);
+			int LA1_1 = input.LA(1);
+
+			if ((LA1_1=='!'))
+			{
+				alt1 = 1;
+			}
+			else if ((LA1_1=='^'))
+			{
+				alt1 = 2;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				NoViableAltException nvae = new NoViableAltException("", 1, 0, input, 1);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(1); }
+			switch (alt1)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:692:5: '!='
+				{
+				DebugLocation(692, 5);
+				Match("!="); if (state.failed) return;
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:692:12: '^='
+				{
+				DebugLocation(692, 12);
+				Match("^="); if (state.failed) return;
+
+
+				}
+				break;
+
+			}
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("NE", 73);
+			LeaveRule("NE", 73);
+			LeaveRule_NE();
+		}
+	}
+	// $ANTLR end "NE"
+
+	partial void EnterRule_LE();
+	partial void LeaveRule_LE();
+
+	// $ANTLR start "LE"
+	[GrammarRule("LE")]
+	private void mLE()
+	{
+		EnterRule_LE();
+		EnterRule("LE", 74);
+		TraceIn("LE", 74);
+		try
+		{
+			int _type = LE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:693:3: ( '<=' )
+			DebugEnterAlt(1);
+			// Hql.g:693:5: '<='
+			{
+			DebugLocation(693, 5);
+			Match("<="); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("LE", 74);
+			LeaveRule("LE", 74);
+			LeaveRule_LE();
+		}
+	}
+	// $ANTLR end "LE"
+
+	partial void EnterRule_GE();
+	partial void LeaveRule_GE();
+
+	// $ANTLR start "GE"
+	[GrammarRule("GE")]
+	private void mGE()
+	{
+		EnterRule_GE();
+		EnterRule("GE", 75);
+		TraceIn("GE", 75);
+		try
+		{
+			int _type = GE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:694:3: ( '>=' )
+			DebugEnterAlt(1);
+			// Hql.g:694:5: '>='
+			{
+			DebugLocation(694, 5);
+			Match(">="); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("GE", 75);
+			LeaveRule("GE", 75);
+			LeaveRule_GE();
+		}
+	}
+	// $ANTLR end "GE"
+
+	partial void EnterRule_BOR();
+	partial void LeaveRule_BOR();
+
+	// $ANTLR start "BOR"
+	[GrammarRule("BOR")]
+	private void mBOR()
+	{
+		EnterRule_BOR();
+		EnterRule("BOR", 76);
+		TraceIn("BOR", 76);
+		try
+		{
+			int _type = BOR;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:696:5: ( '|' )
+			DebugEnterAlt(1);
+			// Hql.g:696:8: '|'
+			{
+			DebugLocation(696, 8);
+			Match('|'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BOR", 76);
+			LeaveRule("BOR", 76);
+			LeaveRule_BOR();
+		}
+	}
+	// $ANTLR end "BOR"
+
+	partial void EnterRule_BXOR();
+	partial void LeaveRule_BXOR();
+
+	// $ANTLR start "BXOR"
+	[GrammarRule("BXOR")]
+	private void mBXOR()
+	{
+		EnterRule_BXOR();
+		EnterRule("BXOR", 77);
+		TraceIn("BXOR", 77);
+		try
+		{
+			int _type = BXOR;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:697:6: ( '^' )
+			DebugEnterAlt(1);
+			// Hql.g:697:8: '^'
+			{
+			DebugLocation(697, 8);
+			Match('^'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BXOR", 77);
+			LeaveRule("BXOR", 77);
+			LeaveRule_BXOR();
+		}
+	}
+	// $ANTLR end "BXOR"
+
+	partial void EnterRule_BAND();
+	partial void LeaveRule_BAND();
+
+	// $ANTLR start "BAND"
+	[GrammarRule("BAND")]
+	private void mBAND()
+	{
+		EnterRule_BAND();
+		EnterRule("BAND", 78);
+		TraceIn("BAND", 78);
+		try
+		{
+			int _type = BAND;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:698:6: ( '&' )
+			DebugEnterAlt(1);
+			// Hql.g:698:8: '&'
+			{
+			DebugLocation(698, 8);
+			Match('&'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BAND", 78);
+			LeaveRule("BAND", 78);
+			LeaveRule_BAND();
+		}
+	}
+	// $ANTLR end "BAND"
+
+	partial void EnterRule_BNOT();
+	partial void LeaveRule_BNOT();
+
+	// $ANTLR start "BNOT"
+	[GrammarRule("BNOT")]
+	private void mBNOT()
+	{
+		EnterRule_BNOT();
+		EnterRule("BNOT", 79);
+		TraceIn("BNOT", 79);
+		try
+		{
+			int _type = BNOT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:699:6: ( '!' )
+			DebugEnterAlt(1);
+			// Hql.g:699:8: '!'
+			{
+			DebugLocation(699, 8);
+			Match('!'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("BNOT", 79);
+			LeaveRule("BNOT", 79);
+			LeaveRule_BNOT();
+		}
+	}
+	// $ANTLR end "BNOT"
+
+	partial void EnterRule_COMMA();
+	partial void LeaveRule_COMMA();
+
+	// $ANTLR start "COMMA"
+	[GrammarRule("COMMA")]
+	private void mCOMMA()
+	{
+		EnterRule_COMMA();
+		EnterRule("COMMA", 80);
+		TraceIn("COMMA", 80);
+		try
+		{
+			int _type = COMMA;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:701:6: ( ',' )
+			DebugEnterAlt(1);
+			// Hql.g:701:8: ','
+			{
+			DebugLocation(701, 8);
+			Match(','); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("COMMA", 80);
+			LeaveRule("COMMA", 80);
+			LeaveRule_COMMA();
+		}
+	}
+	// $ANTLR end "COMMA"
+
+	partial void EnterRule_OPEN();
+	partial void LeaveRule_OPEN();
+
+	// $ANTLR start "OPEN"
+	[GrammarRule("OPEN")]
+	private void mOPEN()
+	{
+		EnterRule_OPEN();
+		EnterRule("OPEN", 81);
+		TraceIn("OPEN", 81);
+		try
+		{
+			int _type = OPEN;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:703:5: ( '(' )
+			DebugEnterAlt(1);
+			// Hql.g:703:7: '('
+			{
+			DebugLocation(703, 7);
+			Match('('); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OPEN", 81);
+			LeaveRule("OPEN", 81);
+			LeaveRule_OPEN();
+		}
+	}
+	// $ANTLR end "OPEN"
+
+	partial void EnterRule_CLOSE();
+	partial void LeaveRule_CLOSE();
+
+	// $ANTLR start "CLOSE"
+	[GrammarRule("CLOSE")]
+	private void mCLOSE()
+	{
+		EnterRule_CLOSE();
+		EnterRule("CLOSE", 82);
+		TraceIn("CLOSE", 82);
+		try
+		{
+			int _type = CLOSE;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:704:6: ( ')' )
+			DebugEnterAlt(1);
+			// Hql.g:704:8: ')'
+			{
+			DebugLocation(704, 8);
+			Match(')'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("CLOSE", 82);
+			LeaveRule("CLOSE", 82);
+			LeaveRule_CLOSE();
+		}
+	}
+	// $ANTLR end "CLOSE"
+
+	partial void EnterRule_OPEN_BRACKET();
+	partial void LeaveRule_OPEN_BRACKET();
+
+	// $ANTLR start "OPEN_BRACKET"
+	[GrammarRule("OPEN_BRACKET")]
+	private void mOPEN_BRACKET()
+	{
+		EnterRule_OPEN_BRACKET();
+		EnterRule("OPEN_BRACKET", 83);
+		TraceIn("OPEN_BRACKET", 83);
+		try
+		{
+			int _type = OPEN_BRACKET;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:705:13: ( '[' )
+			DebugEnterAlt(1);
+			// Hql.g:705:15: '['
+			{
+			DebugLocation(705, 15);
+			Match('['); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("OPEN_BRACKET", 83);
+			LeaveRule("OPEN_BRACKET", 83);
+			LeaveRule_OPEN_BRACKET();
+		}
+	}
+	// $ANTLR end "OPEN_BRACKET"
+
+	partial void EnterRule_CLOSE_BRACKET();
+	partial void LeaveRule_CLOSE_BRACKET();
+
+	// $ANTLR start "CLOSE_BRACKET"
+	[GrammarRule("CLOSE_BRACKET")]
+	private void mCLOSE_BRACKET()
+	{
+		EnterRule_CLOSE_BRACKET();
+		EnterRule("CLOSE_BRACKET", 84);
+		TraceIn("CLOSE_BRACKET", 84);
+		try
+		{
+			int _type = CLOSE_BRACKET;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:706:14: ( ']' )
+			DebugEnterAlt(1);
+			// Hql.g:706:16: ']'
+			{
+			DebugLocation(706, 16);
+			Match(']'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("CLOSE_BRACKET", 84);
+			LeaveRule("CLOSE_BRACKET", 84);
+			LeaveRule_CLOSE_BRACKET();
+		}
+	}
+	// $ANTLR end "CLOSE_BRACKET"
+
+	partial void EnterRule_CONCAT();
+	partial void LeaveRule_CONCAT();
+
+	// $ANTLR start "CONCAT"
+	[GrammarRule("CONCAT")]
+	private void mCONCAT()
+	{
+		EnterRule_CONCAT();
+		EnterRule("CONCAT", 85);
+		TraceIn("CONCAT", 85);
+		try
+		{
+			int _type = CONCAT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:708:7: ( '||' )
+			DebugEnterAlt(1);
+			// Hql.g:708:9: '||'
+			{
+			DebugLocation(708, 9);
+			Match("||"); if (state.failed) return;
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("CONCAT", 85);
+			LeaveRule("CONCAT", 85);
+			LeaveRule_CONCAT();
+		}
+	}
+	// $ANTLR end "CONCAT"
+
+	partial void EnterRule_PLUS();
+	partial void LeaveRule_PLUS();
+
+	// $ANTLR start "PLUS"
+	[GrammarRule("PLUS")]
+	private void mPLUS()
+	{
+		EnterRule_PLUS();
+		EnterRule("PLUS", 86);
+		TraceIn("PLUS", 86);
+		try
+		{
+			int _type = PLUS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:709:5: ( '+' )
+			DebugEnterAlt(1);
+			// Hql.g:709:7: '+'
+			{
+			DebugLocation(709, 7);
+			Match('+'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("PLUS", 86);
+			LeaveRule("PLUS", 86);
+			LeaveRule_PLUS();
+		}
+	}
+	// $ANTLR end "PLUS"
+
+	partial void EnterRule_MINUS();
+	partial void LeaveRule_MINUS();
+
+	// $ANTLR start "MINUS"
+	[GrammarRule("MINUS")]
+	private void mMINUS()
+	{
+		EnterRule_MINUS();
+		EnterRule("MINUS", 87);
+		TraceIn("MINUS", 87);
+		try
+		{
+			int _type = MINUS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:710:6: ( '-' )
+			DebugEnterAlt(1);
+			// Hql.g:710:8: '-'
+			{
+			DebugLocation(710, 8);
+			Match('-'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("MINUS", 87);
+			LeaveRule("MINUS", 87);
+			LeaveRule_MINUS();
+		}
+	}
+	// $ANTLR end "MINUS"
+
+	partial void EnterRule_STAR();
+	partial void LeaveRule_STAR();
+
+	// $ANTLR start "STAR"
+	[GrammarRule("STAR")]
+	private void mSTAR()
+	{
+		EnterRule_STAR();
+		EnterRule("STAR", 88);
+		TraceIn("STAR", 88);
+		try
+		{
+			int _type = STAR;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:711:5: ( '*' )
+			DebugEnterAlt(1);
+			// Hql.g:711:7: '*'
+			{
+			DebugLocation(711, 7);
+			Match('*'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("STAR", 88);
+			LeaveRule("STAR", 88);
+			LeaveRule_STAR();
+		}
+	}
+	// $ANTLR end "STAR"
+
+	partial void EnterRule_DIV();
+	partial void LeaveRule_DIV();
+
+	// $ANTLR start "DIV"
+	[GrammarRule("DIV")]
+	private void mDIV()
+	{
+		EnterRule_DIV();
+		EnterRule("DIV", 89);
+		TraceIn("DIV", 89);
+		try
+		{
+			int _type = DIV;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:712:4: ( '/' )
+			DebugEnterAlt(1);
+			// Hql.g:712:6: '/'
+			{
+			DebugLocation(712, 6);
+			Match('/'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("DIV", 89);
+			LeaveRule("DIV", 89);
+			LeaveRule_DIV();
+		}
+	}
+	// $ANTLR end "DIV"
+
+	partial void EnterRule_COLON();
+	partial void LeaveRule_COLON();
+
+	// $ANTLR start "COLON"
+	[GrammarRule("COLON")]
+	private void mCOLON()
+	{
+		EnterRule_COLON();
+		EnterRule("COLON", 90);
+		TraceIn("COLON", 90);
+		try
+		{
+			int _type = COLON;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:713:6: ( ':' )
+			DebugEnterAlt(1);
+			// Hql.g:713:8: ':'
+			{
+			DebugLocation(713, 8);
+			Match(':'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("COLON", 90);
+			LeaveRule("COLON", 90);
+			LeaveRule_COLON();
+		}
+	}
+	// $ANTLR end "COLON"
+
+	partial void EnterRule_PARAM();
+	partial void LeaveRule_PARAM();
+
+	// $ANTLR start "PARAM"
+	[GrammarRule("PARAM")]
+	private void mPARAM()
+	{
+		EnterRule_PARAM();
+		EnterRule("PARAM", 91);
+		TraceIn("PARAM", 91);
+		try
+		{
+			int _type = PARAM;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:714:6: ( '?' )
+			DebugEnterAlt(1);
+			// Hql.g:714:8: '?'
+			{
+			DebugLocation(714, 8);
+			Match('?'); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("PARAM", 91);
+			LeaveRule("PARAM", 91);
+			LeaveRule_PARAM();
+		}
+	}
+	// $ANTLR end "PARAM"
+
+	partial void EnterRule_IDENT();
+	partial void LeaveRule_IDENT();
+
+	// $ANTLR start "IDENT"
+	[GrammarRule("IDENT")]
+	private void mIDENT()
+	{
+		EnterRule_IDENT();
+		EnterRule("IDENT", 92);
+		TraceIn("IDENT", 92);
+		try
+		{
+			int _type = IDENT;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:717:2: ( ID_START_LETTER ( ID_LETTER )* )
+			DebugEnterAlt(1);
+			// Hql.g:717:4: ID_START_LETTER ( ID_LETTER )*
+			{
+			DebugLocation(717, 4);
+			mID_START_LETTER(); if (state.failed) return;
+			DebugLocation(717, 20);
+			// Hql.g:717:20: ( ID_LETTER )*
+			try { DebugEnterSubRule(2);
+			while (true)
+			{
+				int alt2=2;
+				try { DebugEnterDecision(2, false);
+				int LA2_1 = input.LA(1);
+
+				if ((LA2_1=='$'||(LA2_1>='0' && LA2_1<='9')||(LA2_1>='A' && LA2_1<='Z')||LA2_1=='_'||(LA2_1>='a' && LA2_1<='z')||(LA2_1>='\u0080' && LA2_1<='\uFFFE')))
+				{
+					alt2 = 1;
+				}
+
+
+				} finally { DebugExitDecision(2); }
+				switch ( alt2 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:
+					{
+					DebugLocation(717, 20);
+					input.Consume();
+					state.failed=false;
+
+					}
+					break;
+
+				default:
+					goto loop2;
+				}
+			}
+
+			loop2:
+				;
+
+			} finally { DebugExitSubRule(2); }
+
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("IDENT", 92);
+			LeaveRule("IDENT", 92);
+			LeaveRule_IDENT();
+		}
+	}
+	// $ANTLR end "IDENT"
+
+	partial void EnterRule_ID_START_LETTER();
+	partial void LeaveRule_ID_START_LETTER();
+
+	// $ANTLR start "ID_START_LETTER"
+	[GrammarRule("ID_START_LETTER")]
+	private void mID_START_LETTER()
+	{
+		EnterRule_ID_START_LETTER();
+		EnterRule("ID_START_LETTER", 93);
+		TraceIn("ID_START_LETTER", 93);
+		try
+		{
+			// Hql.g:723:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
+			DebugEnterAlt(1);
+			// Hql.g:
+			{
+			DebugLocation(723, 5);
+			if (input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
+			{
+				input.Consume();
+			state.failed=false;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				MismatchedSetException mse = new MismatchedSetException(null,input);
+				DebugRecognitionException(mse);
+				Recover(mse);
+				throw mse;
+			}
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("ID_START_LETTER", 93);
+			LeaveRule("ID_START_LETTER", 93);
+			LeaveRule_ID_START_LETTER();
+		}
+	}
+	// $ANTLR end "ID_START_LETTER"
+
+	partial void EnterRule_ID_LETTER();
+	partial void LeaveRule_ID_LETTER();
+
+	// $ANTLR start "ID_LETTER"
+	[GrammarRule("ID_LETTER")]
+	private void mID_LETTER()
+	{
+		EnterRule_ID_LETTER();
+		EnterRule("ID_LETTER", 94);
+		TraceIn("ID_LETTER", 94);
+		try
+		{
+			// Hql.g:732:5: ( ID_START_LETTER | '0' .. '9' )
+			DebugEnterAlt(1);
+			// Hql.g:
+			{
+			DebugLocation(732, 5);
+			if (input.LA(1)=='$'||(input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
+			{
+				input.Consume();
+			state.failed=false;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				MismatchedSetException mse = new MismatchedSetException(null,input);
+				DebugRecognitionException(mse);
+				Recover(mse);
+				throw mse;
+			}
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("ID_LETTER", 94);
+			LeaveRule("ID_LETTER", 94);
+			LeaveRule_ID_LETTER();
+		}
+	}
+	// $ANTLR end "ID_LETTER"
+
+	partial void EnterRule_QUOTED_String();
+	partial void LeaveRule_QUOTED_String();
+
+	// $ANTLR start "QUOTED_String"
+	[GrammarRule("QUOTED_String")]
+	private void mQUOTED_String()
+	{
+		EnterRule_QUOTED_String();
+		EnterRule("QUOTED_String", 95);
+		TraceIn("QUOTED_String", 95);
+		try
+		{
+			int _type = QUOTED_String;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:736:4: ( '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\'' )
+			DebugEnterAlt(1);
+			// Hql.g:736:6: '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\''
+			{
+			DebugLocation(736, 6);
+			Match('\''); if (state.failed) return;
+			DebugLocation(736, 11);
+			// Hql.g:736:11: ( ( ESCqs )=> ESCqs |~ '\\'' )*
+			try { DebugEnterSubRule(3);
+			while (true)
+			{
+				int alt3=3;
+				try { DebugEnterDecision(3, false);
+				int LA3_1 = input.LA(1);
+
+				if ((LA3_1=='\''))
+				{
+					int LA3_2 = input.LA(2);
+
+					if ((LA3_2=='\'') && (EvaluatePredicate(synpred1_Hql_fragment)))
+					{
+						alt3 = 1;
+					}
+
+
+				}
+				else if (((LA3_1>='\u0000' && LA3_1<='&')||(LA3_1>='(' && LA3_1<='\uFFFF')))
+				{
+					alt3 = 2;
+				}
+
+
+				} finally { DebugExitDecision(3); }
+				switch ( alt3 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:736:13: ( ESCqs )=> ESCqs
+					{
+					DebugLocation(736, 23);
+					mESCqs(); if (state.failed) return;
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// Hql.g:736:31: ~ '\\''
+					{
+					DebugLocation(736, 31);
+					input.Consume();
+					state.failed=false;
+
+					}
+					break;
+
+				default:
+					goto loop3;
+				}
+			}
+
+			loop3:
+				;
+
+			} finally { DebugExitSubRule(3); }
+
+			DebugLocation(736, 40);
+			Match('\''); if (state.failed) return;
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("QUOTED_String", 95);
+			LeaveRule("QUOTED_String", 95);
+			LeaveRule_QUOTED_String();
+		}
+	}
+	// $ANTLR end "QUOTED_String"
+
+	partial void EnterRule_ESCqs();
+	partial void LeaveRule_ESCqs();
+
+	// $ANTLR start "ESCqs"
+	[GrammarRule("ESCqs")]
+	private void mESCqs()
+	{
+		EnterRule_ESCqs();
+		EnterRule("ESCqs", 96);
+		TraceIn("ESCqs", 96);
+		try
+		{
+			// Hql.g:742:2: ( '\\'' '\\'' )
+			DebugEnterAlt(1);
+			// Hql.g:743:3: '\\'' '\\''
+			{
+			DebugLocation(743, 3);
+			Match('\''); if (state.failed) return;
+			DebugLocation(743, 8);
+			Match('\''); if (state.failed) return;
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("ESCqs", 96);
+			LeaveRule("ESCqs", 96);
+			LeaveRule_ESCqs();
+		}
+	}
+	// $ANTLR end "ESCqs"
+
+	partial void EnterRule_WS();
+	partial void LeaveRule_WS();
+
+	// $ANTLR start "WS"
+	[GrammarRule("WS")]
+	private void mWS()
+	{
+		EnterRule_WS();
+		EnterRule("WS", 97);
+		TraceIn("WS", 97);
+		try
+		{
+			int _type = WS;
+			int _channel = DefaultTokenChannel;
+			// Hql.g:745:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+			DebugEnterAlt(1);
+			// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+			{
+			DebugLocation(745, 9);
+			// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+			int alt4=5;
+			try { DebugEnterSubRule(4);
+			try { DebugEnterDecision(4, false);
+			switch (input.LA(1))
+			{
+			case ' ':
+				{
+				alt4 = 1;
+				}
+				break;
+			case '\t':
+				{
+				alt4 = 2;
+				}
+				break;
+			case '\r':
+				{
+				int LA4_2 = input.LA(2);
+
+				if ((LA4_2=='\n'))
+				{
+					alt4 = 3;
+				}
+				else
+				{
+					alt4 = 5;
+				}
+				}
+				break;
+			case '\n':
+				{
+				alt4 = 4;
+				}
+				break;
+			default:
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 4, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+			}
+
+			} finally { DebugExitDecision(4); }
+			switch (alt4)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:745:13: ' '
+				{
+				DebugLocation(745, 13);
+				Match(' '); if (state.failed) return;
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:746:7: '\\t'
+				{
+				DebugLocation(746, 7);
+				Match('\t'); if (state.failed) return;
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// Hql.g:747:7: '\\r' '\\n'
+				{
+				DebugLocation(747, 7);
+				Match('\r'); if (state.failed) return;
+				DebugLocation(747, 12);
+				Match('\n'); if (state.failed) return;
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// Hql.g:748:7: '\\n'
+				{
+				DebugLocation(748, 7);
+				Match('\n'); if (state.failed) return;
+
+				}
+				break;
+			case 5:
+				DebugEnterAlt(5);
+				// Hql.g:749:7: '\\r'
+				{
+				DebugLocation(749, 7);
+				Match('\r'); if (state.failed) return;
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(4); }
+
+			DebugLocation(751, 3);
+			if (state.backtracking == 0)
+			{
+				Skip();
+			}
+
+			}
+
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("WS", 97);
+			LeaveRule("WS", 97);
+			LeaveRule_WS();
+		}
+	}
+	// $ANTLR end "WS"
+
+	partial void EnterRule_NUM_INT();
+	partial void LeaveRule_NUM_INT();
+
+	// $ANTLR start "NUM_INT"
+	[GrammarRule("NUM_INT")]
+	private void mNUM_INT()
+	{
+		EnterRule_NUM_INT();
+		EnterRule("NUM_INT", 98);
+		TraceIn("NUM_INT", 98);
+		try
+		{
+			int _type = NUM_INT;
+			int _channel = DefaultTokenChannel;
+			CommonToken f1 = default(CommonToken);
+			CommonToken f2 = default(CommonToken);
+			CommonToken f3 = default(CommonToken);
+			CommonToken f4 = default(CommonToken);
+
+			bool isDecimal=false; IToken t=null;
+			// Hql.g:758:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )? )
+			int alt20=2;
+			try { DebugEnterDecision(20, false);
+			int LA20_1 = input.LA(1);
+
+			if ((LA20_1=='.'))
+			{
+				alt20 = 1;
+			}
+			else if (((LA20_1>='0' && LA20_1<='9')))
+			{
+				alt20 = 2;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				NoViableAltException nvae = new NoViableAltException("", 20, 0, input, 1);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(20); }
+			switch (alt20)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:758:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+				{
+				DebugLocation(758, 6);
+				Match('.'); if (state.failed) return;
+				DebugLocation(758, 10);
+				if (state.backtracking == 0)
+				{
+					_type = DOT;
+				}
+				DebugLocation(759, 4);
+				// Hql.g:759:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+				int alt8=2;
+				try { DebugEnterSubRule(8);
+				try { DebugEnterDecision(8, false);
+				int LA8_1 = input.LA(1);
+
+				if (((LA8_1>='0' && LA8_1<='9')))
+				{
+					alt8 = 1;
+				}
+				} finally { DebugExitDecision(8); }
+				switch (alt8)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:759:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+					{
+					DebugLocation(759, 6);
+					// Hql.g:759:6: ( '0' .. '9' )+
+					int cnt5=0;
+					try { DebugEnterSubRule(5);
+					while (true)
+					{
+						int alt5=2;
+						try { DebugEnterDecision(5, false);
+						int LA5_1 = input.LA(1);
+
+						if (((LA5_1>='0' && LA5_1<='9')))
+						{
+							alt5 = 1;
+						}
+
+
+						} finally { DebugExitDecision(5); }
+						switch (alt5)
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// Hql.g:
+							{
+							DebugLocation(759, 6);
+							input.Consume();
+							state.failed=false;
+
+							}
+							break;
+
+						default:
+							if (cnt5 >= 1)
+								goto loop5;
+
+							if (state.backtracking>0) {state.failed=true; return;}
+							EarlyExitException eee5 = new EarlyExitException( 5, input );
+							DebugRecognitionException(eee5);
+							throw eee5;
+						}
+						cnt5++;
+					}
+					loop5:
+						;
+
+					} finally { DebugExitSubRule(5); }
+
+					DebugLocation(759, 18);
+					// Hql.g:759:18: ( EXPONENT )?
+					int alt6=2;
+					try { DebugEnterSubRule(6);
+					try { DebugEnterDecision(6, false);
+					int LA6_1 = input.LA(1);
+
+					if ((LA6_1=='e'))
+					{
+						alt6 = 1;
+					}
+					} finally { DebugExitDecision(6); }
+					switch (alt6)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// Hql.g:759:19: EXPONENT
+						{
+						DebugLocation(759, 19);
+						mEXPONENT(); if (state.failed) return;
+
+						}
+						break;
+
+					}
+					} finally { DebugExitSubRule(6); }
+
+					DebugLocation(759, 30);
+					// Hql.g:759:30: (f1= FLOAT_SUFFIX )?
+					int alt7=2;
+					try { DebugEnterSubRule(7);
+					try { DebugEnterDecision(7, false);
+					int LA7_1 = input.LA(1);
+
+					if ((LA7_1=='d'||LA7_1=='f'||LA7_1=='m'))
+					{
+						alt7 = 1;
+					}
+					} finally { DebugExitDecision(7); }
+					switch (alt7)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// Hql.g:759:31: f1= FLOAT_SUFFIX
+						{
+						DebugLocation(759, 33);
+						int f1Start992 = CharIndex;
+						int f1StartLine992 = Line;
+						int f1StartCharPos992 = CharPositionInLine;
+						mFLOAT_SUFFIX(); if (state.failed) return;
+						f1 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f1Start992, CharIndex-1);
+						f1.Line = f1StartLine992;
+						f1.CharPositionInLine = f1StartCharPos992;
+						DebugLocation(759, 47);
+						if (state.backtracking == 0)
+						{
+							t=f1;
+						}
+
+						}
+						break;
+
+					}
+					} finally { DebugExitSubRule(7); }
+
+					DebugLocation(760, 5);
+					if (state.backtracking == 0)
+					{
+
+											if (t != null && t.Text.ToUpperInvariant().IndexOf('F')>=0)
+											{
+												_type = NUM_FLOAT;
+											}
+											else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+											{
+												_type = NUM_DECIMAL;
+											}
+											else
+											{
+												_type = NUM_DOUBLE; // assume double
+											}
+										
+					}
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(8); }
+
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
+				{
+				DebugLocation(775, 4);
+				// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+				int alt13=2;
+				try { DebugEnterSubRule(13);
+				try { DebugEnterDecision(13, false);
+				int LA13_1 = input.LA(1);
+
+				if ((LA13_1=='0'))
+				{
+					alt13 = 1;
+				}
+				else if (((LA13_1>='1' && LA13_1<='9')))
+				{
+					alt13 = 2;
+				}
+				else
+				{
+					if (state.backtracking>0) {state.failed=true; return;}
+					NoViableAltException nvae = new NoViableAltException("", 13, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				} finally { DebugExitDecision(13); }
+				switch (alt13)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:775:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+					{
+					DebugLocation(775, 6);
+					Match('0'); if (state.failed) return;
+					DebugLocation(775, 10);
+					if (state.backtracking == 0)
+					{
+						isDecimal = true;
+					}
+					DebugLocation(776, 4);
+					// Hql.g:776:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+					int alt11=3;
+					try { DebugEnterSubRule(11);
+					try { DebugEnterDecision(11, false);
+					int LA11_1 = input.LA(1);
+
+					if ((LA11_1=='x'))
+					{
+						alt11 = 1;
+					}
+					else if (((LA11_1>='0' && LA11_1<='7')))
+					{
+						alt11 = 2;
+					}
+					} finally { DebugExitDecision(11); }
+					switch (alt11)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// Hql.g:776:6: ( 'x' ) ( HEX_DIGIT )+
+						{
+						DebugLocation(776, 6);
+						// Hql.g:776:6: ( 'x' )
+						DebugEnterAlt(1);
+						// Hql.g:776:7: 'x'
+						{
+						DebugLocation(776, 7);
+						Match('x'); if (state.failed) return;
+
+						}
+
+						DebugLocation(777, 5);
+						// Hql.g:777:5: ( HEX_DIGIT )+
+						int cnt9=0;
+						try { DebugEnterSubRule(9);
+						while (true)
+						{
+							int alt9=2;
+							try { DebugEnterDecision(9, false);
+							switch (input.LA(1))
+							{
+							case 'e':
+								{
+								int LA9_2 = input.LA(2);
+
+								if (((LA9_2>='0' && LA9_2<='9')))
+								{
+									int LA9_3 = input.LA(3);
+
+									if ((!(((isDecimal)))))
+									{
+										alt9 = 1;
+									}
+
+
+								}
+
+								else
+								{
+									alt9 = 1;
+								}
+
+
+								}
+								break;
+							case 'd':
+							case 'f':
+								{
+								int LA9_2 = input.LA(2);
+
+								if ((!(((isDecimal)))))
+								{
+									alt9 = 1;
+								}
+
+
+								}
+								break;
+							case '0':
+							case '1':
+							case '2':
+							case '3':
+							case '4':
+							case '5':
+							case '6':
+							case '7':
+							case '8':
+							case '9':
+							case 'a':
+							case 'b':
+							case 'c':
+								{
+								alt9 = 1;
+								}
+								break;
+							}
+
+							} finally { DebugExitDecision(9); }
+							switch (alt9)
+							{
+							case 1:
+								DebugEnterAlt(1);
+								// Hql.g:
+								{
+								DebugLocation(777, 5);
+								input.Consume();
+								state.failed=false;
+
+								}
+								break;
+
+							default:
+								if (cnt9 >= 1)
+									goto loop9;
+
+								if (state.backtracking>0) {state.failed=true; return;}
+								EarlyExitException eee9 = new EarlyExitException( 9, input );
+								DebugRecognitionException(eee9);
+								throw eee9;
+							}
+							cnt9++;
+						}
+						loop9:
+							;
+
+						} finally { DebugExitSubRule(9); }
+
+
+						}
+						break;
+					case 2:
+						DebugEnterAlt(2);
+						// Hql.g:786:6: ( '0' .. '7' )+
+						{
+						DebugLocation(786, 6);
+						// Hql.g:786:6: ( '0' .. '7' )+
+						int cnt10=0;
+						try { DebugEnterSubRule(10);
+						while (true)
+						{
+							int alt10=2;
+							try { DebugEnterDecision(10, false);
+							int LA10_1 = input.LA(1);
+
+							if (((LA10_1>='0' && LA10_1<='7')))
+							{
+								alt10 = 1;
+							}
+
+
+							} finally { DebugExitDecision(10); }
+							switch (alt10)
+							{
+							case 1:
+								DebugEnterAlt(1);
+								// Hql.g:
+								{
+								DebugLocation(786, 6);
+								input.Consume();
+								state.failed=false;
+
+								}
+								break;
+
+							default:
+								if (cnt10 >= 1)
+									goto loop10;
+
+								if (state.backtracking>0) {state.failed=true; return;}
+								EarlyExitException eee10 = new EarlyExitException( 10, input );
+								DebugRecognitionException(eee10);
+								throw eee10;
+							}
+							cnt10++;
+						}
+						loop10:
+							;
+
+						} finally { DebugExitSubRule(10); }
+
+
+						}
+						break;
+
+					}
+					} finally { DebugExitSubRule(11); }
+
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// Hql.g:788:5: ( '1' .. '9' ) ( '0' .. '9' )*
+					{
+					DebugLocation(788, 5);
+					input.Consume();
+					state.failed=false;
+					DebugLocation(788, 16);
+					// Hql.g:788:16: ( '0' .. '9' )*
+					try { DebugEnterSubRule(12);
+					while (true)
+					{
+						int alt12=2;
+						try { DebugEnterDecision(12, false);
+						int LA12_1 = input.LA(1);
+
+						if (((LA12_1>='0' && LA12_1<='9')))
+						{
+							alt12 = 1;
+						}
+
+
+						} finally { DebugExitDecision(12); }
+						switch ( alt12 )
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// Hql.g:
+							{
+							DebugLocation(788, 16);
+							input.Consume();
+							state.failed=false;
+
+							}
+							break;
+
+						default:
+							goto loop12;
+						}
+					}
+
+					loop12:
+						;
+
+					} finally { DebugExitSubRule(12); }
+
+					DebugLocation(788, 29);
+					if (state.backtracking == 0)
+					{
+						isDecimal=true;
+					}
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(13); }
+
+				DebugLocation(790, 3);
+				// Hql.g:790:3: ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
+				int alt19=3;
+				try { DebugEnterSubRule(19);
+				try { DebugEnterDecision(19, false);
+				int LA19_1 = input.LA(1);
+
+				if ((LA19_1=='l'))
+				{
+					alt19 = 1;
+				}
+				else if ((LA19_1=='.'||(LA19_1>='d' && LA19_1<='f')||LA19_1=='m'))
+				{
+					alt19 = 2;
+				}
+				} finally { DebugExitDecision(19); }
+				switch (alt19)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:790:5: ( 'l' )
+					{
+					DebugLocation(790, 5);
+					// Hql.g:790:5: ( 'l' )
+					DebugEnterAlt(1);
+					// Hql.g:790:6: 'l'
+					{
+					DebugLocation(790, 6);
+					Match('l'); if (state.failed) return;
+
+					}
+
+					DebugLocation(790, 11);
+					if (state.backtracking == 0)
+					{
+						 _type = NUM_LONG; 
+					}
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// Hql.g:793:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
+					{
+					DebugLocation(793, 5);
+					if (!((isDecimal)))
+					{
+						if (state.backtracking>0) {state.failed=true; return;}
+						throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
+					}
+					DebugLocation(794, 4);
+					// Hql.g:794:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
+					int alt18=3;
+					try { DebugEnterSubRule(18);
+					try { DebugEnterDecision(18, false);
+					switch (input.LA(1))
+					{
+					case '.':
+						{
+						alt18 = 1;
+						}
+						break;
+					case 'e':
+						{
+						alt18 = 2;
+						}
+						break;
+					case 'd':
+					case 'f':
+					case 'm':
+						{
+						alt18 = 3;
+						}
+						break;
+					default:
+						{
+							if (state.backtracking>0) {state.failed=true; return;}
+							NoViableAltException nvae = new NoViableAltException("", 18, 0, input, 1);
+							DebugRecognitionException(nvae);
+							throw nvae;
+						}
+					}
+
+					} finally { DebugExitDecision(18); }
+					switch (alt18)
+					{
+					case 1:
+						DebugEnterAlt(1);
+						// Hql.g:794:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+						{
+						DebugLocation(794, 8);
+						Match('.'); if (state.failed) return;
+						DebugLocation(794, 12);
+						// Hql.g:794:12: ( '0' .. '9' )*
+						try { DebugEnterSubRule(14);
+						while (true)
+						{
+							int alt14=2;
+							try { DebugEnterDecision(14, false);
+							int LA14_1 = input.LA(1);
+
+							if (((LA14_1>='0' && LA14_1<='9')))
+							{
+								alt14 = 1;
+							}
+
+
+							} finally { DebugExitDecision(14); }
+							switch ( alt14 )
+							{
+							case 1:
+								DebugEnterAlt(1);
+								// Hql.g:
+								{
+								DebugLocation(794, 12);
+								input.Consume();
+								state.failed=false;
+
+								}
+								break;
+
+							default:
+								goto loop14;
+							}
+						}
+
+						loop14:
+							;
+
+						} finally { DebugExitSubRule(14); }
+
+						DebugLocation(794, 24);
+						// Hql.g:794:24: ( EXPONENT )?
+						int alt15=2;
+						try { DebugEnterSubRule(15);
+						try { DebugEnterDecision(15, false);
+						int LA15_1 = input.LA(1);
+
+						if ((LA15_1=='e'))
+						{
+							alt15 = 1;
+						}
+						} finally { DebugExitDecision(15); }
+						switch (alt15)
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// Hql.g:794:25: EXPONENT
+							{
+							DebugLocation(794, 25);
+							mEXPONENT(); if (state.failed) return;
+
+							}
+							break;
+
+						}
+						} finally { DebugExitSubRule(15); }
+
+						DebugLocation(794, 36);
+						// Hql.g:794:36: (f2= FLOAT_SUFFIX )?
+						int alt16=2;
+						try { DebugEnterSubRule(16);
+						try { DebugEnterDecision(16, false);
+						int LA16_1 = input.LA(1);
+
+						if ((LA16_1=='d'||LA16_1=='f'||LA16_1=='m'))
+						{
+							alt16 = 1;
+						}
+						} finally { DebugExitDecision(16); }
+						switch (alt16)
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// Hql.g:794:37: f2= FLOAT_SUFFIX
+							{
+							DebugLocation(794, 39);
+							int f2Start1194 = CharIndex;
+							int f2StartLine1194 = Line;
+							int f2StartCharPos1194 = CharPositionInLine;
+							mFLOAT_SUFFIX(); if (state.failed) return;
+							f2 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f2Start1194, CharIndex-1);
+							f2.Line = f2StartLine1194;
+							f2.CharPositionInLine = f2StartCharPos1194;
+							DebugLocation(794, 53);
+							if (state.backtracking == 0)
+							{
+								t=f2;
+							}
+
+							}
+							break;
+
+						}
+						} finally { DebugExitSubRule(16); }
+
+
+						}
+						break;
+					case 2:
+						DebugEnterAlt(2);
+						// Hql.g:795:8: EXPONENT (f3= FLOAT_SUFFIX )?
+						{
+						DebugLocation(795, 8);
+						mEXPONENT(); if (state.failed) return;
+						DebugLocation(795, 17);
+						// Hql.g:795:17: (f3= FLOAT_SUFFIX )?
+						int alt17=2;
+						try { DebugEnterSubRule(17);
+						try { DebugEnterDecision(17, false);
+						int LA17_1 = input.LA(1);
+
+						if ((LA17_1=='d'||LA17_1=='f'||LA17_1=='m'))
+						{
+							alt17 = 1;
+						}
+						} finally { DebugExitDecision(17); }
+						switch (alt17)
+						{
+						case 1:
+							DebugEnterAlt(1);
+							// Hql.g:795:18: f3= FLOAT_SUFFIX
+							{
+							DebugLocation(795, 20);
+							int f3Start1212 = CharIndex;
+							int f3StartLine1212 = Line;
+							int f3StartCharPos1212 = CharPositionInLine;
+							mFLOAT_SUFFIX(); if (state.failed) return;
+							f3 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f3Start1212, CharIndex-1);
+							f3.Line = f3StartLine1212;
+							f3.CharPositionInLine = f3StartCharPos1212;
+							DebugLocation(795, 34);
+							if (state.backtracking == 0)
+							{
+								t=f3;
+							}
+
+							}
+							break;
+
+						}
+						} finally { DebugExitSubRule(17); }
+
+
+						}
+						break;
+					case 3:
+						DebugEnterAlt(3);
+						// Hql.g:796:8: f4= FLOAT_SUFFIX
+						{
+						DebugLocation(796, 10);
+						int f4Start1227 = CharIndex;
+						int f4StartLine1227 = Line;
+						int f4StartCharPos1227 = CharPositionInLine;
+						mFLOAT_SUFFIX(); if (state.failed) return;
+						f4 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f4Start1227, CharIndex-1);
+						f4.Line = f4StartLine1227;
+						f4.CharPositionInLine = f4StartCharPos1227;
+						DebugLocation(796, 24);
+						if (state.backtracking == 0)
+						{
+							t=f4;
+						}
+
+						}
+						break;
+
+					}
+					} finally { DebugExitSubRule(18); }
+
+					DebugLocation(798, 4);
+					if (state.backtracking == 0)
+					{
+
+										if (t != null && t.Text.ToUpperInvariant().IndexOf('F') >= 0)
+										{
+											_type = NUM_FLOAT;
+										}
+										else if (t != null && t.Text.ToUpperInvariant().IndexOf('M')>=0)
+										{
+											_type = NUM_DECIMAL;
+										}
+										else
+										{
+											_type = NUM_DOUBLE; // assume double
+										}
+									
+					}
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(19); }
+
+
+				}
+				break;
+
+			}
+			state.type = _type;
+			state.channel = _channel;
+		}
+		finally
+		{
+			TraceOut("NUM_INT", 98);
+			LeaveRule("NUM_INT", 98);
+			LeaveRule_NUM_INT();
+		}
+	}
+	// $ANTLR end "NUM_INT"
+
+	partial void EnterRule_HEX_DIGIT();
+	partial void LeaveRule_HEX_DIGIT();
+
+	// $ANTLR start "HEX_DIGIT"
+	[GrammarRule("HEX_DIGIT")]
+	private void mHEX_DIGIT()
+	{
+		EnterRule_HEX_DIGIT();
+		EnterRule("HEX_DIGIT", 99);
+		TraceIn("HEX_DIGIT", 99);
+		try
+		{
+			// Hql.g:819:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
+			DebugEnterAlt(1);
+			// Hql.g:
+			{
+			DebugLocation(819, 2);
+			if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='a' && input.LA(1)<='f'))
+			{
+				input.Consume();
+			state.failed=false;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				MismatchedSetException mse = new MismatchedSetException(null,input);
+				DebugRecognitionException(mse);
+				Recover(mse);
+				throw mse;
+			}
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("HEX_DIGIT", 99);
+			LeaveRule("HEX_DIGIT", 99);
+			LeaveRule_HEX_DIGIT();
+		}
+	}
+	// $ANTLR end "HEX_DIGIT"
+
+	partial void EnterRule_EXPONENT();
+	partial void LeaveRule_EXPONENT();
+
+	// $ANTLR start "EXPONENT"
+	[GrammarRule("EXPONENT")]
+	private void mEXPONENT()
+	{
+		EnterRule_EXPONENT();
+		EnterRule("EXPONENT", 100);
+		TraceIn("EXPONENT", 100);
+		try
+		{
+			// Hql.g:825:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+			DebugEnterAlt(1);
+			// Hql.g:825:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+			{
+			DebugLocation(825, 4);
+			// Hql.g:825:4: ( 'e' )
+			DebugEnterAlt(1);
+			// Hql.g:825:5: 'e'
+			{
+			DebugLocation(825, 5);
+			Match('e'); if (state.failed) return;
+
+			}
+
+			DebugLocation(825, 10);
+			// Hql.g:825:10: ( '+' | '-' )?
+			int alt21=2;
+			try { DebugEnterSubRule(21);
+			try { DebugEnterDecision(21, false);
+			int LA21_1 = input.LA(1);
+
+			if ((LA21_1=='+'||LA21_1=='-'))
+			{
+				alt21 = 1;
+			}
+			} finally { DebugExitDecision(21); }
+			switch (alt21)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:
+				{
+				DebugLocation(825, 10);
+				input.Consume();
+				state.failed=false;
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(21); }
+
+			DebugLocation(825, 21);
+			// Hql.g:825:21: ( '0' .. '9' )+
+			int cnt22=0;
+			try { DebugEnterSubRule(22);
+			while (true)
+			{
+				int alt22=2;
+				try { DebugEnterDecision(22, false);
+				int LA22_1 = input.LA(1);
+
+				if (((LA22_1>='0' && LA22_1<='9')))
+				{
+					alt22 = 1;
+				}
+
+
+				} finally { DebugExitDecision(22); }
+				switch (alt22)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:
+					{
+					DebugLocation(825, 21);
+					input.Consume();
+					state.failed=false;
+
+					}
+					break;
+
+				default:
+					if (cnt22 >= 1)
+						goto loop22;
+
+					if (state.backtracking>0) {state.failed=true; return;}
+					EarlyExitException eee22 = new EarlyExitException( 22, input );
+					DebugRecognitionException(eee22);
+					throw eee22;
+				}
+				cnt22++;
+			}
+			loop22:
+				;
+
+			} finally { DebugExitSubRule(22); }
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("EXPONENT", 100);
+			LeaveRule("EXPONENT", 100);
+			LeaveRule_EXPONENT();
+		}
+	}
+	// $ANTLR end "EXPONENT"
+
+	partial void EnterRule_FLOAT_SUFFIX();
+	partial void LeaveRule_FLOAT_SUFFIX();
+
+	// $ANTLR start "FLOAT_SUFFIX"
+	[GrammarRule("FLOAT_SUFFIX")]
+	private void mFLOAT_SUFFIX()
+	{
+		EnterRule_FLOAT_SUFFIX();
+		EnterRule("FLOAT_SUFFIX", 101);
+		TraceIn("FLOAT_SUFFIX", 101);
+		try
+		{
+			// Hql.g:830:2: ( 'f' | 'd' | 'm' )
+			DebugEnterAlt(1);
+			// Hql.g:
+			{
+			DebugLocation(830, 2);
+			if (input.LA(1)=='d'||input.LA(1)=='f'||input.LA(1)=='m')
+			{
+				input.Consume();
+			state.failed=false;
+			}
+			else
+			{
+				if (state.backtracking>0) {state.failed=true; return;}
+				MismatchedSetException mse = new MismatchedSetException(null,input);
+				DebugRecognitionException(mse);
+				Recover(mse);
+				throw mse;
+			}
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("FLOAT_SUFFIX", 101);
+			LeaveRule("FLOAT_SUFFIX", 101);
+			LeaveRule_FLOAT_SUFFIX();
+		}
+	}
+	// $ANTLR end "FLOAT_SUFFIX"
+
+	public override void mTokens()
+	{
+		// Hql.g:1:8: ( ALL | AND | ANY | AS | ASCENDING | AVG | BETWEEN | BOTH | CASE | CLASS | COUNT | DELETE | DESCENDING | DISTINCT | ELEMENTS | ELSE | EMPTY | END | ESCAPE | EXISTS | FALSE | FETCH | FROM | FULL | GROUP | HAVING | IN | INDICES | INNER | INSERT | INTO | IS | JOIN | LEADING | LEFT | LIKE | LITERAL_by | MAX | MEMBER | MIN | NEW | NOT | NULL | OBJECT | OF | ON | OR | ORDER | OUTER | PROPERTIES | RIGHT | SELECT | SET | SKIP | SOME | SUM | TAKE | THEN | TRAILING | TRUE | UNION | UPDATE | VERSIONED | WHEN | WHERE | WITH | T__133 | T__134 | EQ | LT | GT | SQL_NE | NE | LE | GE | BOR | BXOR | BAND | BNOT | COMMA | OPEN | CLOSE | OPEN_BRACKET | CLOSE_BRACKET | CONCAT | PLUS | MINUS | STAR | DIV | COLON | PARAM | IDENT | QUOTED_String | WS | NUM_INT )
+		int alt23=95;
+		try { DebugEnterDecision(23, false);
+		try
+		{
+			alt23 = dfa23.Predict(input);
+		}
+		catch (NoViableAltException nvae)
+		{
+			DebugRecognitionException(nvae);
+			throw;
+		}
+		} finally { DebugExitDecision(23); }
+		switch (alt23)
+		{
+		case 1:
+			DebugEnterAlt(1);
+			// Hql.g:1:10: ALL
+			{
+			DebugLocation(1, 10);
+			mALL(); if (state.failed) return;
+
+			}
+			break;
+		case 2:
+			DebugEnterAlt(2);
+			// Hql.g:1:14: AND
+			{
+			DebugLocation(1, 14);
+			mAND(); if (state.failed) return;
+
+			}
+			break;
+		case 3:
+			DebugEnterAlt(3);
+			// Hql.g:1:18: ANY
+			{
+			DebugLocation(1, 18);
+			mANY(); if (state.failed) return;
+
+			}
+			break;
+		case 4:
+			DebugEnterAlt(4);
+			// Hql.g:1:22: AS
+			{
+			DebugLocation(1, 22);
+			mAS(); if (state.failed) return;
+
+			}
+			break;
+		case 5:
+			DebugEnterAlt(5);
+			// Hql.g:1:25: ASCENDING
+			{
+			DebugLocation(1, 25);
+			mASCENDING(); if (state.failed) return;
+
+			}
+			break;
+		case 6:
+			DebugEnterAlt(6);
+			// Hql.g:1:35: AVG
+			{
+			DebugLocation(1, 35);
+			mAVG(); if (state.failed) return;
+
+			}
+			break;
+		case 7:
+			DebugEnterAlt(7);
+			// Hql.g:1:39: BETWEEN
+			{
+			DebugLocation(1, 39);
+			mBETWEEN(); if (state.failed) return;
+
+			}
+			break;
+		case 8:
+			DebugEnterAlt(8);
+			// Hql.g:1:47: BOTH
+			{
+			DebugLocation(1, 47);
+			mBOTH(); if (state.failed) return;
+
+			}
+			break;
+		case 9:
+			DebugEnterAlt(9);
+			// Hql.g:1:52: CASE
+			{
+			DebugLocation(1, 52);
+			mCASE(); if (state.failed) return;
+
+			}
+			break;
+		case 10:
+			DebugEnterAlt(10);
+			// Hql.g:1:57: CLASS
+			{
+			DebugLocation(1, 57);
+			mCLASS(); if (state.failed) return;
+
+			}
+			break;
+		case 11:
+			DebugEnterAlt(11);
+			// Hql.g:1:63: COUNT
+			{
+			DebugLocation(1, 63);
+			mCOUNT(); if (state.failed) return;
+
+			}
+			break;
+		case 12:
+			DebugEnterAlt(12);
+			// Hql.g:1:69: DELETE
+			{
+			DebugLocation(1, 69);
+			mDELETE(); if (state.failed) return;
+
+			}
+			break;
+		case 13:
+			DebugEnterAlt(13);
+			// Hql.g:1:76: DESCENDING
+			{
+			DebugLocation(1, 76);
+			mDESCENDING(); if (state.failed) return;
+
+			}
+			break;
+		case 14:
+			DebugEnterAlt(14);
+			// Hql.g:1:87: DISTINCT
+			{
+			DebugLocation(1, 87);
+			mDISTINCT(); if (state.failed) return;
+
+			}
+			break;
+		case 15:
+			DebugEnterAlt(15);
+			// Hql.g:1:96: ELEMENTS
+			{
+			DebugLocation(1, 96);
+			mELEMENTS(); if (state.failed) return;
+
+			}
+			break;
+		case 16:
+			DebugEnterAlt(16);
+			// Hql.g:1:105: ELSE
+			{
+			DebugLocation(1, 105);
+			mELSE(); if (state.failed) return;
+
+			}
+			break;
+		case 17:
+			DebugEnterAlt(17);
+			// Hql.g:1:110: EMPTY
+			{
+			DebugLocation(1, 110);
+			mEMPTY(); if (state.failed) return;
+
+			}
+			break;
+		case 18:
+			DebugEnterAlt(18);
+			// Hql.g:1:116: END
+			{
+			DebugLocation(1, 116);
+			mEND(); if (state.failed) return;
+
+			}
+			break;
+		case 19:
+			DebugEnterAlt(19);
+			// Hql.g:1:120: ESCAPE
+			{
+			DebugLocation(1, 120);
+			mESCAPE(); if (state.failed) return;
+
+			}
+			break;
+		case 20:
+			DebugEnterAlt(20);
+			// Hql.g:1:127: EXISTS
+			{
+			DebugLocation(1, 127);
+			mEXISTS(); if (state.failed) return;
+
+			}
+			break;
+		case 21:
+			DebugEnterAlt(21);
+			// Hql.g:1:134: FALSE
+			{
+			DebugLocation(1, 134);
+			mFALSE(); if (state.failed) return;
+
+			}
+			break;
+		case 22:
+			DebugEnterAlt(22);
+			// Hql.g:1:140: FETCH
+			{
+			DebugLocation(1, 140);
+			mFETCH(); if (state.failed) return;
+
+			}
+			break;
+		case 23:
+			DebugEnterAlt(23);
+			// Hql.g:1:146: FROM
+			{
+			DebugLocation(1, 146);
+			mFROM(); if (state.failed) return;
+
+			}
+			break;
+		case 24:
+			DebugEnterAlt(24);
+			// Hql.g:1:151: FULL
+			{
+			DebugLocation(1, 151);
+			mFULL(); if (state.failed) return;
+
+			}
+			break;
+		case 25:
+			DebugEnterAlt(25);
+			// Hql.g:1:156: GROUP
+			{
+			DebugLocation(1, 156);
+			mGROUP(); if (state.failed) return;
+
+			}
+			break;
+		case 26:
+			DebugEnterAlt(26);
+			// Hql.g:1:162: HAVING
+			{
+			DebugLocation(1, 162);
+			mHAVING(); if (state.failed) return;
+
+			}
+			break;
+		case 27:
+			DebugEnterAlt(27);
+			// Hql.g:1:169: IN
+			{
+			DebugLocation(1, 169);
+			mIN(); if (state.failed) return;
+
+			}
+			break;
+		case 28:
+			DebugEnterAlt(28);
+			// Hql.g:1:172: INDICES
+			{
+			DebugLocation(1, 172);
+			mINDICES(); if (state.failed) return;
+
+			}
+			break;
+		case 29:
+			DebugEnterAlt(29);
+			// Hql.g:1:180: INNER
+			{
+			DebugLocation(1, 180);
+			mINNER(); if (state.failed) return;
+
+			}
+			break;
+		case 30:
+			DebugEnterAlt(30);
+			// Hql.g:1:186: INSERT
+			{
+			DebugLocation(1, 186);
+			mINSERT(); if (state.failed) return;
+
+			}
+			break;
+		case 31:
+			DebugEnterAlt(31);
+			// Hql.g:1:193: INTO
+			{
+			DebugLocation(1, 193);
+			mINTO(); if (state.failed) return;
+
+			}
+			break;
+		case 32:
+			DebugEnterAlt(32);
+			// Hql.g:1:198: IS
+			{
+			DebugLocation(1, 198);
+			mIS(); if (state.failed) return;
+
+			}
+			break;
+		case 33:
+			DebugEnterAlt(33);
+			// Hql.g:1:201: JOIN
+			{
+			DebugLocation(1, 201);
+			mJOIN(); if (state.failed) return;
+
+			}
+			break;
+		case 34:
+			DebugEnterAlt(34);
+			// Hql.g:1:206: LEADING
+			{
+			DebugLocation(1, 206);
+			mLEADING(); if (state.failed) return;
+
+			}
+			break;
+		case 35:
+			DebugEnterAlt(35);
+			// Hql.g:1:214: LEFT
+			{
+			DebugLocation(1, 214);
+			mLEFT(); if (state.failed) return;
+
+			}
+			break;
+		case 36:
+			DebugEnterAlt(36);
+			// Hql.g:1:219: LIKE
+			{
+			DebugLocation(1, 219);
+			mLIKE(); if (state.failed) return;
+
+			}
+			break;
+		case 37:
+			DebugEnterAlt(37);
+			// Hql.g:1:224: LITERAL_by
+			{
+			DebugLocation(1, 224);
+			mLITERAL_by(); if (state.failed) return;
+
+			}
+			break;
+		case 38:
+			DebugEnterAlt(38);
+			// Hql.g:1:235: MAX
+			{
+			DebugLocation(1, 235);
+			mMAX(); if (state.failed) return;
+
+			}
+			break;
+		case 39:
+			DebugEnterAlt(39);
+			// Hql.g:1:239: MEMBER
+			{
+			DebugLocation(1, 239);
+			mMEMBER(); if (state.failed) return;
+
+			}
+			break;
+		case 40:
+			DebugEnterAlt(40);
+			// Hql.g:1:246: MIN
+			{
+			DebugLocation(1, 246);
+			mMIN(); if (state.failed) return;
+
+			}
+			break;
+		case 41:
+			DebugEnterAlt(41);
+			// Hql.g:1:250: NEW
+			{
+			DebugLocation(1, 250);
+			mNEW(); if (state.failed) return;
+
+			}
+			break;
+		case 42:
+			DebugEnterAlt(42);
+			// Hql.g:1:254: NOT
+			{
+			DebugLocation(1, 254);
+			mNOT(); if (state.failed) return;
+
+			}
+			break;
+		case 43:
+			DebugEnterAlt(43);
+			// Hql.g:1:258: NULL
+			{
+			DebugLocation(1, 258);
+			mNULL(); if (state.failed) return;
+
+			}
+			break;
+		case 44:
+			DebugEnterAlt(44);
+			// Hql.g:1:263: OBJECT
+			{
+			DebugLocation(1, 263);
+			mOBJECT(); if (state.failed) return;
+
+			}
+			break;
+		case 45:
+			DebugEnterAlt(45);
+			// Hql.g:1:270: OF
+			{
+			DebugLocation(1, 270);
+			mOF(); if (state.failed) return;
+
+			}
+			break;
+		case 46:
+			DebugEnterAlt(46);
+			// Hql.g:1:273: ON
+			{
+			DebugLocation(1, 273);
+			mON(); if (state.failed) return;
+
+			}
+			break;
+		case 47:
+			DebugEnterAlt(47);
+			// Hql.g:1:276: OR
+			{
+			DebugLocation(1, 276);
+			mOR(); if (state.failed) return;
+
+			}
+			break;
+		case 48:
+			DebugEnterAlt(48);
+			// Hql.g:1:279: ORDER
+			{
+			DebugLocation(1, 279);
+			mORDER(); if (state.failed) return;
+
+			}
+			break;
+		case 49:
+			DebugEnterAlt(49);
+			// Hql.g:1:285: OUTER
+			{
+			DebugLocation(1, 285);
+			mOUTER(); if (state.failed) return;
+
+			}
+			break;
+		case 50:
+			DebugEnterAlt(50);
+			// Hql.g:1:291: PROPERTIES
+			{
+			DebugLocation(1, 291);
+			mPROPERTIES(); if (state.failed) return;
+
+			}
+			break;
+		case 51:
+			DebugEnterAlt(51);
+			// Hql.g:1:302: RIGHT
+			{
+			DebugLocation(1, 302);
+			mRIGHT(); if (state.failed) return;
+
+			}
+			break;
+		case 52:
+			DebugEnterAlt(52);
+			// Hql.g:1:308: SELECT
+			{
+			DebugLocation(1, 308);
+			mSELECT(); if (state.failed) return;
+
+			}
+			break;
+		case 53:
+			DebugEnterAlt(53);
+			// Hql.g:1:315: SET
+			{
+			DebugLocation(1, 315);
+			mSET(); if (state.failed) return;
+
+			}
+			break;
+		case 54:
+			DebugEnterAlt(54);
+			// Hql.g:1:319: SKIP
+			{
+			DebugLocation(1, 319);
+			mSKIP(); if (state.failed) return;
+
+			}
+			break;
+		case 55:
+			DebugEnterAlt(55);
+			// Hql.g:1:324: SOME
+			{
+			DebugLocation(1, 324);
+			mSOME(); if (state.failed) return;
+
+			}
+			break;
+		case 56:
+			DebugEnterAlt(56);
+			// Hql.g:1:329: SUM
+			{
+			DebugLocation(1, 329);
+			mSUM(); if (state.failed) return;
+
+			}
+			break;
+		case 57:
+			DebugEnterAlt(57);
+			// Hql.g:1:333: TAKE
+			{
+			DebugLocation(1, 333);
+			mTAKE(); if (state.failed) return;
+
+			}
+			break;
+		case 58:
+			DebugEnterAlt(58);
+			// Hql.g:1:338: THEN
+			{
+			DebugLocation(1, 338);
+			mTHEN(); if (state.failed) return;
+
+			}
+			break;
+		case 59:
+			DebugEnterAlt(59);
+			// Hql.g:1:343: TRAILING
+			{
+			DebugLocation(1, 343);
+			mTRAILING(); if (state.failed) return;
+
+			}
+			break;
+		case 60:
+			DebugEnterAlt(60);
+			// Hql.g:1:352: TRUE
+			{
+			DebugLocation(1, 352);
+			mTRUE(); if (state.failed) return;
+
+			}
+			break;
+		case 61:
+			DebugEnterAlt(61);
+			// Hql.g:1:357: UNION
+			{
+			DebugLocation(1, 357);
+			mUNION(); if (state.failed) return;
+
+			}
+			break;
+		case 62:
+			DebugEnterAlt(62);
+			// Hql.g:1:363: UPDATE
+			{
+			DebugLocation(1, 363);
+			mUPDATE(); if (state.failed) return;
+
+			}
+			break;
+		case 63:
+			DebugEnterAlt(63);
+			// Hql.g:1:370: VERSIONED
+			{
+			DebugLocation(1, 370);
+			mVERSIONED(); if (state.failed) return;
+
+			}
+			break;
+		case 64:
+			DebugEnterAlt(64);
+			// Hql.g:1:380: WHEN
+			{
+			DebugLocation(1, 380);
+			mWHEN(); if (state.failed) return;
+
+			}
+			break;
+		case 65:
+			DebugEnterAlt(65);
+			// Hql.g:1:385: WHERE
+			{
+			DebugLocation(1, 385);
+			mWHERE(); if (state.failed) return;
+
+			}
+			break;
+		case 66:
+			DebugEnterAlt(66);
+			// Hql.g:1:391: WITH
+			{
+			DebugLocation(1, 391);
+			mWITH(); if (state.failed) return;
+
+			}
+			break;
+		case 67:
+			DebugEnterAlt(67);
+			// Hql.g:1:396: T__133
+			{
+			DebugLocation(1, 396);
+			mT__133(); if (state.failed) return;
+
+			}
+			break;
+		case 68:
+			DebugEnterAlt(68);
+			// Hql.g:1:403: T__134
+			{
+			DebugLocation(1, 403);
+			mT__134(); if (state.failed) return;
+
+			}
+			break;
+		case 69:
+			DebugEnterAlt(69);
+			// Hql.g:1:410: EQ
+			{
+			DebugLocation(1, 410);
+			mEQ(); if (state.failed) return;
+
+			}
+			break;
+		case 70:
+			DebugEnterAlt(70);
+			// Hql.g:1:413: LT
+			{
+			DebugLocation(1, 413);
+			mLT(); if (state.failed) return;
+
+			}
+			break;
+		case 71:
+			DebugEnterAlt(71);
+			// Hql.g:1:416: GT
+			{
+			DebugLocation(1, 416);
+			mGT(); if (state.failed) return;
+
+			}
+			break;
+		case 72:
+			DebugEnterAlt(72);
+			// Hql.g:1:419: SQL_NE
+			{
+			DebugLocation(1, 419);
+			mSQL_NE(); if (state.failed) return;
+
+			}
+			break;
+		case 73:
+			DebugEnterAlt(73);
+			// Hql.g:1:426: NE
+			{
+			DebugLocation(1, 426);
+			mNE(); if (state.failed) return;
+
+			}
+			break;
+		case 74:
+			DebugEnterAlt(74);
+			// Hql.g:1:429: LE
+			{
+			DebugLocation(1, 429);
+			mLE(); if (state.failed) return;
+
+			}
+			break;
+		case 75:
+			DebugEnterAlt(75);
+			// Hql.g:1:432: GE
+			{
+			DebugLocation(1, 432);
+			mGE(); if (state.failed) return;
+
+			}
+			break;
+		case 76:
+			DebugEnterAlt(76);
+			// Hql.g:1:435: BOR
+			{
+			DebugLocation(1, 435);
+			mBOR(); if (state.failed) return;
+
+			}
+			break;
+		case 77:
+			DebugEnterAlt(77);
+			// Hql.g:1:439: BXOR
+			{
+			DebugLocation(1, 439);
+			mBXOR(); if (state.failed) return;
+
+			}
+			break;
+		case 78:
+			DebugEnterAlt(78);
+			// Hql.g:1:444: BAND
+			{
+			DebugLocation(1, 444);
+			mBAND(); if (state.failed) return;
+
+			}
+			break;
+		case 79:
+			DebugEnterAlt(79);
+			// Hql.g:1:449: BNOT
+			{
+			DebugLocation(1, 449);
+			mBNOT(); if (state.failed) return;
+
+			}
+			break;
+		case 80:
+			DebugEnterAlt(80);
+			// Hql.g:1:454: COMMA
+			{
+			DebugLocation(1, 454);
+			mCOMMA(); if (state.failed) return;
+
+			}
+			break;
+		case 81:
+			DebugEnterAlt(81);
+			// Hql.g:1:460: OPEN
+			{
+			DebugLocation(1, 460);
+			mOPEN(); if (state.failed) return;
+
+			}
+			break;
+		case 82:
+			DebugEnterAlt(82);
+			// Hql.g:1:465: CLOSE
+			{
+			DebugLocation(1, 465);
+			mCLOSE(); if (state.failed) return;
+
+			}
+			break;
+		case 83:
+			DebugEnterAlt(83);
+			// Hql.g:1:471: OPEN_BRACKET
+			{
+			DebugLocation(1, 471);
+			mOPEN_BRACKET(); if (state.failed) return;
+
+			}
+			break;
+		case 84:
+			DebugEnterAlt(84);
+			// Hql.g:1:484: CLOSE_BRACKET
+			{
+			DebugLocation(1, 484);
+			mCLOSE_BRACKET(); if (state.failed) return;
+
+			}
+			break;
+		case 85:
+			DebugEnterAlt(85);
+			// Hql.g:1:498: CONCAT
+			{
+			DebugLocation(1, 498);
+			mCONCAT(); if (state.failed) return;
+
+			}
+			break;
+		case 86:
+			DebugEnterAlt(86);
+			// Hql.g:1:505: PLUS
+			{
+			DebugLocation(1, 505);
+			mPLUS(); if (state.failed) return;
+
+			}
+			break;
+		case 87:
+			DebugEnterAlt(87);
+			// Hql.g:1:510: MINUS
+			{
+			DebugLocation(1, 510);
+			mMINUS(); if (state.failed) return;
+
+			}
+			break;
+		case 88:
+			DebugEnterAlt(88);
+			// Hql.g:1:516: STAR
+			{
+			DebugLocation(1, 516);
+			mSTAR(); if (state.failed) return;
+
+			}
+			break;
+		case 89:
+			DebugEnterAlt(89);
+			// Hql.g:1:521: DIV
+			{
+			DebugLocation(1, 521);
+			mDIV(); if (state.failed) return;
+
+			}
+			break;
+		case 90:
+			DebugEnterAlt(90);
+			// Hql.g:1:525: COLON
+			{
+			DebugLocation(1, 525);
+			mCOLON(); if (state.failed) return;
+
+			}
+			break;
+		case 91:
+			DebugEnterAlt(91);
+			// Hql.g:1:531: PARAM
+			{
+			DebugLocation(1, 531);
+			mPARAM(); if (state.failed) return;
+
+			}
+			break;
+		case 92:
+			DebugEnterAlt(92);
+			// Hql.g:1:537: IDENT
+			{
+			DebugLocation(1, 537);
+			mIDENT(); if (state.failed) return;
+
+			}
+			break;
+		case 93:
+			DebugEnterAlt(93);
+			// Hql.g:1:543: QUOTED_String
+			{
+			DebugLocation(1, 543);
+			mQUOTED_String(); if (state.failed) return;
+
+			}
+			break;
+		case 94:
+			DebugEnterAlt(94);
+			// Hql.g:1:557: WS
+			{
+			DebugLocation(1, 557);
+			mWS(); if (state.failed) return;
+
+			}
+			break;
+		case 95:
+			DebugEnterAlt(95);
+			// Hql.g:1:560: NUM_INT
+			{
+			DebugLocation(1, 560);
+			mNUM_INT(); if (state.failed) return;
+
+			}
+			break;
+
+		}
+
+	}
+
+	partial void EnterRule_synpred1_Hql_fragment();
+	partial void LeaveRule_synpred1_Hql_fragment();
+
+	// $ANTLR start synpred1_Hql
+	private void synpred1_Hql_fragment()
+	{
+		EnterRule_synpred1_Hql_fragment();
+		EnterRule("synpred1_Hql_fragment", 103);
+		TraceIn("synpred1_Hql_fragment", 103);
+		try
+		{
+			// Hql.g:736:13: ( ESCqs )
+			DebugEnterAlt(1);
+			// Hql.g:736:14: ESCqs
+			{
+			DebugLocation(736, 14);
+			mESCqs(); if (state.failed) return;
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("synpred1_Hql_fragment", 103);
+			LeaveRule("synpred1_Hql_fragment", 103);
+			LeaveRule_synpred1_Hql_fragment();
+		}
+	}
+	// $ANTLR end synpred1_Hql
 
 	#region Synpreds
 	private bool EvaluatePredicate(System.Action fragment)
@@ -6656,7 +6442,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		}
 	}
 
- 
+
 	#endregion
 
 }
