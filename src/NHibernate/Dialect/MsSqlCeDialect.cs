@@ -200,5 +200,14 @@ namespace NHibernate.Dialect
 			}
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
 		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
+				return TimeSpan.TicksPerMillisecond*10L;
+			}
+		}
 	}
 }
