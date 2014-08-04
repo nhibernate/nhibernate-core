@@ -4306,6 +4306,11 @@ Parameter name: typecode]]></message>
                               <message><![CDATA[TestFixtureSetUp failed in HqlFixture]]></message>
                             </failure>
                           </test-case>
+						  <test-case name="NHibernate.Test.Hql.Ast.HqlFixture.UnaryMinusBeforeParenthesesHandledCorrectly" executed="True" result="Failure" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in HqlFixture]]></message>
+                            </failure>
+                          </test-case>
                         </results>
                       </test-suite>
                       <test-suite type="TestFixture" name="LimitClauseFixture" executed="True" result="Error" success="False" asserts="0">

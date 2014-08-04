@@ -48,7 +48,7 @@ namespace NHibernate.Test.Stateless
 					Assert.IsTrue(initVersion.HasValue);
 					tx.Commit();
 				}
-				Thread.Sleep(100); // Only to be secure that next modification have a different version
+				Thread.Sleep(1100); // Ensure version increment (some dialects lack fractional seconds).
 				using (tx = ss.BeginTransaction())
 				{
 					doc.Text = "blah blah blah .... blah";
