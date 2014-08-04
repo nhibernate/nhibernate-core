@@ -331,9 +331,6 @@ namespace NHibernate.Test.Hql.Ast
 				int actualWorkaround = s.CreateQuery("select -1*(1+1) from Animal as h")
 					.List<int>().Single();
 				Assert.That(actualWorkaround, Is.EqualTo(-2));
-
-				s.CreateQuery("delete from Animal").ExecuteUpdate();
-				txn.Commit();
 			}
 		}
 	}
