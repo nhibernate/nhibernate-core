@@ -20,8 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Configuration configuration = GetConfiguration();
 			SchemaExport export = new SchemaExport(configuration);
 			TextWriter tw = new StringWriter();
-			Console.SetOut(tw);
-			export.Drop(true, false);
+			export.Drop(tw, false);
 			string s = tw.ToString();
 
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
@@ -44,10 +43,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Configuration configuration = GetConfiguration();
 			SchemaExport export = new SchemaExport(configuration);
 			TextWriter tw = new StringWriter();
-			Console.SetOut(tw);
-			export.Create(true, false);
+			export.Create(tw, false);
 			string s = tw.ToString();
-			
+
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			if (dialect.SupportsIfExistsBeforeTableName)
 			{
@@ -70,8 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Configuration configuration = GetConfiguration();
 			SchemaUpdate update = new SchemaUpdate(configuration);
 			TextWriter tw = new StringWriter();
-			Console.SetOut(tw);
-			update.Execute(true, false);
+			update.Execute(tw.WriteLine, false);
 
 			string s = tw.ToString();
 			Assert.IsTrue(s.Contains("create table Home_Update"));
@@ -130,9 +127,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			get
 			{
 				return new string[]
-					{
-						"NHSpecificTest." + BugNumber + ".Mappings.hbm.xml"
-					};
+				{
+					"NHSpecificTest." + BugNumber + ".Mappings.hbm.xml"
+				};
 			}
 		}
 	}
