@@ -80,7 +80,7 @@ namespace NHibernate.Loader.Criteria
 			foreach (var entityJoinInfo in translator.GetEntityJoins().Values)
 			{
 				var tableAlias = translator.GetSQLAlias(entityJoinInfo.Criteria);
-				var criteriaPath = entityJoinInfo.Criteria.Alias; //path for entity join is equal to alias
+				var criteriaPath = entityJoinInfo.Criteria.Alias;
 				var persister = entityJoinInfo.Persister as IOuterJoinLoadable;
 				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath), criteriaPath);
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
@@ -166,13 +166,20 @@ namespace NHibernate.Loader.Criteria
 			get { return "criteria query"; }
 		}
 
-		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
-		                                        string[] lhsColumns, bool nullable, int currentDepth,
-		                                        CascadeStyle cascadeStyle)
+		protected override IList<string> AliasByPath(string path, string sqlAlias)
 		{
-			if (translator.IsJoin(path))
+			var alias = translator.AliasByPath(path, sqlAlias);
+			if (alias.Count == 0)
+				return base.AliasByPath(path, sqlAlias);
+			return alias;
+		}
+
+		protected override JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string pathAlias,
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
+		{
+			if (translator.IsJoin(path, pathAlias))
 			{
-				return translator.GetJoinType(path);
+				return translator.GetJoinType(path, pathAlias);
 			}
 
 			if (translator.HasProjection)
@@ -184,7 +191,7 @@ namespace NHibernate.Loader.Criteria
 			switch (selectMode)
 			{
 				case SelectMode.Undefined:
-					return base.GetJoinType(type, config, path, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
+					return base.GetJoinType(type, config, path, pathAlias, lhsTable, lhsColumns, nullable, currentDepth, cascadeStyle);
 
 				case SelectMode.Fetch:
 				case SelectMode.FetchLazyProperties:
@@ -200,7 +207,7 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
+		protected override string GenerateTableAlias(int n, string path, string pathAlias, IJoinable joinable)
 		{
 			// TODO: deal with side-effects (changes to includeInSelectList, userAliasList, resultTypeList)!!!
 
@@ -225,14 +232,14 @@ namespace NHibernate.Loader.Criteria
 
 			if (shouldCreateUserAlias)
 			{
-				ICriteria subcriteria = translator.GetCriteria(path);
+				ICriteria subcriteria = translator.GetCriteria(path, pathAlias);
 				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
 
 				IncludeInResultIfNeeded(joinable, subcriteria, sqlAlias, path);
 			}
 
 			if (sqlAlias == null)
-				sqlAlias = base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+				sqlAlias = base.GenerateTableAlias(n + translator.SQLAliasCount, path, pathAlias, joinable);
 
 			return sqlAlias;
 		}
@@ -261,9 +268,9 @@ namespace NHibernate.Loader.Criteria
 			// NH: really not used (we are using a different ctor to support SubQueryCriteria)
 		}
 
-		protected override SqlString GetWithClause(string path)
+		protected override SqlString GetWithClause(string path, string pathAlias)
 		{
-			return translator.GetWithClause(path);
+			return translator.GetWithClause(path, pathAlias);
 		}
 	}
 }

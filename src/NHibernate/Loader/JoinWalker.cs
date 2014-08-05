@@ -134,15 +134,15 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin (if necessary)
 		/// </summary>
 		private void AddAssociationToJoinTreeIfNecessary(IAssociationType type, string[] aliasedLhsColumns,
-			string alias, string path, int currentDepth, JoinType joinType)
+			string alias, string path, string subPathAlias, int currentDepth, JoinType joinType)
 		{
 			if (joinType >= JoinType.InnerJoin)
 			{
-				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, currentDepth, joinType);
+				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, subPathAlias, currentDepth, joinType);
 			}
 		}
 
-		protected virtual SqlString GetWithClause(string path)
+		protected virtual SqlString GetWithClause(string path, string sqlAlias)
 		{
 			return SqlString.Empty;
 		}
@@ -152,14 +152,14 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin
 		/// </summary>
 		private void AddAssociationToJoinTree(IAssociationType type, string[] aliasedLhsColumns, string alias,
-			string path, int currentDepth, JoinType joinType)
+			string path, string subPathAlias, int currentDepth, JoinType joinType)
 		{
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
 
-			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
+			string subalias = GenerateTableAlias(associations.Count + 1, path, subPathAlias, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters, GetSelectMode(path));
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path, subPathAlias), Factory, enabledFilters, GetSelectMode(path));
 			assoc.ValidateJoin(path);
 			AddAssociation(subalias, assoc);
 
@@ -175,7 +175,7 @@ namespace NHibernate.Loader
 			{
 				IQueryableCollection qc = joinable as IQueryableCollection;
 				if (qc != null)
-					WalkCollectionTree(qc, subalias, path, nextDepth);
+					WalkCollectionTree(qc, subalias, path, subPathAlias, nextDepth);
 			}
 		}
 
@@ -257,18 +257,18 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected void WalkCollectionTree(IQueryableCollection persister, string alias)
 		{
-			WalkCollectionTree(persister, alias, string.Empty, 0);
+			WalkCollectionTree(persister, alias, string.Empty,string.Empty, 0);
 			//TODO: when this is the entry point, we should use an INNER_JOIN for fetching the many-to-many elements!
 		}
 
 		/// <summary>
 		/// For a collection role, return a list of associations to be fetched by outerjoin
 		/// </summary>
-		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, int currentDepth)
+		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, string subPathAlias, int currentDepth)
 		{
 			if (persister.IsOneToMany)
 			{
-				WalkEntityTree((IOuterJoinLoadable)persister.ElementPersister, alias, path, currentDepth);
+				WalkEntityTree((IOuterJoinLoadable)persister.ElementPersister, alias, path,  currentDepth);
 			}
 			else
 			{
@@ -278,7 +278,7 @@ namespace NHibernate.Loader
 					// a many-to-many
 					// decrement currentDepth here to allow join across the association table
 					// without exceeding MAX_FETCH_DEPTH (i.e. the "currentDepth - 1" bit)
-					IAssociationType associationType = (IAssociationType)type;
+					IAssociationType associationType = (IAssociationType) type;
 					string[] aliasedLhsColumns = persister.GetElementColumnNames(alias);
 					string[] lhsColumns = persister.ElementColumnNames;
 
@@ -288,15 +288,18 @@ namespace NHibernate.Loader
 					bool useInnerJoin = currentDepth == 0;
 
 					JoinType joinType =
-						GetJoinType(associationType, persister.FetchMode, path, persister.TableName, lhsColumns, !useInnerJoin,
-												currentDepth - 1, null);
+						GetJoinType(associationType, persister.FetchMode, path, subPathAlias, persister.TableName, lhsColumns,
+							!useInnerJoin,
+							currentDepth - 1, null);
 
-					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, path, currentDepth - 1, joinType);
+					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, path, subPathAlias, currentDepth - 1,
+						joinType);
 				}
 				else if (type.IsComponentType)
 				{
-					WalkCompositeElementTree((IAbstractComponentType)type, persister.ElementColumnNames, persister, alias, path,
-																	 currentDepth);
+					WalkCompositeElementTree((IAbstractComponentType) type, persister.ElementColumnNames, persister, alias, path,
+						subPathAlias,
+						currentDepth);
 				}
 			}
 		}
@@ -331,17 +334,26 @@ namespace NHibernate.Loader
 
 			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
 
-			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable,
-											lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
+			//Obtain  related  aliases to the current path
+			var subPathAliases =  AliasByPath(subpath,alias);
 
-			AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
+			foreach (var subPathAliase in subPathAliases)
+			{
+				JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, subPathAliase,
+					lhsTable,
+					lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
+
+				AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, subPathAliase, currentDepth,
+					joinType);
+			}
+
 		}
 
 		/// <summary>
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
-		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path,  int currentDepth)
 		{
 			int n = persister.CountSubclassProperties();
 			for (int i = 0; i < n; i++)
@@ -381,18 +393,27 @@ namespace NHibernate.Loader
 
 					string subpath = SubPath(path, propertyNames[i]);
 					bool[] propertyNullability = componentType.PropertyNullability;
+					
+					//Obtain  related  aliases to the current path
+				    var subPathAliases = AliasByPath(subpath,alias);
+					foreach (var subPathAliase in subPathAliases)
+					{
+						JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, subPathAliase, lhsTable,
+							lhsColumns,
+							propertyNullability == null || propertyNullability[i], currentDepth,
+							componentType.GetCascadeStyle(i));
 
-					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
-													propertyNullability == null || propertyNullability[i], currentDepth,
-													componentType.GetCascadeStyle(i));
+						AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, subPathAliase,
+							currentDepth,
+							joinType);
+					}
 
-					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 				}
 				else if (types[i].IsComponentType)
 				{
 					string subpath = SubPath(path, propertyNames[i]);
 
-					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo);
+					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth,  associationTypeSQLInfo);
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
@@ -402,7 +423,7 @@ namespace NHibernate.Loader
 		/// For a composite element, add to a list of associations to be fetched by outerjoin
 		/// </summary>
 		private void WalkCompositeElementTree(IAbstractComponentType compositeType, string[] cols,
-			IQueryableCollection persister, string alias, string path, int currentDepth)
+			IQueryableCollection persister, string alias, string path, string subPathAlias, int currentDepth)
 		{
 			IType[] types = compositeType.Subtypes;
 			string[] propertyNames = compositeType.PropertyNames;
@@ -423,15 +444,17 @@ namespace NHibernate.Loader
 					bool[] propertyNullability = compositeType.PropertyNullability;
 
 					JoinType joinType =
-						GetJoinType(associationType, compositeType.GetFetchMode(i), subpath, persister.TableName, lhsColumns,
-												propertyNullability == null || propertyNullability[i], currentDepth, compositeType.GetCascadeStyle(i));
+						GetJoinType(associationType, compositeType.GetFetchMode(i), subpath, alias, persister.TableName, lhsColumns,
+							propertyNullability == null || propertyNullability[i], currentDepth, compositeType.GetCascadeStyle(i));
 
-					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
+					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, subPathAlias, currentDepth,
+						joinType);
 				}
 				else if (types[i].IsComponentType)
 				{
 					string subpath = SubPath(path, propertyNames[i]);
-					WalkCompositeElementTree((IAbstractComponentType)types[i], lhsColumns, persister, alias, subpath, currentDepth);
+					WalkCompositeElementTree((IAbstractComponentType) types[i], lhsColumns, persister, alias, subpath, subPathAlias,
+						currentDepth);
 				}
 				begin += length;
 			}
@@ -452,8 +475,8 @@ namespace NHibernate.Loader
 		/// association should not be joined. Override on
 		/// subclasses.
 		/// </summary>
-		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string lhsTable,
-			string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
+		protected virtual JoinType GetJoinType(IAssociationType type, FetchMode config, string path, string pathAlias,
+			string lhsTable, string[] lhsColumns, bool nullable, int currentDepth, CascadeStyle cascadeStyle)
 		{
 			if (!IsJoinedFetchEnabled(type, config, cascadeStyle))
 				return JoinType.None;
@@ -466,6 +489,15 @@ namespace NHibernate.Loader
 				return JoinType.None;
 
 			return GetJoinType(nullable, currentDepth);
+		}
+
+		/// <summary>
+		/// Returns the "work" alias  on the SQL alias and the path to the query field (entity)
+		/// </summary>	
+		protected virtual IList<string> AliasByPath(string path, string sqlAlias)
+		{
+			//Returns an empty string to start the default behavior
+			return new List<string>() {string.Empty};
 		}
 
 		/// <summary>
@@ -535,7 +567,7 @@ namespace NHibernate.Loader
 			return type.IsEntityType && IsJoinedFetchEnabledInMapping(config, type);
 		}
 
-		protected virtual string GenerateTableAlias(int n, string path, IJoinable joinable)
+		protected virtual string GenerateTableAlias(int n, string path, string pathAlias, IJoinable joinable)
 		{
 			return StringHelper.GenerateAlias(joinable.Name, n);
 		}
