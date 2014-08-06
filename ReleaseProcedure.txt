@@ -22,7 +22,7 @@ These are the tasks typically needed to create an official NHibernate release.
 	And then change to P:\nhibernate-core before building. This will avoid
 	displaying a long user-specific path in public symbol files.
 	
-  * If no error or other issue requiring further changes occured, tag the
+  * If no error or other issue requiring further changes occurred, tag the
     current git HEAD with a tag according to version number. Don't forget to
 	push the tag to github.
 	
