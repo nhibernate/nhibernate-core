@@ -1,16 +1,73 @@
-Build 4.0.0.XXXX
+Build 4.0.0.CR1
 =============================
 
-** Known BREAKING CHANGES from NH4.0.0.Alpha2 to 4.0.0.GA
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.CR1
 
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
+    Support for persistent non-generic collections removed. Use the generic counterparts instead.
+
+    ##### Possible Breaking Changes #####
+        * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
+        * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators accepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Miss-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle and MySQL: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+        * Static fields on NHibernateUtil are declared as their exact class
+
+    From NH4.0.0.Alpha1 to 4.0.0.Alpha2:
+    Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+    
+    The constructor of AbstractComponentTuplizer now behaves like AbstractEntityTuplizer in the way
+    that it doesn't create the instantiator any more. Custom component tuplizers that derive
+    directly from AbstractComponentTuplizer need to add this line of code in their constructor:
+      instantiator = BuildInstantiator(component);
+
+    From NH4.0.0.Alpha2 to 4.0.0.CR1:
     The interface IEnhancedProjection was removed and its methods moved to IProjection.
     Two other overloads of the GetColumnAliases() methods was removed from IProjection.
 
-    ##### Possible Breaking Changes #####
         * [NH-2290] Invalid hql parenthesis expansion in generated sql
             Unary minus before parentheses in HQL lost the parentheses when translated
             to SQL and therefore the wrong value was returned. This use of unary minus is now
             implemented in the mathematically correct way.
+
+** Bug
+    * [NH-3455] - QueryOver + selecting a component + OrderBy = wrong OrderBy in SQL
+    * [NH-3581] - nhibernate.everything.sln doesn't compile
+    * [NH-3587] - Parameters within a select clause
+    * [NH-3620] - ORA-01483 when inserting two blobs and a date using the OracleManagedDataClientDriver
+    * [NH-3624] - broken insert statement with select
+    * [NH-3629] - Translation of string.IndexOf() in Linq is broken for firebird
+    * [NH-3641] - Missing Outer Join
+    * [NH-3642] - PostgreSQL: Support LINQ DateTime.Date in select clause
+    * [NH-3649] - Missing support for round() in SQLite and SQL Server CE dialects (affected criteria queries)
+
+** Improvement
+    * [NH-3623] - Add FirebirdExceptionConverterExample
+    * [NH-3626] - avoid double parens around a select statement
+    * [NH-3627] - change some id mappings from native to assigned in linq tests
+    * [NH-3628] - add keyword "date" and function "date" to FirebirdDialect
+    * [NH-3647] - Support Math.Round() in QueryOver projections
+
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
+    * [NH-3644] - Merge IEnhancedProjection into IProjection
 
 Build 4.0.0.Alpha2
 =============================
