@@ -188,9 +188,10 @@ Build 3.4.0.CR1
 ** Sub-task
     * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
 
-
 ** Bug
+    * [NH-1882] - Collection was not processed by flush when iterate through collection in PostUpdateEvent
     * [NH-2128] - Interceptor fires AfterTransactionCompletion too many times with distributed transactions and user-supplied connections
+    * [NH-2290] - Invalid hql parenthesis expansion in generated sql
     * [NH-2921] - IsSpecialName of getter/setter method of proxy property returns false
     * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
     * [NH-2943] - Mapping XmlDocument (.NET) to XmlType (Oracle). Class XmlDocType not working.
@@ -203,13 +204,17 @@ Build 3.4.0.CR1
     * [NH-3277] - LINQ Projection of Int64 using ToString method causes "cast as char" instead of "cast as nvarchar" in MsSqlCe dialect
     * [NH-3280] - Mapping OneToOne doesn't work for inherited members
     * [NH-3315] - Distinct paging problem with alias SQL Server 2005
+    * [NH-3316] - Mapping parent property on component in a set adds bogus property element
     * [NH-3405] - Cannot Use XDocument When Setting Wrap Resultsets
     * [NH-3496] - NHibernate SqlServer2012Dialect drop sequence bug
     * [NH-3505] - Stateless sessions fail to save relationships pointing to proxies when versioning is enabled
     * [NH-3572] - AfterTransactionCompletion called twice if a distributed transaction is rolled back
     * [NH-3592] - Failed to execute multi criteria with Ms Sql Ce 4.0
+    * [NH-3611] - NHibernateUtil.GuessType(typeof(string)) returns ClassMetaType
     * [NH-3614] - Cannot create project an enumerable of non-mapped objects (List<string>)
     * [NH-3615] - Incorrect assumption that namespace always exists
+    * [NH-3618] - ManyToOne does not allow to set "unique"="true", "unique-key" and "index" for multi-column properties
+    * [NH-3641] - Missing Outer Join
 
 ** Improvement
     * [NH-2005] - hql concat function not registered in MsSqlCeDialect
@@ -230,6 +235,9 @@ Build 3.4.0.CR1
 ** Patch
     * [NH-2996] - MySQL 5.5 + .NET Connector 6.2+ and GUIDs: Need to use CHAR(36)
     * [NH-3209] - DateTimeOffset properties have not been considered; only the properties of DateTime have been considered
+
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
 
 
 Build 3.3.3.SP1
