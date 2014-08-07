@@ -1,3 +1,9 @@
+Build 3.3.4.GA
+=============================
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+
 Build 3.3.3.SP1
 =============================
 
