@@ -296,6 +296,11 @@ Build 3.4.0.CR1
 ** Task
     * [NH-3251] - Update to antlr 3.5.0.2
 
+Build 3.3.4.GA
+=============================
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
 
 Build 3.3.3.SP1
 =============================
@@ -323,7 +328,6 @@ BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
 
 ** Bug
     * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
-    * [NH-3096] - Linq - does not support GetValueOrDefault()
     * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
     * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
     * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>
