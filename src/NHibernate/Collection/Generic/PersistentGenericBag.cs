@@ -62,6 +62,12 @@ namespace NHibernate.Collection.Generic
 			IsDirectlyAccessible = true;
 		}
 
+		protected IList<T> InternalBag
+		{
+			get { return _gbag; }
+			set { _gbag = value; }
+		}
+
 		public override bool Empty
 		{
 			get { return _gbag.Count == 0; }
