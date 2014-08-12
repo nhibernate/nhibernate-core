@@ -346,23 +346,23 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// The dialect can move the given parameters where he need, what it can't do is generates new parameters, losing the BackTrack.
 			var dialect = sessionFactory.Dialect;
 			return dialect.GetLimitString(queryWriter.ToSqlString(),
-			                              queryWriter.Skip.HasValue
-				                              ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value)
-				                              : null,
-			                              queryWriter.Take.HasValue
-				                              ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value)
-				                              : null,
-			                              skipParameter,
-			                              takeParameter);
+										  queryWriter.Skip.HasValue
+											  ? (int?)dialect.GetOffsetValue(queryWriter.Skip.Value)
+											  : null,
+										  queryWriter.Take.HasValue
+											  ? (int?)dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value)
+											  : null,
+										  skipParameter,
+										  takeParameter);
 		}
 
 		private void Skip(IASTNode node)
 		{
-			var queryWriter = (QueryWriter) writer;
+			var queryWriter = (QueryWriter)writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.SkipParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
+				queryWriter.SkipParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -371,11 +371,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Take(IASTNode node)
 		{
-			var queryWriter = (QueryWriter) writer;
+			var queryWriter = (QueryWriter)writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.TakeParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
+				queryWriter.TakeParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -389,7 +389,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return;
 
 			outputStack.Insert(0, writer);
-			writer = new BitwiseOperation();
+			writer = new BitwiseOpWriter();
 		}
 
 		private void EndBitwiseOp(string op)
@@ -398,9 +398,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (function == null)
 				return;
 
-			var functionArguments = (BitwiseOperation)writer;
+			var functionArguments = (BitwiseOpWriter)writer;
 			writer = outputStack[0];
 			outputStack.RemoveAt(0);
+
 			Out(function.Render(functionArguments.Args, sessionFactory));
 		}
 
@@ -557,9 +558,31 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		#endregion
 
+		#region Nested type: ISqlWriter
+
+		/// <summary>
+		/// Writes SQL fragments.
+		/// </summary>
+		private interface ISqlWriter
+		{
+			void Clause(string clause);
+			void Clause(SqlString clause);
+			void PushParameter(Parameter parameter);
+			/**
+			 * todo remove this hack
+			 * The parameter is either ", " or " , ". This is needed to pass sql generating tests as the old
+			 * sql generator uses " , " in the WHERE and ", " in SELECT.
+			 *
+			 * @param comma either " , " or ", "
+			 */
+			void CommaBetweenParameters(string comma);
+		}
+
+		#endregion
+
 		#region Nested type: BitwiseOperation
 
-		private class BitwiseOperation : ISqlWriter
+		private class BitwiseOpWriter : ISqlWriter
 		{
 			private readonly List<SqlString> _args = new List<SqlString>();
 
@@ -590,28 +613,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				get { return _args; }
 			}
-		}
-
-		#endregion
-
-		#region Nested type: ISqlWriter
-
-		/// <summary>
-		/// Writes SQL fragments.
-		/// </summary>
-		private interface ISqlWriter
-		{
-			void Clause(string clause);
-			void Clause(SqlString clause);
-			void PushParameter(Parameter parameter);
-			/**
-			 * todo remove this hack
-			 * The parameter is either ", " or " , ". This is needed to pass sql generating tests as the old
-			 * sql generator uses " , " in the WHERE and ", " in SELECT.
-			 *
-			 * @param comma either " , " or ", "
-			 */
-			void CommaBetweenParameters(string comma);
 		}
 
 		#endregion
