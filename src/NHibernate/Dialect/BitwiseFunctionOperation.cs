@@ -7,6 +7,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Dialect
 {
+	/// <summary>
+	/// Treats bitwise operations as SQL function calls.
+	/// </summary>
 	[Serializable]
 	public class BitwiseFunctionOperation : ISQLFunction
 	{
@@ -14,6 +17,12 @@ namespace NHibernate.Dialect
 		private SqlStringBuilder _sqlBuffer;
 		private Queue _args;
 
+		/// <summary>
+		/// Creates an instance of this class using the provided function name
+		/// </summary>
+		/// <param name="functionName">
+		/// The bitwise function name as defined by the SQL-Dialect
+		/// </param>
 		public BitwiseFunctionOperation(string functionName)
 		{
 			_functionName = functionName;			
@@ -40,12 +49,12 @@ namespace NHibernate.Dialect
 		{
 			Prepare(args);
 
-			Function(); 
+			AddFunctionName(); 
 			OpenParens(); 
-			Arguments(); 
+			AddArguments(); 
 			CloseParens();
 
-			return _sqlBuffer.ToSqlString();
+			return SqlResult();
 		}
 
 		#endregion
@@ -66,7 +75,7 @@ namespace NHibernate.Dialect
 			return candidate == "(" || candidate == ")";
 		}
 
-		private void Function()
+		private void AddFunctionName()
 		{
 			_sqlBuffer.Add(_functionName);
 		}
@@ -76,7 +85,7 @@ namespace NHibernate.Dialect
 			_sqlBuffer.Add("(");
 		}
 
-		private void Arguments()
+		private void AddArguments()
 		{
 			while (_args.Count > 0)
 			{
@@ -93,6 +102,11 @@ namespace NHibernate.Dialect
 		private void CloseParens()
 		{
 			_sqlBuffer.Add(")");
+		}
+
+		private SqlString SqlResult()
+		{
+			return _sqlBuffer.ToSqlString();
 		}
 	}
 }

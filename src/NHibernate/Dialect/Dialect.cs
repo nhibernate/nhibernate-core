@@ -117,7 +117,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("band", new BitwiseNativeOperation("&"));
 			RegisterFunction("bor", new BitwiseNativeOperation("|"));
 			RegisterFunction("bxor", new BitwiseNativeOperation("^"));
-			RegisterFunction("bnot", new BitwiseNativeOperation("~"));
+			RegisterFunction("bnot", new BitwiseNativeOperation("~", true));
 
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
 
