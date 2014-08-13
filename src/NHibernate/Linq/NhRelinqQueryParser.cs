@@ -78,6 +78,13 @@ namespace NHibernate.Linq
 					}, typeof (TimeoutExpressionNode)
 				);
 
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.AsReadOnly<object>(null)),
+					}, typeof(AsReadOnlyExpressionNode)
+				);
+
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
 			defaultNodeTypeProvider = nodeTypeProvider;
