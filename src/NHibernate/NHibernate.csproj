@@ -135,6 +135,7 @@
     <Compile Include="Connection\ConnectionProvider.cs" />
     <Compile Include="Connection\ConnectionProviderFactory.cs" />
     <Compile Include="Connection\DriverConnectionProvider.cs" />
+    <Compile Include="Connection\ResilientDriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />

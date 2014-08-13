@@ -145,6 +145,9 @@
     <EmbeddedResource Include="Issues\NH2966\Issues.NH2966.Mappings.hbm.xml" />
     <EmbeddedResource Include="Issues\NH3302\Issues.NH3302.Mappings.hbm.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

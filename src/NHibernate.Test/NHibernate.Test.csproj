@@ -186,6 +186,7 @@
     <Compile Include="ConnectionTest\AggressiveReleaseTest.cs" />
     <Compile Include="ConnectionTest\ConnectionManagementTestCase.cs" />
     <Compile Include="ConnectionTest\Other.cs" />
+    <Compile Include="ConnectionTest\ResilientConnectionTestCase.cs" />
     <Compile Include="ConnectionTest\Silly.cs" />
     <Compile Include="ConnectionTest\ThreadLocalCurrentSessionTest.cs" />
     <Compile Include="ConventionsTestCase.cs" />
