@@ -26,6 +26,7 @@
 			<include name="System.XML.dll" />
 			<include name="System.Xml.Linq.dll" />
 			<include name="System.Data.dll" />
+			<include name="Microsoft.Data.Services.dll" />
 			<include name="Iesi.Collections.dll" />
 			<include name="Antlr3.Runtime.dll" />
 			<include name="Remotion.Linq.dll" />
