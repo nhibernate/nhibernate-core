@@ -17,6 +17,31 @@ namespace NHibernate.Criterion
 	public static class Projections
 	{
 		/// <summary>
+		/// Return the root entity.
+		/// </summary>
+		/// <returns>The root entity.</returns>
+		public static IProjection RootEntity()
+		{
+			return (new RootEntityProjection());
+		}
+
+		/// <summary>
+		/// Return an aliased entity.
+		/// </summary>
+		/// <param name="type">The type of the entity.</param>
+		/// <param name="alias">The alias of the entity.</param>
+		/// <returns>A projection of the entity.</returns>
+		public static IProjection Entity(System.Type type, string alias)
+		{
+			return (new EntityProjection(type, alias));
+		}
+
+		public static IProjection Entity<T>(string alias)
+		{
+			return (new EntityProjection<T>(alias));
+		}
+
+		/// <summary>
 		/// Create a distinct projection from a projection
 		/// </summary>
 		/// <param name="proj"></param>

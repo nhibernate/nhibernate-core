@@ -141,6 +141,9 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Criterion\BaseEntityProjection.cs" />
+    <Compile Include="Criterion\EntityProjection.cs" />
+    <Compile Include="Criterion\RootEntityProjection.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
