@@ -22,6 +22,7 @@
 			<include name="FirebirdSql.Data.FirebirdClient.dll" />
 			<include name="System.Data.SqlServerCe.dll" />
 			<include name="Npgsql.dll" />
+			<include name="Microsoft.Data.Services.dll" />
 		</assemblyfileset>
 	</target>
 	<target name="generate-assemblyinfo" depends="init common.generate-assemblyinfo" />
