@@ -32,6 +32,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			_oneToOne.cascade = (cascadeStyle.Exclude(ByCode.Cascade.DeleteOrphans)).ToCascadeString();
 		}
 
+		public void Class(System.Type clazz)
+		{
+			_oneToOne.@class = clazz.FullName;
+		}
+
 		#endregion
 
 		#region Implementation of IAccessorPropertyMapper
