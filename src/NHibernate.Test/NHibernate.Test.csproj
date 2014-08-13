@@ -519,6 +519,7 @@
     <Compile Include="Linq\DateTimeTests.cs" />
     <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
     <Compile Include="Linq\LoggingTests.cs" />
+    <Compile Include="Linq\QueryAsReadOnlyTests.cs" />
     <Compile Include="Linq\QueryTimeoutTests.cs" />
     <Compile Include="Linq\JoinTests.cs" />
     <Compile Include="Linq\CustomExtensionsExample.cs" />
@@ -529,7 +530,7 @@
     <Compile Include="Linq\ExtensionMethods.cs" />
     <Compile Include="Linq\FunctionTests.cs" />
     <Compile Include="Linq\LinqQuerySamples.cs" />
-    <Compile Include="Linq\LinqReadonlyTestsContext.cs" />
+    <Compile Include="Linq\LinqReadOnlyTestsContext.cs" />
     <Compile Include="Linq\LinqTestCase.cs" />
     <Compile Include="Linq\LinqToHqlGeneratorsRegistryFactoryTest.cs" />
     <Compile Include="Linq\MethodCallTests.cs" />
