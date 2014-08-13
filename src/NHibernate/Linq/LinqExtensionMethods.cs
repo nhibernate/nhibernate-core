@@ -20,6 +20,15 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(session.GetSessionImplementation());
 		}
 
+		public static IQueryable<T> AsReadOnly<T>(this IQueryable<T> query)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => AsReadOnly<object>(null)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression);
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
 		{
 			var method = ReflectionHelper.GetMethodDefinition(() => Cacheable<object>(null)).MakeGenericMethod(typeof (T));
