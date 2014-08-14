@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -430,6 +431,84 @@ namespace NHibernate.Test.Criteria
 					.SetProjection(Projections.Sum(Projections.SqlFunction("length", NHibernateUtil.Int32, Projections.Property("s.Name"))))
 					.UniqueResult<int>();
 				Assert.AreEqual(0, sum);
+			}
+		}
+
+		[Test]
+		public void UseRootProjection()
+		{
+			//NH-3435
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				session.Save(course);
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				session.Save(gavin);
+
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				session.Save(enrolment);
+
+				session.Flush();
+
+				Student g = session.CreateCriteria(typeof(Student))
+					.Add(Expression.IdEq(gavin.StudentNumber))
+					.SetFetchMode("Enrolments", FetchMode.Join)
+					.SetProjection(Projections.RootEntity())
+					.UniqueResult<Student>();
+
+				Assert.AreSame(gavin, g);
+			}
+		}
+
+		[Test]
+		public void UseEntityProjection()
+		{
+			//NH-3435
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				session.Save(course);
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				session.Save(gavin);
+
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				session.Save(enrolment);
+
+				session.Flush();
+
+				Student g = session.CreateCriteria(typeof(Enrolment))
+					.Add(Expression.And(Expression.Eq("StudentNumber", gavin.StudentNumber), Expression.Eq("CourseCode", course.CourseCode)))
+					.CreateAlias("Student", "s", JoinType.InnerJoin)
+					.SetProjection(Projections.Entity<Student>("s"))
+					.UniqueResult<Student>();
+
+				Assert.AreSame(gavin, g);
 			}
 		}
 	}
