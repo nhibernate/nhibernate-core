@@ -13,11 +13,11 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class BaseEntityProjection : IProjection
 	{
-		private String alias = null;
-		private String [] columnAliases = null;
-		private Boolean lazy = true;
+		private string alias = null;
+		private string [] columnAliases = null;
+		private bool lazy = true;
 
-		protected BaseEntityProjection(System.Type rootEntity, String alias)
+		protected BaseEntityProjection(System.Type rootEntity, string alias)
 		{
 			this.RootEntity = rootEntity;
 			this.alias = alias;
@@ -29,14 +29,14 @@ namespace NHibernate.Criterion
 			private set;
 		}
 
-		public BaseEntityProjection SetLazy(Boolean lazy)
+		public BaseEntityProjection SetLazy(bool lazy)
 		{
 			this.lazy = lazy;
 
 			return (this);
 		}
 
-		String[] IProjection.Aliases
+		string[] IProjection.Aliases
 		{
 			get
 			{
@@ -49,12 +49,12 @@ namespace NHibernate.Criterion
 			throw new NotImplementedException();
 		}
 
-		IType[] IProjection.GetTypes(String alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		IType[] IProjection.GetTypes(string alias, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			throw new NotImplementedException();
+			return (new IType[] { criteriaQuery.GetType(criteria, alias) });
 		}
 
-		IType[] IProjection.GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private void SetFields(ICriteria criteria)
 		{
 			if (this.RootEntity == null)
 			{
@@ -65,36 +65,43 @@ namespace NHibernate.Criterion
 			{
 				this.alias = criteria.Alias;
 			}
+		}
+
+		IType[] IProjection.GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			this.SetFields(criteria);
 
 			return (new IType[] { new ManyToOneType(this.RootEntity.FullName, this.lazy) });
 		}
 
-		Boolean IProjection.IsAggregate
+		bool IProjection.IsAggregate
 		{
 			get { return (false); }
 		}
 
-		Boolean IProjection.IsGrouped
+		bool IProjection.IsGrouped
 		{
 			get { return (false); }
 		}
 
-		SqlString IProjection.ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<String, IFilter> enabledFilters)
+		SqlString IProjection.ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			throw new NotImplementedException();
 		}
 
-		SqlString IProjection.ToSqlString(ICriteria criteria, Int32 position, ICriteriaQuery criteriaQuery, IDictionary<String, IFilter> enabledFilters)
+		SqlString IProjection.ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			var builder = new SqlStringBuilder();
-			var persister = criteriaQuery.Factory.TryGetEntityPersister(this.RootEntity.FullName) as AbstractEntityPersister;
-			var subcriteria = criteria.GetCriteriaByAlias(this.alias);
+			this.SetFields(criteria);
 
-			this.columnAliases = persister.GetIdentifierAliases(String.Empty);
+			SqlStringBuilder builder = new SqlStringBuilder();
+			AbstractEntityPersister persister = criteriaQuery.Factory.TryGetEntityPersister(this.RootEntity.FullName) as AbstractEntityPersister;
+			ICriteria subcriteria = criteria.GetCriteriaByAlias(this.alias);
 
-			var columnNames = persister.GetPropertyColumnNames(persister.IdentifierPropertyName).Select(x => String.Concat(criteriaQuery.GetSQLAlias(subcriteria, persister.IdentifierPropertyName), ".", criteriaQuery.Factory.Dialect.QuoteForColumnName(x))).ToArray();
+			this.columnAliases = persister.GetIdentifierAliases(string.Empty);
 
-			for (var i = 0; i < columnNames.Length; ++i)
+			string[] columnNames = persister.GetPropertyColumnNames(persister.IdentifierPropertyName).Select(x => string.Concat(criteriaQuery.GetSQLAlias(subcriteria, persister.IdentifierPropertyName), ".", criteriaQuery.Factory.Dialect.QuoteForColumnName(x))).ToArray();
+
+			for (int i = 0; i < columnNames.Length; ++i)
 			{
 				builder.Add(String.Format("{0} as {1}", columnNames[i], this.columnAliases[i]));
 
