@@ -54,7 +54,7 @@ namespace NHibernate.Cfg
 
 					if (attrs != null && attrs.Length > 0)
 					{
-						cachedVersion = string.Format("{0} ({1})", thisAssembly.GetName().Version, attrs[0].InformationalVersion);
+						cachedVersion = string.Format("{0} (assembly {1})", attrs[0].InformationalVersion, thisAssembly.GetName().Version);
 					}
 					else
 					{
