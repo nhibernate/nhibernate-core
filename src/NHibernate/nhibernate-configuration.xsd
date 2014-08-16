@@ -11,17 +11,17 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="bytecode-provider" minOccurs="0" maxOccurs="1" >
-          <xs:annotation>
-            <xs:documentation>
-              There are 3 default short-cut values
-              - lcg     : default for .NET2.0 and higher.
-              - codedom : CodeDOM-based bytecode provider (mostly for .NET1.1).
-              - null    : Disable the reflection optimization completely.
-              In addition you can specify the AssemblyQualifiedName of your custom bytecode-provider (implementation of IBytecodeProvider).
-              Note: the bytecode-provider will be tooks in account only when specified in the app.config or web.config.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
+					<xs:annotation>
+						<xs:documentation>
+							There are 3 default short-cut values
+							- lcg     : default for .NET2.0 and higher.
+							- codedom : CodeDOM-based bytecode provider (mostly for .NET1.1).
+							- null    : Disable the reflection optimization completely.
+							In addition you can specify the AssemblyQualifiedName of your custom bytecode-provider (implementation of IBytecodeProvider).
+							Note: the bytecode-provider will be tooks in account only when specified in the app.config or web.config.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="reflection-optimizer" maxOccurs="1" minOccurs="0" />
 				<xs:element ref="session-factory" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>
@@ -53,10 +53,10 @@
 	<xs:element name="mapping">
 		<xs:annotation>
 			<xs:documentation>
-			There are 3 possible combinations of mapping attributes
-			1 - resource &amp; assembly:  NHibernate will read the mapping resource from the specified assembly
-			2 - file only: NHibernate will read the mapping from the file.
-			3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
+				There are 3 possible combinations of mapping attributes
+				1 - resource &amp; assembly:  NHibernate will read the mapping resource from the specified assembly
+				2 - file only: NHibernate will read the mapping from the file.
+				3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -113,9 +113,9 @@
 								<xs:enumeration value="use_sql_comments" />
 								<xs:enumeration value="format_sql" />
 								<xs:enumeration value="collectiontype.factory_class" />
-                <xs:enumeration value="order_inserts" />
-                <xs:enumeration value="linqtohql.generatorsregistry" />
-              </xs:restriction>
+								<xs:enumeration value="order_inserts" />
+								<xs:enumeration value="linqtohql.generatorsregistry" />
+							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
 				</xs:extension>
