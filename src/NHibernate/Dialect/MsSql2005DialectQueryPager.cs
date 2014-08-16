@@ -205,11 +205,6 @@ namespace NHibernate.Dialect
 						result.Add("q_.");
 						result.Add(value);
 					}
-					else if (columnToAlias.ContainsValue(sortExpression)) // When a distinct query is paged the sortexpressions could already be aliased.
-					{
-						result.Add("q_.");
-						result.Add(sortExpression);
-					}
 					else 
 					{
 						throw new HibernateException(
