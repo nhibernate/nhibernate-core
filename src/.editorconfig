@@ -5,3 +5,6 @@ end_of_line = CRLF
 
 [*.cs]
 indent_style = tab
+
+[*.xsd]
+indent_style = tab
