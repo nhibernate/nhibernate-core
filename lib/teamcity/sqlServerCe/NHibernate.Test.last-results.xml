@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="565" failures="956" not-run="383" inconclusive="0" ignored="383" skipped="0" invalid="0">
+<test-results name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" errors="562" failures="960" not-run="386" inconclusive="0" ignored="386" skipped="0" invalid="0">
   <environment nunit-version="2.5.5.10112" clr-version="2.0.50727.3655" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
   <test-suite type="Assembly" name="../../build/NHibernate-3.4.0.CR1-debug/bin/net-3.5/NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
@@ -1915,11 +1915,11 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="3" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="3" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="3" />
                             </results>
                           </test-suite>
                         </results>
@@ -2049,8 +2049,12 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                     <results>
                       <test-suite type="TestFixture" name="GenericMethodShouldBeProxied" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.ProxyOfAGenericMethod" executed="True" result="Success" success="True" asserts="0" />
-                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.ProxyOfSelfCastingMethod" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxyBasicGenericMethod" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxyGenericMethodWithInterfaceConstraint" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxyGenericMethodWithReferenceTypeAndInterfaceConstraint" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxyMethodWithDefaultConstructorConstraint" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxyMethodWithGenericBaseClassConstraint" executed="True" result="Success" success="True" asserts="0" />
+                          <test-case name="NHibernate.Test.DynamicProxyTests.GenericMethodsTests.GenericMethodShouldBeProxied.CanProxySelfCastingMethod" executed="True" result="Success" success="True" asserts="0" />
                         </results>
                       </test-suite>
                     </results>
@@ -4306,7 +4310,7 @@ Parameter name: typecode]]></message>
                               <message><![CDATA[TestFixtureSetUp failed in HqlFixture]]></message>
                             </failure>
                           </test-case>
-						  <test-case name="NHibernate.Test.Hql.Ast.HqlFixture.UnaryMinusBeforeParenthesesHandledCorrectly" executed="True" result="Failure" success="False" asserts="0">
+                          <test-case name="NHibernate.Test.Hql.Ast.HqlFixture.UnaryMinusBeforeParenthesesHandledCorrectly" executed="True" result="Failure" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[TestFixtureSetUp failed in HqlFixture]]></message>
                             </failure>
@@ -14646,6 +14650,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH1863" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithCategoryWhenFilterIsDisabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithCategoryWhenFilterIsEnabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithNoCategoryWhenFilterIsDisabled" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH1863.Fixture.CanGetCustomerWithNoCategoryWhenFilterIsEnabled" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH1864" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
@@ -14720,11 +14736,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1891.Fixture.FormulaEscaping" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#618c7932-24b8-4dfa-b4f9-a374006f269c][SQL: SELECT a0_.id as id1685_0_, a0_.FormulaConstraint as FormulaC2_1685_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_0_ FROM a a0_ WHERE a0_.id=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1891.A#5a88421d-12d1-4538-bd72-a3890106984e][SQL: SELECT a0_.id as id1687_0_, a0_.FormulaConstraint as FormulaC2_1687_0_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_0_ FROM a a0_ WHERE a0_.id=?]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 74,Token in error = select ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select a0_.id as id1685_, a0_.FormulaConstraint as FormulaC2_1685_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_ ]
-[SQL: select a0_.id as id1685_, a0_.FormulaConstraint as FormulaC2_1685_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_]
+[ select a0_.id as id1687_, a0_.FormulaConstraint as FormulaC2_1687_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_ ]
+[SQL: select a0_.id as id1687_, a0_.FormulaConstraint as FormulaC2_1687_, (select count(*) from b where b."Name" = a0_.FormulaConstraint) as formula60_ from a a0_]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 70,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -14782,8 +14798,8 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1905.Fixture.Query" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select det0_.Id as Id1695_, det0_.IdMas as IdMas1695_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0 ]
-[SQL: select det0_.Id as Id1695_, det0_.IdMas as IdMas1695_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0]
+[ select det0_.Id as Id1697_, det0_.IdMas as IdMas1697_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0 ]
+[SQL: select det0_.Id as Id1697_, det0_.IdMas as IdMas1697_ from det det0_ left outer join mas mas1_ on det0_.IdMas=mas1_.Id where (select count(el4_.Id) from mas mas2_, MasEls els3_, Els el4_ where det0_.IdMas=mas2_.Id and mas2_.Id=els3_.IdMas and els3_.IdEls=el4_.Id and el4_.Descr='e1')>0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 127,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -14889,18 +14905,18 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1925.Fixture.Query1" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0 ]
+[ select invoice0_.ID as ID1713_, invoice0_."Number" as Number2_1713_, invoice0_.CustomerID as CustomerID1713_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0 ]
   Name:name - Value:Joe
-[SQL: select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0]
+[SQL: select invoice0_.ID as ID1713_, invoice0_."Number" as Number2_1713_, invoice0_.CustomerID as CustomerID1713_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices3_."Number") from Customer customer2_ inner join Invoice invoices3_ on customer2_.ID=invoices3_.CustomerID where invoice0_.CustomerID=customer2_.ID and customer2_.ID=customer1_.ID) and customer1_.Name=@p0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 228,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1925.Fixture.Query2" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0 ]
+[ select invoice0_.ID as ID1713_, invoice0_."Number" as Number2_1713_, invoice0_.CustomerID as CustomerID1713_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0 ]
   Name:name - Value:Joe
-[SQL: select invoice0_.ID as ID1711_, invoice0_."Number" as Number2_1711_, invoice0_.CustomerID as CustomerID1711_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0]
+[SQL: select invoice0_.ID as ID1713_, invoice0_."Number" as Number2_1713_, invoice0_.CustomerID as CustomerID1713_ from Invoice invoice0_ inner join Customer customer1_ on invoice0_.CustomerID=customer1_.ID where invoice0_."Number"=(select max(invoices2_."Number") from Invoice invoices2_ where customer1_.ID=invoices2_.CustomerID) and customer1_.Name=@p0]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 228,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -15251,6 +15267,24 @@ Parameter name: @p1]]></message>
                       <test-suite type="TestFixture" name="SampleTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2044.SampleTest.IgnoreCaseShouldWorkWithCharCorrectly" executed="True" result="Success" success="True" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH2049" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture2049" executed="True" result="Inconclusive" success="False" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2049.Fixture2049.CanCriteriaQueryWithFilterOnJoinClassBaseClassProperty" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Known bug NH-2049.]]></message>
+                            </reason>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH2049.Fixture2049.CanHqlQueryWithFilterOnJoinClassBaseClassProperty" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Known bug NH-2049.]]></message>
+                            </reason>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -16125,7 +16159,7 @@ alter table nhibernate.dbo_Aclass  drop constraint Aclasses_Id_FK
 Not expected exception message:
 could not execute query
 [ SELECT this_.Name as y0_, (SELECT sum(this_0_.Dollars) as y0_ FROM Forum this_0_ WHERE not (this_0_.Id = this_.Id) and this_0_.Id in (SELECT f2_.Id as y0_ FROM MemberGroup this_0_0_ inner join Group2Members members4_ on this_0_0_.Id=members4_.GroupId inner join Person m1_ on members4_.PersonId=m1_.Id inner join Group2Forums forums6_ on this_0_0_.Id=forums6_.GroupId inner join Forum f2_ on forums6_.ForumId=f2_.Id WHERE m1_.Id = this_.Id)) as y1_ FROM Person this_ WHERE this_.Id in (@p0, @p1) ]
-  Name:cp0 - Value:0bd7634c-e19a-4f63-a122-63582664fb67  Name:cp1 - Value:99a2b7ba-8c2a-4fbc-83d2-a944de63ce8c
+  Name:cp0 - Value:62459457-c645-4e9f-beaa-66d139406f01  Name:cp1 - Value:2891cfa6-11a4-4565-bb68-ca266dfd8ac1
 [SQL: SELECT this_.Name as y0_, (SELECT sum(this_0_.Dollars) as y0_ FROM Forum this_0_ WHERE not (this_0_.Id = this_.Id) and this_0_.Id in (SELECT f2_.Id as y0_ FROM MemberGroup this_0_0_ inner join Group2Members members4_ on this_0_0_.Id=members4_.GroupId inner join Person m1_ on members4_.PersonId=m1_.Id inner join Group2Forums forums6_ on this_0_0_.Id=forums6_.GroupId inner join Forum f2_ on forums6_.ForumId=f2_.Id WHERE m1_.Id = this_.Id)) as y1_ FROM Person this_ WHERE this_.Id in (@p0, @p1)]]]></message>
                             </failure>
                           </test-case>
@@ -16825,7 +16859,7 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkForNullCompares2" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005FC6 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16833,7 +16867,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfBothSidesJoin" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005FC6 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16841,7 +16875,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfNothingJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005FC6 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -16849,7 +16883,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2583.SelfJoinTestFixture.SelfJoinsWorkIfOneSideJoins" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH2583.MyBO#111][SQL: INSERT INTO MyBO (Name, LeftSonKey, RightSonKey, BO1Key, OtherBO1Key, BO2Key, K1, K2, K3, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005F78 ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = MyBO,Constraint name = PK__MyBO__0000000000005FC6 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute update query[SQL: delete from MyBO]
   ----> System.Data.SqlServerCe.SqlCeException : The primary key value cannot be deleted because references to this key still exist. [ Foreign key constraint name = FK8D29D043FED1656E ]]]></message>
                             </failure>
@@ -17181,8 +17215,8 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not execute update 
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2760.Fixture.ShouldBeAbleToSelectUserGroupAndOrderByUserCount" executed="True" result="Error" success="False" asserts="0">
                             <failure>
                               <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select usergroup0_.Id as Id2029_, usergroup0_.Name as Name2029_, usergroup0_.Other as Other2029_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc ]
-[SQL: select usergroup0_.Id as Id2029_, usergroup0_.Name as Name2029_, usergroup0_.Other as Other2029_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc]
+[ select usergroup0_.Id as Id2034_, usergroup0_.Name as Name2034_, usergroup0_.Other as Other2034_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc ]
+[SQL: select usergroup0_.Id as Id2034_, usergroup0_.Name as Name2034_, usergroup0_.Other as Other2034_ from UserGroup usergroup0_ order by (select cast(count(*) as INT) from UserGroupUsers users1_, "User" user2_ where usergroup0_.Id=users1_.UserGroupId and users1_.UserId=user2_.Id) asc]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 135,Token in error = select ]]]></message>
                             </failure>
                           </test-case>
@@ -17639,6 +17673,15 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3058" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="SampleTest" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3058.SampleTest.MethodShouldLoadLazyProperty" executed="True" result="Success" success="True" asserts="4" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3074" executed="True" result="Failure" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
@@ -17705,6 +17748,33 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-suite type="TestFixture" name="InvalidCastWithGenericDictionaryOnCascadeTest" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3126.InvalidCastWithGenericDictionaryOnCascadeTest.Test" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3132" executed="True" result="Failure" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Error" success="False" asserts="0">
+                        <failure>
+                          <message><![CDATA[NHibernate.HibernateException : The specified table already exists. [ Products ]
+  ----> System.Data.SqlServerCe.SqlCeException : The specified table already exists. [ Products ]]]></message>
+                        </failure>
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3132.Fixture.Correct_value_gets_saved" executed="True" result="Failure" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3132.Fixture.Correct_value_gets_saved_with_lazy" executed="True" result="Failure" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                            </failure>
+                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3132.Fixture.Query_returns_correct_name" executed="True" result="Failure" success="False" asserts="0">
+                            <failure>
+                              <message><![CDATA[TestFixtureSetUp failed in Fixture]]></message>
+                            </failure>
+                          </test-case>
                         </results>
                       </test-suite>
                     </results>
@@ -17895,6 +17965,19 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
+                  <test-suite type="Namespace" name="NH3401" executed="True" result="Inconclusive" success="False" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Inconclusive" success="False" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3401.Fixture.YesNoParameterLengthShouldBe1" description="NH-3401" executed="False" result="Ignored">
+                            <reason>
+                              <message><![CDATA[Test not implemented - this can be used a base for a proper test case for NH-3401.]]></message>
+                            </reason>
+                          </test-case>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
                   <test-suite type="Namespace" name="NH3405" executed="True" result="Inconclusive" success="False" asserts="0">
                     <results>
                       <test-suite type="TestFixture" name="Fixture" executed="False" result="Ignored">
@@ -17985,16 +18068,11 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       </test-suite>
                     </results>
                   </test-suite>
-                  <test-suite type="Namespace" name="NH3614" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="NH3614" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH3614.Fixture.CanProjectListOfStrings" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.NHSpecificTest.NH3614.Entity][SQL: INSERT INTO Entity values ( )]
-  ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 29,Token in error = ) ]]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3614.Fixture.CanProjectListOfStrings" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                     </results>
@@ -19087,18 +19165,18 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                       <test-case name="NHibernate.Test.ProjectionFixtures.Fixture.LimitingResultSetOnQueryThatIsOrderedByProjection" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY ]
+[ SELECT this_.Id as Id2357_0_, this_.Area as Area2357_0_, this_.Parent as Parent2357_0_, this_.ParentArea as ParentArea2357_0_, this_.Type as Type2357_0_, this_.Name as Name2357_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY ]
   Name:cp0 - Value:0  Name:cp1 - Value:Smart
-[SQL: SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY]
+[SQL: SELECT this_.Id as Id2357_0_, this_.Area as Area2357_0_, this_.Parent as Parent2357_0_, this_.ParentArea as ParentArea2357_0_, this_.Type as Type2357_0_, this_.Name as Name2357_0_ FROM TreeNode this_ WHERE this_.Id > @p0 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Id = this_.Id and this_0_.Area = this_.Area and this_0_.Type = @p1) asc OFFSET 0 ROWS FETCH NEXT @p2 ROWS ONLY]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 232,Token in error = SELECT ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ProjectionFixtures.Fixture.QueryingWithParemetersAndParaemtersInOrderBy" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY ]
+[ SELECT this_.Id as Id2357_0_, this_.Area as Area2357_0_, this_.Parent as Parent2357_0_, this_.ParentArea as ParentArea2357_0_, this_.Type as Type2357_0_, this_.Name as Name2357_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY ]
   Name:cp0 - Value:ayende  Name:cp1 - Value:0  Name:cp2 - Value:Smart
-[SQL: SELECT this_.Id as Id2349_0_, this_.Area as Area2349_0_, this_.Parent as Parent2349_0_, this_.ParentArea as ParentArea2349_0_, this_.Type as Type2349_0_, this_.Name as Name2349_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY]
+[SQL: SELECT this_.Id as Id2357_0_, this_.Area as Area2357_0_, this_.Parent as Parent2357_0_, this_.ParentArea as ParentArea2357_0_, this_.Type as Type2357_0_, this_.Name as Name2357_0_ FROM TreeNode this_ WHERE this_.Name like @p0 and this_.Id > @p1 ORDER BY (SELECT this_0_.Type as y0_ FROM TreeNode this_0_ WHERE this_0_.Type = @p2) asc OFFSET 0 ROWS FETCH NEXT @p3 ROWS ONLY]
   ----> System.Data.SqlServerCe.SqlCeException : There was an error parsing the query. [ Token line number = 1,Token line offset = 256,Token in error = SELECT ]]]></message>
                         </failure>
                       </test-case>
@@ -19582,139 +19660,139 @@ TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itsel
                     <results>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.DetachedCriteria" executed="True" result="Error" success="False" asserts="5">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.Test.ReadOnly.Student.Enrolments#232][SQL: SELECT enrolments0_.studentId as studentId1_, enrolments0_.CourseCode as CourseCode1_, enrolments0_.studentId as studentId2367_0_, enrolments0_.CourseCode as CourseCode2367_0_, enrolments0_.courseCode as courseCode2367_0_, enrolments0_.Semester as Semester2367_0_, enrolments0_."year" as year4_2367_0_ FROM Enrolment enrolments0_ WHERE enrolments0_.studentId=?]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_0_ ]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.Test.ReadOnly.Student.Enrolments#232][SQL: SELECT enrolments0_.studentId as studentId1_, enrolments0_.CourseCode as CourseCode1_, enrolments0_.studentId as studentId2375_0_, enrolments0_.CourseCode as CourseCode2375_0_, enrolments0_.courseCode as courseCode2375_0_, enrolments0_.Semester as Semester2375_0_, enrolments0_."year" as year4_2375_0_ FROM Enrolment enrolments0_ WHERE enrolments0_.studentId=?]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_0_ ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyEntity" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyProxyInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableCriteriaReturnsExistingReadOnlyProxyNotInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionDefaultCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionModifiableCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ModifiableSessionReadOnlyCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsExistingModifiableProxyInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsExistingModifiableProxyNotInit" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlyCriteriaReturnsModifiableExistingEntity" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionDefaultCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionModifiableCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.ReadOnlySessionReadOnlyCriteria" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.Subselect" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.PersistentObjectException : detached entity passed to persist: NHibernate.Test.ReadOnly.Student
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlyCriteriaQueryTest.TwoAliasesCache" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.Test.ReadOnly.Student#666][SQL: INSERT INTO Student (Name, preferredCourseCode, studentId) VALUES (?, ?, ?)]
-  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = Student,Constraint name = PK__Student__000000000000750C ]
+  ----> System.Data.SqlServerCe.SqlCeException : A duplicate value cannot be inserted into a unique index. [ Table name = Student,Constraint name = PK__Student__0000000000007572 ]
 TearDown : NHibernate.Exceptions.GenericADOException : could not execute query
-[ select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_ ]
-[SQL: select enrolment0_.studentId as studentId2367_, enrolment0_.CourseCode as CourseCode2367_, enrolment0_.courseCode as courseCode2367_, enrolment0_.Semester as Semester2367_, enrolment0_."year" as year4_2367_ from Enrolment enrolment0_]
-  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2367_ ]]]></message>
+[ select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_ ]
+[SQL: select enrolment0_.studentId as studentId2375_, enrolment0_.CourseCode as CourseCode2375_, enrolment0_.courseCode as courseCode2375_, enrolment0_.Semester as Semester2375_, enrolment0_."year" as year4_2375_ from Enrolment enrolment0_]
+  ----> System.Data.SqlServerCe.SqlCeException : The column aliases must be unique. [ Name of duplicate alias = CourseCode2375_ ]]]></message>
                         </failure>
                       </test-case>
                     </results>
@@ -21491,27 +21569,14 @@ Parameter name: typecode]]></message>
                   </test-suite>
                 </results>
               </test-suite>
-              <test-suite type="Namespace" name="VersionTest" executed="True" result="Failure" success="False" asserts="0">
+              <test-suite type="Namespace" name="VersionTest" executed="True" result="Success" success="True" asserts="0">
                 <results>
-                  <test-suite type="Namespace" name="Db" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="Namespace" name="Db" executed="True" result="Success" success="True" asserts="0">
                     <results>
-                      <test-suite type="TestFixture" name="DbVersionFixture" executed="True" result="Failure" success="False" asserts="0">
+                      <test-suite type="TestFixture" name="DbVersionFixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
-                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionNoVersion" executed="True" result="Error" success="False" asserts="1">
-                            <failure>
-                              <message><![CDATA[  owner version was incremented
-  Expected: True
-  But was:  False
-
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
-                            </failure>
-                          </test-case>
-                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionVersion" executed="True" result="Error" success="False" asserts="0">
-                            <failure>
-                              <message><![CDATA[NHibernate.StaleObjectStateException : Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [NHibernate.Test.VersionTest.Db.User#1]
-TearDown : NUnit.Framework.AssertionException : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
-                            </failure>
-                          </test-case>
+                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionNoVersion" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.VersionTest.Db.DbVersionFixture.CollectionVersion" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                       <test-suite type="Namespace" name="MsSQL" executed="True" result="Inconclusive" success="False" asserts="0">
