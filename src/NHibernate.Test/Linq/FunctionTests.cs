@@ -47,12 +47,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void SubstringFunction2()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird before 2.0 only support integer literals for substring() - NH generates parameters.");
-
 			var query = (from e in db.Employees
-						 where e.FirstName.Substring(0, 2) == "An"
-						 select e).ToList();
+				where e.FirstName.Substring(0, 2) == "An"
+				select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -60,12 +57,9 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void SubstringFunction1()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird before 2.0 only support integer literals for substring() - NH generates parameters.");
-
 			var query = (from e in db.Employees
-						 where e.FirstName.Substring(3) == "rew"
-						 select e).ToList();
+				where e.FirstName.Substring(3) == "rew"
+				select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
