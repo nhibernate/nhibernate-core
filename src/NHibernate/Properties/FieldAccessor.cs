@@ -110,7 +110,7 @@ namespace NHibernate.Properties
 
 			FieldInfo field =
 				type.GetField(fieldName,
-				              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+							  BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			if (field == null)
 			{
 				// recursively call this method for the base Type

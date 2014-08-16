@@ -226,6 +226,10 @@
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
     <Compile Include="DriverTest\SqlServerCeDriverFixture.cs" />
+    <Compile Include="DynamicProxyTests\GenericMethodsTests\IMyGenericInterface.cs" />
+    <Compile Include="DynamicProxyTests\GenericMethodsTests\IMyInterface.cs" />
+    <Compile Include="DynamicProxyTests\GenericMethodsTests\MyClass.cs" />
+    <Compile Include="DynamicProxyTests\GenericMethodsTests\MyGenericClass.cs" />
     <Compile Include="DynamicProxyTests\PeVerifyFixture.cs" />
     <Compile Include="DynamicProxyTests\GenericMethodsTests\GenericMethodShouldBeProxied.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\IMyProxy.cs" />
@@ -710,6 +714,8 @@
     <Compile Include="NHSpecificTest\NH3374\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2042\Model.cs" />
     <Compile Include="NHSpecificTest\NH2042\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3058\DomainClass.cs" />
+    <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\Dates\DateTimeOffsetQueryFixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3050\Person.cs" />
@@ -1067,6 +1073,8 @@
     <Compile Include="NHSpecificTest\NH2860\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH3641\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3641\TestFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3132\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3132\Product.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -2931,6 +2939,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsTypes.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2042\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2860\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3332\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3234\Mappings.hbm.xml" />
@@ -2946,6 +2955,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3126\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3145\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2812\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3132\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2664\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2214\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2960\Mappings.hbm.xml" />
