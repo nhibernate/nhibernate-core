@@ -12,6 +12,7 @@ namespace NHibernate.Mapping.ByCode
 		void PropertyReference(MemberInfo propertyInTheOtherSide);
 		void Formula(string formula);
 		void ForeignKey(string foreignKeyName);
+		void Class(System.Type clazz);
 	}
 
 	public interface IOneToOneMapper<T> : IOneToOneMapper
