@@ -231,7 +231,8 @@ Build 4.0.0.Alpha1
     * [NH-3346] - Remove members obsolete in NH3 from NH4
     * [NH-3347] - Remove obsolete dialects for NH4
 
-Build 3.4.0.CR1
+
+Build 3.4.0.GA
 =============================
 ** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
 
@@ -241,6 +242,27 @@ Build 3.4.0.CR1
             to SQL and therefore the wrong value was returned. This use of unary minus is now
             implemented in the mathematically correct way.
 
+
+** Sub-task
+    * [NH-3432] - Merge fix for bug NH-3058 into 3.Next
+
+** Bug
+    * [NH-2819] - DefaultDynamicLazyFieldInterceptor does not handle generic methods correctly
+    * [NH-2977] - MsSqlServer dialects reject custom SQL Server queries with limits 
+    * [NH-3058] - Methods on entities with lazy properties do not trigger load of lazy properties
+    * [NH-3132] - Property with access="field.camelcase" not working when another property is lazy
+    * [NH-3244] - Proxying fails for methods with generic class as generic parameter constraints or generic parameter attributes
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+** Task
+    * [NH-3412] - Need to reconcile changes to MsSql2005DialectQueryPager for NH-2977 between 3.3.3 and vNext
+
+
+Build 3.4.0.CR1
+=============================
 
 ** Sub-task
     * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
