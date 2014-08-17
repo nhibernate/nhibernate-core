@@ -1,7 +1,7 @@
-Build 4.0.0.CR1
+Build 4.0.0.GA
 =============================
 
-** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.CR1
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.GA
 
     NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
     now been changed to use corresponding types from the BCL. The API for these types
@@ -46,6 +46,22 @@ Build 4.0.0.CR1
             Unary minus before parentheses in HQL lost the parentheses when translated
             to SQL and therefore the wrong value was returned. This use of unary minus is now
             implemented in the mathematically correct way.
+
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+    * [NH-3654] - Internal access of PersistentGenericBag removed
+
+** Improvement
+    * [NH-3415] - Add Overload to IGeneratorMapper.Params That Receives a Dictionary
+    * [NH-3657] - Map By Code - One to One Missing Class Action
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+
+Build 4.0.0.CR1
+=============================
 
 ** Bug
     * [NH-3455] - QueryOver + selecting a component + OrderBy = wrong OrderBy in SQL
