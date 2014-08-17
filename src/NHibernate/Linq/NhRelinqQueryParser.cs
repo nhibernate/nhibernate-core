@@ -77,6 +77,13 @@ namespace NHibernate.Linq
 						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
 					}, typeof (TimeoutExpressionNode)
 				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.SetLockMode<object>(null, LockMode.Read)),
+					}, typeof(LockExpressionNode)
+				);
+
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
@@ -136,6 +143,30 @@ namespace NHibernate.Linq
 			return new CacheableResultOperator(_parseInfo, _data);
 		}
 	}
+
+	internal class LockExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _lockMode;
+
+		public LockExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression lockMode)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_lockMode = lockMode;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new LockResultOperator(_parseInfo, _lockMode);
+		}
+	}
+
 
 	public class CacheableResultOperator : ResultOperatorBase
 	{
@@ -222,4 +253,35 @@ namespace NHibernate.Linq
 		{
 		}
 	}
+	internal class LockResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression LockMode { get; private set; }
+
+		public LockResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression lockMode)
+		{
+			ParseInfo = parseInfo;
+			LockMode = lockMode;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
 }
