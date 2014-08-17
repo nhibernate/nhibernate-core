@@ -2514,6 +2514,15 @@ namespace NHibernate.Linq
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 			=> query.WithOptions(o => o.SetTimeout(timeout));
 
+		public static IQueryable<T> SetLockMode<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectHelper.GetMethod(() => SetLockMode(query, lockMode));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
 		/// <summary>
 		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.
 		/// </summary>

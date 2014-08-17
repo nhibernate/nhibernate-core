@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Linq.ExpressionTransformers;
@@ -7,11 +6,9 @@ using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.EagerFetching.Parsing;
-using Remotion.Linq.Parsing.ExpressionVisitors;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
-using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 
 namespace NHibernate.Linq
@@ -83,6 +80,9 @@ namespace NHibernate.Linq
 			methodInfoRegistry.Register(
 				new[] { ReflectHelper.GetMethodDefinition(() => EagerFetchingExtensionMethods.ThenFetchMany<object, object, object>(null, null)) },
 				typeof(ThenFetchManyExpressionNode));
+			methodInfoRegistry.Register(
+				new[] { ReflectHelper.GetMethodDefinition(() => LinqExtensionMethods.SetLockMode<object>(null, LockMode.Read)) }, 
+				typeof(LockExpressionNode));
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
