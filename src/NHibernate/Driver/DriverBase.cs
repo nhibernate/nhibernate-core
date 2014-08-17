@@ -195,7 +195,12 @@ namespace NHibernate.Driver
 			}
 
 			dbParam.ParameterName = FormatNameForParameter(name);
-			dbParam.DbType = sqlType.DbType;
+			SetParameterType(dbParam, sqlType);
+		}
+
+		protected virtual void SetParameterType(IDbDataParameter param, SqlType sqlType)
+		{
+			param.DbType = sqlType.DbType;
 		}
 
 		/// <summary>

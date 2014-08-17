@@ -1,5 +1,4 @@
 using NHibernate.Dialect;
-using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -23,17 +22,13 @@ namespace NHibernate.Test.TypesTest
 			Assert.That(sqlType, Is.EqualTo("MONEY"));
 		}
 
-		/// <summary>
-		/// Test that two decimal fields that are exactly equal are returned
-		/// as Equal by the DecimalType.
-		/// </summary>
-		[Test]
+		[Test, Description("Test that two decimal fields that are exactly equal are returned as Equal by the DecimalType")]
 		public void Equals()
 		{
 			const decimal lhs = 5.6435M;
 			const decimal rhs = 5.6435M;
 
-			var type = (CurrencyType)NHibernateUtil.Currency;
+			var type = NHibernateUtil.Currency;
 			Assert.IsTrue(type.IsEqual(lhs, rhs));
 		}
 
@@ -42,7 +37,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			const decimal expected = 5.6435M;
 
-			var basic = new CurrencyClass {CurrencyValue = expected};
+			var basic = new CurrencyClass { CurrencyValue = expected };
 			ISession s = OpenSession();
 			object savedId = s.Save(basic);
 			s.Flush();
@@ -61,7 +56,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void UnsavedValue()
 		{
-			var type = (CurrencyType)NHibernateUtil.Currency;
+			var type = NHibernateUtil.Currency;
 			object mappedValue = type.StringToObject("0");
 			Assert.AreEqual(0m, mappedValue);
 			Assert.IsTrue(type.IsEqual(mappedValue, 0m), "'0' in the mapping file should have been converted to a 0m");
