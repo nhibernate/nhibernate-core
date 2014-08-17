@@ -6,18 +6,21 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class GeneratorMapper : IGeneratorMapper
 	{
-		private readonly HbmGenerator generator;
+		private readonly HbmGenerator _generator;
 
 		public GeneratorMapper(HbmGenerator generator)
 		{
-			this.generator = generator;
+			_generator = generator;
 		}
 
 		#region Implementation of IGeneratorMapper
 
 		public void Params(object generatorParameters)
 		{
-			this.Params(generatorParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(generatorParameters, null)));
+			var dictionary = generatorParameters.GetType()
+			                                    .GetProperties()
+			                                    .ToDictionary(x => x.Name, x => x.GetValue(generatorParameters, null));
+			Params(dictionary);
 		}
 
 		public void Params(IDictionary<string, object> generatorParameters)
@@ -26,12 +29,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				return;
 			}
-			generator.param = (from pi in generatorParameters
-							   let pname = pi.Key
-							   let pvalue = pi.Value
-							   select
-								new HbmParam { name = pname, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } }).
-				ToArray();
+
+			_generator.param = (from pi in generatorParameters
+			                    let pname = pi.Key
+			                    let pvalue = pi.Value
+			                    select new HbmParam
+			                    {
+				                    name = pname,
+				                    Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}
+			                    }).ToArray();
 		}
 
 		#endregion
