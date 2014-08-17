@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 
@@ -16,16 +17,20 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Params(object generatorParameters)
 		{
+			this.Params(generatorParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(generatorParameters, null)));
+		}
+
+		public void Params(IDictionary<string, object> generatorParameters)
+		{
 			if (generatorParameters == null)
 			{
 				return;
 			}
-			generator.param = (from pi in generatorParameters.GetType().GetProperties()
-			                   let pname = pi.Name
-			                   let pvalue = pi.GetValue(generatorParameters, null)
-			                   select
-			                   	new HbmParam
-			                   	{name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}}).
+			generator.param = (from pi in generatorParameters
+							   let pname = pi.Key
+							   let pvalue = pi.Value
+							   select
+								new HbmParam { name = pname, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } }).
 				ToArray();
 		}
 
