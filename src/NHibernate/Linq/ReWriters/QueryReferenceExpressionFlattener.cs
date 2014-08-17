@@ -16,6 +16,7 @@ namespace NHibernate.Linq.ReWriters
 																				{
 																					typeof(CacheableResultOperator),
 																					typeof (TimeoutResultOperator),
+                                                                                    typeof (LockResultOperator),
 																				};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)
@@ -33,7 +34,7 @@ namespace NHibernate.Linq.ReWriters
 		{
 			var subQueryModel = subQuery.QueryModel;
 			var hasBodyClauses = subQueryModel.BodyClauses.Count > 0;
-			if(hasBodyClauses)
+			if (hasBodyClauses)
 			{
 				return base.VisitSubQueryExpression(subQuery);
 			}

@@ -22,7 +22,7 @@ namespace NHibernate.Linq
 
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
 		{
-			var method = ReflectionHelper.GetMethodDefinition(() => Cacheable<object>(null)).MakeGenericMethod(typeof (T));
+			var method = ReflectionHelper.GetMethodDefinition(() => Cacheable<object>(null)).MakeGenericMethod(typeof(T));
 
 			var callExpression = Expression.Call(method, query.Expression);
 
@@ -31,7 +31,7 @@ namespace NHibernate.Linq
 
 		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
 		{
-			var method = ReflectionHelper.GetMethodDefinition(() => CacheMode<object>(null, NHibernate.CacheMode.Normal)).MakeGenericMethod(typeof (T));
+			var method = ReflectionHelper.GetMethodDefinition(() => CacheMode<object>(null, NHibernate.CacheMode.Normal)).MakeGenericMethod(typeof(T));
 
 			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(cacheMode));
 
@@ -40,7 +40,7 @@ namespace NHibernate.Linq
 
 		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
 		{
-			var method = ReflectionHelper.GetMethodDefinition(() => CacheRegion<object>(null, null)).MakeGenericMethod(typeof (T));
+			var method = ReflectionHelper.GetMethodDefinition(() => CacheRegion<object>(null, null)).MakeGenericMethod(typeof(T));
 
 			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(region));
 
@@ -57,15 +57,24 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
+		public static IQueryable<T> SetLockMode<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => SetLockMode<object>(null, LockMode.Read)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
 		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
 		{
 			var nhQueryable = query as QueryableBase<T>;
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var provider = (INhQueryProvider)nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			return (IEnumerable<T>) future;
+			return (IEnumerable<T>)future;
 		}
 
 		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
@@ -74,14 +83,14 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) nhQueryable.Provider;
+			var provider = (INhQueryProvider)nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
 			if (future is IEnumerable<T>)
 			{
-				return new FutureValue<T>(() => ((IEnumerable<T>) future));
+				return new FutureValue<T>(() => ((IEnumerable<T>)future));
 			}
 
-			return (IFutureValue<T>) future;
+			return (IFutureValue<T>)future;
 		}
 
 		public static IFutureValue<TResult> ToFutureValue<T, TResult>(this IQueryable<T> query, Expression<Func<IQueryable<T>, TResult>> selector)
@@ -90,13 +99,13 @@ namespace NHibernate.Linq
 			if (nhQueryable == null)
 				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
-			var provider = (INhQueryProvider) query.Provider;
+			var provider = (INhQueryProvider)query.Provider;
 
 			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
 																	query.Expression,
 																	selector.Body);
 
-			return (IFutureValue<TResult>) provider.ExecuteFuture(expression);
+			return (IFutureValue<TResult>)provider.ExecuteFuture(expression);
 		}
 	}
 }
