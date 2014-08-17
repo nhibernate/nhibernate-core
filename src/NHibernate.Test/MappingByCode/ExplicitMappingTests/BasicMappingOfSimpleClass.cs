@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -25,6 +27,24 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				{
 					map.Column("MyClassId");
 					map.Generator(Generators.HighLow, gmap => gmap.Params(new { max_low = 100 }));
+				});
+				ca.Property(x => x.Something, map => map.Length(150));
+			});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+			ModelIsWellFormed(hbmMapping);
+		}
+
+		[Test]
+		public void MapClassWithIdAndPropertyWithParamsDictionary()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(ca =>
+			{
+				ca.Id(x => x.Id, map =>
+				{
+					map.Column("MyClassId");
+					//NH-3415
+					map.Generator(Generators.HighLow, gmap => gmap.Params(new Dictionary<string, object> { { "max_low", 100 } }));
 				});
 				ca.Property(x => x.Something, map => map.Length(150));
 			});
