@@ -812,5 +812,24 @@ namespace NHibernate.Dialect
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+        public override string DropColumnString
+        {
+            get { return "drop "; }
+        }
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "modify "; }
+        }
 	}
 }

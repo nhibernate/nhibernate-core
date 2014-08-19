@@ -357,7 +357,25 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary>
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+        public override string DropColumnString
+        {
+            get { return "drop column "; }
+        }
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "modify "; }
+        }
+	    /// <summary>
 		/// Can parameters be used for a statement containing a LIMIT?
 		/// </summary>
 		public override bool SupportsVariableLimit

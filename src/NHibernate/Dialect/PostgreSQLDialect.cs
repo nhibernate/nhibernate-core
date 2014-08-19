@@ -249,5 +249,25 @@ namespace NHibernate.Dialect
 		{
 			get { return "SELECT CURRENT_TIMESTAMP"; }
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string DropColumnString
+	    {
+            get { return "drop column "; }
+	    }
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "alter column "; }
+        }
 	}
 }

@@ -498,7 +498,32 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		public override bool IsKnownToken(string currentToken, string nextToken)
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string DropColumnString
+	    {
+            get { return "drop column "; }
+	    }
+
+	    public override bool SupportsAlterColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string AlterColumnString
+	    {
+	        get { return "alter column "; }
+	    }
+
+	    public override string BatchTerminator
+	    {
+	        get { return "\r\nGO\r\n"; }
+	    }
+
+	    public override bool IsKnownToken(string currentToken, string nextToken)
 		{
 			return currentToken == "n" && nextToken == "'"; // unicode character
 		}
@@ -574,6 +599,8 @@ namespace NHibernate.Dialect
 				string lockHint = _dialect.AppendLockHint(_aliasedLockModes[alias], alias);
 				return string.Concat(" ", lockHint, match.Groups[2].Value); // TODO: seems like this line is redundant
 			}
+
+            
 		}
 	}
 }

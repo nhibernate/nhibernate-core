@@ -229,7 +229,16 @@ namespace NHibernate.Dialect
 			get { return "select GEN_UUID() from RDB$DATABASE"; }
 		}
 
-		[Serializable]
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+        public override string DropColumnString
+        {
+            get { return "drop "; }
+        }
+
+	    [Serializable]
 		private class PositionFunction : ISQLFunction
 		{
 			// The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  

@@ -278,6 +278,11 @@ namespace NHibernate.Dialect
 
 		#region DDL support
 
+	    public virtual string BatchTerminator
+	    {
+	        get { return ""; }
+	    }
+
 		/// <summary>
 		/// Do we need to drop constraints before dropping tables in the dialect?
 		/// </summary>
@@ -2173,6 +2178,30 @@ namespace NHibernate.Dialect
 		{
 			get { throw new NotSupportedException("No add column syntax supported by Dialect"); }
 		}
+
+	    /// <summary>
+	    /// Does the dialect support dropping columns
+	    /// </summary>
+	    public virtual bool SupportsDropColumn
+	    {
+	        get { return false; }
+	    }
+
+	    public virtual string DropColumnString
+	    {
+            get { throw new NotSupportedException("No drop column syntax supported by Dialect"); }
+	    }
+
+	    public virtual bool SupportsAlterColumn
+	    {
+	        get { return false; }
+	    }
+
+        public virtual string AlterColumnString
+        {
+            get { throw new NotSupportedException("No alter column syntax supported by Dialect"); }
+        }
+
 
 		public virtual string DropForeignKeyString
 		{

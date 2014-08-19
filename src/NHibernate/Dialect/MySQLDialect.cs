@@ -244,7 +244,29 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string DropColumnString
+	    {
+            get { return "drop "; }
+	    }
+
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "alter column "; }
+        }
+
+
+	    public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			var pagingBuilder = new SqlStringBuilder(queryString);
 			pagingBuilder.Add(" limit ");

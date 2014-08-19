@@ -51,5 +51,27 @@ namespace NHibernate.Dialect
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.IngresDriver";
 		}
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string DropColumnString
+	    {
+            get { return "drop column "; }
+	    }
+
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "alter column "; }
+        }
+
 	}
 }

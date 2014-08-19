@@ -271,8 +271,26 @@ namespace NHibernate.Dialect
 			
 			return tableName;
 		}
-		
-		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
+
+	    public override bool SupportsDropColumn
+	    {
+	        get { return true; }
+	    }
+        public override string DropColumnString
+        {
+            get { return "drop "; }
+        }
+
+        public override bool SupportsAlterColumn
+        {
+            get { return true; }
+        }
+
+        public override string AlterColumnString
+        {
+            get { return "modify "; }
+        }
+	    public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
 		{
 			// TODO:  merge additional lockoptions support in Dialect.applyLocksToSql
 
