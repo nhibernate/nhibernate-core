@@ -120,12 +120,31 @@ namespace NHibernate.Impl
 												  queryCache,
 												  key);
 
+			if (factory.Statistics.IsStatisticsEnabled)
+			{
+				if (result == null)
+				{
+					factory.StatisticsImplementor.QueryCacheMiss(key.ToString(), queryCache.RegionName);
+				}
+				else
+				{
+					factory.StatisticsImplementor.QueryCacheHit(key.ToString(), queryCache.RegionName);
+				}
+			}
+
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
 				IList list = DoList();
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
 				result = list;
+				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+				{
+					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);
+					}
+				}
 			}
 
 			return GetResultList(result);
