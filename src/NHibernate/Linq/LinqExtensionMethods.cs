@@ -47,6 +47,14 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
+		public static IQueryable<T> AsReadOnly<T>(this IQueryable<T> query)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => AsReadOnly<object>(null)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression);
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
 
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
 		{
