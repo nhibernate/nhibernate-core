@@ -228,6 +228,7 @@ namespace NHibernate.Id
 				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
 				try
 				{
+					session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 					rs = qps.ExecuteReader();
 					if (!rs.Read())
 					{
@@ -271,6 +272,7 @@ namespace NHibernate.Id
 
 					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
+					session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 					rows = ups.ExecuteNonQuery();
 				}
 				catch (Exception e)

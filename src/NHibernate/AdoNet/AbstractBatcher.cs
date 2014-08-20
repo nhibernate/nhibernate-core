@@ -193,6 +193,7 @@ namespace NHibernate.AdoNet
 				duration = Stopwatch.StartNew();
 			try
 			{
+				this.Factory.ConnectionProvider.EnsureConnectionIsOpen(cmd.Connection);
 				return cmd.ExecuteNonQuery();
 			}
 			catch (Exception e)
@@ -219,6 +220,7 @@ namespace NHibernate.AdoNet
 			IDataReader reader = null;
 			try
 			{
+				this._factory.ConnectionProvider.EnsureConnectionIsOpen(cmd.Connection);
 				reader = cmd.ExecuteReader();
 			}
 			catch (Exception e)

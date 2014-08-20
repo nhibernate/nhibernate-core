@@ -114,6 +114,7 @@ namespace NHibernate.Id.Enhanced
 						selectCmd.Transaction = transaction;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
+						session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 						selectedValue = selectCmd.ExecuteScalar();
 					}
 
@@ -143,6 +144,7 @@ namespace NHibernate.Id.Enhanced
 						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
 						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
 						((IDataParameter)updateCmd.Parameters[1]).Value = result;
+						session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 						updatedRows = updateCmd.ExecuteNonQuery();
 					}
 				}

@@ -92,7 +92,8 @@ namespace NHibernate.Engine.Query
 					{
 						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
-					
+
+					session.Factory.ConnectionProvider.EnsureConnectionIsOpen(ps.Connection);
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally
