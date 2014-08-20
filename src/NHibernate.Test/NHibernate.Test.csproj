@@ -588,6 +588,7 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\PoidTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\RootClassPropertiesSplitsTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\SubclassPropertiesSplitsTests.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\OptimisticLockModeTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\GeneratorTests.cs" />

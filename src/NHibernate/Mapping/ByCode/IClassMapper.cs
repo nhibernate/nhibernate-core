@@ -27,6 +27,7 @@ namespace NHibernate.Mapping.ByCode
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
 		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
@@ -67,6 +68,7 @@ namespace NHibernate.Mapping.ByCode
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
 		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class

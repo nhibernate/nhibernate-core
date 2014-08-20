@@ -353,6 +353,7 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ManyToAnyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ManyToAnyMapper.cs" />
+    <Compile Include="Mapping\ByCode\OptimisticLockMode.cs" />
     <Compile Include="Mapping\ByCode\Import.cs" />
     <Compile Include="Mapping\ByCode\PolymorphismType.cs" />
     <Compile Include="Mapping\ByCode\PropertyGeneration.cs" />
