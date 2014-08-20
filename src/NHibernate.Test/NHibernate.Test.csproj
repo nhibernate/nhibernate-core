@@ -590,6 +590,7 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\SubclassPropertiesSplitsTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\VersionTests.cs" />
     <Compile Include="MappingByCode\For.cs" />
+    <Compile Include="MappingByCode\GeneratorTests.cs" />
     <Compile Include="MappingByCode\ImportTests.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3041\Domain.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3657\OneToOneToPropertyReferenceWithExplicitClassSet.cs" />
