@@ -80,7 +80,6 @@ namespace NHibernate.AdoNet
 			int rowsAffected;
 			try
 			{
-				this.Factory.ConnectionProvider.EnsureConnectionIsOpen(ps.Connection);
 				rowsAffected = currentBatch.ExecuteNonQuery();
 			}
 			catch (DbException e)
