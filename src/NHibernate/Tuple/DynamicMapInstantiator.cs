@@ -12,10 +12,12 @@ namespace NHibernate.Tuple
 
 		private readonly string entityName;
 		private readonly HashSet<string> isInstanceEntityNames = new HashSet<string>();
+		private readonly Mapping.Component component;
 
-		public DynamicMapInstantiator()
+		public DynamicMapInstantiator(Mapping.Component component)
 		{
 			entityName = null;
+			this.component = component;
 		}
 
 		public DynamicMapInstantiator(PersistentClass mappingInfo)
@@ -48,7 +50,14 @@ namespace NHibernate.Tuple
 
 		protected virtual IDictionary GenerateMap()
 		{
-			return new Hashtable();
+			if ((this.component != null) && (typeof(IDictionary<string, object>).IsAssignableFrom(this.component.Type.ReturnedClass) == true))
+			{
+				return new Dictionary<string, object>();
+			}
+			else
+			{
+				return new Hashtable();
+			}
 		}
 
 		public bool IsInstance(object obj)
@@ -65,7 +74,7 @@ namespace NHibernate.Tuple
 			}
 			else
 			{
-				return false;
+				return obj is IDictionary<string, object>;
 			}
 		}
 

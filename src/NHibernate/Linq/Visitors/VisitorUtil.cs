@@ -17,7 +17,7 @@ namespace NHibernate.Linq.Visitors
 
 			// A dynamic component must be an IDictionary with a string key.
 
-			if (method.Name != "get_Item" || !typeof(IDictionary).IsAssignableFrom(targetObject.Type))
+			if (method.Name != "get_Item" || !typeof(IDictionary).IsAssignableFrom(targetObject.Type) && !typeof(IDictionary<string, object>).IsAssignableFrom(targetObject.Type))
 				return false;
 
 			var key = arguments.First() as ConstantExpression;

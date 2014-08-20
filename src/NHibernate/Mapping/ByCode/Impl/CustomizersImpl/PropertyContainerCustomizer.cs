@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -98,11 +99,25 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			RegisterDynamicComponentMapping(property, mapping);
 		}
 
+		public void Component<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property,
+													 TComponent dynamicComponentTemplate,
+													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			RegisterDynamicComponentMapping(property, mapping);
+		}
+
 		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			RegisterDynamicComponentMapping(mapping, member, memberOf);
+		}
+
+		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary<string, object>>> property, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
+			RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
 		}
 
 		protected void RegisterDynamicComponentMapping<TComponent>(Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
