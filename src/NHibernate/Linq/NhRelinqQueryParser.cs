@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -86,7 +87,7 @@ namespace NHibernate.Linq
 		public bool IsRegistered(MethodInfo method)
 		{
 			// Avoid Relinq turning IDictionary.Contains into ContainsResultOperator.  We do our own processing for that method.
-			if (method.DeclaringType == typeof(IDictionary) && method.Name == "Contains")
+			if ((method.DeclaringType == typeof(IDictionary) || method.DeclaringType == typeof(IDictionary<string, object>)) && method.Name == "Contains")
 				return false;
 
 			return defaultNodeTypeProvider.IsRegistered(method);

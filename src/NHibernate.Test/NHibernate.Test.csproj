@@ -687,6 +687,14 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH1039Generic\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH1039Generic\Model.cs" />
+    <Compile Include="NHSpecificTest\NH1796Generic\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH1796Generic\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2664Generic\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2664Generic\Product.cs" />
+    <Compile Include="NHSpecificTest\NH3571Generic\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3571Generic\Product.cs" />
     <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />
     <Compile Include="NHSpecificTest\NH3455\Address.cs" />
@@ -3047,6 +3055,10 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3571Generic\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2664Generic\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1796Generic\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1039Generic\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />

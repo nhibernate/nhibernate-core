@@ -58,7 +58,7 @@ namespace NHibernate.Linq.Functions
 
 		public bool SupportsMethod(MethodInfo method)
 		{
-			return (method != null) && (method.Name == MethodName) && method.IsMethodOf(typeof(IDictionary));
+			return (method != null) && (method.Name == MethodName) && (method.IsMethodOf(typeof(IDictionary)) || method.IsMethodOf(typeof(IDictionary<string, object>)));
 		}
 
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)

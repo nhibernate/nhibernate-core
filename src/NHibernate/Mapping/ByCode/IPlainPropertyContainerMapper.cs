@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -41,6 +42,9 @@ namespace NHibernate.Mapping.ByCode
 															 Action<IComponentMapper<TComponent>> mapping) where TComponent : class;
 		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property) where TComponent : class;
 		void Component<TComponent>(Expression<Func<TContainer, IDictionary>> property,
+								   TComponent dynamicComponentTemplate,
+								   Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
+		void Component<TComponent>(Expression<Func<TContainer, IDictionary<string, object>>> property,
 								   TComponent dynamicComponentTemplate,
 								   Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class;
 
