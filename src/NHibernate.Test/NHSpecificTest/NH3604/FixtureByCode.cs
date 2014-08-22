@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3604
 {
-    /// <summary>
-    /// Tests ability to map a non-public property by code via expressions to access the hidden properties
-    /// </summary>
+	/// <summary>
+	/// Tests ability to map a non-public property by code via expressions to access the hidden properties
+	/// </summary>
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
@@ -18,15 +18,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 			{
 				rc.Id(Entity.PropertyAccessExpressions.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-                rc.OneToOne(x => x.Detail, m => m.Cascade(Mapping.ByCode.Cascade.All));
+				rc.OneToOne(x => x.Detail, m => m.Cascade(Mapping.ByCode.Cascade.All));
 			});
 
-		    mapper.Class<EntityDetail>(rc =>
-		    {
-                rc.Id(x => x.Id, m => m.Generator(new ForeignGeneratorDef(ReflectionHelper.GetProperty(EntityDetail.PropertyAccessExpressions.Entity))));
-                rc.OneToOne(EntityDetail.PropertyAccessExpressions.Entity, m => m.Constrained(true));
-                rc.Property(x => x.ExtraInfo);
-		    });
+			mapper.Class<EntityDetail>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(new ForeignGeneratorDef(ReflectionHelper.GetProperty(EntityDetail.PropertyAccessExpressions.Entity))));
+				rc.OneToOne(EntityDetail.PropertyAccessExpressions.Entity, m => m.Constrained(true));
+				rc.Property(x => x.ExtraInfo);
+			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -41,8 +41,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 
 
 				var e2 = new Entity { Name = "Sally" };
-			    var ed2 = new EntityDetail(e2) { ExtraInfo = "Jo" };
-			    e2.Detail = ed2;
+				var ed2 = new EntityDetail(e2) { ExtraInfo = "Jo" };
+				e2.Detail = ed2;
 
 				session.Save(e2);
 
@@ -73,22 +73,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 							 where e.Name == "Sally"
 							 select e;
 
-			    var entities = result.ToList();
-			    Assert.AreEqual(1, entities.Count);
-                Assert.AreEqual("Jo", entities[0].Detail.ExtraInfo);
+				var entities = result.ToList();
+				Assert.AreEqual(1, entities.Count);
+				Assert.AreEqual("Jo", entities[0].Detail.ExtraInfo);
 			}
 		}
 
-        [Test]
-        public void WriteXmlMappings()
-        {
-            var mapper = new ModelMapper();
+		[Test]
+		public void WriteXmlMappings()
+		{
+			var mapper = new ModelMapper();
 			mapper.Class<Entity>(rc =>
 			{
 				rc.Id(Entity.PropertyAccessExpressions.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 			});
-            mapper.CompileMappingForEachExplicitlyAddedEntity().WriteAllXmlMapping();
-        }
+			mapper.CompileMappingForEachExplicitlyAddedEntity().WriteAllXmlMapping();
+		}
 	}
 }
