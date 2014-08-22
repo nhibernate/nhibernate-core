@@ -39,7 +39,7 @@ namespace NHibernate.Classic
 		LifecycleVeto OnSave(ISession s);
 
 		/// <summary>
-		/// Called when an entity is passed to <see cref="ISession.Update(object)"/>.
+		/// Called when an entity is passed to <see cref="ISharedSessionContract.Update(object)"/>.
 		/// </summary>
 		/// <param name="s">The session</param>
 		/// <returns>A <see cref="LifecycleVeto" /> value indicating whether the operation

@@ -113,13 +113,13 @@ namespace NHibernate.Engine
 
 		#region The CascadingAction implementations
 
-		/// <seealso cref="ISession.Delete(object)"/>
+		/// <seealso cref="ISharedSessionContract.Delete(object)"/>
 		public static readonly CascadingAction Delete = new DeleteCascadingAction();
 
 		/// <seealso cref="ISession.Lock(object, LockMode)"/>
 		public static readonly CascadingAction Lock = new LockCascadingAction();
 
-		/// <seealso cref="ISession.Refresh(object)"/>
+		/// <seealso cref="ISharedSessionContract.Refresh(object)"/>
 		public static readonly CascadingAction Refresh= new RefreshCascadingAction();
 
 		/// <seealso cref="ISession.Evict(object)"/>

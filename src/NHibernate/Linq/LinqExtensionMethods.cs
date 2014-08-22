@@ -10,6 +10,22 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
+		public static IQueryable<T> Query<T>(this ISharedSessionContract session)
+		{
+			if (session is ISession)
+			{
+				return Query<T>(session as ISession);
+			}
+			else if (session is IStatelessSession)
+			{
+				return Query<T>(session as IStatelessSession);
+			}
+			else
+			{
+				throw new ArgumentException("Provided session is not an ISession or an IStatelessSession", "session");
+			}
+		}
+
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());

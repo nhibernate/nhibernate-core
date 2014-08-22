@@ -279,6 +279,7 @@
     <Compile Include="IQuery.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />
+    <Compile Include="ISharedSessionContract.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="LazyInitializationException.cs" />
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />

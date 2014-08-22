@@ -10,7 +10,7 @@ namespace NHibernate
 	/// An object-oriented representation of a NHibernate query.
 	/// </summary>
 	/// <remarks>
-	/// An <c>IQuery</c> instance is obtained by calling <see cref="ISession.CreateQuery(string)" />.
+	/// An <c>IQuery</c> instance is obtained by calling <see cref="ISharedSessionContract.CreateQuery(string)" />.
 	/// Key features of this interface include:
 	/// <list type="bullet">
 	///		<item>

@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// <seealso cref="AbstractDetachedQuery"/>
 	/// <seealso cref="IDetachedQuery"/>
 	/// <seealso cref="IQuery"/>
-	/// <seealso cref="ISession.GetNamedQuery(string)"/>
+	/// <seealso cref="ISharedSessionContract.GetNamedQuery(string)"/>
 	[Serializable]
 	public class DetachedNamedQuery : AbstractDetachedQuery
 	{
