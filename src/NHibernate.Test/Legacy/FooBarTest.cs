@@ -4437,9 +4437,8 @@ namespace NHibernate.Test.Legacy
 				//s.Flush();
 				t.Commit();
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				Assert.IsNotNull(e); //getting ride of 'e' is never used compile warning
 				t.Rollback();
 			}
 			finally

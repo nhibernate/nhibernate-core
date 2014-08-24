@@ -678,9 +678,9 @@ namespace NHibernate.Test.Legacy
 					s.GetIdentifier(d);
 					s.Delete(d);
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
-					Assert.IsNotNull(e); //getting ride of 'e' is never used compile warning
+					// Why are we ignoring exceptions here? /Oskar 2014-08-24
 				}
 			}
 			s.Delete(m2);
