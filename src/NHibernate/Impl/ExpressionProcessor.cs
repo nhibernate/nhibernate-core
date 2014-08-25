@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -808,7 +807,17 @@ namespace NHibernate.Impl
 		public static void RegisterCustomMethodCall(Expression<Func<bool>> function, Func<MethodCallExpression, ICriterion> functionProcessor)
 		{
 			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
-			string signature = Signature(functionExpression.Method);
+			RegisterCustomMethodCall(functionExpression.Method);
+		}
+		
+		/// <summary>
+		/// Register a custom method for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">MethodInfo of the custom method</param>
+		/// <param name="functionProcessor">function to convert MethodCallExpression to ICriterion</param>
+		public static void RegisterCustomMethodCall(MethodInfo methodInfo, Func<MethodCallExpression, ICriterion> functionProcessor)
+		{
+			string signature = Signature(methodInfo);
 			_customMethodCallProcessors.Add(signature, functionProcessor);
 		}
 
@@ -820,20 +829,40 @@ namespace NHibernate.Impl
 		public static void RegisterCustomProjection<T>(Expression<Func<T>> function, Func<MethodCallExpression, IProjection> functionProcessor)
 		{
 			MethodCallExpression functionExpression = (MethodCallExpression)function.Body;
-			string signature = Signature(functionExpression.Method);
-		    _customProjectionProcessors.Add(signature, e => functionProcessor((MethodCallExpression) e));
+			RegisterCustomProjection(functionExpression.Method, functionProcessor);
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Register a custom projection for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">MethodInfo of the custom method</param>
+		/// <param name="functionProcessor">function to convert MethodCallExpression to IProjection</param>
+		public static void RegisterCustomProjection(MethodInfo methodInfo, Func<MethodCallExpression, IProjection> functionProcessor)
+        {
+			string signature = Signature(methodInfo);
+			_customProjectionProcessors.Add(signature, e => functionProcessor((MethodCallExpression) e));
+		}
+
+		/// <summary>
 		/// Register a custom projection for use in a QueryOver expression
 		/// </summary>
 		/// <param name="function">Lambda expression demonstrating call of custom method</param>
-		/// <param name="functionProcessor">function to convert MethodCallExpression to IProjection</param>
+		/// <param name="functionProcessor">function to convert MemberExpression to IProjection</param>
 		public static void RegisterCustomProjection<T>(Expression<Func<T>> function, Func<MemberExpression, IProjection> functionProcessor)
         {
-            MemberExpression functionExpression = (MemberExpression) function.Body;
-            string signature = Signature(functionExpression.Member);
-            _customProjectionProcessors.Add(signature, e => functionProcessor((MemberExpression) e));
+			MemberExpression functionExpression = (MemberExpression) function.Body;
+			RegisterCustomProjection(functionExpression.Member, functionProcessor);
+		}
+		
+		/// <summary>
+		/// Register a custom projection for use in a QueryOver expression
+		/// </summary>
+		/// <param name="function">MethodInfo of the custom method</param>
+		/// <param name="functionProcessor">function to convert MemberExpression to IProjection</param>
+		public static void RegisterCustomProjection(MethodInfo methodInfo, Func<MemberExpression, IProjection> functionProcessor)
+        {
+			string signature = Signature(methodInfo);
+			_customProjectionProcessors.Add(signature, e => functionProcessor((MemberExpression) e));
 		}
 	}
 }
