@@ -106,6 +106,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
 			ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
 			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
+			ResultOperatorMap.Add<LockResultOperator, ProcessLock>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 		}
