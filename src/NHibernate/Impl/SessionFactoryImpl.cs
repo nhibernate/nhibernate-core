@@ -474,7 +474,8 @@ namespace NHibernate.Impl
 			{
 				throw new ArgumentNullException("sessionLocalInterceptor");
 			}
-			return OpenSession(connection, false, long.MinValue, sessionLocalInterceptor);
+            long timestamp = settings.CacheProvider.NextTimestamp();
+            return OpenSession(connection, false, timestamp, sessionLocalInterceptor);
 		}
 
 		public ISession OpenSession(IInterceptor sessionLocalInterceptor)
