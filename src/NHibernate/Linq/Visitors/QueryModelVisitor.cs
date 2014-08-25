@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
+using NHibernate.Linq.EagerFetching;
 using NHibernate.Linq.GroupBy;
 using NHibernate.Linq.GroupJoin;
 using NHibernate.Linq.NestedSelects;
@@ -104,6 +105,8 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<AllResultOperator, ProcessAll>();
 			ResultOperatorMap.Add<FetchOneRequest, ProcessFetchOne>();
 			ResultOperatorMap.Add<FetchManyRequest, ProcessFetchMany>();
+            ResultOperatorMap.Add<InnerFetchOneRequest, ProcessInnerFetchOne>();
+            ResultOperatorMap.Add<InnerFetchManyRequest, ProcessInnerFetchMany>();
 			ResultOperatorMap.Add<CacheableResultOperator, ProcessCacheable>();
 			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
