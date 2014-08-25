@@ -1,13 +1,9 @@
 using System;
-using System.Collections;
-
 using NUnit.Framework;
 
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -156,7 +152,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.Where(p => !(p.Name == "test name") || !personAlias.Name.IsLike("%test%"));
+					.Where(p => p.Name != "test name" || !personAlias.Name.IsLike("%test%"));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -254,7 +250,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.CreateCriteria("Father")
-						.Add(Expression.Eq("Name", "test name"));
+						.Add(Restrictions.Eq("Name", "test name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -270,7 +266,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.CreateCriteria("personAlias.Father")
-						.Add(Expression.Eq("Name", "test name"));
+						.Add(Restrictions.Eq("Name", "test name"));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -287,7 +283,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person))
 					.CreateCriteria("Children")
-						.Add(Expression.Eq("Nickname", "test name"));
+						.Add(Restrictions.Eq("Nickname", "test name"));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -303,7 +299,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			ICriteria expected =
 				CreateTestCriteria(typeof(Person), "personAlias")
 					.CreateCriteria("personAlias.Children", JoinType.InnerJoin)
-						.Add(Expression.Eq("Nickname", "test name"));
+						.Add(Restrictions.Eq("Nickname", "test name"));
 
 			Person personAlias = null;
 			IQueryOver<Person> actual =
@@ -639,7 +635,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.OrderBy(() => personAlias.BirthDate.YearPart()).Desc;
+					.OrderBy(() => personAlias.BirthDate.Year).Desc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
