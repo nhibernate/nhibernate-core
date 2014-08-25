@@ -61,6 +61,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -650,6 +651,7 @@
     <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
+    <Compile Include="Transform\MultiLevelDistinctEntityTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />
     <Compile Include="TransientObjectException.cs" />
     <Compile Include="Type\AbstractType.cs" />

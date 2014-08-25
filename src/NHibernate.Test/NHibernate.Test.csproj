@@ -1237,7 +1237,12 @@
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="TransformTests\MultiLevelDistinctEntityTransformer\Child.cs" />
+    <Compile Include="TransformTests\MultiLevelDistinctEntityTransformer\Employee.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
+    <Compile Include="TransformTests\MultiLevelDistinctEntityTransformer\MultiLevelDistinctEntityTransformerFixture.cs" />
+    <Compile Include="TransformTests\MultiLevelDistinctEntityTransformer\Nationality.cs" />
+    <Compile Include="TransformTests\MultiLevelDistinctEntityTransformer\Passport.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
     <Compile Include="TypesTest\StringTypeWithLengthFixture.cs" />

@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NHibernate.Transform
 {
@@ -30,6 +32,11 @@ namespace NHibernate.Transform
 			return AliasToBean(typeof(T));
 		}
 
+		public static IResultTransformer MultiLevelDistinctRootEntity(Dictionary<System.Type, List<String>> fetchedCollectionProperties)
+		{
+			return new MultiLevelDistinctEntityTransformer(fetchedCollectionProperties);
+		}
+		
 		public static readonly IResultTransformer DistinctRootEntity = new DistinctRootEntityResultTransformer();
 
 		public static IResultTransformer AliasToBeanConstructor(System.Reflection.ConstructorInfo constructor)
