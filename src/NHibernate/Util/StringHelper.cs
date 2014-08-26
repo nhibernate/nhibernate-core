@@ -1,15 +1,22 @@
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+[assembly: InternalsVisibleTo("NHibernate.Test")]
 
 namespace NHibernate.Util
 {
 	/// <summary></summary>
 	public static class StringHelper
 	{
+		/// <summary>
+		/// This allows for both CRLF and lone LF line separators.
+		/// </summary>
+		internal static readonly string[] LineSeparators = {"\r\n", "\n"};
+
 		public const string WhiteSpace = " \n\r\f\t";
 
 		/// <summary></summary>
@@ -723,6 +730,54 @@ namespace NHibernate.Util
 			string filterName = filterParameterName.Substring(0, dot);
 			string parameterName = filterParameterName.Substring(dot + 1);
 			return new[] { filterName, parameterName };
+		}
+
+
+		/// <summary>
+		/// Return the index of the next line separator, starting at startIndex. If will match
+		/// the first CRLF or LF line separator. If there is no match, -1 will be returned. When
+		/// returning, newLineLength will be set to the number of characters in the matched line
+		/// separator (1 if LF was found, 2 if CRLF was found).
+		/// </summary>
+		internal static int IndexOfAnyNewLine(this string str, int startIndex, out int newLineLength)
+		{
+			newLineLength = 0;
+			var matchStartIdx = str.IndexOfAny(new[] {'\r', '\n'}, startIndex);
+
+			if (matchStartIdx == -1)
+				return -1;
+
+			if (string.Compare(str, matchStartIdx, "\r\n", 0, 2, StringComparison.OrdinalIgnoreCase) == 0)
+				newLineLength = 2;
+			else
+				newLineLength = 1;
+
+			return matchStartIdx;
+		}
+
+
+		/// <summary>
+		/// Check if the given index points to a line separator in the string. Both CRLF and LF
+		/// line separators are handled. When returning, newLineLength will be set to the number
+		/// of characters matched in the line separator. It will be 2 if a CRLF matched, 1 if LF
+		/// matched, and 0 if the index doesn't indicate (the start of) a line separator.
+		/// </summary>
+		internal static bool IsAnyNewLine(this string str, int index, out int newLineLength)
+		{
+			if (string.Compare(str, index, "\r\n", 0, 2, StringComparison.OrdinalIgnoreCase) == 0)
+			{
+				newLineLength = 2;
+				return true;
+			}
+
+			if (index < str.Length && str[index] == '\n')
+			{
+				newLineLength = 1;
+				return true;
+			}
+
+			newLineLength = 0;
+			return false;
 		}
 	}
 }

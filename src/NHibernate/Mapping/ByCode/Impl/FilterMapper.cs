@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -35,7 +36,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				filter.Text = null;
 				return;
 			}
-			string[] conditionLines = sqlCondition.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+			string[] conditionLines = sqlCondition.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (conditionLines.Length > 1)
 			{
 				filter.Text = conditionLines;

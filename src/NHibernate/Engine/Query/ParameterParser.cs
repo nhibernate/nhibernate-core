@@ -12,8 +12,6 @@ namespace NHibernate.Engine.Query
 	/// </summary>
 	public class ParameterParser
 	{
-		private static readonly int NewLineLength = Environment.NewLine.Length;
-
 		public interface IRecognizer
 		{
 			void OutParameter(int position);
@@ -56,6 +54,8 @@ namespace NHibernate.Engine.Query
 			bool afterNewLine = false;
 			for (int indx = 0; indx < stringLength; indx++)
 			{
+				int currentNewLineLength;
+
 				// check comments
 				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
 				{
@@ -64,9 +64,11 @@ namespace NHibernate.Engine.Query
 					indx = closeCommentIdx + 1;
 					continue;
 				}
+				
 				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
 				{
-					var closeCommentIdx = sqlString.IndexOf(Environment.NewLine, indx + 2);
+					var closeCommentIdx = sqlString.IndexOfAnyNewLine(indx + 2, out currentNewLineLength);
+						
 					string comment;
 					if (closeCommentIdx == -1)
 					{
@@ -75,16 +77,17 @@ namespace NHibernate.Engine.Query
 					}
 					else
 					{
-						comment = sqlString.Substring(indx, closeCommentIdx - indx + Environment.NewLine.Length);
+						comment = sqlString.Substring(indx, closeCommentIdx - indx + currentNewLineLength);
 					}
 					recognizer.Other(comment);
-					indx = closeCommentIdx + NewLineLength - 1;
+					indx = closeCommentIdx + currentNewLineLength - 1;
 					continue;
 				}
-				if (indx + NewLineLength -1 < stringLength && sqlString.Substring(indx, NewLineLength) == Environment.NewLine)
+
+				if (sqlString.IsAnyNewLine(indx, out currentNewLineLength))
 				{
 					afterNewLine = true;
-					indx += NewLineLength - 1;
+					indx += currentNewLineLength - 1;
 					recognizer.Other(Environment.NewLine);
 					continue;
 				}
