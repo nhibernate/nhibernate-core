@@ -74,10 +74,9 @@ namespace NHibernate.Test.ProjectionFixtures
 
 		    string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
 		    string expectedMessagePart0 =
-			    string.Format(
-				    @"could not execute query
-[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
-				    pName);
+			    string.Format("could not execute query" + Environment.NewLine +
+			                  "[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
+			                  pName);
 		    string expectedMessagePart1 =
 			    string.Format(
 				    @"[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0}]", pName);
