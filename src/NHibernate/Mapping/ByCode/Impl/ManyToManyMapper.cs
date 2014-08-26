@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -128,7 +129,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 			ResetColumnPlainValues();
 			manyToMany.Items = null;
-			string[] formulaLines = formula.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
 				manyToMany.Items = new[] {new HbmFormula {Text = formulaLines}};

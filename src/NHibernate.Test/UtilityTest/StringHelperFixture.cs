@@ -137,5 +137,35 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(StringHelper.PurgeBackticksEnclosing("something`"), Is.EqualTo("something`"));
 			Assert.That(StringHelper.PurgeBackticksEnclosing("`something`"), Is.EqualTo("something"));
 		}
+
+
+		[TestCase("ab", 0, -1, 0)]
+		[TestCase("a\r\nb", 0, 1, 2)]
+		[TestCase("a\nb", 0, 1, 1)]
+		[TestCase("ab\r\nfoo\r\n", 4, 7, 2)]
+		public void IndexOfAnyNewLineReturnsIndexAndLength(string str, int startIndex, int expectedIndex,
+		                                                   int expectedMatchLength)
+		{
+			int matchLength;
+			var matchIndex = str.IndexOfAnyNewLine(startIndex, out matchLength);
+
+			Assert.That(matchIndex, Is.EqualTo(expectedIndex));
+			Assert.That(matchLength, Is.EqualTo(expectedMatchLength));
+		}
+
+
+		[TestCase("ab", 0, false, 0)]
+		[TestCase("a\r\nb", 0, false, 0)]
+		[TestCase("a\nb", 1, true, 1)]
+		[TestCase("a\r\nb", 1, true, 2)]
+		public void IsAnyNewLineMatchAndLength(string str, int startIndex, bool expectNewLine,
+		                                       int expectedMatchLength)
+		{
+			int matchLength;
+			var isNewLine = str.IsAnyNewLine(startIndex, out matchLength);
+
+			Assert.That(isNewLine, Is.EqualTo(expectNewLine));
+			Assert.That(matchLength, Is.EqualTo(expectedMatchLength));
+		}
 	}
 }

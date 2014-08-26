@@ -325,7 +325,7 @@ namespace NHibernate.Impl
 			}
 			if (orderEntries.Count != 0)
 			{
-				builder.Append(Environment.NewLine);
+				builder.AppendLine();
 			}
 			first = true;
 			foreach (OrderEntry orderEntry in orderEntries)
