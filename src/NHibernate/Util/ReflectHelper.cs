@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -274,7 +275,7 @@ namespace NHibernate.Util
 					return null;
 				}
 
-				Assembly assembly = Assembly.Load(name.Assembly);
+                Assembly assembly = GetAssembly(name.Assembly);
 
 				if (assembly == null)
 				{
@@ -302,6 +303,31 @@ namespace NHibernate.Util
 				return null;
 			}
 		}
+
+        /// <summary>
+        /// returns <see cref="System.Reflection.Assembly"/> from an already loaded Assembly or an
+        /// Assembly that is loaded with a partial name.
+        /// </summary>
+        /// <param name="assemblyName">An <see cref="System.String" />.</param>
+        /// <returns>A <see cref="System.Reflection.Assembly"/> object that represents the specified assembly,
+        /// or <see langword="null" /> if the type cannot be loaded.</returns>
+        public static Assembly GetAssembly(string assemblyName)
+        {
+            string[] files = Directory.GetFiles(@".\", "*.*", SearchOption.AllDirectories)
+                                          .Where(file => file.ToLower().Contains(".dll") || file.ToLower().Contains(".exe"))
+                                          .ToArray();
+
+            Assembly assembly;
+
+            foreach (string file in files)
+            {
+                assembly = Assembly.LoadFile(Path.Combine(Directory.GetCurrentDirectory(), file));
+
+                if (assembly.FullName.Equals(assemblyName)) return assembly;
+            }
+
+            return null;
+        }
 
 		public static bool TryLoadAssembly(string assemblyName)
 		{
