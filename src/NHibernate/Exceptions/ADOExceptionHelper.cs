@@ -83,10 +83,10 @@ namespace NHibernate.Exceptions
 										   IDictionary<string, TypedValue> namedParameters)
 		{
 			var sb = new StringBuilder();
-			sb.Append(message).Append(Environment.NewLine).Append("[ ").Append(sql ?? SQLNotAvailable).Append(" ]");
+			sb.Append(message).AppendLine().Append("[ ").Append(sql ?? SQLNotAvailable).Append(" ]");
 			if (parameterValues != null && parameterValues.Length > 0)
 			{
-				sb.Append(Environment.NewLine).Append("Positional parameters: ");
+				sb.AppendLine().Append("Positional parameters: ");
 				for (int index = 0; index < parameterValues.Length; index++)
 				{
 					object value = parameterValues[index] ?? "null";
@@ -95,14 +95,14 @@ namespace NHibernate.Exceptions
 			}
 			if (namedParameters != null && namedParameters.Count > 0)
 			{
-				sb.Append(Environment.NewLine);
+				sb.AppendLine();
 				foreach (var namedParameter in namedParameters)
 				{
 					object value = namedParameter.Value.Value ?? "null";
 					sb.Append("  ").Append("Name:").Append(namedParameter.Key).Append(" - Value:").Append(value);
 				}
 			}
-			sb.Append(Environment.NewLine);
+			sb.AppendLine();
 			return sb.ToString();
 		}
 
