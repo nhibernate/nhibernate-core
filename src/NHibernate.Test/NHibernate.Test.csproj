@@ -792,6 +792,7 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3679\ExportToFileFixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
