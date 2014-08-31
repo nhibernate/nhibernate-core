@@ -1280,7 +1280,8 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return new OneToManyRelationMapper(propertyPath, ownerType, collectionElementType, modelInspector, customizerHolder, this);
 			}
-			if (modelInspector.IsManyToMany(property))
+			//NH-3667 & NH-3102
+			if ((modelInspector.IsManyToMany(property)) && (modelInspector.IsEntity(property.GetPropertyOrFieldType().GetGenericArguments()[1])))
 			{
 				return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
 			}
