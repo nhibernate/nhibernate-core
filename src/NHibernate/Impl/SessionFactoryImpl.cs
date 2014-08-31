@@ -497,7 +497,7 @@ namespace NHibernate.Impl
 			return
 				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
 								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode);
+								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)
@@ -1215,7 +1215,8 @@ namespace NHibernate.Impl
 			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
 												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
-												  settings.ConnectionReleaseMode);
+												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);
+
 			if (sessionLocalInterceptor != null)
 			{
 				// NH specific feature

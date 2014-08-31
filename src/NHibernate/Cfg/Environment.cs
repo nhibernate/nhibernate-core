@@ -90,6 +90,9 @@ namespace NHibernate.Cfg
 		/// <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
 		public const string DefaultEntityMode = "default_entity_mode";
 
+		/// Implementation of NH-3619 - Make default value of FlushMode configurable
+		public const string DefaultFlushMode = "default_flush_mode";
+
 		/// <summary>
 		/// When using an enhanced id generator and pooled optimizers (<see cref="NHibernate.Id.Enhanced.IOptimizer"/>),
 		/// prefer interpreting the database value as the lower (lo) boundary. The default is to interpret it as the high boundary.

@@ -107,6 +107,8 @@ namespace NHibernate.Cfg
 
 		public bool IsOrderInsertsEnabled { get; internal set; }
 
+		public FlushMode DefaultFlushMode { get; internal set; }
+
 		public EntityMode DefaultEntityMode { get; internal set; }
 
 		public bool IsDataDefinitionImplicitCommit { get; internal set; }

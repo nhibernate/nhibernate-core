@@ -215,7 +215,8 @@ namespace NHibernate.Impl
 			bool flushBeforeCompletionEnabled,
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
-			ConnectionReleaseMode connectionReleaseMode)
+			ConnectionReleaseMode connectionReleaseMode,
+			FlushMode defaultFlushMode)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -235,6 +236,7 @@ namespace NHibernate.Impl
 				this.connectionReleaseMode = connectionReleaseMode;
 				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+				this.flushMode = defaultFlushMode;
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{

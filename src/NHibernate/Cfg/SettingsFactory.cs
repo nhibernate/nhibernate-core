@@ -256,6 +256,11 @@ namespace NHibernate.Cfg
 				}
 			}
 
+			//NH-3619
+			FlushMode defaultFlushMode = (FlushMode) Enum.Parse(typeof(FlushMode), PropertiesHelper.GetString(Environment.DefaultFlushMode, properties, FlushMode.Unspecified.ToString()), false);
+			log.Info("Default flush mode: " + defaultFlushMode);
+			settings.DefaultFlushMode = defaultFlushMode;
+
 			EntityMode defaultEntityMode =
 				EntityModeHelper.Parse(PropertiesHelper.GetString(Environment.DefaultEntityMode, properties, "poco"));
 			log.Info("Default entity-mode: " + defaultEntityMode);
