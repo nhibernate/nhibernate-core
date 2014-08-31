@@ -27,21 +27,28 @@ namespace NHibernate.Tuple.Component
 		{
 			get
 			{
-				var ownerFullName = this.component.Owner.MappedClass.FullName;
-				var roleName = this.component.RoleName;
-				var spare = roleName.Substring(ownerFullName.Length + 1);
-				var parts = spare.Split('.');
-				var prop = null as PropertyInfo;
-				var owner = this.component.Owner.MappedClass;
-
-				for (var i = 0; i < parts.Length; ++i)
+				if ((this.component != null) && (this.component.Owner.MappedClass != null))
 				{
-					prop = owner.GetProperty(parts[i], BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+					var ownerFullName = this.component.Owner.MappedClass.FullName;
+					var roleName = this.component.RoleName;
+					var spare = roleName.Substring(ownerFullName.Length + 1);
+					var parts = spare.Split('.');
+					var prop = null as PropertyInfo;
+					var owner = this.component.Owner.MappedClass;
 
-					owner = prop.PropertyType;
+					for (var i = 0; i < parts.Length; ++i)
+					{
+						prop = owner.GetProperty(parts[i], BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+						owner = prop.PropertyType;
+					}
+
+					return typeof(IDictionary<string, object>).IsAssignableFrom(prop.PropertyType) ? typeof(IDictionary<string, object>) : typeof(IDictionary);
 				}
-
-				return typeof(IDictionary<string, object>).IsAssignableFrom(prop.PropertyType) ? typeof(IDictionary<string, object>) : typeof(IDictionary);
+				else
+				{
+					return typeof(IDictionary);
+				}
 			}
 		}
 
