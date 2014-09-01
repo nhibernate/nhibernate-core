@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
@@ -12,7 +13,7 @@ namespace NHibernate.Linq
     {
         // This constructor is called by our users, create a new IQueryExecutor.
         public NhQueryable(ISessionImplementor session)
-            : base(new DefaultQueryProvider(session))
+            : base(QueryProviderFactory.CreateQueryProvider(session))
         {
         }
 

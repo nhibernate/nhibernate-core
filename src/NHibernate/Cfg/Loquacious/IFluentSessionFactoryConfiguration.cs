@@ -1,4 +1,5 @@
 using NHibernate.Hql;
+using NHibernate.Linq;
 namespace NHibernate.Cfg.Loquacious
 {
 	public interface IFluentSessionFactoryConfiguration
@@ -26,6 +27,7 @@ namespace NHibernate.Cfg.Loquacious
 		IFluentSessionFactoryConfiguration GenerateStatistics();
 		IFluentSessionFactoryConfiguration Using(EntityMode entityMode);
 		IFluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>() where TQueryTranslator : IQueryTranslatorFactory;
+		IFluentSessionFactoryConfiguration ParsingLinqThrough<TQueryProvider>() where TQueryProvider : INhQueryProvider;
 
 		IProxyConfiguration Proxy { get; }
 

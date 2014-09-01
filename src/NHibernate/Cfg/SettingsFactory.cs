@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -10,6 +9,7 @@ using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
@@ -136,6 +136,8 @@ namespace NHibernate.Cfg
 			// queries:
 
 			settings.QueryTranslatorFactory = CreateQueryTranslatorFactory(properties);
+
+			settings.LinqQueryProviderType = CreateLinqQueryProviderType(properties);
 
 			IDictionary<string, string> querySubstitutions = PropertiesHelper.ToDictionary(Environment.QuerySubstitutions,
 			                                                                               " ,=;:\n\t\r\f", properties);
@@ -362,6 +364,21 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate QueryTranslatorFactory: " + className, cnfe);
+			}
+		}
+
+		private static System.Type CreateLinqQueryProviderType(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.QueryLinqProvider, properties, typeof(DefaultQueryProvider).FullName);
+			log.Info("Query provider: " + className);
+			try
+			{
+				return System.Type.GetType(className, true);
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not find query provider class: " + className, cnfe);
 			}
 		}
 
