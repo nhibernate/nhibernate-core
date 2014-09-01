@@ -10,6 +10,26 @@ namespace NHibernate.Test.Linq
 	public class StatelessSessionQueringTest : LinqTestCase
 	{
 		[Test]
+		public void CanCreateStatelessSessions()
+		{
+			//NH-3606
+			using (var session = this.OpenSession())
+			using (session.BeginTransaction())
+			{
+				Assert.IsTrue(session.Transaction.IsActive);
+
+				using (var statelessSession = session.GetStatelessSession())
+				{
+					Assert.IsTrue(statelessSession.Transaction.IsActive);
+
+					statelessSession.Transaction.Rollback();
+				}
+
+				Assert.IsFalse(session.Transaction.IsActive);
+			}
+		}
+
+		[Test]
 		public void WhenQueryThroughStatelessSessionThenDoesNotThrows()
 		{
 			using (var statelessSession = Sfi.OpenStatelessSession())
