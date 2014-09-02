@@ -1237,6 +1237,7 @@
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
