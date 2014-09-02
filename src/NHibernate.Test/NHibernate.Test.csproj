@@ -792,7 +792,6 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3679\ExportToFileFixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -1238,6 +1237,7 @@
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using NHibernate.Test.NHSpecificTest.NH2756;
-using NUnit.Framework;
 using NHibernate.Tool.hbm2ddl;
-using File = System.IO.File;
+using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH3679
+namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
     public class ExportToFileFixture
     {
