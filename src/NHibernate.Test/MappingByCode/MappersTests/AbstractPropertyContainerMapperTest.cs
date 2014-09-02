@@ -37,6 +37,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			public IDictionary DynCompo { get; set; }
 		}
+		private class MyClassWithDynamicGeneric
+		{
+			public IDictionary<string, object> DynCompo { get; set; }
+		}
 
 		[Test]
 		public void CantCreateWithoutHbmMapping()
@@ -127,12 +131,31 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void AddDynamicComponentPropertyGeneric()
+		{
+			var properties = new List<object>();
+			var map = new StubPropertyContainerMapper<MyClassWithDynamicGeneric>(properties);
+			map.Component(For<MyClassWithDynamicGeneric>.Property(x => x.DynCompo), (IDynamicComponentMapper cp) => { });
+			properties.Single().Should().Be.OfType<HbmDynamicComponent>().And.ValueOf.Name.Should().Be.EqualTo("DynCompo");
+		}
+
+		[Test]
 		public void CallDynamicComponentMapper()
 		{
 			var properties = new List<object>();
 			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
 			var called = false;
 			map.Component(For<MyClassWithDynamic>.Property(x=> x.DynCompo), (IDynamicComponentMapper cp) => called = true);
+			called.Should().Be.True();
+		}
+
+		[Test]
+		public void CallDynamicComponentMapperGeneric()
+		{
+			var properties = new List<object>();
+			var map = new StubPropertyContainerMapper<MyClassWithDynamicGeneric>(properties);
+			var called = false;
+			map.Component(For<MyClassWithDynamicGeneric>.Property(x => x.DynCompo), (IDynamicComponentMapper cp) => called = true);
 			called.Should().Be.True();
 		}
 
