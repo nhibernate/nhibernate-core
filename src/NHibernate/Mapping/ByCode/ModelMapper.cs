@@ -1282,11 +1282,20 @@ namespace NHibernate.Mapping.ByCode
 			}
 			//NH-3667 & NH-3102
 			//check if property is really a many-to-many: as detected by modelInspector.IsManyToMany and also the collection type is an entity
-			if ((modelInspector.IsManyToMany(property) == true) &&
-					((property.GetPropertyOrFieldType().GetGenericArguments().Length < 2) ||
-					((property.GetPropertyOrFieldType().GetGenericArguments().Length > 1) && (modelInspector.IsEntity(property.GetPropertyOrFieldType().GetGenericArguments()[1])) == true)))
+			if (modelInspector.IsManyToMany(property) == true)
 			{
-				return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
+				if (property.GetPropertyOrFieldType().IsGenericCollection() == true)
+				{
+					var args = property.GetPropertyOrFieldType().GetGenericArguments();
+
+					if ((args.Length < 2) || (args.Length > 1))
+					{
+						if (modelInspector.IsEntity(args[1]) == true)
+						{
+							return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
+						}
+					}
+				}
 			}
 			if (modelInspector.IsComponent(collectionElementType))
 			{
