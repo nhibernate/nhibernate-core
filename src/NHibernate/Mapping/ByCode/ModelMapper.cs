@@ -1281,7 +1281,10 @@ namespace NHibernate.Mapping.ByCode
 				return new OneToManyRelationMapper(propertyPath, ownerType, collectionElementType, modelInspector, customizerHolder, this);
 			}
 			//NH-3667 & NH-3102
-			if ((modelInspector.IsManyToMany(property)) && ((property.GetPropertyOrFieldType().GetGenericArguments().Length < 2) || ((property.GetPropertyOrFieldType().GetGenericArguments().Length > 1) && (modelInspector.IsEntity(property.GetPropertyOrFieldType().GetGenericArguments()[1])))))
+			//check if property is really a many-to-many: as detected by modelInspector.IsManyToMany and also the collection type is an entity
+			if ((modelInspector.IsManyToMany(property) == true) &&
+					((property.GetPropertyOrFieldType().GetGenericArguments().Length < 2) ||
+					((property.GetPropertyOrFieldType().GetGenericArguments().Length > 1) && (modelInspector.IsEntity(property.GetPropertyOrFieldType().GetGenericArguments()[1])) == true)))
 			{
 				return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
 			}
