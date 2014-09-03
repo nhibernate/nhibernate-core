@@ -50,6 +50,15 @@ namespace NHibernate.Driver
 			get { return "@"; }
 		}
 
+		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		{
+			var convertedSqlType = sqlType;
+			if (convertedSqlType.DbType == DbType.Currency)
+				convertedSqlType = new SqlType(DbType.Decimal);
+
+			base.InitializeParameter(dbParam, name, convertedSqlType);
+		}
+
 		public override void AdjustCommand(IDbCommand command)
 		{
 			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
