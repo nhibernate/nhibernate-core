@@ -14895,10 +14895,10 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.TypesTest.CharClassFixture.ReadWrite" executed="True" result="Success" success="True" asserts="0" />
                     </results>
                   </test-suite>
-                  <test-suite type="TestFixture" name="CurrencyTypeFixture" executed="True" result="Failure" success="False" asserts="0">
+                  <test-suite type="TestFixture" name="CurrencyTypeFixture" executed="True" result="Success" success="True" asserts="0">
                     <results>
                       <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.Equals" executed="True" result="Success" success="True" asserts="1" />
-                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ReadWrite" executed="True" result="Failure" success="False" asserts="0">
+                      <test-case name="NHibernate.Test.TypesTest.CurrencyTypeFixture.ReadWrite" executed="True" result="Success" success="True" asserts="0">
                         <failure>
                           <message><![CDATA[System.ArgumentException : Invalid data type
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
