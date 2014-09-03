@@ -60,7 +60,7 @@ namespace NHibernate.Event
                 Entity = @event.Entity,
                 Persister = @event.Persister,
                 Session = @event.Session
-            }, typeof (PostDelete));
+            }, typeof (PostDeleteAttribute));
         }
 
         public void OnPostInsert(PostInsertEvent @event)
@@ -70,7 +70,7 @@ namespace NHibernate.Event
                 Entity = @event.Entity,
                 Persister = @event.Persister,
                 Session = @event.Session
-            }, typeof (PostInsert));
+            }, typeof (PostInsertAttribute));
         }
 
         public void OnPostUpdate(PostUpdateEvent @event)
@@ -80,7 +80,7 @@ namespace NHibernate.Event
                 Entity = @event.Entity,
                 Persister = @event.Persister,
                 Session = @event.Session
-            }, typeof (PostUpdate));
+            }, typeof (PostUpdateAttribute));
         }
 
         public bool OnPreDelete(PreDeleteEvent @event)
@@ -90,7 +90,7 @@ namespace NHibernate.Event
                 Entity = @event.Entity,
                 Persister = @event.Persister,
                 Session = @event.Session
-            }, typeof (PreDelete));
+            }, typeof (PreDeleteAttribute));
             return false;
         }
 
@@ -102,7 +102,7 @@ namespace NHibernate.Event
                 Persister = @event.Persister,
                 Session = @event.Session,
                 State = @event.State
-            }, typeof (PreInsert));
+            }, typeof (PreInsertAttribute));
             return false;
         }
 
@@ -114,7 +114,7 @@ namespace NHibernate.Event
                 Persister = @event.Persister,
                 Session = @event.Session,
                 State = @event.State
-            }, typeof (PreUpdate));
+            }, typeof (PreUpdateAttribute));
             return false;
         }
 
