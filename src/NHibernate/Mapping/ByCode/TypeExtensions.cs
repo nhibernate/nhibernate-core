@@ -100,8 +100,27 @@ namespace NHibernate.Mapping.ByCode
 				return memberOfDeclaringType;
 			}
 
-			return typeof (TEntity).GetProperty(memberOfDeclaringType.Name, PropertiesOfClassHierarchy,
-			                                    null, memberOfDeclaringType.GetPropertyOrFieldType(), new System.Type[0], null);
+			//NH-3485
+			var prop = typeof (TEntity).GetProperty (memberOfDeclaringType.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty, null, memberOfDeclaringType.GetPropertyOrFieldType(), System.Type.EmptyTypes, null) as MemberInfo;
+
+			if (prop == null)
+			{
+				var type = typeof(TEntity);
+
+				while (type != typeof(object))
+				{
+					prop = type.GetField(memberOfDeclaringType.Name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+					if (prop != null)
+					{
+						break;
+					}
+
+					type = type.BaseType;
+				}
+			}
+
+			return prop;
 		}
 
 		public static MemberInfo GetMemberFromDeclaringType(this MemberInfo source)
