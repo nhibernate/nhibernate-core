@@ -52,14 +52,11 @@ namespace NHibernate.Driver
 
 		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
 		{
-			base.InitializeParameter(dbParam, name, sqlType);
+			var convertedSqlType = sqlType;
+			if (convertedSqlType.DbType == DbType.Currency)
+				convertedSqlType = new SqlType(DbType.Decimal);
 
-			if (sqlType.DbType == DbType.Currency)
-			{
-				dbParam.DbType = DbType.Decimal;
-				dbParam.Precision = 18;
-				dbParam.Scale = 4;
-			}
+			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
 
 		public override void AdjustCommand(IDbCommand command)
