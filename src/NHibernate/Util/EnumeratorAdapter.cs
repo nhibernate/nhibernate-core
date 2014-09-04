@@ -5,8 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Util
 {
 	/// <summary>
-	/// Wrap a non-generic IEnumerator to provide the generic IEnumerator&lt>T&gt;
-	/// interface.
+	/// Wrap a non-generic IEnumerator to provide the generic IEnumerator&lt;T&gt; interface.
 	/// </summary>
 	/// <typeparam name="T">The type of the enumerated elements.</typeparam>
 	public class EnumeratorAdapter<T> : IEnumerator<T>

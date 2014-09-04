@@ -49,7 +49,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.YearPart() == 2008)
+					.Where(p => p.BirthDate.Year == 2008)
 					.List();
 
 				persons.Count.Should().Be(1);
@@ -64,7 +64,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.YearPart().IsIn(new[] { 2008, 2009 }))
+					.Where(p => p.BirthDate.Year.IsIn(new[] { 2008, 2009 }))
 					.OrderBy(p => p.Name).Asc
 					.List();
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var yearOfBirth = s.QueryOver<Person>()
 					.Where(p => p.Name == "p2")
-					.Select(p => p.BirthDate.YearPart())
+					.Select(p => p.BirthDate.Year)
 					.SingleOrDefault<object>();
 
 				yearOfBirth.GetType().Should().Be(typeof (int));
@@ -97,7 +97,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var avgYear = s.QueryOver<Person>()
-					.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
+					.SelectList(list => list.SelectAvg(p => p.BirthDate.Year))
 					.SingleOrDefault<object>();
 
 				avgYear.GetType().Should().Be(typeof (double));
@@ -224,7 +224,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart())
+					.Where(p => p.BirthDate.Month == p.BirthDate.Day)
 					.List();
 
 				persons.Count.Should().Be(1);
@@ -239,7 +239,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.OrderBy(p => p.BirthDate.YearPart()).Desc
+					.OrderBy(p => p.BirthDate.Year).Desc
 					.List();
 
 				persons.Count.Should().Be(3);

@@ -639,7 +639,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.OrderBy(() => personAlias.BirthDate.YearPart()).Desc;
+					.OrderBy(() => personAlias.BirthDate.Year).Desc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

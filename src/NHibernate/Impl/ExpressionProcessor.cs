@@ -173,14 +173,6 @@ namespace NHibernate.Impl
 		    RegisterCustomProjection(() => default(DateTimeOffset).Second, e => ProjectionsExtensions.ProcessSecond(e.Expression));
 		    RegisterCustomProjection(() => default(DateTimeOffset).Date, e => ProjectionsExtensions.ProcessDate(e.Expression));
 
-			RegisterCustomProjection(() => ProjectionsExtensions.YearPart(default(DateTime)), e => ProjectionsExtensions.ProcessYear(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.DayPart(default(DateTime)), e => ProjectionsExtensions.ProcessDay(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.MonthPart(default(DateTime)), e => ProjectionsExtensions.ProcessMonth(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.HourPart(default(DateTime)), e => ProjectionsExtensions.ProcessHour(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.MinutePart(default(DateTime)), e => ProjectionsExtensions.ProcessMinute(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.SecondPart(default(DateTime)), e => ProjectionsExtensions.ProcessSecond(e.Arguments[0]));
-			RegisterCustomProjection(() => ProjectionsExtensions.DatePart(default(DateTime)), e => ProjectionsExtensions.ProcessDate(e.Arguments[0]));
-
             RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(int)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(double)), ProjectionsExtensions.ProcessSqrt);
 			RegisterCustomProjection(() => ProjectionsExtensions.Sqrt(default(decimal)), ProjectionsExtensions.ProcessSqrt);
