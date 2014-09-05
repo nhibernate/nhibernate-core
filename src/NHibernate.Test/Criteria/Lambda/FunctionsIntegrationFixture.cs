@@ -42,6 +42,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartEqual()
 		{
@@ -49,7 +50,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.Year == 2008)
+					.Where(p => p.BirthDate.YearPart() == 2008)
 					.List();
 
 				persons.Count.Should().Be(1);
@@ -57,6 +58,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartIsIn()
 		{
@@ -64,7 +66,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.Year.IsIn(new[] { 2008, 2009 }))
+					.Where(p => p.BirthDate.YearPart().IsIn(new[] { 2008, 2009 }))
 					.OrderBy(p => p.Name).Asc
 					.List();
 
@@ -74,6 +76,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartSingleOrDefault()
 		{
@@ -82,7 +85,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var yearOfBirth = s.QueryOver<Person>()
 					.Where(p => p.Name == "p2")
-					.Select(p => p.BirthDate.Year)
+					.Select(p => p.BirthDate.YearPart())
 					.SingleOrDefault<object>();
 
 				yearOfBirth.GetType().Should().Be(typeof (int));
@@ -90,6 +93,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void SelectAvgYearPart()
 		{
@@ -97,7 +101,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var avgYear = s.QueryOver<Person>()
-					.SelectList(list => list.SelectAvg(p => p.BirthDate.Year))
+					.SelectList(list => list.SelectAvg(p => p.BirthDate.YearPart()))
 					.SingleOrDefault<object>();
 
 				avgYear.GetType().Should().Be(typeof (double));
@@ -217,6 +221,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("MonthPart extension method is obsolete. Should use Month property instead.")]
 		[Test]
 		public void MonthPartEqualsDayPart()
 		{
@@ -224,7 +229,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.Where(p => p.BirthDate.Month == p.BirthDate.Day)
+					.Where(p => p.BirthDate.MonthPart() == p.BirthDate.DayPart())
 					.List();
 
 				persons.Count.Should().Be(1);
@@ -232,6 +237,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void OrderByYearPart()
 		{
@@ -239,7 +245,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (s.BeginTransaction())
 			{
 				var persons = s.QueryOver<Person>()
-					.OrderBy(p => p.BirthDate.Year).Desc
+					.OrderBy(p => p.BirthDate.YearPart()).Desc
 					.List();
 
 				persons.Count.Should().Be(3);

@@ -629,6 +629,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void OrderByYearPartFunction()
 		{
@@ -639,7 +640,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person personAlias = null;
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>(() => personAlias)
-					.OrderBy(() => personAlias.BirthDate.Year).Desc;
+					.OrderBy(() => personAlias.BirthDate.YearPart()).Desc;
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
