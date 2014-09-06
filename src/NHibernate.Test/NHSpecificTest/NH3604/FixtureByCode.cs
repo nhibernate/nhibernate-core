@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 		}
 
 		[Test]
-		public void PerformQuery()
+		public void CanPerformQueryOnMappedClassWithProtectedProperty()
 		{
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 		}
 
 		[Test]
-		public void WriteXmlMappings()
+		public void CanWriteMappingsReferencingProtectedProperty()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Entity>(rc =>
