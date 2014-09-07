@@ -30,6 +30,21 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 
 		[Test]
+		public void CanSpecifyUnsavedValue()
+		{
+			//NH-3048
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id, x =>
+				{
+					x.UnsavedValue(UnsavedValueType.Any);
+				}));
+
+			var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
+
+			Assert.AreEqual(mapping.RootClasses[0].CompositeId.unsavedvalue, HbmUnsavedValueType.Any);
+		}
+
+		[Test]
 		public void WhenPropertyUsedAsComposedIdThenRegister()
 		{
 			var inspector = new ExplicitlyDeclaredModel();

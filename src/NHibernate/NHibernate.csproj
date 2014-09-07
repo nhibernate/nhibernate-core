@@ -498,6 +498,7 @@
     <Compile Include="Mapping\ByCode\NotFoundMode.cs" />
     <Compile Include="Mapping\ByCode\SchemaAction.cs" />
     <Compile Include="Mapping\ByCode\TypeExtensions.cs" />
+    <Compile Include="Mapping\ByCode\UnsavedValueType.cs" />
     <Compile Include="Mapping\ByCode\VersionGeneration.cs" />
     <Compile Include="Mapping\Collection.cs" />
     <Compile Include="Mapping\Column.cs" />
