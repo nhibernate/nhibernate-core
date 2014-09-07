@@ -22,8 +22,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmSet {name = property.Name};
-			System.Type propertyType = property.GetPropertyOrFieldType();
-			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new SetMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
@@ -32,8 +31,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void Bag(MemberInfo property, Action<IBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmBag {name = property.Name};
-			System.Type propertyType = property.GetPropertyOrFieldType();
-			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new BagMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
@@ -42,8 +40,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmList {name = property.Name};
-			System.Type propertyType = property.GetPropertyOrFieldType();
-			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new ListMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item1 = rel));
 			AddProperty(hbm);
@@ -66,8 +63,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
 			var hbm = new HbmIdbag { name = property.Name };
-			System.Type propertyType = property.GetPropertyOrFieldType();
-			System.Type collectionElementType = propertyType.DetermineCollectionElementType();
+			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new IdBagMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
 			AddProperty(hbm);
