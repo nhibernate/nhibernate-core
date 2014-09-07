@@ -19,6 +19,46 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+
+		[Test]
+		public void DeserializedCascadeStyleRefersToSameObject()
+		{
+			CascadeStyle deserializedCascadeStyle;
+
+			using (var configMemoryStream = new MemoryStream())
+			{
+				var formatter = new BinaryFormatter();
+				formatter.Serialize(configMemoryStream, CascadeStyle.Evict);
+				configMemoryStream.Position = 0;
+				deserializedCascadeStyle = (CascadeStyle) formatter.Deserialize(configMemoryStream);
+			}
+
+			Assert.That(deserializedCascadeStyle, Is.SameAs(CascadeStyle.Evict));
+		}
+
+
+		[Test]
+		public void CanRoundTripSerializedMultipleCascadeStyle()
+		{
+			CascadeStyle startingCascadeStyle =
+				new CascadeStyle.MultipleCascadeStyle(new[] {CascadeStyle.Delete, CascadeStyle.Lock});
+			CascadeStyle deserializedCascadeStyle;
+
+			using (var configMemoryStream = new MemoryStream())
+			{
+				var formatter = new BinaryFormatter();
+				formatter.Serialize(configMemoryStream, startingCascadeStyle);
+				configMemoryStream.Position = 0;
+				deserializedCascadeStyle = (CascadeStyle)formatter.Deserialize(configMemoryStream);
+			}
+
+			Assert.That(deserializedCascadeStyle, Is.TypeOf<CascadeStyle.MultipleCascadeStyle>());
+			Assert.That(deserializedCascadeStyle.ToString(),
+			            Is.EqualTo(
+				            "[NHibernate.Engine.CascadeStyle+DeleteCascadeStyle,NHibernate.Engine.CascadeStyle+LockCascadeStyle]"));
+		}
+
+
 		[Test]
 		public void DeserializedPropertyMapping_RefersToSameCascadeStyle()
 		{
