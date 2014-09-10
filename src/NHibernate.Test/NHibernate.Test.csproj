@@ -2376,7 +2376,7 @@
     <Compile Include="TypesTest\TimeAsTimeSpanClass.cs" />
     <Compile Include="TypesTest\TimeAsTimeSpanTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanClass.cs" />
-    <Compile Include="TypesTest\Decima2lTypeFixture.cs" />
+    <Compile Include="TypesTest\DateTime2TypeFixture.cs" />
     <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\DecimalClass.cs" />
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />
