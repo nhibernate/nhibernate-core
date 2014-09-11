@@ -21,7 +21,7 @@
 
   <class name="TimesheetEntry" table="TimesheetEntries">
     <id name="Id" column="TimesheetEntryId">
-      <generator class="native" />
+      <generator class="assigned" />
     </id>
 
     <property name="EntryDate" />
