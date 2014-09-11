@@ -4,6 +4,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 	[TestFixture]
 	public class Fixture:BugTestCase
 	{
+		private object _idOfPersonWithAnimals;
+		private object _idOfPersonWithCats;
+		private object _idOfPersonWithDogs;
+		private object _idOfPersonWithSivasKangals;
+
 		protected override void OnSetUp()
 		{
 			using(var session=OpenSession())
@@ -51,10 +56,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 				session.Save(dogForSivasKangals);
 				session.Save(catForSivasKangals);
 
-				session.Save(personWithAnimals);
-				session.Save(personWithCats);
-				session.Save(personWithDogs);
-				session.Save(personWithSivasKangals);
+				_idOfPersonWithAnimals = session.Save(personWithAnimals);
+				_idOfPersonWithCats = session.Save(personWithCats);
+				_idOfPersonWithDogs = session.Save(personWithDogs);
+				_idOfPersonWithSivasKangals = session.Save(personWithSivasKangals);
 				
 
 
@@ -79,10 +84,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				var personWithAnimals = session.Get<PersonWithAnimals>(1);
-				var personWithCats = session.Get<PersonWithCats>(2);
-				var personWithDogs = session.Get<PersonWithDogs>(3);
-				var personWithSivasKangals = session.Get<PersonWithSivasKangals>(4);
+				var personWithAnimals = session.Get<PersonWithAnimals>(_idOfPersonWithAnimals);
+				var personWithCats = session.Get<PersonWithCats>(_idOfPersonWithCats);
+				var personWithDogs = session.Get<PersonWithDogs>(_idOfPersonWithDogs);
+				var personWithSivasKangals = session.Get<PersonWithSivasKangals>(_idOfPersonWithSivasKangals);
 
 				Assert.That(personWithAnimals.AnimalsGeneric,Has.Count.EqualTo(4));
 
