@@ -149,6 +149,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#endregion
 
 		#region Implementation of IJoinedSubclassAttributesMapper
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
 
 		public void Table(string tableName)
 		{

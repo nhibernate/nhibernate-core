@@ -111,6 +111,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		#endregion
 
 		#region Implementation of IJoinedSubclassAttributesMapper<TEntity>
+		public void Extends(System.Type baseType)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Extends(baseType));
+		}
+
+		public void Abstract(bool isAbstract)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Abstract(isAbstract));
+		}
 
 		public void Table(string tableName)
 		{

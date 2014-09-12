@@ -81,7 +81,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		}
 
 		[Test]
-		public void SubclassIsAbstract()
+		public void UnionSubclassIsAbstract()
 		{
 			//NH-3527
 			var modelMapper = new ModelMapper();

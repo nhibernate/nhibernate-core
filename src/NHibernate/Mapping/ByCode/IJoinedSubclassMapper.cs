@@ -10,13 +10,16 @@ namespace NHibernate.Mapping.ByCode
 		void Key(Action<IKeyMapper> keyMapping);
 		void Extends(System.Type baseType);
 		void SchemaAction(SchemaAction action);
-        void Filter(string filterName, Action<IFilterMapper> filterMapping);
+		void Filter(string filterName, Action<IFilterMapper> filterMapping);
+		void Abstract(bool isAbstract);
 	}
 
 	public interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper {}
 
 	public interface IJoinedSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
+		void Abstract(bool isAbstract);
+		void Extends(System.Type baseType);
 		void Table(string tableName);
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
