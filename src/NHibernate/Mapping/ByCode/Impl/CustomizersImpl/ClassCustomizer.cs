@@ -29,6 +29,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#region Implementation of IClassAttributesMapper<TEntity>
+		public void Abstract(bool isAbstract)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Abstract(isAbstract));
+		}
 
 		public void OptimisticLock(OptimisticLockMode mode)
 		{
