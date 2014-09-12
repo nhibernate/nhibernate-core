@@ -150,6 +150,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#endregion
 
 		#region Implementation of IUnionSubclassAttributesMapper
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
 
 		public void Table(string tableName)
 		{

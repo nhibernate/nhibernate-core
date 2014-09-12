@@ -79,5 +79,23 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 
 			Assert.That(inspector.IsEntity(typeof(Inherited1)), Is.True);
 		}
+
+		[Test]
+		public void SubclassIsAbstract()
+		{
+			//NH-3527
+			var modelMapper = new ModelMapper();
+			modelMapper.Class<MyClass>(c => { });
+			modelMapper.UnionSubclass<Inherited1>(c =>
+				{
+					c.Abstract(true);
+					c.Extends(typeof(MyClass));
+				});
+
+			var mappings = modelMapper.CompileMappingForAllExplicitlyAddedEntities();
+
+			Assert.IsTrue(mappings.UnionSubclasses[0].@abstract);
+			Assert.IsTrue(mappings.UnionSubclasses[0].extends == typeof(MyClass).FullName);
+		}
 	}
 }

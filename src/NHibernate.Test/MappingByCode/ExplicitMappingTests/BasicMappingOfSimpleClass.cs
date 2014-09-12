@@ -19,6 +19,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 		[Test]
 		public void AbstractClass()
 		{
+			//NH-3527
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(ca =>
 			{
