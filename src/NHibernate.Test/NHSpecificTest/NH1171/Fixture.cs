@@ -7,6 +7,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1171
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Firebird has issues with comments containing apostrophes
+			return !(dialect is FirebirdDialect);
+		}
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "false");
@@ -15,9 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1171
 		[Test]
 		public void SupportSQLQueryWithComments()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird has issues with comments containing apostrophes");
-
 			string sql =
 				@"
 SELECT id 
@@ -38,9 +41,6 @@ ORDER BY Name
 		[Test]
 		public void ExecutedContainsComments()
 		{
-			if (Dialect is FirebirdDialect)
-				Assert.Ignore("Firebird has issues with comments containing apostrophes");
-
 			string sql =
 				@"
 SELECT id 
