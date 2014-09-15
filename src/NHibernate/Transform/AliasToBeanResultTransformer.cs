@@ -48,22 +48,25 @@ namespace NHibernate.Transform
 			if (constructor == null && resultClass.IsClass)
 			{
 				throw new ArgumentException("The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
-				                            "resultClass");
+											"resultClass");
 			}
 
-			propertyAccessor =
-				new ChainedPropertyAccessor(new[]
-				                            	{
-				                            		PropertyAccessorFactory.GetPropertyAccessor(null),
-				                            		PropertyAccessorFactory.GetPropertyAccessor("field")
-				                            	});
+			var accessors = new[]
+			{
+				PropertyAccessorFactory.GetPropertyAccessor(null),
+				PropertyAccessorFactory.GetPropertyAccessor("field"),
+				// The following are added to support dialects that returns column names in different casing
+				new CaseInsensitivePropertyAccessor(),
+				new CaseInsensitiveFieldAccessor()
+			};
+			propertyAccessor = new ChainedPropertyAccessor(accessors);
 		}
 
 
 		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
 		{
 			return false;
-		}	
+		}
 
 
 		public override object TransformTuple(object[] tuple, String[] aliases)
@@ -88,11 +91,11 @@ namespace NHibernate.Transform
 						}
 					}
 				}
-				
+
 				// if resultClass is not a class but a value type, we need to use Activator.CreateInstance
 				result = resultClass.IsClass
-				         	? constructor.Invoke(null)
-				         	: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
+							? constructor.Invoke(null)
+							: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{

@@ -41,6 +41,21 @@ namespace NHibernate.Test.TransformTests
 			public string Something { get; set; }
 		}
 
+		public class PublicPropertiesSimpleDTO
+		{
+			public int Id { get; set; }
+			public string Name { get; set; }
+		}
+
+		public class PrivateFieldsSimpleDTO
+		{
+			private int id;
+			private string name;
+
+			public int Id { get { return id; } }
+			public string Name { get { return name; } }
+		}
+
 		#region Overrides of TestCase
 
 		protected override IList Mappings
@@ -74,6 +89,52 @@ namespace NHibernate.Test.TransformTests
 			finally
 			{
 				Cleanup();	
+			}
+		}
+
+		[Test]
+		public void ToPublicProperties_WithoutAnyProjections()
+		{
+			try
+			{
+				Setup();
+
+				using (ISession s = OpenSession())
+				{
+					var transformer = Transformers.AliasToBean<PublicPropertiesSimpleDTO>();
+					IList<PublicPropertiesSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
+						.SetResultTransformer(transformer)
+						.List<PublicPropertiesSimpleDTO>();
+					Assert.That(l.Count, Is.EqualTo(2));
+					Assert.That(l, Has.All.Not.Null);
+				}
+			}
+			finally
+			{
+				Cleanup();
+			}			
+		}
+
+		[Test]
+		public void ToPrivateFields_WithoutAnyProjections()
+		{
+			try
+			{
+				Setup();
+
+				using (ISession s = OpenSession())
+				{
+					var transformer = Transformers.AliasToBean<PrivateFieldsSimpleDTO>();
+					IList<PrivateFieldsSimpleDTO> l = s.CreateSQLQuery("select * from Simple")
+						.SetResultTransformer(transformer)
+						.List<PrivateFieldsSimpleDTO>();
+					Assert.That(l.Count, Is.EqualTo(2));
+					Assert.That(l, Has.All.Not.Null);
+				}
+			}
+			finally
+			{
+				Cleanup();
 			}
 		}
 

@@ -670,6 +670,8 @@
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
     <Compile Include="Transform\CacheableResultTransformer.cs" />
     <Compile Include="Transform\AliasedTupleSubsetResultTransformer.cs" />
+    <Compile Include="Transform\CaseInsensitiveFieldAccessor.cs" />
+    <Compile Include="Transform\CaseInsensitivePropertyAccessor.cs" />
     <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
