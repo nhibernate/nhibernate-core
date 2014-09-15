@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using NHibernate.Properties;
 
 namespace NHibernate.Transform
 {
@@ -27,10 +26,9 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer
 	{
+		private readonly QueryAliasToObjectPropertySetter _propertySetter;
 		private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		private readonly System.Type resultClass;
-		private ISetter[] setters;
-		private readonly IPropertyAccessor propertyAccessor;
 		private readonly ConstructorInfo constructor;
 
 		public AliasToBeanResultTransformer(System.Type resultClass)
@@ -48,22 +46,17 @@ namespace NHibernate.Transform
 			if (constructor == null && resultClass.IsClass)
 			{
 				throw new ArgumentException("The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
-				                            "resultClass");
+											"resultClass");
 			}
 
-			propertyAccessor =
-				new ChainedPropertyAccessor(new[]
-				                            	{
-				                            		PropertyAccessorFactory.GetPropertyAccessor(null),
-				                            		PropertyAccessorFactory.GetPropertyAccessor("field")
-				                            	});
+			_propertySetter = QueryAliasToObjectPropertySetter.MakeFor(resultClass);
 		}
 
 
 		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
 		{
 			return false;
-		}	
+		}
 
 
 		public override object TransformTuple(object[] tuple, String[] aliases)
@@ -76,30 +69,13 @@ namespace NHibernate.Transform
 
 			try
 			{
-				if (setters == null)
-				{
-					setters = new ISetter[aliases.Length];
-					for (int i = 0; i < aliases.Length; i++)
-					{
-						string alias = aliases[i];
-						if (alias != null)
-						{
-							setters[i] = propertyAccessor.GetSetter(resultClass, alias);
-						}
-					}
-				}
-				
-				// if resultClass is not a class but a value type, we need to use Activator.CreateInstance
 				result = resultClass.IsClass
-				         	? constructor.Invoke(null)
-				         	: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
+							? constructor.Invoke(null)
+							: Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(resultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{
-					if (setters[i] != null)
-					{
-						setters[i].Set(result, tuple[i]);
-					}
+					_propertySetter.SetProperty(aliases[i], tuple[i], result);
 				}
 			}
 			catch (InstantiationException e)

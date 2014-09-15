@@ -130,6 +130,12 @@ namespace NHibernate.Properties
 				return null;
 			}
 
+			// According to http://msdn.microsoft.com/EN-US/library/kz0a8sxy%28v=VS.110,d=hv.2%29.aspx
+			// the assumption articulated in the comment following "if(type.IsValueType)" is wrong at least since .NET 2.0!
+			// This part of the code has beed changed twice to fix the following Issues in order: NH-1728 then NH-1904
+			// As it stands now the implementation prevents AliasToBeanTransformer from finding the correct property 
+			// on a class if the dialect returns column names in a different case than expected.
+
 			BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
 			if (type.IsValueType)
