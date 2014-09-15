@@ -4,7 +4,7 @@ using NHibernate.Properties;
 namespace NHibernate.Transform
 {
 	/// <summary>
-	/// Access a private field found by ignoring case matching
+	/// Access a private field found by case-insensitive matching
 	/// </summary>
 	public class CaseInsensitiveFieldAccessor : IPropertyAccessor
 	{
