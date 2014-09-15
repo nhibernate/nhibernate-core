@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using NHibernate.Properties;
 
@@ -6,6 +7,7 @@ namespace NHibernate.Transform
 	/// <summary>
 	/// Access a private field found by case-insensitive matching
 	/// </summary>
+	[Serializable]
 	public class CaseInsensitiveFieldAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
