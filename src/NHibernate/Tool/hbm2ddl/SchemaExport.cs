@@ -344,7 +344,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 			try
 			{
-				if (fileOutput != null && outputFile != null)
+				if (fileOutput == null && outputFile != null)
 				{
 					fileOutput = new StreamWriter(outputFile);
 				}

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Security;
 using NHibernate.Util;
 
 namespace NHibernate.Engine
@@ -7,7 +9,7 @@ namespace NHibernate.Engine
 	/// <summary> A contract for defining the aspects of cascading various persistence actions. </summary>
 	/// <seealso cref="CascadingAction"/>
 	[Serializable]
-	public abstract class CascadeStyle
+	public abstract class CascadeStyle : ISerializable
 	{
 		/// <summary> package-protected constructor</summary>
 		internal CascadeStyle() {}
@@ -26,6 +28,19 @@ namespace NHibernate.Engine
 			Styles["remove"] = Delete; // adds remove as a sort-of alias for delete...
 			Styles["delete-orphan"] = DeleteOrphan;
 			Styles["none"] = None;
+
+			AliasByStyle[All] = "all";
+			AliasByStyle[AllDeleteOrphan] = "all-delete-orphan";
+			AliasByStyle[Update] = "save-update";
+			AliasByStyle[Persist] = "persist";
+			AliasByStyle[Merge] = "merge";
+			AliasByStyle[Lock] = "lock";
+			AliasByStyle[Refresh] = "refresh";
+			AliasByStyle[Replicate] = "replicate";
+			AliasByStyle[Evict] = "evict";
+			AliasByStyle[Delete] = "delete";
+			AliasByStyle[DeleteOrphan] = "delete-orphan";
+			AliasByStyle[None] = "none";
 		}
 
 		#region The CascadeStyle contract
@@ -63,7 +78,8 @@ namespace NHibernate.Engine
 
 		#region  Static helper methods
 
-		internal static readonly Dictionary<string, CascadeStyle> Styles = new Dictionary<string, CascadeStyle>();
+		private static readonly Dictionary<string, CascadeStyle> Styles = new Dictionary<string, CascadeStyle>();
+		private static readonly Dictionary<CascadeStyle, string> AliasByStyle = new Dictionary<CascadeStyle, string>();
 
 		/// <summary> Factory method for obtaining named cascade styles </summary>
 		/// <param name="cascade">The named cascade style name. </param>
@@ -77,9 +93,40 @@ namespace NHibernate.Engine
 				return style;
 		}
 
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			string alias = AliasByStyle[this];
+			info.SetType(typeof (CascadeStyleSingletonReference));
+			info.AddValue("cascadestyle", alias, typeof (string));
+		}
+
+		[Serializable]
+		private sealed class CascadeStyleSingletonReference : IObjectReference, ISerializable
+		{
+			private readonly string _cascadeStyle;
+
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				throw new NotImplementedException("This class should not be serialized directly.");
+			}
+
+			private CascadeStyleSingletonReference(SerializationInfo info, StreamingContext context)
+			{
+				_cascadeStyle = (string) info.GetValue("cascadestyle", typeof (string));
+			}
+
+			[SecurityCritical]
+			Object IObjectReference.GetRealObject(StreamingContext context)
+			{
+				// Redirect to the singleton instance for the correct cascade style.
+				return GetCascadeStyle(_cascadeStyle);
+			}
+		}
+
 		#endregion
 
 		#region The CascadeStyle implementations
+
 
 		[Serializable]
 		private class AllDeleteOrphanCascadeStyle : CascadeStyle
@@ -204,12 +251,22 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public sealed class MultipleCascadeStyle : CascadeStyle
+		public sealed class MultipleCascadeStyle : CascadeStyle, ISerializable
 		{
 			private readonly CascadeStyle[] styles;
 			public MultipleCascadeStyle(CascadeStyle[] styles)
 			{
 				this.styles = styles;
+			}
+
+			private MultipleCascadeStyle(SerializationInfo info, StreamingContext context)
+			{
+				styles = (CascadeStyle[])info.GetValue("styles", typeof(CascadeStyle[]));
+			}
+
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.AddValue("styles", styles);
 			}
 
 			public override bool DoCascade(CascadingAction action)

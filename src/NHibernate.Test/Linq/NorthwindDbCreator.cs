@@ -87,12 +87,14 @@ namespace NHibernate.Test.Linq
 					{
 						new TimesheetEntry
 						{
+							Id = 1,
 							EntryDate = KnownDate,
 							NumberOfHours = 6,
 							Comments = "testing 123"
 						},
 						new TimesheetEntry
 						{
+							Id = 2,
 							EntryDate = KnownDate.AddDays(1),
 							NumberOfHours = 14
 						}
@@ -107,22 +109,26 @@ namespace NHibernate.Test.Linq
 					{
 						new TimesheetEntry
 						{
+							Id = 3,
 							EntryDate = DateTime.Now.AddMinutes(20),
 							NumberOfHours = 4
 						},
 						new TimesheetEntry
 						{
+							Id = 4,
 							EntryDate = DateTime.Now.AddMinutes(10),
 							NumberOfHours = 8,
 							Comments = "testing 456"
 						},
 						new TimesheetEntry
 						{
+							Id = 5,
 							EntryDate = DateTime.Now.AddMinutes(13),
 							NumberOfHours = 7
 						},
 						new TimesheetEntry
 						{
+							Id = 6,
 							EntryDate = DateTime.Now.AddMinutes(45),
 							NumberOfHours = 38
 						}

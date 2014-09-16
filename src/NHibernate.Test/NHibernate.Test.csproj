@@ -712,6 +712,7 @@
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2692\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3383\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2772\Model.cs" />
     <Compile Include="NHSpecificTest\NH2772\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3058\DomainClass.cs" />
@@ -792,6 +793,8 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3604\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3604\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -1237,6 +1240,7 @@
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
@@ -2372,7 +2376,7 @@
     <Compile Include="TypesTest\TimeAsTimeSpanClass.cs" />
     <Compile Include="TypesTest\TimeAsTimeSpanTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanClass.cs" />
-    <Compile Include="TypesTest\Decima2lTypeFixture.cs" />
+    <Compile Include="TypesTest\DateTime2TypeFixture.cs" />
     <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\DecimalClass.cs" />
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />

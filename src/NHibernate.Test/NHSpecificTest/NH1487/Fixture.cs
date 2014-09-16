@@ -1,9 +1,9 @@
+using System;
 using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1487
 {
@@ -34,7 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 		[Test]
 		public void GenerateSchemaMultipleUniqueKeys()
 		{
-			if(!(Dialect.Dialect.GetDialect() is MsSql2000Dialect))
+			var cfg = GetConf();
+			if(!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -52,8 +53,6 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-			var cfg = GetConf();
-
 			cfg.AddXmlString(hbm);
 
 			// Can create the schema
@@ -70,7 +69,8 @@ assembly='NHibernate.Test'>
 		[Test]
 		public void GenerateSchemaMultipleIndex()
 		{
-			if (!(Dialect.Dialect.GetDialect() is MsSql2000Dialect))
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -88,7 +88,6 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-			var cfg = GetConf();
 			cfg.AddXmlString(hbm);
 
 			var scriptB = new StringBuilder();
@@ -103,7 +102,8 @@ assembly='NHibernate.Test'>
 		[Test]
 		public void GenerateSchemaMultipleIndexOnColumn()
 		{
-			if (!(Dialect.Dialect.GetDialect() is MsSql2000Dialect))
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -127,7 +127,6 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-			var cfg = GetConf();
 			cfg.AddXmlString(hbm);
 
 			var scriptB = new StringBuilder();
@@ -141,7 +140,8 @@ assembly='NHibernate.Test'>
 		[Test]
 		public void GenerateSchemaIndexOnId()
 		{
-			if (!(Dialect.Dialect.GetDialect() is MsSql2000Dialect))
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -160,7 +160,6 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-			var cfg = GetConf();
 			cfg.AddXmlString(hbm);
 
 			var scriptB = new StringBuilder();
@@ -175,7 +174,8 @@ assembly='NHibernate.Test'>
 		[Test]
 		public void GenerateSchemaUniqueOnId()
 		{
-			if (!(Dialect.Dialect.GetDialect() is MsSql2000Dialect))
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -194,7 +194,6 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-			var cfg = GetConf();
 			cfg.AddXmlString(hbm);
 
 			var scriptB = new StringBuilder();

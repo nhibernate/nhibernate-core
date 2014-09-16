@@ -6,9 +6,9 @@ using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment = NHibernate.Cfg.Environment;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect
 {
@@ -396,6 +396,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("left", new StandardSQLFunction("left"));
 		}
 
 		private void RegisterBlobFunctions()
