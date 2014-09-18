@@ -32,14 +32,14 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 						new Money {Amount = 9, Currency = "USD"},
 						new Money {Amount = 3, Currency = "EUR"},
 					},
-                    ManagedEmployees = new HashSet<ManagedEmployee>
-                    {
+					ManagedEmployees = new HashSet<ManagedEmployee>
+					{
 						new ManagedEmployee
 						{
 							Position = "parent",
-                            Employee = parent
+							Employee = parent
 						}
-                    }
+					}
 				};
 				s.Save(parent);
 				s.Save(emp);
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		protected override void OnTearDown()
 		{
 			using (var s = sessions.OpenSession())
-			using(s.BeginTransaction())
+			using (s.BeginTransaction())
 			{
 				s.Delete("from System.Object");
 
@@ -60,18 +60,18 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		}
 
 		[Test]
-        public void CanQueryByCriteriaOnSetOfCompositeElement()
-        {
-            using(var s = sessions.OpenSession())
-            {
-            	var list = s.CreateCriteria<Employee>()
-					.CreateCriteria("ManagedEmployees")
-            		.Add(Restrictions.Eq("Position", "parent"))
-            		.SetResultTransformer(new RootEntityResultTransformer())
-            		.List();
+		public void CanQueryByCriteriaOnSetOfCompositeElement()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				var list = s.CreateCriteria<Employee>()
+				            .CreateCriteria("ManagedEmployees")
+				            .Add(Restrictions.Eq("Position", "parent"))
+				            .SetResultTransformer(new RootEntityResultTransformer())
+				            .List();
 				Assert.IsNotEmpty(list);
-            }
-        }
+			}
+		}
 
 		[Test]
 		public void CanQueryByCriteriaOnSetOfElement()
@@ -79,10 +79,10 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = sessions.OpenSession())
 			{
 				var list = s.CreateCriteria<Employee>()
-					.CreateCriteria("Amounts")
-					.Add(Restrictions.Gt("Amount", 5m))
-					.SetResultTransformer(new RootEntityResultTransformer())
-					.List();
+				            .CreateCriteria("Amounts")
+				            .Add(Restrictions.Gt("Amount", 5m))
+				            .SetResultTransformer(new RootEntityResultTransformer())
+				            .List();
 				Assert.IsNotEmpty(list);
 			}
 		}
@@ -93,26 +93,26 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = sessions.OpenSession())
 			{
 				var list = s.CreateCriteria<Employee>()
-					.Add(Subqueries.PropertyIn("id",
-					                           DetachedCriteria.For<Employee>()
-											    .SetProjection(Projections.Id())
-					                           	.CreateCriteria("Amounts")
-					                           	.Add(Restrictions.Gt("Amount", 5m))))
-					.List();
+				            .Add(Subqueries.PropertyIn("id",
+				                                       DetachedCriteria.For<Employee>()
+				                                                       .SetProjection(Projections.Id())
+				                                                       .CreateCriteria("Amounts")
+				                                                       .Add(Restrictions.Gt("Amount", 5m))))
+				            .List();
 				Assert.IsNotEmpty(list);
 			}
 		}
 
 
-        protected override IList Mappings
-        {
-            get { return new [] { "NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml" }; }
-        }
+		protected override IList Mappings
+		{
+			get { return new[] {"NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml"}; }
+		}
 
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
 	}
 }
