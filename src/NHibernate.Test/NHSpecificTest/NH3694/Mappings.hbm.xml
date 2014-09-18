@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3694">
+
+	<class name="EntityWithComponentsCollection">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<set fetch="subselect" name="Components" table="ComponentsTable">
+			<key foreign-key="component_id">
+				<column name="Entity_id" />
+			</key>
+			<composite-element class="Component">
+				<property name="Val1" type="System.String">
+					<column name="Val1" length="1000"/>
+				</property>
+				<property name="Val2" type="System.String">
+					<column name="Value" length="2000" />
+				</property>
+			</composite-element>
+		</set>        
+
+	</class>
+
+</hibernate-mapping>

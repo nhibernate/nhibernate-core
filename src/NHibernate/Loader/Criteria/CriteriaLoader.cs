@@ -143,7 +143,7 @@ namespace NHibernate.Loader.Criteria
 
 		private object[] ToResultRow(object[] row)
 		{
-			if (resultRowLength == row.Length)
+			if (resultRowLength >= row.Length)
 				return row;
 
 			var result = new object[resultRowLength];
