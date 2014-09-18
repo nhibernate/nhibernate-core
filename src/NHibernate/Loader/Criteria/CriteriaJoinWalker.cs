@@ -169,41 +169,56 @@ namespace NHibernate.Loader.Criteria
 			return fetchMode == FetchMode.Default;
 		}
 
+
 		protected override string GenerateTableAlias(int n, string path, IJoinable joinable)
 		{
 			// TODO: deal with side-effects (changes to includeInSelectList, userAliasList, resultTypeList)!!!
-			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias(); 
-			if(shouldCreateUserAlias == false  && joinable.IsCollection)
+
+			// for collection-of-entity, we are called twice for given "path"
+			// once for the collection Joinable, once for the entity Joinable.
+			// the second call will/must "consume" the alias + perform side effects according to consumesEntityAlias()
+			// for collection-of-other, however, there is only one call 
+			// it must "consume" the alias + perform side effects, despite what consumeEntityAlias() return says
+			// 
+			// note: the logic for adding to the userAliasList is still strictly based on consumesEntityAlias return value
+
+			bool shouldCreateUserAlias = joinable.ConsumesEntityAlias();
+			if (!shouldCreateUserAlias && joinable.IsCollection)
 			{
-				var elementType = ((ICollectionPersister)joinable).ElementType;
+				// is it a collection-of-other (component or value) ?
+				var elementType = ((ICollectionPersister) joinable).ElementType;
 				if (elementType != null)
-					shouldCreateUserAlias = elementType.IsComponentType;
+					shouldCreateUserAlias = elementType.IsComponentType || !elementType.IsEntityType;
 			}
+
+			string sqlAlias = null;
+
 			if (shouldCreateUserAlias)
 			{
 				ICriteria subcriteria = translator.GetCriteria(path);
-				string sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
-				if (sqlAlias != null)
+				sqlAlias = subcriteria == null ? null : translator.GetSQLAlias(subcriteria);
+
+				if (joinable.ConsumesEntityAlias() && !translator.HasProjection)
 				{
-					if (!translator.HasProjection)
+					includeInResultRowList.Add(subcriteria != null && subcriteria.Alias != null);
+
+					if (sqlAlias != null)
 					{
-						includeInResultRowList.Add(subcriteria.Alias != null);
-						if (subcriteria.Alias!=null)
+						if (subcriteria.Alias != null)
 						{
 							userAliasList.Add(subcriteria.Alias); //alias may be null
 							resultTypeList.Add(translator.ResultType(subcriteria));
 						}
 					}
-					return sqlAlias; //EARLY EXIT
-				}
-				else
-				{
-					if (!translator.HasProjection)
-						includeInResultRowList.Add(false);
 				}
 			}
-			return base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+
+			if (sqlAlias == null)
+				sqlAlias = base.GenerateTableAlias(n + translator.SQLAliasCount, path, joinable);
+
+			return sqlAlias;
 		}
+
 
 		protected override string GenerateRootAlias(string tableName)
 		{
