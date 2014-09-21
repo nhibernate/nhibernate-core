@@ -18,7 +18,7 @@ namespace NHibernate.Test.Linq
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{
 				this.Called[1] = true;
-				return tuple;
+				return null;
 			}
 
 			public IList TransformList(IList collection)
@@ -34,11 +34,10 @@ namespace NHibernate.Test.Linq
 			//NH-3702
 			var called = new bool[2];
 
-			var result = (from e in db.Customers
-						  where e.CompanyName == "Corp"
-						  select e).SetResultTransformer(new DummyResultTransformer() { Called = called }).ToList();
+			var result = (from e in db.Customers select e).SetResultTransformer(new DummyResultTransformer() { Called = called }).ToList();
 
 			Assert.IsTrue(called[0]);
+			Assert.IsTrue(called[1]);
 		}
 
 		[Test]
@@ -47,11 +46,10 @@ namespace NHibernate.Test.Linq
 			//NH-3702
 			var called = new bool[2];
 
-			var result = (from e in db.Customers
-						  where e.CompanyName == "Corp"
-						  select new { e.ContactName, e.CustomerId }).SetResultTransformer(new DummyResultTransformer() { Called = called }).ToList();
+			var result = (from e in db.Customers select e.ContactName).SetResultTransformer(new DummyResultTransformer() { Called = called }).ToList();
 
 			Assert.IsTrue(called[0]);
+			Assert.IsTrue(called[1]);
 		}
 	}
 }
