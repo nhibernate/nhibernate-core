@@ -60,7 +60,7 @@
 		effectively SP0).
 	-->
 
-	<property name="project.version" value="4.0.1.Alpha1" overwrite="false" />
+	<property name="project.version" value="4.0.1.GA" overwrite="false" />
 	
 	<!-- This version number should be changed if, but only if, there are incompatible
 	     changes compared to the previous version. -->
