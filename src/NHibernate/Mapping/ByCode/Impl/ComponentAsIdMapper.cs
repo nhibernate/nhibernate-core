@@ -20,6 +20,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 			accessorPropertyMapper = new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => id.access = x);
 		}
 
+		public void UnsavedValue(UnsavedValueType unsavedValueType)
+		{
+			id.unsavedvalue = (HbmUnsavedValueType)Enum.Parse(typeof(HbmUnsavedValueType), unsavedValueType.ToString());
+		}
+
 		public HbmCompositeId CompositeId
 		{
 			get { return id; }

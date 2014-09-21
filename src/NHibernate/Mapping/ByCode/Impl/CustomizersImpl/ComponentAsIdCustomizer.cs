@@ -19,6 +19,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			explicitDeclarationsHolder.AddAsPoid(propertyPath.LocalMember);
 		}
 
+		public void UnsavedValue(UnsavedValueType unsavedValueType)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (IComponentAsIdAttributesMapper m) => m.UnsavedValue(unsavedValueType));
+		}
+
 		public void Class<TConcrete>() where TConcrete : TComponent
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (IComponentAsIdAttributesMapper m) => m.Class(typeof(TConcrete)));

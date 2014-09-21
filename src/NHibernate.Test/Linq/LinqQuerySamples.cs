@@ -9,6 +9,22 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class LinqQuerySamples : LinqTestCase
 	{
+		[Test]
+		public void GroupTwoQueriesAndSum()
+		{
+			//NH-3534
+			var queryWithAggregation = from o1 in db.Orders
+									   from o2 in db.Orders
+									   where o1.Customer.CustomerId == o2.Customer.CustomerId && o1.OrderDate == o2.OrderDate
+									   group o1 by new { o1.Customer.CustomerId, o1.OrderDate } into g
+									   select new { CustomerId = g.Key.CustomerId, LastOrderDate = g.Max(x => x.OrderDate) };
+
+			var result = queryWithAggregation.ToList();
+
+			Assert.IsNotNull(result);
+			Assert.IsNotEmpty(result);
+		}
+
 		[Category("WHERE")]
 		[Test(Description = "This sample uses WHERE to filter for Customers in London.")]
 		public void DLinq1()
