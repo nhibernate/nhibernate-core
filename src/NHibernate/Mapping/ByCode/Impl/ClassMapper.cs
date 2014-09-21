@@ -59,6 +59,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#region Implementation of IClassMapper
+		public void OptimisticLock(OptimisticLockMode mode)
+		{
+			classMapping.optimisticlock = (HbmOptimisticLockMode)Enum.Parse(typeof(OptimisticLockMode), mode.ToString());
+		}
 
 		public void Id(Action<IIdMapper> mapper)
 		{
