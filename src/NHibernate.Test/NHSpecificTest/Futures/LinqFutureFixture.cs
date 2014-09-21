@@ -9,6 +9,20 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	public class LinqFutureFixture : FutureFixture
 	{
 		[Test]
+		public void DefaultReadOnlyTest()
+		{
+			//NH-3575
+			using (var s = sessions.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.Query<Person>().ToFuture();
+
+				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+			}
+		}
+
+		[Test]
 		public void CoalesceShouldWorkForFutures()
 		{
 			int personId;
