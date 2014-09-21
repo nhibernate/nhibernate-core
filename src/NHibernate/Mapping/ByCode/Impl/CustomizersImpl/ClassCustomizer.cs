@@ -116,6 +116,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Schema(schemaName));
 		}
 
+		public void Polymorphism(PolymorphismType type)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Polymorphism(type));
+		}
+
 		#endregion
 
 		#region Implementation of IEntityAttributesMapper

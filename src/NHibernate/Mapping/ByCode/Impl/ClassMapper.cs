@@ -256,6 +256,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 			splitMapping(splitGroup);
 		}
 
+		public void Polymorphism(PolymorphismType type)
+		{
+			classMapping.polymorphism = (HbmPolymorphismType) Enum.Parse(typeof(HbmPolymorphismType), type.ToString());
+		}
 		#endregion
 
 		#region Implementation of IEntityAttributesMapper
