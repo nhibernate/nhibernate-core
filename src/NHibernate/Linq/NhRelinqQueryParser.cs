@@ -77,6 +77,12 @@ namespace NHibernate.Linq
 						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
 					}, typeof (TimeoutExpressionNode)
 				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.SetResultTransformer<object>(null, null)),
+					}, typeof(SetResultTransformerExpressionNode)
+				);
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
@@ -167,6 +173,63 @@ namespace NHibernate.Linq
 		{
 		}
 	}
+
+
+
+	internal class SetResultTransformerExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _transformer;
+
+		public SetResultTransformerExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression transformer)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_transformer = transformer;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new SetResultTransformerOperator(_parseInfo, _transformer);
+		}
+	}
+
+	internal class SetResultTransformerOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression ResultTransformer { get; private set; }
+
+		public SetResultTransformerOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression transformer)
+		{
+			ParseInfo = parseInfo;
+			ResultTransformer = transformer;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
 
 
 	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using NHibernate.Transform;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
@@ -10,6 +11,15 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
+		public static IQueryable<T> SetResultTransformer<T>(this IQueryable<T> query, IResultTransformer transformer)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => SetResultTransformer<object>(null, null)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(transformer));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
