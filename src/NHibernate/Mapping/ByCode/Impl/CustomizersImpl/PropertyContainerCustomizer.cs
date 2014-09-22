@@ -100,7 +100,14 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 													 TComponent dynamicComponentTemplate,
 													 Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
 		{
-			RegisterDynamicComponentMapping(property, mapping);
+			if (dynamicComponentTemplate is IDictionary<string, System.Type>)
+			{
+				RegisterDynamicComponentMapping<TComponent>(property, dynamicComponentTemplate as IDictionary<string, System.Type>, mapping);
+			}
+			else
+			{
+				RegisterDynamicComponentMapping(property, mapping);
+			}
 		}
 
 		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
@@ -108,6 +115,22 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
+		}
+
+		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping) where TComponent : class
+		{
+			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
+			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
+			RegisterDynamicComponentMapping<TComponent>(template, mapping, member, memberOf);
+		}
+
+		protected void RegisterDynamicComponentMapping<TComponent>(IDictionary<string, System.Type> template, Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
+			where TComponent : class
+		{
+			foreach (var member in members)
+			{
+				mapping(new DynamicComponentCustomizer<TComponent>(template, explicitDeclarationsHolder, CustomizersHolder, new PropertyPath(PropertyPath, member)));
+			}
 		}
 
 		protected void RegisterDynamicComponentMapping<TComponent>(Action<IDynamicComponentMapper<TComponent>> mapping, params MemberInfo[] members)
@@ -485,7 +508,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
 			MemberInfo memberOf = member.GetMemberFromReflectedType(typeof(TEntity));
-			RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
+
+			if (dynamicComponentTemplate is IDictionary<string, System.Type>)
+			{
+				RegisterDynamicComponentMapping<TComponent>(dynamicComponentTemplate as IDictionary<string, System.Type>, mapping, member, memberOf);
+			}
+			else
+			{
+				RegisterDynamicComponentMapping<TComponent>(mapping, member, memberOf);
+			}
 		}
 
 		public void Any<TProperty>(string notVisiblePropertyOrFieldName, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -19,6 +20,42 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				get { return info; }
 				set { info = value; }
 			}
+		}
+
+		[Test]
+		public void WhenMapDynCompoByDictionaryThenMapItAndItsProperties()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(map =>
+			{
+				map.Id(x => x.Id, idmap => { });
+				map.Component(x => x.Info, new Dictionary<string, System.Type> { { "MyInt", typeof(int) }, { "MyDate", typeof(DateTime) } }, z => { });
+			});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			hbmDynamicComponent.Should().Not.Be.Null();
+			hbmDynamicComponent.Properties.Select(x => x.Name).Should().Have.SameValuesAs("MyInt", "MyDate");
+		}
+
+		[Test]
+		public void WhenMapPrivateDynCompoByDictionaryThenMapItAndItsProperties()
+		{
+			//NH-3704
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(map =>
+			{
+				map.Id(x => x.Id, idmap => { });
+				map.Component("Info", new Dictionary<string, System.Type> { { "MyInt", typeof(int) }, { "MyDate", typeof(DateTime) } }, z => { });
+			});
+
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Person) });
+			var hbmClass = hbmMapping.RootClasses[0];
+			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
+			hbmDynamicComponent.Should().Not.Be.Null();
+			hbmDynamicComponent.Properties.Select(x => x.Name).Should().Have.SameValuesAs("MyInt", "MyDate");
 		}
 
 		[Test]
