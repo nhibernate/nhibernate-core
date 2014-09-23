@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
-	public sealed class Template
+	public static class Template
 	{
 		private static readonly HashSet<string> Keywords = new HashSet<string>();
 		private static readonly HashSet<string> BeforeTableKeywords = new HashSet<string>();
@@ -61,10 +61,6 @@ namespace NHibernate.SqlCommand
 		}
 
 		public static readonly string Placeholder = "$PlaceHolder$";
-
-		private Template()
-		{
-		}
 
 		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect,
 		                                               SQLFunctionRegistry functionRegistry)
