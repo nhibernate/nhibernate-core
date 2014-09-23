@@ -555,7 +555,8 @@ namespace NHibernate.Mapping.ByCode
 			System.Type firstType = typeToMap.FirstOrDefault();
 			if (firstType != null && typeToMap.All(t => t.Assembly.Equals(firstType.Assembly)))
 			{
-				defaultAssemblyName = firstType.Assembly.GetName().Name;
+				//NH-2831: always use the full name of the assembly because it may come from GAC
+				defaultAssemblyName = firstType.Assembly.GetName().FullName;
 			}
 			if (firstType != null && typeToMap.All(t => t.Namespace == firstType.Namespace))
 			{
