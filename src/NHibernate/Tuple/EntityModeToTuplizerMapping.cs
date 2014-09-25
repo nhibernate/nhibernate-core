@@ -1,19 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using NHibernate.Util;
 
 namespace NHibernate.Tuple
 {
 	/// <summary> Centralizes handling of <see cref="EntityMode"/> to <see cref="ITuplizer"/> mappings. </summary>
 	[Serializable]
-	public abstract class EntityModeToTuplizerMapping
+	public abstract class EntityModeToTuplizerMapping : IDeserializationCallback
 	{
+
 		// NH-1660
 		private readonly IDictionary<EntityMode, ITuplizer> tuplizers
 												= new LinkedHashMap<EntityMode, ITuplizer>(5, new EntityModeEqualityComparer());
+		[NonSerialized()]
+		private bool isFullyDeserialized = false;
+
+		public EntityModeToTuplizerMapping()
+		{
+			isFullyDeserialized = true;
+		}
 
 		protected internal void AddTuplizer(EntityMode entityMode, ITuplizer tuplizer)
 		{
+			EnsureFullyDeserialized();
 			tuplizers[entityMode] = tuplizer;
 		}
 
@@ -22,6 +32,7 @@ namespace NHibernate.Tuple
 		/// <returns> The guessed entity mode. </returns>
 		public virtual EntityMode? GuessEntityMode(object obj)
 		{
+			EnsureFullyDeserialized();
 			foreach (KeyValuePair<EntityMode, ITuplizer> entry in tuplizers)
 			{
 				ITuplizer tuplizer = entry.Value;
@@ -41,6 +52,7 @@ namespace NHibernate.Tuple
 		/// <returns> The tuplizer, or null if not found. </returns>
 		public virtual ITuplizer GetTuplizerOrNull(EntityMode entityMode)
 		{
+			EnsureFullyDeserialized();
 			ITuplizer result;
 			tuplizers.TryGetValue(entityMode, out result);
 			return result;
@@ -64,6 +76,20 @@ namespace NHibernate.Tuple
 				throw new HibernateException("No tuplizer found for entity-mode [" + entityMode + "]");
 			}
 			return tuplizer;
+		}
+
+		private void EnsureFullyDeserialized()
+		{
+			if (!isFullyDeserialized)
+			{
+				((IDeserializationCallback)this).OnDeserialization(this);
+			}
+		}
+
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			((IDeserializationCallback)tuplizers).OnDeserialization(sender);
+			isFullyDeserialized = true;
 		}
 	}
 }
