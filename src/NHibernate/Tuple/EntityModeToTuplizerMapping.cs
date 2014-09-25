@@ -11,20 +11,24 @@ namespace NHibernate.Tuple
 	{
 
 		// NH-1660
-		private readonly IDictionary<EntityMode, ITuplizer> tuplizers
-												= new LinkedHashMap<EntityMode, ITuplizer>(5, new EntityModeEqualityComparer());
-		[NonSerialized()]
-		private bool isFullyDeserialized = false;
+		private readonly IDictionary<EntityMode, ITuplizer> _tuplizers
+			= new LinkedHashMap<EntityMode, ITuplizer>(5, new EntityModeEqualityComparer());
 
-		public EntityModeToTuplizerMapping()
+		/// <summary>
+		/// This class might get called during serialization, and may therefore need to deserialize on-demand.
+		/// </summary>
+		[NonSerialized] private bool _isFullyDeserialized;
+
+
+		protected EntityModeToTuplizerMapping()
 		{
-			isFullyDeserialized = true;
+			_isFullyDeserialized = true;
 		}
 
 		protected internal void AddTuplizer(EntityMode entityMode, ITuplizer tuplizer)
 		{
 			EnsureFullyDeserialized();
-			tuplizers[entityMode] = tuplizer;
+			_tuplizers[entityMode] = tuplizer;
 		}
 
 		/// <summary> Given a supposed instance of an entity/component, guess its entity mode. </summary>
@@ -33,7 +37,7 @@ namespace NHibernate.Tuple
 		public virtual EntityMode? GuessEntityMode(object obj)
 		{
 			EnsureFullyDeserialized();
-			foreach (KeyValuePair<EntityMode, ITuplizer> entry in tuplizers)
+			foreach (KeyValuePair<EntityMode, ITuplizer> entry in _tuplizers)
 			{
 				ITuplizer tuplizer = entry.Value;
 				if (tuplizer.IsInstance(obj))
@@ -54,7 +58,7 @@ namespace NHibernate.Tuple
 		{
 			EnsureFullyDeserialized();
 			ITuplizer result;
-			tuplizers.TryGetValue(entityMode, out result);
+			_tuplizers.TryGetValue(entityMode, out result);
 			return result;
 		}
 
@@ -80,16 +84,16 @@ namespace NHibernate.Tuple
 
 		private void EnsureFullyDeserialized()
 		{
-			if (!isFullyDeserialized)
+			if (!_isFullyDeserialized)
 			{
-				((IDeserializationCallback)this).OnDeserialization(this);
+				((IDeserializationCallback) this).OnDeserialization(this);
 			}
 		}
 
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
-			((IDeserializationCallback)tuplizers).OnDeserialization(sender);
-			isFullyDeserialized = true;
+			((IDeserializationCallback) _tuplizers).OnDeserialization(sender);
+			_isFullyDeserialized = true;
 		}
 	}
 }

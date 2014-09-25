@@ -2,10 +2,10 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3487">
 
 	<class name="Entity">
-        <composite-id name="Id">
-            <key-property name="Id" />
-        </composite-id>
+		<composite-id name="Id">
+			<key-property name="Id" />
+		</composite-id>
 		<property name="Name" not-null="true" />
-    </class>
+	</class>
 
 </hibernate-mapping>

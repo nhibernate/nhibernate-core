@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using NHibernate.Linq;
-using NHibernate.Collection;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3487
@@ -12,8 +8,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private Key key1;
-		private Key key2;
+		private Key _key1;
+		private Key _key2;
 
 		public override string BugNumber
 		{
@@ -26,12 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					key1 = new Key() { Id = 1 };
-					var entity1 = new Entity { Id = key1, Name = "Bob1" };
+					_key1 = new Key {Id = 1};
+					var entity1 = new Entity {Id = _key1, Name = "Bob1"};
 					session.Save(entity1);
 
-					key2 = new Key() { Id = 2 };
-					var entity2 = new Entity { Id = key2, Name = "Bob2" };
+					_key2 = new Key {Id = 2};
+					var entity2 = new Entity {Id = _key2, Name = "Bob2"};
 					session.Save(entity2);
 
 					session.Flush();
@@ -55,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 		}
 
 		[Test]
-		public void Test()
+		public void CanDeserializeSessionWithEntityHashCollision()
 		{
 			IFormatter formatter = new BinaryFormatter();
 			byte[] serializedSessionArray;
@@ -64,8 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 			{
 				using (session.BeginTransaction())
 				{
-					var entity1 = session.Get<Entity>(key1);
-					var entity2 = session.Get<Entity>(key2);
+					session.Get<Entity>(_key1);
+					session.Get<Entity>(_key2);
 				}
 
 				session.Disconnect();
@@ -77,10 +73,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 				}
 			}
 
-			ISession deserializedSession;
 			using (var serializationStream = new MemoryStream(serializedSessionArray))
 			{
-				deserializedSession = (ISession)formatter.Deserialize(serializationStream);
+				formatter.Deserialize(serializationStream);
 			}
 
 		}

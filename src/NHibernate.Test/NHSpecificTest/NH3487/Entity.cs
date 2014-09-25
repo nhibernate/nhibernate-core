@@ -1,9 +1,8 @@
 ﻿using System;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3487
 {
-	[Serializable()]
+	[Serializable]
 	public class Entity
 	{
 		public virtual Key Id { get; set; }
@@ -11,10 +10,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 
 		public override bool Equals(object obj)
 		{
-			if(obj is Entity)
+			var otherEntity = obj as Entity;
+			if (otherEntity != null)
 			{
-				var otherEntity = (Entity)obj;
-				return otherEntity.Id.Equals(this.Id);
+				return otherEntity.Id.Equals(Id);
 			}
 			return false;
 		}
@@ -25,17 +24,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 		}
 	}
 
-	[Serializable()]
+	[Serializable]
 	public class Key
 	{
 		public virtual int Id { get; set; }
 
 		public override bool Equals(object obj)
 		{
-			if (obj is Key)
+			var otherEntity = obj as Key;
+			if (otherEntity != null)
 			{
-				var otherEntity = (Key)obj;
-				return otherEntity.Id == this.Id;
+				return otherEntity.Id == Id;
 			}
 			return false;
 		}
