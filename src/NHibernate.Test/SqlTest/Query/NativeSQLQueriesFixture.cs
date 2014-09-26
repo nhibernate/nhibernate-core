@@ -617,6 +617,7 @@ namespace NHibernate.Test.SqlTest.Query
 		[Test]
 		public void CanSetResultTransformerOnFutureQuery()
 		{
+			//NH-3222
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
@@ -639,6 +640,7 @@ namespace NHibernate.Test.SqlTest.Query
 		[Test]
 		public void CanSetResultTransformerOnFutureValue()
 		{
+			//NH-3222
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
@@ -656,6 +658,45 @@ namespace NHibernate.Test.SqlTest.Query
 				Assert.AreEqual("Ricardo", v[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
 				Assert.IsTrue(transformer.TransformTupleCalled);
+			}
+		}
+
+		[Test]
+		public void CanExecuteFutureList()
+		{
+			//NH-3222
+			using (var s = this.OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Person("Ricardo"));
+				s.Flush();
+
+				var l = s
+					.CreateSQLQuery("select Name from Person")
+					.Future<string>();
+
+				Assert.AreEqual(l.Count(), 1);
+				Assert.AreEqual("Ricardo", l.ElementAt(0));
+			}
+		}
+
+		[Test]
+		public void CanExecuteFutureValue()
+		{
+			//NH-3222
+			using (var s = this.OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Save(new Person("Ricardo"));
+				s.Flush();
+
+				var l = s
+					.CreateSQLQuery("select Name from Person")
+					.FutureValue<string>();
+
+				var v = l.Value;
+
+				Assert.AreEqual("Ricardo", v);
 			}
 		}
 	}
