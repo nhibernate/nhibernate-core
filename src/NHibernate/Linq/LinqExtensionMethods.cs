@@ -10,6 +10,12 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
+		public static T MappedAs<T>(this T parameter, NHibernate.Type.IType type)
+		{
+			//NH-2401
+			return parameter;
+		}
+
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());

@@ -17,6 +17,8 @@ namespace NHibernate.Linq.Visitors
 	/// </summary>
 	public class ExpressionParameterVisitor : ExpressionTreeVisitor
 	{
+		//NH-2401
+		private readonly Dictionary<int, IType> parameterTypeOverrides = new Dictionary<int, IType>();
 		private readonly Dictionary<ConstantExpression, NamedParameter> _parameters = new Dictionary<ConstantExpression, NamedParameter>();
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
@@ -60,6 +62,17 @@ namespace NHibernate.Linq.Visitors
 				return Expression.Call(null, expression.Method, query, arg);
 			}
 
+			if (expression.Method.GetGenericMethodDefinition() == ReflectionHelper.GetMethodDefinition<object>(x => x.MappedAs(null)))
+            {
+				//NH-2401
+                var typeExpression = Expression.Lambda<Func<IType>>(Expression.Convert(expression.Arguments[1], typeof(IType)));
+                var type = typeExpression.Compile()();
+
+				this.parameterTypeOverrides[_parameters.Count] = type;
+
+				return expression;
+            }
+
 			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
 			{
 				return expression;
@@ -75,10 +88,14 @@ namespace NHibernate.Linq.Visitors
 				// We use null for the type to indicate that the caller should let HQL figure it out.
 				IType type = null;
 
-				// We have a bit more information about the null parameter value.
-				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
-				if (expression.Value == null)
-					type = NHibernateUtil.GuessType(expression.Type);
+				//NH-2401
+				if (this.parameterTypeOverrides.TryGetValue(this._parameters.Count, out type) == false)
+				{
+					// We have a bit more information about the null parameter value.
+					// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
+					if (expression.Value == null)
+						type = NHibernateUtil.GuessType(expression.Type);
+				}
 
 				// There is more information available in the Linq expression than to HQL directly.
 				// In some cases it might be advantageous to use the extra info.  Assuming this

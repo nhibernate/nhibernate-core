@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -1619,6 +1620,17 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(809, q.Length);
 
 			Assert.That(!q.Any(orderid => withNullShippingDate.Contains(orderid)));
+		}
+
+		[Test]
+		public void CanSpecifyParameterType()
+		{
+			//NH-2401
+			var q = from o in this.db.Orders where o.OrderId > 0 && o.ShippingDate.MappedAs(NHibernateUtil.Date) < DateTime.Today select o;
+			var r = q.ToList();
+
+			Assert.IsNotEmpty(r);
+			Assert.IsTrue(r.All(o => o.OrderId > 0 && o.ShippingDate < DateTime.Today));
 		}
 	}
 
