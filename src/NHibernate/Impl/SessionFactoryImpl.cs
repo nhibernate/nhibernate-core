@@ -1180,8 +1180,8 @@ namespace NHibernate.Impl
 					NativeSQLQuerySpecification spec;
 					if (qd.ResultSetRef != null)
 					{
-						ResultSetMappingDefinition definition = sqlResultSetMappings[qd.ResultSetRef];
-						if (definition == null)
+						ResultSetMappingDefinition definition;
+						if (!sqlResultSetMappings.TryGetValue(qd.ResultSetRef, out definition))
 						{
 							throw new MappingException("Unable to find resultset-ref definition: " + qd.ResultSetRef);
 						}
