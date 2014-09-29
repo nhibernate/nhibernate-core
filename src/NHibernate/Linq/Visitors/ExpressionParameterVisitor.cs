@@ -62,9 +62,17 @@ namespace NHibernate.Linq.Visitors
 				return Expression.Call(null, expression.Method, query, arg);
 			}
 
-			if (expression.Method.GetGenericMethodDefinition() == ReflectionHelper.GetMethodDefinition<object>(x => x.MappedAs(null)))
+			/*if (expression.Method == ReflectionHelper.GetMethod<object>(x => x.ToString()))
+			{
+				//NH-2401: detect ToString after MappedAs
+				//we just leave thos to StringGenerator
+				return base.VisitMethodCallExpression(expression);
+			}*/
+
+			if ((expression.Method.DeclaringType == typeof(LinqExtensionMethods)) && (expression.Method.Name == "MappedAs"))
             {
-				//NH-2401
+				//NH-2401: detect MappedAs
+				//we cannot do this in a *Generator class because there we don't have access to the parameters collection (_parameters)
                 var typeExpression = Expression.Lambda<Func<IType>>(Expression.Convert(expression.Arguments[1], typeof(IType)));
                 var type = typeExpression.Compile()();
 

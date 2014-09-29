@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -1623,14 +1624,79 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void CanSpecifyParameterType()
+		public void CanSpecifyParameterTypeOnRestriction()
 		{
 			//NH-2401
-			var q = from o in this.db.Orders where o.OrderId > 0 && o.ShippingDate.MappedAs(NHibernateUtil.Date) < DateTime.Today select o;
-			var r = q.ToList();
+			using (this.session.BeginTransaction())
+			{
+				//this should work perfectly, even if doesn't return anything (sanity check)
+				(from o in this.db.Orders where o.ShippingDate == DateTime.Now select o).FirstOrDefault();
 
-			Assert.IsNotEmpty(r);
-			Assert.IsTrue(r.All(o => o.OrderId > 0 && o.ShippingDate < DateTime.Today));
+				//this one should throw an exception because of invalid case
+				//note: cannot use Assert.Throws because we need to look at the actual exception
+				try
+				{
+					(from o in this.db.Orders where o.ShippingDate.MappedAs(NHibernateUtil.String) == DateTime.Now select o).FirstOrDefault();
+				}
+				catch (GenericADOException ex)
+				{
+					Assert.IsInstanceOf<InvalidCastException>(ex.InnerException);
+					Assert.AreEqual("Unable to cast object of type 'System.DateTime' to type 'System.String'.", ex.InnerException.Message);
+				}
+			}
+		}
+
+		[Test]
+		public void CanSpecifyParameterTypeAndToStringOnRestriction()
+		{
+			//NH-2401
+			using (this.session.BeginTransaction())
+			{
+				var firstDate = (from o in this.db.Orders where o.ShippingDate != null orderby o.ShippingDate select o.ShippingDate.ToString()).First();
+				var firstDateConverted = (from o in this.db.Orders where o.ShippingDate.MappedAs(NHibernateUtil.String).ToString() == firstDate select o.ShippingDate).FirstOrDefault();
+
+				Assert.AreEqual(DateTime.Parse(firstDate), firstDateConverted);
+			}
+		}
+
+
+		[Test]
+		public void CanSpecifyParameterTypeAndConvertToIntOnRestriction()
+		{
+			//NH-2401
+			using (this.session.BeginTransaction())
+			{
+				var firstIdAsInt = (from o in this.db.Orders where o.OrderDate != null orderby o.OrderDate select Convert.ToInt32(o.OrderDate)).First();
+				var firstIdConverted = (from o in this.db.Orders where Convert.ToInt32(o.OrderDate.MappedAs(NHibernateUtil.Int32)) == firstIdAsInt orderby o.OrderDate select Convert.ToInt32(o.OrderDate)).Single();
+
+				Assert.AreEqual(firstIdAsInt, firstIdConverted);
+			}
+		}
+
+		[Test]
+		public void CanSpecifyParameterTypeAndConvertToDecimalOnRestriction()
+		{
+			//NH-2401
+			using (this.session.BeginTransaction())
+			{
+				var firstIdAsDecimal = Convert.ToDecimal((from o in this.db.Orders orderby o.OrderId select o.OrderId).First());
+				var firstIdConverted = (from o in this.db.Orders where Convert.ToDecimal(o.OrderId.MappedAs(NHibernateUtil.Decimal)) == firstIdAsDecimal orderby o.OrderId select Convert.ToDecimal(o.OrderId)).Single();
+
+				Assert.AreEqual(firstIdAsDecimal, firstIdConverted);
+			}
+		}
+
+		[Test]
+		public void CanSpecifyParameterTypeAndConvertToDoubleOnRestriction()
+		{
+			//NH-2401
+			using (this.session.BeginTransaction())
+			{
+				var firstIdAsDouble = Convert.ToDouble((from o in this.db.Orders orderby o.OrderId select o.OrderId).First());
+				var firstIdConverted = (from o in this.db.Orders where Convert.ToDouble(o.OrderId.MappedAs(NHibernateUtil.Double)) == firstIdAsDouble orderby o.OrderId select Convert.ToDouble(o.OrderId)).Single();
+
+				Assert.AreEqual(firstIdAsDouble, firstIdConverted);
+			}
 		}
 	}
 

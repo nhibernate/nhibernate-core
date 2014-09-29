@@ -6,6 +6,7 @@ using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
+using NHibernate.Type;
 
 namespace NHibernate.Linq.Functions
 {
@@ -19,7 +20,6 @@ namespace NHibernate.Linq.Functions
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			var result = visitor.Visit(arguments[0]).AsExpression();
-
 			return result;
 		}
 	}
