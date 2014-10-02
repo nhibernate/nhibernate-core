@@ -2,35 +2,63 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using System.Reflection;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Engine;
 using NHibernate.Metadata;
-using NHibernate.Type;
 using NHibernate.Persister.Entity;
+using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
 	[Flags]
-	public enum MatchMode
+	public enum ExampleMatchMode
 	{
 		Exact = 0,
 		IgnoreCase = 1,
 		Start = 2,
 		End = 4,
-		Anywhere = (Start | End)
+		Anywhere = Start | End
+	}
+
+	public static class ExampleMatchModeExtensions
+	{
+		public static bool IsStart(this ExampleMatchMode mode)
+		{
+			return (mode & ExampleMatchMode.Start) == ExampleMatchMode.Start;
+		}
+
+		public static bool IsEnd(this ExampleMatchMode mode)
+		{
+			return (mode & ExampleMatchMode.End) == ExampleMatchMode.End;
+		}
+
+		public static bool IsAnywhere(this ExampleMatchMode mode)
+		{
+			return (mode & ExampleMatchMode.Anywhere) == ExampleMatchMode.Anywhere;
+		}
+
+		public static bool IsExact(this ExampleMatchMode mode)
+		{
+			return (mode & ExampleMatchMode.Exact) == ExampleMatchMode.Exact;
+		}
+
+		public static bool IsIgnoreCase(this ExampleMatchMode mode)
+		{
+			return (mode & ExampleMatchMode.IgnoreCase) == ExampleMatchMode.IgnoreCase;
+		}
 	}
 
 	//NH-3714
 	public interface IQueryableByExample<T> : IQueryable<T>
 	{
+		IQueryableByExample<T> MatchMode(ExampleMatchMode mode);
 		IQueryableByExample<T> Exclude(string propertyName);
 		IQueryableByExample<T> Exclude<TProp>(Expression<Func<T, TProp>> prop);
-		IQueryableByExample<T> SetMatchMode(MatchMode mode);
 		IQueryableByExample<T> ExcludeZeroes();
 		IQueryableByExample<T> ExcludeNulls();
 		IQueryableByExample<T> ExcludeNone();
-		IQueryableByExample<T> NullIsEmptyString();
+		IQueryableByExample<T> IncludeCollectionsCount();
+		IQueryableByExample<T> IncludeDefaultValues();
 	}
 
 	//NH-3714
@@ -40,16 +68,17 @@ namespace NHibernate.Linq
 		private readonly T example;
 		private readonly IClassMetadata classMetadata;
 		private string[] propertyNames;
-		private readonly MatchMode matchMode;
+		private readonly ExampleMatchMode matchMode;
 		private readonly bool excludeZeroes;
 		private readonly bool excludeNulls;
-		private readonly bool nullIsEmptyString;
+		private readonly bool includeCollectionsCount;
+		private readonly bool includeDefaultValues;
 
-		public QueryableByExample(IQueryable<T> inner, T example, IClassMetadata classMetadata) : this(inner, example, classMetadata, classMetadata.PropertyNames, MatchMode.Exact, false, false, false)
+		public QueryableByExample(IQueryable<T> inner, T example, IClassMetadata classMetadata) : this(inner, example, classMetadata, classMetadata.PropertyNames, ExampleMatchMode.Exact, false, false, false, false)
 		{
 		}
 
-		public QueryableByExample(IQueryable<T> inner, T example, IClassMetadata classMetadata, string[] propertyNames, MatchMode matchMode, bool excludeZeroes, bool excludeNulls, bool nullIsEmptyString)
+		public QueryableByExample(IQueryable<T> inner, T example, IClassMetadata classMetadata, string[] propertyNames, ExampleMatchMode matchMode, bool excludeZeroes, bool excludeNulls, bool includeCollectionsCount, bool includeDefaultValues)
 		{
 			this.inner = inner;
 			this.example = example;
@@ -58,19 +87,32 @@ namespace NHibernate.Linq
 			this.matchMode = matchMode;
 			this.excludeZeroes = excludeZeroes;
 			this.excludeNulls = excludeNulls;
-			this.nullIsEmptyString = nullIsEmptyString;
+			this.includeCollectionsCount = includeCollectionsCount;
+			this.includeDefaultValues = includeDefaultValues;
 		}
 
 		#region IQueryableByExample<T> Members
-		public IQueryableByExample<T> NullIsEmptyString()
+		public IQueryableByExample<T> IncludeDefaultValues()
 		{
-			if (this.nullIsEmptyString == true)
+			if (this.includeDefaultValues == true)
 			{
 				return this;
 			}
 			else
 			{
-				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, this.excludeZeroes, this.excludeNulls, true);
+				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, this.excludeZeroes, this.excludeNulls, this.includeCollectionsCount, true);
+			}
+		}
+
+		public IQueryableByExample<T> IncludeCollectionsCount()
+		{
+			if (this.includeCollectionsCount == true)
+			{
+				return this;
+			}
+			else
+			{
+				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, this.excludeZeroes, this.excludeNulls, true, this.includeDefaultValues);
 			}
 		}
 
@@ -78,7 +120,7 @@ namespace NHibernate.Linq
 		{
 			var propertyNames = this.classMetadata.PropertyNames;
 
-			return new QueryableByExample<T>(inner: this.inner, example: example, classMetadata: this.classMetadata, propertyNames: propertyNames, matchMode: MatchMode.Exact, excludeZeroes: false, excludeNulls: false, nullIsEmptyString: false);
+			return new QueryableByExample<T>(inner: this.inner, example: example, classMetadata: this.classMetadata, propertyNames: propertyNames, matchMode: ExampleMatchMode.Exact, excludeZeroes: false, excludeNulls: false, includeCollectionsCount: false, includeDefaultValues: false);
 		}
 
 		public IQueryableByExample<T> ExcludeZeroes()
@@ -89,7 +131,7 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, true, this.excludeNulls, this.nullIsEmptyString);
+				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, true, this.excludeNulls, this.includeCollectionsCount, this.includeDefaultValues);
 			}
 		}
 
@@ -101,11 +143,11 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, this.excludeZeroes, true, this.nullIsEmptyString);
+				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, this.matchMode, this.excludeZeroes, true, this.includeCollectionsCount, this.includeDefaultValues);
 			}
 		}
 
-		public IQueryableByExample<T> SetMatchMode(MatchMode mode)
+		public IQueryableByExample<T> MatchMode(ExampleMatchMode mode)
 		{
 			if (matchMode.Equals(mode) == true)
 			{
@@ -113,13 +155,13 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, mode, this.excludeZeroes, this.excludeNulls, this.nullIsEmptyString);
+				return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames, mode, this.excludeZeroes, this.excludeNulls, this.includeCollectionsCount, this.includeDefaultValues);
 			}
 		}
 
 		public IQueryableByExample<T> Exclude(string propertyName)
 		{
-			return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames.Where(x => x != propertyName).ToArray(), this.matchMode, this.excludeZeroes, this.excludeNulls, this.nullIsEmptyString);
+			return new QueryableByExample<T>(this.inner, this.example, this.classMetadata, this.propertyNames.Where(x => x != propertyName).ToArray(), this.matchMode, this.excludeZeroes, this.excludeNulls, this.includeCollectionsCount, this.includeDefaultValues);
 		}
 
 		public IQueryableByExample<T> Exclude<TProp>(Expression<Func<T, TProp>> prop)
@@ -169,6 +211,24 @@ namespace NHibernate.Linq
 				{
 					if (propertyTypes[i].IsCollectionType == true)
 					{
+						var collectionValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
+
+						if (collectionValue != null)
+						{
+							if (this.includeCollectionsCount == true)
+							{
+								var parameter = Expression.Parameter(typeof(T), "p");
+								var member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
+								var prop = Expression.MakeMemberAccess(parameter, member);
+								var count = Expression.Call(null, ReflectionHelper.GetMethod<IEnumerable<object>>(x => x.Count()), prop);
+								var equals = Expression.MakeBinary(ExpressionType.Equal, count, Expression.Constant((propertyValues[i] as System.Collections.IEnumerable).OfType<object>().Count()));
+
+								var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
+
+								newQuery = newQuery.Where(cond);
+							}
+						}
+
 						continue;
 					}
 
@@ -208,13 +268,31 @@ namespace NHibernate.Linq
 
 			for (var i = 0; i < propertyNames.Length; ++i)
 			{
+				if ((propertyTypes[i].IsCollectionType == true) || (propertyTypes[i].IsComponentType == true))
+				{
+					continue;
+				}
+
 				if (this.IsDefaultValue(propertyValues[i], propertyTypes[i].ReturnedClass) == false)
 				{
-					var member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
-					var parameter = Expression.Parameter(entityType, "p");
-					var prop = Expression.MakeMemberAccess(parameter, member);
+					var member = null as MemberInfo;
+					var prop = null as MemberExpression;
+					var parameter = Expression.Parameter(typeof(T), "p");
+
+					if (componentPath == null)
+					{
+						member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
+						prop = Expression.MakeMemberAccess(parameter, member);
+					}
+					else
+					{
+						member = typeof(T).GetPropertyOrFieldMatchingName(componentPath);
+						prop = Expression.MakeMemberAccess(parameter, member);
+						prop = Expression.MakeMemberAccess(prop, entityType.GetPropertyOrFieldMatchingName(propertyNames[i]));
+					}
+
 					var value = Expression.Constant(propertyValues[i]);
-					var equals = Expression.MakeBinary(ExpressionType.Equal, prop, value) as Expression;
+					var equals = Expression.MakeBinary(ExpressionType.Equal, prop, value);
 
 					if (propertyValues[i] == null)
 					{
@@ -228,22 +306,22 @@ namespace NHibernate.Linq
 					{
 						var stringValue = propertyValues[i] as string;
 
-						if (this.matchMode != MatchMode.Exact)
+						if (this.matchMode.IsExact() == false)
 						{
-							if ((this.matchMode & MatchMode.Anywhere) == MatchMode.Anywhere)
+							if (this.matchMode.IsAnywhere() == true)
 							{
 								value = Expression.Constant(String.Concat("%", stringValue, "%"));
 							}
-							else if ((this.matchMode & MatchMode.Start) == MatchMode.Start)
+							else if (this.matchMode.IsStart() == true)
 							{
 								value = Expression.Constant(String.Concat(stringValue, "%"));
 							}
-							else if ((this.matchMode & MatchMode.End) == MatchMode.End)
+							else if (this.matchMode.IsEnd() == true)
 							{
 								value = Expression.Constant(String.Concat("%", stringValue));
 							}
 
-							if ((this.matchMode & MatchMode.IgnoreCase) == MatchMode.IgnoreCase)
+							if (this.matchMode.IsIgnoreCase() == true)
 							{
 								value = Expression.Constant(stringValue.ToUpper());
 								equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(prop, ReflectionHelper.GetMethod<string>(x => x.ToUpper())), value);
@@ -253,14 +331,6 @@ namespace NHibernate.Linq
 								equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(null, ReflectionHelper.GetMethod<string>(x => x.Like(null)), prop, value), Expression.Constant(true));
 							}
 						}
-						else
-						{
-							if (this.nullIsEmptyString == true)
-							{
-								equals = Expression.Condition(Expression.MakeBinary(ExpressionType.Equal, prop, Expression.Constant(null)), Expression.Constant(string.Empty), value);
-							}
-						}
-
 					}
 					else if (numericTypes.Contains(propertyTypes[i].ReturnedClass) == true)
 					{
@@ -273,16 +343,7 @@ namespace NHibernate.Linq
 						}
 					}
 
-					var cond = null as Expression<Func<T, bool>>;
-
-					if (entityType == typeof(T))
-					{
-						cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
-					}
-					else
-					{
-						cond = Expression.Lambda<Func<T, bool>>(Expression.MakeMemberAccess(parameter, typeof(T).GetPropertyOrFieldMatchingName(componentPath)), parameter);
-					}
+					var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
 
 					newQuery = newQuery.Where(cond);
 				}
@@ -300,6 +361,11 @@ namespace NHibernate.Linq
 
 		private bool IsDefaultValue(object value, System.Type type)
 		{
+			if (this.includeDefaultValues == true)
+			{
+				return false;
+			}
+
 			if (value == null)
 			{
 				return true;
@@ -312,7 +378,7 @@ namespace NHibernate.Linq
 
 			if (type == typeof(string))
 			{
-				return value == string.Empty;
+				return (value as string) == string.Empty;
 			}
 
 			return (type.IsClass == false) ? value == Activator.CreateInstance(type) : false;
