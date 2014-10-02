@@ -10,6 +10,19 @@ namespace NHibernate.Linq
 {
 	public static class LinqExtensionMethods
 	{
+		//NH-3714
+		public static IQueryableByExample<T> ByExample<T>(this IQueryable<T> query, T example)
+		{
+			var provider = query.Provider as DefaultQueryProvider;
+			var session = provider.Session;
+			var factory = session.Factory;
+			var persister = factory.GetEntityPersister(typeof(T).FullName);
+			var classMetadata = persister.ClassMetadata;
+			var propertyNames = classMetadata.PropertyNames;
+
+			return new QueryableByExample<T>(query, example, classMetadata);
+		}
+
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());

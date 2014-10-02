@@ -27,7 +27,7 @@ namespace NHibernate.Linq
 			_session = new WeakReference(session, true);
 		}
 
-		protected virtual ISessionImplementor Session
+		protected internal virtual ISessionImplementor Session
 		{
 			get { return _session.Target as ISessionImplementor; }
 		}
