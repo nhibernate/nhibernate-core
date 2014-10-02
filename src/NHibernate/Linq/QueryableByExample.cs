@@ -196,6 +196,69 @@ namespace NHibernate.Linq
 			get { return this.inner.ElementType; }
 		}
 
+		private IQueryable<T> CreateExpression(IQueryable<T> newQuery, System.Type entityType, EntityMode entityMode, string [] propertyNames, object [] propertyValues, IType [] propertyTypes, string componentPath = null)
+		{
+			for (var i = 0; i < propertyNames.Length; ++i)
+			{
+				if (propertyTypes[i].IsCollectionType == true)
+				{
+					var collectionValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
+
+					if (collectionValue != null)
+					{
+						if (this.includeCollectionsCount == true)
+						{
+							var parameter = Expression.Parameter(typeof(T), "p");
+							var member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
+							var prop = Expression.MakeMemberAccess(parameter, member);
+							var count = Expression.Call(null, ReflectionHelper.GetMethod<IEnumerable<object>>(x => x.Count()), prop);
+							var equals = Expression.MakeBinary(ExpressionType.Equal, count, Expression.Constant((propertyValues[i] as System.Collections.IEnumerable).OfType<object>().Count()));
+
+							var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
+
+							newQuery = newQuery.Where(cond);
+						}
+					}
+
+					continue;
+				}
+
+				if (propertyTypes[i].IsComponentType == true)
+				{
+					var componentValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
+
+					if (componentValue != null)
+					{
+						var componentType = (propertyTypes[i] as ComponentType);
+						var componentPropertyNames = componentType.PropertyNames;
+						var componentPropertyValues = componentType.GetPropertyValues(componentValue, entityMode);
+						var componentPropertyTypes = componentPropertyValues.Select((value, index) => NHibernateUtil.GuessType(componentPropertyValues[index])).ToArray();
+
+						newQuery = this.CreateExpression(newQuery, componentType.ReturnedClass, entityMode, componentPropertyNames, componentPropertyValues, componentPropertyTypes, propertyNames[i]);
+					}
+
+					continue;
+				}
+
+				if (propertyTypes[i].IsAssociationType == true)
+				{
+					var entityValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
+
+					if (entityValue != null)
+					{
+
+					}
+				}
+
+				if (this.IsDefaultValue(propertyValues[i], propertyTypes[i].ReturnedClass) == false)
+				{
+					newQuery = this.AppendRestrictionToQuery(newQuery, entityType, propertyNames[i], propertyValues[i], propertyTypes[i], componentPath);
+				}
+			}
+
+			return newQuery;
+		}
+
 		public Expression Expression
 		{
 			get
@@ -205,149 +268,87 @@ namespace NHibernate.Linq
 				var propertyValues = this.classMetadata.GetPropertyValues(this.example, entityMode).Where((value, index) => propertyIndexes.Contains(index)).ToArray();
 				var propertyTypes = this.classMetadata.PropertyTypes.Where((value, index) => propertyIndexes.Contains(index)).ToArray();
 				var entityType = this.ElementType;
-				var newQuery = this.inner;
 
-				for (var i = 0; i < this.propertyNames.Length; ++i)
-				{
-					if (propertyTypes[i].IsCollectionType == true)
-					{
-						var collectionValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
-
-						if (collectionValue != null)
-						{
-							if (this.includeCollectionsCount == true)
-							{
-								var parameter = Expression.Parameter(typeof(T), "p");
-								var member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
-								var prop = Expression.MakeMemberAccess(parameter, member);
-								var count = Expression.Call(null, ReflectionHelper.GetMethod<IEnumerable<object>>(x => x.Count()), prop);
-								var equals = Expression.MakeBinary(ExpressionType.Equal, count, Expression.Constant((propertyValues[i] as System.Collections.IEnumerable).OfType<object>().Count()));
-
-								var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
-
-								newQuery = newQuery.Where(cond);
-							}
-						}
-
-						continue;
-					}
-
-					if (propertyTypes[i].IsComponentType == true)
-					{
-						var componentValue = this.classMetadata.GetPropertyValue(this.example, propertyNames[i], entityMode);
-
-						if (componentValue != null)
-						{
-							var componentMetadata = (this.classMetadata as AbstractEntityPersister).Factory.GetClassMetadata(propertyTypes[i].ReturnedClass.FullName);
-
-							var componentType = (propertyTypes[i] as ComponentType);
-							var componentPropertyNames = componentType.PropertyNames;
-							var componentPropertyValues = componentType.GetPropertyValues(componentValue, entityMode);
-							var componentPropertyTypes = componentPropertyValues.Select((value, index) => NHibernateUtil.GuessType(componentPropertyValues[index])).ToArray();
-
-							newQuery = this.AppendRestrictionToQuery(newQuery, componentType.ReturnedClass, componentPropertyNames, componentPropertyValues, componentPropertyTypes, propertyNames[i]);
-						}
-
-						continue;
-					}
-
-					if (this.IsDefaultValue(propertyValues[i], propertyTypes[i].ReturnedClass) == false)
-					{
-						newQuery = this.AppendRestrictionToQuery(newQuery, entityType, propertyNames, propertyValues, propertyTypes);
-					}
-				}
-
-				return newQuery.Expression;
+				return this.CreateExpression(this.inner, entityType, entityMode, this.propertyNames, propertyValues, propertyTypes).Expression;
 			}
 		}
 
-		private IQueryable<T> AppendRestrictionToQuery(IQueryable<T> query, System.Type entityType, string[] propertyNames, object[] propertyValues, IType[] propertyTypes, string componentPath = null)
+		private IQueryable<T> AppendRestrictionToQuery(IQueryable<T> query, System.Type entityType, string propertyName, object propertyValue, IType propertyType, string componentPath = null)
 		{
 			var newQuery = query;
 			var numericTypes = new[] { typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal) };
 
-			for (var i = 0; i < propertyNames.Length; ++i)
+			var member = null as MemberInfo;
+			var prop = null as MemberExpression;
+			var parameter = Expression.Parameter(typeof(T), "p");
+
+			if (componentPath == null)
 			{
-				if ((propertyTypes[i].IsCollectionType == true) || (propertyTypes[i].IsComponentType == true))
+				member = entityType.GetPropertyOrFieldMatchingName(propertyName);
+				prop = Expression.MakeMemberAccess(parameter, member);
+			}
+			else
+			{
+				member = typeof(T).GetPropertyOrFieldMatchingName(componentPath);
+				prop = Expression.MakeMemberAccess(parameter, member);
+				prop = Expression.MakeMemberAccess(prop, entityType.GetPropertyOrFieldMatchingName(propertyName));
+			}
+
+			var value = Expression.Constant(propertyValue);
+			var equals = Expression.MakeBinary(ExpressionType.Equal, prop, value);
+
+			if (propertyValue == null)
+			{
+				if (this.excludeNulls == true)
 				{
-					continue;
+					return newQuery;
 				}
+			}
 
-				if (this.IsDefaultValue(propertyValues[i], propertyTypes[i].ReturnedClass) == false)
+			if (propertyType.ReturnedClass == typeof(string))
+			{
+				var stringValue = propertyValue as string;
+
+				if (this.matchMode.IsExact() == false)
 				{
-					var member = null as MemberInfo;
-					var prop = null as MemberExpression;
-					var parameter = Expression.Parameter(typeof(T), "p");
-
-					if (componentPath == null)
+					if (this.matchMode.IsAnywhere() == true)
 					{
-						member = entityType.GetPropertyOrFieldMatchingName(propertyNames[i]);
-						prop = Expression.MakeMemberAccess(parameter, member);
+						value = Expression.Constant(String.Concat("%", stringValue, "%"));
+					}
+					else if (this.matchMode.IsStart() == true)
+					{
+						value = Expression.Constant(String.Concat(stringValue, "%"));
+					}
+					else if (this.matchMode.IsEnd() == true)
+					{
+						value = Expression.Constant(String.Concat("%", stringValue));
+					}
+
+					if (this.matchMode.IsIgnoreCase() == true)
+					{
+						value = Expression.Constant(stringValue.ToUpper());
+						equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(prop, ReflectionHelper.GetMethod<string>(x => x.ToUpper())), value);
 					}
 					else
 					{
-						member = typeof(T).GetPropertyOrFieldMatchingName(componentPath);
-						prop = Expression.MakeMemberAccess(parameter, member);
-						prop = Expression.MakeMemberAccess(prop, entityType.GetPropertyOrFieldMatchingName(propertyNames[i]));
+						equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(null, ReflectionHelper.GetMethod<string>(x => x.Like(null)), prop, value), Expression.Constant(true));
 					}
-
-					var value = Expression.Constant(propertyValues[i]);
-					var equals = Expression.MakeBinary(ExpressionType.Equal, prop, value);
-
-					if (propertyValues[i] == null)
-					{
-						if (this.excludeNulls == true)
-						{
-							continue;
-						}
-					}
-
-					if (propertyTypes[i].ReturnedClass == typeof(string))
-					{
-						var stringValue = propertyValues[i] as string;
-
-						if (this.matchMode.IsExact() == false)
-						{
-							if (this.matchMode.IsAnywhere() == true)
-							{
-								value = Expression.Constant(String.Concat("%", stringValue, "%"));
-							}
-							else if (this.matchMode.IsStart() == true)
-							{
-								value = Expression.Constant(String.Concat(stringValue, "%"));
-							}
-							else if (this.matchMode.IsEnd() == true)
-							{
-								value = Expression.Constant(String.Concat("%", stringValue));
-							}
-
-							if (this.matchMode.IsIgnoreCase() == true)
-							{
-								value = Expression.Constant(stringValue.ToUpper());
-								equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(prop, ReflectionHelper.GetMethod<string>(x => x.ToUpper())), value);
-							}
-							else
-							{
-								equals = Expression.MakeBinary(ExpressionType.Equal, Expression.Call(null, ReflectionHelper.GetMethod<string>(x => x.Like(null)), prop, value), Expression.Constant(true));
-							}
-						}
-					}
-					else if (numericTypes.Contains(propertyTypes[i].ReturnedClass) == true)
-					{
-						if (this.excludeZeroes == true)
-						{
-							if (Convert.ToInt32(propertyValues[i]) == 0)
-							{
-								continue;
-							}
-						}
-					}
-
-					var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
-
-					newQuery = newQuery.Where(cond);
 				}
 			}
+			else if (numericTypes.Contains(propertyType.ReturnedClass) == true)
+			{
+				if (this.excludeZeroes == true)
+				{
+					if (Convert.ToInt32(propertyValue) == 0)
+					{
+						return newQuery;
+					}
+				}
+			}
+
+			var cond = Expression.Lambda<Func<T, bool>>(equals, parameter);
+
+			newQuery = newQuery.Where(cond);
 
 			return newQuery;
 		}
@@ -381,7 +382,7 @@ namespace NHibernate.Linq
 				return (value as string) == string.Empty;
 			}
 
-			return (type.IsClass == false) ? value == Activator.CreateInstance(type) : false;
+			return (type.IsClass == false) ? value.Equals(Activator.CreateInstance(type)) : false;
 		}
 	}
 }

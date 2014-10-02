@@ -15,7 +15,7 @@ namespace NHibernate.Test.Linq
 			//NH-3714
 			var customerExample = new Customer { CompanyName = "Alfreds Futterkiste", ContactTitle = "Sales Representative" };
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).ToList();
+			var result = this.db.Customers.ByExample(customerExample).ToList();
 
 			Assert.IsTrue(result.All(x => x.CompanyName == customerExample.CompanyName && x.ContactTitle == customerExample.ContactTitle));
 		}
@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq
 			//NH-3714
 			var customerExample = new Customer { CompanyName = "Alfreds Futterkiste", ContactTitle = "Sales Representative" };
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).Exclude(x => x.ContactTitle).ToList();
+			var result = this.db.Customers.ByExample(customerExample).Exclude(x => x.ContactTitle).ToList();
 
 			Assert.IsTrue(result.All(x => x.CompanyName == customerExample.CompanyName));
 		}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.Linq
 			var customerExample = new Customer();
 			customerExample.Orders.Add(new Order());
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).IncludeCollectionsCount().ToList();
+			var result = this.db.Customers.ByExample(customerExample).IncludeCollectionsCount().ToList();
 
 			Assert.IsTrue(result.All(x => x.Orders.Count == customerExample.Orders.Count));
 		}
@@ -48,20 +48,19 @@ namespace NHibernate.Test.Linq
 		{
 			//NH-3714
 			var customerExample = new Customer();
-			customerExample.Orders.Add(new Order());
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).IncludeDefaultValues().ToList();
+			var result = this.db.Customers.ByExample(customerExample).IncludeDefaultValues().ToList();
 
 			Assert.IsEmpty(result);
 		}
 
-		public void CanQueryByExampleIncludingDefaultValuesExceptNulls()
+		[Test]
+		public void CanQueryByExampleIncludingDefaultValuesExcludingNull()
 		{
 			//NH-3714
-			var customerExample = new Customer();
-			customerExample.Orders.Add(new Order());
+			var productExample = new Product();
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).IncludeDefaultValues().ExcludeNulls().ToList();
+			var result = this.db.Products.ByExample(productExample).IncludeDefaultValues().ExcludeNulls().ToList();
 
 			Assert.IsEmpty(result);
 		}
@@ -70,10 +69,12 @@ namespace NHibernate.Test.Linq
 		public void CanQueryByExampleIncludingAssociatedEntity()
 		{
 			//NH-3714
-			var customerExample = new Customer { CompanyName = "Alfreds Futterkiste" };
-			//AQUI
+			var category = this.db.Categories.First();
+			var productExample = new Product { Category = category };
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).ToList();
+			var result = this.db.Products.ByExample(productExample).ToList();
+
+			Assert.IsTrue(result.All(x => x.Category == category));
 		}
 
 		[Test]
@@ -82,7 +83,7 @@ namespace NHibernate.Test.Linq
 			//NH-3714
 			var customerExample = new Customer { Address = new Address(string.Empty, "Berlin", string.Empty, string.Empty, string.Empty, string.Empty, string.Empty) };
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).ToList();
+			var result = this.db.Customers.ByExample(customerExample).ToList();
 
 			Assert.IsTrue(result.All(x => x.Address.City == customerExample.Address.City));
 		}
@@ -93,7 +94,7 @@ namespace NHibernate.Test.Linq
 			//NH-3714
 			var customerExample = new Customer { CompanyName = "alfreds futterkiste" };
 
-			var result = this.session.Query<Customer>().ByExample(customerExample).MatchMode(ExampleMatchMode.IgnoreCase).ToList();
+			var result = this.db.Customers.ByExample(customerExample).MatchMode(ExampleMatchMode.IgnoreCase).ToList();
 
 			Assert.IsTrue(result.All(x => x.CompanyName.Equals(customerExample.CompanyName, StringComparison.OrdinalIgnoreCase)));
 		}
@@ -106,7 +107,7 @@ namespace NHibernate.Test.Linq
 			{
 				var customerExample = new Customer { CompanyName = "Alfred" };
 
-				var result = this.session.Query<Customer>().ByExample(customerExample).MatchMode(ExampleMatchMode.Start).ToList();
+				var result = this.db.Customers.ByExample(customerExample).MatchMode(ExampleMatchMode.Start).ToList();
 
 				Assert.IsTrue(result.All(x => x.CompanyName.StartsWith(customerExample.CompanyName)));
 			}
@@ -120,7 +121,7 @@ namespace NHibernate.Test.Linq
 			{
 				var customerExample = new Customer { CompanyName = "Futterkiste" };
 
-				var result = this.session.Query<Customer>().ByExample(customerExample).MatchMode(ExampleMatchMode.End).ToList();
+				var result = this.db.Customers.ByExample(customerExample).MatchMode(ExampleMatchMode.End).ToList();
 
 				Assert.IsTrue(result.All(x => x.CompanyName.EndsWith(customerExample.CompanyName)));
 			}
@@ -134,7 +135,7 @@ namespace NHibernate.Test.Linq
 			{
 				var customerExample = new Customer { CompanyName = "fred" };
 
-				var result = this.session.Query<Customer>().ByExample(customerExample).MatchMode(ExampleMatchMode.Anywhere).ToList();
+				var result = this.db.Customers.ByExample(customerExample).MatchMode(ExampleMatchMode.Anywhere).ToList();
 
 				Assert.IsTrue(result.All(x => x.CompanyName.Contains(customerExample.CompanyName)));
 			}
