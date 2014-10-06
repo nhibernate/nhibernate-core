@@ -381,6 +381,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.subselect = new HbmSubselect();
 			}
 			classMapping.subselect.Text = new[] {sql};
+
+			//NH-3715
+			this.Mutable(false);
 		}
 
 		#endregion
