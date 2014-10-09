@@ -14,10 +14,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-    public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpression
+	public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpression
 	{
-        private string _alias;
+		private string _alias;
 		private IParameterSpecification _parameterSpecification;
+		private int _scalarColumnIndex = -1;
 
 		public ParameterNode(IToken token) : base(token)
 		{
@@ -70,39 +71,50 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-        #region ISelectExpression
+		#region ISelectExpression
 
-        public void SetScalarColumnText(int i)
-        {
-            ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
-        }
+		public void SetScalarColumnText(int i)
+		{
+			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
+		}
 
-        public FromElement FromElement
-        {
-            get { return null; }
-        }
+		public FromElement FromElement
+		{
+			get { return null; }
+		}
 
-        public bool IsConstructor
-        {
-            get { return false; }
-        }
+		public bool IsConstructor
+		{
+			get { return false; }
+		}
 
-        public bool IsReturnableEntity
-        {
-            get { return false; }
-        }
+		public bool IsReturnableEntity
+		{
+			get { return false; }
+		}
 
-        public bool IsScalar
-        {
-            get { return DataType != null && !DataType.IsAssociationType; }
-        }
+		public bool IsScalar
+		{
+			get { return DataType != null && !DataType.IsAssociationType; }
+		}
 
-        public string Alias
-        {
-            get { return _alias; }
-            set { _alias = value; }
-        }
+		public string Alias
+		{
+			get { return _alias; }
+			set { _alias = value; }
+		}
 
-        #endregion
+		public void SetScalarColumn(int i)
+		{
+			_scalarColumnIndex = i;
+			SetScalarColumnText(i);
+		}
+
+		public int ScalarColumnIndex
+		{
+			get { return _scalarColumnIndex; }
+		}
+
+		#endregion
 	}
 }

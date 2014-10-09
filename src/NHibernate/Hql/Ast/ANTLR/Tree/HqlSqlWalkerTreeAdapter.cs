@@ -60,6 +60,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.IDENT:
 					ret = new IdentNode(payload);
 					break;
+
+				case HqlSqlWalker.RESULT_VARIABLE_REF:
+					ret = new ResultVariableRefNode(payload);
+					break;
+
 				case HqlSqlWalker.SQL_TOKEN:
 					ret = new SqlFragment(payload);
 					break;
@@ -89,8 +94,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.NUM_FLOAT:
 				case HqlSqlWalker.NUM_LONG:
 				case HqlSqlWalker.NUM_DOUBLE:
-                case HqlSqlWalker.NUM_DECIMAL:
-                case HqlSqlWalker.QUOTED_String:
+				case HqlSqlWalker.NUM_DECIMAL:
+				case HqlSqlWalker.QUOTED_String:
 					ret = new LiteralNode(payload);
 					break;
 				case HqlSqlWalker.TRUE:
