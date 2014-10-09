@@ -160,7 +160,7 @@ resultVariableRef!
 		HandleResultVariableRef( $resultVariableRef.tree );
 	}
 	: i=identifier
-	-> ^(RESULT_VARIABLE_REF [i.Tree.Text]) 
+	-> ^(RESULT_VARIABLE_REF [$i.tree.Text]) 
 	;
 
 skipClause

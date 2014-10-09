@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 HqlSqlWalker.g 2014-10-10 10:44:16
+// $ANTLR 3.5.0.2 HqlSqlWalker.g 2014-10-10 11:16:23
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -2585,7 +2585,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	partial void EnterRule_resultVariableRef();
 	partial void LeaveRule_resultVariableRef();
 	// $ANTLR start "resultVariableRef"
-	// HqlSqlWalker.g:158:1: resultVariableRef : i= identifier -> ^( RESULT_VARIABLE_REF[i.Tree.Text] ) ;
+	// HqlSqlWalker.g:158:1: resultVariableRef : i= identifier -> ^( RESULT_VARIABLE_REF[$i.start.ToString()] ) ;
 	[GrammarRule("resultVariableRef")]
 	private AstTreeRuleReturnScope<IASTNode, IASTNode> resultVariableRef()
 	{
@@ -2607,7 +2607,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 		DebugLocation(158, 1);
 		try
 		{
-			// HqlSqlWalker.g:162:2: (i= identifier -> ^( RESULT_VARIABLE_REF[i.Tree.Text] ) )
+			// HqlSqlWalker.g:162:2: (i= identifier -> ^( RESULT_VARIABLE_REF[$i.start.ToString()] ) )
 			DebugEnterAlt(1);
 			// HqlSqlWalker.g:162:4: i= identifier
 			{
@@ -2632,14 +2632,14 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 163:2: -> ^( RESULT_VARIABLE_REF[i.Tree.Text] )
+			// 163:2: -> ^( RESULT_VARIABLE_REF[$i.start.ToString()] )
 			{
 				DebugLocation(163, 5);
-				// HqlSqlWalker.g:163:5: ^( RESULT_VARIABLE_REF[i.Tree.Text] )
+				// HqlSqlWalker.g:163:5: ^( RESULT_VARIABLE_REF[$i.start.ToString()] )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
 				DebugLocation(163, 7);
-				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RESULT_VARIABLE_REF, i.Tree.Text), root_1);
+				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RESULT_VARIABLE_REF, (i!=null?((IASTNode)i.Start):default(IASTNode)).ToString()), root_1);
 
 				adaptor.AddChild(root_0, root_1);
 				}
