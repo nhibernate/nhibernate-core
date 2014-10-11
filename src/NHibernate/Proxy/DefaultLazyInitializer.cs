@@ -13,10 +13,8 @@ namespace NHibernate.Proxy
 	{
 		public DefaultLazyInitializer(string entityName, System.Type persistentClass, object id, MethodInfo getIdentifierMethod,
 							   MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType,
-							   ISessionImplementor session)
-			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session) {}
-
-		#region Implementation of IInterceptor
+							   ISessionImplementor session, bool overridesEquals)
+			: base(entityName, persistentClass, id, getIdentifierMethod, setIdentifierMethod, componentIdType, session, overridesEquals) {}
 
 		public object Intercept(InvocationInfo info)
 		{
@@ -40,7 +38,5 @@ namespace NHibernate.Proxy
 
 			return returnValue;
 		}
-
-		#endregion
 	}
 }
