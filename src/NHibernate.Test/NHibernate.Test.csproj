@@ -557,6 +557,7 @@
     <Compile Include="MappingByCode\ConventionModelMapperTests\PropertyToFieldAccessorTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\SafePoidTests.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\VersionOnBaseClassIntegrationTest.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\ComponentAsIdTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\AllPropertiesRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\ClassWithComponentsTest.cs" />
