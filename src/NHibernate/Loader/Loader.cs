@@ -1289,7 +1289,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected virtual void AutoDiscoverTypes(IDataReader rs)
+		protected internal virtual void AutoDiscoverTypes(IDataReader rs)
 		{
 			throw new AssertionFailure("Auto discover types not supported in this loader");
 		}
