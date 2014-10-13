@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Id;
+using NHibernate.Properties;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using NHibernate.Util;
@@ -55,7 +55,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		#region Implementation of IEntityPropertyMapper
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{
 			this.Access(typeof(T));
 		}

@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Id;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
@@ -79,7 +79,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			AddCustomizer(m => m.Access(accessor));
 		}
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{
 			this.Access(typeof(T));
 		}

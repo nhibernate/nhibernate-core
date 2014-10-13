@@ -3,7 +3,6 @@ using System.Linq;
 using System.Data;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
-using NHibernate.Id;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NHibernate.Properties;
@@ -36,7 +35,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 				AccessorCalled = true;
 			}
 
-			public void Access<T>() where T : IIdentifierGenerator, new()
+			public void Access<T>() where T : IPropertyAccessor, new()
 			{
 
 			}

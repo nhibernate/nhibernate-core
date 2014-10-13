@@ -1,4 +1,4 @@
-using NHibernate.Id;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -24,6 +24,6 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Access(Accessor accessor);
 		void Access(System.Type accessorType);
-		void Access<T>() where T : IIdentifierGenerator, new();
+		void Access<T>() where T : IPropertyAccessor, new();
 	}
 }

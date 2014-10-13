@@ -1,8 +1,8 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Id;
 using NHibernate.Persister.Collection;
+using NHibernate.Properties;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
@@ -139,7 +139,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.Access(accessorType));
 		}
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{
 			this.Access(typeof(T));
 		}

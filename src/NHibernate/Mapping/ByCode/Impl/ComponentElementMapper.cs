@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Id;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -93,7 +93,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			// not supported by HbmCompositeElement
 		}
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{
 			// not supported by HbmCompositeElement
 		}

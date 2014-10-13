@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Id;
 using NHibernate.Persister.Collection;
+using NHibernate.Properties;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl
@@ -218,7 +218,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			entityPropertyMapper.Access(accessor);
 		}
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{
 			this.Access(typeof(T));
 		}

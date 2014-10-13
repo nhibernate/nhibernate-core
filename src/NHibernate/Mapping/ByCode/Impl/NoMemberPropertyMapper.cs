@@ -1,4 +1,4 @@
-using NHibernate.Id;
+using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -10,7 +10,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Access(System.Type accessorType) {}
 
-		public void Access<T>() where T : IIdentifierGenerator, new()
+		public void Access<T>() where T : IPropertyAccessor, new()
 		{}
 
 		#endregion
