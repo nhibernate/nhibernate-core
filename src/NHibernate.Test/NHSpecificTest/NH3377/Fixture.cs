@@ -28,6 +28,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3377
 					         };
 				session.Save(e2);
 
+				var e3 = new Entity
+				{
+					Name = "True",
+					Age = "10"
+				};
+				session.Save(e3);
+
+				var e4 = new Entity
+				{
+					Name = "20141013",
+					Age = "11"
+				};
+				session.Save(e4);
+
 				session.Flush();
 				transaction.Commit();
 			}
@@ -69,6 +83,32 @@ namespace NHibernate.Test.NHSpecificTest.NH3377
 				var result = session.Query<Entity>().Max(e => Convert.ToInt32(e.Age));
 
 				Assert.AreEqual(17, result);
+			}
+		}
+
+		[Test]
+		public void ShouldBeAbleToCallConvertToBooleanFromStringParameter()
+		{
+			//NH-3720
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = session.Query<Entity>().Where(x => x.Name == Boolean.TrueString).Select(x => Convert.ToBoolean(x.Name)).Single();
+
+				Assert.AreEqual(true, result);
+			}
+		}
+
+		[Test]
+		public void ShouldBeAbleToCallConvertToDateTimeFromStringParameter()
+		{
+			//NH-3720
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = session.Query<Entity>().Where(x => x.Name == "20141013").Select(x => Convert.ToDateTime(x.Name)).Single();
+
+				Assert.AreEqual(new DateTime(2014, 10, 13), result);
 			}
 		}
 	}
