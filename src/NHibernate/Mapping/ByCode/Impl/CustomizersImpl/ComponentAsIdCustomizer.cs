@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Id;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
@@ -32,6 +33,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Access(Accessor accessor)
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (IComponentAsIdAttributesMapper m) => m.Access(accessor));
+		}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)

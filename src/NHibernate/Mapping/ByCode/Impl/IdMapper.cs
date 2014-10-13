@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Id;
 using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl
@@ -47,6 +48,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Access(Accessor accessor)
 		{
 			accessorMapper.Access(accessor);
+		}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)
@@ -119,6 +125,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			public void Access(Accessor accessor) {}
 
 			public void Access(System.Type accessorType) {}
+
+			public void Access<T>() where T : IIdentifierGenerator, new() {}
 
 			#endregion
 		}

@@ -1,3 +1,5 @@
+using NHibernate.Id;
+
 namespace NHibernate.Mapping.ByCode.Impl
 {
 	public class NoMemberPropertyMapper : IAccessorPropertyMapper
@@ -7,6 +9,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Access(Accessor accessor) {}
 
 		public void Access(System.Type accessorType) {}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
+		{}
 
 		#endregion
 	}

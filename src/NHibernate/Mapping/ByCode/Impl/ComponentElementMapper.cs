@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Id;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -88,6 +89,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#region IComponentElementMapper Members
 
 		public void Access(Accessor accessor)
+		{
+			// not supported by HbmCompositeElement
+		}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
 		{
 			// not supported by HbmCompositeElement
 		}

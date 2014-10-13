@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Id;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 
@@ -146,6 +147,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Access(Accessor accessor)
 		{
 			entityPropertyMapper.Access(accessor);
+		}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void Access(System.Type accessorType)

@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Id;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 
@@ -136,6 +137,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Access(System.Type accessorType)
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.Access(accessorType));
+		}
+
+		public void Access<T>() where T : IIdentifierGenerator, new()
+		{
+			this.Access(typeof(T));
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
