@@ -1149,7 +1149,7 @@ sessionFactory.EvictCollection("Eg.Cat.Kittens"); //evict all kitten collections
             </para>
 
             <para>
-                one-shot-delete apply to collections mapped <literal>inverse="true"</literal>.
+                Of course, one-shot-delete does not apply to collections mapped <literal>inverse="true"</literal>.
             </para>
 
         </sect2>
