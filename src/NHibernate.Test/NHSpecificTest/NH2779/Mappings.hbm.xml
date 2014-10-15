@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.NH2779"
+           assembly="NHibernate.Test">
+
+  <class name="Order" table="ORDERS" lazy="false">
+    <id name="OrderId" column="ORDER_ID" type="String">
+      <generator class="assigned" />
+    </id>
+    <property name="InternalOrderId" column="INTERNAL_ORDER_ID" type="Int32" />   
+    
+    <list name="lineItems" lazy="false" cascade="all" fetch="join" access="field" generic="true">
+      <key column="INTERNAL_ORDER_ID" property-ref="InternalOrderId" />
+      <list-index column="SortOrder" base="1" />
+      <one-to-many class="LineItem" />
+    </list>
+  </class>
+
+  <class name="LineItem" table="LINEITEMS" lazy="false">
+    <id name="LineItemId" column="LINEITEM_ID" type="Int32">
+      <generator class="assigned" />
+    </id>
+    <property name="InternalOrderId" column="INTERNAL_ORDER_ID" type="Int32" />
+    <property name="SortOrder" column="SORT_ORDER" type="Int32" />
+  </class>
+</hibernate-mapping>

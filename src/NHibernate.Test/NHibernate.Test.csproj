@@ -699,6 +699,9 @@
     <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2779\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2779\LineItem.cs" />
+    <Compile Include="NHSpecificTest\NH2779\Order.cs" />
     <Compile Include="NHSpecificTest\NH2865\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2865\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3377\Entity.cs" />
@@ -3090,6 +3093,7 @@
     <EmbeddedResource Include="UnionsubclassPolymorphicFormula\Party.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2779\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3221\Mappings.hbm.xml" />

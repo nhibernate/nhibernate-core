@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("initializing collection " + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, source.Factory));
+					log.Debug("initializing collection " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}
 
 				log.Debug("checking second-level cache");
