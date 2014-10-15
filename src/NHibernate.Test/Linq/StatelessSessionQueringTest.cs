@@ -10,10 +10,29 @@ namespace NHibernate.Test.Linq
 	public class StatelessSessionQueringTest : LinqTestCase
 	{
 		[Test]
-		public void CanCreateStatelessSessions()
+		public void CanQueryChildStatelessSession()
 		{
 			//NH-3606
 			using (var session = this.OpenSession())
+			{
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+
+				using (var statelessSession = session.GetStatelessSession())
+				{
+					var results = statelessSession.Query<Customer>().ToList();
+
+					Assert.IsNotEmpty(results);
+				}
+
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+			}
+		}
+
+		[Test]
+		public void CanCreateStatelessSessions()
+		{
+			//NH-3606
+			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				Assert.IsTrue(session.Transaction.IsActive);
@@ -26,6 +45,38 @@ namespace NHibernate.Test.Linq
 				}
 
 				Assert.IsFalse(session.Transaction.IsActive);
+			}
+		}
+
+		[Test]
+		public void CanApplyAsStatelessExtensionMethod()
+		{
+			//NH-3606
+			using (var session = OpenSession())
+			{
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+
+				var results = session.Query<Customer>().AsStateless().ToList();
+
+				Assert.IsNotEmpty(results);
+
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+			}
+		}
+
+		[Test]
+		public void ExplicitlyFetchedLazyMembersAreNotCached()
+		{
+			//NH-3606
+			using (var session = OpenSession())
+			{
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+
+				var results = session.Query<Customer>().AsStateless().Fetch(x => x.Orders).ToList();
+
+				Assert.IsNotEmpty(results);
+
+				Assert.AreEqual(0, session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
 			}
 		}
 

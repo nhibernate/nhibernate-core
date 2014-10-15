@@ -80,6 +80,10 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
 
+		//NH-3606
+		[NonSerialized]
+		private IStatelessSession childStatelessSession;
+		
 		[NonSerialized]
 		private readonly bool flushBeforeCompletionEnabled;
 		[NonSerialized]
@@ -367,12 +371,22 @@ namespace NHibernate.Impl
 				{
 					try
 					{
+						//NH-3606
+						if (childStatelessSession != null)
+						{
+							childStatelessSession.Close();
+							childStatelessSession = null;
+						}
+
 						if (childSessionsByEntityMode != null)
 						{
 							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
 							{
 								pair.Value.Close();
 							}
+
+							//remove references to child sessions so that they can be garbage collected
+							childSessionsByEntityMode.Clear();
 						}
 					}
 					catch
@@ -2220,6 +2234,27 @@ namespace NHibernate.Impl
 		public ISessionImplementor GetSessionImplementation()
 		{
 			return this;
+		}
+
+		//NH-3606
+		public IStatelessSession GetStatelessSession()
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (rootSession != null)
+				{
+					return rootSession.GetStatelessSession();
+				}
+
+				if (childStatelessSession == null)
+				{
+					childStatelessSession = new StatelessSessionImpl(Connection, SessionFactory as SessionFactoryImpl);
+
+					(childStatelessSession as StatelessSessionImpl).ConnectionManager.transaction = Transaction;
+				}
+
+				return childStatelessSession;
+			}
 		}
 
 		public ISession GetSession(EntityMode entityMode)

@@ -10,10 +10,7 @@ namespace NHibernate
 	{
 		public static IStatelessSession GetStatelessSession(this ISession session)
 		{
-			var statelessSessionImpl = new StatelessSessionImpl(session.Connection, session.SessionFactory as SessionFactoryImpl);
-			statelessSessionImpl.ConnectionManager.transaction = session.Transaction;
-
-			return statelessSessionImpl;
+			return (session.GetSessionImplementation() as SessionImpl).GetStatelessSession();
 		}
 	}
 }
