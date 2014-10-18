@@ -20,6 +20,12 @@ namespace NHibernate.Driver
 		private int commandTimeout;
 		private bool prepareSql;
 
+		public virtual void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			//do nothing by default
+		}
+
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			// Command timeout

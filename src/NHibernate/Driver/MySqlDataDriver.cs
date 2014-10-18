@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace NHibernate.Driver
 {
@@ -30,6 +31,14 @@ namespace NHibernate.Driver
 			"MySql.Data.MySqlClient.MySqlConnection",
 			"MySql.Data.MySqlClient.MySqlCommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
 		}
 
 		/// <summary>

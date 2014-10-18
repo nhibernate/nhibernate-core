@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
@@ -22,6 +23,17 @@ namespace NHibernate.Driver
 		public const byte MaxScale = 5;
 		public const byte MaxDateTime2 = 8;
 		public const byte MaxDateTimeOffset = 10;
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			if (handler is SqlInfoMessageEventHandler)
+			{
+				(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;
+			}
+
+			base.AddNotificationHandler(con, handler);
+		}
 
 		/// <summary>
 		/// Creates an uninitialized <see cref="IDbConnection" /> object for

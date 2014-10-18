@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -33,6 +34,14 @@ namespace NHibernate.Driver
 				"FirebirdSql.Data.FirebirdClient.FbConnection",
 				"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql

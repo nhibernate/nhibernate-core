@@ -1,4 +1,7 @@
-﻿namespace NHibernate.Driver
+﻿using System;
+using System.Data;
+
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
@@ -39,6 +42,14 @@
 		public SybaseSQLAnywhereDotNet4Driver()
 			: base("iAnywhere.Data.SQLAnywhere", "iAnywhere.Data.SQLAnywhere.v4.0", "iAnywhere.Data.SQLAnywhere.SAConnection", "iAnywhere.Data.SQLAnywhere.SACommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql

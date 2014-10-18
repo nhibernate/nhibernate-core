@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
@@ -21,6 +22,14 @@ namespace NHibernate.Driver
 						"Oracle.DataAccess.Lite.OracleConnection",
 						"Oracle.DataAccess.Lite.OracleCommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql

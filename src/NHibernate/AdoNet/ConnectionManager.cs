@@ -184,6 +184,11 @@ namespace NHibernate.AdoNet
 				if (ownConnection)
 				{
 					connection = Factory.ConnectionProvider.GetConnection();
+					//NH-3724
+					if (Factory.Settings.NotificationHandler != null)
+					{
+						Factory.ConnectionProvider.Driver.AddNotificationHandler(connection, Factory.Settings.NotificationHandler);
+					}
 					if (Factory.Statistics.IsStatisticsEnabled)
 					{
 						Factory.StatisticsImplementor.Connect();

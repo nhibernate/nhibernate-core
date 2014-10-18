@@ -48,6 +48,14 @@ namespace NHibernate.Driver
 			oracleDbTypeBlob = Enum.Parse(oracleDbTypeEnum, "Blob");
 		}
 
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
+		}
+
 		/// <summary></summary>
 		public override string NamedPrefix
 		{

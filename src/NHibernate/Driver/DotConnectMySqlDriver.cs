@@ -1,4 +1,7 @@
-﻿namespace NHibernate.Driver
+﻿using System;
+using System.Data;
+
+namespace NHibernate.Driver
 {
     /// <summary>
     /// Provides a database driver for dotConnect for MySQL by DevArt.
@@ -27,6 +30,14 @@
             "Devart.Data.MySql.NHibernate.NHibernateMySqlCommand")
         {
         }
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
+		}
 
         /// <summary>
         /// Devart.Data.MySql uses named parameters in the sql.

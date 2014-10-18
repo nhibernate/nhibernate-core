@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
@@ -34,6 +35,13 @@ namespace NHibernate.Driver
 		/// Configure the driver using <paramref name="settings"/>.
 		/// </summary>
 		void Configure(IDictionary<string, string> settings);
+
+		//NH-3724
+		/// <summary>
+		/// Attaches an event handler for the notification event (InfoMessage in most ADO.NET drivers).
+		/// </summary>
+		/// <param name="handler"></param>
+		void AddNotificationHandler(IDbConnection con, Delegate handler);
 
 		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver

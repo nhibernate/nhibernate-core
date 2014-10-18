@@ -1,3 +1,6 @@
+using System;
+using System.Data;
+
 namespace NHibernate.Driver
 {
 	/// <summary>
@@ -18,6 +21,14 @@ namespace NHibernate.Driver
 				"IBM.Data.Informix.IfxConnection",
 				"IBM.Data.Informix.IfxCommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
+
+			base.AddNotificationHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql
