@@ -97,7 +97,7 @@ namespace NHibernate.Test.Hql.Ast
 				.SetInt32("pSkip", 1)
 				.SetInt32("pTake", 3).List<Human>().Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {6f, 10f, 15f};
-			actual.Should().Have.SameSequenceAs(expected);
+			Assert.That(actual, Is.EquivalentTo(expected));
 
 			txn.Commit();
 			s.Close();
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Hql.Ast
 				.SetInt32("pSkip", 1)
 				.SetInt32("pTake", 4).List<Human>().Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {10f, 15f};
-			actual.Should().Have.SameSequenceAs(expected);
+			Assert.That(actual, Is.EquivalentTo(expected));
 
 			txn.Commit();
 			s.Close();
@@ -128,7 +128,7 @@ namespace NHibernate.Test.Hql.Ast
 
 			float[] actual = s.CreateQuery("from Human h order by h.bodyWeight skip :jump").SetInt32("jump", 2).List<Human>().Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {10f, 15f, 20f};
-			actual.Should().Have.SameSequenceAs(expected);
+			Assert.That(actual, Is.EquivalentTo(expected));
 
 			txn.Commit();
 			s.Close();

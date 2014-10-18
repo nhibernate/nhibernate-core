@@ -11,7 +11,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2313
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2313.Mappings.hbm.xml", GetType().Assembly);
-			cfg.Executing(c=> c.BuildSessionFactory()).Throws<MappingException>().And.ValueOf.Message.Should().Contain("TheOther");
+			Assert.That(() => cfg.BuildSessionFactory(), Throws.TypeOf<MappingException>()
+															   .And.Message.ContainsSubstring("TheOther"));
 		}
 	}
 }

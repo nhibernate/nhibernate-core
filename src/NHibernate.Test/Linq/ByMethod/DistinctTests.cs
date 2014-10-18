@@ -30,7 +30,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(388);
+			Assert.That(result.Length, Is.EqualTo(388));
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(774);
+			Assert.That(result.Length, Is.EqualTo(774));
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(388);
+			Assert.That(result.Length, Is.EqualTo(388));
 		}
 
 		[Test]
@@ -77,7 +77,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(774);
+			Assert.That(result.Length, Is.EqualTo(774));
 		}
 
 		[Test]
@@ -95,7 +95,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Distinct()
 				.ToArray();
 
-			result.Length.Should().Be.EqualTo(824);
+			Assert.That(result.Length, Is.EqualTo(824));
 		}
 
 		[Test]

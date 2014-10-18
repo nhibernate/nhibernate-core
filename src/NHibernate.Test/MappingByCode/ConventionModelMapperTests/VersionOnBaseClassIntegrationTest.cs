@@ -33,8 +33,8 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmVersion = hbmClass.Version;
-			hbmVersion.Should().Not.Be.Null();
-			hbmVersion.name.Should().Be("Version");
+			Assert.That(hbmVersion, Is.Not.Null);
+			Assert.That(hbmVersion.name, Is.EqualTo("Version"));
 		}
 
 		[Test]
@@ -54,10 +54,9 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmVersion = hbmClass.Version;
-			hbmVersion.Should().Not.Be.Null();
-			hbmVersion.name.Should().Be("Version");
-
-			hbmClass.Properties.Should("because one is the POID and the other is the version").Be.Empty();
+			Assert.That(hbmVersion, Is.Not.Null);
+			Assert.That(hbmVersion.name, Is.EqualTo("Version"));
+			Assert.That(hbmClass.Properties, Is.Empty, "because one is the POID and the other is the version");
 		}
 	}
 }

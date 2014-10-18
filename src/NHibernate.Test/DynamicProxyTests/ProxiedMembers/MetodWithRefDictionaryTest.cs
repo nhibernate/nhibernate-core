@@ -23,7 +23,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 			var dictionary = new Dictionary<string, string>();
 			var myParam = dictionary;
 			c.Method(ref myParam);
-			myParam.Should().Not.Be.SameInstanceAs(dictionary);
+			Assert.That(myParam, Is.Not.SameAs(dictionary));
 		}
 	}
 }

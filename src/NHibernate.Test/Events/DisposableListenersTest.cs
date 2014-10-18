@@ -29,7 +29,7 @@ namespace NHibernate.Test.Events
 			cfg.AppendListeners(ListenerType.PostUpdate, new[]{myDisposableListener});
 			var sf = cfg.BuildSessionFactory();
 			sf.Close();
-			myDisposableListener.DisposeCalled.Should().Be.True();
+			Assert.That(myDisposableListener.DisposeCalled, Is.True);
 		}
 	}
 }

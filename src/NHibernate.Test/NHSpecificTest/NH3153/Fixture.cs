@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var mappings = conf.CreateMappings(Dialect.Dialect.GetDialect());
 
 			var pc = mappings.GetClass(typeof(A).FullName);
-			((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"].Should().Be("Test");
+			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
 		}
 
 
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var mappings = conf.CreateMappings(Dialect.Dialect.GetDialect());
 
 			var pc = mappings.GetClass(typeof(A).FullName);
-			((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"].Should().Be("Test");
+			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
 		}
 	}
 }

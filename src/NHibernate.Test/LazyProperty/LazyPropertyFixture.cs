@@ -61,15 +61,15 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = s.Load<Book>(1);
 
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "Id"));
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "Name"));
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.False);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 
 				NHibernateUtil.Initialize(book);
 
-				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Id"));
-				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Name"));
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			}
 		}
 
@@ -86,9 +86,9 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = s.Get<Book>(1);
 
-				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Id"));
-				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "Name"));
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			}
 		}
 
@@ -99,8 +99,8 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = s.Get<Book>(1);
 
-				Assert.AreEqual("a lot of text ...", book.ALotOfText);
-				Assert.True(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text ..."));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
 			}
 		}
 
@@ -111,8 +111,8 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = s.Get<Book>(1);
 
-				Assert.AreEqual("some name", book.Name);
-				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
+				Assert.That(book.Name, Is.EqualTo("some name"));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 			}
 		}
 

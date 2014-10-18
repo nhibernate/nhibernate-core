@@ -32,11 +32,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.column1.Should().Be("MYCLASSID");
+			Assert.That(hbmId.column1, Is.EqualTo("MYCLASSID"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.column.Should().Be("SOMETHING");
+			Assert.That(hbmProperty.column, Is.EqualTo("SOMETHING"));
 		}
 
 		[Test]
@@ -57,11 +57,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmMapping.RootClasses[0];
-			hbmClass.Should().Not.Be.Null();
+			Assert.That(hbmClass, Is.Not.Null);
 			var hbmId = hbmClass.Id;
-			hbmId.column1.Should().Be("MYCLASSID");
+			Assert.That(hbmId.column1, Is.EqualTo("MYCLASSID"));
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
-			hbmProperty.column.Should().Be("SOMETHING");
+			Assert.That(hbmProperty.column, Is.EqualTo("SOMETHING"));
 		}
 	}
 }

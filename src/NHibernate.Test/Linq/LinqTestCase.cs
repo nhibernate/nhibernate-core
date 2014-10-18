@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NUnit.Framework;
 using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
@@ -64,9 +65,9 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		public void AssertByIds<TEntity, TId>(IEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
+		public static void AssertByIds<TEntity, TId>(IEnumerable<TEntity> entities, TId[] expectedIds, Converter<TEntity, TId> entityIdGetter)
 		{
-			entities.Select(x => entityIdGetter(x)).Should().Have.SameValuesAs(expectedIds);
+			Assert.That(entities.Select(x => entityIdGetter(x)), Is.EquivalentTo(expectedIds));
 		}
 	}
 }

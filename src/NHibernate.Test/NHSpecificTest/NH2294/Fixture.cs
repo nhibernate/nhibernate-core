@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2294
 		{
 			using (ISession session = OpenSession())
 			{
-				session.Executing(s => s.CreateQuery("where").List()).Throws<QuerySyntaxException>();
+				Assert.That(() => session.CreateQuery("where").List(), Throws.TypeOf<QuerySyntaxException>());
 			}
 		}
 	}

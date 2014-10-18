@@ -350,8 +350,8 @@ namespace NHibernate.Test.Hql.Ast
 			s = OpenSession();
 			t = s.BeginTransaction();
 			string updateQryString = "update Human h " + "set h.description = 'updated' " + "where exists ("
-			                         + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' "
-			                         + ")";
+									 + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' "
+									 + ")";
 			int count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			s.Delete(doll);
@@ -376,15 +376,15 @@ namespace NHibernate.Test.Hql.Ast
 			t = s.BeginTransaction();
 			// one-to-many test
 			updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-			                  + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
+							  + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
 			count = s.CreateQuery(updateQryString).ExecuteUpdate();
 			Assert.That(count, Is.EqualTo(1));
 			// many-to-many test
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
 				updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where "
-				                  + "exists(select a.id from e.ManyToManyAssociatedEntities a "
-				                  + "where a.Name = 'many-to-many-association')";
+								  + "exists(select a.id from e.ManyToManyAssociatedEntities a "
+								  + "where a.Name = 'many-to-many-association')";
 				count = s.CreateQuery(updateQryString).ExecuteUpdate();
 				Assert.That(count, Is.EqualTo(1));
 			}
@@ -653,7 +653,7 @@ namespace NHibernate.Test.Hql.Ast
 						.SetDouble("w1", 3)
 						.ExecuteUpdate();
 				
-				count.Should().Be(1);
+				Assert.That(count, Is.EqualTo(1));
 				t.Commit();
 			}
 
@@ -661,8 +661,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (s.BeginTransaction())
 			{
 				var tadpole = s.Get<Animal>(data.Polliwog.Id);
-				tadpole.Description.Should().Be("Tadpole");
-				tadpole.BodyWeight.Should().Be(3);
+				Assert.That(tadpole.Description, Is.EqualTo("Tadpole"));
+				Assert.That(tadpole.BodyWeight, Is.EqualTo(3));
 			}
 
 			data.Cleanup();

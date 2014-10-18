@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsBag(mi).Should().Be.True();
+			Assert.That(inspector.IsBag(mi), Is.True);
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsBag(mi).Should().Be.True();
+			Assert.That(inspector.IsBag(mi), Is.True);
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsBag(mi).Should().Be.True();
+			Assert.That(inspector.IsBag(mi), Is.True);
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsBag(mi).Should().Be.False();
+			Assert.That(inspector.IsBag(mi), Is.False);
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsBag(mi).Should().Be.False();
+			Assert.That(inspector.IsBag(mi), Is.False);
 		}
 
 		[Test]
@@ -94,7 +94,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 			var hbmMapping = mapper.CompileMappingFor(new[] {typeof(Parent)});
 			var hbmBag = hbmMapping.RootClasses[0].Properties.OfType<HbmBag>().Single();
-			hbmBag.Key.Columns.Single().name.Should().Be("ParentId");
+			Assert.That(hbmBag.Key.Columns.Single().name, Is.EqualTo("ParentId"));
 		}
 	}
 }

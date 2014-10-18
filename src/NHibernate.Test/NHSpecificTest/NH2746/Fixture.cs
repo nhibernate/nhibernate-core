@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2746
 
 				session.EnableFilter("nameFilter").SetParameter("name", "Another child");
 
-				crit.Executing(c=> c.List<T1>()).NotThrows();
+				Assert.That(() => crit.List<T1>(), Throws.Nothing);
 			}
 		}
 	}

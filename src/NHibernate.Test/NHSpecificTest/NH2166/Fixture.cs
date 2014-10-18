@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2166
 		{
 			using (var s = OpenSession())
 			{
-				Executing.This(()=> s.CreateSQLQuery("select make from ItFunky").UniqueResult<int>()).Should().Throw<GenericADOException>();
+				Assert.That(() => s.CreateSQLQuery("select make from ItFunky").UniqueResult<int>(), Throws.TypeOf<GenericADOException>());
 			}
 		}
 	}
