@@ -183,6 +183,7 @@ namespace NHibernate.Cfg
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
 			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
+			NotificationHandler = null;
 		}
 
 		[Serializable]
@@ -1405,6 +1406,10 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
+		//NH-3724
+		[field: NonSerialized]
+		public Delegate NotificationHandler { get; set; }
+
 		/// <summary>
 		/// Sets the default interceptor for use by all sessions.
 		/// </summary>
@@ -1763,6 +1768,8 @@ namespace NHibernate.Cfg
 			// NH : Set configuration for IdGenerator SQL logging
 			PersistentIdGeneratorParmsNames.SqlStatementLogger.FormatSql = result.SqlStatementLogger.FormatSql;
 			PersistentIdGeneratorParmsNames.SqlStatementLogger.LogToStdout = result.SqlStatementLogger.LogToStdout;
+			//NH-3724
+			result.NotificationHandler = NotificationHandler;
 			return result;
 		}
 

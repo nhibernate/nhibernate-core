@@ -28,6 +28,12 @@ namespace NHibernate.Driver
 			return new System.Data.OleDb.OleDbConnection();
 		}
 
+		public override void AddNotificationHandler(System.Data.IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			(con as System.Data.OleDb.OleDbConnection).InfoMessage += (System.Data.OleDb.OleDbInfoMessageEventHandler) handler;
+		}
+
 		public override DbCommand CreateCommand()
 		{
 			return new System.Data.OleDb.OleDbCommand();

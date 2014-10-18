@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
@@ -39,6 +40,12 @@ namespace NHibernate.Driver
 			"Npgsql.NpgsqlConnection",
 			"Npgsql.NpgsqlCommand")
 		{
+		}
+
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			con.GetType().GetEvent("Notification").AddEventHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql => true;

@@ -88,6 +88,12 @@ namespace NHibernate.Driver
 			return new SqlConnection();
 		}
 
+		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;
+		}
+
 		/// <summary>
 		/// Creates an uninitialized <see cref="DbCommand" /> object for
 		/// the SqlClientDriver.

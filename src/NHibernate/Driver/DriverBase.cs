@@ -21,6 +21,22 @@ namespace NHibernate.Driver
 		private int commandTimeout;
 		private bool prepareSql;
 
+		public virtual void AddNotificationHandler(IDbConnection con, Delegate handler)
+		{
+			//NH-3724
+			if (handler != null)
+			{
+				var prop = con.GetType().GetEvent("InfoMessage");
+
+				if (prop == null)
+				{
+					throw new NotSupportedException("Current driver does not support notifications.");
+				}
+
+				prop.AddEventHandler(con, handler);
+			}
+		}
+
 		public virtual void Configure(IDictionary<string, string> settings)
 		{
 			// Command timeout
