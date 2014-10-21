@@ -9,85 +9,85 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3727
 {
-    public class ByCodeFixture : TestCaseMappingByCode
-    {
-        protected override HbmMapping GetMappings()
-        {
-            var mapper = new ModelMapper();
-            mapper.Class<Entity>(rc =>
-            {
-                rc.Id(x => x.Id);
-            });
+	public class ByCodeFixture : TestCaseMappingByCode
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Entity>(rc =>
+			{
+				rc.Id(x => x.Id);
+			});
 
-            return mapper.CompileMappingForAllExplicitlyAddedEntities();
-        }
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
 
-        [Test]
-        public void QueryOverWithSubqueryProjectionCanBeExecutedMoreThanOnce()
-        {
-            using (ISession session = OpenSession())
-            using (session.BeginTransaction())
-            {
-                const int parameter1 = 111;
+		[Test]
+		public void QueryOverWithSubqueryProjectionCanBeExecutedMoreThanOnce()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				const int parameter1 = 111;
 
-                var countSubquery = QueryOver.Of<Entity>()
-                        .Where(x => x.Id == parameter1) //any condition which makes output SQL has parameter
-                        .Select(Projections.RowCount())
-                        ;
+				var countSubquery = QueryOver.Of<Entity>()
+						.Where(x => x.Id == parameter1) //any condition which makes output SQL has parameter
+						.Select(Projections.RowCount())
+						;
 
-                var originalQueryOver = session.QueryOver<Entity>()
-                                               .SelectList(l => l
-                                                                    .Select(x => x.Id)
-                                                                    .SelectSubQuery(countSubquery)
-                                                )
-                                               .TransformUsing(Transformers.ToList);
+				var originalQueryOver = session.QueryOver<Entity>()
+											   .SelectList(l => l
+																	.Select(x => x.Id)
+																	.SelectSubQuery(countSubquery)
+												)
+											   .TransformUsing(Transformers.ToList);
 
-                originalQueryOver.List<object>();
+				originalQueryOver.List<object>();
 
-                Assert.DoesNotThrow(() => originalQueryOver.List<object>(), "Second try to execute QueryOver thrown exception.");
-            }
-        }
+				Assert.DoesNotThrow(() => originalQueryOver.List<object>(), "Second try to execute QueryOver thrown exception.");
+			}
+		}
 
-        [Test]
-        public void ClonedQueryOverExecutionMakesOriginalQueryOverNotWorking()
-        {
-            // Projections are copied by clone operation. 
-            // SubqueryProjection use SubqueryExpression which holds CriteriaQueryTranslator (class SubqueryExpression { private CriteriaQueryTranslator innerQuery; })
-            // So given CriteriaQueryTranslator is used twice. 
-            // Since CriteriaQueryTranslator has CollectedParameters collection, second execution of the Criteria does not fit SqlCommand parameters.
+		[Test]
+		public void ClonedQueryOverExecutionMakesOriginalQueryOverNotWorking()
+		{
+			// Projections are copied by clone operation. 
+			// SubqueryProjection use SubqueryExpression which holds CriteriaQueryTranslator (class SubqueryExpression { private CriteriaQueryTranslator innerQuery; })
+			// So given CriteriaQueryTranslator is used twice. 
+			// Since CriteriaQueryTranslator has CollectedParameters collection, second execution of the Criteria does not fit SqlCommand parameters.
 
-            using (ISession session = OpenSession())
-            using (session.BeginTransaction())
-            {
-                const int parameter1 = 111;
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				const int parameter1 = 111;
 
-                var countSubquery = QueryOver.Of<Entity>()
-                        .Where(x => x.Id == parameter1) //any condition which makes output SQL has parameter
-                        .Select(Projections.RowCount())
-                        ;
+				var countSubquery = QueryOver.Of<Entity>()
+						.Where(x => x.Id == parameter1) //any condition which makes output SQL has parameter
+						.Select(Projections.RowCount())
+						;
 
-                var originalQueryOver = session.QueryOver<Entity>()
-                                               //.Where(x => x.Id == parameter2)
-                                               .SelectList(l => l
-                                                                    .Select(x => x.Id)
-                                                                    .SelectSubQuery(countSubquery)
-                                                )
-                                               .TransformUsing(Transformers.ToList);
+				var originalQueryOver = session.QueryOver<Entity>()
+					//.Where(x => x.Id == parameter2)
+											   .SelectList(l => l
+																	.Select(x => x.Id)
+																	.SelectSubQuery(countSubquery)
+												)
+											   .TransformUsing(Transformers.ToList);
 
-                var clonedQueryOver = originalQueryOver.Clone();
-                clonedQueryOver.List<object>();
+				var clonedQueryOver = originalQueryOver.Clone();
+				clonedQueryOver.List<object>();
 
-                Assert.DoesNotThrow(() => originalQueryOver.List<object>(), "Cloned QueryOver execution caused source QueryOver throw exception when executed.");
-            }
-        }
+				Assert.DoesNotThrow(() => originalQueryOver.List<object>(), "Cloned QueryOver execution caused source QueryOver throw exception when executed.");
+			}
+		}
 
-        private static IEnumerable<IProjection> GetProjectionList(IQueryOver<Entity, Entity> clonedQueryOver)
-        {
-            var projectionList = (((CriteriaImpl)clonedQueryOver.RootCriteria).Projection as ProjectionList);
-            for (int i = 0; i < projectionList.Length; i++)
-            {
-                yield return projectionList[i];
-            }
-        }
-    }
+		private static IEnumerable<IProjection> GetProjectionList(IQueryOver<Entity, Entity> clonedQueryOver)
+		{
+			var projectionList = (((CriteriaImpl)clonedQueryOver.RootCriteria).Projection as ProjectionList);
+			for (int i = 0; i < projectionList.Length; i++)
+			{
+				yield return projectionList[i];
+			}
+		}
+	}
 }
