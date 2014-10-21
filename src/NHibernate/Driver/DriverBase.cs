@@ -23,7 +23,10 @@ namespace NHibernate.Driver
 		public virtual void AddNotificationHandler(IDbConnection con, Delegate handler)
 		{
 			//NH-3724
-			//do nothing by default
+			if (handler != null)
+			{
+				throw new ArgumentException("Current driver does not support notifications");
+			}
 		}
 
 		public virtual void Configure(IDictionary<string, string> settings)

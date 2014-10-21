@@ -27,10 +27,7 @@ namespace NHibernate.Driver
 		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
 		{
 			//NH-3724
-			if (handler is SqlInfoMessageEventHandler)
-			{
-				(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;
-			}
+			(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;
 
 			base.AddNotificationHandler(con, handler);
 		}
