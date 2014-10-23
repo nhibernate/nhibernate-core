@@ -29,7 +29,7 @@ namespace NHibernate.Driver
 
 				if (prop == null)
 				{
-					throw new NotSupportedException("Current driver does not support notifications");
+					throw new NotSupportedException("Current driver does not support notifications.");
 				}
 
 				prop.AddEventHandler(con, handler);

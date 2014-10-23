@@ -1,6 +1,3 @@
-using System;
-using System.Data;
-
 namespace NHibernate.Driver
 {
 	/// <summary>

@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.SqlTypes;

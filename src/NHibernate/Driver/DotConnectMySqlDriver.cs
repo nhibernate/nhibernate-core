@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data;
-
-namespace NHibernate.Driver
+﻿namespace NHibernate.Driver
 {
     /// <summary>
     /// Provides a database driver for dotConnect for MySQL by DevArt.

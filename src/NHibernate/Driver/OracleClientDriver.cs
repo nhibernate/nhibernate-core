@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;

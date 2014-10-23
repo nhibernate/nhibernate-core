@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data;
-
-namespace NHibernate.Driver
+﻿namespace NHibernate.Driver
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
