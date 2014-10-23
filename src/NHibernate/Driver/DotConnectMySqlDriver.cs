@@ -31,14 +31,6 @@ namespace NHibernate.Driver
         {
         }
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
-		{
-			//NH-3724
-			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
-		}
-
         /// <summary>
         /// Devart.Data.MySql uses named parameters in the sql.
         /// </summary>

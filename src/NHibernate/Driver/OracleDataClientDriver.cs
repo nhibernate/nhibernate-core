@@ -51,14 +51,6 @@ namespace NHibernate.Driver
 			oracleDbTypeXmlType = Enum.Parse(oracleDbTypeEnum, "XmlType");
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
-		{
-			//NH-3724
-			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
-		}
-
 		/// <summary></summary>
 		public override bool UseNamedPrefixInSql
 		{

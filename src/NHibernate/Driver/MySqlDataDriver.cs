@@ -33,14 +33,6 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
-		{
-			//NH-3724
-			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
-		}
-
 		/// <summary>
 		/// MySql.Data uses named parameters in the sql.
 		/// </summary>

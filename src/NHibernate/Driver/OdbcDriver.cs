@@ -17,8 +17,6 @@ namespace NHibernate.Driver
 		{
 			//NH-3724
 			(con as OdbcConnection).InfoMessage += (OdbcInfoMessageEventHandler)handler;
-
-			base.AddNotificationHandler(con, handler);
 		}
 
 		public override IDbConnection CreateConnection()

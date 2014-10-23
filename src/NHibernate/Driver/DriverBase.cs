@@ -25,7 +25,14 @@ namespace NHibernate.Driver
 			//NH-3724
 			if (handler != null)
 			{
-				throw new ArgumentException("Current driver does not support notifications");
+				var prop = con.GetType().GetEvent("InfoMessage");
+
+				if (prop == null)
+				{
+					throw new NotSupportedException("Current driver does not support notifications");
+				}
+
+				prop.AddEventHandler(con, handler);
 			}
 		}
 

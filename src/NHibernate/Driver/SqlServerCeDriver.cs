@@ -27,14 +27,6 @@ namespace NHibernate.Driver
 		private bool prepareSql;
 		private PropertyInfo dbParamSqlDbTypeProperty;
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
-		{
-			//NH-3724
-			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
-		}
-
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);

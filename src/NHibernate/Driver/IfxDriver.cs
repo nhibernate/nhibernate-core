@@ -23,14 +23,6 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override void AddNotificationHandler(IDbConnection con, Delegate handler)
-		{
-			//NH-3724
-			con.GetType().GetEvent("InfoMessage").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
-		}
-
 		public override bool UseNamedPrefixInSql
 		{
 			get { return false; }

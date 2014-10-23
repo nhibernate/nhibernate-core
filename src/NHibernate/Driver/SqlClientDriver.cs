@@ -28,8 +28,6 @@ namespace NHibernate.Driver
 		{
 			//NH-3724
 			(con as SqlConnection).InfoMessage += (SqlInfoMessageEventHandler) handler;
-
-			base.AddNotificationHandler(con, handler);
 		}
 
 		/// <summary>

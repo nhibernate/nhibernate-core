@@ -44,8 +44,6 @@ namespace NHibernate.Driver
 		{
 			//NH-3724
 			con.GetType().GetEvent("Notification").AddEventHandler(con, handler);
-
-			base.AddNotificationHandler(con, handler);
 		}
 
 		public override bool UseNamedPrefixInSql
