@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
         public class MyClass
         {
             public virtual int Code { get; set; }
-            public virtual string Name { get; set; }
+            public virtual string JoinedName { get; set; }
             public virtual MyOther Relation { get; set; }
             public virtual MyOther JoinedRelation { get; set; }
             public virtual IDictionary Attributes { get; set; }
@@ -29,8 +30,9 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
         {
             public MyClassMap()
             {
-
-                this.Component(p => p.Attributes,
+                // basic table related properties
+                ManyToOne(x => x.Relation);
+                Component(p => p.Attributes,
                                new
                                {
                                    IsVisible = false,
@@ -43,11 +45,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
                                    m.Property(p => p.Hash);
                                    m.ManyToOne(p => p.Reference);
                                });
-
                 Property(x => x.Code);
+
+                // joined table stuff
                 Join("JoinedAttributes", x =>
                 {
-                    x.Property(p => p.Name);
+                    x.Property(p => p.JoinedName);
                     x.Component(p => p.JoinedAttributes,
                                new
                                {
@@ -63,13 +66,134 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
                                });
                     x.ManyToOne(p => p.JoinedRelation);
                 });
-
-                ManyToOne(x => x.Relation);
             }
         }
 
+        protected HbmClass CompileClassMapping()
+        {
+            var mapper = new ModelMapper();
+            mapper.AddMapping(typeof(MyClassMap));
+
+            var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
+            var hbmClass = hbmMapping.RootClasses[0];
+
+            return hbmClass;
+        }
+
         [Test]
-        public void JoinedDynamicComponentShouldBeNestedInJoin()
+        public void WhenPropertyIsMappedOnRootThenItBelonsToRootTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            var rootProperties = hbmClass.Properties;
+            // <property name="Code" 
+            var hbmPropCode = rootProperties
+                .FirstOrDefault(p => p.Name == "Code");
+
+            hbmPropCode.Should().Not.Be.Null();
+            hbmPropCode.Should().Be.OfType<HbmProperty>();
+        }
+
+        [Test]
+        public void WhenDynamicComponentIsMappedOnRootThenItBelonsToRootTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            var rootProperties = hbmClass.Properties;
+            // <dynamic-component name="Attributes"
+            var hbmPropAttributes = rootProperties
+                .FirstOrDefault(p => p.Name == "Attributes")
+                ;
+
+            hbmPropAttributes.Should().Not.Be.Null();
+            hbmPropAttributes.Should().Be.OfType<HbmDynamicComponent>();
+        }
+
+        [Test]
+        public void WhenRelationIsMappedOnRootThenItBelonsToRootTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            var rootProperties = hbmClass.Properties;
+            //  <many-to-one name="Relation"
+            var hbmPropRelation = rootProperties
+                .FirstOrDefault(p => p.Name == "Relation");
+
+            hbmPropRelation.Should().Not.Be.Null();
+            hbmPropRelation.Should().Be.OfType<HbmManyToOne>();
+        }
+
+        [Test]
+        public void WhenJoinedPropertyIsMappedOnJoinThenItBelonsToJoinTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            // <join table="JoinedAttributes">
+            var hbmJoined = hbmClass.Joins.FirstOrDefault();
+            hbmJoined.Should().Not.Be.Null();
+
+            var rootProperties = hbmJoined.Properties;
+            // <join table="JoinedAttributes">
+            //   <dynamic-component name="Attributes"
+            var hbmPropJoinedName = rootProperties
+                .FirstOrDefault(p => p.Name == "JoinedName");
+
+            hbmPropJoinedName.Should().Not.Be.Null();
+            hbmPropJoinedName.Should().Be.OfType<HbmProperty>();
+        }
+
+        [Test]
+        public void WhenJoinedRelationIsMappedOnJoinThenItBelonsToJoinTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            // <join table="JoinedAttributes">
+            var hbmJoined = hbmClass.Joins.FirstOrDefault();
+            hbmJoined.Should().Not.Be.Null();
+
+            var rootProperties = hbmJoined.Properties;
+            // <join table="JoinedAttributes">
+            //   <many-to-one name="JoinedRelation"
+            var hbmPropJoinedRelation = rootProperties
+                .FirstOrDefault(p => p.Name == "JoinedRelation");
+
+            hbmPropJoinedRelation.Should().Not.Be.Null();
+            hbmPropJoinedRelation.Should().Be.OfType<HbmManyToOne>();
+        }
+
+        [Test]
+        public void WhenJoinedDynamicComponentIsMappedOnJoinThenItBelonsToJoinTable()
+        {
+            // <class name="MyClass"">
+            var hbmClass = CompileClassMapping();
+            hbmClass.Should().Not.Be.Null();
+
+            // <join table="JoinedAttributes">
+            var hbmJoined = hbmClass.Joins.FirstOrDefault();
+            hbmJoined.Should().Not.Be.Null();
+
+            var rootProperties = hbmJoined.Properties;
+            // <join table="JoinedAttributes">
+            //   <dynamic-component name="JoinedAttributes">
+            var hbmPropJoinedAttributes = rootProperties
+                .FirstOrDefault(p => p.Name == "JoinedAttributes");
+
+            hbmPropJoinedAttributes.Should().Not.Be.Null();
+            hbmPropJoinedAttributes.Should().Be.OfType<HbmDynamicComponent>();
+        }
+
+        // [Test]
+        public void Expected_XML_Result()
         {
             var mapper = new ModelMapper();
             mapper.AddMapping(typeof(MyClassMap));
@@ -90,7 +214,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
     </dynamic-component>
     <join table=""JoinedAttributes"">
       <key column=""myclass_key"" />
-      <property name=""Name"" />
+      <property name=""JoinedName"" />
       <many-to-one name=""JoinedRelation"" />
       <dynamic-component name=""JoinedAttributes"">
         <many-to-one name=""OtherReference"" />
