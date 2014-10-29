@@ -26,14 +26,17 @@ namespace NHibernate.Driver
 
 		public virtual void Initialize(IDictionary<String, String> properties)
 		{
-			if (properties.ContainsKey(Environment.BulkProviderTimeout) == true)
+			var timeout = string.Empty;
+			var batchSize = string.Empty;
+
+			if (properties.TryGetValue(Environment.BulkProviderTimeout, out timeout))
 			{
-				this.Timeout = Convert.ToInt32(properties[Environment.BulkProviderTimeout]);
+				this.Timeout = Convert.ToInt32(timeout);
 			}
 
-			if (properties.ContainsKey(Environment.BulkProviderBatchSize) == true)
+			if (properties.TryGetValue(Environment.BulkProviderBatchSize, out batchSize))
 			{
-				this.BatchSize = Convert.ToInt32(properties[Environment.BulkProviderBatchSize]);
+				this.BatchSize = Convert.ToInt32(batchSize);
 			}
 		}
 

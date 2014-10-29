@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web.UI;
+using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
@@ -13,7 +14,6 @@ namespace NHibernate.Driver
 {
 	public abstract class TableBasedBulkProvider : BulkProvider
 	{
-		//NH-3675
 		protected virtual IEnumerable<DataTable> GetTables<T>(ISessionImplementor session, IEnumerable<T> entities)
 		{
 			if (session.EntityMode != EntityMode.Poco)
@@ -27,21 +27,7 @@ namespace NHibernate.Driver
 			{
 				var entityType = entityTypes.Key;
 				var persister = session.GetEntityPersister(entityType.FullName, null) as AbstractEntityPersister;
-				var table = new DataTable();
-
-				if (persister is SingleTableEntityPersister)
-				{
-					table.TableName = (persister as SingleTableEntityPersister).TableName;
-				}
-				else if (persister is JoinedSubclassEntityPersister)
-				{
-					table.TableName = (persister as JoinedSubclassEntityPersister).TableName;
-				}
-				else if (persister is UnionSubclassEntityPersister)
-				{
-					table.TableName = (persister as UnionSubclassEntityPersister).TableName;
-				}
-
+				var table = new DataTable(persister.TableName);
 				tables[table.TableName] = table;
 
 				var map = new Hashtable();
@@ -119,7 +105,7 @@ namespace NHibernate.Driver
 
 					for (var c = 0; c < table.Columns.Count; ++c)
 					{
-						var value = DataBinder.Eval(entity, table.Columns[c].ExtendedProperties["PropertyName"].ToString()) ?? DBNull.Value;
+						var value = Eval(entity, table.Columns[c].ExtendedProperties["PropertyName"].ToString()) ?? DBNull.Value;
 						row[c] = value;
 					}
 
@@ -130,6 +116,82 @@ namespace NHibernate.Driver
 			}
 
 			return (tables.Values);
+		}
+
+		private object Eval(object instance, string path)
+		{
+			if (instance == null)
+			{
+				return null;
+			}
+
+			var context = instance;
+			object value = null;
+			var parts = path.Split('.');
+
+			for (var i = 0; i < parts.Length; ++i)
+			{
+				value = GetPropertyOrFieldValue(context, parts[i]);
+				context = value;
+			}
+
+			return value;
+		}
+
+		private MemberInfo GetPropertyOrField(object instance, string memberName)
+		{
+			if (instance == null)
+			{
+				return null;
+			}
+
+			var property = instance.GetType().GetProperty(memberName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+			if (property != null)
+			{
+				return property;
+			}
+
+			var field = FindField(instance.GetType(), memberName);
+
+			return field;
+		}
+
+		private object GetPropertyOrFieldValue(object instance, string memberName)
+		{
+			if (instance == null)
+			{
+				return null;
+			}
+
+			var member = GetPropertyOrField(instance, memberName);
+
+			if (member != null)
+			{
+				return (member is FieldInfo) ? (member as FieldInfo).GetValue(instance) : (member as PropertyInfo).GetValue(instance, null);
+			}
+
+			throw new InvalidOperationException(string.Format("Member named {0} does not exist in type {1}.", memberName, instance.GetType().FullName));
+		}
+
+		private FieldInfo FindField(System.Type type, string fieldName)
+		{
+			var currentType = type;
+			var field = null as FieldInfo;
+
+			while (currentType != typeof (object))
+			{
+				field = currentType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+				if (field != null)
+				{
+					return field;
+				}
+
+				currentType = currentType.BaseType;
+			}
+
+			return field;
 		}
 	}
 }

@@ -9,7 +9,6 @@ namespace NHibernate.Driver
 {
 	public class SqlBulkProvider : TableBasedBulkProvider
 	{
-		//NH-3675
 		public const String BulkProviderOptions = "adonet.bulk_provider_options";
 
 		public SqlBulkCopyOptions Options { get; set; }
@@ -21,7 +20,7 @@ namespace NHibernate.Driver
 
 			var bulkProviderOptions = String.Empty;
 
-			if (properties.TryGetValue(BulkProviderOptions, out bulkProviderOptions) == true)
+			if (properties.TryGetValue(BulkProviderOptions, out bulkProviderOptions))
 			{
 				this.Options = (SqlBulkCopyOptions)Enum.Parse(typeof(SqlBulkCopyOptions), bulkProviderOptions, true);
 			}

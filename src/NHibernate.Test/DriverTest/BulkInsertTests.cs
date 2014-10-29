@@ -21,15 +21,16 @@ namespace NHibernate.Test.DriverTest
 		public void CanBulkInsertEntitiesWithComponents()
 		{
 			//NH-3675
-			using (session.BeginTransaction())
+			using (var statelessSession = session.SessionFactory.OpenStatelessSession())
+			using (statelessSession.BeginTransaction())
 			{
 				var customers = new Customer[] { new Customer { Address = new Address("street", "city", "region", "postalCode", "country", "phoneNumber", "fax"), CompanyName = "Company", ContactName = "Contact", ContactTitle = "Title", CustomerId = "12345" } };
 
-				this.session.CreateQuery("delete from Customer").ExecuteUpdate();
+				statelessSession.CreateQuery("delete from Customer").ExecuteUpdate();
 
-				this.session.BulkInsert(customers);
+				statelessSession.BulkInsert(customers);
 
-				var count = this.session.Query<Customer>().Count();
+				var count = statelessSession.Query<Customer>().Count();
 
 				Assert.AreEqual(customers.Count(), count);
 			}
@@ -39,17 +40,18 @@ namespace NHibernate.Test.DriverTest
 		public void CanBulkInsertEntitiesWithComponentsAndAssociations()
 		{
 			//NH-3675
-			using (session.BeginTransaction())
+			using (var statelessSession = session.SessionFactory.OpenStatelessSession())
+			using (statelessSession.BeginTransaction())
 			{
 				var superior = new Employee { Address = new Address("street", "city", "region", "zip", "country", "phone", "fax"), BirthDate = System.DateTime.Now, EmployeeId = 1, Extension = "1", FirstName = "Superior", LastName = "Last" };
 				var employee = new Employee { Address = new Address("street", "city", "region", "zip", "country", "phone", "fax"), BirthDate = System.DateTime.Now, EmployeeId = 2, Extension = "2", FirstName = "Employee", LastName = "Last", Superior = superior };
 				var employees = new Employee[] { superior, employee };
 
-				this.session.CreateQuery("delete from Employee").ExecuteUpdate();
+				statelessSession.CreateQuery("delete from Employee").ExecuteUpdate();
 
-				this.session.BulkInsert(employees);
+				statelessSession.BulkInsert(employees);
 
-				var count = this.session.Query<Employee>().Count();
+				var count = statelessSession.Query<Employee>().Count();
 
 				Assert.AreEqual(employees.Count(), count);
 			}

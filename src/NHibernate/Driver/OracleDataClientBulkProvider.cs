@@ -9,7 +9,6 @@ namespace NHibernate.Driver
 {
 	public class OracleDataClientBulkProvider : TableBasedBulkProvider
 	{
-		//NH-3675
 		public const String BulkProviderOptions = "adonet.bulk_provider_options";
 
 		private static readonly System.Type bulkCopyOptionsType = System.Type.GetType("Oracle.DataAccess.Client.OracleBulkCopyOptions, Oracle.DataAccess");
@@ -29,7 +28,7 @@ namespace NHibernate.Driver
 
 			var bulkProviderOptions = String.Empty;
 
-			if (properties.TryGetValue(BulkProviderOptions, out bulkProviderOptions) == true)
+			if (properties.TryGetValue(BulkProviderOptions, out bulkProviderOptions))
 			{
 				this.Options = Convert.ToInt32(bulkProviderOptions);
 			}

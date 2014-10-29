@@ -23,7 +23,6 @@ namespace NHibernate.Driver
 
 		public virtual BulkProvider GetBulkProvider()
 		{
-			//NH-3675
 			return new DefaultBulkProvider();
 		}
 

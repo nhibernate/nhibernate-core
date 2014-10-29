@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NHibernate.Engine;
 
 namespace NHibernate.Driver
@@ -7,16 +8,16 @@ namespace NHibernate.Driver
 	{
 		public override void Insert<T>(ISessionImplementor session, IEnumerable<T> entities)
 		{
+			var statelessSession = session as IStatelessSession;
+
+			if (statelessSession == null)
+			{
+				throw new InvalidOperationException("Insert can only be called with stateless sessions.");
+			}
+
 			foreach (var entity in entities)
 			{
-				if (session is ISession)
-				{
-					(session as ISession).Save(entity);
-				}
-				else if (session is IStatelessSession)
-				{
-					(session as IStatelessSession).Insert(entity);
-				}
+				statelessSession.Insert(entity);
 			}
 		}
 	}

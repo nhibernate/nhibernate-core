@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate
 {
 	public static class SessionExtensions
 	{
-		public static void BulkInsert<T>(this ISession session, IEnumerable<T> entities) where T : class
-		{
-			BulkInsert(session.GetSessionImplementation(), entities);
-		}
-
 		public static void BulkInsert<T>(this IStatelessSession session, IEnumerable<T> entities) where T : class
 		{
 			BulkInsert(session.GetSessionImplementation(), entities);
@@ -27,7 +23,15 @@ namespace NHibernate
 				}
 
 				provider.Initialize(Environment.Properties);
-				provider.Insert(session, entities);
+
+				try
+				{
+					provider.Insert(session, entities);
+				}
+				catch (Exception e)
+				{
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, e, "could not execute bulk insert.");
+				}
 			}
 		}
 	}
