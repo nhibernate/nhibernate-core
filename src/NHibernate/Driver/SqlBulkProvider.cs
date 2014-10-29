@@ -9,6 +9,7 @@ namespace NHibernate.Driver
 {
 	public class SqlBulkProvider : TableBasedBulkProvider
 	{
+		//NH-3675
 		public const String BulkProviderOptions = "adonet.bulk_provider_options";
 
 		public SqlBulkCopyOptions Options { get; set; }

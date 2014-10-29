@@ -20,6 +20,7 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void CanBulkInsertEntitiesWithComponents()
 		{
+			//NH-3675
 			using (session.BeginTransaction())
 			{
 				var customers = new Customer[] { new Customer { Address = new Address("street", "city", "region", "postalCode", "country", "phoneNumber", "fax"), CompanyName = "Company", ContactName = "Contact", ContactTitle = "Title", CustomerId = "12345" } };
@@ -37,6 +38,7 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public void CanBulkInsertEntitiesWithComponentsAndAssociations()
 		{
+			//NH-3675
 			using (session.BeginTransaction())
 			{
 				var superior = new Employee { Address = new Address("street", "city", "region", "zip", "country", "phone", "fax"), BirthDate = System.DateTime.Now, EmployeeId = 1, Extension = "1", FirstName = "Superior", LastName = "Last" };

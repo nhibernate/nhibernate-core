@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Web.UI;
-using System.Xml.Schema;
 using NHibernate.Engine;
 using NHibernate.Id;
-using NHibernate.Impl;
-using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
@@ -17,8 +13,14 @@ namespace NHibernate.Driver
 {
 	public abstract class TableBasedBulkProvider : BulkProvider
 	{
+		//NH-3675
 		protected virtual IEnumerable<DataTable> GetTables<T>(ISessionImplementor session, IEnumerable<T> entities)
 		{
+			if (session.EntityMode != EntityMode.Poco)
+			{
+				throw new InvalidOperationException(String.Format("Entity mode {0} is not supported for bulk inserts.", session.EntityMode));
+			}
+
 			var tables = new Dictionary<String, DataTable>();
 
 			foreach (var entityTypes in entities.GroupBy(x => x.GetType()))

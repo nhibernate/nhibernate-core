@@ -24,7 +24,7 @@ namespace NHibernate.Driver
 		public virtual BulkProvider GetBulkProvider()
 		{
 			//NH-3675
-			return null;
+			return new DefaultBulkProvider();
 		}
 
 		public virtual void Configure(IDictionary<string, string> settings)

@@ -32,6 +32,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public interface IDriver
 	{
+		//NH-3675
 		/// <summary>
 		/// Returns a bulk provider for the current driver.
 		/// </summary>
