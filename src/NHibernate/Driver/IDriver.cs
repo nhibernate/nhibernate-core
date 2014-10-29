@@ -33,6 +33,11 @@ namespace NHibernate.Driver
 	public interface IDriver
 	{
 		/// <summary>
+		/// Returns a bulk provider for the current driver.
+		/// </summary>
+		BulkProvider GetBulkProvider();
+
+		/// <summary>
 		/// Configure the driver using <paramref name="settings"/>.
 		/// </summary>
 		void Configure(IDictionary<string, string> settings);
