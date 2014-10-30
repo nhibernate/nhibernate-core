@@ -17,16 +17,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.List(
-					x => x.Children,
-					c =>
-					{
-						c.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-					},
-					x => x.OneToMany()
-				);
+				rc.List(x => x.ChildrenList, c => c.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans), x => x.OneToMany());
+				rc.Map(x => x.ChildrenMap, c => c.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans), x => x.OneToMany());
 			});
-			mapper.Class<Child>(rc =>
+			mapper.Class<ListChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			});
+			mapper.Class<MapChild>(rc =>
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
@@ -40,14 +39,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var c1 = new Child { Name = "Child 1" };
-				var c2 = new Child { Name = "Child 2" };
-				var c3 = new Child { Name = "Child 3" };
-
 				var p = new Parent { Name = "Parent" };
-				p.Children.Add(c1);
-				p.Children.Add(c2);
-				p.Children.Add(c3);
+				p.ChildrenList.Add(new ListChild { Name = "ListChild 1" });
+				p.ChildrenList.Add(new ListChild { Name = "ListChild 2" });
+				p.ChildrenList.Add(new ListChild { Name = "ListChild 3" });
+				p.ChildrenMap.Add("first", new MapChild { Name = "MapChild 1" });
+				p.ChildrenMap.Add("second", new MapChild { Name = "MapChild 2" });
+				p.ChildrenMap.Add("third", new MapChild { Name = "MapChild 3" });
 
 				session.Save(p);
 
@@ -69,16 +67,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 		}
 
 		[Test]
-		public void Serializing_Session_After_Reordering_Children_Should_Work()
+		public void Serializing_Session_After_Reordering_ChildrenList_Should_Work()
 		{
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var p = session.Query<Parent>().Single();
-					var c = p.Children.Last();
-					p.Children.Remove(c);
-					p.Children.Insert(p.Children.Count - 1, c);
+					var c = p.ChildrenList.Last();
+					p.ChildrenList.Remove(c);
+					p.ChildrenList.Insert(p.ChildrenList.Count - 1, c);
 					session.Flush();
 					transaction.Commit();
 				}
@@ -94,14 +92,42 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 		}
 
 		[Test]
-		public void Serializing_Session_After_Deleting_First_Child_Should_Work()
+		public void Serializing_Session_After_Deleting_First_Child_In_List_Should_Work()
 		{
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var p = session.Query<Parent>().Single();
-					p.Children.RemoveAt(0);
+					p.ChildrenList.RemoveAt(0);
+					session.Flush();
+					transaction.Commit();
+				}
+
+				using (MemoryStream stream = new MemoryStream())
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, session);
+
+					Assert.AreNotEqual(0, stream.Length);
+				}
+			}
+		}
+
+		[Test]
+		public void Serializing_Session_After_Changing_Key_ChildrenMap_Should_Work()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var p = session.Query<Parent>().Single();
+					var firstChild = p.ChildrenMap["first"];
+					var secondChild = p.ChildrenMap["second"];
+					p.ChildrenMap.Remove("first");
+					p.ChildrenMap.Remove("second");
+					p.ChildrenMap.Add("first", secondChild);
+					p.ChildrenMap.Add("second", firstChild);
 					session.Flush();
 					transaction.Commit();
 				}
