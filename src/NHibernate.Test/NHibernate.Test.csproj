@@ -582,6 +582,7 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\UnionSubclassMappingRegistrationTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\DynamicComponentMappingTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\IdBagMappingTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\JoinDynamicComponentTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\NaturalIdTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\NestedComponetsTests.cs" />

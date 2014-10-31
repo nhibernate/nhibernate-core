@@ -13,7 +13,7 @@ namespace NHibernate.Mapping.ByCode
 		void Fetch(FetchKind fetchMode);
 	}
 
-	public interface IJoinMapper : IJoinAttributesMapper, ICollectionPropertiesContainerMapper, IBasePlainPropertyContainerMapper { }
+    public interface IJoinMapper : IJoinAttributesMapper, IPropertyContainerMapper { }
 
 	public interface IJoinAttributesMapper<TEntity> : IEntitySqlsMapper where TEntity : class
 	{

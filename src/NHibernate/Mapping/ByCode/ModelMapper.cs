@@ -864,6 +864,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					MapComponent(member, memberPath, propertyType, propertiesContainer, propertiesContainerType);
 				}
+                else if (modelInspector.IsDynamicComponent(member))
+                {
+                    MapDynamicComponent(member, memberPath, propertyType, propertiesContainer);
+                }
 				else
 				{
 					MapProperty(member, memberPath, propertiesContainer);
