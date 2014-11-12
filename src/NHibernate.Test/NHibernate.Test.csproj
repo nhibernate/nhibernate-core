@@ -196,6 +196,7 @@
     <Compile Include="Criteria\CourseMeeting.cs" />
     <Compile Include="Criteria\CourseMeetingId.cs" />
     <Compile Include="Criteria\CriteriaQueryTest.cs" />
+    <Compile Include="Criteria\DeleteTests.cs" />
     <Compile Include="Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Criteria\Enrolment.cs" />
     <Compile Include="Criteria\Lambda\CriteriaAssertFixture.cs" />
