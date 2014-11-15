@@ -13,8 +13,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	/// <summary>
-	/// Generates SQL by overriding callback methods in the base class, which does
-	/// the actual SQL AST walking.
+	/// Generates SQL by overriding callback methods in the base class, which does the actual SQL AST walking.
 	/// Author: Joshua Davis, Steve Ebersole
 	/// Ported By: Steve Strong
 	/// </summary>

@@ -661,7 +661,6 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Are rows transformed immediately after being read from the ResultSet?
 		/// </summary>
-		/// <param name="transformer">The specified result transformer.</param>
 		/// <returns>True, if getResultColumnOrRow() transforms the results; false, otherwise</returns>
 		protected virtual bool AreResultSetRowsTransformedImmediately()
 		{

@@ -42,6 +42,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartEqual()
 		{
@@ -57,6 +58,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartIsIn()
 		{
@@ -74,6 +76,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void YearPartSingleOrDefault()
 		{
@@ -90,6 +93,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void SelectAvgYearPart()
 		{
@@ -217,6 +221,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("MonthPart extension method is obsolete. Should use Month property instead.")]
 		[Test]
 		public void MonthPartEqualsDayPart()
 		{
@@ -232,6 +237,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void OrderByYearPart()
 		{

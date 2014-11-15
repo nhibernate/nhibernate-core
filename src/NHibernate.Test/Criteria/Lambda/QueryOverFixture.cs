@@ -629,6 +629,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		[Obsolete("YearPart extension method is obsolete. Should use Year property instead.")]
 		[Test]
 		public void OrderByYearPartFunction()
 		{
