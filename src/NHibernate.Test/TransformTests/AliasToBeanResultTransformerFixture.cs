@@ -43,16 +43,16 @@ namespace NHibernate.Test.TransformTests
 
 		public class PublicPropertiesSimpleDTO
 		{
-			public int Id { get; set; }
+			public object Id { get; set; }
 			public string Name { get; set; }
 		}
 
 		public class PrivateFieldsSimpleDTO
 		{
-			private int id;
+			private object id;
 			private string name;
 
-			public int Id { get { return id; } }
+			public object Id { get { return id; } }
 			public string Name { get { return name; } }
 		}
 
