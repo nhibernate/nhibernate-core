@@ -311,7 +311,7 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		protected override void AutoDiscoverTypes(IDataReader rs)
+		protected internal override void AutoDiscoverTypes(IDataReader rs)
 		{
 			MetaData metadata = new MetaData(rs);
 			List<string> aliases = new List<string>();

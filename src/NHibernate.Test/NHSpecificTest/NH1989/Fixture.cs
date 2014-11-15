@@ -15,6 +15,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
 		protected override void OnSetUp()
 		{
 			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
@@ -47,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -87,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -129,7 +134,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -181,7 +186,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}
@@ -239,7 +244,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				User user = new User() { Name="test" };
+				User user = new User() { Name = "test" };
 				s.Save(user);
 				tx.Commit();
 			}

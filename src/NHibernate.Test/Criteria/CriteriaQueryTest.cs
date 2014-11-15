@@ -2983,5 +2983,27 @@ namespace NHibernate.Test.Criteria
 				t.Commit();
 			}
 		}
+
+		[Test]
+		public void CanSetLockModeOnDetachedCriteria()
+		{
+			//NH-3710
+			var dc = DetachedCriteria
+				.For(typeof(Student))
+				.SetLockMode(LockMode.Upgrade);
+
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				session.Save(new Student { Name = "Ricardo Peres", StudentNumber = 666, CityState = new CityState("Coimbra", "Portugal") });
+				session.Flush();
+
+				var ec = dc.GetExecutableCriteria(session);
+				var countExec = CriteriaTransformer.TransformToRowCount(ec);
+				var countRes = countExec.UniqueResult();
+
+				Assert.AreEqual(countRes, 1);
+			}
+		}
 	}
 }

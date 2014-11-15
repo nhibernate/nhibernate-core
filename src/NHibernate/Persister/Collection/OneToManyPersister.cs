@@ -287,7 +287,7 @@ namespace NHibernate.Persister.Collection
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.InfoString(this, id));
+				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 			}
 		}
 

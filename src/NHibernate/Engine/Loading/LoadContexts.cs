@@ -158,17 +158,12 @@ namespace NHibernate.Engine.Loading
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("returning loading collection:" + MessageHelper.InfoString(persister, ownerKey, Session.Factory));
+					log.Debug("returning loading collection:" + MessageHelper.CollectionInfoString(persister, ownerKey, Session.Factory));
 				}
 				return lce.Collection;
 			}
 			else
 			{
-				// todo : should really move this log statement to CollectionType, where this is used from...
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("creating collection wrapper:" + MessageHelper.InfoString(persister, ownerKey, Session.Factory));
-				}
 				return null;
 			}
 		}

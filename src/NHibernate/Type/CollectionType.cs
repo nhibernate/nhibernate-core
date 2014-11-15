@@ -10,6 +10,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.Impl;
 
 namespace NHibernate.Type
 {
@@ -20,6 +21,8 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class CollectionType : AbstractType, IAssociationType
 	{
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CollectionType));
+
 		private static readonly object NotNullCollection = new object(); // place holder
 		public static readonly object UnfetchedCollection = new object(); // place holder
 
@@ -271,6 +274,11 @@ namespace NHibernate.Type
 					{
 						session.PersistenceContext.AddCollectionHolder(collection);
 					}
+				}
+
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;

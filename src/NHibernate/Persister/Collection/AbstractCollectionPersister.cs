@@ -1010,7 +1010,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting collection: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -1063,7 +1063,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection: " + MessageHelper.CollectionInfoString(this, id));
 				}
 			}
 		}
@@ -1074,7 +1074,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting collection: " + MessageHelper.InfoString(this, id));
+					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1127,7 +1127,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not insert collection: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1138,7 +1138,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting rows of collection: " + MessageHelper.InfoString(this, id));
+					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -1236,7 +1236,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1247,7 +1247,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting rows of collection: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1289,7 +1289,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not insert collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1534,7 +1534,7 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 												 "could not retrieve collection size: "
-												 + MessageHelper.InfoString(this, key, Factory), GenerateSelectSizeString(session));
+												 + MessageHelper.CollectionInfoString(this, key, Factory), GenerateSelectSizeString(session));
 			}
 		}
 
@@ -1584,7 +1584,7 @@ namespace NHibernate.Persister.Collection
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												 "could not check row existence: " + MessageHelper.InfoString(this, key, Factory),
+												 "could not check row existence: " + MessageHelper.CollectionInfoString(this, key, Factory),
 												 GenerateSelectSizeString(session));
 			}
 		}
@@ -1627,7 +1627,7 @@ namespace NHibernate.Persister.Collection
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
+												 "could not read row: " + MessageHelper.CollectionInfoString(this, key, Factory),
 												 GenerateSelectSizeString(session));
 			}
 		}
@@ -2056,7 +2056,7 @@ namespace NHibernate.Persister.Collection
 
 		public string GetInfoString()
 		{
-			return MessageHelper.InfoString(this, null);
+			return MessageHelper.CollectionInfoString(this, null);
 		}
 		#endregion
 
