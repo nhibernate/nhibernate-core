@@ -906,7 +906,7 @@ namespace NHibernate.Impl
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("evicting second-level cache: " + MessageHelper.InfoString(p, id));
+					log.Debug("evicting second-level cache: " + MessageHelper.CollectionInfoString(p, id));
 				}
 				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
 				p.Cache.Remove(ck);

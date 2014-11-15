@@ -557,6 +557,7 @@
     <Compile Include="MappingByCode\ConventionModelMapperTests\PropertyToFieldAccessorTest.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\SafePoidTests.cs" />
     <Compile Include="MappingByCode\ConventionModelMapperTests\VersionOnBaseClassIntegrationTest.cs" />
+    <Compile Include="MappingByCode\ExplicitlyDeclaredModelTests\ComponentAsIdTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\AllPropertiesRegistrationTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\BagOfNestedComponentsWithParentTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\ClassWithComponentsTest.cs" />
@@ -582,6 +583,7 @@
     <Compile Include="MappingByCode\ExplicitMappingTests\ConformistMappingRegistrationTests\UnionSubclassMappingRegistrationTest.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\DynamicComponentMappingTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\IdBagMappingTest.cs" />
+    <Compile Include="MappingByCode\ExplicitMappingTests\MappingOfInternalMembersOnRootEntity.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\MappingOfPrivateMembersOnRootEntity.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\NaturalIdTests.cs" />
     <Compile Include="MappingByCode\ExplicitMappingTests\NestedComponetsTests.cs" />
@@ -695,6 +697,9 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\NH3487\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3487\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3570\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />
     <Compile Include="NHSpecificTest\NH3455\Address.cs" />
@@ -704,6 +709,9 @@
     <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2779\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2779\LineItem.cs" />
+    <Compile Include="NHSpecificTest\NH2779\Order.cs" />
     <Compile Include="NHSpecificTest\NH2865\Entity.cs" />
     <Compile Include="NHSpecificTest\NH2865\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3377\Entity.cs" />
@@ -3061,6 +3069,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3570\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
@@ -3098,6 +3107,7 @@
     <EmbeddedResource Include="UnionsubclassPolymorphicFormula\Party.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3050\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2469\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2779\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3221\Mappings.hbm.xml" />

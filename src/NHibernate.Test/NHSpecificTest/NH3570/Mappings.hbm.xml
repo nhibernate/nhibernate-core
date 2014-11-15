@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.NH3570">
+	<class name="UniParent">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<version name="Version"/>
+		<bag name="Children" cascade="all-delete-orphan">
+			<key column="parentId"/>
+			<one-to-many class="UniChild"/>
+		</bag>
+	</class>
+	<class name="UniChild">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+	</class>
+
+	<class name="BiParent">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<version name="Version"/>
+		<bag name="Children" cascade="all-delete-orphan" inverse="true">
+			<key column="parentId"/>
+			<one-to-many class="BiChild"/>
+		</bag>
+	</class>
+	<class name="BiChild">
+		<id name="Id">
+			<generator class="guid.comb" />
+		</id>
+		<many-to-one class="BiParent" name="Parent" column="parentId"/>
+	</class>
+</hibernate-mapping>
+

@@ -69,9 +69,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void ComponentAsId<TComponent>(Expression<Func<TEntity, TComponent>> idProperty, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
 		{
-			var member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
-			var propertyPath = new PropertyPath(null, member);
-			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			var memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(idProperty);
+			RegisterComponentAsIdMapping(idMapper, memberOf);
 		}
 
 		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName) where TComponent : class
@@ -82,8 +81,16 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void ComponentAsId<TComponent>(string notVisiblePropertyOrFieldName, Action<IComponentAsIdMapper<TComponent>> idMapper) where TComponent : class
 		{
 			var member = typeof(TEntity).GetPropertyOrFieldMatchingName(notVisiblePropertyOrFieldName);
-			var propertyPath = new PropertyPath(null, member);
-			idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			RegisterComponentAsIdMapping(idMapper, member);
+		}
+
+		private void RegisterComponentAsIdMapping<TComponent>(Action<IComponentAsIdMapper<TComponent>> idMapper, params MemberInfo[] members) where TComponent : class
+		{
+			foreach (var member in members)
+			{
+				var propertyPath = new PropertyPath(PropertyPath, member);
+				idMapper(new ComponentAsIdCustomizer<TComponent>(ExplicitDeclarationsHolder, CustomizersHolder, propertyPath));
+			}
 		}
 
 		public void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping)

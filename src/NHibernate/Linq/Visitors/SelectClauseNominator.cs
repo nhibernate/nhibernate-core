@@ -121,7 +121,10 @@ namespace NHibernate.Linq.Visitors
 		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)
 		{
 			// HQL can't do New or Member Init
-			if ((expression.NodeType == ExpressionType.MemberInit) || (expression.NodeType == ExpressionType.New))
+			if (expression.NodeType == ExpressionType.MemberInit || 
+				expression.NodeType == ExpressionType.New || 
+				expression.NodeType == ExpressionType.NewArrayInit ||
+				expression.NodeType == ExpressionType.NewArrayBounds)
 			{
 				return false;
 			}

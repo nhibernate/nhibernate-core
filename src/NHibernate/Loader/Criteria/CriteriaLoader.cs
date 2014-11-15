@@ -168,22 +168,27 @@ namespace NHibernate.Loader.Criteria
 			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
 			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
 			string[] drivingSqlAliases = Aliases;
-			for (int i = 0; i < drivingSqlAliases.Length; i++)
+
+			//NH-3710: if we are issuing an aggregation function, Aliases will be null
+			if (drivingSqlAliases != null)
 			{
-				LockMode lockMode;
-				if (lockModes.TryGetValue(drivingSqlAliases[i], out lockMode))
+				for (int i = 0; i < drivingSqlAliases.Length; i++)
 				{
-					ILockable drivingPersister = (ILockable) EntityPersisters[i];
-					string rootSqlAlias = drivingPersister.GetRootTableAlias(drivingSqlAliases[i]);
-					aliasedLockModes[rootSqlAlias] = lockMode;
-					if (keyColumnNames != null)
+					LockMode lockMode;
+					if (lockModes.TryGetValue(drivingSqlAliases[i], out lockMode))
 					{
-						keyColumnNames[rootSqlAlias] = drivingPersister.RootTableIdentifierColumnNames;
+						ILockable drivingPersister = (ILockable)EntityPersisters[i];
+						string rootSqlAlias = drivingPersister.GetRootTableAlias(drivingSqlAliases[i]);
+						aliasedLockModes[rootSqlAlias] = lockMode;
+						if (keyColumnNames != null)
+						{
+							keyColumnNames[rootSqlAlias] = drivingPersister.RootTableIdentifierColumnNames;
+						}
 					}
 				}
 			}
 
-			return dialect.ApplyLocksToSql(sqlSelectString, lockModes, keyColumnNames);
+			return dialect.ApplyLocksToSql(sqlSelectString, aliasedLockModes, keyColumnNames);
 		}
 
 		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)

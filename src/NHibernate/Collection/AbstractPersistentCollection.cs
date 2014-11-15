@@ -557,7 +557,7 @@ namespace NHibernate.Collection
 					else
 					{
 						throw new HibernateException("Illegal attempt to associate a collection with two open sessions: "
-													 + MessageHelper.InfoString(ce.LoadedPersister, ce.LoadedKey, session.Factory));
+													 + MessageHelper.CollectionInfoString(ce.LoadedPersister, this, ce.LoadedKey, session));
 					}
 				}
 				else
