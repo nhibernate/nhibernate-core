@@ -34,7 +34,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			mapper.OneToOne(propertyInfo, x => { });
 
-			component.Properties.Select(x => x.Name).Should().Have.SameSequenceAs("A");
+			Assert.That(component.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "A" }));
 		}
 
 		[Test]
@@ -48,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var called = false;
 			mapper.OneToOne(propertyInfo, x => called = true);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			mapper.OneToOne(propertyInfo, x => x.Access(Accessor.Field));
 
-			component.Properties.OfType<HbmOneToOne>().Single().Access.Should().Be.NullOrEmpty();
+			Assert.That(component.Properties.OfType<HbmOneToOne>().Single().Access, Is.Null.Or.Empty);
 		}		
 	}
 }

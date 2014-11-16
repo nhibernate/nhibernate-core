@@ -38,7 +38,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			var interceptor = new InterceptedMethodsExposer();
 			var proxy = proxyFactory.CreateProxy(typeof(IHasSomething), interceptor, null);
 			proxy.Equals(null);
-			interceptor.InterceptedMethods.Should().Contain("Equals");
+			Assert.That(interceptor.InterceptedMethods, Contains.Item("Equals"));
 		}
 	}
 }

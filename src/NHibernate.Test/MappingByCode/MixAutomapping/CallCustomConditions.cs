@@ -62,7 +62,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			});
 			mapper.Subclass<FormActivity>(map => map.DiscriminatorValue(1));
 
-			mapper.Executing(m=> m.CompileMappingFor(new[] { typeof(Activity), typeof(FormActivity) })).NotThrows();
+			Assert.That(() => mapper.CompileMappingFor(new[] { typeof(Activity), typeof(FormActivity) }), Throws.Nothing);
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 					map.Version(x => x.Version, vm => { });
 				});
 
-			inspector.IsVersion(For<Person>.Property(x => x.Version)).Should().Be.True();
+			Assert.That(inspector.IsVersion(For<Person>.Property(x => x.Version)), Is.True);
 		}
 	}
 }

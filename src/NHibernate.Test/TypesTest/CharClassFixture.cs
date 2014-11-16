@@ -24,9 +24,9 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				CharClass saved= null;
-				Executing.This(()=> saved = s.Get<CharClass>(1)).Should().NotThrow();
-				saved.NormalChar.Should().Be('A');
-				saved.NullableChar.Should().Not.Have.Value();
+				Assert.That(() => saved = s.Get<CharClass>(1), Throws.Nothing);
+				Assert.That(saved.NormalChar, Is.EqualTo('A'));
+				Assert.That(saved.NullableChar, Is.Null);
 
 				s.Delete(saved);
 				s.Flush();

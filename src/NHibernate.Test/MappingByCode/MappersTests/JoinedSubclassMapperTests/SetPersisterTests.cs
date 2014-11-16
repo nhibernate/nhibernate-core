@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new JoinedSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Persister<JoinedSubclassEntityPersister>();
-			mapdoc.JoinedSubclasses[0].Persister.Should().Contain("JoinedSubclassEntityPersister");
+			Assert.That(mapdoc.JoinedSubclasses[0].Persister, Is.StringContaining("JoinedSubclassEntityPersister"));
 		}
 	}
 }

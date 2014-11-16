@@ -29,7 +29,7 @@ namespace NHibernate.Test.CfgTest
 		public void FromAppConfigTest()
 		{
 			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
-			hc.ByteCodeProviderType.Should().Be("lcg");
+			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("lcg"));
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
 		}

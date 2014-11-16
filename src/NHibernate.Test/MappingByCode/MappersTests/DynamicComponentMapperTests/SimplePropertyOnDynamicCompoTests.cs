@@ -29,8 +29,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var propertyInfo = (new { A = 5 }).GetType().GetProperty("A");
 			
 			mapper.Property(propertyInfo, x => { });
-			
-			component.Properties.Select(x=> x.Name).Should().Have.SameSequenceAs("A");
+
+			Assert.That(component.Properties.Select(x => x.Name), Is.EquivalentTo(new[] {"A"}));
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var called = false;
 			mapper.Property(propertyInfo, x => called = true);
 
-			called.Should().Be.True();
+			Assert.That(called, Is.True);
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			mapper.Property(propertyInfo, x => x.Access(Accessor.Field));
 
-			component.Properties.OfType<HbmProperty>().Single().Access.Should().Be.NullOrEmpty();
+			Assert.That(component.Properties.OfType<HbmProperty>().Single().Access, Is.Null.Or.Empty);
 		}
 	}
 }

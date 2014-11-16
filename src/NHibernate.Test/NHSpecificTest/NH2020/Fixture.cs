@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			{
 				var one = s.Load<One>(oneId);
 				s.Delete(one);
-				tx.Executing(transaction => transaction.Commit()).Throws<ConstraintViolationException>();
+				Assert.That(() => tx.Commit(), Throws.TypeOf<ConstraintViolationException>());
 			}
 		}
 	}

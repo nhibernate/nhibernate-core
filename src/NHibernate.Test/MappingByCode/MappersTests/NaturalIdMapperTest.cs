@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			var hbmNaturalId = hbmClass.naturalid;
 			nid.Mutable(true);
-			hbmNaturalId.mutable.Should().Be.True();
+			Assert.That(hbmNaturalId.mutable, Is.True);
 		}
 	}
 }

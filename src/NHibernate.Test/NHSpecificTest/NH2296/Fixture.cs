@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2296
 				// count of entities we want:
 				int ourEntities = orders.Count + orders.Sum(o => o.Products.Count);
 
-				s.Statistics.EntityCount.Should().Be(ourEntities);
+				Assert.That(s.Statistics.EntityCount, Is.EqualTo(ourEntities));
 			}
 		}
 	}

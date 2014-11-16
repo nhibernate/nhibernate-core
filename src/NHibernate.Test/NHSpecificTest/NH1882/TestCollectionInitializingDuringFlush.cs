@@ -112,8 +112,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			s.Transaction.Commit();
 			s.Clear();
 			s.Close();
-			Assert.True(listener.Executed);
-			Assert.True(listener.FoundAny);
+			Assert.That(listener.Executed, Is.True);
+			Assert.That(listener.FoundAny, Is.True);
 		}
 	}
 }

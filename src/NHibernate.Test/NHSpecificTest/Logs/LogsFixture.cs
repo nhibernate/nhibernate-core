@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				s.Get<Person>(1);//will execute some sql
 
 				var loggingEvent = spy.Events[0];
-				Assert.True(loggingEvent.Contains(sessionId.ToString()));
+				Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);
 			}
 		}
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				{
 					Layout = new PatternLayout(pattern),
 					Threshold = Level.All,
-                    Writer = new StringWriter(stringBuilder)
+					Writer = new StringWriter(stringBuilder)
 				};
 				loggerImpl = (Logger)LogManager.GetLogger(loggerName).Logger;
 				loggerImpl.AddAppender(appender);

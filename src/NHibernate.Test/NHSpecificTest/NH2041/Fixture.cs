@@ -14,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2041
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2041.Mappings.hbm.xml", GetType().Assembly);
 			var mappings = cfg.CreateMappings(Dialect.Dialect.GetDialect(cfg.Properties));
 			var table = mappings.GetTable(null, null, "Locations");
-			table.Should().Not.Be.Null();
-			table.ColumnIterator.Select(c => c.Name).Should().Have.SameValuesAs("myclassId", "latitudecol", "longitudecol");
+			Assert.That(table, Is.Not.Null);
+			Assert.That(table.ColumnIterator.Select(c => c.Name), Is.EquivalentTo(new [] {"myclassId", "latitudecol", "longitudecol"}));
 		}
 	}
 }

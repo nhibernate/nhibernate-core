@@ -11,19 +11,19 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void CastCount()
 		{
-			session.Query<Cat>()
-				.Cast<Animal>()
-				.Count().Should().Be(1);
+			Assert.That(session.Query<Cat>()
+							   .Cast<Animal>()
+							   .Count(), Is.EqualTo(1));
 		}
 
 		[Test]
 		public void CastWithWhere()
 		{
 			var pregnatMammal = (from a
-			                      	in session.Query<Animal>().Cast<Cat>()
-			                      where a.Pregnant
-			                      select a).FirstOrDefault();
-			pregnatMammal.Should().Not.Be.Null();
+									in session.Query<Animal>().Cast<Cat>()
+								  where a.Pregnant
+								  select a).FirstOrDefault();
+			Assert.That(pregnatMammal, Is.Not.Null);
 		}
 
 		[Test]
@@ -31,7 +31,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var query = session.Query<Mammal>().Cast<Dog>();
 			// the list contains at least one Cat then should Throws
-			query.Executing(q=> q.ToList()).Throws();
+			Assert.That(() => query.ToList(), Throws.Exception);
 		}
 
 		[Test]
@@ -39,7 +39,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			// NH-2657
 			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a=> a.BodyWeight);
-			query.Executing(q => q.ToList()).NotThrows();
+			Assert.That(() => query.ToList(), Throws.Nothing);
 		}
 
 		[Test, Ignore("Not fixed yet. The method OfType does not work as expected.")]
@@ -47,7 +47,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var query = session.Query<Animal>().OfType<Mammal>().Cast<Dog>();
 			// the list contains at least one Cat then should Throws
-			query.Executing(q => q.ToList()).Throws();
+			Assert.That(() => query.ToList(), Throws.Exception);
 		}
 	}
 }

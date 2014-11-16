@@ -26,9 +26,9 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
-			inspector.IsTablePerClass(typeof(Inherited1)).Should().Be.False();
-			inspector.IsTablePerClassHierarchy(typeof(Inherited1)).Should().Be.True();
-			inspector.IsTablePerConcreteClass(typeof(Inherited1)).Should().Be.False();
+			Assert.That(inspector.IsTablePerClass(typeof(Inherited1)), Is.False);
+			Assert.That(inspector.IsTablePerClassHierarchy(typeof(Inherited1)), Is.True);
+			Assert.That(inspector.IsTablePerConcreteClass(typeof(Inherited1)), Is.False);
 		}
 
 		[Test]
@@ -38,9 +38,9 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited2));
 
-			inspector.IsTablePerClass(typeof(Inherited2)).Should().Be.False();
-			inspector.IsTablePerClassHierarchy(typeof(Inherited2)).Should().Be.True();
-			inspector.IsTablePerConcreteClass(typeof(Inherited2)).Should().Be.False();
+			Assert.That(inspector.IsTablePerClass(typeof(Inherited2)), Is.False);
+			Assert.That(inspector.IsTablePerClassHierarchy(typeof(Inherited2)), Is.True);
+			Assert.That(inspector.IsTablePerConcreteClass(typeof(Inherited2)), Is.False);
 		}
 
 		[Test]
@@ -50,11 +50,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
-			Executing.This(() =>
-										 {
-											 inspector.AddAsTablePerClassEntity(typeof(Inherited1));
-											 inspector.IsTablePerClass(typeof(Inherited1));
-										 }).Should().Throw<MappingException>();
+			Assert.That(() =>
+			{
+				inspector.AddAsTablePerClassEntity(typeof(Inherited1));
+				inspector.IsTablePerClass(typeof(Inherited1));
+			}, Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -64,11 +64,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof (MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof (Inherited1));
 
-			Executing.This(() =>
-			               {
-			               	inspector.AddAsTablePerConcreteClassEntity(typeof (Inherited1));
-			               	inspector.IsTablePerClassHierarchy(typeof (Inherited1));
-			               }).Should().Throw<MappingException>();
+			Assert.That(() =>
+			{
+				inspector.AddAsTablePerConcreteClassEntity(typeof (Inherited1));
+				inspector.IsTablePerClassHierarchy(typeof (Inherited1));
+			}, Throws.TypeOf<MappingException>());
 		}
 
 		[Test]
@@ -78,7 +78,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
 
-			inspector.IsEntity(typeof(Inherited1)).Should().Be.True();
+			Assert.That(inspector.IsEntity(typeof(Inherited1)), Is.True);
 		}
 	}
 }

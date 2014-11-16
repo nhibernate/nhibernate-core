@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var q = s.CreateQuery("from Base");
-					q.Executing(query => query.List()).NotThrows();
+					Assert.That(() => q.List(), Throws.Nothing);
 				}
 			}
 			finally

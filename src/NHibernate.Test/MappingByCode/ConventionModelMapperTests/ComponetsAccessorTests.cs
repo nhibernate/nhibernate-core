@@ -45,7 +45,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmMyCompo = hbmClass.Properties.OfType<HbmComponent>().Single();
 
-			hbmMyCompo.Access.Should().Contain("camelcase");
+			Assert.That(hbmMyCompo.Access, Is.StringContaining("camelcase"));
 		}
 	}
 }

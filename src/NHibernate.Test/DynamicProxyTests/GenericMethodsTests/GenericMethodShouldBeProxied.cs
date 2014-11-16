@@ -12,8 +12,8 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.BasicGenericMethod<int>().Should().Be(5);
-			c.BasicGenericMethod<string>().Should().Be("blha");
+			Assert.That(c.BasicGenericMethod<int>(), Is.EqualTo(5));
+			Assert.That(c.BasicGenericMethod<string>(), Is.EqualTo("blha"));
 		}
 
 		[Test]
@@ -21,7 +21,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.MethodWithGenericBaseClassConstraint<MyGenericClass<int>, int>().Should().Be(typeof(MyGenericClass<int>));
+			Assert.That(c.MethodWithGenericBaseClassConstraint<MyGenericClass<int>, int>(), Is.EqualTo(typeof(MyGenericClass<int>)));
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.As<MyClass>().Should().Not.Be.Null();
+			Assert.That(c.As<MyClass>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.MethodWithConstructorConstraint<MyClass>().Should().Not.Be.Null();
+			Assert.That(c.MethodWithConstructorConstraint<MyClass>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -45,7 +45,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
-			c.MethodWithInterfaceConstraint<IMyInterface>(new MyDerivedClass()).Should().Be(typeof(IMyInterface));
+			Assert.That(c.MethodWithInterfaceConstraint<IMyInterface>(new MyDerivedClass()), Is.EqualTo(typeof(IMyInterface)));
 		}
 		
 		[Test]
@@ -53,7 +53,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyDerivedClass()), null);
-			c.MethodWithReferenceTypeAndInterfaceConstraint<MyDerivedClass>().Should().Not.Be.Null();
+			Assert.That(c.MethodWithReferenceTypeAndInterfaceConstraint<MyDerivedClass>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.As<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.As<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -69,7 +69,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsBase<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsBase<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -77,7 +77,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterface<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterface<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterfaceBase<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterfaceBase<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.As2<MyGenericClass<object>>().Should().Not.Be.Null();
+			Assert.That(c.As2<MyGenericClass<object>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsBase2<MyGenericClass<object>>().Should().Not.Be.Null();
+			Assert.That(c.AsBase2<MyGenericClass<object>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -109,7 +109,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterface2<MyGenericClass<object>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterface2<MyGenericClass<object>>(), Is.Not.Null);
 		}
 		
 		[Test]
@@ -117,7 +117,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterfaceBase2<MyGenericClass<object>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterfaceBase2<MyGenericClass<object>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -125,7 +125,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.As3<MyGenericClass<object>, object>().Should().Not.Be.Null();
+			Assert.That(c.As3<MyGenericClass<object>, object>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -133,7 +133,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsBase3<MyGenericClassBase<object, object>, object>().Should().Not.Be.Null();
+			Assert.That(c.AsBase3<MyGenericClassBase<object, object>, object>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -141,7 +141,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterface3<MyGenericClass<object>, object>().Should().Not.Be.Null();
+			Assert.That(c.AsInterface3<MyGenericClass<object>, object>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -149,7 +149,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>) factory.CreateProxy(typeof (MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterfaceBase3<MyGenericClass<object>, object>().Should().Not.Be.Null();
+			Assert.That(c.AsInterfaceBase3<MyGenericClass<object>, object>(), Is.Not.Null);
 		}
 		
 		[Test]
@@ -157,7 +157,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.As4<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.As4<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -165,7 +165,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsBase4<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsBase4<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -173,7 +173,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterface4<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterface4<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -181,7 +181,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterfaceBase4<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterfaceBase4<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -189,7 +189,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.As5<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.As5<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -197,7 +197,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsBase5<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsBase5<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -205,7 +205,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterface5<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterface5<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]
@@ -213,7 +213,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			var factory = new ProxyFactory();
 			var c = (MyGenericClass<int>)factory.CreateProxy(typeof(MyGenericClass<int>), new PassThroughInterceptor(new MyGenericClass<int>()), null);
-			c.AsInterfaceBase5<MyGenericClass<int>>().Should().Not.Be.Null();
+			Assert.That(c.AsInterfaceBase5<MyGenericClass<int>>(), Is.Not.Null);
 		}
 
 		[Test]

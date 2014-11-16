@@ -25,7 +25,6 @@
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />
-			<include name="SharpTestsEx.NUnit.dll" />
  			<include name="System.Linq.Dynamic.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Test.VisualBasic" dynamicprefix="false">

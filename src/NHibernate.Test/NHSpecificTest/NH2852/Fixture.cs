@@ -57,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 
 				session.Close();
 
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Address));
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Address.City));
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Address), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Address.City), Is.True);
 			}
 		}
 
@@ -76,8 +76,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 
 				session.Close();
 
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Parent));
-				Assert.True(NHibernateUtil.IsInitialized(results[0].Parent.Parent));
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent.Parent), Is.True);
 			}
 		}
 	}

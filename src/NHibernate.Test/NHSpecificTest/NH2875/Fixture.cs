@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2875
 			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
 
 			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
-			script.ToString().Should().Contain(string.Format("constraint {0}", ForeignKeyName));
+			Assert.That(script.ToString(), Is.StringContaining(string.Format("constraint {0}", ForeignKeyName)));
 		}
 	}
 

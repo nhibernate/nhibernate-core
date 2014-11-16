@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var datesRecovered = s.CreateQuery("from AllDates").UniqueResult<AllDates>();
-				datesRecovered.Sql_datetimeoffset.Should().Be(NowOS);
+				Assert.That(datesRecovered.Sql_datetimeoffset, Is.EqualTo(NowOS));
 			}
 
 			using (ISession s = OpenSession())
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			var type = new DateTimeOffsetType();
 			var now = DateTimeOffset.Now;
-			type.IsEqual(new DateTimeOffset(now.Ticks, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)).Should().Be.True();
+			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.True);
 		}
 
 		[Test]
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			var type = new DateTimeOffsetType();
 			var now = DateTimeOffset.Now;
-			type.IsEqual(new DateTimeOffset(now.Ticks - 1, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)).Should().Be.False();
+			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks - 1, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.False);
 		}
 
 		[Test]
@@ -82,24 +82,24 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			var type = new DateTimeOffsetType();
 			var now = DateTimeOffset.Now;
 			var exactClone = new DateTimeOffset(now.Ticks, now.Offset);
-			(now.GetHashCode() == exactClone.GetHashCode()).Should().Be.EqualTo(now.GetHashCode() == type.GetHashCode(exactClone, EntityMode.Poco));
+			Assert.That((now.GetHashCode() == exactClone.GetHashCode()), Is.EqualTo(now.GetHashCode() == type.GetHashCode(exactClone, EntityMode.Poco)));
 		}
 
 		[Test]
 		public void Next()
 		{
-			var type = (DateTimeOffsetType)NHibernateUtil.DateTimeOffset;
+			var type = NHibernateUtil.DateTimeOffset;
 			var current = DateTimeOffset.Now.AddTicks(-1);
 			object next = type.Next(current, null);
 
-			next.Should().Be.OfType<DateTimeOffset>().And.ValueOf.Ticks.Should().Be.GreaterThan(current.Ticks);
+			Assert.That(next, Is.TypeOf<DateTimeOffset>().And.Property("Ticks").GreaterThan(current.Ticks));
 		}
 
 		[Test]
 		public void Seed()
 		{
-			var type = (DateTimeOffsetType)NHibernateUtil.DateTimeOffset;
-			type.Seed(null).Should().Be.OfType<DateTimeOffset>();
+			var type = NHibernateUtil.DateTimeOffset;
+			Assert.That(type.Seed(null), Is.TypeOf<DateTimeOffset>());
 		}
 
 	}

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
@@ -19,16 +20,16 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var mapdoc = new HbmMapping();
 			var hbmJoin = new HbmJoin();
-			Executing.This(() => new JoinMapper(typeof(MyClass), null, hbmJoin, mapdoc)).Should().Throw<ArgumentNullException>();
-			Executing.This(() => new JoinMapper(typeof(MyClass), "", hbmJoin, mapdoc)).Should().Throw<ArgumentOutOfRangeException>();
-			Executing.This(() => new JoinMapper(typeof(MyClass), "     ", hbmJoin, mapdoc)).Should().Throw<ArgumentOutOfRangeException>();
+			Assert.That(() => new JoinMapper(typeof(MyClass), null, hbmJoin, mapdoc), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => new JoinMapper(typeof(MyClass), "", hbmJoin, mapdoc), Throws.TypeOf<ArgumentOutOfRangeException>());
+			Assert.That(() => new JoinMapper(typeof(MyClass), "     ", hbmJoin, mapdoc), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]
 		public void WhenCreateWithNullHbmJoinThenThrows()
 		{
 			var mapdoc = new HbmMapping();
-			Executing.This(() => new JoinMapper(typeof(MyClass), "AA", null, mapdoc)).Should().Throw<ArgumentNullException>();
+			Assert.That(() => new JoinMapper(typeof(MyClass), "AA", null, mapdoc), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -37,7 +38,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapdoc = new HbmMapping();
 			var hbmJoin = new HbmJoin();
 			new JoinMapper(typeof(MyClass), "   AA   ", hbmJoin, mapdoc);
-			hbmJoin.table.Should().Be("AA");
+			Assert.That(hbmJoin.table, Is.EqualTo("AA"));
 		}
 
 		[Test]
@@ -47,7 +48,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Table("   Pizza   ");
-			hbmJoin.table.Should().Be("Pizza");
+			Assert.That(hbmJoin.table, Is.EqualTo("Pizza"));
 		}
 
 		[Test]
@@ -56,9 +57,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapdoc = new HbmMapping();
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
-			mapper.Executing(x => x.Table(null)).Throws<ArgumentNullException>();
-			mapper.Executing(x => x.Table("")).Throws<ArgumentOutOfRangeException>();
-			mapper.Executing(x => x.Table("    ")).Throws<ArgumentOutOfRangeException>();
+			Assert.That(() => mapper.Table(null), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => mapper.Table(""), Throws.TypeOf<ArgumentOutOfRangeException>());
+			Assert.That(() => mapper.Table("    "), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		[Test]
@@ -69,14 +70,14 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.TableNameChanged += (m, x) =>
-			                           {
-																	 m.Should().Be.SameInstanceAs(mapper);
-																	 x.OldName.Should().Be("AA");
-																	 x.NewName.Should().Be("Pizza");
+									   {
+																	 Assert.That(m, Is.SameAs(mapper));
+																	 Assert.That(x.OldName, Is.EqualTo("AA"));
+																	 Assert.That(x.NewName, Is.EqualTo("Pizza"));
 																	 eventCalled = true;
 																 };
 			mapper.Table("   Pizza   ");
-			eventCalled.Should().Be.True();
+			Assert.That(eventCalled, Is.True);
 		}
 
 		[Test]
@@ -86,7 +87,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Catalog("pizza");
-			hbmJoin.catalog.Should().Be("pizza");
+			Assert.That(hbmJoin.catalog, Is.EqualTo("pizza"));
 		}
 
 		[Test]
@@ -96,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Schema("pizza");
-			hbmJoin.schema.Should().Be("pizza");
+			Assert.That(hbmJoin.schema, Is.EqualTo("pizza"));
 		}
 
 		[Test]
@@ -107,8 +108,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.SqlInsert("blah");
 
-			hbmJoin.SqlInsert.Should().Not.Be.Null();
-			hbmJoin.SqlInsert.Text[0].Should().Be("blah");
+			Assert.That(hbmJoin.SqlInsert, Is.Not.Null);
+			Assert.That(hbmJoin.SqlInsert.Text[0], Is.EqualTo("blah"));
 		}
 
 		[Test]
@@ -119,8 +120,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.SqlUpdate("blah");
 
-			hbmJoin.SqlUpdate.Should().Not.Be.Null();
-			hbmJoin.SqlUpdate.Text[0].Should().Be("blah");
+			Assert.That(hbmJoin.SqlUpdate, Is.Not.Null);
+			Assert.That(hbmJoin.SqlUpdate.Text[0], Is.EqualTo("blah"));
 		}
 
 		[Test]
@@ -131,8 +132,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.SqlDelete("blah");
 
-			hbmJoin.SqlDelete.Should().Not.Be.Null();
-			hbmJoin.SqlDelete.Text[0].Should().Be("blah");
+			Assert.That(hbmJoin.SqlDelete, Is.Not.Null);
+			Assert.That(hbmJoin.SqlDelete.Text[0], Is.EqualTo("blah"));
 		}
 
 		[Test]
@@ -143,8 +144,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Subselect("blah");
 
-			hbmJoin.Subselect.Should().Not.Be.Null();
-			hbmJoin.subselect.Text[0].Should().Be("blah");
+			Assert.That(hbmJoin.Subselect, Is.Not.Null);
+			Assert.That(hbmJoin.subselect.Text[0], Is.EqualTo("blah"));
 		}
 
 		[Test]
@@ -154,7 +155,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Inverse(true);
-			hbmJoin.inverse.Should().Be.True();
+			Assert.That(hbmJoin.inverse, Is.True);
 		}
 
 		[Test]
@@ -164,7 +165,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Optional(true);
-			hbmJoin.optional.Should().Be.True();
+			Assert.That(hbmJoin.optional, Is.True);
 		}
 
 		[Test]
@@ -174,7 +175,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.Fetch(FetchKind.Select);
-			hbmJoin.fetch.Should().Be(HbmJoinFetch.Select);
+			Assert.That(hbmJoin.fetch, Is.EqualTo(HbmJoinFetch.Select));
 		}
 
 		[Test]
@@ -187,7 +188,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Key(km => keyMapperCalled = true);
 
-			keyMapperCalled.Should().Be.True();
+			Assert.That(keyMapperCalled, Is.True);
 		}
 
 		[Test]
@@ -197,7 +198,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 
-			mapper.Key(km => km.Should().Not.Be.Null());
+			mapper.Key(km => Assert.That(km, Is.Not.Null));
 		}
 
 		[Test]
@@ -212,7 +213,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Key(km => firstCallInstance = km);
 			mapper.Key(km => secondCallInstance = km);
 
-			firstCallInstance.Should().Be.SameInstanceAs(secondCallInstance);
+			Assert.That(firstCallInstance, Is.SameAs(secondCallInstance));
 		}
 
 		[Test]
@@ -224,7 +225,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			mapper.Property(For<MyClass>.Property(mc => mc.Something), x => { });
 
-			hbmJoin.Properties.Should().Have.Count.EqualTo(1);
+			Assert.That(hbmJoin.Properties.Count(), Is.EqualTo(1));
 		}
 	}
 }

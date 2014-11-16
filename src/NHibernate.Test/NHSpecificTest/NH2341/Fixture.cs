@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2341
 			using (var tx = session.BeginTransaction())
 			{
 				var entity = new ConcreteB();
-				session.Executing(s => s.Save(entity)).NotThrows();
+				Assert.That(() => session.Save(entity), Throws.Nothing);
 				tx.Commit();
 			}
 		}

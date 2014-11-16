@@ -183,14 +183,14 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
 		{
-            if (!Dialect.SupportsSqlBatches)
-                Assert.Ignore("Dialect does not support sql batches.");
+			if (!Dialect.SupportsSqlBatches)
+				Assert.Ignore("Dialect does not support sql batches.");
 
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
 			{
 				ss.SetBatchSize(37);
 				var impl = (ISessionImplementor)ss;
-				impl.Batcher.BatchSize.Should().Be(37);
+				Assert.That(impl.Batcher.BatchSize, Is.EqualTo(37));
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace NHibernate.Test.Stateless
 		{
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
 			{
-				ss.GetSessionImplementation().Should().Be.SameInstanceAs(ss);
+				Assert.That(ss.GetSessionImplementation(), Is.SameAs(ss));
 			}
 		}
 
@@ -210,8 +210,8 @@ namespace NHibernate.Test.Stateless
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
 			{
 				ICriteria criteria = null;
-				Executing.This(()=> criteria = dc.GetExecutableCriteria(ss)).Should().NotThrow();
-				criteria.Executing(c => c.List()).NotThrows();
+				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);
+				Assert.That(() => criteria.List(), Throws.Nothing);
 			}
 		}
 		

@@ -51,9 +51,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id));
 
-			inspector.IsPersistentId(For<MyClass>.Property(x => x.Id)).Should().Be.True();
-			inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Id)).Should().Be.True();
-			inspector.IsComponent(typeof(IMyCompo)).Should().Be.True();
+			Assert.That(inspector.IsPersistentId(For<MyClass>.Property(x => x.Id)), Is.True);
+			Assert.That(inspector.IsPersistentProperty(For<MyClass>.Property(x => x.Id)), Is.True);
+			Assert.That(inspector.IsComponent(typeof(IMyCompo)), Is.True);
 		}
 
 		[Test]
@@ -61,18 +61,18 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id, idmap =>
-			                                                          {
-			                                                          	idmap.Property(y => y.Code);
-			                                                          	idmap.Property(y => y.Name);
-			                                                          }));
+																	  {
+																		idmap.Property(y => y.Code);
+																		idmap.Property(y => y.Name);
+																	  }));
 
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
-			keyProperties.Should().Have.Count.EqualTo(2);
-			keyProperties.Select(x => x.Name).Should().Have.SameValuesAs("Code", "Name");
-			hbmCompositId.name.Should().Be(For<MyClass>.Property(x => x.Id).Name);
+			Assert.That(keyProperties.Count(), Is.EqualTo(2));
+			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new [] {"Code", "Name"}));
+			Assert.That(hbmCompositId.name, Is.EqualTo(For<MyClass>.Property(x => x.Id).Name));
 		}
 
 		[Test]
@@ -88,8 +88,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.access.Should().Contain("field");
-			hbmCompositId.@class.Should().Contain("MyComponent");
+			Assert.That(hbmCompositId.access, Is.StringContaining("field"));
+			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
 		}
 
 		[Test]
@@ -97,19 +97,19 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 			mapper.Component<IMyCompo>(x =>
-			                           {
+									   {
 																	 x.Property(y => y.Code, pm => pm.Length(10));
 																	 x.Property(y => y.Name);
-			                           });
+									   });
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id));
 
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
-			keyProperties.Should().Have.Count.EqualTo(2);
-			keyProperties.Select(x => x.Name).Should().Have.SameValuesAs("Code", "Name");
-			keyProperties.Where(x => x.Name == "Code").Single().length.Should().Be("10");
+			Assert.That(keyProperties.Count(), Is.EqualTo(2));
+			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new [] {"Code", "Name"}));
+			Assert.That(keyProperties.Single(x => x.Name == "Code").length, Is.EqualTo("10"));
 		}
 
 		[Test]
@@ -131,7 +131,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
-			keyProperties.Select(x => x.length).Should().Have.SameValuesAs("15", "25");
+			Assert.That(keyProperties.Select(x => x.length), Is.EquivalentTo(new [] {"15", "25"}));
 		}
 
 		[Test]
@@ -148,8 +148,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.access.Should().Contain("field");
-			hbmCompositId.@class.Should().Contain("MyComponent");
+			Assert.That(hbmCompositId.access, Is.StringContaining("field"));
+			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
 		}
 
 		[Test]
@@ -166,8 +166,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
-			hbmCompositId.access.Should().Contain("nosetter");
-			hbmCompositId.@class.Should().Contain("MyComponent");
+			Assert.That(hbmCompositId.access, Is.StringContaining("nosetter"));
+			Assert.That(hbmCompositId.@class, Is.StringContaining("MyComponent"));
 		}
 	}
 }

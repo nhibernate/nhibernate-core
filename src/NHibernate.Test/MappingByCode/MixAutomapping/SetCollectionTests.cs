@@ -32,7 +32,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsSet(mi).Should().Be.True();
+			Assert.That(inspector.IsSet(mi), Is.True);
 		}
 
 		[Test]
@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsSet(mi).Should().Be.True();
+			Assert.That(inspector.IsSet(mi), Is.True);
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsSet(mi).Should().Be.True();
+			Assert.That(inspector.IsSet(mi), Is.True);
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsSet(mi).Should().Be.False();
+			Assert.That(inspector.IsSet(mi), Is.False);
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var inspector = (IModelInspector)autoinspector;
 
-			inspector.IsSet(mi).Should().Be.False();
+			Assert.That(inspector.IsSet(mi), Is.False);
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<EntityWithSets>(map => map.Set(x => x.Others, x => { }, y=> {}));
 
 			var inspector = (IModelInspector)autoinspector;
-			inspector.IsSet(mi).Should().Be.True();
+			Assert.That(inspector.IsSet(mi), Is.True);
 		}
 	}
 }

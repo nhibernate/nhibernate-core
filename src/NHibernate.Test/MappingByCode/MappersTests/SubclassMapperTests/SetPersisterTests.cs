@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new SubclassMapper(typeof(HineritedSimple), mapdoc);
 			rc.Persister<SingleTableEntityPersister>();
-			mapdoc.SubClasses[0].Persister.Should().Contain("SingleTableEntityPersister");
+			Assert.That(mapdoc.SubClasses[0].Persister, Is.StringContaining("SingleTableEntityPersister"));
 		}
 	}
 }

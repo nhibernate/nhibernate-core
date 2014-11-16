@@ -45,13 +45,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 				var compId = (IDictionary)loan["CompId"];
 				var group = compId["Group"];
 
-				group.Should().Not.Be.Null();
+				Assert.That(@group, Is.Not.Null);
 
 				isInitialized = NHibernateUtil.IsInitialized(group);
 
 				tx.Commit();
 			}
-			isInitialized.Should().Be.False();
+			Assert.That(isInitialized, Is.False);
 		}
 
 		protected override void OnTearDown()

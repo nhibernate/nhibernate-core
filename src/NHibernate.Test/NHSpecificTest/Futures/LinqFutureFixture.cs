@@ -353,11 +353,9 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 					Assert.AreEqual(1, events.Length);
 					var wholeLog = logSpy.GetWholeLog();
 					string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
-					Assert.True(wholeLog.Contains(paramPrefix + "p0 = 1 [Type: Int32 (0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0)]"));
+					Assert.That(wholeLog.Contains(paramPrefix + "p0 = 1 [Type: Int32 (0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0)]"), Is.True);
 				}
 			}
-
 		}
-
 	}
 }

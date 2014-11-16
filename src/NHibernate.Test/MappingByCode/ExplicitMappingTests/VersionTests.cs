@@ -27,7 +27,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 					map.Version(x => x.Version, vm => { });
 				});
 
-			inspector.IsVersion(For<MyClass>.Property(x => x.Version)).Should().Be.True();
+			Assert.That(inspector.IsVersion(For<MyClass>.Property(x => x.Version)), Is.True);
 		}
 
 		[Test]
@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 					map.Version(x => x.Version, vm => { });
 				});
 
-			inspector.IsVersion(For<MyRoot>.Property(x => x.Version)).Should().Be.True();
+			Assert.That(inspector.IsVersion(For<MyRoot>.Property(x => x.Version)), Is.True);
 		}
 	}
 }

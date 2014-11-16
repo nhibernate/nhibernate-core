@@ -16,9 +16,9 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				b.Query = "from System.Object o";
 			});
 
-			configure.NamedQueries.Should().Have.Count.EqualTo(1);
-			configure.NamedQueries.Keys.Single().Should().Be("aQuery");
-			configure.NamedQueries.Values.Single().Query.Should().Be("from System.Object o");
+			Assert.That(configure.NamedQueries, Has.Count.EqualTo(1));
+			Assert.That(configure.NamedQueries.Keys.Single(), Is.EqualTo("aQuery"));
+			Assert.That(configure.NamedQueries.Values.Single().Query, Is.EqualTo("from System.Object o"));
 		}
 
 		[Test]
@@ -31,7 +31,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				b.FetchSize = 0;
 			});
 
-			configure.NamedQueries.Values.Single().FetchSize.Should().Be(-1);
+			Assert.That(configure.NamedQueries.Values.Single().FetchSize, Is.EqualTo(-1));
 		}
 
 		[Test]
@@ -44,7 +44,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				b.FetchSize = 15;
 			});
 
-			configure.NamedQueries.Values.Single().FetchSize.Should().Be(15);
+			Assert.That(configure.NamedQueries.Values.Single().FetchSize, Is.EqualTo(15));
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				b.Timeout = 0;
 			});
 
-			configure.NamedQueries.Values.Single().Timeout.Should().Be(-1);
+			Assert.That(configure.NamedQueries.Values.Single().Timeout, Is.EqualTo(-1));
 		}
 
 		[Test]
@@ -70,7 +70,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 				b.Timeout = 123;
 			});
 
-			configure.NamedQueries.Values.Single().Timeout.Should().Be(123);
+			Assert.That(configure.NamedQueries.Values.Single().Timeout, Is.EqualTo(123));
 		}
 	}
 }

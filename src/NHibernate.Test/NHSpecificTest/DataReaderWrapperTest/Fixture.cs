@@ -45,8 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 				var multi = s.CreateMultiCriteria();
 				multi.Add(crit);
 				var res = (IList) multi.List()[0];
-				res.Count
-					.Should().Be.EqualTo(1);
+				Assert.That(res.Count, Is.EqualTo(1));
 			}
 		}
 	}

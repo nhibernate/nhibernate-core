@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 		{
 			// The expected value should be "(5+1)%(1+1)" instead "5+ 1%1 +1"
 			var sqlQuery = GetSql("select mod(5+1,1+1) from MyClass");
-			sqlQuery.Should().Contain("(5+1)").And.Contain("(1+1)");
+			Assert.That(sqlQuery, Is.StringContaining("(5+1)").And.StringContaining("(1+1)"));
 		}
 
 		public string GetSql(string query)

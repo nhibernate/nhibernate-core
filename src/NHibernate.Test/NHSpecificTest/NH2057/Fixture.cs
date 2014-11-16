@@ -26,8 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 				Assert.False(s.IsClosed);
 				tx.Complete();
 			}
-			Assert.True(s.IsClosed);
+			Assert.That(s.IsClosed, Is.True);
 		}
-
 	}
 }

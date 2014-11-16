@@ -205,7 +205,7 @@ namespace NHibernate.Test.Linq
 
 			var firstUser = query.First();
 			Assert.IsNotNull(firstUser);
-			firstUser.Category.Should().Be("something");
+			Assert.That(firstUser.Category, Is.EqualTo("something"));
 		}
 
 		[Test]

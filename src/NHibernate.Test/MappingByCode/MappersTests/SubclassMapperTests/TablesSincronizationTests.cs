@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 		{
 			var mapdoc = new HbmMapping();
 			var rc = new SubclassMapper(typeof(InheritedSimple), mapdoc);
-			rc.Executing(x => x.Synchronize(null)).NotThrows();
+			Assert.That(() => rc.Synchronize(null), Throws.Nothing);
 		}
 
 		[Test]
@@ -32,7 +32,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new SubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("", "  ATable   ", "     ", null);
-			mapdoc.SubClasses[0].Synchronize.Single().table.Should().Be("ATable");
+			Assert.That(mapdoc.SubClasses[0].Synchronize.Single().table, Is.EqualTo("ATable"));
 		}
 
 		[Test]
@@ -41,7 +41,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new SubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2", "T3", null);
-			mapdoc.SubClasses[0].Synchronize.Select(x => x.table).Should().Have.SameValuesAs("T1", "T2", "T3");
+			Assert.That(mapdoc.SubClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
 		}
 
 		[Test]
@@ -51,7 +51,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			var rc = new SubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3");
-			mapdoc.SubClasses[0].Synchronize.Select(x => x.table).Should().Have.SameValuesAs("T1", "T2", "T3");
+			Assert.That(mapdoc.SubClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			var rc = new SubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3", "T2");
-			mapdoc.SubClasses[0].Synchronize.Select(x => x.table).Should().Have.SameValuesAs("T1", "T2", "T3");
+			Assert.That(mapdoc.SubClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
 		}
 	}
 }

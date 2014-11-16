@@ -129,8 +129,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = sessions.OpenSession())
 			{
 				var saved = s.Get<PersistentEnumClass>(1);
-				saved.A.Should().Be(A.Two);
-				saved.B.Should().Be(B.One);
+				Assert.That(saved.A, Is.EqualTo(A.Two));
+				Assert.That(saved.B, Is.EqualTo(B.One));
 				s.Delete(saved);
 				s.Flush();
 			}
@@ -143,7 +143,7 @@ namespace NHibernate.Test.TypesTest
 		public void TheNameShouldBeFullNameAndAssembly()
 		{
 			var enumType = new EnumType<B>();
-			enumType.Name.Should().Be(typeof(EnumType<B>).FullName + ", NHibernate");
+			Assert.That(enumType.Name, Is.EqualTo(typeof(EnumType<B>).FullName + ", NHibernate"));
 		}
 	}
 }

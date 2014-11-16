@@ -65,8 +65,8 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void WhenNullOrEmptyIsQuotedFalse()
 		{
-			d.IsQuoted(null).Should().Be.False();
-			d.IsQuoted("").Should().Be.False();
+			Assert.That(d.IsQuoted(null), Is.False);
+			Assert.That(d.IsQuoted(""), Is.False);
 		}
 
 		[Test]

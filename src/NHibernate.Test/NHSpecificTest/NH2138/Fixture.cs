@@ -12,10 +12,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2138
 		{
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2138.Mappings.hbm.xml", GetType().Assembly);
-			cfg.Executing(c => c.BuildMappings()).NotThrows();
+			Assert.That(() => cfg.BuildMappings(), Throws.Nothing);
 			var sqlQuery = cfg.NamedSQLQueries["AllCoders"];
 			var rootReturn = (NativeSQLQueryRootReturn)sqlQuery.QueryReturns[0];
-			rootReturn.ReturnEntityName.Should().Be("Coder");
+			Assert.That(rootReturn.ReturnEntityName, Is.EqualTo("Coder"));
 		}
 	}
 }
