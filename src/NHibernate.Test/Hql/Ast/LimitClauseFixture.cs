@@ -2,7 +2,6 @@
 using NHibernate.Cfg;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Hql.Ast
 {

@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
 	public class GetPropertyOrFieldMatchingNameTest

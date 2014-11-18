@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2697
 {

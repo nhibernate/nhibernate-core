@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {

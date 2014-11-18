@@ -2,7 +2,6 @@ using System;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {

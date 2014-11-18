@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
 using NHibernate.Intercept;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DynamicProxyTests
 {

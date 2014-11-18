@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {

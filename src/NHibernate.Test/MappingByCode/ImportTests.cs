@@ -1,7 +1,6 @@
 ﻿using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode
 {

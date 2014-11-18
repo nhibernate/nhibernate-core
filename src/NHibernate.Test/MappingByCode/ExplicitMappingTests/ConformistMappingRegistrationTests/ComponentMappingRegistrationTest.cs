@@ -3,7 +3,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {

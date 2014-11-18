@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.Linq.Functions;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Linq

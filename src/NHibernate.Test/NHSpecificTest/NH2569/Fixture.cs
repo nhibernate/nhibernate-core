@@ -3,7 +3,6 @@ using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 namespace NHibernate.Test.NHSpecificTest.NH2569
 {
 	public class MyClass

@@ -10,7 +10,6 @@ using NHibernate.Type;
 using NUnit.Framework;
 using System.Data;
 using NHibernate.Exceptions;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {

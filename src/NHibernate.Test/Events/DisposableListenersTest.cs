@@ -2,7 +2,6 @@ using System;
 using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Events
 {

@@ -1,6 +1,5 @@
 using NHibernate.Mapping;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH3153
 {

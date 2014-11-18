@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Driver;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DriverTest
 {

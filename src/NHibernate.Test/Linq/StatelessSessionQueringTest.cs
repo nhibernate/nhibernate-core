@@ -3,7 +3,6 @@ using System.Text;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NHibernate.Linq;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {

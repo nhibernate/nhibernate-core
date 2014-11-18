@@ -1,6 +1,5 @@
 using NHibernate.Param;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Parameters
 {

@@ -2,7 +2,6 @@ using NUnit.Framework;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {

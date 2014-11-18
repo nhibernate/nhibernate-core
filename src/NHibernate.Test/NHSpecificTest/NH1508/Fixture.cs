@@ -1,11 +1,5 @@
 ﻿using NUnit.Framework;
-using SharpTestsEx;
 
-namespace SharpTestsEx
-{
-
-
-}
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
 	[TestFixture]

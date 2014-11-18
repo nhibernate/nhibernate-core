@@ -11,7 +11,6 @@ using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {

@@ -2,7 +2,6 @@ using System;
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Bytecode.Lightweight

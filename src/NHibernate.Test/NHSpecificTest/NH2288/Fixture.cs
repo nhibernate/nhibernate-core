@@ -3,7 +3,6 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2288
 {

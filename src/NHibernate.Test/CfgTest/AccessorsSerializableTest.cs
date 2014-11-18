@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using NHibernate.Properties;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest
 {

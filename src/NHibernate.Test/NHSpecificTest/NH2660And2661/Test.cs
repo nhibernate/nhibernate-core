@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 {

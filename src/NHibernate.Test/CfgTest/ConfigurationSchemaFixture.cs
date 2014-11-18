@@ -5,7 +5,6 @@ using NUnit.Framework;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;
 using System.Xml;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest
 {

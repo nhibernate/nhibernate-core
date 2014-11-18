@@ -7,7 +7,6 @@ using System.Reflection;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Criteria.Lambda
 {

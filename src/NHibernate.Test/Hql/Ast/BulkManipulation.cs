@@ -6,7 +6,6 @@ using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Hql.Ast
 {

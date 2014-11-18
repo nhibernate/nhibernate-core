@@ -4,7 +4,6 @@ using System.Data;
 using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {

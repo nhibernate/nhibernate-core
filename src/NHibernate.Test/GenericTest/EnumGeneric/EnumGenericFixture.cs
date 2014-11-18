@@ -4,7 +4,6 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {

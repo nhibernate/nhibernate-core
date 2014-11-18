@@ -2,7 +2,6 @@ using System;
 using System.Data;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2207
 {

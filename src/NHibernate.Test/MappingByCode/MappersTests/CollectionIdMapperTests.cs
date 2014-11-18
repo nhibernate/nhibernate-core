@@ -5,7 +5,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {

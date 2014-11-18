@@ -4,7 +4,6 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest
 {

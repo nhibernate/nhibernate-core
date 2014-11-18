@@ -1,7 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
 using System.Collections.Generic;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {

@@ -12,7 +12,6 @@ using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Linq
 {

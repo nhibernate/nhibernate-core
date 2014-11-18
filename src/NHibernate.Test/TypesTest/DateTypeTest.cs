@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 using System;
 
 namespace NHibernate.Test.TypesTest

@@ -1,6 +1,5 @@
 using System.Collections;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {

@@ -4,7 +4,6 @@ using System.Threading;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless
 {

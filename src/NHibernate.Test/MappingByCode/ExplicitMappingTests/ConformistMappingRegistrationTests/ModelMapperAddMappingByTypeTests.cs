@@ -1,7 +1,6 @@
 using System;
 using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {

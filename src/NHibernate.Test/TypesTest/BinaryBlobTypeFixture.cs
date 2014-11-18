@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {

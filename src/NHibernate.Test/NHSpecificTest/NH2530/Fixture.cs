@@ -3,7 +3,6 @@ using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2530
 {

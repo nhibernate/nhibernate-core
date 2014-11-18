@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Collection;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {

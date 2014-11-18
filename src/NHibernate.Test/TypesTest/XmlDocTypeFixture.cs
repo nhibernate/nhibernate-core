@@ -3,7 +3,6 @@ using System.Xml;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {

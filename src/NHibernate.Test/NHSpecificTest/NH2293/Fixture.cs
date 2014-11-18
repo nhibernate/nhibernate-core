@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2293
 {

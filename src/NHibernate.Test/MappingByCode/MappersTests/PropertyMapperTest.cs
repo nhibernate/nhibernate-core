@@ -10,7 +10,6 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {

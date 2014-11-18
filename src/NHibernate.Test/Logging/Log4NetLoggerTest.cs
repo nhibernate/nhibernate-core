@@ -1,7 +1,6 @@
 using System;
 using log4net;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Logging
 {

@@ -1,7 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
 using NHibernate.Cfg;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2041
 {

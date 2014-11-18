@@ -2,7 +2,6 @@ using NHibernate.Dialect;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2031
 {

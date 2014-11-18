@@ -1,7 +1,6 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {

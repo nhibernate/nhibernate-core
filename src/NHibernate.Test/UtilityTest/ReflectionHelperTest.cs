@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest
 {

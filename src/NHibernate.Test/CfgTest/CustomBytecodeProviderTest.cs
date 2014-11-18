@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NHibernate.Bytecode;
 using NHibernate.Properties;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest

@@ -7,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest

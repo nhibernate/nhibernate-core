@@ -3,7 +3,6 @@ using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.DriverTest
 {

@@ -2,7 +2,6 @@ using System.Linq;
 using NHibernate.DomainModel;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2203
 {

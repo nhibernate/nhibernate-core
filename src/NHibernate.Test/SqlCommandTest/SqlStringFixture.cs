@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.SqlCommandTest
 {

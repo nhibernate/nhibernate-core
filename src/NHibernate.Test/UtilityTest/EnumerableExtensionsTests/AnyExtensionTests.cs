@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Util;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {

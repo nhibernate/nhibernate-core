@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 // ReSharper disable InconsistentNaming
 

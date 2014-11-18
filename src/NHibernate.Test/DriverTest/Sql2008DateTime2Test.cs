@@ -3,7 +3,6 @@ using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using SharpTestsEx;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DriverTest

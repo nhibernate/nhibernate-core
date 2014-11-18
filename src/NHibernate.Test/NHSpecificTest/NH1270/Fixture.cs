@@ -4,7 +4,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH1270
 {

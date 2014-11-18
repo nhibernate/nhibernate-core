@@ -1,6 +1,5 @@
 using NHibernate.Util;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.UtilityTest
 {

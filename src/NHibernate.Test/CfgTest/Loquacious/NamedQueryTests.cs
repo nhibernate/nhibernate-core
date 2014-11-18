@@ -1,7 +1,6 @@
 using System.Linq;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {

@@ -3,7 +3,6 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using NHibernate.Type;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TypesTest
 {

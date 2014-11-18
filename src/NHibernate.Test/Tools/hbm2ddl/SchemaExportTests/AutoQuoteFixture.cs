@@ -7,7 +7,6 @@ using NHibernate.Mapping;
 using NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {

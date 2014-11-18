@@ -5,7 +5,6 @@ using System.Reflection;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.TransformTests
 {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2331
 {

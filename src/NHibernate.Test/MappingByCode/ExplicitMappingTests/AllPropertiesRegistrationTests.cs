@@ -5,7 +5,6 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {

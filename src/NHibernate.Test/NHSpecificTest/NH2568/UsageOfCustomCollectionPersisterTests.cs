@@ -7,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Persister.Collection;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH2568
 {

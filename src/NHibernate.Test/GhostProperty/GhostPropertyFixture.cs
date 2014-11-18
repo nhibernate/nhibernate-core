@@ -3,7 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.GhostProperty
 {
