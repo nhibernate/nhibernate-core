@@ -18,6 +18,7 @@ using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -362,6 +363,14 @@ namespace NHibernate.Impl
 		public override string GuessEntityName(object entity)
 		{
 			CheckAndUpdateSessionStatus();
+			if (entity.IsProxy())
+			{
+				return (entity as INHibernateProxy).HibernateLazyInitializer.PersistentClass.FullName;
+			}
+			else if (entity is IProxy)
+			{
+				return entity.GetType().BaseType.FullName;
+			}
 			return entity.GetType().FullName;
 		}
 

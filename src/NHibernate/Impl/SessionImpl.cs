@@ -19,6 +19,7 @@ using NHibernate.Loader.Custom;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -1036,6 +1037,10 @@ namespace NHibernate.Impl
 						return initializer.PersistentClass.FullName;
 					}
 					entity = initializer.GetImplementation();
+				}
+				else if (entity is IProxy)
+				{
+					return entity.GetType().BaseType.FullName;
 				}
 				if (FieldInterceptionHelper.IsInstrumented(entity))
 				{
