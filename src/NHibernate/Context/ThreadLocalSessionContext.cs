@@ -19,7 +19,7 @@ namespace NHibernate.Context
 	/// has been called. If <tt>Close()</tt> is called on a session managed by
 	/// this class, it will be automatically unbound.
 	/// <p/>
-	/// Additionally, the static <see cref="Bind"/> and <see cref="Unbind"/> methods are
+	/// Additionally, the static <see cref="CurrentSessionContext.Bind"/> and <see cref="CurrentSessionContext.Unbind"/> methods are
 	/// provided to allow application code to explicitly control opening and
 	/// closing of these sessions.  This, with some from of interception,
 	/// is the preferred approach.  It also allows easy framework integration
