@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.NHSpecificTest.NH3570
 {
@@ -29,8 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 			{
 				using (s.BeginTransaction())
 				{
-					s.Get<BiParent>(id).Children.Count.Should().Be.EqualTo(1);
-					s.CreateCriteria<BiChild>().List().Count.Should().Be.EqualTo(1);
+					Assert.That(s.Get<BiParent>(id).Children.Count, Is.EqualTo(1));
+					Assert.That(s.CreateCriteria<BiChild>().List().Count, Is.EqualTo(1));
 				}
 			}
 		}

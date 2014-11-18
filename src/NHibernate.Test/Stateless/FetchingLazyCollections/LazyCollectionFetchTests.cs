@@ -6,7 +6,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Linq;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
@@ -138,13 +137,13 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				Assert.That(hf.Count, Is.EqualTo(1));
 				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "Lazy collection should be initialized");
 
 				IList<Family<Reptile>> rf = s.Query<Family<Reptile>>().FetchMany(f => f.Childs).ToList();
 				Assert.That(rf.Count, Is.EqualTo(1));
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
-				NHibernateUtil.IsInitialized(hf[0].Childs).Should("Lazy collection should be initialized").Be.True();
+				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "Lazy collection should be initialized");
 
 				tx.Commit();
 			}
