@@ -3,6 +3,7 @@ using NHibernate.AdoNet;
 using NHibernate.Connection;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
+using NHibernate.Linq.Visitors;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
@@ -35,5 +36,7 @@ namespace NHibernate.Cfg.Loquacious
 		byte MaximumDepthOfOuterJoinFetching { set; }
 
 		SchemaAutoAction SchemaAction { set; }
+
+		void QueryModelRewriterFactory<TFactory>() where TFactory : IQueryModelRewriterFactory;
 	}
 }
