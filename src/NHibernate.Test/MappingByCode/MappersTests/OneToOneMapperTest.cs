@@ -29,15 +29,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
-		public void AutoCleanUnsupportedCascadeStyle()
-		{
-			var hbm = new HbmOneToOne();
-			var mapper = new OneToOneMapper(null, hbm);
-			mapper.Cascade(Mapping.ByCode.Cascade.Persist | Mapping.ByCode.Cascade.DeleteOrphans | Mapping.ByCode.Cascade.Remove);
-			Assert.That(hbm.cascade.Split(',').Select(w => w.Trim()).All(cascade => !cascade.Contains("orphan")), Is.True);
-		}
-
-		[Test]
 		public void CanSetAccessor()
 		{
 			var member = typeof(MyClass).GetProperty("Relation");

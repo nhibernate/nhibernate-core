@@ -253,6 +253,11 @@ namespace NHibernate.Type
 
 		public abstract bool IsOneToOne { get; }
 
+		public virtual bool IsLogicalOneToOne()
+		{
+			return IsOneToOne;
+		}
+
 		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
