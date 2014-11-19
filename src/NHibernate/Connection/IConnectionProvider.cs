@@ -41,5 +41,11 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <returns>An open <see cref="IDbConnection"/>.</returns>
 		IDbConnection GetConnection();
+
+		/// <summary>
+		/// Ensures that a connection is open.
+		/// </summary>
+		/// <param name="conn"></param>
+		void EnsureConnectionIsOpen(IDbConnection conn);
 	}
 }

@@ -241,6 +241,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					stmnt = connection.CreateCommand();
 					stmnt.Transaction = transaction;
 					stmnt.CommandText = persister.TemporaryIdTableDDL;
+					session.Factory.ConnectionProvider.EnsureConnectionIsOpen(connection);
 					stmnt.ExecuteNonQuery();
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
@@ -286,6 +287,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					stmnt = connection.CreateCommand();
 					stmnt.Transaction = transaction;
 					stmnt.CommandText = "drop table " + persister.TemporaryIdTableName;
+					this.session.Factory.ConnectionProvider.EnsureConnectionIsOpen(connection);
 					stmnt.ExecuteNonQuery();
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}

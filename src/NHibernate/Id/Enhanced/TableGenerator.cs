@@ -450,6 +450,7 @@ namespace NHibernate.Id.Enhanced
 						((IDataParameter)selectCmd.Parameters[0]).Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
+						session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 						selectedValue = selectCmd.ExecuteScalar();
 					}
 
@@ -467,6 +468,7 @@ namespace NHibernate.Id.Enhanced
 							((IDataParameter)insertCmd.Parameters[1]).Value = result;
 
 							PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(insertCmd, FormatStyle.Basic);
+							session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 							insertCmd.ExecuteNonQuery();
 						}
 					}
@@ -495,6 +497,7 @@ namespace NHibernate.Id.Enhanced
 						((IDataParameter)updateCmd.Parameters[1]).Value = result;
 						((IDataParameter)updateCmd.Parameters[2]).Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
+						session.Factory.ConnectionProvider.EnsureConnectionIsOpen(conn);
 						updatedRows = updateCmd.ExecuteNonQuery();
 					}
 				}

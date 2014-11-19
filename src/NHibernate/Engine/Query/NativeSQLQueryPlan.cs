@@ -92,7 +92,7 @@ namespace NHibernate.Engine.Query
 					{
 						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
-					
+
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally

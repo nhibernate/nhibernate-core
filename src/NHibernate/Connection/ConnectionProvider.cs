@@ -19,6 +19,14 @@ namespace NHibernate.Connection
 		private string connString;
 		private IDriver driver;
 
+		public virtual void EnsureConnectionIsOpen(IDbConnection conn)
+		{
+			if (conn.State != ConnectionState.Open)
+			{
+				conn.Open();
+			}
+		}
+
 		/// <summary>
 		/// Closes the <see cref="IDbConnection"/>.
 		/// </summary>
