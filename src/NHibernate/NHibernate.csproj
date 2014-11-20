@@ -230,6 +230,7 @@
     <Compile Include="Hql\StringQueryExpression.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
     <Compile Include="Hql\ParserHelper.cs" />
+    <Compile Include="IQueryOptions.cs" />
     <Compile Include="ICriteria.cs" />
     <Compile Include="IDatabinder.cs" />
     <Compile Include="Id\Assigned.cs" />
@@ -312,6 +313,10 @@
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessLockMode.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessReadOnly.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessResultTransformer.cs" />
+    <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessFetchSize.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />

@@ -1,8 +1,9 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
-
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -270,6 +271,90 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot> IQueryOver<TRoot>.ReadOnly()
 		{ return ReadOnly(); }
 
+		#region IQueryOptions Members
+
+		IList<TEntity> IQueryOptions.List<TEntity>()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).List<TEntity>();
+		}
+
+		void IQueryOptions.List(IList list)
+		{
+			(this.UnderlyingCriteria as IQueryOptions).List(list);
+		}
+
+		IList IQueryOptions.List()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).List();
+		}
+
+		object IQueryOptions.UniqueResult()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).UniqueResult();
+		}
+
+		TEntity IQueryOptions.UniqueResult<TEntity>()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).UniqueResult<TEntity>();
+		}
+
+		IQueryOptions IQueryOptions.SetFirstResult(int firstResult)
+		{
+			return this.UnderlyingCriteria.SetFirstResult(firstResult);
+		}
+
+		IQueryOptions IQueryOptions.SetReadOnly(bool readOnly)
+		{
+			return this.UnderlyingCriteria.SetReadOnly(readOnly);
+		}
+
+		IQueryOptions IQueryOptions.SetFetchSize(int fetchSize)
+		{
+			return this.UnderlyingCriteria.SetFetchSize(fetchSize);
+		}
+
+
+		IQueryOptions IQueryOptions.SetCacheable(bool cacheable)
+		{
+			return this.UnderlyingCriteria.SetCacheable(cacheable);
+		}
+
+		IQueryOptions IQueryOptions.SetCacheRegion(string cacheRegion)
+		{
+			return this.UnderlyingCriteria.SetCacheRegion(cacheRegion);
+		}
+
+		IQueryOptions IQueryOptions.SetTimeout(int timeout)
+		{
+			return this.UnderlyingCriteria.SetTimeout(timeout);
+		}
+
+		IQueryOptions IQueryOptions.SetMaxResults(int maxResults)
+		{
+			return this.UnderlyingCriteria.SetMaxResults(maxResults);
+		}
+
+		IQueryOptions IQueryOptions.SetLockMode(string alias, LockMode lockMode)
+		{
+			return this.UnderlyingCriteria.SetLockMode(alias, lockMode);
+		}
+
+		IQueryOptions IQueryOptions.SetResultTransformer(IResultTransformer resultTransformer)
+		{
+			return this.UnderlyingCriteria.SetResultTransformer(resultTransformer);
+		}
+
+		IEnumerable<TEntity> IQueryOptions.Future<TEntity>()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).Future<TEntity>();
+		}
+
+		IFutureValue<TEntity> IQueryOptions.FutureValue<TEntity>()
+		{
+			return (this.UnderlyingCriteria as IQueryOptions).FutureValue<TEntity>();
+		}
+
+		#endregion
 	}
 
 	/// <summary>

@@ -108,6 +108,10 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<TimeoutResultOperator, ProcessTimeout>();
 			ResultOperatorMap.Add<OfTypeResultOperator, ProcessOfType>();
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
+			ResultOperatorMap.Add<FetchSizeResultOperator, ProcessFetchSize>();
+			ResultOperatorMap.Add<ResultTransformerResultOperator, ProcessResultTransformer>();
+			ResultOperatorMap.Add<ReadOnlyResultOperator, ProcessReadOnly>();
+			ResultOperatorMap.Add<LockModeResultOperator, ProcessLockMode>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel)

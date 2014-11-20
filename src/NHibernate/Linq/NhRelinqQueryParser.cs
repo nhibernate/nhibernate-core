@@ -77,6 +77,30 @@ namespace NHibernate.Linq
 						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
 					}, typeof (TimeoutExpressionNode)
 				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.FetchSize<object>(null, 0)),
+					}, typeof(FetchSizeExpressionNode)
+				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.ResultTransformer<object>(null, null)),
+					}, typeof(ResultTransformerExpressionNode)
+				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.ReadOnly<object>(null, true)),
+					}, typeof(ReadOnlyExpressionNode)
+				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.LockMode<object>(null, LockMode.None)),
+					}, typeof(LockModeExpressionNode)
+				);
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();
 			nodeTypeProvider.InnerProviders.Add(methodInfoRegistry);
@@ -112,6 +136,222 @@ namespace NHibernate.Linq
 		protected override QueryModel ApplyNodeSpecificSemantics(QueryModel queryModel, ClauseGenerationContext clauseGenerationContext)
 		{
 			return queryModel;
+		}
+	}
+
+	public class LockModeExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _data;
+
+		public LockModeExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_data = data;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new LockModeResultOperator(_parseInfo, _data);
+		}
+	}
+
+	public class LockModeResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression Data { get; private set; }
+
+		public LockModeResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+		{
+			ParseInfo = parseInfo;
+			Data = data;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
+	public class ReadOnlyExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _data;
+
+		public ReadOnlyExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_data = data;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new ReadOnlyResultOperator(_parseInfo, _data);
+		}
+	}
+
+	public class ReadOnlyResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression Data { get; private set; }
+
+		public ReadOnlyResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+		{
+			ParseInfo = parseInfo;
+			Data = data;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
+	public class ResultTransformerExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _data;
+
+		public ResultTransformerExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_data = data;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new ResultTransformerResultOperator(_parseInfo, _data);
+		}
+	}
+
+	public class ResultTransformerResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression Data { get; private set; }
+
+		public ResultTransformerResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+		{
+			ParseInfo = parseInfo;
+			Data = data;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
+	}
+
+	public class FetchSizeExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _data;
+
+		public FetchSizeExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_data = data;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new FetchSizeResultOperator(_parseInfo, _data);
+		}
+	}
+
+	public class FetchSizeResultOperator : ResultOperatorBase
+	{
+		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
+		public ConstantExpression Data { get; private set; }
+
+		public FetchSizeResultOperator(MethodCallExpressionParseInfo parseInfo, ConstantExpression data)
+		{
+			ParseInfo = parseInfo;
+			Data = data;
+		}
+
+		public override IStreamedData ExecuteInMemory(IStreamedData input)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
+		{
+			return inputInfo;
+		}
+
+		public override ResultOperatorBase Clone(CloneContext cloneContext)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
 		}
 	}
 

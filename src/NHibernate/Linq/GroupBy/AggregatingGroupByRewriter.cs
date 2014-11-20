@@ -38,6 +38,10 @@ namespace NHibernate.Linq.GroupBy
 				typeof (AnyResultOperator),
 				typeof (AllResultOperator),
 				typeof (TimeoutResultOperator),
+				typeof (FetchSizeResultOperator),
+				typeof (ResultTransformerResultOperator),
+				typeof (ReadOnlyResultOperator),
+				typeof (LockModeResultOperator),
 			};
 
 		public static void ReWrite(QueryModel queryModel)

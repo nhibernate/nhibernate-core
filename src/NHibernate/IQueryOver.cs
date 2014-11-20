@@ -11,7 +11,7 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 
-	public interface IQueryOver
+	public interface IQueryOver : IQueryOptions
 	{
 		/// <summary>
 		/// Access the underlying ICriteria

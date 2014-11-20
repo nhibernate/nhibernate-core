@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using NHibernate.Transform;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
@@ -18,6 +19,42 @@ namespace NHibernate.Linq
 		public static IQueryable<T> Query<T>(this IStatelessSession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
+		}
+
+		public static IQueryable<T> ReadOnly<T>(this IQueryable<T> query, bool readOnly)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => ReadOnly<object>(null, readOnly)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(readOnly));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IQueryable<T> LockMode<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => LockMode<object>(null, lockMode)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IQueryable<T> FetchSize<T>(this IQueryable<T> query, int fetchSize)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => FetchSize<object>(null, 0)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(fetchSize));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IQueryable<T> ResultTransformer<T>(this IQueryable<T> query, IResultTransformer resultTransformer)
+		{
+			var method = ReflectionHelper.GetMethodDefinition(() => ResultTransformer<object>(null, null)).MakeGenericMethod(typeof(T));
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(resultTransformer));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
