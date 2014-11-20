@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Reflection;
 using System.Xml;
@@ -375,6 +376,11 @@ namespace NHibernate.Type
 			}
 		}
 
+		public static IType Structured(string typeName)
+		{
+			return new StructuredType(typeName);
+		}
+
 		/// <summary>
 		/// Given the name of a Hibernate type such as Decimal, Decimal(19,0)
 		/// , Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0),
@@ -516,7 +522,7 @@ namespace NHibernate.Type
 
 			if (type != null)
 				return type;
-			
+
 			string[] parsedTypeName;
 			TypeClassification typeClassification = GetTypeClassification(typeName);
 			if (typeClassification == TypeClassification.LengthOrScale)
@@ -537,7 +543,7 @@ namespace NHibernate.Type
 
 			if (typeClass == null)
 				return null;
-				
+
 			if (typeof(IType).IsAssignableFrom(typeClass))
 			{
 				try

@@ -154,13 +154,12 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
-
 			// Defaults size/precision/scale
 			switch (dbParam.DbType)
 			{
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-					dbParam.Size = IsAnsiText(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForAnsiClob : MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
+					dbParam.Size = IsAnsiText(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForAnsiClob	: MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
 					break;
 				case DbType.Binary:
 					dbParam.Size = IsBlob(dbParam, sqlType) ? MsSql2000Dialect.MaxSizeForBlob : MsSql2000Dialect.MaxSizeForLengthLimitedBinary;

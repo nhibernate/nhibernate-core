@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Intercept;
@@ -41,7 +42,10 @@ namespace NHibernate
 			var value = TypeFactory.GetDefaultTypeFor(type);
 			if (value != null)
 				return value;
-			
+
+			if (type == typeof (DataTable))
+				return Structured();
+
 			if (type.IsEnum)
 				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
 			
@@ -52,6 +56,22 @@ namespace NHibernate
 			}
 
 			return Entity(type);
+		}
+
+		/// <summary>
+		/// Table-valued type with type name parameter
+		/// </summary>
+		public static StructuredType Structured(string typeName)
+		{
+			return new StructuredType(typeName);
+		}
+
+		/// <summary>
+		/// Table-valued type
+		/// </summary>
+		public static StructuredType Structured()
+		{
+			return Structured(string.Empty);
 		}
 
 		/// <summary>
