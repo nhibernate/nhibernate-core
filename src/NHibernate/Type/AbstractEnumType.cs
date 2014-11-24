@@ -24,7 +24,7 @@ namespace NHibernate.Type
 			{
 				throw new MappingException(enumType.Name + " did not inherit from System.Enum");
 			}
-			defaultValue = Enum.GetValues(enumType).GetValue(0);
+			defaultValue = Enum.ToObject(enumType, 0);
 		}
 
 		private readonly object defaultValue;
