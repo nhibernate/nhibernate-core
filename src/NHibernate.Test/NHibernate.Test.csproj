@@ -731,6 +731,7 @@
     <Compile Include="NHSpecificTest\NH3487\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3567\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH3567\NH3567Tests.cs" />
+    <Compile Include="NHSpecificTest\NH3491\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="NHSpecificTest\NH3570\Model.cs" />
     <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
