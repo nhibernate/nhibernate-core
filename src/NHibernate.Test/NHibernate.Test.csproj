@@ -696,7 +696,6 @@
     <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="NHSpecificTest\NH3570\Model.cs" />
     <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
-    <Compile Include="NHSpecificTest\NH3596\Blog.cs" />
     <Compile Include="NHSpecificTest\NH3596\CachingWithTransformerTests.cs" />
     <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />

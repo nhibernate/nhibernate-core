@@ -34,7 +34,14 @@ namespace NHibernate.Impl
 					}
 					else
 					{
-						singleQueryCached.Add(TypeHelper.Disassemble((object[]) objToCache, assemblers, null, session, null));
+						var valuesToCache = objToCache as object[];
+
+						if (valuesToCache == null)
+						{
+							valuesToCache = new object[] { objToCache };
+						}
+
+						singleQueryCached.Add(TypeHelper.Disassemble(valuesToCache, assemblers, null, session, null));
 					}
 				}
 				cacheable.Add(singleQueryCached);

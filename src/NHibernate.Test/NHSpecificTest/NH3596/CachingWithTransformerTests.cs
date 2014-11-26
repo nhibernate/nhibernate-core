@@ -1,34 +1,103 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Transform;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3596
 {
+	public class EntityBase
+	{
+		public virtual int Id { get; set; }
+	}
+
+	public class Role : EntityBase
+	{
+		public virtual string Name { get; set; }
+		public virtual Role Parent { get; set; }
+		public virtual IList<Role> Children { get; set; }
+	}
+
+	public class RoleMap : ClassMapping<Role>
+	{
+		public RoleMap()
+		{
+			Cache(x => x.Usage(CacheUsage.ReadOnly));
+			Id(x => x.Id, x => x.Generator(Generators.Identity));
+			Property(x => x.Name);
+			ManyToOne(x => x.Parent, x =>
+			{
+				x.Column("ParentId");
+				x.NotNullable(false);
+			});
+			Bag(x => x.Children, x =>
+			{
+				x.Cascade(Mapping.ByCode.Cascade.All);
+				x.Key(y => y.Column("ParentId"));
+			}, x => x.OneToMany());
+		}
+	}
+
 	public class CachingWithTransformerTests: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
-			var mapper = new ConventionModelMapper();
-			mapper.BeforeMapClass += (inspector, type, map) => map.Id(x => x.Generator(Generators.HighLow));
-			mapper.BeforeMapClass += (inspector, type, map) => map.Cache(x => x.Usage(CacheUsage.ReadWrite));
-			mapper.BeforeMapClass += (inspector, type, map) => map.Table(type.Name + "s");
-			mapper.BeforeMapSet += (inspector, property, map) =>
-								   {
-									map.Cascade(Mapping.ByCode.Cascade.All);
-									map.Cache(x => x.Usage(CacheUsage.ReadWrite));
-								   };
-			var mapping = mapper.CompileMappingFor(new[] { typeof(Blog), typeof(Post), typeof(Comment) });
+			var mapper = new ModelMapper();
+			mapper.AddMapping<RoleMap>();
+			var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mapping;
+		}
+
+		protected override void OnSetUp()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var parentRoles = new List<Role>()
+                {
+                    new Role() { Name = "Admin", Children = null, Parent = null },
+                    new Role() { Name = "Manager", Children = null, Parent = null },
+                    new Role() { Name = "Support", Children = null, Parent = null }
+                };
+
+				var childRoles = new List<Role>()
+                {
+                    new Role() { Name = "Manager-Secretary", Children = null, Parent = parentRoles.FirstOrDefault(x => x.Name == "Manager") },
+                    new Role() { Name = "Superviser", Children = null, Parent = parentRoles.FirstOrDefault(x => x.Name == "Manager") }
+                };
+
+				foreach (var parentRole in parentRoles)
+				{
+					parentRole.Children = new List<Role>(childRoles.Where(x => x.Parent == parentRole));
+
+					session.Save(parentRole);
+				}
+
+				session.Flush();
+				transaction.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from System.Object");
+
+				session.Flush();
+				transaction.Commit();
+			}
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
+			base.Configure(configuration);
+
 			configuration.Cache(x =>
 								{
 									x.Provider<HashtableCacheProvider>();
@@ -36,65 +105,37 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 								});
 		}
 
-		private class Scenario: IDisposable
-		{
-			private readonly ISessionFactory factory;
-
-			public Scenario(ISessionFactory factory)
-			{
-				this.factory = factory;
-				using (var session= factory.OpenSession())
-				using (var tx = session.BeginTransaction())
-				{
-					var blog = new Blog { Author = "Gabriel", Name = "Keep on running" };
-					blog.Posts.Add(new Post { Title = "First post", Body = "Some text" });
-					blog.Posts.Add(new Post { Title = "Second post", Body = "Some other text" });
-					blog.Posts.Add(new Post { Title = "Third post", Body = "Third post text" });
-
-
-					blog.Comments.Add(new Comment { Title = "First comment", Body = "Some text" });
-					blog.Comments.Add(new Comment { Title = "Second comment", Body = "Some other text" });
-					session.Save(blog);
-					tx.Commit();
-				}
-			}
-
-			public void Dispose()
-			{
-				using (var session = factory.OpenSession())
-				using (var tx = session.BeginTransaction())
-				{
-					session.CreateQuery("delete from Comment").ExecuteUpdate();
-					session.CreateQuery("delete from Post").ExecuteUpdate();
-					session.CreateQuery("delete from Blog").ExecuteUpdate();
-					tx.Commit();
-				}
-			}
-		}
-
 		[Test]
-		public void WhenQueryToFutureWithTransformetThenNotThrows()
+		public void WhenQueryToFutureWithTransformerThenNotThrows()
 		{
 			//NH-3596
-			using (new Scenario(Sfi))
 			using (var session = this.OpenSession())
+			using (session.BeginTransaction())
 			{
-				var futureblogs = session.QueryOver<Blog>()
-						.Where(x => x.Author == "Gabriel")
-				        .Fetch(x => x.Posts).Eager
-				        .TransformUsing(new DistinctRootEntityResultTransformer())
-				        .Cacheable()
-						.CacheRegion("")
-				        .Future();
+				var roles = session
+					.QueryOver<Role>()
+					.Where(x => x.Parent == null)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.Cacheable()
+					.CacheMode(CacheMode.Normal)
+					.Future();
 
-				Assert.IsNotNull(futureblogs);
+				Role children = null;
+				Role parent = null;
 
-				var blogs = futureblogs.ToList();
+				session
+					.QueryOver<Role>()
+					.Left.JoinAlias(x => x.Children, () => children)
+					.Left.JoinAlias(x => x.Parent, () => parent)
+					.TransformUsing(Transformers.DistinctRootEntity)
+					.Cacheable()
+					.CacheMode(CacheMode.Normal)
+					.Future();
 
-				Assert.IsNotNull(blogs);
-				Assert.IsNotEmpty(blogs);
+				var result = roles.ToList();
+
+				Assert.AreEqual(3, result.Count);
 			}
-
 		}
 	}
 }
