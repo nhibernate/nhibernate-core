@@ -106,13 +106,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 		}
 
 		[Test]
-		public void WhenQueryToFutureWithTransformerThenNotThrows()
+		public void UsingQueryOverToFutureWithCacheAndTransformerDoesntThrow()
 		{
 			//NH-3596
 			using (var session = this.OpenSession())
 			using (session.BeginTransaction())
 			{
-				var roles = session
+				//store values in cache
+				session
 					.QueryOver<Role>()
 					.Where(x => x.Parent == null)
 					.TransformUsing(Transformers.DistinctRootEntity)
@@ -123,7 +124,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 				Role children = null;
 				Role parent = null;
 
-				session
+				//get values from cache
+				var roles = session
 					.QueryOver<Role>()
 					.Left.JoinAlias(x => x.Children, () => children)
 					.Left.JoinAlias(x => x.Parent, () => parent)
@@ -134,7 +136,37 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 
 				var result = roles.ToList();
 
-				Assert.AreEqual(3, result.Count);
+				Assert.AreEqual(5, result.Count);
+			}
+		}
+
+		[Test]
+		public void UsingHqlToFutureWithCacheAndTransformerDoesntThrow()
+		{
+			//NH-3596
+			using (var session = this.OpenSession())
+			using (session.BeginTransaction())
+			{
+				//store values in cache
+				session
+					.CreateQuery("from Role r left join r.Children left join r.Parent where r.Parent is null")
+					.SetResultTransformer(Transformers.DistinctRootEntity)
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Normal)
+					.Future<Role>();
+
+				//get values from cache
+				var roles = session
+					.CreateQuery("from Role r left join r.Children left join r.Parent")
+					.SetResultTransformer(Transformers.DistinctRootEntity)
+					.SetCacheable(true)
+					.SetCacheMode(CacheMode.Normal)
+					.Future<Role>();
+
+				var result = roles.ToList();
+
+				//doesn't work
+				Assert.AreEqual(5, result.Count);
 			}
 		}
 	}

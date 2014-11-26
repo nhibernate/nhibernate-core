@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -28,20 +29,29 @@ namespace NHibernate.Impl
 				var singleQueryCached = new List<object>();
 				foreach (object objToCache in itemList)
 				{
-					if (assemblers.Length == 1)
-					{
-						singleQueryCached.Add(assemblers[0].Disassemble(objToCache, session, owner));
-					}
-					else
+					if (objToCache != null)
 					{
 						var valuesToCache = objToCache as object[];
+						var assemblersToCache = assemblers;
 
-						if (valuesToCache == null)
+						if (valuesToCache != null)
+						{
+							assemblersToCache = assemblers.Where((x, index) => valuesToCache[index] != null).ToArray();
+							valuesToCache = valuesToCache.Where(x => x != null).ToArray();
+						}
+						else
 						{
 							valuesToCache = new object[] { objToCache };
 						}
 
-						singleQueryCached.Add(TypeHelper.Disassemble(valuesToCache, assemblers, null, session, null));
+						if (valuesToCache.Length == 1)
+						{
+							singleQueryCached.Add(assemblers[0].Disassemble(valuesToCache[0], session, owner));
+						}
+						else
+						{
+							singleQueryCached.Add(TypeHelper.Disassemble(valuesToCache, assemblersToCache, null, session, null));
+						}
 					}
 				}
 				cacheable.Add(singleQueryCached);
