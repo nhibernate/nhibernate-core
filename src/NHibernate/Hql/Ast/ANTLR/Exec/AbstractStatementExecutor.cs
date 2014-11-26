@@ -85,7 +85,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				if (whereJoinFragment.Length > 0)
 				{
-					whereJoinFragment.Append(" and ");
+					whereJoinFragment = whereJoinFragment.Append(" and ");
 				}
 			}
 
