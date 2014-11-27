@@ -112,21 +112,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 			using (var session = this.OpenSession())
 			using (session.BeginTransaction())
 			{
+				Role children = null;
+				Role parent = null;
+
 				//store values in cache
 				session
 					.QueryOver<Role>()
 					.Where(x => x.Parent == null)
+					.Left.JoinAlias(x => x.Children, () => children)
+					.Left.JoinAlias(x => x.Parent, () => parent)
 					.TransformUsing(Transformers.DistinctRootEntity)
 					.Cacheable()
 					.CacheMode(CacheMode.Normal)
 					.Future();
 
-				Role children = null;
-				Role parent = null;
-
 				//get values from cache
 				var roles = session
 					.QueryOver<Role>()
+					.Where(x => x.Parent == null)
 					.Left.JoinAlias(x => x.Children, () => children)
 					.Left.JoinAlias(x => x.Parent, () => parent)
 					.TransformUsing(Transformers.DistinctRootEntity)
@@ -149,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 			{
 				//store values in cache
 				session
-					.CreateQuery("from Role r left join r.Children left join r.Parent where r.Parent is null")
+					.CreateQuery("select r from Role r left join r.Children left join r.Parent where r.Parent is null")
 					.SetResultTransformer(Transformers.DistinctRootEntity)
 					.SetCacheable(true)
 					.SetCacheMode(CacheMode.Normal)
@@ -157,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 
 				//get values from cache
 				var roles = session
-					.CreateQuery("from Role r left join r.Children left join r.Parent")
+					.CreateQuery("select r from Role r left join r.Children left join r.Parent where r.Parent is null")
 					.SetResultTransformer(Transformers.DistinctRootEntity)
 					.SetCacheable(true)
 					.SetCacheMode(CacheMode.Normal)
