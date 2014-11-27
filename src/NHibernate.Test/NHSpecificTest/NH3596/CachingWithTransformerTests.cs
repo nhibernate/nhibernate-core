@@ -139,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 
 				var result = roles.ToList();
 
-				Assert.AreEqual(5, result.Count);
+				Assert.AreEqual(3, result.Count);
 			}
 		}
 
@@ -168,8 +168,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3596
 
 				var result = roles.ToList();
 
-				//doesn't work
-				Assert.AreEqual(5, result.Count);
+				Assert.AreEqual(3, result.Count);
 			}
 		}
 	}
