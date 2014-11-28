@@ -611,6 +611,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH3280\OneToOneToInheritedProperty.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3667\MapFixture.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3667\Model.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3741\MapFixture.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3741\Model.cs" />
     <Compile Include="MappingByCode\MappersTests\AnyMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\IdMapperTest.cs" />
     <Compile Include="MappingByCode\MappersTests\ManyToOneMapperTest.cs" />
