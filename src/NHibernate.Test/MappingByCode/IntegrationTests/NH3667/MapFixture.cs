@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -15,41 +13,32 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 		[Test]
 		public void TestMapElementElement()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapElementElement>(c =>
+			mapper.Class<ClassWithMapElementElement>(
+				c =>
 				{
 					c.Lazy(false);
-					c.Id(id => id.Id, id =>
-						{
-							id.Generator(Generators.Identity);
-						});
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
 
-					c.Map(m => m.Map, col =>
+					c.Map(
+						m => m.Map,
+						col =>
 						{
 							col.Table("element_element");
 							col.Key(k => k.Column("id"));
-						}, key =>
-						{
-							key.Element(e =>
-								{
-									e.Column("key");
-								});
-						}, element =>
-						{
-							element.Element(e =>
-								{
-									e.Column("element");
-								});
-						});
+						},
+						key => key.Element(e => e.Column("key")),
+						element => element.Element(e => e.Column("element")));
 				});
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementElement).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmElement>());
 		}
 
 		[Test]
@@ -58,98 +47,77 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapEntityEntity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
-				{
-					id.Generator(Generators.Identity);
-				});
-
-				c.Map(m => m.Map, col =>
-				{
-					col.Table("entity_entity");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.ManyToMany(e =>
-					{
-						e.Column("key");
-					});
-				}, element =>
-				{
-					element.ManyToMany(e =>
-					{
-						e.Column("element");
-					});
-				});
-			});
-
-			mapper.Class<Entity>(c =>
+			mapper.Class<ClassWithMapEntityEntity>(
+				c =>
 				{
 					c.Lazy(false);
-					c.Id(id => id.A, id =>
-					{
-						id.Generator(Generators.Identity);
-					});
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("entity_entity");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.ManyToMany(e => e.Column("key")),
+						element => element.ManyToMany(e => e.Column("element")));
+				});
+
+			mapper.Class<Entity>(
+				c =>
+				{
+					c.Lazy(false);
+					c.Id(id => id.A, id => id.Generator(Generators.Identity));
 					c.Property(p => p.B);
 				});
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityEntity).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKeyManyToMany>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmManyToMany>());
 		}
 
 		[Test]
 		public void TestMapEntityElement()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapEntityElement>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapEntityElement>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("entity_element");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.ManyToMany(e => e.Column("key")),
+						element => element.Element(e => e.Column("element")));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Class<Entity>(
+				c =>
 				{
-					col.Table("entity_element");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.ManyToMany(e =>
-					{
-						e.Column("key");
-					});
-				}, element =>
-				{
-					element.Element(e =>
-					{
-						e.Column("element");
-					});
+					c.Lazy(false);
+					c.Id(id => id.A, id => id.Generator(Generators.Identity));
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Class<Entity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.A, id =>
-				{
-					id.Generator(Generators.Identity);
-				});
-				c.Property(p => p.B);
-			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityElement).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKeyManyToMany>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmElement>());
 		}
 
 		[Test]
@@ -158,302 +126,260 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapElementEntity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapElementEntity>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("element_entity");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.Element(e => e.Column("key")),
+						element => element.ManyToMany(e => e.Column("element")));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Class<Entity>(
+				c =>
 				{
-					col.Table("element_entity");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.Element(e =>
-					{
-						e.Column("key");
-					});
-				}, element =>
-				{
-					element.ManyToMany(e =>
-					{
-						e.Column("element");
-					});
+					c.Lazy(false);
+					c.Id(id => id.A, id => id.Generator(Generators.Identity));
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Class<Entity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.A, id =>
-				{
-					id.Generator(Generators.Identity);
-				});
-				c.Property(p => p.B);
-			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementEntity).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmManyToMany>());
 		}
 
 		[Test]
 		public void TestMapEntityComponent()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapEntityComponent>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapEntityComponent>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
-				});
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
 
-				c.Map(m => m.Map, col =>
-				{
-					col.Table("entity_component");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.ManyToMany(e =>
-					{
-						e.Column("key");
-					});
-				}, element =>
-				{
-					element.Component(cmp =>
+					c.Map(
+						m => m.Map,
+						col =>
 						{
-							cmp.Class<Component>();
-						});
+							col.Table("entity_component");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.ManyToMany(e => e.Column("key")),
+						element => element.Component(cmp => cmp.Class<Component>()));
 				});
-			});
 
-			mapper.Component<Component>(c =>
-				 {
-					 c.Property(p => p.A);
-					 c.Property(p => p.B);
-				 });
-
-			mapper.Class<Entity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.A, id =>
+			mapper.Component<Component>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Property(p => p.A);
+					c.Property(p => p.B);
 				});
-				c.Property(p => p.B);
-			});
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+			mapper.Class<Entity>(
+				c =>
+				{
+					c.Lazy(false);
+					c.Id(id => id.A, id => id.Generator(Generators.Identity));
+					c.Property(p => p.B);
+				});
 
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityComponent).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKeyManyToMany>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmCompositeElement>());
 		}
 
 		[Test]
 		public void TestMapElementComponent()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapElementComponent>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapElementComponent>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("element_component");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.Element(e => e.Column("key")),
+						element => element.Component(cmp => cmp.Class<Component>()));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Component<Component>(
+				c =>
 				{
-					col.Table("element_component");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.Element(e =>
-					{
-						e.Column("key");
-					});
-				}, element =>
-				{
-					element.Component(cmp =>
-					{
-						cmp.Class<Component>();
-					});
+					c.Property(p => p.A);
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Component<Component>(c =>
-			{
-				c.Property(p => p.A);
-				c.Property(p => p.B);
-			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementComponent).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmCompositeElement>());
 		}
 
 		[Test]
 		public void TestMapComponentComponent()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapComponentComponent>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapComponentComponent>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("component_component");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.Component(
+							cmp =>
+							{
+								cmp.Property(p => p.A);
+								cmp.Property(p => p.B);
+							}),
+						element => element.Component(cmp => cmp.Class<Component>()));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Component<Component>(
+				c =>
 				{
-					col.Table("component_component");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.Component(cmp =>
-					{
-						cmp.Property(p => p.A);
-						cmp.Property(p => p.B);
-					});
-				}, element =>
-				{
-					element.Component(cmp =>
-					{
-						cmp.Class<Component>();
-					});
+					c.Property(p => p.A);
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Component<Component>(c =>
-			{
-				c.Property(p => p.A);
-				c.Property(p => p.B);
-			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentComponent).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmCompositeMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmCompositeElement>());
 		}
 
 		[Test]
 		public void TestMapComponentElement()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapComponentElement>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapComponentElement>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("component_element");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.Component(
+							cmp =>
+							{
+								cmp.Property(p => p.A);
+								cmp.Property(p => p.B);
+							}),
+						element => element.Element(e => e.Column("element")));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Component<Component>(
+				c =>
 				{
-					col.Table("component_element");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.Component(cmp =>
-					{
-						cmp.Property(p => p.A);
-						cmp.Property(p => p.B);
-					});
-				}, element =>
-				{
-					element.Element(e =>
-					{
-						e.Column("element");
-					});
+					c.Property(p => p.A);
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Component<Component>(c =>
-			{
-				c.Property(p => p.A);
-				c.Property(p => p.B);
-			});
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentElement).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmCompositeMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmElement>());
 		}
 
 		//OK
 		[Test]
 		public void TestMapComponentEntity()
 		{
-			var cfg = new Configuration().Configure();
 			var mapper = new ModelMapper();
 
-			mapper.Class<ClassWithMapComponentEntity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.Id, id =>
+			mapper.Class<ClassWithMapComponentEntity>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.Id, id => id.Generator(Generators.Identity));
+
+					c.Map(
+						m => m.Map,
+						col =>
+						{
+							col.Table("component_entity");
+							col.Key(k => k.Column("id"));
+						},
+						key => key.Component(
+							cmp =>
+							{
+								cmp.Property(p => p.A);
+								cmp.Property(p => p.B);
+							}),
+						element => element.ManyToMany(e => e.Column("element")));
 				});
 
-				c.Map(m => m.Map, col =>
+			mapper.Component<Component>(
+				c =>
 				{
-					col.Table("component_entity");
-					col.Key(k => k.Column("id"));
-				}, key =>
-				{
-					key.Component(cmp =>
-					{
-						cmp.Property(p => p.A);
-						cmp.Property(p => p.B);
-					});
-				}, element =>
-				{
-					element.ManyToMany(e =>
-					{
-						e.Column("element");
-					});
+					c.Property(p => p.A);
+					c.Property(p => p.B);
 				});
-			});
 
-			mapper.Component<Component>(c =>
-			{
-				c.Property(p => p.A);
-				c.Property(p => p.B);
-			});
-
-			mapper.Class<Entity>(c =>
-			{
-				c.Lazy(false);
-				c.Id(id => id.A, id =>
+			mapper.Class<Entity>(
+				c =>
 				{
-					id.Generator(Generators.Identity);
+					c.Lazy(false);
+					c.Id(id => id.A, id => id.Generator(Generators.Identity));
+					c.Property(p => p.B);
 				});
-				c.Property(p => p.B);
-			});
 
-			cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentEntity).Name);
+			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
-			var script = cfg.GenerateSchemaCreationScript(new MsSql2012Dialect());
-
-			Assert.False(script.Any(x => x.Contains("idx")));
+			Assert.That(hbmMap, Is.Not.Null);
+			Assert.That(hbmMap.Item, Is.TypeOf<HbmCompositeMapKey>());
+			Assert.That(hbmMap.Item1, Is.TypeOf<HbmManyToMany>());
 		}
 	}
 }

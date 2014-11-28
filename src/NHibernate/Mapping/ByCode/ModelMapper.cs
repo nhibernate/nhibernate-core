@@ -1291,19 +1291,12 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return new OneToManyRelationMapper(propertyPath, ownerType, collectionElementType, modelInspector, customizerHolder, this);
 			}
-			//NH-3667 & NH-3102
-			//check if property is really a many-to-many: as detected by modelInspector.IsManyToMany and also the collection type is an entity
-			if (modelInspector.IsManyToMany(property) == true)
+			//NH-3667 & NH-3102 && NH-3741
+			// many to many split from key many to many so that XML mappings and Interfaces work with many to many.
+			// MapKeyManyToManyCustomizer now registers itself as KeyManyToMany, so will return false for IsManyToMany(property).
+			if (modelInspector.IsManyToManyItem(property))
 			{
-				if (property.GetPropertyOrFieldType().IsGenericCollection() == true)
-				{
-					var args = property.GetPropertyOrFieldType().GetGenericArguments();
-
-					if (modelInspector.IsEntity(args.Last()) == true)
-					{
-						return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
-					}
-				}
+				return new ManyToManyRelationMapper(propertyPath, customizerHolder, this);
 			}
 			if (modelInspector.IsComponent(collectionElementType))
 			{
@@ -1318,10 +1311,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private IMapKeyRelationMapper DetermineMapKeyRelationType(MemberInfo member, PropertyPath propertyPath, System.Type dictionaryKeyType)
 		{
-			// Perhaps we have to change IModelInspector with IsDictionaryKeyManyToMany(member), IsDictionaryKeyComponent(member) and so on
-
-			//if (modelInspector.IsManyToMany(member) || modelInspector.IsOneToMany(member))
-			if (modelInspector.IsEntity(dictionaryKeyType))
+			if (modelInspector.IsManyToManyKey(member))
 			{
 				// OneToMany is not possible as map-key so we map it as many-to-many instead ignore the case
 				return new KeyManyToManyRelationMapper(propertyPath, customizerHolder, this);
