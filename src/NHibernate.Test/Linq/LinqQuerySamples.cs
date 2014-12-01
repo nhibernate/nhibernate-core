@@ -1653,7 +1653,7 @@ namespace NHibernate.Test.Linq
 			using (this.session.BeginTransaction())
 			{
 				var firstDate = (from o in this.db.Orders where o.ShippingDate != null orderby o.ShippingDate select o.ShippingDate.ToString()).First();
-				var firstDateConverted = (from o in this.db.Orders where o.ShippingDate.MappedAs(NHibernateUtil.String).ToString() == firstDate select o.ShippingDate).FirstOrDefault();
+				var firstDateConverted = (from o in this.db.Orders where o.ShippingDate.ToString() == firstDate.MappedAs(NHibernateUtil.String) select o.ShippingDate).FirstOrDefault();
 
 				Assert.AreEqual(DateTime.Parse(firstDate), firstDateConverted);
 			}
@@ -1680,7 +1680,7 @@ namespace NHibernate.Test.Linq
 			using (this.session.BeginTransaction())
 			{
 				var firstIdAsDecimal = Convert.ToDecimal((from o in this.db.Orders orderby o.OrderId select o.OrderId).First());
-				var firstIdConverted = (from o in this.db.Orders where Convert.ToDecimal(o.OrderId.MappedAs(NHibernateUtil.Decimal)) == firstIdAsDecimal orderby o.OrderId select Convert.ToDecimal(o.OrderId)).Single();
+				var firstIdConverted = (from o in this.db.Orders where o.OrderId.ToString() == firstIdAsDecimal.MappedAs(NHibernateUtil.Decimal).ToString() orderby o.OrderId select Convert.ToDecimal(o.OrderId)).Single();
 
 				Assert.AreEqual(firstIdAsDecimal, firstIdConverted);
 			}
