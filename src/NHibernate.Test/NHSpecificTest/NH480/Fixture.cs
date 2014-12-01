@@ -19,7 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 	/// </list>
 	/// This test checks that field naming strategies handle this correctly.
 	/// </remarks>
-	/// </summary>
 	[TestFixture]
 	public class Fixture
 	{
