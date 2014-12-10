@@ -998,7 +998,7 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ContraintOrderedTableKeyColumnClosure { get;}
+		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get;}
 		public abstract IType DiscriminatorType { get;}
 		public abstract string[] ConstraintOrderedTableNameClosure { get;}
 		public abstract string DiscriminatorSQLValue { get;}
