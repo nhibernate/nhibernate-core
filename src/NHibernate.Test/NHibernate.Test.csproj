@@ -728,6 +728,8 @@
     <Compile Include="NHSpecificTest\NH3453\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3480\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3480\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3634\Connection.cs" />
+    <Compile Include="NHSpecificTest\NH3634\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3487\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3487\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3567\DomainClass.cs" />
@@ -863,6 +865,10 @@
     <Compile Include="NHSpecificTest\NH3604\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3754\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3754\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3634\Person.cs" />
+    <Compile Include="NHSpecificTest\NH3634\CachedPerson.cs" />
+    <Compile Include="NHSpecificTest\NH3634\CachedPersonMapper.cs" />
+    <Compile Include="NHSpecificTest\NH3634\PersonMapper.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
