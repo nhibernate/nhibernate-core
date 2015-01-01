@@ -542,7 +542,7 @@ possible solutions:
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false, null);
+			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false, null, QueryMode.Select);
 			return query.Statement;
 		}
 

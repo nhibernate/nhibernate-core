@@ -91,14 +91,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			return provider.ExecuteFuture<TSource>(source.Expression);
 		}
 
@@ -113,14 +106,7 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
+			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
 			return new FutureValue<TSource>(() => future);
 		}
@@ -138,6 +124,57 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
+			var provider = GetNhProvider(source);
+
+			var expression = ReplacingExpressionTreeVisitor
+				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
+
+			return provider.ExecuteFutureValue<TResult>(expression);
+		}
+
+		/// <summary>
+		/// Deletes all entities in the specified query. The delete operation is performed in the database.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to delete.</param>
+		/// <returns>The number of deleted entities.</returns>
+		public static int Delete<TSource>(this IQueryable<TSource> source)
+		{
+			var provider = GetNhProvider(source);
+			return provider.ExecuteDelete(source.Expression);
+		}
+
+		/// <summary>
+		/// Updates the entities in the query, using the specified assignments. The update operation is performed in the database.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <param name="source">The query matching the entities to update.</param>
+		/// <returns>An update builder, allowing to specify assignments to the entities properties.</returns>
+		public static UpdateSyntax<TSource> Update<TSource>(this IQueryable<TSource> source)
+		{
+			var provider = GetNhProvider(source);
+			return new UpdateSyntax<TSource>(source.Expression, provider);
+		}
+
+		/// <summary>
+		/// Inserts new entities into the database, using other stored entities as a source. Uses INSERT INTO [...] SELECT FROM [...] in the database.
+		/// </summary>
+		/// <typeparam name="TInput">The type of the input.</typeparam>
+		/// <param name="source">The query matching entities source of the data to insert.</param>
+		/// <returns>An insert builder, allowing to specify target entity class and assignments to its properties.</returns>
+		public static InsertSyntax<TInput> Insert<TInput>(this IQueryable<TInput> source)
+		{
+			var provider = GetNhProvider(source);
+			return new InsertSyntax<TInput>(source.Expression, provider);
+		}
+
+		public static T MappedAs<T>(this T parameter, IType type)
+		{
+			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
+		}
+
+		private static INhQueryProvider GetNhProvider<TInput>(IQueryable<TInput> source)
+		{
 			if (source == null)
 			{
 				throw new ArgumentNullException(nameof(source));
@@ -146,16 +183,7 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-
-			var expression = ReplacingExpressionTreeVisitor
-				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
-
-			return provider.ExecuteFutureValue<TResult>(expression);
-		}
-
-		public static T MappedAs<T>(this T parameter, IType type)
-		{
-			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
+			return provider;
 		}
 	}
 }

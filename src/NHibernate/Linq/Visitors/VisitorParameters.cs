@@ -16,6 +16,8 @@ namespace NHibernate.Linq.Visitors
 
 		public QuerySourceNamer QuerySourceNamer { get; set; }
 
+		public System.Type EntityType { get; set; }
+
 		public VisitorParameters(
 			ISessionFactoryImplementor sessionFactory, 
 			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap, 

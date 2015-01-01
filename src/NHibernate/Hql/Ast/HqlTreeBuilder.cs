@@ -34,6 +34,27 @@ namespace NHibernate.Hql.Ast
 			return new HqlQuery(_factory, selectFrom, where, orderBy);
 		}
 
+		public HqlDelete Delete(HqlFrom @from)
+		{
+			return new HqlDelete(_factory, @from);
+		}
+
+		public HqlUpdate Update(HqlFrom @from,HqlSet set)
+		{
+			return new HqlUpdate(_factory, @from,set);
+		}
+
+		public HqlUpdate Update(HqlVersioned versioned,HqlFrom @from, HqlSet set)
+		{
+			return new HqlUpdate(_factory, versioned, @from, set);
+		}
+
+		public HqlInsert Insert(HqlInto into, HqlQuery query)
+		{
+			return new HqlInsert(_factory, into, query);
+		}
+		
+
 		public HqlSelectFrom SelectFrom()
 		{
 			return new HqlSelectFrom(_factory);
@@ -64,9 +85,9 @@ namespace NHibernate.Hql.Ast
 			return new HqlFrom(_factory);
 		}
 
-		public HqlRange Range(HqlIdent ident)
+		public HqlRange Range(params HqlIdent[] idents)
 		{
-			return new HqlRange(_factory, ident);
+			return new HqlRange(_factory, idents);
 		}
 
 		public HqlRange Range(HqlTreeNode ident, HqlAlias alias)
@@ -474,6 +495,26 @@ namespace NHibernate.Hql.Ast
 		public HqlTreeNode Indices(HqlExpression dictionary)
 		{
 			return new HqlIndices(_factory, dictionary);
+		}
+
+		public HqlSet Set()
+		{
+			return new HqlSet(_factory);
+		}
+
+		public HqlSet Set(HqlExpression expression)
+		{
+			return new HqlSet(_factory, expression);
+		}
+
+		public HqlVersioned Versioned()
+		{
+			return new HqlVersioned(_factory);
+		}
+
+		public HqlInto Into()
+		{
+			return new HqlInto(_factory);
 		}
 	}
 }

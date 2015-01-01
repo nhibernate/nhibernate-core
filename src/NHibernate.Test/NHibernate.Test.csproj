@@ -996,9 +996,29 @@
     <Compile Include="NHSpecificTest\NH3909\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3957\ResultTransformerEqualityFixture.cs" />
     <Compile Include="NHSpecificTest\NH3956\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Address.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Animal.cs" />
+    <Compile Include="NHSpecificTest\NH3488\BaseFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Classification.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\CrazyCompositeKey.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\DomesticAnimal.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\EntityWithCrazyCompositeKey.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Human.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\IntegerVersioned.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Joiner.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\SimpleClassWithComponent.cs" />
+    <Compile Include="NHSpecificTest\NH3488\LinqBulkManipulationFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Mammal.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Name.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Reptile.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\SimpleAssociatedEntity.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\SimpleClass.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\SimpleEntityWithAssociation.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\StateProvince.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\TimestampVersioned.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\User.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Vehicles.cs" />
+    <Compile Include="NHSpecificTest\NH3488\Domain\Zoo.cs" />
     <Compile Include="NHSpecificTest\NH3755\Circle.cs" />
     <Compile Include="NHSpecificTest\NH3755\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3755\ICircle.cs" />
@@ -1008,6 +1028,9 @@
     <Compile Include="NHSpecificTest\NH3755\Shape.cs" />
     <Compile Include="NHSpecificTest\NH3755\ShapeContainer.cs" />
     <Compile Include="NHSpecificTest\NH3755\Square.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Entities.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3993\Mappers.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -3329,6 +3352,14 @@
     <EmbeddedResource Include="NHSpecificTest\NH3480\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\SimpleClassWithComponent.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\Versions.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\Vehicle.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\SimpleEntityWithAssociation.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\SimpleClass.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\Multi.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\EntityWithCrazyCompositeKey.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3488\Domain\Animal.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3570\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2053\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
@@ -3727,7 +3758,9 @@
     <EmbeddedResource Include="MappingTest\Wicked.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1393\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1391\Mappings.hbm.xml" />
-    <EmbeddedResource Include="Hql\Ast\Animal.hbm.xml" />
+    <EmbeddedResource Include="Hql\Ast\Animal.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Hql\Ast\BooleanLiteralEntity.hbm.xml" />
     <EmbeddedResource Include="Hql\Ast\EntityWithCrazyCompositeKey.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\Logs\Mappings.hbm.xml" />
