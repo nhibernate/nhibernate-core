@@ -11,7 +11,7 @@ namespace NHibernate.Linq
 		public static bool IsGroupingKey(this MemberExpression expression)
 		{
 			return expression.Member.Name == "Key" && expression.Member.DeclaringType!=null &&
-			       expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof (IGrouping<,>);
+					 expression.Member.DeclaringType.IsGenericType && expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof(IGrouping<,>);
 		}
 
 		public static bool IsGroupingKeyOf(this MemberExpression expression,GroupResultOperator groupBy)
