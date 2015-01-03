@@ -285,19 +285,19 @@ namespace NHibernate.Test.Linq.ByMethod
 						group o by o.OrderDate
 						into g
 						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+									{
+										g.Key,
+										Count = g.SelectMany(x => x.OrderLines).Count()
+									}).ToList();
 
 			var query = (from o in db.Orders
 						group o by o.OrderDate
 						into g
 						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+									{
+										g.Key,
+										Count = g.SelectMany(x => x.OrderLines).Count()
+									}).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(481));
 			Assert.That(query, Is.EquivalentTo(list));
@@ -333,9 +333,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2566
 			var results = (from o in db.Orders
-			               group o by o.Customer
-			               into g
-			               select g.Key.CustomerId)
+								group o by o.Customer
+								into g
+								select g.Key.CustomerId)
 				.OrderBy(customerId => customerId)
 				.Skip(10)
 				.Take(10)
@@ -416,6 +416,95 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ProjectingCountWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Select(x => new { x.Key, Count = x.Count(y => y.UnitPrice == 9.50M) })
+				.OrderByDescending(x => x.Key)
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void FilteredByCountWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Count(y => y.UnitPrice == 12.75M) == 1)
+				.Select(x => new { x.Key, Count = x.Count() })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void FilteredByCountFromSubQuery()
+		{
+			//Not really an aggregate filter, but included to ensure that this kind of query still works
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => db.Products.Count(y => y.Supplier.CompanyName==x.Key && y.UnitPrice == 12.75M) == 1)
+				.Select(x => new { x.Key, Count = x.Count() })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void FilteredByAndProjectingSumWithPredicate()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M) == 12.75M)
+				.Select(x => new { x.Key, Sum = x.Sum(y => y.UnitPrice) })
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Sum, Is.EqualTo(12.75M + 9.50M));
+		}
+
+		[Test]
+		public void FilteredByKeyAndProjectedWithAggregatePredicates()
+		{
+			var result = db.Products
+				.GroupBy(x => x.Supplier.CompanyName)
+				.Where(x => x.Key == "Zaanse Snoepfabriek")
+				.Select(x => new { x.Key, 
+					Sum = x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Avg = x.Average(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Count = x.Count(y => y.UnitPrice == 12.75M),
+					Max = x.Max(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
+					Min = x.Min(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M)
+				})
+				.First();
+
+			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
+			Assert.That(result.Sum, Is.EqualTo(12.75M));
+			Assert.That(result.Count, Is.EqualTo(1));
+			Assert.That(result.Avg, Is.EqualTo(12.75M/2));
+			Assert.That(result.Max, Is.EqualTo(12.75M));
+			Assert.That(result.Min, Is.EqualTo(0M));
+		}
+
+		[Test]
+		public void ProjectingWithSubQueriesFilteredByTheAggregateKey()
+		{
+			var result=db.Products.GroupBy(x => x.Supplier.Address.Country)
+			 .OrderBy(x=>x.Key)
+			 .Select(x => new { x.Key, MaxFreight = db.Orders.Where(y => y.ShippingAddress.Country == x.Key).Max(y => y.Freight), FirstOrder = db.Orders.Where(o => o.Employee.FirstName.StartsWith("A")).OrderBy(o => o.OrderId).Select(y => y.OrderId).First() })
+			 .ToList();
+
+			Assert.That(result.Count,Is.EqualTo(16));
+			Assert.That(result[15].MaxFreight, Is.EqualTo(830.75M));
+			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)

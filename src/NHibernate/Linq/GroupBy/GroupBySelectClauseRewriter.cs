@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Linq.Expressions;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -9,6 +11,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.GroupBy
 {
+	//This should be renamed. It handles entire querymodels, not just select clauses
 	internal class GroupBySelectClauseRewriter : ExpressionTreeVisitor
 	{
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
@@ -43,7 +46,7 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
-			if (expression.Member.Name == "Key")
+			if (expression.IsGroupingKeyOf(_groupBy))
 			{
 				return _groupBy.KeySelector;
 			}
@@ -105,6 +108,34 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
 		{
+			//If the subquery is a Count(*) aggregate with a condition
+			if (expression.QueryModel.MainFromClause.FromExpression.Type == _groupBy.ItemType)
+			{
+				var where = expression.QueryModel.BodyClauses.OfType<WhereClause>().FirstOrDefault();
+				NhCountExpression countExpression;
+				if (where != null && (countExpression = expression.QueryModel.SelectClause.Selector as NhCountExpression) !=
+				null && countExpression.Expression.NodeType == (ExpressionType)NhExpressionType.Star)
+				{
+					//return it as a CASE [column] WHEN [predicate] THEN 1 ELSE NULL END
+					return
+							countExpression.CreateNew(Expression.Condition(where.Predicate, Expression.Constant(1, typeof(int?)),
+								Expression.Constant(null, typeof(int?))));
+
+				}
+			}
+
+			//In the subquery body clauses, references to the grouping key should be restored to the KeySelector expression. NOT the resolved value.
+			//This feels a bit backwards, but solving it here is probably a smaller operation than fixing the previous rewriting
+			if (expression.QueryModel.BodyClauses.Any())
+			{
+				foreach (var bodyClause in expression.QueryModel.BodyClauses)
+				{
+					bodyClause.TransformExpressions((e) => new KeySelectorVisitor(_groupBy).VisitExpression(e));
+				}
+				return base.VisitSubQueryExpression(expression);
+			}
+
+
 			// TODO - is this safe?  All we are extracting is the select clause from the sub-query.  Assumes that everything
 			// else in the subquery has been removed.  If there were two subqueries, one aggregating & one not, this may not be a 
 			// valid assumption.  Should probably be passed a list of aggregating subqueries that we are flattening so that we can check...
