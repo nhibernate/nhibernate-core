@@ -16,6 +16,10 @@ namespace NHibernate.Linq.ReWriters
 																				{
 																					typeof(CacheableResultOperator),
 																					typeof (TimeoutResultOperator),
+																					typeof(FetchSizeResultOperator),
+																					typeof(ResultTransformerResultOperator),
+																					typeof(ReadOnlyResultOperator),
+																					typeof(LockModeResultOperator),
 																				};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)

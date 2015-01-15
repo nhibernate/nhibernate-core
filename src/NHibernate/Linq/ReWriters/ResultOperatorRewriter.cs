@@ -67,6 +67,10 @@ namespace NHibernate.Linq.ReWriters
 					typeof(OfTypeResultOperator),
 					typeof(CacheableResultOperator),
 					typeof(TimeoutResultOperator),
+					typeof(FetchSizeResultOperator),
+					typeof(ResultTransformerResultOperator),
+					typeof(ReadOnlyResultOperator),
+					typeof(LockModeResultOperator),
 					typeof(CastResultOperator), // see ProcessCast class
 				};
 

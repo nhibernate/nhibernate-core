@@ -1233,6 +1233,7 @@
     <Compile Include="ReadOnly\StudentDto.cs" />
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
+    <Compile Include="CommonInterfaceTest.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
     <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />

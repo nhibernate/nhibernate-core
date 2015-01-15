@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
+using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -320,5 +321,44 @@ namespace NHibernate.Impl
 			var sqlQuery = this as ISQLQuery;
 			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
 		}
+
+		#region IQueryOptions Members
+
+		IQueryOptions IQueryOptions.SetFirstResult(int firstResult)
+		{
+			return this.SetFirstResult(firstResult);
+		}
+
+		IQueryOptions IQueryOptions.SetReadOnly(bool readOnly)
+		{
+			return this.SetReadOnly(readOnly);
+		}
+
+		IQueryOptions IQueryOptions.SetCacheable(bool cacheable)
+		{
+			return this.SetCacheable(cacheable);
+		}
+
+		IQueryOptions IQueryOptions.SetCacheRegion(string cacheRegion)
+		{
+			return this.SetCacheRegion(cacheRegion);
+		}
+
+		IQueryOptions IQueryOptions.SetTimeout(int timeout)
+		{
+			return this.SetTimeout(timeout);
+		}
+
+		IQueryOptions IQueryOptions.SetMaxResults(int maxResults)
+		{
+			return this.SetMaxResults(maxResults);
+		}
+
+		IQueryOptions IQueryOptions.SetResultTransformer(IResultTransformer resultTransformer)
+		{
+			return this.SetResultTransformer(resultTransformer);
+		}
+
+		#endregion
 	}
 }

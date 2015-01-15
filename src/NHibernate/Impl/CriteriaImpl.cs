@@ -941,6 +941,55 @@ namespace NHibernate.Impl
 				}
 				alias = newAlias;
 			}
+
+			#region IQueryOptions Members
+
+			IQueryOptions IQueryOptions.SetFirstResult(int firstResult)
+			{
+				return this.SetFirstResult(firstResult);
+			}
+
+			IQueryOptions IQueryOptions.SetFetchSize(int fetchSize)
+			{
+				return this.SetFetchSize(fetchSize);
+			}
+
+			IQueryOptions IQueryOptions.SetReadOnly(bool readOnly)
+			{
+				return this.SetReadOnly(readOnly);
+			}
+
+			IQueryOptions IQueryOptions.SetCacheable(bool cacheable)
+			{
+				return this.SetCacheable(cacheable);
+			}
+
+			IQueryOptions IQueryOptions.SetCacheRegion(string cacheRegion)
+			{
+				return this.SetCacheRegion(cacheRegion);
+			}
+
+			IQueryOptions IQueryOptions.SetTimeout(int timeout)
+			{
+				return this.SetTimeout(timeout);
+			}
+
+			IQueryOptions IQueryOptions.SetMaxResults(int maxResults)
+			{
+				return this.SetMaxResults(maxResults);
+			}
+
+			IQueryOptions IQueryOptions.SetLockMode(string alias, LockMode lockMode)
+			{
+				return this.SetLockMode(alias, lockMode);
+			}
+
+			IQueryOptions IQueryOptions.SetResultTransformer(IResultTransformer resultTransformer)
+			{
+				return this.SetResultTransformer(resultTransformer);
+			}
+
+			#endregion
 		}
 
 		[Serializable]
@@ -1005,5 +1054,54 @@ namespace NHibernate.Impl
 				return persistentClass;
 			throw new HibernateException("Cannot provide root entity type because this criteria was initialized with an entity name.");
 		}
+
+		#region IQueryOptions Members
+
+		IQueryOptions IQueryOptions.SetFirstResult(int firstResult)
+		{
+			return this.SetFirstResult(firstResult);
+		}
+
+		IQueryOptions IQueryOptions.SetFetchSize(int fetchSize)
+		{
+			return this.SetFetchSize(fetchSize);
+		}
+
+		IQueryOptions IQueryOptions.SetReadOnly(bool readOnly)
+		{
+			return this.SetReadOnly(readOnly);
+		}
+
+		IQueryOptions IQueryOptions.SetCacheable(bool cacheable)
+		{
+			return this.SetCacheable(cacheable);
+		}
+
+		IQueryOptions IQueryOptions.SetCacheRegion(string cacheRegion)
+		{
+			return this.SetCacheRegion(cacheRegion);
+		}
+
+		IQueryOptions IQueryOptions.SetTimeout(int timeout)
+		{
+			return this.SetTimeout(timeout);
+		}
+
+		IQueryOptions IQueryOptions.SetMaxResults(int maxResults)
+		{
+			return this.SetMaxResults(maxResults);
+		}
+
+		IQueryOptions IQueryOptions.SetLockMode(string alias, LockMode lockMode)
+		{
+			return this.SetLockMode(alias, lockMode);
+		}
+
+		IQueryOptions IQueryOptions.SetResultTransformer(IResultTransformer resultTransformer)
+		{
+			return this.SetResultTransformer(resultTransformer);
+		}
+
+		#endregion
 	}
 }

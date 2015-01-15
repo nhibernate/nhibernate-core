@@ -54,7 +54,7 @@ namespace NHibernate
 	/// Implementors are not intended to be threadsafe.
 	/// </para>
 	/// </remarks>
-	public interface IQuery
+	public interface IQuery : IQueryOptions
 	{
 		/// <summary>
 		/// The query string
