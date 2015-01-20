@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="D:\BuildAgent-03\work\f20cfe335cc08c35\build\NHibernate-4.0.1.GA-debug\bin\net-4.0\NHibernate.Test.dll" errors="40" failures="158" not-run="366" inconclusive="0" ignored="366" skipped="0" invalid="0">
+<test-results name="D:\BuildAgent-03\work\2277c4cbced4a692\build\NHibernate-4.0.2.GA-debug\bin\net-4.0\NHibernate.Test.dll" errors="40" failures="158" not-run="367" inconclusive="0" ignored="367" skipped="0" invalid="0">
   <environment nunit-version="2.6.1.12217" clr-version="2.0.50727.3662" os-version="Microsoft Windows NT 5.2.3790 Service Pack 2" platform="Win32NT" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="D:\BuildAgent-03\work\f20cfe335cc08c35\build\NHibernate-4.0.1.GA-debug\bin\net-4.0\NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
+  <test-suite type="Assembly" name="D:\BuildAgent-03\work\2277c4cbced4a692\build\NHibernate-4.0.2.GA-debug\bin\net-4.0\NHibernate.Test.dll" executed="True" result="Failure" success="False" asserts="0">
     <results>
       <test-suite type="Namespace" name="NHibernate" executed="True" result="Failure" success="False" asserts="0">
         <results>
@@ -1174,11 +1174,11 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                         <results>
                           <test-suite type="ParameterizedTest" name="SetColumnSizeAndNumericalPrecision" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="2" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="2" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="2" />
-                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="2" />
                               <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,&quot;7&quot;,0,7)" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,&quot;7&quot;,13,7)" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;13&quot;,null,13,0)" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(null,null,0,0)" executed="True" result="Success" success="True" asserts="2" />
+                              <test-case name="NHibernate.Test.DialectTest.SchemaTests.ColumnMetaDataFixture.SetColumnSizeAndNumericalPrecision(&quot;5000000000&quot;,null,int.MaxValue,0)" executed="True" result="Success" success="True" asserts="2" />
                             </results>
                           </test-suite>
                         </results>
@@ -2791,7 +2791,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
 [ select sysdatetimeoffset() as col_0_0_ from Animal animal0_ ]
 [SQL: select sysdatetimeoffset() as col_0_0_ from Animal animal0_]
-  ----> System.FormatException : Input string '2014-11-14 20:37:21.9687500 -06:00' was not in the correct format.
+  ----> System.FormatException : Input string '2015-01-20 01:29:00.5612500 -06:00' was not in the correct format.
   ----> System.InvalidCastException : Specified cast is not valid.]]></message>
                         </failure>
                       </test-case>
@@ -3720,6 +3720,17 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                   </test-suite>
                 </results>
               </test-suite>
+              <test-suite type="Namespace" name="LazyComponentTest" executed="True" result="Success" success="True" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="LazyComponentTestFixture" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-case name="NHibernate.Test.LazyComponentTest.LazyComponentTestFixture.LazyDeleteTest" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.LazyComponentTest.LazyComponentTestFixture.LazyLoadTest" executed="True" result="Success" success="True" asserts="1" />
+                      <test-case name="NHibernate.Test.LazyComponentTest.LazyComponentTestFixture.LazyUpdateTest" executed="True" result="Success" success="True" asserts="2" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
               <test-suite type="Namespace" name="LazyOneToOne" executed="True" result="Success" success="True" asserts="0">
                 <results>
                   <test-suite type="TestFixture" name="LazyOneToOneTest" executed="True" result="Success" success="True" asserts="0">
@@ -3784,55 +3795,55 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                     <results>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AddAll" executed="True" result="Failure" success="False" asserts="2">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#2686b07cf48049da9cea5e06ef8ec208][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#2bd38489ba75459186a80ef1680cc62c][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AfterDelete" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#f845cfe986b346fcbe9ec70da10bce0f][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#4f4e4b4217134c8abc852fe708db9ce9][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Any" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#4de26c5f60f54c9fa971f0a69c6bd5fd][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#794fcdcc991e40eab66dd909ff0eed78][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ArraysOfTimes" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#09695735d11742519b952d0ecd1f70f5][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#ba8fb0e8281f4cf282c6f5b82e185886][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AssociationId" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#461d15367e9141f19b27c3a778d4d221][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#620b95baada14a50b85554aedf59bbd0][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AutoFlush" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c7ec7e0c92db46fe9ce5d45ddc40cafc][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#e9e6102a6d4b44c5a99453e36bbdca99][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AutoFlushCollections" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#64fff77b0447484193dca19798ebe9c8][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#aafd233b9d644949a6b9c857c0933243][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.AutosaveChildren" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#92d4ca1ec8be4324a771d3853a073f1d][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#d2277f00efb84796a8cf351d48bbe250][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3841,7 +3852,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.BagOneToMany" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.BatchLoad" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#d85a53fc690e40c691169de1c86b60b7][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#a3c3ca7b937743e490f13cb08e6693d2][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3849,14 +3860,14 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Cache" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CachedCollection" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#884b15184edb4567b4683c0e7db43ed2][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#1816e6aa563341a482c09b38e4fd90ae][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Callback" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c3570020be074ed6b524e66d951825f9][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#d59d1a51f43a4015a3683eee6a4fb171][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3865,21 +3876,21 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CascadeSave" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionCache" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#d41fd56b01de4c8a96e8596f25b4dd40][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#0b8afd40c1ae4d379132ccad76546342][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionOfSelf" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#8e2cb1e2ab714b29b41b3c1cf1930f09][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#039e690336814de9845613c62d830425][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionsInSelect" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c4d2b51384a04d5c883df8bf22256ebe][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#716b2a3895e34c1f99034a68574d48c3][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -3887,28 +3898,28 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionVersioning" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CollectionWhere" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#56bc171814c64175a574f64d9b495ef8][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#666b463500e847699bd7f6269cd9eb63][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ComplicatedQuery" executed="True" result="Failure" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#702daaf1022d49278dfbf2058d43e693][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#cb8e835870374f239b08e21ee8d26816][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ComponentParent" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#e08b038a81c245bab346ea700b323ce1][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#d5e987a681b94dee89adc78e6aa2e8a6][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Components" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#76e82ef0ece04b8180c5e6e0e69f6277][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#397e08d65dfd40eaa7dbe0ee23d4962f][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -3917,14 +3928,14 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Copy" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Create" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#4140d298f7e04463bde0ca0022f9968c][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#645b98df97d440f5907b9e8681893880][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.CreateUpdate" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#3cb329cca4ab48b49aa13444a8f8220e][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#751a638a813947db9c722262d05d9b08][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3933,7 +3944,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Custom" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.DeleteRecursive" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#0e6eecaca9614e959560a33fe72c648b][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#689d9a1ba4e94c129df52432932cea0c][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3942,14 +3953,14 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.DeleteUpdatedTransient" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.DereferenceLazyCollection" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#97a3b655f74b452eb5e2ca961a1a8de3][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#78fdca2508a243008749656dfd2e39dc][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Disconnect" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#256f2f7801f647a384ad0c70b76c0d35][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#0564e88d39ae4fa7b5909bf0f8c02329][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3958,21 +3969,21 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.EmbeddedCompositeID" executed="True" result="Success" success="True" asserts="5" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.EmptyCollection" executed="True" result="Failure" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#a15ea20155c3474fb219f8738c9fbf89][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#7ada89a032454381aff5e80aaf21d0d6][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Enum" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9c8c23f4772a4c699ae4430777bb149b][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9ab477d020bf4485afe6d040dfe7330d][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Enumerable" executed="True" result="Failure" success="False" asserts="20">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#b37971ac3e64490b9c75438ac3001d91][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#541e2b2506fc473faf44d3cd8f1cf04b][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -3980,42 +3991,42 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.EnumerableDisposable" executed="True" result="Success" success="True" asserts="12" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.FetchInitializedCollection" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c50fd4e75eae4bb9ac7594958aa1ec0e][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#0bc588437fe542cc8dbc0e51fe666589][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.FetchInitializedCollectionDupe" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c635aa9bc1a742bc8c5a8de672581d07][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#f33320c3393648c389ad10623a75ede0][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.FetchList" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#e729164c09af44e198a5183e66038b3c][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#31870c47730b4b719ad9ef0c577f833d][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Find" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#da3936d6d15c4e0cb6e4e42d6e449539][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#b628b7c9e720446c84a12b2d2729cefa][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.FindByCriteria" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#70a428001cf3458bb5ee7c23e13f9159][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#ffe4d187d4fa488c92a15d5d01e2b50d][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.FindLoad" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#49dce7552d974118b216f2cc436f1189][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#d4d5102f2b0b4159a70d28f2e3a65c9c][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4024,21 +4035,21 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ForCertain" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ForeignKeys" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9c23180564f5495a916627a3fa29db44][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#1dacaf08cf314add92a45540c7645936][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Formula" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#0811fcd975754464aa2b42dffa37ac3f][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#216ec90ff3db45d0953ec9e5d79355e6][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.IdBag" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#0b390f45a9bf43b297975057f2489427][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#49e621ffe9ec46b0b069e45c498930e9][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4046,14 +4057,14 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.LateCollectionAdd" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.LazyCollections" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#e2ac66875ae24c3f90efb9c58b0c6a72][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#a4d1742b9ec84fd59b33d1b0e576c5a6][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Limit" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#4926ff7b22524d349ca3ef43848e901a][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#4ac3483aa56e4e9f994f82857897ceb3][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -4061,21 +4072,21 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ListRemove" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Load" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#4731242ea06f47d09c8226865d17adea][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#3d4a0c220bbd4818b9a7e927dcf00fab][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.LoadAfterDelete" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#54ea66bbc89a48f7b522354fe3a88fbd][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#5ac25392566d461e83624f3bc7cc3812][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ManyToManyBag" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#31b0048f931f48eb8f073dcc738d3c47][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#fcdf3d3dd5de4bd48db3f4293c030da7][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4083,35 +4094,35 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ManyToOne" executed="True" result="Success" success="True" asserts="1" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.MoveLazyCollection" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#7fc48343be124943bddc696a712edbb2][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#1a81cceac5e74c788e75b5874443899f][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.MultiColumnQueries" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#d6d390a3d8f049389adf3181b4b4c3ce][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#1db1569236634caa863f0a87273b10e0][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NamedParams" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#cd74e47c196d44fd9689bfe56bffc1e5][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#2734e72576a74b1a9f2099013cb745f8][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NewFlushing" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#2ebe024c08f04eb48c65bc8ca8482a04][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#7901fd46c0e44adaacd3255c06095aaa][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NewSessionLifecycle" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#60756c8ddd894f65aad33302f10c5221][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c2e7f752a1c14b4c8225c4c1f4a59a52][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented]]></message>
                         </failure>
                       </test-case>
@@ -4119,7 +4130,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.NonlazyCollections" executed="True" result="Success" success="True" asserts="2" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ObjectType" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#8987590e47d54d77ac712d2a3a64089a][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#641ea166f41c4c4097b6291795148f4a][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4127,7 +4138,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.OneToOneGenerator" executed="True" result="Success" success="True" asserts="9" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.OrderBy" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#31715c414a704f6ea29fb5ac795124a1][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c60f6e1c1660467db6787cd01a5fcbd1][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -4137,111 +4148,111 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ParameterInOrderByClause" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PersistCollections" executed="True" result="Failure" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#4eb05ee6a7a94846913ae96672810586][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#1830fb66a61143189ac1d769cefd7e0f][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PersistentLifecycle" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#8f1865101f884c0a98fec7690c0c42ec][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#edcb4559bbbb4d57bd59e28cb7c22658][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Polymorphism" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#b7b221c2f6b14525a693f1e222672980][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#7d4f33fdae084777b28e8d0073d199f0][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PropertyRef" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#15fbf9e591334aa6878545fa6fc01729][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#a2a26203324b421d8e900a98a9063021][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ProxiesInCollections" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#7dcd70dc513f464eb03e75b187a8119e][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#011a0a95e87a427c8d69aa0d201b6116][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ProxyArray" executed="True" result="Failure" success="False" asserts="5">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.DomainModel.Glarch.FooComponents#11876d3478d4477c85cbc5e4395c27d5][SQL: SELECT foocompone0_.glarch_key as glarch1_3_, foocompone0_.name_ as name2_3_, foocompone0_.count_ as count3_3_, foocompone0_.x_ as x4_3_, foocompone0_.y_ as y5_3_, foocompone0_.Fee as Fee3_, foocompone0_.tha_indecks as tha7_3_, fee1_.id_ as id1_1835_0_, fee1_.Fi as Fi1835_0_, fee1_.TheFee as TheFee1835_0_, fee1_.AnotherFee as AnotherFee1835_0_, fee1_.Qux as Qux1835_0_, fee1_.count_ as count6_1835_0_, fee1_.Name as Name1835_0_, fee1_.null_prop as null8_1835_0_, fee2_.id_ as id1_1835_1_, fee2_.Fi as Fi1835_1_, fee2_.TheFee as TheFee1835_1_, fee2_.AnotherFee as AnotherFee1835_1_, fee2_.Qux as Qux1835_1_, fee2_.count_ as count6_1835_1_, fee2_.Name as Name1835_1_, fee2_.null_prop as null8_1835_1_, fee3_.id_ as id1_1835_2_, fee3_.Fi as Fi1835_2_, fee3_.TheFee as TheFee1835_2_, fee3_.AnotherFee as AnotherFee1835_2_, fee3_.Qux as Qux1835_2_, fee3_.count_ as count6_1835_2_, fee3_.Name as Name1835_2_, fee3_.null_prop as null8_1835_2_ FROM FooComponents foocompone0_ left outer join [the fees] fee1_ on foocompone0_.Fee=fee1_.id_ left outer join [the fees] fee2_ on fee1_.TheFee=fee2_.id_ left outer join [the fees] fee3_ on fee2_.AnotherFee=fee3_.id_ WHERE foocompone0_.glarch_key=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not initialize a collection: [NHibernate.DomainModel.Glarch.FooComponents#63cbfce0ee55446ab8846f0d0f6923f9][SQL: SELECT foocompone0_.glarch_key as glarch1_3_, foocompone0_.name_ as name2_3_, foocompone0_.count_ as count3_3_, foocompone0_.x_ as x4_3_, foocompone0_.y_ as y5_3_, foocompone0_.Fee as Fee3_, foocompone0_.tha_indecks as tha7_3_, fee1_.id_ as id1_1837_0_, fee1_.Fi as Fi1837_0_, fee1_.TheFee as TheFee1837_0_, fee1_.AnotherFee as AnotherFee1837_0_, fee1_.Qux as Qux1837_0_, fee1_.count_ as count6_1837_0_, fee1_.Name as Name1837_0_, fee1_.null_prop as null8_1837_0_, fee2_.id_ as id1_1837_1_, fee2_.Fi as Fi1837_1_, fee2_.TheFee as TheFee1837_1_, fee2_.AnotherFee as AnotherFee1837_1_, fee2_.Qux as Qux1837_1_, fee2_.count_ as count6_1837_1_, fee2_.Name as Name1837_1_, fee2_.null_prop as null8_1837_1_, fee3_.id_ as id1_1837_2_, fee3_.Fi as Fi1837_2_, fee3_.TheFee as TheFee1837_2_, fee3_.AnotherFee as AnotherFee1837_2_, fee3_.Qux as Qux1837_2_, fee3_.count_ as count6_1837_2_, fee3_.Name as Name1837_2_, fee3_.null_prop as null8_1837_2_ FROM FooComponents foocompone0_ left outer join [the fees] fee1_ on foocompone0_.Fee=fee1_.id_ left outer join [the fees] fee2_ on fee1_.TheFee=fee2_.id_ left outer join [the fees] fee3_ on fee2_.AnotherFee=fee3_.id_ WHERE foocompone0_.glarch_key=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.PSCache" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#5b5f5180ddb34dc8bf9b2962e465b5d7][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9180d61c0c39486c89ae0359041bc76a][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Query" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#08efc755b3b44f95a2bbe10e226280f2][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#b486e02b8db2437f9754182771b8d361][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.QueryCollectionOfValues" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#75d80843d9d049748a2bad42f918dedd][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#e7982915e01b493cb4475d49340827ab][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.QueryLockMode" executed="True" result="Failure" success="False" asserts="2">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#348c79a5a3274fd0be9dd2593064390b][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#d26d67d3dcf14797867180c83a283ee6][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Reachability" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#f9f70dc938e2490f85f89fa01528cfe8][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#f6466967a6c54427b41c00d0b475ff06][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.RecursiveLoad" executed="True" result="Failure" success="False" asserts="9">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#394b268236f44a4084335ba843b00f8f][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Bar#a08d366e541f4453b45d55b199197c75][SQL: INSERT INTO [foos] (Version, foo, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, null_cmpnt_, the_time, Baz, bar_String, name_name, bar_count, Name, clazz, [gen_id], [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'B', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Refresh" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#a5352d54deb842c79ab253e8b1280802][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#42b1743d918e4135b2b977a936bec6f8][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.RefreshTransient" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#dc3a0acd2f134304ab897e1664e23d1e][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#b58fe399279a4dbcb5e66aad21cb98b6][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.RemoveContains" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#e84ec0498c9149dda07b508478fb5edd][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#009159381e454bbcb17e67ba9cf5bbed][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.ReuseDeletedCollection" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#da000e81fed24269b501d730041086a9][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert collection: [NHibernate.DomainModel.Baz.TimeArray#d2037f5f863846d2aacfe0f96bad9401][SQL: INSERT INTO TimeArray (baz_id, j, the_time) VALUES (?, ?, ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4249,7 +4260,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.SaveAddDelete" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.SaveDelete" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#75688abd8ae248cc8a0d9b0e1fcb601b][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#e268b8e648ce40a7a85b8c7a12146f96][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4259,28 +4270,28 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Sortables" executed="True" result="Success" success="True" asserts="6" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.TransientOrphanDelete" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9ef25e3b2f254fe2b3b633ba62954f2d][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#74a1dbfe04e3406e9ae6edb9513d2283][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Update" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9ed94ad4222648c4b38a1ce1cf8fddbf][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#8b9bf804833447aebe9e345a3e67b922][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.UpdateCollections" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#d52a6d902ec14947840338d7cb385f43][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#753e92322b964de2bb9e4f5dadf3e156][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.UpdateFromTransient" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#2f80fd83f6c04cdabf1249b0ae2f1cbd][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#ea3021add6cb4796b0a351ff426bb61a][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4297,7 +4308,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.Veto" executed="True" result="Success" success="True" asserts="0" />
                       <test-case name="NHibernate.Test.Legacy.FooBarTest.WierdSession" executed="True" result="Error" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#24e46eb520e445d38e478558d3715b40][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#371f05699b8d417297f556245f726413][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented]]></message>
                         </failure>
                       </test-case>
@@ -4307,14 +4318,14 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                     <results>
                       <test-case name="NHibernate.Test.Legacy.FumTest.CompositeID" executed="True" result="Failure" success="False" asserts="4">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.DomainModel.Fum#component[String,Short,Date]{'String'='fi', 'Short'='12', 'Date'='4/29/2004 9:00:00 AM'}][SQL: SELECT fum0_.string_ as string1_1916_1_, fum0_.short_ as short2_1916_1_, fum0_.date_ as date3_1916_1_, fum0_.LastUpdated as LastUpda4_1916_1_, fum0_.FumString as FumString1916_1_, fum0_.fo_string as fo6_1916_1_, fum0_.fo_short as fo7_1916_1_, fum0_.fo_date as fo8_1916_1_, fum0_.count_ as count9_1916_1_, fum1_.string_ as string1_1916_0_, fum1_.short_ as short2_1916_0_, fum1_.date_ as date3_1916_0_, fum1_.LastUpdated as LastUpda4_1916_0_, fum1_.FumString as FumString1916_0_, fum1_.fo_string as fo6_1916_0_, fum1_.fo_short as fo7_1916_0_, fum1_.fo_date as fo8_1916_0_, fum1_.count_ as count9_1916_0_, stringmap2_.fum_str_ as fum1_3_, stringmap2_.fum_sho_ as fum2_3_, stringmap2_.fum_dat_ as fum3_3_, stringmap2_.mapelement as mapelement3_, stringmap2_.mapindex as mapindex3_ FROM Fum fum0_ left outer join Fum fum1_ on fum0_.fo_string=fum1_.string_ and fum0_.fo_short=fum1_.short_ and fum0_.fo_date=fum1_.date_ left outer join Stringmap stringmap2_ on fum1_.string_=stringmap2_.fum_str_ and fum1_.short_=stringmap2_.fum_sho_ and fum1_.date_=stringmap2_.fum_dat_ WHERE fum0_.string_=? and fum0_.short_=? and fum0_.date_=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.DomainModel.Fum#component[String,Short,Date]{'String'='fi', 'Short'='12', 'Date'='4/29/2004 9:00:00 AM'}][SQL: SELECT fum0_.string_ as string1_1918_1_, fum0_.short_ as short2_1918_1_, fum0_.date_ as date3_1918_1_, fum0_.LastUpdated as LastUpda4_1918_1_, fum0_.FumString as FumString1918_1_, fum0_.fo_string as fo6_1918_1_, fum0_.fo_short as fo7_1918_1_, fum0_.fo_date as fo8_1918_1_, fum0_.count_ as count9_1918_1_, fum1_.string_ as string1_1918_0_, fum1_.short_ as short2_1918_0_, fum1_.date_ as date3_1918_0_, fum1_.LastUpdated as LastUpda4_1918_0_, fum1_.FumString as FumString1918_0_, fum1_.fo_string as fo6_1918_0_, fum1_.fo_short as fo7_1918_0_, fum1_.fo_date as fo8_1918_0_, fum1_.count_ as count9_1918_0_, stringmap2_.fum_str_ as fum1_3_, stringmap2_.fum_sho_ as fum2_3_, stringmap2_.fum_dat_ as fum3_3_, stringmap2_.mapelement as mapelement3_, stringmap2_.mapindex as mapindex3_ FROM Fum fum0_ left outer join Fum fum1_ on fum0_.fo_string=fum1_.string_ and fum0_.fo_short=fum1_.short_ and fum0_.fo_date=fum1_.date_ left outer join Stringmap stringmap2_ on fum1_.string_=stringmap2_.fum_str_ and fum1_.short_=stringmap2_.fum_sho_ and fum1_.date_=stringmap2_.fum_dat_ WHERE fum0_.string_=? and fum0_.short_=? and fum0_.date_=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FumTest.CompositeIDCollections" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#80f6a7624e854a468dd1cee83f055605][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#ae3967b7910a4e38b2302b8b9f1adfb9][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4332,14 +4343,14 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.FumTest.CriteriaCollection" executed="True" result="Success" success="True" asserts="4" />
                       <test-case name="NHibernate.Test.Legacy.FumTest.DeleteOwner" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#655799e38f664dbaa6e8cc05da4246e9][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#5b764bda4bb2481b853734585cda3470][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.FumTest.KeyManyToOne" executed="True" result="Failure" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.DomainModel.Inner#component[AKey,BKey]{'AKey'='a', 'BKey'='b'}][SQL: SELECT inner0_.AKEY as AKEY1941_0_, inner0_.BKEY as BKEY1941_0_, inner0_.DUDU as DUDU1941_0_ FROM CID_IN inner0_ WHERE inner0_.AKEY=? and inner0_.BKEY=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.DomainModel.Inner#component[AKey,BKey]{'AKey'='a', 'BKey'='b'}][SQL: SELECT inner0_.AKEY as AKEY1943_0_, inner0_.BKEY as BKEY1943_0_, inner0_.DUDU as DUDU1943_0_ FROM CID_IN inner0_ WHERE inner0_.AKEY=? and inner0_.BKEY=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4428,7 +4439,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.CollectionQuery" executed="True" result="Success" success="True" asserts="12" />
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ComplexCriteria" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#c80178f4514b4515b4c05d7d81da56f5][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#32622ae7c3fe45569ead5c86712d6dc5][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -4439,7 +4450,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ManyToMany" executed="True" result="Success" success="True" asserts="9" />
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ObjectType" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#08b96b646a52468bbc051c4f967042df][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#e696dca6edc548ae965ec714ef3958b6][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4447,9 +4458,9 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ParentChild" executed="True" result="Failure" success="False" asserts="5">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select parent0_.Id as Id2068_, parent0_.X as X2068_, parent0_.count_ as count3_2068_, parent0_.any_id as any4_2068_, parent0_.any_class as any5_2068_ from Parent parent0_ where parent0_.count_=? ]
+[ select parent0_.Id as Id2070_, parent0_.X as X2070_, parent0_.count_ as count3_2070_, parent0_.any_id as any4_2070_, parent0_.any_class as any5_2070_ from Parent parent0_ where parent0_.count_=? ]
 Positional parameters:  #0>66
-[SQL: select parent0_.Id as Id2068_, parent0_.X as X2068_, parent0_.count_ as count3_2068_, parent0_.any_id as any4_2068_, parent0_.any_class as any5_2068_ from Parent parent0_ where parent0_.count_=?]
+[SQL: select parent0_.Id as Id2070_, parent0_.X as X2070_, parent0_.count_ as count3_2070_, parent0_.any_id as any4_2070_, parent0_.any_class as any5_2070_ from Parent parent0_ where parent0_.count_=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4464,7 +4475,7 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       </test-case>
                       <test-case name="NHibernate.Test.Legacy.ParentChildTest.ProxyReuse" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#9c7b6e8beba246c18b5c19d493ae0cf5][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not insert: [NHibernate.DomainModel.Foo#19226c735bce49639df128ff3a01d124][SQL: INSERT INTO [foos] (Version, long_, [@@##integer_  *], float_, X, date_, timestamp_, boolean_, bool_, null_, short_, char_, zero_, int_, string_, byte_, YesNo, [status_@###], [localeayzabc123!@#$], first_name, surname, Dependent, count_, name_, g__, cmpnt_null_, subcount, subname, fee_sub, [$foo_subclass^], [foo_id]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'F', ?)]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented
 TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                         </failure>
@@ -4492,8 +4503,8 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                       <test-case name="NHibernate.Test.Legacy.SQLFunctionsTest.SQLFunctions" executed="True" result="Failure" success="False" asserts="14">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select TOP (?) simple0_.id_ as id1_2113_, simple0_.Name as Name2113_, simple0_.address as address2113_, simple0_.count_ as count4_2113_, simple0_.date_ as date5_2113_, simple0_.Pay as Pay2113_, simple0_.Other as Other2113_ from Simple simple0_ ]
-[SQL: select TOP (?) simple0_.id_ as id1_2113_, simple0_.Name as Name2113_, simple0_.address as address2113_, simple0_.count_ as count4_2113_, simple0_.date_ as date5_2113_, simple0_.Pay as Pay2113_, simple0_.Other as Other2113_ from Simple simple0_]
+[ select TOP (?) simple0_.id_ as id1_2115_, simple0_.Name as Name2115_, simple0_.address as address2115_, simple0_.count_ as count4_2115_, simple0_.date_ as date5_2115_, simple0_.Pay as Pay2115_, simple0_.Other as Other2115_ from Simple simple0_ ]
+[SQL: select TOP (?) simple0_.id_ as id1_2115_, simple0_.Name as Name2115_, simple0_.address as address2115_, simple0_.count_ as count4_2115_, simple0_.date_ as date5_2115_, simple0_.Pay as Pay2115_, simple0_.Other as Other2115_ from Simple simple0_]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -4763,9 +4774,9 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.Linq.DateTimeTests.CanQueryByDate" executed="True" result="Error" success="False" asserts="0">
                         <failure>
                           <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not execute query
-[ select order0_.OrderId as OrderId3007_, order0_.CustomerId as CustomerId3007_, order0_.EmployeeId as EmployeeId3007_, order0_.OrderDate as OrderDate3007_, order0_.RequiredDate as Required5_3007_, order0_.ShippedDate as ShippedD6_3007_, order0_.ShipVia as ShipVia3007_, order0_.Freight as Freight3007_, order0_.ShipName as ShipName3007_, order0_.ShipAddress as ShipAdd10_3007_, order0_.ShipCity as ShipCity3007_, order0_.ShipRegion as ShipRegion3007_, order0_.ShipPostalCode as ShipPos13_3007_, order0_.ShipCountry as ShipCou14_3007_ from Orders order0_ where dateadd(dd, 0, datediff(dd, 0, order0_.OrderDate))=? ]
+[ select order0_.OrderId as OrderId3009_, order0_.CustomerId as CustomerId3009_, order0_.EmployeeId as EmployeeId3009_, order0_.OrderDate as OrderDate3009_, order0_.RequiredDate as Required5_3009_, order0_.ShippedDate as ShippedD6_3009_, order0_.ShipVia as ShipVia3009_, order0_.Freight as Freight3009_, order0_.ShipName as ShipName3009_, order0_.ShipAddress as ShipAdd10_3009_, order0_.ShipCity as ShipCity3009_, order0_.ShipRegion as ShipRegion3009_, order0_.ShipPostalCode as ShipPos13_3009_, order0_.ShipCountry as ShipCou14_3009_ from Orders order0_ where dateadd(dd, 0, datediff(dd, 0, order0_.OrderDate))=? ]
   Name:p1 - Value:2/26/1998 12:00:00 AM
-[SQL: select order0_.OrderId as OrderId3007_, order0_.CustomerId as CustomerId3007_, order0_.EmployeeId as EmployeeId3007_, order0_.OrderDate as OrderDate3007_, order0_.RequiredDate as Required5_3007_, order0_.ShippedDate as ShippedD6_3007_, order0_.ShipVia as ShipVia3007_, order0_.Freight as Freight3007_, order0_.ShipName as ShipName3007_, order0_.ShipAddress as ShipAdd10_3007_, order0_.ShipCity as ShipCity3007_, order0_.ShipRegion as ShipRegion3007_, order0_.ShipPostalCode as ShipPos13_3007_, order0_.ShipCountry as ShipCou14_3007_ from Orders order0_ where dateadd(dd, 0, datediff(dd, 0, order0_.OrderDate))=?]
+[SQL: select order0_.OrderId as OrderId3009_, order0_.CustomerId as CustomerId3009_, order0_.EmployeeId as EmployeeId3009_, order0_.OrderDate as OrderDate3009_, order0_.RequiredDate as Required5_3009_, order0_.ShippedDate as ShippedD6_3009_, order0_.ShipVia as ShipVia3009_, order0_.Freight as Freight3009_, order0_.ShipName as ShipName3009_, order0_.ShipAddress as ShipAdd10_3009_, order0_.ShipCity as ShipCity3009_, order0_.ShipRegion as ShipRegion3009_, order0_.ShipPostalCode as ShipPos13_3009_, order0_.ShipCountry as ShipCou14_3009_ from Orders order0_ where dateadd(dd, 0, datediff(dd, 0, order0_.OrderDate))=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HYC00] [Microsoft][SQL Native Client]Optional feature not implemented]]></message>
                         </failure>
                       </test-case>
@@ -5653,6 +5664,8 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                     <results>
                       <test-case name="NHibernate.Test.Linq.QueryCacheableTests.CacheableBeforeOtherClauses" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Linq.QueryCacheableTests.CacheableRegionBeforeOtherClauses" executed="True" result="Success" success="True" asserts="3" />
+                      <test-case name="NHibernate.Test.Linq.QueryCacheableTests.GroupByQueryIsCacheable" executed="True" result="Success" success="True" asserts="3" />
+                      <test-case name="NHibernate.Test.Linq.QueryCacheableTests.GroupByQueryIsCacheable2" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Linq.QueryCacheableTests.QueryIsCacheable" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Linq.QueryCacheableTests.QueryIsCacheable2" executed="True" result="Success" success="True" asserts="3" />
                       <test-case name="NHibernate.Test.Linq.QueryCacheableTests.QueryIsCacheable3" executed="True" result="Success" success="True" asserts="3" />
@@ -6357,8 +6370,8 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                             <results>
                               <test-suite type="ParameterizedTest" name="ExplicitColumnNameIsAlwaysMapped" executed="True" result="Success" success="True" asserts="0">
                                 <results>
-                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;Bar&quot;)" executed="True" result="Success" success="True" asserts="1" />
                                   <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;DifferentFromBar&quot;)" executed="True" result="Success" success="True" asserts="1" />
+                                  <test-case name="NHibernate.Test.MappingByCode.IntegrationTests.NH3140.Fixture.ExplicitColumnNameIsAlwaysMapped(&quot;Bar&quot;)" executed="True" result="Success" success="True" asserts="1" />
                                 </results>
                               </test-suite>
                             </results>
@@ -7364,8 +7377,8 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                           <test-case name="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection.Fixture.CanQueryByCriteriaOnSetOfElement" executed="True" result="Success" success="True" asserts="4" />
                           <test-suite type="ParameterizedTest" name="CanQueryByCriteriaOnSetOfElementByCreateAlias" executed="True" result="Success" success="True" asserts="0">
                             <results>
-                              <test-case name="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection.Fixture.CanQueryByCriteriaOnSetOfElementByCreateAlias(InnerJoin)" executed="True" result="Success" success="True" asserts="4" />
                               <test-case name="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection.Fixture.CanQueryByCriteriaOnSetOfElementByCreateAlias(LeftOuterJoin)" executed="True" result="Success" success="True" asserts="4" />
+                              <test-case name="NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection.Fixture.CanQueryByCriteriaOnSetOfElementByCreateAlias(InnerJoin)" executed="True" result="Success" success="True" asserts="4" />
                             </results>
                           </test-suite>
                         </results>
@@ -8544,9 +8557,9 @@ TearDown : Test didn't clean up after itself. session closed: False database cle
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1388.Fixture.BagTest" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1388.Subject#1][SQL: SELECT subject0_.SUBJECT_ID as SUBJECT1_4891_0_, subject0_.TITLE as TITLE4891_0_ FROM SUBJECT subject0_ WHERE subject0_.SUBJECT_ID=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1388.Subject#1][SQL: SELECT subject0_.SUBJECT_ID as SUBJECT1_4893_0_, subject0_.TITLE as TITLE4893_0_ FROM SUBJECT subject0_ WHERE subject0_.SUBJECT_ID=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
-TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1388.Subject#1][SQL: SELECT subject0_.SUBJECT_ID as SUBJECT1_4891_0_, subject0_.TITLE as TITLE4891_0_ FROM SUBJECT subject0_ WHERE subject0_.SUBJECT_ID=?]
+TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH1388.Subject#1][SQL: SELECT subject0_.SUBJECT_ID as SUBJECT1_4893_0_, subject0_.TITLE as TITLE4893_0_ FROM SUBJECT subject0_ WHERE subject0_.SUBJECT_ID=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command]]></message>
                             </failure>
                           </test-case>
@@ -8699,7 +8712,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity:
                           <test-case name="NHibernate.Test.NHSpecificTest.NH1444.Fixture.Bug" executed="True" result="Failure" success="False" asserts="1">
                             <failure>
                               <message><![CDATA[  Expected: String containing "xchild0_.ParentId=xparent1_.Id and (p0=1 or xparent1_.A<p1)"
-  But was:  "NHibernate.SQL select xchild0_.Id as Id4961_, xchild0_.B as B4961_, xchild0_.ParentId as ParentId4961_ from xchild xchild0_, xparent xparent1_ where xchild0_.ParentId=xparent1_.Id and (?=1 or xparent1_.A<?);p0 = True [Type: Boolean (0)], p1 = 0 [Type: Int64 (0)]
+  But was:  "NHibernate.SQL select xchild0_.Id as Id4963_, xchild0_.B as B4963_, xchild0_.ParentId as ParentId4963_ from xchild xchild0_, xparent xparent1_ where xchild0_.ParentId=xparent1_.Id and (?=1 or xparent1_.A<?);p0 = True [Type: Boolean (0)], p1 = 0 [Type: Int64 (0)]
 "
 ]]></message>
                             </failure>
@@ -10321,7 +10334,8 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                             <failure>
                               <message><![CDATA[  Expected: True
   But was:  False
-]]></message>
+
+TearDown : Test didn't clean up after itself. session closed: False database cleaned: True connection closed: True]]></message>
                             </failure>
                           </test-case>
                         </results>
@@ -10436,7 +10450,7 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2112.Fixture.Test" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH2112.B#1][SQL: SELECT b0_.Id as Id5505_0_, b0_.Name as Name5505_0_ FROM TableB b0_ WHERE b0_.Id=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH2112.B#1][SQL: SELECT b0_.Id as Id5507_0_, b0_.Name as Name5507_0_ FROM TableB b0_ WHERE b0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command]]></message>
                             </failure>
                           </test-case>
@@ -10584,7 +10598,7 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH2202.Fixture.CanProjectEmployeeFromAddressUsingCriteria" executed="True" result="Error" success="False" asserts="1">
                             <failure>
-                              <message><![CDATA[TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH2202.Employee#component[NationalId,EmployeeId]{'NationalId'='1000', 'EmployeeId'='1'}][SQL: SELECT employee0_.NationalId as NationalId5544_0_, employee0_.EmployeeId as EmployeeId5544_0_ FROM Employee employee0_ WHERE employee0_.NationalId=? and employee0_.EmployeeId=?]
+                              <message><![CDATA[TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH2202.Employee#component[NationalId,EmployeeId]{'NationalId'='1000', 'EmployeeId'='1'}][SQL: SELECT employee0_.NationalId as NationalId5546_0_, employee0_.EmployeeId as EmployeeId5546_0_ FROM Employee employee0_ WHERE employee0_.NationalId=? and employee0_.EmployeeId=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command]]></message>
                             </failure>
                           </test-case>
@@ -12900,7 +12914,7 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                       <test-suite type="TestFixture" name="Fixture" executed="True" result="Success" success="True" asserts="0">
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContains" executed="True" result="Success" success="True" asserts="1" />
-                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContainsInParallel" executed="True" result="Success" success="True" asserts="33" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3436.Fixture.TestQueryWithContainsInParallel" executed="True" result="Success" success="True" asserts="31" />
                         </results>
                       </test-suite>
                     </results>
@@ -13074,6 +13088,17 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH372.Fixture.SubComponentFieldNotInserted_Dynamic" executed="True" result="Success" success="True" asserts="1" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH372.Fixture.SubComponentFieldNotUpdated" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.NHSpecificTest.NH372.Fixture.SubComponentFieldNotUpdated_Dynamic" executed="True" result="Success" success="True" asserts="2" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                  <test-suite type="Namespace" name="NH3731" executed="True" result="Success" success="True" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="ByCodeFixture" executed="True" result="Success" success="True" asserts="0">
+                        <results>
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3731.ByCodeFixture.Serializing_Session_After_Changing_Key_ChildrenMap_Should_Work" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3731.ByCodeFixture.Serializing_Session_After_Deleting_First_Child_In_List_Should_Work" executed="True" result="Success" success="True" asserts="1" />
+                          <test-case name="NHibernate.Test.NHSpecificTest.NH3731.ByCodeFixture.Serializing_Session_After_Reordering_ChildrenList_Should_Work" executed="True" result="Success" success="True" asserts="1" />
                         </results>
                       </test-suite>
                     </results>
@@ -13471,9 +13496,9 @@ Threw: NHibernate.Exceptions.GenericADOException]]></message>
                         <results>
                           <test-case name="NHibernate.Test.NHSpecificTest.NH750.Fixture.DeviceOfDrive" executed="True" result="Error" success="False" asserts="0">
                             <failure>
-                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH750.Drive#3][SQL: SELECT drive0_.[_id] as column1_6529_0_, drive0_.ClassFullName as ClassFul2_6529_0_ FROM Drive drive0_ WHERE drive0_.[_id]=?]
+                              <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH750.Drive#3][SQL: SELECT drive0_.[_id] as column1_6537_0_, drive0_.ClassFullName as ClassFul2_6537_0_ FROM Drive drive0_ WHERE drive0_.[_id]=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
-TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH750.Drive#3][SQL: SELECT drive0_.[_id] as column1_6529_0_, drive0_.ClassFullName as ClassFul2_6529_0_ FROM Drive drive0_ WHERE drive0_.[_id]=?]
+TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.NHSpecificTest.NH750.Drive#3][SQL: SELECT drive0_.[_id] as column1_6537_0_, drive0_.ClassFullName as ClassFul2_6537_0_ FROM Drive drive0_ WHERE drive0_.[_id]=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command]]></message>
                             </failure>
                           </test-case>
@@ -14149,6 +14174,11 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity:
                           <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
                         </reason>
                       </test-case>
+                      <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUpdateStatisticsWhenGetMultiQueryFromSecondLevelCache" executed="False" result="Ignored">
+                        <reason>
+                          <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
+                        </reason>
+                      </test-case>
                       <test-case name="NHibernate.Test.QueryTest.MultiCriteriaFixture.CanUseSecondLevelCacheWithPositionalParameters" executed="False" result="Ignored">
                         <reason>
                           <message><![CDATA[NHibernate.Test.QueryTest.MultiCriteriaFixture does not apply with the current session-factory configuration]]></message>
@@ -14487,7 +14517,7 @@ TearDown : NHibernate.Exceptions.GenericADOException : could not load an entity:
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.ModifiableSessionDefaultQueryReadOnlySessionIterate" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#3][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#3][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -14499,7 +14529,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.ModifiableSessionReadOnlyQueryIterate" executed="True" result="Failure" success="False" asserts="1">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#103][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#103][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -14511,7 +14541,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.QueryModifiableIterate" executed="True" result="Failure" success="False" asserts="11">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#302][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#302][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -14523,7 +14553,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.QueryReadOnlyIterate" executed="True" result="Failure" success="False" asserts="11">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#402][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#402][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -14548,7 +14578,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.ReadOnlyRefreshDetached" executed="True" result="Success" success="True" asserts="10" />
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.ReadOnlySessionDefaultQueryIterate" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#410][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#410][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -14560,7 +14590,7 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       </test-case>
                       <test-case name="NHibernate.Test.ReadOnly.ReadOnlySessionTest.ReadOnlySessionModifiableQueryIterate" executed="True" result="Failure" success="False" asserts="0">
                         <failure>
-                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#510][SQL: SELECT datapoint0_.Id as Id6781_0_, datapoint0_.xval as xval6781_0_, datapoint0_.yval as yval6781_0_, datapoint0_.Description as Descript4_6781_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
+                          <message><![CDATA[NHibernate.Exceptions.GenericADOException : could not load an entity: [NHibernate.Test.ReadOnly.DataPoint#510][SQL: SELECT datapoint0_.Id as Id6789_0_, datapoint0_.xval as xval6789_0_, datapoint0_.yval as yval6789_0_, datapoint0_.Description as Descript4_6789_0_ FROM DataPoint datapoint0_ WHERE datapoint0_.Id=?]
   ----> System.Data.Odbc.OdbcException : ERROR [HY000] [Microsoft][SQL Native Client]Connection is busy with results for another command
 TearDown : Test didn't clean up after itself. session closed: True database cleaned: False connection closed: True]]></message>
                         </failure>
@@ -15980,10 +16010,10 @@ TearDown : Test didn't clean up after itself. session closed: True database clea
                       </test-suite>
                       <test-suite type="ParameterizedTest" name="IsAnyNewLineMatchAndLength" executed="True" result="Success" success="True" asserts="0">
                         <results>
+                          <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;a\nb&quot;,1,True,1)" executed="True" result="Success" success="True" asserts="2" />
+                          <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;ab&quot;,0,False,0)" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;a\r\nb&quot;,0,False,0)" executed="True" result="Success" success="True" asserts="2" />
                           <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;a\r\nb&quot;,1,True,2)" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;ab&quot;,0,False,0)" executed="True" result="Success" success="True" asserts="2" />
-                          <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsAnyNewLineMatchAndLength(&quot;a\nb&quot;,1,True,1)" executed="True" result="Success" success="True" asserts="2" />
                         </results>
                       </test-suite>
                       <test-case name="NHibernate.Test.UtilityTest.StringHelperFixture.IsBackticksEnclosed" executed="True" result="Success" success="True" asserts="4" />
