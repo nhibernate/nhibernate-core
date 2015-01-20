@@ -434,7 +434,11 @@ namespace NHibernate.Mapping
 
 			foreach (UniqueKey uk in UniqueKeyIterator)
 			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
+				string ukSql = uk.SqlConstraintString(dialect);
+				if (!string.IsNullOrEmpty(ukSql))
+				{
+					buf.Append(',').Append(ukSql);
+				}
 			}
 
 			if (dialect.SupportsTableCheck)
