@@ -1,3 +1,14 @@
+Build 4.0.3.GA
+=============================
+
+
+** Bug
+    * [NH-2504] - Can't use Cacheable with Group By
+    * [NH-3457] - TemplatedViolatedConstraintNameExtracter.ExtractUsingTemplate calls Substring with wrong arguments
+    * [NH-3468] - InvalidCastException when deleting entities containing uninitialized lazy components
+    * [NH-3573] - Query cache statistics not updated when using MultiCriteria
+    * [NH-3731] - Unable to serialize session after modifying the index of entities in a list
+
 
 Build 4.0.2.GA
 =============================
