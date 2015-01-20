@@ -497,6 +497,9 @@
     <Compile Include="KnownBugAttribute.cs" />
     <Compile Include="Join\JoinedFilters.cs" />
     <Compile Include="Join\TennisPlayer.cs" />
+    <Compile Include="LazyComponentTest\Address.cs" />
+    <Compile Include="LazyComponentTest\LazyComponentTestFixture.cs" />
+    <Compile Include="LazyComponentTest\Person.cs" />
     <Compile Include="LazyOneToOne\Employee.cs" />
     <Compile Include="LazyOneToOne\Employment.cs" />
     <Compile Include="LazyOneToOne\LazyOneToOneTest.cs" />
@@ -695,6 +698,8 @@
     <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="NHSpecificTest\NH3570\Model.cs" />
     <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3731\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3731\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />
     <Compile Include="NHSpecificTest\NH3455\Address.cs" />
@@ -3062,6 +3067,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3570\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />

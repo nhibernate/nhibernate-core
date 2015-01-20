@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Linq.Clauses;
+using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.Expressions;
@@ -38,21 +39,31 @@ namespace NHibernate.Linq.GroupBy
 				typeof (AnyResultOperator),
 				typeof (AllResultOperator),
 				typeof (TimeoutResultOperator),
+				typeof (CacheableResultOperator)
 			};
 
 		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
-			if ((subQueryExpression != null) &&
-				(subQueryExpression.QueryModel.ResultOperators.Count == 1) &&
-				(subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator))
+			if (subQueryExpression != null)
 			{
-				FlattenSubQuery(queryModel, subQueryExpression.QueryModel);
+				var operators = subQueryExpression.QueryModel.ResultOperators
+					.Where(x => !QueryReferenceExpressionFlattener.FlattenableResultOperators.Contains(x.GetType()))
+					.ToArray();
+
+				if (operators.Length == 1)
+				{
+					var groupBy = operators[0] as GroupResultOperator;
+					if (groupBy != null)
+					{
+						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
+					}
+				}
 			}
 		}
 
-		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel)
+		private static void FlattenSubQuery(QueryModel queryModel, QueryModel subQueryModel, GroupResultOperator groupBy)
 		{
 			foreach (var resultOperator in queryModel.ResultOperators.Where(resultOperator => !AcceptableOuterResultOperators.Contains(resultOperator.GetType())))
 			{
@@ -60,9 +71,7 @@ namespace NHibernate.Linq.GroupBy
 			}
 
 			// Move the result operator up.
-			var groupBy = (GroupResultOperator) subQueryModel.ResultOperators[0];
-
-			queryModel.ResultOperators.Insert(0, groupBy);
+			SubQueryFromClauseFlattener.InsertResultOperators(subQueryModel.ResultOperators, queryModel);
 
 			for (var i = 0; i < queryModel.BodyClauses.Count; i++)
 			{

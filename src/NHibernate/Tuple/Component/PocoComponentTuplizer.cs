@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Bytecode;
+using NHibernate.Intercept;
 using NHibernate.Properties;
 
 namespace NHibernate.Tuple.Component
@@ -67,7 +68,7 @@ namespace NHibernate.Tuple.Component
 		public override object[] GetPropertyValues(object component)
 		{
 			// NH Different behavior : for NH-1101
-			if (Equals(BackrefPropertyAccessor.Unknown, component) || component == null)
+			if (Equals(BackrefPropertyAccessor.Unknown, component) || Equals(LazyPropertyInitializer.UnfetchedProperty, component) || component == null)
 			{
 				return new object[propertySpan];
 			}
