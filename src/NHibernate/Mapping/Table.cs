@@ -414,9 +414,12 @@ namespace NHibernate.Mapping
 				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
 			}
 
-			foreach (UniqueKey uk in UniqueKeyIterator)
+			if (dialect.SupportsNotNullUnique)
 			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
+				foreach (UniqueKey uk in UniqueKeyIterator)
+				{
+					buf.Append(',').Append(uk.SqlConstraintString(dialect));
+				}
 			}
 
 			if (dialect.SupportsTableCheck)
