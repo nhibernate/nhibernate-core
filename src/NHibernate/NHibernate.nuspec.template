@@ -15,6 +15,7 @@
     <dependencies>
 	  <!-- Bet that if there is ever an Iesi.Collections 5.0, it would be incompatible. -->
       <dependency id="Iesi.Collections" version="[4,5)" />
+      <dependency id="Remotion.Linq" />
     </dependencies>
 	<projectUrl>
 		http://nhibernate.info
