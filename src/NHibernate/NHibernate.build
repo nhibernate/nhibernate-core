@@ -72,22 +72,7 @@
 			</exec>
 
       <delete file="${bin.dir}/Antlr3.Runtime.dll" />
-      
-      <!-- Merge everything that should be accessible -->
-      <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
-      <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
-
-      <exec program="../../Tools/ilrepack/ilrepack.exe">
-        <arg value="/t:library" />
-        <arg value="/targetplatform:v4" />
-        <arg value="/keyfile:../NHibernate.snk" />
-        <arg value="/out:${bin.dir}/merged/NHibernate.dll" />
-        <arg value="${bin.dir}/NHibernate.dll" />
-        <arg value="${bin.dir}/Remotion.Linq.dll" />
-      </exec>
-
-      <delete file="${bin.dir}/Remotion.Linq.dll" />
-      
+            
       <!-- Put merged files in appropriate places -->
       <move file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
 			<move file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />

@@ -61,6 +61,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Remotion.Linq, Version=1.13.183.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Remotion.Linq.1.13.183.0\lib\net35\Remotion.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -77,10 +81,6 @@
     </Reference>
     <Reference Include="Iesi.Collections">
       <HintPath>..\..\lib\net\4.0\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.100.2, Culture=neutral, PublicKeyToken=cab60358ab4081ea">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq">
@@ -1820,6 +1820,7 @@
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
+    <None Include="packages.config" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
   <ItemGroup>
