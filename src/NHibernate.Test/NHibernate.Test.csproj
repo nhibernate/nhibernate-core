@@ -516,6 +516,7 @@
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
+    <Compile Include="Linq\ExampleTests.cs" />
     <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
     <Compile Include="Linq\LoggingTests.cs" />
     <Compile Include="Linq\QueryTimeoutTests.cs" />
