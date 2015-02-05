@@ -74,7 +74,7 @@ namespace NHibernate.Loader.Criteria
 			get { return resultTypes; }
 		}
 
-		protected string[] ResultRowAliases
+		protected override  string[] ResultRowAliases
 		{
 			get { return userAliases; }
 		}
