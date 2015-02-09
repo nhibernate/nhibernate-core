@@ -23,7 +23,7 @@ namespace NHibernate.Criterion
 		[NonSerialized] private CriteriaQueryTranslator innerQuery;
 
 		protected SubqueryExpression(String op, String quantifier, DetachedCriteria dc)
-			:this(op, quantifier, dc, true)
+			: this(op, quantifier, dc, true)
 		{
 		}
 
@@ -44,7 +44,7 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			InitializeInnerQueryAndParameters(criteriaQuery);
+			InitializeInnerQueryAndParameters(criteriaQuery, true); // Force reinitialization. There can be old instance from earlier Criteria execution or cloned Criteria.
 
 			if (innerQuery.HasProjection == false)
 			{
@@ -88,7 +88,7 @@ namespace NHibernate.Criterion
 			{
 				buf.Add(quantifier).Add(" ");
 			}
-			
+
 			buf.Add("(").Add(sql).Add(")");
 
 			if (quantifier != null && prefixOp == false)
@@ -101,9 +101,9 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			if(prefixOp)
+			if (prefixOp)
 				return string.Format("{0} {1} ({2})", op, quantifier, criteriaImpl);
-			
+
 			return string.Format("{0} ({1}) {2}", op, criteriaImpl, quantifier);
 		}
 
@@ -117,9 +117,9 @@ namespace NHibernate.Criterion
 			return null;
 		}
 
-		public void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery)
+		public void InitializeInnerQueryAndParameters(ICriteriaQuery criteriaQuery, bool forceReinitialization = false)
 		{
-			if (innerQuery == null)
+			if (innerQuery == null || forceReinitialization)
 			{
 				ISessionFactoryImplementor factory = criteriaQuery.Factory;
 
