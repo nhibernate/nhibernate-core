@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
+using NHibernate.Engine;
 using NHibernate.Util;
 using System;
 
@@ -17,41 +21,7 @@ namespace NHibernate.Mapping
 		private bool cascadeDeleteEnabled;
 		private readonly List<Column> referencedColumns = new List<Column>();
 
-		/// <summary>
-		/// Generates the SQL string to create the named Foreign Key Constraint in the database.
-		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
-		/// <param name="defaultSchema"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <returns>
-		/// A string that contains the SQL to create the named Foreign Key Constraint.
-		/// </returns>
-		public override string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultCatalog, string defaultSchema)
-		{
-			string[] cols = new string[ColumnSpan];
-			string[] refcols = new string[ColumnSpan];
-			int i = 0;
-			IEnumerable<Column> refiter;
-			if (IsReferenceToPrimaryKey)
-				refiter = referencedTable.PrimaryKey.ColumnIterator;
-			else
-				refiter = referencedColumns;
-			foreach (Column column in ColumnIterator)
-			{
-				cols[i] = column.GetQuotedName(d);
-				i++;
-			}
-
-			i = 0;
-			foreach (Column column in refiter)
-			{
-				refcols[i] = column.GetQuotedName(d);
-				i++;
-			}
-			string result = d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d, defaultCatalog, defaultSchema), refcols, IsReferenceToPrimaryKey);
-			return cascadeDeleteEnabled && d.SupportsCascadeDelete ? result + " on delete cascade" : result;
-		}
+		
 
 		/// <summary>
 		/// Gets or sets the <see cref="Table"/> that the Foreign Key is referencing.
@@ -73,27 +43,7 @@ namespace NHibernate.Mapping
 			set { cascadeDeleteEnabled = value; }
 		}
 
-		#region IRelationalModel Memebers
 
-		/// <summary>
-		/// Get the SQL string to drop this Constraint in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="defaultSchema"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <returns>
-		/// A string that contains the SQL to drop this Constraint.
-		/// </returns>
-		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
-		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
-																	dialect.GetDropForeignKeyConstraintString(Name));
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
-		}
-
-		#endregion
 
 		/// <summary> 
 		/// Validates that columnspan of the foreignkey and the primarykey is the same.
@@ -214,5 +164,47 @@ namespace NHibernate.Mapping
 		{
 			get { return referencedColumns.Count == 0; }
 		}
-	}
+
+        #region DdlOperations Generation
+
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect, IMapping mapping, string defaultSchema)
+        {
+            var constratintName = dialect.Qualify("", Table.Schema ?? defaultSchema, Name);
+            var model = GetForeignKeyModel(dialect, constratintName, defaultSchema);
+            return new CreateForeignKeyOperation(model);
+        }
+
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect, string defaultSchema)
+        {
+            var constratintName = dialect.Qualify("", Table.Schema ?? defaultSchema, Name);
+            var model = GetForeignKeyModel(dialect, constratintName, defaultSchema);
+            return new DropForeignKeyDdlOperation(model);
+        }
+
+
+
+        private ForeignKeyModel GetForeignKeyModel(Dialect.Dialect dialect, string constraintName, string defaultSchema)
+        {
+            var referencedTableName = referencedTable.GetThreePartName(dialect, "", defaultSchema);
+
+            //var referencedTableName = referencedTable.GetQualifiedName(d, defaultCatalog, defaultSchema);
+
+            var dependentTableName = this.Table.GetThreePartName(dialect, "", defaultSchema);
+            var model = new ForeignKeyModel
+            {
+                Name = constraintName,
+                DependentTable = dependentTableName,
+                ReferencedTable = referencedTableName,
+                CascadeDelete = CascadeDeleteEnabled,
+                ForeignKeyColumns = ColumnIterator.Select(c => c.GetQuotedName()).ToList(),
+                IsReferenceToPrimaryKey = IsReferenceToPrimaryKey,
+                PrimaryKeyColumns = (IsReferenceToPrimaryKey ? referencedTable.PrimaryKey.ColumnIterator : referencedColumns)
+                    .Select(c => c.GetQuotedName()).ToList()
+            };
+            //string result = d.GetAddForeignKeyConstraintString(constraintName, cols, referencedTable.GetQualifiedName(d, defaultCatalog, defaultSchema), refcols, IsReferenceToPrimaryKey);
+            return model;
+        }
+
+        #endregion
+    }
 }

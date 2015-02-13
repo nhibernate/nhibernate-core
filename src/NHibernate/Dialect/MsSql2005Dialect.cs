@@ -63,20 +63,11 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		protected override string GetSelectExistingObject(string name, Table table)
-		{
-			string schema = table.GetQuotedSchemaName(this);
-			if (schema != null)
-			{
-				schema += ".";
-			}
-			string objName = string.Format("{0}{1}", schema, Quote(name));
-			string parentName = string.Format("{0}{1}", schema, table.GetQuotedName(this));
-			return
-				string.Format(
-					"select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')", objName,
-					parentName);
-		}
+        protected override string GetSelectExistingObject(string objectName, string parentObjectName)
+        {
+            return string.Format("select 1 from sys.objects where object_id = OBJECT_ID(N'{0}') AND parent_object_id = OBJECT_ID('{1}')",
+                                 objectName, parentObjectName);
+        }
 
 		/// <summary>
 		/// Sql Server 2005 supports a query statement that provides <c>LIMIT</c>

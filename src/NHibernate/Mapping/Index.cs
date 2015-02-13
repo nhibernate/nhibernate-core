@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -11,73 +14,12 @@ namespace NHibernate.Mapping
 	/// An Index in the database.
 	/// </summary>
 	[Serializable]
-	public class Index : IRelationalModel
+	public class Index 
 	{
 		private Table table;
 		private readonly List<Column> columns = new List<Column>();
 		private string name;
 
-		public static string BuildSqlCreateIndexString(Dialect.Dialect dialect, string name, Table table,
-			IEnumerable<Column> columns, bool unique, string defaultCatalog, string defaultSchema)
-		{
-			//TODO handle supportsNotNullUnique=false, but such a case does not exist in the wild so far
-			StringBuilder buf = new StringBuilder("create")
-				.Append(unique ? " unique" : "")
-				.Append(" index ")
-				.Append(dialect.QualifyIndexName ? name : StringHelper.Unqualify(name))
-				.Append(" on ")
-				.Append(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
-				.Append(" (");
-			bool commaNeeded = false;
-			foreach (Column column in columns)
-			{
-				if (commaNeeded)
-					buf.Append(StringHelper.CommaSpace);
-				commaNeeded = true;
-
-				buf.Append(column.GetQuotedName(dialect));
-			}
-			buf.Append(")");
-
-			return buf.ToString();
-		}
-
-		public static string BuildSqlDropIndexString(Dialect.Dialect dialect, Table table, string name, string defaultCatalog, string defaultSchema)
-		{
-			string ifExists = dialect.GetIfExistsDropConstraint(table, name);
-			string drop = string.Format("drop index {0}", StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name));
-			string end = dialect.GetIfExistsDropConstraintEnd(table, name);
-			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
-		}
-
-		/// <summary>
-		/// Generates the SQL string to create this Index in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="p"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <param name="defaultSchema"></param>
-		/// <returns>
-		/// A string that contains the SQL to create this Index.
-		/// </returns>
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
-		{
-			return BuildSqlCreateIndexString(dialect, Name, Table, ColumnIterator, false, defaultCatalog, defaultSchema);
-		}
-
-		/// <summary>
-		/// Generates the SQL string to drop this Index in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="defaultCatalog"></param>
-		/// <param name="defaultSchema"></param>
-		/// <returns>
-		/// A string that contains the SQL to drop this Index.
-		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
-		{
-			return BuildSqlDropIndexString(dialect, Table, Name, defaultCatalog, defaultSchema);
-		}
 
 		/// <summary>
 		/// Gets or sets the <see cref="Table"/> this Index is in.
@@ -146,6 +88,34 @@ namespace NHibernate.Mapping
 		public override string ToString()
 		{
 			return GetType().FullName + "(" + Name + ")";
-		}
-	}
+        }
+
+        #region DdlOperations Framework
+
+        ///// <summary>
+        ///// Generates the SQL string to create this Index in the database.
+        ///// </summary>
+        ///// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
+        ///// <param name="p"></param>
+        ///// <param name="defaultCatalog"></param>
+        ///// <param name="defaultSchema"></param>
+        ///// <returns>
+        ///// A string that contains the SQL to create this Index.
+        ///// </returns>
+        public IDdlOperation GetCreateIndexOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema)
+        {
+            var model = new IndexModel
+            {
+                TableName = this.Table.GetThreePartName(dialect, defaultCatalog, defaultSchema),
+                Name = (dialect.QualifyIndexName ? Name : StringHelper.Unqualify(Name)),
+                Columns = ColumnIterator.Select(c => c.GetQuotedName()).ToList(),
+                Unique = false,
+                Clustered = false,
+            };
+            return new CreateIndexDdlOperation(model);
+        }
+
+        #endregion
+
+    }
 }

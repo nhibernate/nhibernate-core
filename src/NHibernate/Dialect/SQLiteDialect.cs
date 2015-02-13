@@ -306,7 +306,20 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		[Serializable]
+	    public override bool SupportsDropColumn
+	    {
+	        get { return false; }
+	    }
+
+        public override bool SupportsAlterColumn
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+	    [Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
 			protected override bool CastingIsRequired(string sqlType)

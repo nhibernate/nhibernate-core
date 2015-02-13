@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -241,16 +241,15 @@ namespace NHibernate.Id.Enhanced
 			return DatabaseStructure.Name;
 		}
 
-		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			return DatabaseStructure.SqlCreateStrings(dialect);
-		}
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
+            return DatabaseStructure.GetCreateOperation(dialect);
+        }
 
-		public virtual string[] SqlDropString(Dialect.Dialect dialect)
-		{
-			return DatabaseStructure.SqlDropStrings(dialect);
-		}
-
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return DatabaseStructure.GetDropOperation(dialect);
+        }
 		#endregion
 	}
 }

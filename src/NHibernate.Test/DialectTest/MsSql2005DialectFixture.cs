@@ -195,11 +195,11 @@ namespace NHibernate.Test.DialectTest
 		public void GetIfExistsDropConstraintTest_without_schema()
 		{
 			MsSql2005Dialect dialect = new MsSql2005Dialect();
-			Table foo = new Table("Foo");
+
 			string expected = "if exists (select 1 from sys.objects" +
 							  " where object_id = OBJECT_ID(N'[Bar]')" +
 							  " AND parent_object_id = OBJECT_ID('Foo'))";
-			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(foo, "Bar");
+			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("[Bar]", "Foo");
 			System.Console.WriteLine(ifExistsDropConstraint);
 			Assert.AreEqual(expected, ifExistsDropConstraint);
 		}
@@ -208,12 +208,11 @@ namespace NHibernate.Test.DialectTest
 		public void GetIfExistsDropConstraintTest_For_Schema_other_than_dbo()
 		{
 			MsSql2005Dialect dialect = new MsSql2005Dialect();
-			Table foo = new Table("Foo");
-			foo.Schema = "Other";
+
 			string expected = "if exists (select 1 from sys.objects" +
 							  " where object_id = OBJECT_ID(N'Other.[Bar]')" +
 							  " AND parent_object_id = OBJECT_ID('Other.Foo'))";
-			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(foo, "Bar");
+			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("Other.[Bar]", "Other.Foo");
 			System.Console.WriteLine(ifExistsDropConstraint);
 			Assert.AreEqual(expected, ifExistsDropConstraint);
 		}

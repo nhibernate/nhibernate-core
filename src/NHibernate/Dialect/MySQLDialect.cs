@@ -386,5 +386,10 @@ namespace NHibernate.Dialect
 				return TimeSpan.TicksPerSecond;
 			}
 		}
+
+	    public override string AlterColumnString
+	    {
+            get { return "MODIFY COLUMN"; }
+	    }
 	}
 }

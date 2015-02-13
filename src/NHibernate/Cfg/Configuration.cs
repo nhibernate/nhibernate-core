@@ -16,6 +16,7 @@ using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.XmlHbmBinding;
+using NHibernate.DdlGen;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
@@ -808,153 +809,72 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		/// <summary>
-		/// Generate DDL for dropping tables
-		/// </summary>
-		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
-		public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
-		{
-			SecondPassCompile();
 
-			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
-			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+        public OperationsGenerator CreateOperationsGenerator()
+        {
+            SecondPassCompile();
 
-			var script = new List<string>();
+            string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+            string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.DisableForeignKeyConstraintsString))
-				script.Add(dialect.DisableForeignKeyConstraintsString);
+            var operationsGenerator = new OperationsGenerator(mapping, defaultCatalog, defaultSchema);
+            return operationsGenerator;
+        }
 
-			// drop them in reverse order in case db needs it done that way...););
-			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
-			{
-				IAuxiliaryDatabaseObject auxDbObj = auxiliaryDatabaseObjects[i];
-				if (auxDbObj.AppliesToDialect(dialect))
-				{
-					script.Add(auxDbObj.SqlDropString(dialect, defaultCatalog, defaultSchema));
-				}
-			}
 
-			if (dialect.DropConstraints)
-			{
-				foreach (var table in TableMappings)
-				{
-					if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
-					{
-						foreach (var fk in table.ForeignKeyIterator)
-						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Drop))
-							{
-								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
-							}
-						}
-					}
-				}
-			}
+        /// <summary>
+        /// Generate DDL for dropping tables
+        /// </summary>
+        /// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaExport" />
+        public string[] GenerateDropSchemaScript(Dialect.Dialect dialect)
+        {
 
-			foreach (var table in TableMappings)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
-				{
-					script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
-				}
-			}
+            var op = CreateOperationsGenerator();
+            var idGenerators = IterateGenerators(dialect).ToList();
 
-			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
-			foreach (var idGen in pIDg)
-			{
-				string[] lines = idGen.SqlDropString(dialect);
-				if (lines != null)
-				{
-					foreach (var line in lines)
-					{
-						script.Add(line);
-					}
-				}
-			}
+            return op.GetDropDdlOperations(dialect, TableMappings, idGenerators, auxiliaryDatabaseObjects)
+              .SelectMany(g => g.GetStatements(dialect))
+              .ToArray();
 
-			if (!dialect.SupportsForeignKeyConstraintInAlterTable && !string.IsNullOrEmpty(dialect.EnableForeignKeyConstraintsString))
-				script.Add(dialect.EnableForeignKeyConstraintsString);
 
-			return script.ToArray();
-		}
+        }
+
 
 		public static bool IncludeAction(SchemaAction actionsSource, SchemaAction includedAction)
 		{
 			return (actionsSource & includedAction) != SchemaAction.None;
 		}
 
-		/// <summary>
-		/// Generate DDL for creating tables
-		/// </summary>
-		/// <param name="dialect"></param>
-		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect)
-		{
-			SecondPassCompile();
+        /// <summary>
+        /// Generate DDL for creating tables
+        /// </summary>
+        /// <param name="dialect"></param>
+        public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect)
+        {
+            var op = CreateOperationsGenerator();
+            var idGenerators = IterateGenerators(dialect).ToList();
 
-			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
-			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+            return op.GetCreateDdlOperations(dialect, TableMappings, idGenerators, auxiliaryDatabaseObjects)
+              .SelectMany(g => g.GetStatements(dialect))
+              .ToArray();
 
-			var script = new List<string>();
+        }
 
-			foreach (var table in TableMappings)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
-				{
-					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
-				}
-			}
+        ///<summary>
+        /// Generate DDL for altering tables
+        ///</summary>
+        /// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
+        public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+        {
+            var op = CreateOperationsGenerator();
+            var idGenerators = IterateGenerators(dialect).ToList();
 
-			foreach (var table in TableMappings)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
-				{
-					if (!dialect.SupportsUniqueConstraintInCreateAlterTable)
-					{
-						foreach (var uk in table.UniqueKeyIterator)
-						{
-							string constraintString = uk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
-							if (constraintString != null)
-							{
-								script.Add(constraintString);
-							}
-						}
-					}
+            return op.GenerateSchemaUpdateOperations(dialect, databaseMetadata, TableMappings, idGenerators)
+              .SelectMany(g => g.GetStatements(dialect))
+              .ToArray();
+        }
 
-					foreach (var index in table.IndexIterator)
-					{
-						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-					}
 
-					if (dialect.SupportsForeignKeyConstraintInAlterTable)
-					{
-						foreach (var fk in table.ForeignKeyIterator)
-						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
-							{
-								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-							}
-						}
-					}
-				}
-			}
-
-			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
-			foreach (var idGen in pIDg)
-			{
-				script.AddRange(idGen.SqlCreateStrings(dialect));
-			}
-
-			foreach (var auxDbObj in auxiliaryDatabaseObjects)
-			{
-				if (auxDbObj.AppliesToDialect(dialect))
-				{
-					script.Add(auxDbObj.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-				}
-			}
-
-			return script.ToArray();
-		}
 
 		private void Validate()
 		{
@@ -2315,129 +2235,11 @@ namespace NHibernate.Cfg
 			return list.ToArray();
 		}
 
-		///<summary>
-		/// Generate DDL for altering tables
-		///</summary>
-		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
-		{
-			SecondPassCompile();
-
-			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
-			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
-
-			var script = new List<string>(50);
-			foreach (var table in TableMappings)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
-				{
-					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema,
-																				 table.Catalog ?? defaultCatalog, table.IsQuoted);
-					if (tableInfo == null)
-					{
-						script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-					}
-					else
-					{
-						string[] alterDDL = table.SqlAlterStrings(dialect, mapping, tableInfo, defaultCatalog, defaultSchema);
-						script.AddRange(alterDDL);
-					}
-
-					string[] comments = table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema);
-					script.AddRange(comments);
-				}
-			}
-
-			foreach (var table in TableMappings)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
-				{
-					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
-																				 table.IsQuoted);
-
-					if (dialect.SupportsForeignKeyConstraintInAlterTable)
-					{
-						foreach (var fk in table.ForeignKeyIterator)
-						{
-							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Update))
-							{
-								bool create = tableInfo == null
-											  ||
-											  (tableInfo.GetForeignKeyMetadata(fk.Name) == null
-											   && (!(dialect is MySQLDialect) || tableInfo.GetIndexMetadata(fk.Name) == null));
-								if (create)
-								{
-									script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-								}
-							}
-						}
-					}
-
-					foreach (var index in table.IndexIterator)
-					{
-						if (tableInfo == null || tableInfo.GetIndexMetadata(index.Name) == null)
-						{
-							script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
-						}
-					}
-				}
-			}
-
-			foreach (var generator in IterateGenerators(dialect))
-			{
-				string key = generator.GeneratorKey();
-				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
-				{
-					string[] lines = generator.SqlCreateStrings(dialect);
-					for (int i = 0; i < lines.Length; i++)
-					{
-						script.Add(lines[i]);
-					}
-				}
-			}
-
-			return script.ToArray();
-		}
 
 		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
 		{
-			SecondPassCompile();
-
-			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
-			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
-
-			var iter = TableMappings;
-			foreach (var table in iter)
-			{
-				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Validate))
-				{
-					/*NH Different Implementation :
-						TableMetadata tableInfo = databaseMetadata.getTableMetadata(
-						table.getName(),
-						( table.getSchema() == null ) ? defaultSchema : table.getSchema(),
-						( table.getCatalog() == null ) ? defaultCatalog : table.getCatalog(),
-								table.isQuoted());*/
-					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(
-						table.Name,
-						table.Schema ?? defaultSchema,
-						table.Catalog ?? defaultCatalog,
-						table.IsQuoted);
-					if (tableInfo == null)
-						throw new HibernateException("Missing table: " + table.Name);
-					else
-						table.ValidateColumns(dialect, mapping, tableInfo);
-				}
-			}
-
-			var persistenceIdentifierGenerators = IterateGenerators(dialect);
-			foreach (var generator in persistenceIdentifierGenerators)
-			{
-				string key = generator.GeneratorKey();
-				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
-				{
-					throw new HibernateException(string.Format("Missing sequence or table: " + key));
-				}
-			}
+            var op = CreateOperationsGenerator();
+            op.ValidateSchema(dialect, TableMappings, IterateGenerators(dialect),databaseMetadata);
 		}
 
 		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)

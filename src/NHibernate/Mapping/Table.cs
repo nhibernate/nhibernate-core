@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -23,7 +26,7 @@ namespace NHibernate.Mapping
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
 	[Serializable]
-	public class Table : IRelationalModel
+	public class Table 
 	{
 		private static int tableCounter;
 		private readonly List<string> checkConstraints = new List<string>();
@@ -315,156 +318,6 @@ namespace NHibernate.Mapping
 			get { return isSchemaQuoted; }
 		}
 
-		#region IRelationalModel Members
-
-		/// <summary>
-		/// Generates the SQL string to create this Table in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
-		/// <param name="p"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <param name="defaultSchema"></param>
-		/// <returns>
-		/// A string that contains the SQL to create this Table, Primary Key Constraints
-		/// , and Unique Key Constraints.
-		/// </returns>
-		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
-		{
-			StringBuilder buf =
-				new StringBuilder(HasPrimaryKey ? dialect.CreateTableString : dialect.CreateMultisetTableString).Append(' ').Append(
-					GetQualifiedName(dialect, defaultCatalog, defaultSchema)).Append(" (");
-
-			bool identityColumn = idValue != null && idValue.IsIdentityColumn(dialect);
-
-			// try to find out the name of the pk to create it as identity if the 
-			// identitygenerator is used
-			string pkname = null;
-			if (HasPrimaryKey && identityColumn)
-			{
-				foreach (Column col in PrimaryKey.ColumnIterator)
-				{
-					pkname = col.GetQuotedName(dialect); //should only go through this loop once
-				}
-			}
-
-			bool commaNeeded = false;
-			foreach (Column col in ColumnIterator)
-			{
-				if (commaNeeded)
-				{
-					buf.Append(StringHelper.CommaSpace);
-				}
-				commaNeeded = true;
-
-				buf.Append(col.GetQuotedName(dialect)).Append(' ');
-
-				if (identityColumn && col.GetQuotedName(dialect).Equals(pkname))
-				{
-					// to support dialects that have their own identity data type
-					if (dialect.HasDataTypeInIdentityColumn)
-					{
-						buf.Append(col.GetSqlType(dialect, p));
-					}
-					buf.Append(' ').Append(dialect.GetIdentityColumnString(col.GetSqlTypeCode(p).DbType));
-				}
-				else
-				{
-					buf.Append(col.GetSqlType(dialect, p));
-
-					if (!string.IsNullOrEmpty(col.DefaultValue))
-					{
-						buf.Append(" default ").Append(col.DefaultValue).Append(" ");
-					}
-
-					if (col.IsNullable)
-					{
-						buf.Append(dialect.NullColumnString);
-					}
-					else
-					{
-						buf.Append(" not null");
-					}
-				}
-
-				if (col.IsUnique)
-				{
-					if (dialect.SupportsUnique)
-					{
-						buf.Append(" unique");
-					}
-					else
-					{
-						UniqueKey uk = GetOrCreateUniqueKey(col.GetQuotedName(dialect) + "_");
-						uk.AddColumn(col);
-					}
-				}
-
-				if (col.HasCheckConstraint && dialect.SupportsColumnCheck)
-				{
-					buf.Append(" check( ").Append(col.CheckConstraint).Append(") ");
-				}
-
-				if (string.IsNullOrEmpty(col.Comment) == false)
-				{
-					buf.Append(dialect.GetColumnComment(col.Comment));
-				}
-			}
-			if (HasPrimaryKey && (dialect.GenerateTablePrimaryKeyConstraintForIdentityColumn || !identityColumn))
-			{
-				buf.Append(StringHelper.CommaSpace).Append(PrimaryKey.SqlConstraintString(dialect, defaultSchema));
-			}
-
-			foreach (UniqueKey uk in UniqueKeyIterator)
-			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
-			}
-
-			if (dialect.SupportsTableCheck)
-			{
-				foreach (string checkConstraint in checkConstraints)
-				{
-					buf.Append(", check (").Append(checkConstraint).Append(") ");
-				}
-			}
-
-			if (!dialect.SupportsForeignKeyConstraintInAlterTable)
-			{
-				foreach (ForeignKey foreignKey in ForeignKeyIterator)
-				{
-					if (foreignKey.HasPhysicalConstraint)
-					{
-						buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
-					}
-				}
-			}
-
-			buf.Append(StringHelper.ClosedParen);
-
-			if (string.IsNullOrEmpty(comment) == false)
-			{
-				buf.Append(dialect.GetTableComment(comment));
-			}
-			buf.Append(dialect.TableTypeString);
-
-			return buf.ToString();
-		}
-
-		/// <summary>
-		/// Generates the SQL string to drop this Table in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
-		/// <param name="defaultCatalog"></param>
-		/// <param name="defaultSchema"></param>
-		/// <returns>
-		/// A string that contains the SQL to drop this Table and to cascade the drop to 
-		/// the constraints if the database supports it.
-		/// </returns>
-		public string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
-		{
-			return dialect.GetDropTableString(GetQualifiedName(dialect, defaultCatalog, defaultSchema));
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Gets the schema qualified name of the Table.
@@ -589,66 +442,6 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public string[] SqlAlterStrings(Dialect.Dialect dialect, IMapping p, ITableMetadata tableInfo, string defaultCatalog,
-										string defaultSchema)
-		{
-			StringBuilder root =
-				new StringBuilder("alter table ").Append(GetQualifiedName(dialect, defaultCatalog, defaultSchema)).Append(' ').
-					Append(dialect.AddColumnString);
-
-			var results = new List<string>(ColumnSpan);
-
-			foreach (Column column in ColumnIterator)
-			{
-				IColumnMetadata columnInfo = tableInfo.GetColumnMetadata(column.Name);
-				if (columnInfo != null)
-				{
-					continue;
-				}
-
-				// the column doesnt exist at all.
-				StringBuilder alter =
-					new StringBuilder(root.ToString()).Append(' ').Append(column.GetQuotedName(dialect)).Append(' ').Append(
-						column.GetSqlType(dialect, p));
-
-				string defaultValue = column.DefaultValue;
-				if (!string.IsNullOrEmpty(defaultValue))
-				{
-					alter.Append(" default ").Append(defaultValue);
-
-					if (column.IsNullable)
-					{
-						alter.Append(dialect.NullColumnString);
-					}
-					else
-					{
-						alter.Append(" not null");
-					}
-				}
-
-				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
-										   && (!column.IsNullable || dialect.SupportsNotNullUnique);
-				if (useUniqueConstraint)
-				{
-					alter.Append(" unique");
-				}
-
-				if (column.HasCheckConstraint && dialect.SupportsColumnCheck)
-				{
-					alter.Append(" check(").Append(column.CheckConstraint).Append(") ");
-				}
-
-				string columnComment = column.Comment;
-				if (columnComment != null)
-				{
-					alter.Append(dialect.GetColumnComment(columnComment));
-				}
-
-				results.Add(alter.ToString());
-			}
-
-			return results.ToArray();
-		}
 
 		public Index GetIndex(string indexName)
 		{
@@ -929,35 +722,236 @@ namespace NHibernate.Mapping
 			return comments.ToArray();
 		}
 
-		public virtual string SqlTemporaryTableCreateString(Dialect.Dialect dialect, IMapping mapping)
-		{
-			StringBuilder buffer = new StringBuilder(dialect.CreateTemporaryTableString).Append(' ').Append(name).Append(" (");
-			bool commaNeeded = false;
-			foreach (Column column in ColumnIterator)
-			{
-				buffer.Append(column.GetQuotedName(dialect)).Append(' ');
-				buffer.Append(column.GetSqlType(dialect, mapping));
+        #region DdlOperation Framework
 
-				if (commaNeeded)
-				{
-					buffer.Append(StringHelper.CommaSpace);
-				}
-				commaNeeded = true;
+        /// <summary>
+        /// Generates the SQL string to create this Table in the database.
+        /// </summary>
+        /// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
+        /// <param name="p"></param>
+        /// <param name="defaultCatalog"></param>
+        /// <param name="defaultSchema"></param>
+        /// <returns>
+        /// A string that contains the SQL to create this Table, Primary Key Constraints
+        /// , and Unique Key Constraints.
+        /// </returns>
+        public IDdlOperation GetCreateTableOperation(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+        {
+            //TODO: Make this return Operations
+            var createTableModel = GetCreateTableModel(dialect, p, defaultCatalog, defaultSchema);
+            return new CreateTableDdlOperation(createTableModel);
 
-				if (column.IsNullable)
-				{
-					buffer.Append(dialect.NullColumnString);
-				}
-				else
-				{
-					buffer.Append(" not null");
-				}
-			}
 
-			buffer.Append(") ");
-			buffer.Append(dialect.CreateTemporaryTablePostfix);
-			return buffer.ToString();
-		}
+        }
+
+        public IEnumerable<IDdlOperation> GetAddUniqueKeyOperations(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+        {
+            var qualifiedTableName = GetThreePartName(dialect, defaultCatalog, defaultSchema);
+            var modelColumns = GetModelColumns(dialect, p, qualifiedTableName);
+            var columnUniques = GetUniqueIndexModels(dialect, qualifiedTableName, modelColumns);
+            return columnUniques.Select(m => new CreateIndexDdlOperation(m));
+        }
+        private CreateTableModel GetCreateTableModel(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+        {
+            var qualifiedTableName = GetThreePartName(dialect, defaultCatalog, defaultSchema);
+
+
+            var modelColumns = GetModelColumns(dialect, p, qualifiedTableName);
+
+            PrimaryKeyModel pkModel = null;
+            if (HasPrimaryKey)
+            {
+                bool hasIdentityColumn = idValue != null && idValue.IsIdentityColumn(dialect);
+                var pkCols = PrimaryKey.ColumnIterator
+                    .Select(c => c.GetQuotedName())
+                    .Select(c => modelColumns[c])
+                    .ToList();
+                pkModel = new PrimaryKeyModel(pkCols, hasIdentityColumn);
+            }
+
+
+            var columnUniques = GetUniqueIndexModels(dialect, qualifiedTableName, modelColumns);
+
+
+            var tableChecks = checkConstraints.Select(c => new TableCheckModel
+            {
+                Expression = c,
+                TableName = qualifiedTableName
+            }).ToList();
+
+            var fkModels = ForeignKeyIterator.Where(fk => fk.HasPhysicalConstraint)
+                .Select(fk => new ForeignKeyModel
+                {
+                    Name = fk.Name,
+                    IsReferenceToPrimaryKey = fk.IsReferenceToPrimaryKey,
+                    CascadeDelete = fk.CascadeDeleteEnabled,
+                    DependentTable = qualifiedTableName,
+                    ForeignKeyColumns =
+                        fk.ColumnIterator.Select(fkc => modelColumns[fkc.GetQuotedName()].Name).ToList(),
+                    ReferencedTable = fk.ReferencedTable.GetThreePartName(dialect, defaultCatalog, defaultSchema),
+                }).ToList();
+
+            var createTableModel = new CreateTableModel
+            {
+                Name = qualifiedTableName,
+                Columns = modelColumns.Values.ToList(),
+                PrimaryKey = pkModel,
+                UniqueIndexes = columnUniques,
+                ForeignKeys = fkModels,
+                Checks = tableChecks
+            };
+            return createTableModel;
+        }
+
+        public DbName GetThreePartName(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
+        {
+            return new DbName(catalog ?? defaultCatalog, schema ?? defaultSchema, IsQuoted ? BacktickQuoteUtil.QuoteWithBackticks(dialect, Name) : Name);
+            
+        }
+
+        private Dictionary<string, ColumnModel> GetModelColumns(Dialect.Dialect dialect, IMapping p, DbName qualifiedTableName)
+        {
+            var modelColumns = ColumnIterator.Select(c => CreateColumnModel(dialect, p, c, qualifiedTableName))
+                              .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+            return modelColumns;
+        }
+
+        private List<IndexModel> GetUniqueIndexModels(Dialect.Dialect dialect, DbName qualifiedTableName,
+                                                      Dictionary<string, ColumnModel> modelColumns)
+        {
+            var columnUniques = ColumnIterator.Where(c => c.Unique)
+            .Select(c => new IndexModel
+            {
+                TableName = qualifiedTableName,
+                Unique = true,
+                Columns = new[] { c.GetQuotedName() },
+                Name = "UK" + UniqueColumnString(new[] { c }),
+            })
+            .Concat(
+                UniqueKeyIterator.Where(uk => uk.Table == this).Select(uk => new
+                {
+                    uk.Name,
+                    Cols = uk.ColumnIterator.Select(c => modelColumns[c.GetQuotedName()]).ToList()
+                }).Select(m => new IndexModel
+                {
+                    TableName = qualifiedTableName,
+                    Unique = true,
+                    Name = m.Name,
+                    Columns = m.Cols.Select(x => x.Name).ToList()
+                }))
+            .ToList();
+            return columnUniques;
+        }
+
+        private static ColumnModel CreateColumnModel(Dialect.Dialect dialect, IMapping p, Column c, DbName qualifiedTableName)
+        {
+            var columnModel = new ColumnModel
+            {
+                Name = c.GetQuotedName(),
+                SqlType = c.SqlType,
+                SqlTypeCode = c.GetSqlTypeCode(p),
+                CheckConstraint = !c.HasCheckConstraint ? null : new ColumnCheckModel
+                {
+                    ColumnName = c.GetQuotedName(),
+                    Expression = c.CheckConstraint,
+                    TableName = qualifiedTableName
+                },
+                DefaultValue = c.DefaultValue,
+                Nullable = c.IsNullable,
+            };
+            columnModel.SetPrecsisionNullable(c.GetPrecisionNullable());
+            columnModel.SetLengthNullable(c.GetLengthNullable());
+            columnModel.SetScaleNullable(c.GetScaleNullable());
+            return columnModel;
+        }
+
+        /// <summary>
+        /// Generates the SQL string to drop this Table in the database.
+        /// </summary>
+        /// <param name="dialect">The <see cref="Dialect"/> to use for SQL rules.</param>
+        /// <param name="defaultCatalog"></param>
+        /// <param name="defaultSchema"></param>
+        /// <returns>
+        /// A string that contains the SQL to drop this Table and to cascade the drop to 
+        /// the constraints if the database supports it.
+        /// </returns>
+        public IDdlOperation GetDropTableOperation(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
+        {
+
+            return new DropTableDdlOperation(GetThreePartName(dialect, defaultCatalog, defaultSchema));
+
+        }
+
+        public IEnumerable<IDdlOperation> GetAlterOperations(Dialect.Dialect dialect, IMapping p, ITableMetadata tableInfo, string defaultCatalog, string defaultSchema)
+        {
+
+            var qualifiedTableName = GetThreePartName(dialect, defaultCatalog, defaultSchema);
+
+            var cols = ColumnIterator
+                .Where(column => tableInfo.GetColumnMetadata(column.Name) == null)
+                .Select(column => new
+                {
+                    Model = CreateColumnModel(dialect, p, column, qualifiedTableName),
+                    column.Unique,
+                    Column = column
+                });
+            foreach (var c in cols)
+            {
+                yield return new AlterTableAddColumnDdlOperation(new AddOrAlterColumnModel
+                {
+                    Column = c.Model,
+                    Table = qualifiedTableName
+
+                });
+                if (c.Unique)
+                {
+                    yield return new CreateIndexDdlOperation(new IndexModel
+                    {
+                        Unique = true,
+                        Columns = new List<string>() { c.Model.Name },
+                        TableName = qualifiedTableName,
+                        Name = "UK" + UniqueColumnString(new[] { c.Column })
+                    });
+                }
+            }
+
+        }
+
+
+        public virtual IDdlOperation GetAddTableCommentsOperation(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
+        {
+            //TODO: Make this return Operations
+            var model = new TableCommentsModel
+            {
+                TableName = GetThreePartName(dialect, defaultCatalog, defaultSchema),
+                Comment = comment,
+                Columns = ColumnIterator
+                .Where(c => !String.IsNullOrEmpty(c.Comment))
+                .Select(c => new ColumnCommentModel
+                {
+                    ColumnName = c.GetQuotedName(),
+                    Comment = c.Comment
+                }).ToList()
+            };
+            return new AddTableCommentsDdlOperation(model);
+
+        }
+
+        public virtual string SqlTemporaryTableCreateString(Dialect.Dialect dialect, IMapping mapping)
+        {
+            var model = new CreateTemporaryTableModel
+            {
+                Name = new DbName(name),
+                Columns = ColumnIterator.Select(c => new ColumnModel
+                {
+                    Name = c.GetQuotedName(),
+                    SqlType = c.GetSqlType(dialect, mapping),
+                    Nullable = c.IsNullable
+                }).ToList()
+            };
+            return String.Join(dialect.BatchTerminator, new CreateTemporaryTableDdlOperation(model).GetStatements(dialect));
+        }
+        #endregion
 
 		public override string ToString()
 		{

@@ -17,7 +17,7 @@ namespace NHibernate.Test
 {
 	public abstract class TestCase
 	{
-		private const bool OutputDdl = false;
+		private const bool OutputDdl = true;
 		protected Configuration cfg;
 		protected ISessionFactoryImplementor sessions;
 

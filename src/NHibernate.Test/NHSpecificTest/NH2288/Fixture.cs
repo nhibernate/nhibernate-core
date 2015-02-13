@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 			var sb = new StringBuilder(500);
 			su.Execute(x => sb.AppendLine(x), false, false);
 			string script = sb.ToString();
-			Assert.That(script, Is.StringContaining("if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[Aclasses_Id_FK]') AND parent_object_id = OBJECT_ID('dbo.Aclass'))"));
+            Assert.That(script, Is.StringContaining(" if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.Aclasses_Id_FK') AND parent_object_id = OBJECT_ID('nhibernate.dbo.Aclass'))"));
 		}
 
 		[Test]

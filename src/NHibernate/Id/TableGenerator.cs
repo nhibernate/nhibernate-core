@@ -5,6 +5,8 @@ using System.Data;
 using System.Runtime.CompilerServices;
 
 using NHibernate.AdoNet.Util;
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -163,38 +165,31 @@ namespace NHibernate.Id
 
 		#region IPersistentIdentifierGenerator Members
 
-		/// <summary>
-		/// The SQL required to create the database objects for a TableGenerator.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect"/> to help with creating the sql.</param>
-		/// <returns>
-		/// An array of <see cref="string"/> objects that contain the Dialect specific sql to 
-		/// create the necessary database objects and to create the first value as <c>1</c> 
-		/// for the TableGenerator.
-		/// </returns>
-		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			// changed the first value to be "1" by default since an uninitialized Int32 is 0 - leaving
-			// it at 0 would cause problems with an unsaved-value="0" which is what most people are 
-			// defaulting <id>'s with Int32 types at.
-			return new[]
-					{
-						"create table " + tableName + " ( " + columnName + " " + dialect.GetTypeName(columnSqlType) + " )",
-						"insert into " + tableName + " values ( 1 )"
-					};
-		}
 
-		/// <summary>
-		/// The SQL required to remove the underlying database objects for a TableGenerator.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect"/> to help with creating the sql.</param>
-		/// <returns>
-		/// A <see cref="string"/> that will drop the database objects for the TableGenerator.
-		/// </returns>
-		public virtual string[] SqlDropString(Dialect.Dialect dialect)
-		{
-			return new[] {dialect.GetDropTableString(tableName)};
-		}
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
+            var model = new CreateTableModel
+            {
+                Name = new DbName(tableName),
+                Columns = new List<ColumnModel>()
+	            {
+	                new ColumnModel
+	                {
+	                    Name = columnName,
+	                    Nullable = false,
+	                    SqlType = dialect.GetTypeName(columnSqlType)
+	                }
+	            }
+            };
+            var insertStatement = "insert into " + tableName + " values ( 1 )";
+            return new AggregateDdlOperation(new CreateTableDdlOperation(model), new SqlDdlOperation(insertStatement));
+        }
+
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return new DropTableDdlOperation(new DbName(tableName));
+        }
+
 
 		/// <summary>
 		/// Return a key unique to the underlying database objects for a TableGenerator.

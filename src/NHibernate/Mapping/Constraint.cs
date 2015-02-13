@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// Base class for relational constraints in the database.
 	/// </summary>
 	[Serializable]
-	public abstract class Constraint : IRelationalModel
+	public abstract class Constraint 
 	{
 		private string name;
 		private readonly List<Column> columns = new List<Column>();
@@ -86,74 +86,7 @@ namespace NHibernate.Mapping
 			set { table = value; }
 		}
 
-		#region IRelationModel Members
-
-		/// <summary>
-		/// Generates the SQL string to drop this Constraint in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="defaultSchema"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <returns>
-		/// A string that contains the SQL to drop this Constraint.
-		/// </returns>
-		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
-		{
-			if (IsGenerated(dialect))
-			{
-				string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-				string drop =
-					string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), Name);
-				string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-
-				return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		/// <summary>
-		/// Generates the SQL string to create this Constraint in the database.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="p"></param>
-		/// <param name="defaultSchema"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <returns>
-		/// A string that contains the SQL to create this Constraint.
-		/// </returns>
-		public virtual string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
-		{
-			if (IsGenerated(dialect))
-			{
-				string constraintString = SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema);
-				StringBuilder buf = new StringBuilder("alter table ")
-					.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
-					.Append(constraintString);
-				return buf.ToString();
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-		#endregion
-
-		/// <summary>
-		/// When implemented by a class, generates the SQL string to create the named
-		/// Constraint in the database.
-		/// </summary>
-		/// <param name="d">The <see cref="Dialect.Dialect"/> to use for SQL rules.</param>
-		/// <param name="constraintName">The name to use as the identifier of the constraint in the database.</param>
-		/// <param name="defaultSchema"></param>
-		/// <param name="defaultCatalog"></param>
-		/// <returns>
-		/// A string that contains the SQL to create the named Constraint.
-		/// </returns>
-		public abstract string SqlConstraintString(Dialect.Dialect d, string constraintName, string defaultCatalog, string defaultSchema);
+	
 
 		public virtual bool IsGenerated(Dialect.Dialect dialect)
 		{

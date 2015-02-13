@@ -454,6 +454,11 @@ namespace NHibernate.Dialect
 
 			return res.ToString();
 		}
+
+	    public override string AlterColumnString
+	    {
+	        get { return "modify"; }
+	    }
 	}
 
 	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter

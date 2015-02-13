@@ -2,8 +2,11 @@
 using System.Data;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.SqlCommand;
@@ -512,22 +515,37 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			string createString = dialect.CreateTableString + " " + TableName
-				+ " ( "
-				+ SegmentColumnName + " " + dialect.GetTypeName(SqlTypes.SqlTypeFactory.GetAnsiString(SegmentValueLength)) + " not null, "
-				+ ValueColumnName + " " + dialect.GetTypeName(SqlTypes.SqlTypeFactory.Int64) + ", "
-				+ dialect.PrimaryKeyString + " ( " + SegmentColumnName + ") "
-				+ ")";
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
+            var segmentColumn = new ColumnModel
+            {
+                Name = SegmentColumnName,
+                Nullable = false,
+                SqlTypeCode = SqlTypes.SqlTypeFactory.GetAnsiString(SegmentValueLength)
+            };
+            var valueColumn = new ColumnModel()
+            {
+                Name = ValueColumnName,
+                SqlTypeCode = SqlTypeFactory.Int64
+            };
+            var model = new CreateTableModel
+            {
+                Name = new DbName(TableName),
+                Columns = new List<ColumnModel>()
+	            {
+	                segmentColumn,
+                    valueColumn
+	            },
+                PrimaryKey = new PrimaryKeyModel(new List<ColumnModel> { segmentColumn }, false)
 
-			return new string[] { createString };
-		}
+            };
 
+            return new CreateTableDdlOperation(model);
+        }
 
-		public virtual string[] SqlDropString(Dialect.Dialect dialect)
-		{
-			return new[] { dialect.GetDropTableString(TableName) };
-		}
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return new DropTableDdlOperation(new DbName(TableName));
+        }
 	}
 }

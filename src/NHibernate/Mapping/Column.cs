@@ -453,5 +453,20 @@ namespace NHibernate.Mapping
 		}
 
 		#endregion
+
+        public int? GetPrecisionNullable()
+        {
+            return precision;
+        }
+
+        public int? GetLengthNullable()
+        {
+            return length;
+        }
+
+        public int? GetScaleNullable()
+        {
+            return scale;
+        }
 	}
 }

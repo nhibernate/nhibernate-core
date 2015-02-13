@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using NHibernate.DdlGen.Operations;
+using NHibernate.Engine;
 
 namespace NHibernate.Mapping
 {
@@ -7,7 +9,7 @@ namespace NHibernate.Mapping
 	/// in the mappings.  Allows Hibernate to manage their lifecycle as part of
 	/// creating/dropping the schema. 
 	/// </summary>
-	public interface IAuxiliaryDatabaseObject : IRelationalModel
+	public interface IAuxiliaryDatabaseObject 
 	{
 		/// <summary> 
 		/// Add the given dialect name to the scope of dialects to which
@@ -27,5 +29,25 @@ namespace NHibernate.Mapping
 		/// Gets called by NHibernate to pass the configured type parameters to the implementation.
 		/// </summary>
 		void SetParameterValues(IDictionary<string, string> parameters);
+
+        /// <summary>
+        /// Generates the operation to create this db object
+        /// </summary>
+        /// <param name="dialect"></param>
+        /// <param name="mapping"></param>
+        /// <param name="defaultCatalog"></param>
+        /// <param name="defaultSchema"></param>
+        /// <returns></returns>
+        IDdlOperation GetCreateOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema);
+
+        /// <summary>
+        /// Generates the operation to drop this db object
+        /// </summary>
+        /// <param name="dialect"></param>
+        /// <param name="mapping"></param>
+        /// <param name="defaultCatalog"></param>
+        /// <param name="defaultSchema"></param>
+        /// <returns></returns>
+        IDdlOperation GetDropOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema);
 	}
 }

@@ -812,5 +812,10 @@ namespace NHibernate.Dialect
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+
+        public override string AlterColumnString
+        {
+            get { return "MODIFY"; }
+        }
 	}
 }

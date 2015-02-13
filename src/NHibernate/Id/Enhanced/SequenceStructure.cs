@@ -1,7 +1,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -53,24 +54,28 @@ namespace NHibernate.Id.Enhanced
 			_applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
 		}
 
-		public string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			int sourceIncrementSize = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
+        /// <summary> Commands needed to create the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The creation commands. </returns>
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
+            int sourceIncrementSize = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
+            var model = new CreateSequenceModel
+            {
+                Name = new DbName(_sequenceName),
+                InitialValue = _initialValue,
+                IncrementSize = sourceIncrementSize
+            };
+            return new CreateSequenceDdlOperation(model);
+        }
 
-			// If pooled sequences aren't supported, but needed here, the dialect will throw, which is
-			// ok, since the SequenceStyleGenerator is responsible for not using us in that case.
-
-			if (_initialValue > 1 || sourceIncrementSize > 1)
-				return dialect.GetCreateSequenceStrings(_sequenceName, _initialValue, sourceIncrementSize);
-			else
-				return new[] { dialect.GetCreateSequenceString(_sequenceName) };
-		}
-
-		public string[] SqlDropStrings(Dialect.Dialect dialect)
-		{
-			return dialect.GetDropSequenceStrings(_sequenceName);
-		}
-
+        /// <summary> Commands needed to drop the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The drop commands. </returns>
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return new DropSequenceDdlOperation(_sequenceName);
+        }
 		public int TimesAccessed
 		{
 			get { return _accessCounter; }

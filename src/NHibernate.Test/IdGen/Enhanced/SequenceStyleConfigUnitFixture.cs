@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Id.Enhanced;
 using NUnit.Framework;
 
@@ -212,6 +213,10 @@ namespace NHibernate.Test.IdGen.Enhanced
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
+        private string[] SqlCreateStrings(SequenceStyleGenerator generator, Dialect.Dialect dialect)
+	    {
+	        return generator.GetCreateOperation(dialect).GetStatements(dialect).ToArray();
+	    }
 		[Test]
 		public void NonPoolOptimizerUsedWithExplicitInitialValueUsesPooledSequenceGenerator()
 		{
@@ -226,8 +231,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 
 			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
 			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.NoopOptimizer)));
-			//Assert.That(generator.SqlCreateStrings(dialect).Length, Is.EqualTo(3));
-			Assert.That(generator.SqlCreateStrings(dialect), Is.EqualTo(PoolSequenceString));
+			//Assert.That(SqlCreateStrings(generator, dialect).Length, Is.EqualTo(3));
+			Assert.That(SqlCreateStrings(generator, dialect), Is.EqualTo(PoolSequenceString));
 		}
 
 		[Test]
@@ -244,8 +249,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 
 			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
 			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.HiLoOptimizer)));
-			//Assert.That(generator.SqlCreateStrings(dialect).Length, Is.EqualTo(3));
-			Assert.That(generator.SqlCreateStrings(dialect), Is.EqualTo(PoolSequenceString));
+			//Assert.That(SqlCreateStrings(generator, dialect).Length, Is.EqualTo(3));
+			Assert.That(SqlCreateStrings(generator, dialect), Is.EqualTo(PoolSequenceString));
 		}
 
 		[Test]
@@ -263,8 +268,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 
 			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
 			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
-			//Assert.That(generator.SqlCreateStrings(dialect).Length, Is.EqualTo(1));
-			Assert.That(generator.SqlCreateStrings(dialect), Is.EqualTo(SequenceString));
+			//Assert.That(SqlCreateStrings(generator, dialect).Length, Is.EqualTo(1));
+			Assert.That(SqlCreateStrings(generator, dialect), Is.EqualTo(SequenceString));
 		}
 	}
 }

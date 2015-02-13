@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -33,15 +34,20 @@ namespace NHibernate.Mapping
 			this.sqlDropString = sqlDropString;
 		}
 
-		public override string SqlCreateString(Dialect.Dialect dialect,IMapping p, string defaultCatalog, string defaultSchema)
-		{
-			return InjectCatalogAndSchema(sqlCreateString, defaultCatalog, defaultSchema);
-		}
 
-		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
-		{
-			return InjectCatalogAndSchema(sqlDropString, defaultCatalog, defaultSchema);
-		}
+        public override IDdlOperation GetCreateOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog,
+            string defaultSchema)
+        {
+            var sql = InjectCatalogAndSchema(sqlCreateString, defaultCatalog, defaultSchema);
+            return new SqlDdlOperation(sql);
+        }
+
+        public override IDdlOperation GetDropOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog,
+            string defaultSchema)
+        {
+            var sql = InjectCatalogAndSchema(sqlDropString, defaultCatalog, defaultSchema);
+            return new SqlDdlOperation(sql);
+        }
 
 		private static string InjectCatalogAndSchema(string ddlString, string defaultCatalog, string defaultSchema)
 		{

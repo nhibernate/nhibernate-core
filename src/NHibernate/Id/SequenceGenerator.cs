@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
-
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -149,36 +150,23 @@ namespace NHibernate.Id
 
 		#region IPersistentIdentifierGenerator Members
 
-		/// <summary>
-		/// The SQL required to create the database objects for a SequenceGenerator.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
-		/// <returns>
-		/// An array of <see cref="String"/> objects that contain the Dialect specific sql to 
-		/// create the necessary database objects for the SequenceGenerator.
-		/// </returns>
-		public string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			string baseDDL = dialect.GetCreateSequenceString(sequenceName);
-			string paramsDDL = null;
-			if (parameters != null)
-			{
-				paramsDDL = ' ' + parameters;
-			}
-			return new string[] { string.Concat(baseDDL,paramsDDL) };
-		}
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
 
-		/// <summary>
-		/// The SQL required to remove the underlying database objects for a SequenceGenerator.
-		/// </summary>
-		/// <param name="dialect">The <see cref="Dialect.Dialect"/> to help with creating the sql.</param>
-		/// <returns>
-		/// A <see cref="String"/> that will drop the database objects for the SequenceGenerator.
-		/// </returns>
-		public string[] SqlDropString(Dialect.Dialect dialect)
-		{
-			return new string[] { dialect.GetDropSequenceString(sequenceName) };
-		}
+            return new CreateSequenceDdlOperation(new CreateSequenceModel
+            {
+                Name = new DbName(sequenceName),
+                Parameters = parameters
+            });
+
+        }
+
+
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return new DropSequenceDdlOperation(sequenceName);
+        }
+
 
 		/// <summary>
 		/// Return a key unique to the underlying database objects for a SequenceGenerator.

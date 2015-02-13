@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
-
+using NHibernate.DdlGen.Model;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -78,19 +80,30 @@ namespace NHibernate.Id.Enhanced
 			_applyIncrementSizeToSourceValues = optimizer.ApplyIncrementSizeToSourceValues;
 		}
 
-		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
-		{
-			return new[]
-			{
-				"create table " + _tableName + " ( " + _valueColumnName + " " + dialect.GetTypeName(SqlTypeFactory.Int64)
-				+ " )", "insert into " + _tableName + " values ( " + _initialValue + " )"
-			};
-		}
+        /// <summary> Commands needed to create the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The creation commands. </returns>
+        public IDdlOperation GetCreateOperation(Dialect.Dialect dialect)
+        {
+            var model = new CreateTableModel
+            {
+                Name = new DbName(_tableName),
+                Columns = new List<ColumnModel>()
+	            {
+	                new ColumnModel {Name = _valueColumnName, SqlTypeCode = SqlTypeFactory.Int64}
+	            }
+            };
+            var sql = "insert into " + _tableName + " values ( " + _initialValue + " )";
+            return new AggregateDdlOperation(new CreateTableDdlOperation(model), new SqlDdlOperation(sql));
+        }
 
-		public virtual string[] SqlDropStrings(Dialect.Dialect dialect)
-		{
-			return new[] {dialect.GetDropTableString(_tableName) };
-		}
+        /// <summary> Commands needed to drop the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The drop commands. </returns>
+        public IDdlOperation GetDropOperation(Dialect.Dialect dialect)
+        {
+            return new DropTableDdlOperation(new DbName(_tableName));
+        }
 
 		#endregion
 

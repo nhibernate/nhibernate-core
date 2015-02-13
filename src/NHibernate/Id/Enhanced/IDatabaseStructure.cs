@@ -1,3 +1,4 @@
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 
 namespace NHibernate.Id.Enhanced
@@ -31,14 +32,14 @@ namespace NHibernate.Id.Enhanced
 		/// <param name="optimizer">The optimizer being applied to the generator. </param>
 		void Prepare(IOptimizer optimizer);
 
-		/// <summary> Commands needed to create the underlying structures.</summary>
-		/// <param name="dialect">The database dialect being used. </param>
-		/// <returns> The creation commands. </returns>
-		string[] SqlCreateStrings(Dialect.Dialect dialect);
 
-		/// <summary> Commands needed to drop the underlying structures.</summary>
-		/// <param name="dialect">The database dialect being used. </param>
-		/// <returns> The drop commands. </returns>
-		string[] SqlDropStrings(Dialect.Dialect dialect);
+        /// <summary> Commands needed to create the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The creation commands. </returns>
+        IDdlOperation GetCreateOperation(Dialect.Dialect dialect);
+        /// <summary> Commands needed to drop the underlying structures.</summary>
+        /// <param name="dialect">The database dialect being used. </param>
+        /// <returns> The drop commands. </returns>
+        IDdlOperation GetDropOperation(Dialect.Dialect dialect);
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.DdlGen.Operations;
 using NHibernate.Engine;
 
 namespace NHibernate.Mapping
@@ -49,13 +50,17 @@ namespace NHibernate.Mapping
 			return dialectScopes.Count == 0 || dialectScopes.Contains(dialect.GetType().FullName);
 		}
 
-		public abstract string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema);
-		public abstract string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema);
+
 
 		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
 			this.parameters = parameters;
 		}
+
+        public abstract IDdlOperation GetCreateOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog,
+    string defaultSchema);
+        public abstract IDdlOperation GetDropOperation(Dialect.Dialect dialect, IMapping mapping, string defaultCatalog,
+            string defaultSchema);
 
 	}
 }

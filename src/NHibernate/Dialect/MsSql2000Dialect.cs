@@ -382,7 +382,7 @@ namespace NHibernate.Dialect
 		/// MsSql does not require the OpenQuote to be escaped as long as the first char
 		/// is an OpenQuote.
 		/// </remarks>
-		protected override string Quote(string name)
+		internal override string Quote(string name)
 		{
 			return OpenQuote + name.Replace(CloseQuote.ToString(), new string(CloseQuote, 2)) + CloseQuote;
 		}
@@ -442,24 +442,24 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override string GetIfExistsDropConstraint(Table table, string name)
-		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
-			return string.Format(@"if exists ({0})", selectExistingObject);
-		}
+        public override string GetIfExistsDropConstraint(string constraintName, string tableName)
+        {
+            string selectExistingObject = GetSelectExistingObject(constraintName, tableName);
+            return string.Format(@"if exists ({0})", selectExistingObject);
+        }
 
-		protected virtual string GetSelectExistingObject(string name, Table table)
-		{
-			string objName = table.GetQuotedSchemaName(this) + Quote(name);
-			return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
-								 objName, table.GetQuotedName(this));
-		}
+        protected virtual string GetSelectExistingObject(string objectName, string parentObjectName)
+        {
+            return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
+                                 objectName, parentObjectName);
+        }
 
-		public override string GetIfNotExistsCreateConstraint(Table table, string name)
-		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
-			return string.Format(@"if not exists ({0})", selectExistingObject);
-		}
+        public override string GetIfNotExistsCreateConstraint(string constraintName, string tableName)
+        {
+            string selectExistingObject = GetSelectExistingObject(constraintName, tableName);
+            return string.Format(@"if not exists ({0})", selectExistingObject);
+        }
+
 		
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction

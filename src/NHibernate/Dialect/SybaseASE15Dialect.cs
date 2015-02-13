@@ -329,5 +329,10 @@ namespace NHibernate.Dialect
 		{
 			return statement.ExecuteReader();
 		}
+
+        public override string AlterColumnString
+        {
+            get { return "MODIFY"; }
+        }
 	}
 }
