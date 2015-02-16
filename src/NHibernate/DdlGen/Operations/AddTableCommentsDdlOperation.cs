@@ -18,10 +18,12 @@ namespace NHibernate.DdlGen.Operations
         {
             if (dialect.SupportsCommentOn)
             {
+
                 var tableName = Model.TableName.QuoteAndQualify(dialect);
                 if (!String.IsNullOrEmpty(Model.Comment))
                 {
                     yield return String.Format("comment on table {0} is '{1}'", tableName, Model.Comment);
+
                 }
                 foreach (var c in Model.Columns ?? Enumerable.Empty<ColumnCommentModel>())
                 {

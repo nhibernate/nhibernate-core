@@ -8,17 +8,14 @@ namespace NHibernate.DdlGen.Operations
     public class AlterTableAlterColumnDdlOperation : IDdlOperation
     {
 
-        private readonly AddOrAlterColumnModel _model;
 
         public AlterTableAlterColumnDdlOperation(AddOrAlterColumnModel model)
         {
-            _model = model;
+            Model = model;
         }
 
-        public AddOrAlterColumnModel Model
-        {
-            get { return _model; }
-        }
+        public AddOrAlterColumnModel Model { get; private set; }
+
 
         public IEnumerable<string> GetStatements(Dialect.Dialect dialect)
         {

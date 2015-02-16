@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using NHibernate.DdlGen.Model;
 using NHibernate.Util;
@@ -26,7 +27,8 @@ namespace NHibernate.DdlGen.Operations
                 .AppendLine(dialect.GetDropForeignKeyConstraintString(fkName))
                 .AppendLine(dialect.GetIfExistsDropConstraintEnd(fkName, tableName));
             return new[] {sb.ToString()};
+
+
         }
     }
-
 }

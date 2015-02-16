@@ -148,6 +148,8 @@
     <Compile Include="DdlGen\Model\ForeignKeyModel.cs" />
     <Compile Include="DdlGen\Model\IndexModel.cs" />
     <Compile Include="DdlGen\Model\PrimaryKeyModel.cs" />
+    <Compile Include="DdlGen\Model\RenameColumnModel.cs" />
+    <Compile Include="DdlGen\Model\RenameTableModel.cs" />
     <Compile Include="DdlGen\Model\TableCheckModel.cs" />
     <Compile Include="DdlGen\Model\TableCommentsModel.cs" />
     <Compile Include="DdlGen\Model\TableModel.cs" />
@@ -157,6 +159,8 @@
     <Compile Include="DdlGen\Operations\AlterTableAddColumnDdlOperation.cs" />
     <Compile Include="DdlGen\Operations\AlterTableAlterColumnDdlOperation.cs" />
     <Compile Include="DdlGen\Operations\AlterTableDropColumnDdlOperation.cs" />
+    <Compile Include="DdlGen\Operations\AlterTableRenameColumnOperation.cs" />
+    <Compile Include="DdlGen\Operations\AlterTableRenameTableOperation.cs" />
     <Compile Include="DdlGen\Operations\CreateForeignKeyOperation.cs" />
     <Compile Include="DdlGen\Operations\CreateIndexDdlOperation.cs" />
     <Compile Include="DdlGen\Operations\CreateSequenceDdlOperation.cs" />

@@ -43,14 +43,14 @@ namespace NHibernate.DdlGen.Model
             {
                 Catalog = parts[0];
                 Schema = parts[1];
-                Name = parts[2];
+                Name = parts[2];                
             }
         }
         public string Name { get; protected set; }
         public string Schema { get; protected set; }
         public string Catalog { get; protected set; }
 
-
+    
         public string QuoteAndQualify(Dialect.Dialect dialect)
         {
 

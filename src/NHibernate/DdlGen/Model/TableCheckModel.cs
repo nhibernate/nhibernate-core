@@ -1,4 +1,4 @@
-namespace NHibernate.DdlGen.Model
+﻿namespace NHibernate.DdlGen.Model
 {
     public class TableCheckModel
     {

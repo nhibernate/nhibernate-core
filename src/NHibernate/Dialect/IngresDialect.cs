@@ -1,5 +1,6 @@
+using System;
 using System.Data;
-using NHibernate.Cfg;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -56,5 +57,20 @@ namespace NHibernate.Dialect
 	    {
 	        get { return false; }
 	    }
+
+	    public override bool SupportsRenameColumn
+	    {
+	        get { return true; }
+	    }
+
+        public override string GetRenameColumnString(string tableName, string oldColumnName, string newColumnName)
+        {
+            return String.Format("ALTER TABLE {0} RENAME COLUMN {1} TO {2}", tableName, oldColumnName, newColumnName);
+        }
+
+	  public override string GetRenameTableString(string oldTableName, string newTableName)
+	  {
+      return String.Format("ALTER TABLE {0} RENAME  {0}  TO  {1}", oldTableName, newTableName);
+	  }
 	}
 }

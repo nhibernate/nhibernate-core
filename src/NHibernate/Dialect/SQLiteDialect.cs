@@ -319,7 +319,12 @@ namespace NHibernate.Dialect
             }
         }
 
-	    [Serializable]
+	  public override string GetRenameTableString(string oldTableName, string newTableName)
+	  {
+	    return string.Format("ALTER TABLE {0} RENAME TO {1}", oldTableName, newTableName);
+	  }
+
+	  [Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
 			protected override bool CastingIsRequired(string sqlType)

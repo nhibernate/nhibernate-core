@@ -1,10 +1,10 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Common;
-
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -189,5 +189,22 @@ namespace NHibernate.Dialect
         {
             get { return "MODIFY"; }
         }
+
+        public override bool SupportsRenameColumn
+        {
+            get { return true; }
+        }
+
+        public override string GetRenameColumnString(string tableName, string oldColumnName, string newColumnName)
+        {
+            //Yo Dawg, we take out the quotes so you dont get quotes in your quotes.
+            newColumnName = UnQuote(newColumnName);
+            return String.Format("EXEC sp_rename '{0}.{1}' , '{2}'\r\n", tableName, oldColumnName, newColumnName);
+        }
+
+	      public override string GetRenameTableString(string oldTableName, string newTableName)
+	      {
+	          return string.Format("ALTER TABLE {0} RENAME {1}", oldTableName, newTableName);
+	      }
 	}
 }

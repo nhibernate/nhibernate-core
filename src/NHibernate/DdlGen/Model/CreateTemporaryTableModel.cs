@@ -12,4 +12,3 @@ namespace NHibernate.DdlGen.Model
         public List<ColumnModel> Columns { get; set; }
     }
 }
-

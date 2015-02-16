@@ -1,4 +1,3 @@
-
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Mapping;
@@ -36,5 +35,4 @@ namespace NHibernate.DdlGen.Model
             return CascadeDelete && dialect.SupportsCascadeDelete ? result + " on delete cascade" : result;
         }
     }
-
 }

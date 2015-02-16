@@ -460,6 +460,8 @@ namespace NHibernate.Dialect
             return string.Format(@"if not exists ({0})", selectExistingObject);
         }
 
+
+        
 		
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
@@ -575,5 +577,22 @@ namespace NHibernate.Dialect
 				return string.Concat(" ", lockHint, match.Groups[2].Value); // TODO: seems like this line is redundant
 			}
 		}
+
+	    public override bool SupportsRenameColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string GetRenameColumnString(string tableName, string oldColumnName, string newColumnName)
+	    {
+            //Yo Dawg, we take out the quotes so you dont get quotes in your quotes.
+	        newColumnName = UnQuote(newColumnName);
+	        return String.Format("EXEC sp_rename '{0}.{1}' , '{2}', 'COLUMN'\r\n", tableName, oldColumnName, newColumnName);
+	    }
+
+	    public override string GetRenameTableString(string oldTableName, string newTableName)
+	    {
+          return string.Format("EXEC sp_rename '{0}', '{1}'\r\n", oldTableName, newTableName);
+	    }
 	}
 }

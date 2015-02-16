@@ -391,5 +391,10 @@ namespace NHibernate.Dialect
 	    {
             get { return "MODIFY COLUMN"; }
 	    }
+
+	  public override string GetRenameTableString(string oldTableName, string newTableName)
+	  {
+	    return string.Format("RENAME TABLE {0} TO {1}", oldTableName, newTableName);
+	  }
 	}
 }

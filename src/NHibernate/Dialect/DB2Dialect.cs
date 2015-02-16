@@ -1,8 +1,9 @@
+using System;
 using System.Data;
 using System.Text;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -262,5 +263,20 @@ namespace NHibernate.Dialect
 		{
 			get { return " for read only with rs"; }
 		}
+
+	    public override bool SupportsRenameColumn
+	    {
+	        get { return true; }
+	    }
+
+	    public override string GetRenameColumnString(string tableName, string oldColumnName, string newColumnName)
+	    {
+            return String.Format("ALTER TABLE {0} RENAME COLUMN {1} TO {2}", tableName, oldColumnName, newColumnName);
+	    }
+
+	  public override string GetRenameTableString(string oldTableName, string newTableName)
+	  {
+	    return string.Format("Rename Table {0} to {1}", oldTableName, newTableName);
+	  }
 	}
 }

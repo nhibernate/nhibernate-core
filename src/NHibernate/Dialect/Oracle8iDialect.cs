@@ -459,7 +459,25 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		#region Overridden informational metadata
+	    public override bool SupportsRenameColumn
+	    {
+	        get
+	        {
+	            return true;
+	        }
+	    }
+
+	    public override string GetRenameColumnString(string tableName, string oldColumnName, string newColumnName)
+	    {
+            return String.Format(" alter table {0} rename column {1} to {2}", tableName, oldColumnName, newColumnName);
+	    }
+
+	  public override string GetRenameTableString(string oldTableName, string newTableName)
+	  {
+	    return string.Format("RENAME TABLE {0} TO {1}", oldTableName, newTableName);
+	  }
+
+	  #region Overridden informational metadata
 
 		public override bool SupportsEmptyInList
 		{

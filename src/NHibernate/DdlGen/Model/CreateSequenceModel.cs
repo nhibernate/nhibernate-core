@@ -13,4 +13,3 @@ namespace NHibernate.DdlGen.Model
         public int InitialValue { get; set; }
     }
 }
-
