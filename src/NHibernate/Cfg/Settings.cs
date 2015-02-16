@@ -129,6 +129,7 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
 		public bool IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled { get; internal set; }
 
+        public IDictionary<string,string> Properties { get; internal set; }
 		#endregion
 	}
 }

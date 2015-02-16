@@ -291,6 +291,7 @@ namespace NHibernate.Cfg
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 
+		    settings.Properties = properties;
 			return settings;
 		}
 
