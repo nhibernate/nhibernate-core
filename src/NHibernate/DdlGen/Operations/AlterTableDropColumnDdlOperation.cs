@@ -7,19 +7,19 @@ namespace NHibernate.DdlGen.Operations
 {
     public class AlterTableDropColumnDdlOperation : IDdlOperation
     {
-        private readonly DropColumnModel _model;
+        public DropColumnModel Model { get; private set; }
 
         public AlterTableDropColumnDdlOperation(DropColumnModel model)
         {
-            _model = model;
+            Model = model;
         }
 
         public IEnumerable<string> GetStatements(Dialect.Dialect dialect)
         {
             if (dialect.SupportsDropColumn)
             {
-                var tableName = _model.Table.QuoteAndQualify(dialect);
-                var columnName = BacktickQuoteUtil.ApplyDialectQuotes(_model.Column, dialect);
+                var tableName = Model.Table.QuoteAndQualify(dialect);
+                var columnName = BacktickQuoteUtil.ApplyDialectQuotes(Model.Column, dialect);
                 return new[] {String.Format("alter table {0} drop column {1}", tableName, columnName)};
 
             }

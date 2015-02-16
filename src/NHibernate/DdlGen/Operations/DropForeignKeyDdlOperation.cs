@@ -7,18 +7,18 @@ namespace NHibernate.DdlGen.Operations
 {
     public class DropForeignKeyDdlOperation : IDdlOperation
     {
-        private readonly ForeignKeyModel _model;
+        public ForeignKeyModel Model { get; private set; }
 
         public DropForeignKeyDdlOperation(ForeignKeyModel model)
         {
-            _model = model;
+            Model = model;
         }
 
         public IEnumerable<string> GetStatements(Dialect.Dialect dialect)
         {
             
-            var tableName = _model.DependentTable.QuoteAndQualify(dialect);
-            var name = BacktickQuoteUtil.ApplyDialectQuotes(_model.Name, dialect);
+            var tableName = Model.DependentTable.QuoteAndQualify(dialect);
+            var name = BacktickQuoteUtil.ApplyDialectQuotes(Model.Name, dialect);
             string fkName = BacktickQuoteUtil.ApplyDialectQuotes(name, dialect);
             var sb = new StringBuilder();
             sb.AppendLine(dialect.GetIfExistsDropConstraint(fkName, tableName))
