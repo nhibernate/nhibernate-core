@@ -813,7 +813,6 @@
     <Compile Include="NHSpecificTest\NH3604\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3755\Circle.cs" />
     <Compile Include="NHSpecificTest\NH3755\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3755\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3755\ICircle.cs" />
     <Compile Include="NHSpecificTest\NH3755\IShape.cs" />
     <Compile Include="NHSpecificTest\NH3755\IShapeContainer.cs" />
