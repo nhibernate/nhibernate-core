@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3755
 			}
 		}
 
-		[Test]
+        [Test, KnownBug("NH-3755")]
 		public void YourTestName()
 		{
 			using (ISession session = OpenSession())
