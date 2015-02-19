@@ -15,16 +15,21 @@ namespace NHibernate.Loader.Entity
 	/// <seealso cref="EntityLoader"/>
 	public class BatchingEntityLoader : IUniqueEntityLoader
 	{
-		private readonly Loader[] loaders;
+		private readonly Dictionary<int, EntityLoader> loaders = new Dictionary<int, EntityLoader>();
 		private readonly int[] batchSizes;
-		private readonly IEntityPersister persister;
+		private readonly IOuterJoinLoadable persister;
 		private readonly IType idType;
+		private readonly LockMode lockMode;
+		private readonly ISessionFactoryImplementor factory;
+		private readonly IDictionary<string, IFilter> enabledFilters;
 
-		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Loader[] loaders)
+		public BatchingEntityLoader(IOuterJoinLoadable persister, int[] batchSizes, LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
 			this.batchSizes = batchSizes;
-			this.loaders = loaders;
 			this.persister = persister;
+			this.lockMode = lockMode;
+			this.factory = factory;
+			this.enabledFilters = enabledFilters;
 			idType = persister.IdentifierType;
 		}
 
@@ -44,6 +49,17 @@ namespace NHibernate.Loader.Entity
 			return null;
 		}
 
+		private EntityLoader GetEntityLoader(int index, int smallBatchSize)
+		{
+			EntityLoader loader;
+			if (!this.loaders.TryGetValue(index, out loader))
+			{
+				loader  = new EntityLoader(this.persister, smallBatchSize, this.lockMode, this.factory, this.enabledFilters);
+				this.loaders[index] = loader;
+			}
+			return loader;
+		}
+
 		public object Load(object id, object optionalObject, ISessionImplementor session)
 		{
 			object[] batch =
@@ -57,14 +73,16 @@ namespace NHibernate.Loader.Entity
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
+					EntityLoader loader = this.GetEntityLoader(i, smallBatchSize);
 					IList results =
-						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
+						loader.LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session);
+			int index = batchSizes.Length - 1;
+			return ((IUniqueEntityLoader) this.GetEntityLoader(index, batchSizes[index])).Load(id, optionalObject, session);
 		}
 
 		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,
@@ -73,13 +91,8 @@ namespace NHibernate.Loader.Entity
 		{
 			if (maxBatchSize > 1)
 			{
-				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);
-				Loader[] loadersToCreate = new Loader[batchSizesToCreate.Length];
-				for (int i = 0; i < batchSizesToCreate.Length; i++)
-				{
-					loadersToCreate[i] = new EntityLoader(persister, batchSizesToCreate[i], lockMode, factory, enabledFilters);
-				}
-				return new BatchingEntityLoader(persister, batchSizesToCreate, loadersToCreate);
+				int[] batchSizesToCreate = ArrayHelper.GetBatchSizes(maxBatchSize);				
+				return new BatchingEntityLoader(persister, batchSizesToCreate, lockMode, factory, enabledFilters);
 			}
 			else
 			{
