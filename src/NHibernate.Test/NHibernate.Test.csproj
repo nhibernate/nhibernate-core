@@ -1321,6 +1321,8 @@
     <Compile Include="NHSpecificTest\NH3641\TestFixture.cs" />
     <Compile Include="NHSpecificTest\NH3800\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3800\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3757\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3757\Money.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -3221,6 +3223,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3800\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="NHSpecificTest\NH3757\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3372\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3567\Mappings.hbm.xml" />
