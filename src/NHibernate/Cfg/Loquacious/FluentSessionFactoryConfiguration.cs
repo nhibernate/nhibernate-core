@@ -47,6 +47,12 @@ namespace NHibernate.Cfg.Loquacious
 			return this;
 		}
 
+		public IFluentSessionFactoryConfiguration DefaultFlushMode(FlushMode flushMode)
+		{
+			configuration.SetProperty(Environment.DefaultFlushMode, flushMode.ToString());
+			return this;
+		}
+
 		public IFluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>()
 			where TQueryTranslator : IQueryTranslatorFactory
 		{
