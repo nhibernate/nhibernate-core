@@ -91,6 +91,28 @@ namespace NHibernate.Mapping.ByCode
 	{
 		#region Implementation of IGeneratorDef
 
+		private readonly object param;
+
+		public UUIDHexGeneratorDef()
+		{
+		}
+
+		public UUIDHexGeneratorDef(string format)
+		{
+			if (format == null)
+				throw new ArgumentNullException("format");
+			param = new { format = format };
+		}
+
+		public UUIDHexGeneratorDef(string format, string separator)
+		{
+			if (format == null)
+				throw new ArgumentNullException("format");
+			if (separator == null)
+				throw new ArgumentNullException("separator");
+			param = new { format = format, seperator = separator };
+		}
+
 		public string Class
 		{
 			get { return "uuid.hex"; }
@@ -98,12 +120,12 @@ namespace NHibernate.Mapping.ByCode
 
 		public object Params
 		{
-			get { return null; }
+			get { return param; }
 		}
 
 		public System.Type DefaultReturnType
 		{
-			get { return typeof(Guid); }
+			get { return typeof(string); }
 		}
 
 		public bool SupportedAsCollectionElementId
