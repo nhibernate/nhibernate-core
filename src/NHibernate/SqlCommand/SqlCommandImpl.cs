@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 		private readonly QueryParameters queryParameters;
 		private readonly ISessionFactoryImplementor factory;
 		private SqlType[] parameterTypes;
-		List<Parameter> sqlQueryParametersList;
+		IList<Parameter> sqlQueryParametersList;
 
 		public SqlCommandImpl(SqlString query, ICollection<IParameterSpecification> specifications, QueryParameters queryParameters, ISessionFactoryImplementor factory)
 		{
@@ -70,9 +70,9 @@ namespace NHibernate.SqlCommand
 			this.factory = factory;
 		}
 
-		public List<Parameter> SqlQueryParametersList
+		public IList<Parameter> SqlQueryParametersList
 		{
-			get { return sqlQueryParametersList ?? (sqlQueryParametersList = query.GetParameters().ToList()); }
+			get { return sqlQueryParametersList ?? (sqlQueryParametersList = query.GetParameters().ToBackTrackCacheParameterList()); }
 		}
 
 		public SqlType[] ParameterTypes
@@ -103,6 +103,7 @@ namespace NHibernate.SqlCommand
 			{
 				throw new AssertionFailure("singleSqlParametersOffset < 0 - this indicate a bug in NHibernate ");
 			}
+
 			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
 			// this mean that found the first location of a parameter for the IType span, the others are in secuence
 			foreach (IParameterSpecification specification in Specifications)
@@ -111,7 +112,7 @@ namespace NHibernate.SqlCommand
 				int[] effectiveParameterLocations = SqlQueryParametersList.GetEffectiveParameterLocations(firstParameterId).ToArray();
 				if (effectiveParameterLocations.Length > 0) // Parameters previously present might have been removed from the SQL at a later point.
 				{
-					int firstParamNameIndex = effectiveParameterLocations.First() + singleSqlParametersOffset;
+					int firstParamNameIndex = effectiveParameterLocations[0] + singleSqlParametersOffset;
 					foreach (int location in effectiveParameterLocations)
 					{
 						int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);

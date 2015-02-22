@@ -745,6 +745,9 @@
     <Compile Include="NHSpecificTest\NH1082\SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH3571\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3571\Product.cs" />
+    <Compile Include="NHSpecificTest\NH3489\Department.cs" />
+    <Compile Include="NHSpecificTest\NH3489\Order.cs" />
+    <Compile Include="NHSpecificTest\NH3489\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />

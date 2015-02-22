@@ -540,6 +540,7 @@
     <Compile Include="NonUniqueResultException.cs" />
     <Compile Include="ObjectDeletedException.cs" />
     <Compile Include="ObjectNotFoundException.cs" />
+    <Compile Include="SqlCommand\BackTrackCacheParameterList.cs" />
     <Compile Include="Param\CriteriaNamedParameterSpecification.cs" />
     <Compile Include="Param\IPageableParameterSpecification.cs" />
     <Compile Include="Param\ParametersBackTrackExtensions.cs" />
