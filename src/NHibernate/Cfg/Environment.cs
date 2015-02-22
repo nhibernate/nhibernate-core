@@ -141,6 +141,9 @@ namespace NHibernate.Cfg
 		// The classname of the HQL query parser factory
 		public const string QueryTranslator = "query.factory_class";
 
+		// The class name of the LINQ query provider class, implementing from <see cref="INhQueryProvider"/>
+		public const string QueryLinqProvider = "query.linq_provider_class";
+
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";

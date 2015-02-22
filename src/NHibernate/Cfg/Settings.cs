@@ -100,6 +100,8 @@ namespace NHibernate.Cfg
 
 		public IQueryTranslatorFactory QueryTranslatorFactory { get; internal set; }
 
+		public System.Type LinqQueryProviderType { get; internal set; }
+
 		public ISQLExceptionConverter SqlExceptionConverter { get; internal set; }
 
 		public bool IsWrapResultSetsEnabled { get; internal set; }

@@ -18,7 +18,7 @@ namespace NHibernate.Linq
 
 	public class DefaultQueryProvider : INhQueryProvider
 	{
-		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null));
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 
 		private readonly WeakReference _session;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery);
 		}
 
-		protected NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
+		protected virtual NhLinqExpression PrepareQuery(Expression expression, out IQuery query, out NhLinqExpression nhQuery)
 		{
 			var nhLinqExpression = new NhLinqExpression(expression, Session.Factory);
 
@@ -161,7 +161,7 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
+		public virtual void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters)
 		{
 			query.SetResultTransformer(nhExpression.ExpressionToHqlTranslationResults.ResultTransformer);
 

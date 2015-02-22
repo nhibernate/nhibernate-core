@@ -93,6 +93,7 @@
 								<xs:enumeration value="cache.default_expiration" />
 								<xs:enumeration value="query.substitutions" />
 								<xs:enumeration value="query.factory_class" />
+								<xs:enumeration value="query.linq_provider_class" />
 								<xs:enumeration value="query.imports" />
 								<xs:enumeration value="hbm2ddl.auto" />
 								<xs:enumeration value="hbm2ddl.keywords" />
