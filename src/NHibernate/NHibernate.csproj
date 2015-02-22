@@ -296,6 +296,7 @@
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
+    <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
     <Compile Include="Linq\Functions\CompareGenerator.cs" />
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />

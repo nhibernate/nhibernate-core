@@ -57,6 +57,16 @@ namespace NHibernate.Linq.Visitors
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
 
+			// Give a rewriter provided by the session factory a chance to
+			// rewrite the query.
+			var rewriterFactory = parameters.SessionFactory.Settings.QueryModelRewriterFactory;
+			if (rewriterFactory != null)
+			{
+				var customVisitor = rewriterFactory.CreateVisitor(parameters);
+				if (customVisitor != null)
+					customVisitor.VisitQueryModel(queryModel);
+			}
+
 			// rewrite any operators that should be applied on the outer query
 			// by flattening out the sub-queries that they are located in
 			var result = ResultOperatorRewriter.Rewrite(queryModel);
