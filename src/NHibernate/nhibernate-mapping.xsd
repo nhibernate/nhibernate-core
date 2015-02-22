@@ -676,6 +676,7 @@
 					<xs:element ref="idbag" />
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
+					<xs:element ref="filter" />
 				</xs:choice>
 				<xs:element ref="joined-subclass" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="loader" minOccurs="0" />
@@ -1353,6 +1354,7 @@
 					<xs:element ref="idbag" />
 					<xs:element ref="array" />
 					<xs:element ref="primitive-array" />
+					<xs:element ref="filter" />
 				</xs:choice>
 				<xs:element ref="join" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="subclass" minOccurs="0" maxOccurs="unbounded" />

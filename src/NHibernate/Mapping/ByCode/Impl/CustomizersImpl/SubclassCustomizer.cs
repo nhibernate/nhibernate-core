@@ -28,6 +28,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.DiscriminatorValue(value));
 		}
 
+		public void Filter(string filterName, Action<IFilterMapper> filterMapping)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Filter(filterName, filterMapping));
+		}
+
 		#endregion
 
 		private Dictionary<string, IJoinMapper<TEntity>> JoinCustomizers

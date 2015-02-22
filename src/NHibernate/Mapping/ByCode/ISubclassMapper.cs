@@ -6,6 +6,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void DiscriminatorValue(object value);
 		void Extends(System.Type baseType);
+		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 	}
 
 	public interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper
@@ -16,6 +17,7 @@ namespace NHibernate.Mapping.ByCode
 	public interface ISubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void DiscriminatorValue(object value);
+		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 	}
 
 	public interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
