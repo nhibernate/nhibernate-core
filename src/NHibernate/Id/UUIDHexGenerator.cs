@@ -17,17 +17,17 @@ namespace NHibernate.Id
 	///	<code>
 	///	&lt;generator class="uuid.hex"&gt;
 	///		&lt;param name="format"&gt;format_string&lt;/param&gt;
-	///		&lt;param name="seperator"&gt;seperator_string&lt;/param&gt;
+	///		&lt;param name="separator"&gt;separator_string&lt;/param&gt;
 	///	&lt;/generator&gt;
 	///	</code>
 	/// </p>
 	/// <p>
-	/// The <c>format</c> and <c>seperator</c> parameters are optional.
+	/// The <c>format</c> and <c>separator</c> parameters are optional.
 	/// </p>
 	/// <p>
 	/// The identifier string will consist of only hex digits.  Optionally, the identifier string
-	/// may be generated with enclosing characters and seperators between each component 
-	/// of the UUID.  If there are seperators then the string length will be 36.  If a format
+	/// may be generated with enclosing characters and separators between each component 
+	/// of the UUID.  If there are separators then the string length will be 36.  If a format
 	/// that has enclosing brackets is used, then the string length will be 38.
 	/// </p>
 	/// <p>
@@ -40,9 +40,9 @@ namespace NHibernate.Id
 	/// If no <c>format</c> is specified the default is "N".
 	/// </p>
 	/// <p>
-	/// <c>seperator</c> is the char that will replace the "-" if specified.  If no value is
-	/// configured then the default seperator for the format will be used.  If the format "D", "B", or
-	/// "P" is specified, then the seperator will replace the "-".  If the format is "N" then this
+	/// <c>separator</c> is the char that will replace the "-" if specified.  If no value is
+	/// configured then the default separator for the format will be used.  If the format "D", "B", or
+	/// "P" is specified, then the separator will replace the "-".  If the format is "N" then this
 	/// parameter will be ignored.
 	/// </p>
 	/// <p>
@@ -83,7 +83,7 @@ namespace NHibernate.Id
 
 		/// <summary>
 		/// Configures the UUIDHexGenerator by reading the value of <c>format</c> and
-		/// <c>seperator</c> from the <c>parms</c> parameter.
+		/// <c>separator</c> from the <c>parms</c> parameter.
 		/// </summary>
 		/// <param name="type">The <see cref="IType"/> the identifier should be.</param>
 		/// <param name="parms">An <see cref="IDictionary"/> of Param values that are keyed by parameter name.</param>
@@ -94,7 +94,7 @@ namespace NHibernate.Id
 
 			if (format != FormatWithDigitsOnly)
 			{
-				sep = PropertiesHelper.GetString("seperator", parms, null);
+				sep = PropertiesHelper.GetString("separator", parms, null);
 			}
 		}
 
