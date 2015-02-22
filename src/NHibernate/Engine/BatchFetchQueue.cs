@@ -134,7 +134,6 @@ namespace NHibernate.Engine
 		/// <param name="collectionPersister">The persister for the collection role.</param>
 		/// <param name="id">A key that must be included in the batch fetch</param>
 		/// <param name="batchSize">the maximum number of keys to return</param>
-		/// <param name="entityMode">The entity mode.</param>
 		/// <returns>an array of collection keys, of length batchSize (padded with nulls)</returns>
 		public object[] GetCollectionBatch(ICollectionPersister collectionPersister, object id, int batchSize)
 		{
