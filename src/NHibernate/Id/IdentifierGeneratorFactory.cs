@@ -82,7 +82,7 @@ namespace NHibernate.Id
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public sealed class IdentifierGeneratorFactory
+	public static class IdentifierGeneratorFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (IdentifierGeneratorFactory));
 
@@ -178,11 +178,6 @@ namespace NHibernate.Id
 			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
 			idgenerators.Add("enhanced-sequence", typeof(SequenceStyleGenerator));
 			idgenerators.Add("enhanced-table", typeof(Enhanced.TableGenerator));
-		}
-
-		private IdentifierGeneratorFactory()
-		{
-			//cannot be instantiated
 		}
 
 		/// <summary>

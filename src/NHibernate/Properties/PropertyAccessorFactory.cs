@@ -9,7 +9,7 @@ namespace NHibernate.Properties
 	/// <summary>
 	/// Factory for creating the various PropertyAccessor strategies.
 	/// </summary>
-	public sealed class PropertyAccessorFactory
+	public static class PropertyAccessorFactory
 	{
 		private static readonly IDictionary<string, IPropertyAccessor> accessors;
 		private const string DefaultAccessorName = "property";
@@ -43,10 +43,6 @@ namespace NHibernate.Properties
 			accessors["embedded"] = new EmbeddedPropertyAccessor();
 			accessors["noop"] = new NoopAccessor();
 			accessors["none"] = new NoopAccessor();
-		}
-
-		private PropertyAccessorFactory()
-		{
 		}
 
 		/// <summary>
