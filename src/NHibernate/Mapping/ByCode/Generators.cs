@@ -25,7 +25,6 @@ namespace NHibernate.Mapping.ByCode
 			SequenceIdentity = new SequenceIdentityGeneratorDef();
 			Table = new TableGeneratorDef();
 			TriggerIdentity = new TriggerIdentityGeneratorDef();
-			UUIDHex = new UUIDHexGeneratorDef();
 			UUIDString = new UUIDStringGeneratorDef();
 		}
 
@@ -46,7 +45,22 @@ namespace NHibernate.Mapping.ByCode
 		public static IGeneratorDef Table { get; private set; }
 		public static IGeneratorDef TriggerIdentity { get; private set; }
 		public static IGeneratorDef SequenceIdentity { get; private set; }
-		public static IGeneratorDef UUIDHex { get; private set; }
+
+		public static IGeneratorDef UUIDHex()
+		{
+			return new UUIDHexGeneratorDef(); 
+		}
+
+		public static IGeneratorDef UUIDHex(string format)
+		{
+			return new UUIDHexGeneratorDef(format); 
+		}
+
+		public static IGeneratorDef UUIDHex(string format, string separator)
+		{
+			return new UUIDHexGeneratorDef(format, separator); 
+		}
+
 		public static IGeneratorDef UUIDString { get; private set; }
 
 		public static IGeneratorDef Foreign<TEntity>(Expression<Func<TEntity, object>> property)
@@ -110,7 +124,7 @@ namespace NHibernate.Mapping.ByCode
 				throw new ArgumentNullException("format");
 			if (separator == null)
 				throw new ArgumentNullException("separator");
-			param = new { format = format, seperator = separator };
+			param = new { format = format, separator = separator };
 		}
 
 		public string Class
