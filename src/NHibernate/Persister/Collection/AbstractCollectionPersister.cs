@@ -87,6 +87,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] keyColumnAliases;
 		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
+		private readonly string[] joinColumnNames;
 
 		#endregion
 
@@ -228,17 +229,43 @@ namespace NHibernate.Persister.Collection
 
 			isVersioned = collection.IsOptimisticLocked;
 
-			keyType = collection.Key.Type;
-			int keySpan = collection.Key.ColumnSpan;
-			keyColumnNames = new string[keySpan];
-			keyColumnAliases = new string[keySpan];
-			int k = 0;
-			foreach (Column col in collection.Key.ColumnIterator)
+			if (collection.CollectionType.UseLHSPrimaryKey)
 			{
-				keyColumnNames[k] = col.GetQuotedName(dialect);
-				keyColumnAliases[k] = col.GetAlias(dialect);
-				k++;
+				keyType = collection.Key.Type;
+				int keySpan = collection.Key.ColumnSpan;
+				keyColumnNames = new string[keySpan];
+				keyColumnAliases = new string[keySpan];
+				int k = 0;
+				foreach (Column col in collection.Key.ColumnIterator)
+				{
+					keyColumnNames[k] = col.GetQuotedName(dialect);
+					keyColumnAliases[k] = col.GetAlias(dialect);
+					k++;
+				}
+				joinColumnNames = keyColumnNames;
 			}
+			else
+			{
+				keyType = collection.Owner.Key.Type;
+				int keySpan = collection.Owner.Key.ColumnSpan;
+				keyColumnNames = new string[keySpan];
+				keyColumnAliases = new string[keySpan];
+				int k = 0;
+				foreach (Column col in collection.Owner.Key.ColumnIterator)
+				{
+					keyColumnNames[k] = col.GetQuotedName(dialect);
+					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_"; // Force the alias to be unique in case it conflicts with an alias in the entity
+					k++;
+				}
+				joinColumnNames = new string[collection.Key.ColumnSpan];
+				k = 0;
+				foreach (Column col in collection.Key.ColumnIterator)
+				{
+					joinColumnNames[k] = col.GetQuotedName(dialect);
+					k++;
+				}
+			}
+
 			HashSet<string> distinctColumns = new HashSet<string>();
 			CheckColumnDuplication(distinctColumns, collection.Key.ColumnIterator);
 
@@ -1763,6 +1790,11 @@ namespace NHibernate.Persister.Collection
 			get { return keyColumnNames; }
 		}
 
+		public string[] JoinColumnNames
+		{
+			get { return joinColumnNames; }
+		}
+
 		protected string[] KeyColumnAliases
 		{
 			get { return keyColumnAliases; }
@@ -1954,6 +1986,11 @@ namespace NHibernate.Persister.Collection
 
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
+
+		public virtual string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return alias;
+		}
 
 		protected object PerformInsert(object ownerId, IPersistentCollection collection, IExpectation expectation,
 									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session)

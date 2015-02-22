@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.NHSpecificTest.NH3453"
+	default-lazy="false"
+  default-access="property">
+
+  <class name="Direction" table="Direction">
+    <composite-id>
+      <key-property column="Id1" name="Id1" />
+      <key-property column="Id2" name="Id2" />
+     </composite-id>
+    <property column="GUID" name="GUID" not-null="true" unique="true"/>
+  </class>
+
+  <class name="DirectionReferrer" table="DirectionReferrer">
+    <id column="GUID" name="GUID"></id>
+    <many-to-one name="Direction" column="guid_Direction" not-null="false" property-ref="GUID" />
+  </class>
+
+</hibernate-mapping>

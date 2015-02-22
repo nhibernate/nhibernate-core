@@ -878,6 +878,11 @@ namespace NHibernate.Persister.Entity
 			get { return IdentifierColumnNames; }
 		}
 
+		public string[] JoinColumnNames
+		{
+			get { return KeyColumnNames; }
+		}
+
 		public string Name
 		{
 			get { return EntityName; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -57,7 +58,7 @@ namespace NHibernate.Loader.Collection
 			int collectionJoins = CountCollectionPersisters(associations) + 1;
 			CollectionSuffixes = BasicLoader.GenerateSuffixes(joins + 1, collectionJoins);
 
-			SqlStringBuilder whereString = WhereString(alias, oneToManyPersister.KeyColumnNames, subquery, batchSize);
+			SqlStringBuilder whereString = WhereString(oneToManyPersister.GenerateTableAliasForKeyColumns(alias), oneToManyPersister.KeyColumnNames, subquery, batchSize);
 			string filter = oneToManyPersister.FilterFragment(alias, EnabledFilters);
 			whereString.Insert(0, StringHelper.MoveAndToBeginning(filter));
 
@@ -66,7 +67,7 @@ namespace NHibernate.Loader.Collection
 				new SqlSelectBuilder(Factory).SetSelectClause(
 					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true)
 					+ SelectString(associations)).SetFromClause(elementPersister.FromTableFragment(alias)
-					                                            + elementPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
+																+ oneToManyPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
 					whereString.ToSqlString()).SetOuterJoins(ojf.ToFromFragmentString,
 					                                         ojf.ToWhereFragmentString
 					                                         + elementPersister.WhereJoinFragment(alias, true, true));
