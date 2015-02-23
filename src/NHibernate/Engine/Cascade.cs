@@ -96,7 +96,7 @@ namespace NHibernate.Engine
 
 		/// <summary> 
 		/// Cascade an action from the parent entity instance to all its children.  This
-		/// form is typicaly called from within cascade actions. 
+		/// form is typically called from within cascade actions. 
 		/// </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>

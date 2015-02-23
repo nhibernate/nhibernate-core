@@ -169,7 +169,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		/// <summary>
-		/// Retreives the from-element represented by the given alias.
+		/// Retrieves the from-element represented by the given alias.
 		/// </summary>
 		/// <param name="aliasOrClassName">The alias by which to locate the from-element.</param>
 		/// <returns>The from-element assigned the given alias, or null if none.</returns>

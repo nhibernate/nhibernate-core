@@ -21,7 +21,7 @@ namespace NHibernate.Bytecode
 		IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters);
 
 		/// <summary>
-		/// NHibernate's object instaciator.
+		/// NHibernate's object instantiator.
 		/// </summary>
 		/// <remarks>
 		/// For entities <see cref="IReflectionOptimizer"/> and its implementations.
@@ -29,7 +29,7 @@ namespace NHibernate.Bytecode
 		IObjectsFactory ObjectsFactory { get; }
 
 		/// <summary>
-		/// Instanciator of NHibernate's collections default types.
+		/// Instantiator of NHibernate's collections default types.
 		/// </summary>
 		ICollectionTypeFactory CollectionTypeFactory { get; }
 

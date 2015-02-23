@@ -101,7 +101,7 @@ namespace NHibernate
 		/// Called after a flush that actually ends in execution of the SQL statements required to
 		/// synchronize in-memory state with the database.
 		/// </summary>
-		/// <param name="entities">The entitites</param>
+		/// <param name="entities">The entities</param>
 		void PostFlush(ICollection entities);
 
 		/// <summary>

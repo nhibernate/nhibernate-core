@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 		/// Return the logical column name used to refer to a column in the metadata
 		/// (like index, unique constraints etc)
 		/// A full bijection is required between logicalNames and physical ones
-		/// logicalName have to be case insersitively unique for a given table 
+		/// logicalName have to be case insensitively unique for a given table 
 		/// </summary>
 		/// <param name="columnName">given column name if any </param>
 		/// <param name="propertyName">property name of this column </param>

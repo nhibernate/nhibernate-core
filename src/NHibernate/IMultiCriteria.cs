@@ -121,13 +121,13 @@ namespace NHibernate
 		IMultiCriteria Add<U>(string key, IQueryOver queryOver);
 
 		/// <summary>
-		/// Sets whatevert this criteria is cacheable.
+		/// Sets whatever this criteria is cacheable.
 		/// </summary>
 		/// <param name="cachable">if set to <c>true</c> [cachable].</param>
 		IMultiCriteria SetCacheable(bool cachable);
 
 		///<summary>
-		/// Set the cache region for thie criteria
+		/// Set the cache region for the criteria
 		///</summary>
 		///<param name="region">The region</param>
 		///<returns></returns>

@@ -242,7 +242,7 @@ namespace NHibernate.Dialect
 		/// <summary> 
 		/// Support for the oracle proprietary join syntax... 
 		/// </summary>
-		/// <returns> The orqacle join fragment </returns>
+		/// <returns> The oracle join fragment </returns>
 		public override JoinFragment CreateOuterJoinFragment()
 		{
 			return new OracleJoinFragment();

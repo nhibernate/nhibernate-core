@@ -35,7 +35,7 @@ namespace NHibernate.Type
 		/// <param name="isEmbeddedInXML">Should values of this mapping be embedded in XML modes? </param>
 		/// <param name="unwrapProxy">
 		/// Is unwrapping of proxies allowed for this association; unwrapping
-		/// says to return the "implementation target" of lazy prooxies; typically only possible
+		/// says to return the "implementation target" of lazy proxies; typically only possible
 		/// with lazy="no-proxy".
 		/// </param>
 		protected internal EntityType(string entityName, string uniqueKeyPropertyName, bool eager, bool isEmbeddedInXML, bool unwrapProxy)
@@ -554,7 +554,7 @@ namespace NHibernate.Type
 		/// Load an instance by a unique key that is not the primary key. 
 		/// </summary>
 		/// <param name="entityName">The name of the entity to load </param>
-		/// <param name="uniqueKeyPropertyName">The name of the property defining the uniqie key. </param>
+		/// <param name="uniqueKeyPropertyName">The name of the property defining the unique key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
 		/// <returns> The loaded entity </returns>

@@ -95,7 +95,7 @@ namespace NHibernate.Engine
 		/// <summary> 
 		/// Initialize the role of the collection. 
 		/// </summary>
-		/// <param name="collection">The collection to be updated by reachibility. </param>
+		/// <param name="collection">The collection to be updated by reachability. </param>
 		/// <param name="type">The type of the collection. </param>
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>

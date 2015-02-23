@@ -2,7 +2,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 {
 	/// <summary>
 	/// This is a trivial class that is used to make sure that Equals and GetHashCode
-	/// are properly overloaded with the correct semantics. This is exteremely important
+	/// are properly overloaded with the correct semantics. This is extremely important
 	/// if you are going to deal with objects outside the current Unit of Work.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>

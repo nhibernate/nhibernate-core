@@ -298,7 +298,7 @@ namespace NHibernate.Engine
 		IQuery GetNamedQuery(string queryName);
 
 		/// <summary> Determine whether the session is closed.  Provided separately from
-		/// {@link #isOpen()} as this method does not attempt any JTA synch
+		/// {@link #isOpen()} as this method does not attempt any JTA sync
 		/// registration, where as {@link #isOpen()} does; which makes this one
 		/// nicer to use for most internal purposes. 
 		/// </summary>

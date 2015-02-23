@@ -7,7 +7,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Connection
 {
 	/// <summary>
-	/// Instanciates a connection provider given configuration properties.
+	/// Instantiates a connection provider given configuration properties.
 	/// </summary>
 	public static class ConnectionProviderFactory
 	{

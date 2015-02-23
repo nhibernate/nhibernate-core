@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 	/// <summary> 
 	/// Used to uniquely key an entity instance in relation to a particular session
 	/// by some unique property reference, as opposed to identifier.
-	/// Uniqueing information consists of the entity-name, the referenced
+	/// Unique information consists of the entity-name, the referenced
 	/// property name, and the referenced property value. 
 	/// </summary>
 	/// <seealso cref="EntityKey"/>

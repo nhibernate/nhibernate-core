@@ -585,7 +585,7 @@ namespace NHibernate.Collection
 
 		/// <summary>
 		/// To be called internally by the session, forcing
-		/// immediate initalization.
+		/// immediate initialization.
 		/// </summary>
 		/// <remarks>
 		/// This method is similar to <see cref="Initialize" />, except that different exceptions are thrown.
@@ -852,7 +852,7 @@ namespace NHibernate.Collection
 		/// allowing appropriate initializations to occur.
 		/// </summary>
 		/// <param name="persister">The underlying collection persister. </param>
-		/// <param name="anticipatedSize">The anticipated size of the collection after initilization is complete. </param>
+		/// <param name="anticipatedSize">The anticipated size of the collection after initialization is complete. </param>
 		public abstract void BeforeInitialize(ICollectionPersister persister, int anticipatedSize);
 
 		#region - Hibernate Collection Proxy Classes

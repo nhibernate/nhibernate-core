@@ -40,7 +40,7 @@ namespace NHibernate.Test.CfgTest
 		}
 
 		/// <summary>
-		/// Recieved sample code that Configuration could not be configured manually.  It can be configured
+		/// Received sample code that Configuration could not be configured manually.  It can be configured
 		/// manually just need to set all of the properties before adding classes
 		/// </summary>
 		[Test, Explicit]

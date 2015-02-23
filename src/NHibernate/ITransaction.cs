@@ -9,7 +9,7 @@ namespace NHibernate
 	/// underlying transaction implementation
 	/// </summary>
 	/// <remarks>
-	/// A transaction is associated with a <c>ISession</c> and is usually instanciated by a call to
+	/// A transaction is associated with a <c>ISession</c> and is usually instantiated by a call to
 	/// <c>ISession.BeginTransaction()</c>. A single session might span multiple transactions since 
 	/// the notion of a session (a conversation between the application and the datastore) is of
 	/// coarser granularity than the notion of a transaction. However, it is intended that there be

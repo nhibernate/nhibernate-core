@@ -99,7 +99,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Add a type-definition for mappings.
 		/// </summary>
-		/// <typeparam name="TDef">The peristent type.</typeparam>
+		/// <typeparam name="TDef">The persistent type.</typeparam>
 		/// <param name="configuration">The <see cref="Configuration"/> where add the type-definition.</param>
 		/// <param name="typeDefConfiguration">The custom configuration action.</param>
 		/// <returns>The <see cref="Configuration"/>.</returns>

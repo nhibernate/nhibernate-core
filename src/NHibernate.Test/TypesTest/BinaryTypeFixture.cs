@@ -37,7 +37,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		/// <summary>
-		/// Certain drivers (ie - Oralce) don't handle writing and reading null byte[] 
+		/// Certain drivers (ie - Oracle) don't handle writing and reading null byte[] 
 		/// to and from the db consistently.  Verify if this driver does.
 		/// </summary>
 		[Test]
@@ -71,7 +71,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		/// <summary>
-		/// Certain drivers (ie - Oralce) don't handle writing and reading byte[0] 
+		/// Certain drivers (ie - Oracle) don't handle writing and reading byte[0] 
 		/// to and from the db consistently.  Verify if this driver does.
 		/// </summary>
 		[Test]

@@ -8,9 +8,9 @@ namespace NHibernate.Id.Insert
 {
 	/// <summary> 
 	/// Abstract InsertGeneratedIdentifierDelegate implementation where the
-	/// underlying strategy causes the generated identitifer to be returned as an
+	/// underlying strategy causes the generated identifier to be returned as an
 	/// effect of performing the insert statement.  Thus, there is no need for an
-	/// additional sql statement to determine the generated identitifer. 
+	/// additional sql statement to determine the generated identifier. 
 	/// </summary>
 	public abstract class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
 	{

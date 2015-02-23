@@ -635,7 +635,7 @@ namespace NHibernate.Dialect
 		#region Callable statement support
 
 		/// <summary> 
-		/// Registers an OUT parameter which will be returing a
+		/// Registers an OUT parameter which will be returning a
 		/// <see cref="DbDataReader"/>.  How this is accomplished varies greatly
 		/// from DB to DB, hence its inclusion (along with {@link #getResultSet}) here.
 		///  </summary>
@@ -1217,7 +1217,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// This specialized string tokenizier will break a string to tokens, taking
 		/// into account single quotes, parenthesis and commas and [ ]
-		/// Notice that we aren't differenciating between [ ) and ( ] on purpose, it would complicate
+		/// Notice that we aren't differentiating between [ ) and ( ] on purpose, it would complicate
 		/// the code and it is not legal at any rate.
 		/// </summary>
 		public class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>

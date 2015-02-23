@@ -39,7 +39,7 @@ namespace NHibernate.Test
 		}
 
 		/// <summary>
-		/// Standar Configuration for tests.
+		/// Standard Configuration for tests.
 		/// </summary>
 		/// <returns>The configuration using merge between App.Config and hibernate.cfg.xml if present.</returns>
 		public static Configuration GetDefaultConfiguration()
