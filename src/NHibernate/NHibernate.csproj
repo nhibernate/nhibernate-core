@@ -532,6 +532,7 @@
     <Compile Include="Mapping\PrimaryKey.cs" />
     <Compile Include="Mapping\PrimitiveArray.cs" />
     <Compile Include="Mapping\Property.cs" />
+    <Compile Include="Mapping\ReferenceDependantValue.cs" />
     <Compile Include="Mapping\RootClass.cs" />
     <Compile Include="Mapping\Set.cs" />
     <Compile Include="Mapping\SimpleValue.cs" />
