@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using NHibernate.Cfg;
 using NUnit.Framework;
 
@@ -12,13 +14,19 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void CanSetDefaultFlushModeThroughXmlConfiguration()
 		{
-			var cfg = new Configuration().Configure();
+			const string c = @"<hibernate-configuration xmlns=""urn:nhibernate-configuration-2.2"">
+		<session-factory name=""NHibernate.Test"">
+			<property name=""default_flush_mode"">Commit</property>
+		</session-factory>
+	</hibernate-configuration>";
+
+			var cfg = new Configuration().Configure(new XmlTextReader(new StringReader(c)));
 
 			using (var sessionFactory = cfg.BuildSessionFactory())
 			{
 				using (var session = sessionFactory.OpenSession())
 				{
-					Assert.AreEqual(session.FlushMode, FlushMode.Commit);
+					Assert.AreEqual(FlushMode.Commit, session.FlushMode);
 				}
 			}
 		}
@@ -33,7 +41,7 @@ namespace NHibernate.Test.CfgTest
 			{
 				using (var session = sessionFactory.OpenSession())
 				{
-					Assert.AreEqual(session.FlushMode, FlushMode.Always);
+					Assert.AreEqual(FlushMode.Always, session.FlushMode);
 				}
 			}
 
@@ -43,7 +51,7 @@ namespace NHibernate.Test.CfgTest
 			{
 				using (var session = sessionFactory.OpenSession())
 				{
-					Assert.AreEqual(session.FlushMode, FlushMode.Commit);
+					Assert.AreEqual(FlushMode.Commit, session.FlushMode);
 				}
 			}
 		}
@@ -62,7 +70,7 @@ namespace NHibernate.Test.CfgTest
 			{
 				using (var session = sessionFactory.OpenSession())
 				{
-					Assert.AreEqual(session.FlushMode, FlushMode.Always);
+					Assert.AreEqual(FlushMode.Always, session.FlushMode);
 				}
 			}
 
@@ -74,7 +82,7 @@ namespace NHibernate.Test.CfgTest
 			{
 				using (var session = sessionFactory.OpenSession())
 				{
-					Assert.AreEqual(session.FlushMode, FlushMode.Commit);
+					Assert.AreEqual(FlushMode.Commit, session.FlushMode);
 				}
 			}
 		}
