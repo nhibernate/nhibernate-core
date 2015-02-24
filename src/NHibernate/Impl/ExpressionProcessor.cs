@@ -86,7 +86,7 @@ namespace NHibernate.Impl
 
 
 			/// <summary>
-			/// Retreive the property name from a supplied PropertyProjection
+			/// Retrieve the property name from a supplied PropertyProjection
 			/// Note:  throws is the supplied IProjection is not a PropertyProjection
 			/// </summary>
 			public string AsProperty()
@@ -365,7 +365,7 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Retrieves a detached criteria from an appropriate lambda expression
 		/// </summary>
-		/// <param name="expression">Expresson for detached criteria using .As&lt;>() extension"/></param>
+		/// <param name="expression">Expression for detached criteria using .As&lt;>() extension"/></param>
 		/// <returns>Evaluated detached criteria</returns>
 		public static DetachedCriteria FindDetachedCriteria(Expression expression)
 		{

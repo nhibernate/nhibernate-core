@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// Maps the Property to a single column that is capable of storing nulls in it. If a .net Struct is
-	/// used it will be created with its unitialized value and then on Update the uninitialized value of
+	/// used it will be created with its uninitialized value and then on Update the uninitialized value of
 	/// the Struct will be written to the column - not <see langword="null" />. 
 	/// </remarks>
 	[Serializable]

@@ -23,7 +23,7 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Session factory propeties bag.
+		/// Session factory properties bag.
 		/// </summary>
 		public IDictionary<string,string> Properties
 		{

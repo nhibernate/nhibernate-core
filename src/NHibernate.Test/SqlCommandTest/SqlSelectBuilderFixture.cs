@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlCommandTest
 {
 	/// <summary>
-	/// Tests all of the functionallity of the SqlSelectBuilderTest
+	/// Tests all of the functionality of the SqlSelectBuilderTest
 	/// </summary>
 	[TestFixture]
 	public class SqlSelectBuilderFixture

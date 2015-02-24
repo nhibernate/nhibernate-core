@@ -26,7 +26,7 @@ namespace NHibernate.Cache
 		/// <param name="id">The identifier associated with the cached data </param>
 		/// <param name="type">The Hibernate type mapping </param>
 		/// <param name="entityOrRoleName">The entity or collection-role name. </param>
-		/// <param name="entityMode">The entiyt mode of the originating session </param>
+		/// <param name="entityMode">The entity mode of the originating session </param>
 		/// <param name="factory">The session factory for which we are caching </param>
 		public CacheKey(object id, IType type, string entityOrRoleName, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{

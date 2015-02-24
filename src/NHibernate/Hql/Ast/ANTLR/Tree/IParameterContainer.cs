@@ -31,7 +31,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		void AddEmbeddedParameter(IParameterSpecification specification);
 
 		/// <summary>
-		/// Determine whether this node contans embedded parameters.  The implication is that
+		/// Determine whether this node contains embedded parameters.  The implication is that
 		/// {@link #getEmbeddedParameters()} is allowed to return null if this method returns false.
 		/// </summary>
 		bool HasEmbeddedParameters

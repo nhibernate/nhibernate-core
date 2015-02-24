@@ -80,9 +80,9 @@ namespace NHibernate
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
 		/// <remarks>
-		/// Must be called at the end of a unit of work, before commiting the transaction and closing
+		/// Must be called at the end of a unit of work, before committing the transaction and closing
 		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
-		/// of synchronising the underlying persistent store with persistable state held in memory.
+		/// of synchronizing the underlying persistent store with persistable state held in memory.
 		/// </remarks>
 		void Flush();
 
@@ -914,7 +914,7 @@ namespace NHibernate
 		/// Gets the session implementation.
 		/// </summary>
 		/// <remarks>
-		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementions.
+		/// This method is provided in order to get the <b>NHibernate</b> implementation of the session from wrapper implementations.
 		/// Implementors of the <seealso cref="ISession"/> interface should return the NHibernate implementation of this method.
 		/// </remarks>
 		/// <returns>

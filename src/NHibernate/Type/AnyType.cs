@@ -31,7 +31,7 @@ namespace NHibernate.Type
 	///	Simple, AssemblyName			4
 	///	
 	///	You can also provide you own type that might map the name of the class to a table
-	///	with a giant switch statemet or a good naming convention for your class->table.  The
+	///	with a giant switch statement or a good naming convention for your class->table.  The
 	///	data stored might look like
 	///	class_name					id_col1
 	///	========================================

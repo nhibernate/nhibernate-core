@@ -72,7 +72,7 @@ namespace NHibernate.Dialect
         }
 
         /// <summary> 
-        /// Generate the appropriate select statement to to retreive the next value
+        /// Generate the appropriate select statement to to retrieve the next value
         /// of a sequence.
         /// </summary>
         /// <param name="sequenceName">the name of the sequence </param>

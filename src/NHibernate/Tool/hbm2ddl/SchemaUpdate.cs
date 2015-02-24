@@ -44,7 +44,7 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		/// <summary>
-		///  Returns a List of all Exceptions which occured during the export.
+		///  Returns a List of all Exceptions which occurred during the export.
 		/// </summary>
 		/// <returns></returns>
 		public IList<Exception> Exceptions

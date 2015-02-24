@@ -84,7 +84,7 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Generate the table alias to use for the collection's key columns
 		/// </summary>
-		/// <param name="alias">The alias for thetarget table</param>
+		/// <param name="alias">The alias for the target table</param>
 		/// <returns>Appropriate table alias.</returns>
 		string GenerateTableAliasForKeyColumns(string alias);
 	}

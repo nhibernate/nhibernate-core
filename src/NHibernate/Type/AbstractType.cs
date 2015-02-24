@@ -111,7 +111,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Retrives an instance of the mapped class, or the identifier of an entity 
+		/// Retrieves an instance of the mapped class, or the identifier of an entity 
 		/// or collection from a <see cref="IDataReader"/>.
 		/// </summary>
 		/// <param name="rs">The <see cref="IDataReader"/> that contains the values.</param>

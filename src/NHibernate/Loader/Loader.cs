@@ -797,7 +797,7 @@ namespace NHibernate.Loader
 
 		/// <summary>
 		/// If this is a collection initializer, we need to tell the session that a collection
-		/// is being initilized, to account for the possibility of the collection having
+		/// is being initialized, to account for the possibility of the collection having
 		/// no elements (hence no rows in the result set).
 		/// </summary>
 		internal void HandleEmptyCollections(object[] keys, object resultSetId, ISessionImplementor session)
@@ -892,9 +892,9 @@ namespace NHibernate.Loader
 
 		/// <summary>
 		/// Resolve any ids for currently loaded objects, duplications within the <c>IDataReader</c>,
-		/// etc. Instanciate empty objects to be initialized from the <c>IDataReader</c>. Return an
+		/// etc. Instantiate empty objects to be initialized from the <c>IDataReader</c>. Return an
 		/// array of objects (a row of results) and an array of booleans (by side-effect) that determine
-		/// wheter the corresponding object should be initialized
+		/// whether the corresponding object should be initialized
 		/// </summary>
 		private object[] GetRow(IDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
 								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
@@ -1225,7 +1225,7 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary> 
-		/// Some dialect-specific LIMIT clauses require the maximium last row number
+		/// Some dialect-specific LIMIT clauses require the maximum last row number
 		/// (aka, first_row_number + total_row_count), while others require the maximum
 		/// returned row count (the total maximum number of rows to return). 
 		/// </summary>

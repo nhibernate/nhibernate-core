@@ -24,7 +24,7 @@ namespace NHibernate.Dialect.Lock
 		/// Construct a locking strategy based on SQL UPDATE statements.
 		/// </summary>
 		/// <param name="lockable">The metadata for the entity to be locked. </param>
-		/// <param name="lockMode">Indictates the type of lock to be acquired. </param>
+		/// <param name="lockMode">Indicates the type of lock to be acquired. </param>
 		/// <remarks>
 		/// read-locks are not valid for this strategy.
 		/// </remarks>

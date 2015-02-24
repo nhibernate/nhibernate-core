@@ -177,7 +177,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-		/// Load a System.Type given is't name.
+		/// Load a System.Type given its name.
 		/// </summary>
 		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
 		/// <returns>The System.Type</returns>
@@ -199,7 +199,7 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-				/// Load a System.Type given is't name.
+				/// Load a System.Type given its name.
 				/// </summary>
 				/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
 				/// <returns>The System.Type or null</returns>

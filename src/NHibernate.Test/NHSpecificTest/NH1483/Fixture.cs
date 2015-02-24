@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 		}
 
 		/// <summary>
-		/// Tests that a Subclass can be loaded from second level cache as the specifed 
+		/// Tests that a Subclass can be loaded from second level cache as the specified 
 		/// type of baseclass
 		/// </summary>
 		/// <typeparam name="TBaseClass">The type of the BaseClass to test.</typeparam>
