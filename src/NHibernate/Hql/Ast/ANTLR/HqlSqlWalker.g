@@ -26,6 +26,8 @@ tokens
 	METHOD_NAME;    // An IDENT that is a method name.
 	NAMED_PARAM;    // A named parameter (:foo).
 	BOGUS;          // Used for error state detection, etc.
+	RESULT_VARIABLE_REF;   // An IDENT that refers to result variable
+	                       // (i.e, an alias for a select expression) 
 }
 
 @namespace { NHibernate.Hql.Ast.ANTLR }
@@ -145,7 +147,20 @@ orderClause
 	;
 
 orderExprs
-	: expr ( ASCENDING | DESCENDING )? (orderExprs)?
+	: orderExpr ( ASCENDING | DESCENDING )? (orderExprs)?
+	;
+
+orderExpr
+	: { IsOrderExpressionResultVariableRef( (IASTNode) input.LT(1) ) }? resultVariableRef
+	| expr
+	;
+
+resultVariableRef!
+	@after {
+		HandleResultVariableRef( $resultVariableRef.tree );
+	}
+	: i=identifier
+	-> ^(RESULT_VARIABLE_REF [$i.tree.Text]) 
 	;
 
 skipClause

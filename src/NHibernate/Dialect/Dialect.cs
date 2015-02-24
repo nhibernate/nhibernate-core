@@ -1872,6 +1872,20 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary> 
+		/// Does this dialect require that references to result variables
+		/// (i.e, select expresssion aliases) in an ORDER BY clause be
+		/// replaced by column positions (1-origin) as defined by the select clause?
+		/// </summary>
+		/// <returns> 
+		/// true if result variable references in the ORDER BY clause should 
+		/// be replaced by column positions; false otherwise. 
+		/// </returns>
+		public virtual bool ReplaceResultVariableInOrderByClauseWithPosition
+		{
+			get { return false; }
+		}
+
+		/// <summary> 
 		/// Does this dialect support asking the result set its positioning
 		/// information on forward only cursors.  Specifically, in the case of
 		/// scrolling fetches, Hibernate needs to use

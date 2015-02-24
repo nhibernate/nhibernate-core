@@ -370,6 +370,7 @@ addrExpr
 	: ^(r=DOT . .) { Out(r); }
 	| i=ALIAS_REF { Out(i); }
 	| ^(j=INDEX_OP .*) { Out(j); }
+	| v=RESULT_VARIABLE_REF { Out(v); }
 	;
 
 sqlToken

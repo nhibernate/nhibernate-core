@@ -17,11 +17,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		IType DataType { get; }
 
 		/// <summary>
-		/// Appends AST nodes that represent the columns after the current AST node.
+		/// Set the scalar column index and appends AST nodes that represent the columns after the current AST node.
 		/// (e.g. 'as col0_O_')
 		/// </summary>
 		/// <param name="i">The index of the select expression in the projection list.</param>
 		void SetScalarColumnText(int i);
+
+		/// <summary>
+		/// Sets the index and text for select expression in the projection list.
+		/// </summary>
+		/// <param name="i">The index of the select expression in the projection list.</param>
+		void SetScalarColumn(int i);
+
+		/// <summary>
+		/// Gets index of the select expression in the projection list.
+		/// </summary>
+		/// <value>The index of the select expression in the projection list.</value>
+		int ScalarColumnIndex { get; }
 
 		/// <summary>
 		/// Returns the FROM element that this expression refers to.
