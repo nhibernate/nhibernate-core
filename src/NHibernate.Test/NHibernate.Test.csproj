@@ -676,6 +676,7 @@
     <Compile Include="MappingByCode\MappersTests\SubclassMapperTests\SetPersisterTests.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MappersTests\SubclassMapperWithJoinPropertiesTest.cs" />
+    <Compile Include="MappingByCode\MappersTests\UnionSubclassMapperTests\AbstractAttributeTests.cs" />
     <Compile Include="MappingByCode\MappersTests\UnionSubclassMapperTests\SetPersisterTests.cs" />
     <Compile Include="MappingByCode\MappersTests\UnionSubclassMapperTests\TablesSincronizationTests.cs" />
     <Compile Include="MappingByCode\MixAutomapping\ArrayCollectionTests.cs" />
