@@ -39,6 +39,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#region ISubclassMapper Members
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
 
 		public void DiscriminatorValue(object value)
 		{

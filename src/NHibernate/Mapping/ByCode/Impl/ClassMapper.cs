@@ -59,6 +59,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#region Implementation of IClassMapper
+		public void Abstract(bool isAbstract)
+		{
+			classMapping.@abstract = isAbstract;
+			classMapping.abstractSpecified = true;
+		}
+
 		public void OptimisticLock(OptimisticLockMode mode)
 		{
 			classMapping.optimisticlock = (HbmOptimisticLockMode)Enum.Parse(typeof(OptimisticLockMode), mode.ToString());

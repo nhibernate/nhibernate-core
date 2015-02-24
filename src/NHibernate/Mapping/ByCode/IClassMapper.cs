@@ -13,6 +13,7 @@ namespace NHibernate.Mapping.ByCode
 		void ComponentAsId(MemberInfo idProperty, Action<IComponentAsIdMapper> idMapper);
 		void ComposedId(Action<IComposedIdMapper> idPropertiesMapping);
 
+		void Abstract(bool isAbstract);
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
@@ -53,6 +54,7 @@ namespace NHibernate.Mapping.ByCode
 
 		void ComposedId(Action<IComposedIdMapper<TEntity>> idPropertiesMapping);
 
+		void Abstract(bool isAbstract);
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);

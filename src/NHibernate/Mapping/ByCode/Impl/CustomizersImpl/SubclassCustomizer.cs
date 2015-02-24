@@ -22,6 +22,15 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		}
 
 		#region ISubclassMapper<TEntity> Members
+		public void Extends(System.Type baseType)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Extends(baseType));
+		}
+
+		public void Abstract(bool isAbstract)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Abstract(isAbstract));
+		}
 
 		public void DiscriminatorValue(object value)
 		{
