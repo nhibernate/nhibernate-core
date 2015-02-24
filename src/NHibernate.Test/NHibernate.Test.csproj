@@ -3132,7 +3132,7 @@
   <ItemGroup>
     <EmbeddedResource Include="NHSpecificTest\NH3754\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
-    <Content Include="NHSpecificTest\NH3372\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3372\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3567\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3453\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3480\Mappings.hbm.xml">
