@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 SqlGenerator.g 2014-10-10 10:44:17
+// $ANTLR 3.5.0.2 SqlGenerator.g 2015-02-24 17:27:16
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -6051,22 +6051,28 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(308, 6);
 				Match(input,BAND,Follow._BAND_in_bitwiseExpr1709); if (state.failed) return;
 
-				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(308, 11);
-				PushFollow(Follow._expr_in_bitwiseExpr1711);
+				if (state.backtracking == 0)
+				{
+					 BeginBitwiseOp("band"); 
+				}
+
+				Match(input, TokenTypes.Down, null); if (state.failed) return;
+				DebugLocation(308, 39);
+				PushFollow(Follow._expr_in_bitwiseExpr1713);
 				expr();
 				PopFollow();
 				if (state.failed) return;
-				DebugLocation(308, 16);
-				if (state.backtracking == 0)
-				{
-					 Out("&"); 
-				}
-				DebugLocation(308, 30);
+				DebugLocation(308, 44);
 				PushFollow(Follow._nestedExpr_in_bitwiseExpr1715);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
+				DebugLocation(308, 55);
+				if (state.backtracking == 0)
+				{
+					 EndBitwiseOp("band"); 
+				}
 
 				Match(input, TokenTypes.Up, null); if (state.failed) return;
 
@@ -6079,24 +6085,30 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(309, 4);
 				DebugLocation(309, 6);
-				Match(input,BOR,Follow._BOR_in_bitwiseExpr1722); if (state.failed) return;
+				Match(input,BOR,Follow._BOR_in_bitwiseExpr1724); if (state.failed) return;
+
+				DebugLocation(309, 10);
+				if (state.backtracking == 0)
+				{
+					 BeginBitwiseOp("bor"); 
+				}
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
-				DebugLocation(309, 10);
-				PushFollow(Follow._expr_in_bitwiseExpr1724);
+				DebugLocation(309, 37);
+				PushFollow(Follow._expr_in_bitwiseExpr1728);
 				expr();
 				PopFollow();
 				if (state.failed) return;
-				DebugLocation(309, 15);
-				if (state.backtracking == 0)
-				{
-					 Out("|"); 
-				}
-				DebugLocation(309, 29);
-				PushFollow(Follow._nestedExpr_in_bitwiseExpr1728);
+				DebugLocation(309, 42);
+				PushFollow(Follow._nestedExpr_in_bitwiseExpr1730);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
+				DebugLocation(309, 53);
+				if (state.backtracking == 0)
+				{
+					 EndBitwiseOp("bor"); 
+				}
 
 				Match(input, TokenTypes.Up, null); if (state.failed) return;
 
@@ -6109,24 +6121,30 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(310, 4);
 				DebugLocation(310, 6);
-				Match(input,BXOR,Follow._BXOR_in_bitwiseExpr1735); if (state.failed) return;
+				Match(input,BXOR,Follow._BXOR_in_bitwiseExpr1739); if (state.failed) return;
+
+				DebugLocation(310, 11);
+				if (state.backtracking == 0)
+				{
+					 BeginBitwiseOp("bxor"); 
+				}
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
-				DebugLocation(310, 11);
-				PushFollow(Follow._expr_in_bitwiseExpr1737);
+				DebugLocation(310, 39);
+				PushFollow(Follow._expr_in_bitwiseExpr1743);
 				expr();
 				PopFollow();
 				if (state.failed) return;
-				DebugLocation(310, 16);
-				if (state.backtracking == 0)
-				{
-					 Out("^"); 
-				}
-				DebugLocation(310, 30);
-				PushFollow(Follow._nestedExpr_in_bitwiseExpr1741);
+				DebugLocation(310, 44);
+				PushFollow(Follow._nestedExpr_in_bitwiseExpr1745);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
+				DebugLocation(310, 55);
+				if (state.backtracking == 0)
+				{
+					 EndBitwiseOp("bxor"); 
+				}
 
 				Match(input, TokenTypes.Up, null); if (state.failed) return;
 
@@ -6139,20 +6157,25 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(311, 4);
 				DebugLocation(311, 6);
-				Match(input,BNOT,Follow._BNOT_in_bitwiseExpr1748); if (state.failed) return;
+				Match(input,BNOT,Follow._BNOT_in_bitwiseExpr1754); if (state.failed) return;
 
 				DebugLocation(311, 11);
 				if (state.backtracking == 0)
 				{
-					 Out("~"); 
+					 BeginBitwiseOp("bnot"); 
 				}
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
-				DebugLocation(311, 25);
-				PushFollow(Follow._nestedExpr_in_bitwiseExpr1752);
+				DebugLocation(311, 39);
+				PushFollow(Follow._nestedExpr_in_bitwiseExpr1758);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
+				DebugLocation(311, 50);
+				if (state.backtracking == 0)
+				{
+					 EndBitwiseOp("bnot"); 
+				}
 
 				Match(input, TokenTypes.Up, null); if (state.failed) return;
 
@@ -6223,11 +6246,11 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(315, 4);
 				DebugLocation(315, 6);
-				Match(input,STAR,Follow._STAR_in_multiplicativeExpr1766); if (state.failed) return;
+				Match(input,STAR,Follow._STAR_in_multiplicativeExpr1773); if (state.failed) return;
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(315, 11);
-				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1768);
+				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1775);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6237,7 +6260,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					 Out("*"); 
 				}
 				DebugLocation(315, 36);
-				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1772);
+				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1779);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6253,11 +6276,11 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(316, 4);
 				DebugLocation(316, 6);
-				Match(input,DIV,Follow._DIV_in_multiplicativeExpr1779); if (state.failed) return;
+				Match(input,DIV,Follow._DIV_in_multiplicativeExpr1786); if (state.failed) return;
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(316, 10);
-				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1781);
+				PushFollow(Follow._nestedExpr_in_multiplicativeExpr1788);
 				nestedExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6267,7 +6290,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					 Out("/"); 
 				}
 				DebugLocation(316, 35);
-				PushFollow(Follow._nestedExprAfterMinusDiv_in_multiplicativeExpr1785);
+				PushFollow(Follow._nestedExprAfterMinusDiv_in_multiplicativeExpr1792);
 				nestedExprAfterMinusDiv();
 				PopFollow();
 				if (state.failed) return;
@@ -6502,7 +6525,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					 Out("("); 
 				}
 				DebugLocation(321, 36);
-				PushFollow(Follow._additiveExpr_in_nestedExpr1807);
+				PushFollow(Follow._additiveExpr_in_nestedExpr1814);
 				additiveExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6524,7 +6547,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					 Out("("); 
 				}
 				DebugLocation(322, 35);
-				PushFollow(Follow._bitwiseExpr_in_nestedExpr1822);
+				PushFollow(Follow._bitwiseExpr_in_nestedExpr1829);
 				bitwiseExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6541,7 +6564,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:323:4: expr
 				{
 				DebugLocation(323, 4);
-				PushFollow(Follow._expr_in_nestedExpr1829);
+				PushFollow(Follow._expr_in_nestedExpr1836);
 				expr();
 				PopFollow();
 				if (state.failed) return;
@@ -6873,7 +6896,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					 Out("("); 
 				}
 				DebugLocation(328, 38);
-				PushFollow(Follow._arithmeticExpr_in_nestedExprAfterMinusDiv1851);
+				PushFollow(Follow._arithmeticExpr_in_nestedExprAfterMinusDiv1858);
 				arithmeticExpr();
 				PopFollow();
 				if (state.failed) return;
@@ -6890,7 +6913,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:329:4: expr
 				{
 				DebugLocation(329, 4);
-				PushFollow(Follow._expr_in_nestedExprAfterMinusDiv1858);
+				PushFollow(Follow._expr_in_nestedExprAfterMinusDiv1865);
 				expr();
 				PopFollow();
 				if (state.failed) return;
@@ -6961,7 +6984,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(333, 4);
 				DebugLocation(333, 6);
-				Match(input,CASE,Follow._CASE_in_caseExpr1870); if (state.failed) return;
+				Match(input,CASE,Follow._CASE_in_caseExpr1877); if (state.failed) return;
 
 				DebugLocation(333, 11);
 				if (state.backtracking == 0)
@@ -6995,7 +7018,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						{
 						DebugLocation(334, 5);
 						DebugLocation(334, 7);
-						Match(input,WHEN,Follow._WHEN_in_caseExpr1880); if (state.failed) return;
+						Match(input,WHEN,Follow._WHEN_in_caseExpr1887); if (state.failed) return;
 
 						DebugLocation(334, 12);
 						if (state.backtracking == 0)
@@ -7005,7 +7028,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 						Match(input, TokenTypes.Down, null); if (state.failed) return;
 						DebugLocation(334, 32);
-						PushFollow(Follow._booleanExpr_in_caseExpr1884);
+						PushFollow(Follow._booleanExpr_in_caseExpr1891);
 						booleanExpr(false);
 						PopFollow();
 						if (state.failed) return;
@@ -7015,7 +7038,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 							 Out(" then "); 
 						}
 						DebugLocation(334, 70);
-						PushFollow(Follow._expr_in_caseExpr1889);
+						PushFollow(Follow._expr_in_caseExpr1896);
 						expr();
 						PopFollow();
 						if (state.failed) return;
@@ -7062,7 +7085,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					{
 					DebugLocation(335, 5);
 					DebugLocation(335, 7);
-					Match(input,ELSE,Follow._ELSE_in_caseExpr1901); if (state.failed) return;
+					Match(input,ELSE,Follow._ELSE_in_caseExpr1908); if (state.failed) return;
 
 					DebugLocation(335, 12);
 					if (state.backtracking == 0)
@@ -7072,7 +7095,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 					Match(input, TokenTypes.Down, null); if (state.failed) return;
 					DebugLocation(335, 31);
-					PushFollow(Follow._expr_in_caseExpr1905);
+					PushFollow(Follow._expr_in_caseExpr1912);
 					expr();
 					PopFollow();
 					if (state.failed) return;
@@ -7103,7 +7126,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(337, 4);
 				DebugLocation(337, 6);
-				Match(input,CASE2,Follow._CASE2_in_caseExpr1921); if (state.failed) return;
+				Match(input,CASE2,Follow._CASE2_in_caseExpr1928); if (state.failed) return;
 
 				DebugLocation(337, 12);
 				if (state.backtracking == 0)
@@ -7113,7 +7136,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(337, 30);
-				PushFollow(Follow._expr_in_caseExpr1925);
+				PushFollow(Follow._expr_in_caseExpr1932);
 				expr();
 				PopFollow();
 				if (state.failed) return;
@@ -7142,7 +7165,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						{
 						DebugLocation(338, 5);
 						DebugLocation(338, 7);
-						Match(input,WHEN,Follow._WHEN_in_caseExpr1932); if (state.failed) return;
+						Match(input,WHEN,Follow._WHEN_in_caseExpr1939); if (state.failed) return;
 
 						DebugLocation(338, 12);
 						if (state.backtracking == 0)
@@ -7152,7 +7175,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 						Match(input, TokenTypes.Down, null); if (state.failed) return;
 						DebugLocation(338, 32);
-						PushFollow(Follow._expr_in_caseExpr1936);
+						PushFollow(Follow._expr_in_caseExpr1943);
 						expr();
 						PopFollow();
 						if (state.failed) return;
@@ -7162,7 +7185,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 							 Out(" then "); 
 						}
 						DebugLocation(338, 56);
-						PushFollow(Follow._expr_in_caseExpr1940);
+						PushFollow(Follow._expr_in_caseExpr1947);
 						expr();
 						PopFollow();
 						if (state.failed) return;
@@ -7209,7 +7232,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 					{
 					DebugLocation(339, 5);
 					DebugLocation(339, 7);
-					Match(input,ELSE,Follow._ELSE_in_caseExpr1952); if (state.failed) return;
+					Match(input,ELSE,Follow._ELSE_in_caseExpr1959); if (state.failed) return;
 
 					DebugLocation(339, 12);
 					if (state.backtracking == 0)
@@ -7219,7 +7242,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 					Match(input, TokenTypes.Down, null); if (state.failed) return;
 					DebugLocation(339, 31);
-					PushFollow(Follow._expr_in_caseExpr1956);
+					PushFollow(Follow._expr_in_caseExpr1963);
 					expr();
 					PopFollow();
 					if (state.failed) return;
@@ -7287,7 +7310,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 			DebugLocation(344, 4);
 			DebugLocation(344, 7);
-			a=(IASTNode)Match(input,AGGREGATE,Follow._AGGREGATE_in_aggregate1980); if (state.failed) return;
+			a=(IASTNode)Match(input,AGGREGATE,Follow._AGGREGATE_in_aggregate1987); if (state.failed) return;
 
 			DebugLocation(344, 18);
 			if (state.backtracking == 0)
@@ -7297,7 +7320,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 			Match(input, TokenTypes.Down, null); if (state.failed) return;
 			DebugLocation(344, 41);
-			PushFollow(Follow._expr_in_aggregate1985);
+			PushFollow(Follow._expr_in_aggregate1992);
 			expr();
 			PopFollow();
 			if (state.failed) return;
@@ -7354,11 +7377,11 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 			DebugLocation(349, 4);
 			DebugLocation(349, 7);
-			m=(IASTNode)Match(input,METHOD_CALL,Follow._METHOD_CALL_in_methodCall2004); if (state.failed) return;
+			m=(IASTNode)Match(input,METHOD_CALL,Follow._METHOD_CALL_in_methodCall2011); if (state.failed) return;
 
 			Match(input, TokenTypes.Down, null); if (state.failed) return;
 			DebugLocation(349, 21);
-			i=(IASTNode)Match(input,METHOD_NAME,Follow._METHOD_NAME_in_methodCall2008); if (state.failed) return;
+			i=(IASTNode)Match(input,METHOD_NAME,Follow._METHOD_NAME_in_methodCall2015); if (state.failed) return;
 			DebugLocation(349, 34);
 			if (state.backtracking == 0)
 			{
@@ -7384,7 +7407,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(350, 5);
 				DebugLocation(350, 7);
-				Match(input,EXPR_LIST,Follow._EXPR_LIST_in_methodCall2017); if (state.failed) return;
+				Match(input,EXPR_LIST,Follow._EXPR_LIST_in_methodCall2024); if (state.failed) return;
 
 				if (input.LA(1) == TokenTypes.Down)
 				{
@@ -7408,7 +7431,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						// SqlGenerator.g:350:18: arguments
 						{
 						DebugLocation(350, 18);
-						PushFollow(Follow._arguments_in_methodCall2020);
+						PushFollow(Follow._arguments_in_methodCall2027);
 						arguments();
 						PopFollow();
 						if (state.failed) return;
@@ -7508,7 +7531,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:355:5: expr
 				{
 				DebugLocation(355, 5);
-				PushFollow(Follow._expr_in_arguments2045);
+				PushFollow(Follow._expr_in_arguments2052);
 				expr();
 				PopFollow();
 				if (state.failed) return;
@@ -7520,7 +7543,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:355:12: comparisonExpr[true]
 				{
 				DebugLocation(355, 12);
-				PushFollow(Follow._comparisonExpr_in_arguments2049);
+				PushFollow(Follow._comparisonExpr_in_arguments2056);
 				comparisonExpr(true);
 				PopFollow();
 				if (state.failed) return;
@@ -7588,7 +7611,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						// SqlGenerator.g:355:71: expr
 						{
 						DebugLocation(355, 71);
-						PushFollow(Follow._expr_in_arguments2058);
+						PushFollow(Follow._expr_in_arguments2065);
 						expr();
 						PopFollow();
 						if (state.failed) return;
@@ -7600,7 +7623,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 						// SqlGenerator.g:355:78: comparisonExpr[true]
 						{
 						DebugLocation(355, 78);
-						PushFollow(Follow._comparisonExpr_in_arguments2062);
+						PushFollow(Follow._comparisonExpr_in_arguments2069);
 						comparisonExpr(true);
 						PopFollow();
 						if (state.failed) return;
@@ -7692,7 +7715,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:359:4: n= NAMED_PARAM
 				{
 				DebugLocation(359, 5);
-				n=(IASTNode)Match(input,NAMED_PARAM,Follow._NAMED_PARAM_in_parameter2080); if (state.failed) return;
+				n=(IASTNode)Match(input,NAMED_PARAM,Follow._NAMED_PARAM_in_parameter2087); if (state.failed) return;
 				DebugLocation(359, 18);
 				if (state.backtracking == 0)
 				{
@@ -7706,7 +7729,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:360:4: p= PARAM
 				{
 				DebugLocation(360, 5);
-				p=(IASTNode)Match(input,PARAM,Follow._PARAM_in_parameter2089); if (state.failed) return;
+				p=(IASTNode)Match(input,PARAM,Follow._PARAM_in_parameter2096); if (state.failed) return;
 				DebugLocation(360, 12);
 				if (state.backtracking == 0)
 				{
@@ -7855,7 +7878,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(370, 4);
 				DebugLocation(370, 7);
-				r=(IASTNode)Match(input,DOT,Follow._DOT_in_addrExpr2126); if (state.failed) return;
+				r=(IASTNode)Match(input,DOT,Follow._DOT_in_addrExpr2133); if (state.failed) return;
 
 				Match(input, TokenTypes.Down, null); if (state.failed) return;
 				DebugLocation(370, 12);
@@ -7878,7 +7901,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:371:4: i= ALIAS_REF
 				{
 				DebugLocation(371, 5);
-				i=(IASTNode)Match(input,ALIAS_REF,Follow._ALIAS_REF_in_addrExpr2140); if (state.failed) return;
+				i=(IASTNode)Match(input,ALIAS_REF,Follow._ALIAS_REF_in_addrExpr2147); if (state.failed) return;
 				DebugLocation(371, 16);
 				if (state.backtracking == 0)
 				{
@@ -7893,7 +7916,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				{
 				DebugLocation(372, 4);
 				DebugLocation(372, 7);
-				j=(IASTNode)Match(input,INDEX_OP,Follow._INDEX_OP_in_addrExpr2150); if (state.failed) return;
+				j=(IASTNode)Match(input,INDEX_OP,Follow._INDEX_OP_in_addrExpr2157); if (state.failed) return;
 
 				if (input.LA(1) == TokenTypes.Down)
 				{
@@ -7957,7 +7980,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				// SqlGenerator.g:373:4: v= RESULT_VARIABLE_REF
 				{
 				DebugLocation(373, 5);
-				v=(IASTNode)Match(input,RESULT_VARIABLE_REF,Follow._RESULT_VARIABLE_REF_in_addrExpr2163); if (state.failed) return;
+				v=(IASTNode)Match(input,RESULT_VARIABLE_REF,Follow._RESULT_VARIABLE_REF_in_addrExpr2170); if (state.failed) return;
 				DebugLocation(373, 26);
 				if (state.backtracking == 0)
 				{
@@ -8009,7 +8032,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			{
 			DebugLocation(377, 4);
 			DebugLocation(377, 7);
-			t=(IASTNode)Match(input,SQL_TOKEN,Follow._SQL_TOKEN_in_sqlToken2179); if (state.failed) return;
+			t=(IASTNode)Match(input,SQL_TOKEN,Follow._SQL_TOKEN_in_sqlToken2186); if (state.failed) return;
 
 			DebugLocation(377, 18);
 			if (state.backtracking == 0)
@@ -8134,7 +8157,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:321:5: additiveExpr
 			{
 			DebugLocation(321, 5);
-			PushFollow(Follow._additiveExpr_in_synpred2_SqlGenerator1800);
+			PushFollow(Follow._additiveExpr_in_synpred2_SqlGenerator1807);
 			additiveExpr();
 			PopFollow();
 			if (state.failed) return;
@@ -8167,7 +8190,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:322:5: bitwiseExpr
 			{
 			DebugLocation(322, 5);
-			PushFollow(Follow._bitwiseExpr_in_synpred3_SqlGenerator1815);
+			PushFollow(Follow._bitwiseExpr_in_synpred3_SqlGenerator1822);
 			bitwiseExpr();
 			PopFollow();
 			if (state.failed) return;
@@ -8200,7 +8223,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 			// SqlGenerator.g:328:5: arithmeticExpr
 			{
 			DebugLocation(328, 5);
-			PushFollow(Follow._arithmeticExpr_in_synpred4_SqlGenerator1844);
+			PushFollow(Follow._arithmeticExpr_in_synpred4_SqlGenerator1851);
 			arithmeticExpr();
 			PopFollow();
 			if (state.failed) return;
@@ -8441,61 +8464,61 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 		public static readonly BitSet _expr_in_additiveExpr1692 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
 		public static readonly BitSet _nestedExprAfterMinusDiv_in_additiveExpr1696 = new BitSet(new ulong[]{0x8UL});
 		public static readonly BitSet _BAND_in_bitwiseExpr1709 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_bitwiseExpr1711 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _expr_in_bitwiseExpr1713 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
 		public static readonly BitSet _nestedExpr_in_bitwiseExpr1715 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BOR_in_bitwiseExpr1722 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_bitwiseExpr1724 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _nestedExpr_in_bitwiseExpr1728 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BXOR_in_bitwiseExpr1735 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_bitwiseExpr1737 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _nestedExpr_in_bitwiseExpr1741 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _BNOT_in_bitwiseExpr1748 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _nestedExpr_in_bitwiseExpr1752 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _STAR_in_multiplicativeExpr1766 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1768 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1772 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _DIV_in_multiplicativeExpr1779 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1781 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _nestedExprAfterMinusDiv_in_multiplicativeExpr1785 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _additiveExpr_in_nestedExpr1807 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _bitwiseExpr_in_nestedExpr1822 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expr_in_nestedExpr1829 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _arithmeticExpr_in_nestedExprAfterMinusDiv1851 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expr_in_nestedExprAfterMinusDiv1858 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CASE_in_caseExpr1870 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _WHEN_in_caseExpr1880 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _booleanExpr_in_caseExpr1884 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _expr_in_caseExpr1889 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ELSE_in_caseExpr1901 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr1905 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _CASE2_in_caseExpr1921 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr1925 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
-		public static readonly BitSet _WHEN_in_caseExpr1932 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr1936 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
-		public static readonly BitSet _expr_in_caseExpr1940 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _ELSE_in_caseExpr1952 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_caseExpr1956 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _AGGREGATE_in_aggregate1980 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _expr_in_aggregate1985 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _METHOD_CALL_in_methodCall2004 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _METHOD_NAME_in_methodCall2008 = new BitSet(new ulong[]{0x80000000008UL});
-		public static readonly BitSet _EXPR_LIST_in_methodCall2017 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _arguments_in_methodCall2020 = new BitSet(new ulong[]{0x8UL});
-		public static readonly BitSet _expr_in_arguments2045 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
-		public static readonly BitSet _comparisonExpr_in_arguments2049 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
-		public static readonly BitSet _expr_in_arguments2058 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
-		public static readonly BitSet _comparisonExpr_in_arguments2062 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
-		public static readonly BitSet _NAMED_PARAM_in_parameter2080 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _PARAM_in_parameter2089 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DOT_in_addrExpr2126 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _ALIAS_REF_in_addrExpr2140 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INDEX_OP_in_addrExpr2150 = new BitSet(new ulong[]{0x4UL});
-		public static readonly BitSet _RESULT_VARIABLE_REF_in_addrExpr2163 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SQL_TOKEN_in_sqlToken2179 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _BOR_in_bitwiseExpr1724 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_bitwiseExpr1728 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _nestedExpr_in_bitwiseExpr1730 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BXOR_in_bitwiseExpr1739 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_bitwiseExpr1743 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _nestedExpr_in_bitwiseExpr1745 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _BNOT_in_bitwiseExpr1754 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _nestedExpr_in_bitwiseExpr1758 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _STAR_in_multiplicativeExpr1773 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1775 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1779 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _DIV_in_multiplicativeExpr1786 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _nestedExpr_in_multiplicativeExpr1788 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _nestedExprAfterMinusDiv_in_multiplicativeExpr1792 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _additiveExpr_in_nestedExpr1814 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _bitwiseExpr_in_nestedExpr1829 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expr_in_nestedExpr1836 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _arithmeticExpr_in_nestedExprAfterMinusDiv1858 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expr_in_nestedExprAfterMinusDiv1865 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CASE_in_caseExpr1877 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _WHEN_in_caseExpr1887 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _booleanExpr_in_caseExpr1891 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _expr_in_caseExpr1896 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ELSE_in_caseExpr1908 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr1912 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _CASE2_in_caseExpr1928 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr1932 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
+		public static readonly BitSet _WHEN_in_caseExpr1939 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr1943 = new BitSet(new ulong[]{0x8801003140ED150UL,0x561444C01F814010UL,0x428080UL});
+		public static readonly BitSet _expr_in_caseExpr1947 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _ELSE_in_caseExpr1959 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_caseExpr1963 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _AGGREGATE_in_aggregate1987 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _expr_in_aggregate1992 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _METHOD_CALL_in_methodCall2011 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _METHOD_NAME_in_methodCall2015 = new BitSet(new ulong[]{0x80000000008UL});
+		public static readonly BitSet _EXPR_LIST_in_methodCall2024 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _arguments_in_methodCall2027 = new BitSet(new ulong[]{0x8UL});
+		public static readonly BitSet _expr_in_arguments2052 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
+		public static readonly BitSet _comparisonExpr_in_arguments2056 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
+		public static readonly BitSet _expr_in_arguments2065 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
+		public static readonly BitSet _comparisonExpr_in_arguments2069 = new BitSet(new ulong[]{0xC941243140EF152UL,0x561444C01FF34A5CUL,0x428080UL});
+		public static readonly BitSet _NAMED_PARAM_in_parameter2087 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _PARAM_in_parameter2096 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DOT_in_addrExpr2133 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _ALIAS_REF_in_addrExpr2147 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INDEX_OP_in_addrExpr2157 = new BitSet(new ulong[]{0x4UL});
+		public static readonly BitSet _RESULT_VARIABLE_REF_in_addrExpr2170 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SQL_TOKEN_in_sqlToken2186 = new BitSet(new ulong[]{0x4UL});
 		public static readonly BitSet _SQL_TOKEN_in_synpred1_SqlGenerator370 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _additiveExpr_in_synpred2_SqlGenerator1800 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _bitwiseExpr_in_synpred3_SqlGenerator1815 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _arithmeticExpr_in_synpred4_SqlGenerator1844 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _additiveExpr_in_synpred2_SqlGenerator1807 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _bitwiseExpr_in_synpred3_SqlGenerator1822 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _arithmeticExpr_in_synpred4_SqlGenerator1851 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }
