@@ -3,8 +3,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3512
 {
-
-
 	public class Fixture : BugTestCase
 	{
 		private int _id;
@@ -47,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 
 				transaction.Commit();
 
-				CollectionAssert.AreNotEqual(before, person.Version);
+				Assert.That(person.Version, Is.GreaterThan(before));
 			}
 		}
 
@@ -64,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 
 				transaction.Commit();
 
-				CollectionAssert.AreNotEqual(before, employee.Version);
+				Assert.That(employee.Version, Is.GreaterThan(before));
 			}
 		}
 	}

@@ -3,9 +3,7 @@
 
 	<class name="Person">
 		<id name="Id" generator="identity" />
-		<version name="Version" generated="always" unsaved-value="null" type="BinaryBlob">
-			<column name="Version" not-null="false" sql-type="timestamp"/>
-		</version>
+		<version name="Version" />
 		<property name="Name" />
 		<property name="Age" />
 

@@ -3,7 +3,7 @@
 	class Person
 	{
 		public virtual int Id { get; protected set; }
-		public virtual byte[] Version { get; set; }
+		public virtual int Version { get; set; }
 		public virtual string Name { get; set; }
 		public virtual int Age { get; set; }
 	}
