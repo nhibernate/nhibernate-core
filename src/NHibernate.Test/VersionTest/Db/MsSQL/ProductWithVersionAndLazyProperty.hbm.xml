@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.Test.VersionTest.Db.MsSQL" assembly="NHibernate.Test">
+  <class name="ProductWithVersionAndLazyProperty">
+    <id name="Id" generator="assigned" />
+    <version name="Version" generated="always" unsaved-value="null" type="BinaryBlob" access="nosetter.camelcase-underscore">
+      <column name="version" not-null="false" sql-type="timestamp" />
+    </version>
+    <property name="Summary" lazy="true" />
+  </class>
+</hibernate-mapping>
