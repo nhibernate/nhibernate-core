@@ -75,8 +75,7 @@ namespace NHibernate.Persister.Collection
 			else
 			{
 				var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
-				update.SetJoin(ownerPersister.TableName, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
-				update.SetIdentityColumn(ownerPersister.TableName, KeyColumnNames, KeyType);
+				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
 			}
 
 			if (HasIndex)
