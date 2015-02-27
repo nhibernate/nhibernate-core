@@ -19,6 +19,7 @@ namespace NHibernate.Persister.Entity
 	{
 		// the class hierarchy structure
 		private readonly int joinSpan;
+		private IType[] identifierTypes;
 		private readonly string[] qualifiedTableNames;
 		private readonly bool[] isInverseTable;
 		private readonly bool[] isNullableTable;
@@ -39,7 +40,7 @@ namespace NHibernate.Persister.Entity
 		private readonly int[] propertyTableNumbers;
 
 		// if the id is a property of the base table eg join to property-ref
-		// if the id is not a property the value will be -1
+		// if the id is not a property the value will be null
 		private readonly Dictionary<int, int> tableIdPropertyNumbers;
 
 		// the closure of all columns used by the entire hierarchy including
@@ -82,13 +83,14 @@ namespace NHibernate.Persister.Entity
 			#region CLASS + TABLE
 
 			joinSpan = persistentClass.JoinClosureSpan + 1;
+			identifierTypes = new IType[joinSpan];
 			qualifiedTableNames = new string[joinSpan];
 			isInverseTable = new bool[joinSpan];
 			isNullableTable = new bool[joinSpan];
 			keyColumnNames = new string[joinSpan][];
 			Table table = persistentClass.RootTable;
-			qualifiedTableNames[0] =
-				table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+			identifierTypes[0] = IdentifierType;
+			qualifiedTableNames[0] =table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 			isInverseTable[0] = false;
 			isNullableTable[0] = false;
 			keyColumnNames[0] = IdentifierColumnNames;
@@ -124,6 +126,7 @@ namespace NHibernate.Persister.Entity
 			int j = 1;
 			foreach (Join join in persistentClass.JoinClosureIterator)
 			{
+				identifierTypes[j] = join.Key.Type;
 				qualifiedTableNames[j] = join.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 				isInverseTable[j] = join.IsInverse;
 				isNullableTable[j] = join.IsOptional;
@@ -459,6 +462,11 @@ namespace NHibernate.Persister.Entity
 		public override string[] ConstraintOrderedTableNameClosure
 		{
 			get { return constraintOrderedTableNames; }
+		}
+
+		public override IType GetIdentifierType(int j)
+		{
+			return identifierTypes[j];
 		}
 
 		public override string[][] ContraintOrderedTableKeyColumnClosure

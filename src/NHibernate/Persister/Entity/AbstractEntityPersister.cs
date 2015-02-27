@@ -276,7 +276,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			batchSize = persistentClass.BatchSize.HasValue ? persistentClass.BatchSize.Value : factory.Settings.DefaultBatchFetchSize;
+			batchSize = persistentClass.BatchSize ?? factory.Settings.DefaultBatchFetchSize;
 			hasSubselectLoadableCollections = persistentClass.HasSubselectLoadableCollections;
 
 			propertyMapping = new BasicEntityPropertyMapping(this);
@@ -991,6 +991,11 @@ namespace NHibernate.Persister.Entity
 		public virtual string IdentifierPropertyName
 		{
 			get { return entityMetamodel.IdentifierProperty.Name; }
+		}
+
+		public virtual IType GetIdentifierType(int j)
+		{
+			return IdentifierType;
 		}
 
 		public virtual IType IdentifierType
@@ -2241,9 +2246,9 @@ namespace NHibernate.Persister.Entity
 
 			// select the correct row by either pk or rowid
 			if (useRowId)
-				updateBuilder.SetIdentityColumn(new string[] { rowIdName }, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
+				updateBuilder.SetIdentityColumn(new[] {rowIdName}, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
 			else
-				updateBuilder.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+				updateBuilder.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 			bool hasColumns = false;
 			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
@@ -2357,7 +2362,7 @@ namespace NHibernate.Persister.Entity
 			}
 			else
 			{
-				builder.AddColumns(GetKeyColumns(j), null, IdentifierType);
+				builder.AddColumns(GetKeyColumns(j), null, GetIdentifierType(j));
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -2407,7 +2412,7 @@ namespace NHibernate.Persister.Entity
 			var deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			deleteBuilder
 				.SetTableName(GetTableName(j))
-				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+				.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 			// NH: Only add version to where clause if optimistic lock mode is Version
 			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
@@ -3162,7 +3167,7 @@ namespace NHibernate.Persister.Entity
 			{
 				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory)
 					.SetTableName(GetTableName(j))
-					.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
+					.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
 
 				if (Factory.Settings.IsCommentsEnabled)
 				{
