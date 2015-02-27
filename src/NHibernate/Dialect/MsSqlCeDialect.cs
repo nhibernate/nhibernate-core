@@ -163,7 +163,7 @@ namespace NHibernate.Dialect
 
 		public override string Qualify(string catalog, string schema, string table)
 		{
-			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
+			// SQL Server Compact doesn't support Schema. So join schema name and table name with underscores
 			// similar to the SQLLite dialect.
 			
 			var qualifiedName = new StringBuilder();
@@ -227,6 +227,11 @@ namespace NHibernate.Dialect
 				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
 				return TimeSpan.TicksPerMillisecond*10L;
 			}
+		}
+
+		public override string NoColumnsInsertString
+		{
+			get { throw new NotSupportedException("The Microsoft SQL Server CE does not support insertion of empty columns."); }
 		}
 	}
 }
