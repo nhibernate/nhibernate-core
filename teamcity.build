@@ -151,17 +151,17 @@
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/common">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/x86">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x86">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-oracle-managed64">
@@ -169,17 +169,17 @@
 		<property name="nhibernate.dialect"							value="NHibernate.Dialect.Oracle10gDialect" />
 		<property name="nhibernate.connection.connection_string"	value="User ID=nhibernate;Password=nhibernate;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XE)))" />
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/common">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/common">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<copy todir="${bin.dir}">
-			<fileset basedir="${root.dir}/lib/teamcity/oracle/managed/x64">
+			<fileset basedir="${root.dir}/lib/teamcity/oracle-managed/x64">
 				<include name="*.dll"/>
 			</fileset>
 		</copy>
 		<property name="NHibernate.Test.IgnoreFail" value="true" />
-		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle/NHibernate.Test.last-results.xml" />
+		<property name="teamcity.last.result" value="${root.dir}/lib/teamcity/oracle-managed/NHibernate.Test.last-results.xml" />
 	</target>
 
 	<target name="setup-teamcity-mysql">
