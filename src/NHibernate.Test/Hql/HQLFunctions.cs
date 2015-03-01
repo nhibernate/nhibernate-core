@@ -74,9 +74,13 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			{
 				// Count in select
-				object result = s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResult();
-				Assert.AreEqual(typeof(long), result.GetType());
-				Assert.AreEqual(2, result);
+			    object result;
+			    if (!(Dialect is MsSqlCeDialect)) // SQL CE does not support count distinct
+			    {
+			        result = s.CreateQuery("select count(distinct a.id) from Animal a").UniqueResult();
+			        Assert.AreEqual(typeof(long), result.GetType());
+				    Assert.AreEqual(2, result);
+			    }
 
 				result = s.CreateQuery("select count(*) from Animal").UniqueResult();
 				Assert.AreEqual(typeof(long), result.GetType());

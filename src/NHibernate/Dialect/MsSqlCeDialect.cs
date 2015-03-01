@@ -45,9 +45,31 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
 
+			RegisterFunction("acos", new StandardSQLFunction("acos"));
+			RegisterFunction("asin", new StandardSQLFunction("asin"));
+			RegisterFunction("atan", new StandardSQLFunction("atan"));
+			RegisterFunction("atn2", new StandardSQLFunction("atn2"));
+		    RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
+		    RegisterFunction("cos", new StandardSQLFunction("cos"));
+		    RegisterFunction("cot", new StandardSQLFunction("cot"));
+		    RegisterFunction("degrees", new StandardSQLFunction("degrees"));
+		    RegisterFunction("exp", new StandardSQLFunction("exp"));
+		    RegisterFunction("floor", new StandardSQLFunction("floor"));
+		    RegisterFunction("log", new StandardSQLFunction("log"));
+		    RegisterFunction("log10", new StandardSQLFunction("log10"));
+		    RegisterFunction("pi", new StandardSQLFunction("pi"));
+		    RegisterFunction("power", new StandardSQLFunction("power"));
+		    RegisterFunction("radians", new StandardSQLFunction("radians"));
+		    RegisterFunction("rand", new StandardSQLFunction("rand"));
+		    RegisterFunction("round", new StandardSQLFunction("round"));
+		    RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
+		    RegisterFunction("sin", new StandardSQLFunction("sin"));
+		    RegisterFunction("tan", new StandardSQLFunction("tan"));
+
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
 
+            RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
@@ -68,7 +90,11 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 
-			RegisterFunction("round", new StandardSQLFunction("round"));
+            RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
+            RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+            RegisterFunction("nullif", new SQLFunctionTemplate(null, "case when ?1 = ?2 then null else ?1 end"));
+            RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+            RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
