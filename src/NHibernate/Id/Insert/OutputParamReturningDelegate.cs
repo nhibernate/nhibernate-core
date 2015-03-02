@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -61,7 +62,7 @@ namespace NHibernate.Id.Insert
 		public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
 		{
 			session.Batcher.ExecuteNonQuery(insert);
-			return ((IDbDataParameter)insert.Parameters[driveGeneratedParamName]).Value;
+			return Convert.ChangeType(((IDbDataParameter) insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
 		}
 
 		#endregion
