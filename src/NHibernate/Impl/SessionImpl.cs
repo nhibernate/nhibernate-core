@@ -1124,7 +1124,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				if (!TransactionInProgress)
+				if (!ConnectionManager.IsInActiveTransaction)
 				{
 					// do not auto-flush while outside a transaction
 					return false;
@@ -1467,10 +1467,7 @@ namespace NHibernate.Impl
 
 		public override bool TransactionInProgress
 		{
-			get
-			{
-				return !IsClosed && Transaction.IsActive;
-			}
+			get { return ConnectionManager.IsInActiveTransaction; }
 		}
 
 		public bool IsDirty()
