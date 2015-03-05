@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -9,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2003
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public class Fixture
 	{
 		[Test]
 		public void ShouldCreateNotNullIdColumn()
@@ -17,12 +16,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2003
 			StringBuilder script = new StringBuilder();
 
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(MappingsAssembly + "." + (string)Mappings[0]))
+
+			string ns = GetType().Namespace;
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + ".Mappings.hbm.xml"))
 				cfg.AddInputStream(stream);
+
 			new SchemaExport(cfg).Execute(s => script.AppendLine(s), false, false);
 
 			string wholeScript = script.ToString();
-			Assert.That(wholeScript.ToLower(), Is.StringContaining("not null"));
+			Assert.That(wholeScript, Is.StringContaining("not null").IgnoreCase);
 		}
 	}
 }
