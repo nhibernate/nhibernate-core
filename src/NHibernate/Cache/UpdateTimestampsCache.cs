@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 using NHibernate.Cfg;
 
@@ -38,10 +39,14 @@ namespace NHibernate.Cache
 		{
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			long ts = updateTimestamps.NextTimestamp() + updateTimestamps.Timeout;
-			for (int i = 0; i < spaces.Length; i++)
+
+			// Spaces can appear more than once but we only need to update the
+			// cache once.
+			foreach (var space in spaces.Distinct())
 			{
-				updateTimestamps.Put(spaces[i], ts);
+				updateTimestamps.Put(space, ts);
 			}
+
 			//TODO: return new Lock(ts);
 		}
 
@@ -52,10 +57,17 @@ namespace NHibernate.Cache
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = updateTimestamps.NextTimestamp();
 			//TODO: if lock.getTimestamp().equals(ts)
-			for (int i = 0; i < spaces.Length; i++)
+
+			// Spaces can appear more than once but we only need to update the
+			// cache once.
+			foreach (var space in spaces.Distinct())
 			{
-				log.Debug(string.Format("Invalidating space [{0}]", spaces[i]));
-				updateTimestamps.Put(spaces[i], ts);
+				if (log.IsDebugEnabled)
+				{
+					log.Debug(string.Format("Invalidating space [{0}]", space));
+				}
+
+				updateTimestamps.Put(space, ts);
 			}
 		}
 
