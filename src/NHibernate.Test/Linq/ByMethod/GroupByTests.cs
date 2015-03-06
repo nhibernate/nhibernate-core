@@ -507,6 +507,19 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
 		}
 
+		[Test(Description = "NH-3681"), KnownBug("NH-3681 not yet fixed", "NHibernate.HibernateException")]
+		public void SelectManyGroupByAggregateProjection()
+		{
+			var result = (from o in db.Orders
+			              from ol in o.OrderLines
+			              group ol by ol.Product.ProductId
+			              into grp
+			              select new {ProductId = grp.Key, Sum = grp.Sum(x => x.UnitPrice)}
+				).ToList();
+
+			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
