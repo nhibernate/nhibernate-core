@@ -1,39 +1,33 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
+using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3252
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public class Fixture : BugTestCase
 	{
-		protected override string MappingsAssembly
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{
-			get { return "NHibernate.Test"; }
-		}
-
-		protected override IList Mappings
-		{
-			get { return new string[] { "NHSpecificTest.NH3252.Mappings.hbm.xml" }; }
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
 		[Test]
 		public void VerifyThatWeCanSaveAndLoad()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 
 				session.Save(new Note { Text = new String('0', 9000) });
 				transaction.Commit();
 			}
 
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
 			{
 
 				var note = session.Query<Note>().First();
@@ -43,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
 
