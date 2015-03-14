@@ -610,6 +610,19 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Determines whether the sqlString matches the specified System.String,
+		/// using case-insensitive comparison
+		/// </summary>
+		/// <param name="value">The System.String to match</param>
+		/// <returns>true if the SqlString matches the value.</returns>
+		public bool EqualsCaseInsensitive(string value)
+		{
+			return value != null
+				&& value.Length == _length
+				&& IndexOf(value, 0, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
+		}
+
+		/// <summary>
 		/// Retrieves a substring from this instance. The substring starts at a specified character position. 
 		/// </summary>
 		/// <param name="startIndex">The starting character position of a substring in this instance.</param>
