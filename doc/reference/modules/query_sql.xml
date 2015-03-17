@@ -564,7 +564,7 @@ IList pusList = query.SetString("name", "Pus%").List();          ]]></programlis
             <para>A function must return a result set. The first parameter of
             a procedure must be an <literal>OUT</literal> that returns a
             result set. This is done by using a
-            <literal>SYS_REFCURSOR</literal> type in Oracle 9 or 10. In Oracle
+            <literal>SYS_REFCURSOR</literal> type in Oracle 9i or later. In Oracle
             you need to define a <literal>REF CURSOR</literal> type, see
             Oracle literature.</para>
           </listitem>
