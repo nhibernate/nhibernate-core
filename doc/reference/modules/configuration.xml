@@ -691,13 +691,18 @@ ISession session = sessions.OpenSession(conn);
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 9</entry> 
+                            <entry>Oracle 9i</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle9iDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>Oracle 10g</entry> 
+                            <entry>Oracle 10g, Oracle 11g</entry> 
                             <entry><literal>NHibernate.Dialect.Oracle10gDialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Oracle 12c</entry> 
+                            <entry><literal>NHibernate.Dialect.Oracle12cDialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
