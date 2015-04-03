@@ -47,7 +47,17 @@ namespace NHibernate.Type
 
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key)
 		{
-			return userType.Instantiate(session, persister);
+			IPersistentCollection createdCollection = userType.Instantiate(session, persister);
+			EnsureNotInitialized(createdCollection);
+			return createdCollection;
+		}
+
+		private static void EnsureNotInitialized(IPersistentCollection createdCollection) 
+		{
+			if (createdCollection.WasInitialized) {
+				throw new HibernateException(
+					"UserCollectionType.Instantiate should return a non-initialized persistent collection. Implement UserCollectionType.Instantiate(int anticipatedSize) to actually create the collection that needs to be wrapped by the persistent collection.");
+			}
 		}
 
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
@@ -80,8 +90,7 @@ namespace NHibernate.Type
 			return userType.IndexOf(collection, entity);
 		}
 
-		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-		                                       ISessionImplementor session)
+		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
 			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
 			return userType.ReplaceElements(original, target, cp, owner, copyCache, session);
