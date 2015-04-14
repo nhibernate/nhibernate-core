@@ -732,6 +732,8 @@
     <Compile Include="NHSpecificTest\NH3570\BiFixture.cs" />
     <Compile Include="NHSpecificTest\NH3570\Model.cs" />
     <Compile Include="NHSpecificTest\NH3570\UniFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3666\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3666\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3731\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3731\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2053\Cat.cs" />
@@ -3128,6 +3130,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="VersionTest\Db\MsSQL\ProductWithVersionAndLazyProperty.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3754\Mappings.hbm.xml" />
     <EmbeddedResource Include="LazyComponentTest\Person.hbm.xml" />
