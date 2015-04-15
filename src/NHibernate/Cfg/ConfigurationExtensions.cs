@@ -11,6 +11,16 @@ namespace NHibernate.Cfg
 {
 	public static class ConfigurationExtensions
 	{
+		public static Configuration LoggerFactory<T>(this Configuration configuration) where T : ILoggerFactory, new()
+		{
+			return LoggerFactory(configuration, typeof(T));
+		}
+
+		public static Configuration LoggerFactory(this Configuration configuration, System.Type loggerFactory)
+		{
+			return configuration.SetProperty(NHibernate.Cfg.Environment.LoggerFactory, loggerFactory.AssemblyQualifiedName);
+		}
+
 		public static IFluentSessionFactoryConfiguration SessionFactory(this Configuration configuration)
 		{
 			return new FluentSessionFactoryConfiguration(configuration);

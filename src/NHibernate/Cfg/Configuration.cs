@@ -1223,6 +1223,13 @@ namespace NHibernate.Cfg
 		private string defaultAssembly;
 		private string defaultNamespace;
 
+		protected virtual void ConfigureLoggerFactory()
+		{
+			var loggerFactoryType = System.Type.GetType(this.GetProperty(NHibernate.Cfg.Environment.LoggerFactory));
+			var loggerFactory = Activator.CreateInstance(loggerFactoryType) as ILoggerFactory;
+			LoggerProvider.SetLoggersFactory(loggerFactory);
+		}
+
 		protected virtual void ConfigureProxyFactoryFactory()
 		{
 			#region Way for the user to specify their own ProxyFactory
@@ -1247,7 +1254,7 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
-
+			ConfigureLoggerFactory();
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate();

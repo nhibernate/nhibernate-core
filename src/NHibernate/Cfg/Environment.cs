@@ -65,6 +65,11 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		/// <summary>
+		/// Assembly-qualified type name of a class that implements <see cref="NHibernate.ILoggerFactory"/>
+		/// </summary>
+		public const string LoggerFactory = "nhibernate-logger";
+
 		public const string ConnectionProvider = "connection.provider";
 		public const string ConnectionDriver = "connection.driver_class";
 		public const string ConnectionString = "connection.connection_string";

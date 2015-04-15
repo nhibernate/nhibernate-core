@@ -41,7 +41,7 @@ namespace NHibernate
 
 	public class LoggerProvider
 	{
-		private const string NhibernateLoggerConfKey = "nhibernate-logger";
+		private const string NhibernateLoggerConfKey = NHibernate.Cfg.Environment.LoggerFactory;
 		private readonly ILoggerFactory loggerFactory;
 		private static LoggerProvider instance;
 
