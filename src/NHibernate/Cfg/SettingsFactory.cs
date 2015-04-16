@@ -25,10 +25,13 @@ namespace NHibernate.Cfg
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;
+		private static readonly string DefaultLoggerFactoryType = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
 
 		public Settings BuildSettings(IDictionary<string, string> properties)
 		{
 			Settings settings = new Settings();
+
+			settings.LoggerFactory = PropertiesHelper.GetString(Environment.LoggerFactory, properties, DefaultLoggerFactoryType);
 
 			Dialect.Dialect dialect;
 			try

@@ -26,6 +26,8 @@ namespace NHibernate.Cfg
 		// not ported - private TransactionManagerLookup transactionManagerLookup;
 		// not ported - private bool strictJPAQLCompliance;
 
+		public string LoggerFactory { get; internal set; }
+
 		#region JDBC Specific (Not Ported)
 
 		//private int jdbcFetchSize;

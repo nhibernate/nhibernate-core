@@ -126,12 +126,12 @@ namespace NHibernate.Cfg
 #endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
+			ConfigureLoggerFactory();
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate();
 
 			info.AddValue("entityNotFoundDelegate", EntityNotFoundDelegate);
-
 			info.AddValue("auxiliaryDatabaseObjects", auxiliaryDatabaseObjects);
 			info.AddValue("classes", classes);
 			info.AddValue("collections", collections);
@@ -1225,9 +1225,14 @@ namespace NHibernate.Cfg
 
 		protected virtual void ConfigureLoggerFactory()
 		{
-			var loggerFactoryType = System.Type.GetType(this.GetProperty(NHibernate.Cfg.Environment.LoggerFactory));
-			var loggerFactory = Activator.CreateInstance(loggerFactoryType) as ILoggerFactory;
-			LoggerProvider.SetLoggersFactory(loggerFactory);
+			var loggerFactoryProperty = this.GetProperty(NHibernate.Cfg.Environment.LoggerFactory);
+
+			if (!string.IsNullOrWhiteSpace(loggerFactoryProperty))
+			{
+				var loggerFactoryType = System.Type.GetType(loggerFactoryProperty);
+				var loggerFactory = Activator.CreateInstance(loggerFactoryType) as ILoggerFactory;
+				LoggerProvider.SetLoggersFactory(loggerFactory);
+			}
 		}
 
 		protected virtual void ConfigureProxyFactoryFactory()
