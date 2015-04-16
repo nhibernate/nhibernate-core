@@ -184,7 +184,7 @@ namespace NHibernate.Loader
 			// add vertices
 			for (int i = 0; i < fields.Count; i++)
 			{
-				_indexes[fields[i].Alias.ToLower()] = g.AddVertex(i);
+				_indexes[fields[i].Alias.ToLower()] = g.AddVertex();
 			}
 
 			// add edges
