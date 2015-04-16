@@ -39,6 +39,7 @@ namespace NHibernate.Linq.GroupBy
 				typeof (AnyResultOperator),
 				typeof (AllResultOperator),
 				typeof (TimeoutResultOperator),
+				typeof (AsReadOnlyResultOperator),
 				typeof (CacheableResultOperator)
 			};
 
