@@ -28,5 +28,6 @@ namespace NHibernate.Mapping.ByCode
 		void Class<TConcrete>() where TConcrete : TComponent;
 	}
 
-	public interface IComponentMapper<TComponent> : IComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent> where TComponent : class {}
+	public interface IComponentMapper<TComponent> : IComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent>
+	{}
 }

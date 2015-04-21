@@ -5,7 +5,6 @@ using System.Reflection;
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
 	public class CollectionKeyCustomizer<TEntity> : IKeyMapper<TEntity>
-		where TEntity : class
 	{
 		private readonly PropertyPath propertyPath;
 
