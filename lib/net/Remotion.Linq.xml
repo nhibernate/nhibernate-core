@@ -2124,16 +2124,11 @@
             </para>
             </remarks>
         </member>
-        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.TupleNewExpressionTransformer">
+        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer">
             <summary>
-            Detects <see cref="T:System.Linq.Expressions.NewExpression"/> nodes for the .NET tuple types and adds <see cref="T:System.Reflection.MemberInfo"/> metadata to those nodes.
-            This allows LINQ providers to match member access and constructor arguments more easily.
-            </summary>
-        </member>
-        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.MemberAddingNewExpressionTransformerBase">
-            <summary>
-            Provides a base class for transformers detecting <see cref="T:System.Linq.Expressions.NewExpression"/> nodes for tuple types and adding <see cref="T:System.Reflection.MemberInfo"/> metadata 
-            to those nodes. This allows LINQ providers to match member access and constructor arguments more easily.
+            Dynamically discovers attributes implementing the <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer.IMethodCallExpressionTransformerAttribute"/> interface on methods and get accessors
+            invoked by <see cref="T:System.Linq.Expressions.MethodCallExpression"/> or <see cref="T:System.Linq.Expressions.MemberExpression"/> instances and applies the respective 
+            <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1"/>.
             </summary>
         </member>
         <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1">
@@ -2171,6 +2166,43 @@
             <value>The supported expression types. Return <see langword="null"/> to support all expression types. (This is only sensible when
             <typeparamref name="T"/> is <see cref="T:System.Linq.Expressions.Expression"/>.)
             </value>
+        </member>
+        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer.IMethodCallExpressionTransformerAttribute">
+            <summary>
+            Defines an interface for attributes providing an <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1"/> for a given <see cref="T:System.Linq.Expressions.MethodCallExpression"/>.
+            </summary>
+            <remarks>
+            <para>
+            <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer"/> detects attributes implementing this interface while expressions are parsed 
+            and uses the <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1"/> returned by <see cref="M:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer.IMethodCallExpressionTransformerAttribute.GetExpressionTransformer(System.Linq.Expressions.MethodCallExpression)"/> to modify the expressions.
+            </para>
+            <para>
+            Only one attribute instance implementing <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer.IMethodCallExpressionTransformerAttribute"/> must be applied to a single method or property
+            get accessor.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.MethodCallExpressionTransformerAttribute">
+            <summary>
+            Chooses a given <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1"/> for a specific method (or property get accessor).
+            </summary>
+            <remarks>
+            The <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.IExpressionTransformer`1"/> must have a default constructor. To choose a transformer that does not have a default constructor,
+            create your own custom attribute class implementing 
+            <see cref="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.AttributeEvaluatingExpressionTransformer.IMethodCallExpressionTransformerAttribute"/>.
+            </remarks>
+        </member>
+        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.TupleNewExpressionTransformer">
+            <summary>
+            Detects <see cref="T:System.Linq.Expressions.NewExpression"/> nodes for the .NET tuple types and adds <see cref="T:System.Reflection.MemberInfo"/> metadata to those nodes.
+            This allows LINQ providers to match member access and constructor arguments more easily.
+            </summary>
+        </member>
+        <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.MemberAddingNewExpressionTransformerBase">
+            <summary>
+            Provides a base class for transformers detecting <see cref="T:System.Linq.Expressions.NewExpression"/> nodes for tuple types and adding <see cref="T:System.Reflection.MemberInfo"/> metadata 
+            to those nodes. This allows LINQ providers to match member access and constructor arguments more easily.
+            </summary>
         </member>
         <member name="T:Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.PredefinedTransformations.DictionaryEntryNewExpressionTransformer">
             <summary>
@@ -4126,16 +4158,73 @@
             </summary>
             <seealso cref="T:JetBrains.Annotations.AssertionConditionAttribute"/>
         </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Access">
+            <summary>
+            Only entity marked with attribute considered used
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Assign">
+            <summary>
+            Indicates implicit assignment to a member
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature">
+            <summary>
+            Indicates implicit instantiation of a type with fixed constructor signature.
+            That means any unused constructor parameters won't be reported as such.
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature">
+            <summary>
+            Indicates implicit instantiation of a type
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.ImplicitUseTargetFlags">
+            <summary>
+            Specify what is considered used implicitly when marked with <see cref="T:JetBrains.Annotations.MeansImplicitUseAttribute"/> or <see cref="T:JetBrains.Annotations.UsedImplicitlyAttribute"/>
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.Members">
+            <summary>
+            Members of entity marked with attribute are considered used
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.WithMembers">
+            <summary>
+            Entity marked with attribute and all its members considered used
+            </summary>
+        </member>
         <member name="T:JetBrains.Annotations.InvokerParameterNameAttribute">
             <summary>
             Indicates that the function argument should be string literal and match one  of the parameters of the caller function.
             For example, <see cref="T:System.ArgumentNullException"/> has such parameter.
             </summary>
         </member>
+        <member name="T:JetBrains.Annotations.MeansImplicitUseAttribute">
+            <summary>
+            Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes as unused (as well as by other usage inspections)
+            </summary>
+        </member>
+        <member name="P:JetBrains.Annotations.MeansImplicitUseAttribute.TargetFlags">
+            <summary>
+            Gets value indicating what is meant to be used
+            </summary>
+        </member>
         <member name="T:JetBrains.Annotations.NoEnumerationAttribute">
             <summary>
             Indicates that IEnumarable, passed as parameter, is not enumerated.
             
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.UsedImplicitlyAttribute">
+            <summary>
+            Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
+            so this symbol will not be marked as unused (as well as by other usage inspections)
+            </summary>
+        </member>
+        <member name="P:JetBrains.Annotations.UsedImplicitlyAttribute.TargetFlags">
+            <summary>
+            Gets value indicating what is meant to be used
             </summary>
         </member>
         <member name="T:Remotion.Linq.Utilities.SeparatedStringBuilder">
