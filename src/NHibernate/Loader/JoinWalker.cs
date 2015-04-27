@@ -158,7 +158,7 @@ namespace NHibernate.Loader
 			OuterJoinableAssociation assoc =
 				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
 			assoc.ValidateJoin(path);
-			AddAssociation(subalias, assoc);
+			AddAssociation(alias, assoc);
 
 			int nextDepth = currentDepth + 1;
 
@@ -197,6 +197,7 @@ namespace NHibernate.Loader
 					{
 						var dependentField = dependentAlias.DependsOn[j].ToLower();
 						int end;
+
 						if (_indexes.TryGetValue(dependentField, out end))
 						{
 							g.AddEdge(i, end);
@@ -211,25 +212,30 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Adds an association and extracts the aliases the association's 'with clause' is dependent on
 		/// </summary>
-		private void AddAssociation(string subalias, OuterJoinableAssociation association)
+		private void AddAssociation(string lhsAlias, OuterJoinableAssociation association)
 		{
-			subalias = subalias.ToLower();
+			string rhsAlias = association.RHSAlias.ToLower();
 
 			var dependencies = new List<string>();
+
+			// the association always depends on the lhsAlias (note: the "On"-SqlString does not seem to include this part of the join SQL)
+			dependencies.Add(lhsAlias.ToLower());
+
+			// analyze the "On"-SqlString to find other aliases the association depends on.
 			var on = association.On.ToString();
 			if (!String.IsNullOrEmpty(on))
 			{
 				foreach (Match match in aliasRegex.Matches(on))
 				{
 					string alias = match.Groups[1].Value;
-					if (alias == subalias) continue;
+					if (alias == rhsAlias) continue;
 					dependencies.Add(alias.ToLower());
 				}
 			}
 
 			_dependentAliases.Add(new DependentAlias
 			{
-				Alias = subalias,
+				Alias = rhsAlias,
 				DependsOn = dependencies.ToArray()
 			});
 
