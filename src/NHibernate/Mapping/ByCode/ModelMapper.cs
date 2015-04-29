@@ -526,7 +526,7 @@ namespace NHibernate.Mapping.ByCode
 			customizeAction(customizer);
 		}
 
-		public void Component<TComponent>(Action<IComponentMapper<TComponent>> customizeAction) where TComponent : class
+		public void Component<TComponent>(Action<IComponentMapper<TComponent>> customizeAction)
 		{
 			var customizer = new ComponentCustomizer<TComponent>(explicitDeclarationsHolder, customizerHolder);
 			customizeAction(customizer);
