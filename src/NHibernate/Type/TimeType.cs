@@ -105,7 +105,7 @@ namespace NHibernate.Type
 
 		public override string ToString(object val)
 		{
-			return ((DateTime) val).ToShortTimeString();
+			return ((DateTime) val).ToString("T");
 		}
 
 		public object StringToObject(string xml)
