@@ -236,6 +236,10 @@ namespace NHibernate.Cfg
 			log.Info("Order SQL inserts for batching: " + EnabledDisabled(orderInserts));
 			settings.IsOrderInsertsEnabled = orderInserts;
 
+			bool orderUpdates = PropertiesHelper.GetBoolean(Environment.OrderUpdates, properties, false);
+			log.Info("Order SQL updates for batching: " + EnabledDisabled(orderUpdates));
+			settings.IsOrderUpdatesEnabled = orderUpdates;
+
 			bool wrapResultSets = PropertiesHelper.GetBoolean(Environment.WrapResultSets, properties, false);
 			log.Debug("Wrap result sets: " + EnabledDisabled(wrapResultSets));
 			settings.IsWrapResultSetsEnabled = wrapResultSets;
