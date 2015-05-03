@@ -630,35 +630,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		void PrepareFromClauseInputTree(IASTNode fromClauseInput, ITreeNodeStream input)
+		void PrepareFilterParameter()
 		{
 			if (IsFilter())
 			{
-				// Handle collection-fiter compilation.
-				// IMPORTANT NOTE: This is modifying the INPUT (HQL) tree, not the output tree!
-				IQueryableCollection persister = _sessionFactoryHelper.GetCollectionPersister(_collectionFilterRole);
-				IType collectionElementType = persister.ElementType;
-				if (!collectionElementType.IsEntityType)
-				{
-					throw new QueryException("collection of values in filter: this");
-				}
-
-				string collectionElementEntityName = persister.ElementPersister.EntityName;
-
-				IASTNode fromElement = (IASTNode)adaptor.Create(FILTER_ENTITY, collectionElementEntityName);
-				IASTNode alias = (IASTNode)adaptor.Create(ALIAS, "this");
-
-				((HqlSqlWalkerTreeNodeStream)input).InsertChild(fromClauseInput, fromElement);
-				((HqlSqlWalkerTreeNodeStream)input).InsertChild(fromClauseInput, alias);
-
-//				fromClauseInput.AddChild(fromElement);
-//				fromClauseInput.AddChild(alias);
-
-				// Show the modified AST.
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("prepareFromClauseInputTree() : Filter - Added 'this' as a from element...");
-				}
+				// Handle collection-filter compilation.
+				// filter-implied FROM element is already converted by HqlFilterPreprocessor
 				
 				// Create a parameter specification for the collection filter...
 				IType collectionFilterKeyType = _sessionFactoryHelper.RequireQueryableCollection(_collectionFilterRole).KeyType;
