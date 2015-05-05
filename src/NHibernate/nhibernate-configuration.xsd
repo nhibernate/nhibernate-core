@@ -117,6 +117,7 @@
 								<xs:enumeration value="collectiontype.factory_class" />
 								<xs:enumeration value="interceptors.beforetransactioncompletion_ignore_exceptions" />
 								<xs:enumeration value="order_inserts" />
+								<xs:enumeration value="order_updates" />
 								<xs:enumeration value="query.query_model_rewriter_factory" />
 								<xs:enumeration value="linqtohql.generatorsregistry" />
 							</xs:restriction>
