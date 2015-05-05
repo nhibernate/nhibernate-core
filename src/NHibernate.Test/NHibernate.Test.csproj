@@ -178,6 +178,7 @@
     <Compile Include="Classic\LifecycleFixture.cs" />
     <Compile Include="Classic\ValidatableFixture.cs" />
     <Compile Include="Classic\Video.cs" />
+    <Compile Include="CollectionFilterTest\CollectionFilterQueriesTest.cs" />
     <Compile Include="CollectionTest\A.cs" />
     <Compile Include="CollectionTest\IdBagFixture.cs" />
     <Compile Include="CollectionTest\NullableValueTypeElementMapFixture.cs" />

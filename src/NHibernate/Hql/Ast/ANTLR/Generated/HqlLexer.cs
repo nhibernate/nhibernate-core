@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 Hql.g 2015-02-24 17:27:14
+// $ANTLR 3.5.0.2 Hql.g 2015-05-03 23:15:27
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -2651,11 +2651,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = EQ;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:688:3: ( '=' )
+			// Hql.g:699:3: ( '=' )
 			DebugEnterAlt(1);
-			// Hql.g:688:5: '='
+			// Hql.g:699:5: '='
 			{
-			DebugLocation(688, 5);
+			DebugLocation(699, 5);
 			Match('='); if (state.failed) return;
 
 			}
@@ -2686,11 +2686,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = LT;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:689:3: ( '<' )
+			// Hql.g:700:3: ( '<' )
 			DebugEnterAlt(1);
-			// Hql.g:689:5: '<'
+			// Hql.g:700:5: '<'
 			{
-			DebugLocation(689, 5);
+			DebugLocation(700, 5);
 			Match('<'); if (state.failed) return;
 
 			}
@@ -2721,11 +2721,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = GT;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:690:3: ( '>' )
+			// Hql.g:701:3: ( '>' )
 			DebugEnterAlt(1);
-			// Hql.g:690:5: '>'
+			// Hql.g:701:5: '>'
 			{
-			DebugLocation(690, 5);
+			DebugLocation(701, 5);
 			Match('>'); if (state.failed) return;
 
 			}
@@ -2756,11 +2756,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = SQL_NE;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:691:7: ( '<>' )
+			// Hql.g:702:7: ( '<>' )
 			DebugEnterAlt(1);
-			// Hql.g:691:9: '<>'
+			// Hql.g:702:9: '<>'
 			{
-			DebugLocation(691, 9);
+			DebugLocation(702, 9);
 			Match("<>"); if (state.failed) return;
 
 
@@ -2792,7 +2792,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = NE;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:692:3: ( '!=' | '^=' )
+			// Hql.g:703:3: ( '!=' | '^=' )
 			int alt1=2;
 			try { DebugEnterDecision(1, false);
 			int LA1_1 = input.LA(1);
@@ -2817,9 +2817,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:692:5: '!='
+				// Hql.g:703:5: '!='
 				{
-				DebugLocation(692, 5);
+				DebugLocation(703, 5);
 				Match("!="); if (state.failed) return;
 
 
@@ -2827,9 +2827,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:692:12: '^='
+				// Hql.g:703:12: '^='
 				{
-				DebugLocation(692, 12);
+				DebugLocation(703, 12);
 				Match("^="); if (state.failed) return;
 
 
@@ -2863,11 +2863,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = LE;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:693:3: ( '<=' )
+			// Hql.g:704:3: ( '<=' )
 			DebugEnterAlt(1);
-			// Hql.g:693:5: '<='
+			// Hql.g:704:5: '<='
 			{
-			DebugLocation(693, 5);
+			DebugLocation(704, 5);
 			Match("<="); if (state.failed) return;
 
 
@@ -2899,11 +2899,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = GE;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:694:3: ( '>=' )
+			// Hql.g:705:3: ( '>=' )
 			DebugEnterAlt(1);
-			// Hql.g:694:5: '>='
+			// Hql.g:705:5: '>='
 			{
-			DebugLocation(694, 5);
+			DebugLocation(705, 5);
 			Match(">="); if (state.failed) return;
 
 
@@ -2935,11 +2935,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = BOR;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:696:5: ( '|' )
+			// Hql.g:707:5: ( '|' )
 			DebugEnterAlt(1);
-			// Hql.g:696:8: '|'
+			// Hql.g:707:8: '|'
 			{
-			DebugLocation(696, 8);
+			DebugLocation(707, 8);
 			Match('|'); if (state.failed) return;
 
 			}
@@ -2970,11 +2970,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = BXOR;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:697:6: ( '^' )
+			// Hql.g:708:6: ( '^' )
 			DebugEnterAlt(1);
-			// Hql.g:697:8: '^'
+			// Hql.g:708:8: '^'
 			{
-			DebugLocation(697, 8);
+			DebugLocation(708, 8);
 			Match('^'); if (state.failed) return;
 
 			}
@@ -3005,11 +3005,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = BAND;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:698:6: ( '&' )
+			// Hql.g:709:6: ( '&' )
 			DebugEnterAlt(1);
-			// Hql.g:698:8: '&'
+			// Hql.g:709:8: '&'
 			{
-			DebugLocation(698, 8);
+			DebugLocation(709, 8);
 			Match('&'); if (state.failed) return;
 
 			}
@@ -3040,11 +3040,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = BNOT;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:699:6: ( '!' )
+			// Hql.g:710:6: ( '!' )
 			DebugEnterAlt(1);
-			// Hql.g:699:8: '!'
+			// Hql.g:710:8: '!'
 			{
-			DebugLocation(699, 8);
+			DebugLocation(710, 8);
 			Match('!'); if (state.failed) return;
 
 			}
@@ -3075,11 +3075,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = COMMA;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:701:6: ( ',' )
+			// Hql.g:712:6: ( ',' )
 			DebugEnterAlt(1);
-			// Hql.g:701:8: ','
+			// Hql.g:712:8: ','
 			{
-			DebugLocation(701, 8);
+			DebugLocation(712, 8);
 			Match(','); if (state.failed) return;
 
 			}
@@ -3110,11 +3110,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = OPEN;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:703:5: ( '(' )
+			// Hql.g:714:5: ( '(' )
 			DebugEnterAlt(1);
-			// Hql.g:703:7: '('
+			// Hql.g:714:7: '('
 			{
-			DebugLocation(703, 7);
+			DebugLocation(714, 7);
 			Match('('); if (state.failed) return;
 
 			}
@@ -3145,11 +3145,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = CLOSE;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:704:6: ( ')' )
+			// Hql.g:715:6: ( ')' )
 			DebugEnterAlt(1);
-			// Hql.g:704:8: ')'
+			// Hql.g:715:8: ')'
 			{
-			DebugLocation(704, 8);
+			DebugLocation(715, 8);
 			Match(')'); if (state.failed) return;
 
 			}
@@ -3180,11 +3180,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = OPEN_BRACKET;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:705:13: ( '[' )
+			// Hql.g:716:13: ( '[' )
 			DebugEnterAlt(1);
-			// Hql.g:705:15: '['
+			// Hql.g:716:15: '['
 			{
-			DebugLocation(705, 15);
+			DebugLocation(716, 15);
 			Match('['); if (state.failed) return;
 
 			}
@@ -3215,11 +3215,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = CLOSE_BRACKET;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:706:14: ( ']' )
+			// Hql.g:717:14: ( ']' )
 			DebugEnterAlt(1);
-			// Hql.g:706:16: ']'
+			// Hql.g:717:16: ']'
 			{
-			DebugLocation(706, 16);
+			DebugLocation(717, 16);
 			Match(']'); if (state.failed) return;
 
 			}
@@ -3250,11 +3250,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = CONCAT;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:708:7: ( '||' )
+			// Hql.g:719:7: ( '||' )
 			DebugEnterAlt(1);
-			// Hql.g:708:9: '||'
+			// Hql.g:719:9: '||'
 			{
-			DebugLocation(708, 9);
+			DebugLocation(719, 9);
 			Match("||"); if (state.failed) return;
 
 
@@ -3286,11 +3286,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = PLUS;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:709:5: ( '+' )
+			// Hql.g:720:5: ( '+' )
 			DebugEnterAlt(1);
-			// Hql.g:709:7: '+'
+			// Hql.g:720:7: '+'
 			{
-			DebugLocation(709, 7);
+			DebugLocation(720, 7);
 			Match('+'); if (state.failed) return;
 
 			}
@@ -3321,11 +3321,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = MINUS;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:710:6: ( '-' )
+			// Hql.g:721:6: ( '-' )
 			DebugEnterAlt(1);
-			// Hql.g:710:8: '-'
+			// Hql.g:721:8: '-'
 			{
-			DebugLocation(710, 8);
+			DebugLocation(721, 8);
 			Match('-'); if (state.failed) return;
 
 			}
@@ -3356,11 +3356,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = STAR;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:711:5: ( '*' )
+			// Hql.g:722:5: ( '*' )
 			DebugEnterAlt(1);
-			// Hql.g:711:7: '*'
+			// Hql.g:722:7: '*'
 			{
-			DebugLocation(711, 7);
+			DebugLocation(722, 7);
 			Match('*'); if (state.failed) return;
 
 			}
@@ -3391,11 +3391,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = DIV;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:712:4: ( '/' )
+			// Hql.g:723:4: ( '/' )
 			DebugEnterAlt(1);
-			// Hql.g:712:6: '/'
+			// Hql.g:723:6: '/'
 			{
-			DebugLocation(712, 6);
+			DebugLocation(723, 6);
 			Match('/'); if (state.failed) return;
 
 			}
@@ -3426,11 +3426,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = COLON;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:713:6: ( ':' )
+			// Hql.g:724:6: ( ':' )
 			DebugEnterAlt(1);
-			// Hql.g:713:8: ':'
+			// Hql.g:724:8: ':'
 			{
-			DebugLocation(713, 8);
+			DebugLocation(724, 8);
 			Match(':'); if (state.failed) return;
 
 			}
@@ -3461,11 +3461,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = PARAM;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:714:6: ( '?' )
+			// Hql.g:725:6: ( '?' )
 			DebugEnterAlt(1);
-			// Hql.g:714:8: '?'
+			// Hql.g:725:8: '?'
 			{
-			DebugLocation(714, 8);
+			DebugLocation(725, 8);
 			Match('?'); if (state.failed) return;
 
 			}
@@ -3496,14 +3496,14 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = IDENT;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:717:2: ( ID_START_LETTER ( ID_LETTER )* )
+			// Hql.g:728:2: ( ID_START_LETTER ( ID_LETTER )* )
 			DebugEnterAlt(1);
-			// Hql.g:717:4: ID_START_LETTER ( ID_LETTER )*
+			// Hql.g:728:4: ID_START_LETTER ( ID_LETTER )*
 			{
-			DebugLocation(717, 4);
+			DebugLocation(728, 4);
 			mID_START_LETTER(); if (state.failed) return;
-			DebugLocation(717, 20);
-			// Hql.g:717:20: ( ID_LETTER )*
+			DebugLocation(728, 20);
+			// Hql.g:728:20: ( ID_LETTER )*
 			try { DebugEnterSubRule(2);
 			while (true)
 			{
@@ -3524,7 +3524,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// Hql.g:
 					{
-					DebugLocation(717, 20);
+					DebugLocation(728, 20);
 					input.Consume();
 					state.failed=false;
 
@@ -3568,11 +3568,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("ID_START_LETTER", 93);
 		try
 		{
-			// Hql.g:723:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
+			// Hql.g:734:5: ( '_' | '$' | 'a' .. 'z' | 'A' .. 'Z' | '\\u0080' .. '\\ufffe' )
 			DebugEnterAlt(1);
 			// Hql.g:
 			{
-			DebugLocation(723, 5);
+			DebugLocation(734, 5);
 			if (input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
 			{
 				input.Consume();
@@ -3612,11 +3612,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("ID_LETTER", 94);
 		try
 		{
-			// Hql.g:732:5: ( ID_START_LETTER | '0' .. '9' )
+			// Hql.g:743:5: ( ID_START_LETTER | '0' .. '9' )
 			DebugEnterAlt(1);
 			// Hql.g:
 			{
-			DebugLocation(732, 5);
+			DebugLocation(743, 5);
 			if (input.LA(1)=='$'||(input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z')||(input.LA(1)>='\u0080' && input.LA(1)<='\uFFFE'))
 			{
 				input.Consume();
@@ -3658,14 +3658,14 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = QUOTED_String;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:736:4: ( '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\'' )
+			// Hql.g:747:4: ( '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\'' )
 			DebugEnterAlt(1);
-			// Hql.g:736:6: '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\''
+			// Hql.g:747:6: '\\'' ( ( ESCqs )=> ESCqs |~ '\\'' )* '\\''
 			{
-			DebugLocation(736, 6);
+			DebugLocation(747, 6);
 			Match('\''); if (state.failed) return;
-			DebugLocation(736, 11);
-			// Hql.g:736:11: ( ( ESCqs )=> ESCqs |~ '\\'' )*
+			DebugLocation(747, 11);
+			// Hql.g:747:11: ( ( ESCqs )=> ESCqs |~ '\\'' )*
 			try { DebugEnterSubRule(3);
 			while (true)
 			{
@@ -3695,18 +3695,18 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:736:13: ( ESCqs )=> ESCqs
+					// Hql.g:747:13: ( ESCqs )=> ESCqs
 					{
-					DebugLocation(736, 23);
+					DebugLocation(747, 23);
 					mESCqs(); if (state.failed) return;
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:736:31: ~ '\\''
+					// Hql.g:747:31: ~ '\\''
 					{
-					DebugLocation(736, 31);
+					DebugLocation(747, 31);
 					input.Consume();
 					state.failed=false;
 
@@ -3723,7 +3723,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(3); }
 
-			DebugLocation(736, 40);
+			DebugLocation(747, 40);
 			Match('\''); if (state.failed) return;
 
 			}
@@ -3752,13 +3752,13 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("ESCqs", 96);
 		try
 		{
-			// Hql.g:742:2: ( '\\'' '\\'' )
+			// Hql.g:753:2: ( '\\'' '\\'' )
 			DebugEnterAlt(1);
-			// Hql.g:743:3: '\\'' '\\''
+			// Hql.g:754:3: '\\'' '\\''
 			{
-			DebugLocation(743, 3);
+			DebugLocation(754, 3);
 			Match('\''); if (state.failed) return;
-			DebugLocation(743, 8);
+			DebugLocation(754, 8);
 			Match('\''); if (state.failed) return;
 
 			}
@@ -3787,12 +3787,12 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		{
 			int _type = WS;
 			int _channel = DefaultTokenChannel;
-			// Hql.g:745:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+			// Hql.g:756:5: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
 			DebugEnterAlt(1);
-			// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+			// Hql.g:756:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
 			{
-			DebugLocation(745, 9);
-			// Hql.g:745:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+			DebugLocation(756, 9);
+			// Hql.g:756:9: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
 			int alt4=5;
 			try { DebugEnterSubRule(4);
 			try { DebugEnterDecision(4, false);
@@ -3841,47 +3841,47 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:745:13: ' '
+				// Hql.g:756:13: ' '
 				{
-				DebugLocation(745, 13);
+				DebugLocation(756, 13);
 				Match(' '); if (state.failed) return;
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:746:7: '\\t'
+				// Hql.g:757:7: '\\t'
 				{
-				DebugLocation(746, 7);
+				DebugLocation(757, 7);
 				Match('\t'); if (state.failed) return;
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:747:7: '\\r' '\\n'
+				// Hql.g:758:7: '\\r' '\\n'
 				{
-				DebugLocation(747, 7);
+				DebugLocation(758, 7);
 				Match('\r'); if (state.failed) return;
-				DebugLocation(747, 12);
+				DebugLocation(758, 12);
 				Match('\n'); if (state.failed) return;
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// Hql.g:748:7: '\\n'
+				// Hql.g:759:7: '\\n'
 				{
-				DebugLocation(748, 7);
+				DebugLocation(759, 7);
 				Match('\n'); if (state.failed) return;
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// Hql.g:749:7: '\\r'
+				// Hql.g:760:7: '\\r'
 				{
-				DebugLocation(749, 7);
+				DebugLocation(760, 7);
 				Match('\r'); if (state.failed) return;
 
 				}
@@ -3890,7 +3890,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(4); }
 
-			DebugLocation(751, 3);
+			DebugLocation(762, 3);
 			if (state.backtracking == 0)
 			{
 				Skip();
@@ -3930,7 +3930,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			CommonToken f4 = default(CommonToken);
 
 			bool isDecimal=false; IToken t=null;
-			// Hql.g:758:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )? )
+			// Hql.g:769:2: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )? )
 			int alt20=2;
 			try { DebugEnterDecision(20, false);
 			int LA20_1 = input.LA(1);
@@ -3955,17 +3955,17 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:758:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+				// Hql.g:769:6: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
 				{
-				DebugLocation(758, 6);
+				DebugLocation(769, 6);
 				Match('.'); if (state.failed) return;
-				DebugLocation(758, 10);
+				DebugLocation(769, 10);
 				if (state.backtracking == 0)
 				{
 					_type = DOT;
 				}
-				DebugLocation(759, 4);
-				// Hql.g:759:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+				DebugLocation(770, 4);
+				// Hql.g:770:4: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
 				int alt8=2;
 				try { DebugEnterSubRule(8);
 				try { DebugEnterDecision(8, false);
@@ -3980,10 +3980,10 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:759:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+					// Hql.g:770:6: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
 					{
-					DebugLocation(759, 6);
-					// Hql.g:759:6: ( '0' .. '9' )+
+					DebugLocation(770, 6);
+					// Hql.g:770:6: ( '0' .. '9' )+
 					int cnt5=0;
 					try { DebugEnterSubRule(5);
 					while (true)
@@ -4005,7 +4005,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 							DebugEnterAlt(1);
 							// Hql.g:
 							{
-							DebugLocation(759, 6);
+							DebugLocation(770, 6);
 							input.Consume();
 							state.failed=false;
 
@@ -4028,8 +4028,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 
 					} finally { DebugExitSubRule(5); }
 
-					DebugLocation(759, 18);
-					// Hql.g:759:18: ( EXPONENT )?
+					DebugLocation(770, 18);
+					// Hql.g:770:18: ( EXPONENT )?
 					int alt6=2;
 					try { DebugEnterSubRule(6);
 					try { DebugEnterDecision(6, false);
@@ -4044,9 +4044,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:759:19: EXPONENT
+						// Hql.g:770:19: EXPONENT
 						{
-						DebugLocation(759, 19);
+						DebugLocation(770, 19);
 						mEXPONENT(); if (state.failed) return;
 
 						}
@@ -4055,8 +4055,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					}
 					} finally { DebugExitSubRule(6); }
 
-					DebugLocation(759, 30);
-					// Hql.g:759:30: (f1= FLOAT_SUFFIX )?
+					DebugLocation(770, 30);
+					// Hql.g:770:30: (f1= FLOAT_SUFFIX )?
 					int alt7=2;
 					try { DebugEnterSubRule(7);
 					try { DebugEnterDecision(7, false);
@@ -4071,9 +4071,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:759:31: f1= FLOAT_SUFFIX
+						// Hql.g:770:31: f1= FLOAT_SUFFIX
 						{
-						DebugLocation(759, 33);
+						DebugLocation(770, 33);
 						int f1Start992 = CharIndex;
 						int f1StartLine992 = Line;
 						int f1StartCharPos992 = CharPositionInLine;
@@ -4081,7 +4081,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						f1 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f1Start992, CharIndex-1);
 						f1.Line = f1StartLine992;
 						f1.CharPositionInLine = f1StartCharPos992;
-						DebugLocation(759, 47);
+						DebugLocation(770, 47);
 						if (state.backtracking == 0)
 						{
 							t=f1;
@@ -4093,7 +4093,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					}
 					} finally { DebugExitSubRule(7); }
 
-					DebugLocation(760, 5);
+					DebugLocation(771, 5);
 					if (state.backtracking == 0)
 					{
 
@@ -4123,10 +4123,10 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
+				// Hql.g:786:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
 				{
-				DebugLocation(775, 4);
-				// Hql.g:775:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+				DebugLocation(786, 4);
+				// Hql.g:786:4: ( '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
 				int alt13=2;
 				try { DebugEnterSubRule(13);
 				try { DebugEnterDecision(13, false);
@@ -4152,17 +4152,17 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:775:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+					// Hql.g:786:6: '0' ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
 					{
-					DebugLocation(775, 6);
+					DebugLocation(786, 6);
 					Match('0'); if (state.failed) return;
-					DebugLocation(775, 10);
+					DebugLocation(786, 10);
 					if (state.backtracking == 0)
 					{
 						isDecimal = true;
 					}
-					DebugLocation(776, 4);
-					// Hql.g:776:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
+					DebugLocation(787, 4);
+					// Hql.g:787:4: ( ( 'x' ) ( HEX_DIGIT )+ | ( '0' .. '7' )+ )?
 					int alt11=3;
 					try { DebugEnterSubRule(11);
 					try { DebugEnterDecision(11, false);
@@ -4181,20 +4181,20 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:776:6: ( 'x' ) ( HEX_DIGIT )+
+						// Hql.g:787:6: ( 'x' ) ( HEX_DIGIT )+
 						{
-						DebugLocation(776, 6);
-						// Hql.g:776:6: ( 'x' )
+						DebugLocation(787, 6);
+						// Hql.g:787:6: ( 'x' )
 						DebugEnterAlt(1);
-						// Hql.g:776:7: 'x'
+						// Hql.g:787:7: 'x'
 						{
-						DebugLocation(776, 7);
+						DebugLocation(787, 7);
 						Match('x'); if (state.failed) return;
 
 						}
 
-						DebugLocation(777, 5);
-						// Hql.g:777:5: ( HEX_DIGIT )+
+						DebugLocation(788, 5);
+						// Hql.g:788:5: ( HEX_DIGIT )+
 						int cnt9=0;
 						try { DebugEnterSubRule(9);
 						while (true)
@@ -4266,7 +4266,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 								DebugEnterAlt(1);
 								// Hql.g:
 								{
-								DebugLocation(777, 5);
+								DebugLocation(788, 5);
 								input.Consume();
 								state.failed=false;
 
@@ -4294,10 +4294,10 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// Hql.g:786:6: ( '0' .. '7' )+
+						// Hql.g:797:6: ( '0' .. '7' )+
 						{
-						DebugLocation(786, 6);
-						// Hql.g:786:6: ( '0' .. '7' )+
+						DebugLocation(797, 6);
+						// Hql.g:797:6: ( '0' .. '7' )+
 						int cnt10=0;
 						try { DebugEnterSubRule(10);
 						while (true)
@@ -4319,7 +4319,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 								DebugEnterAlt(1);
 								// Hql.g:
 								{
-								DebugLocation(786, 6);
+								DebugLocation(797, 6);
 								input.Consume();
 								state.failed=false;
 
@@ -4354,13 +4354,13 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:788:5: ( '1' .. '9' ) ( '0' .. '9' )*
+					// Hql.g:799:5: ( '1' .. '9' ) ( '0' .. '9' )*
 					{
-					DebugLocation(788, 5);
+					DebugLocation(799, 5);
 					input.Consume();
 					state.failed=false;
-					DebugLocation(788, 16);
-					// Hql.g:788:16: ( '0' .. '9' )*
+					DebugLocation(799, 16);
+					// Hql.g:799:16: ( '0' .. '9' )*
 					try { DebugEnterSubRule(12);
 					while (true)
 					{
@@ -4381,7 +4381,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 							DebugEnterAlt(1);
 							// Hql.g:
 							{
-							DebugLocation(788, 16);
+							DebugLocation(799, 16);
 							input.Consume();
 							state.failed=false;
 
@@ -4398,7 +4398,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 
 					} finally { DebugExitSubRule(12); }
 
-					DebugLocation(788, 29);
+					DebugLocation(799, 29);
 					if (state.backtracking == 0)
 					{
 						isDecimal=true;
@@ -4410,8 +4410,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				}
 				} finally { DebugExitSubRule(13); }
 
-				DebugLocation(790, 3);
-				// Hql.g:790:3: ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
+				DebugLocation(801, 3);
+				// Hql.g:801:3: ( ( 'l' ) |{...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX ) )?
 				int alt19=3;
 				try { DebugEnterSubRule(19);
 				try { DebugEnterDecision(19, false);
@@ -4430,19 +4430,19 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:790:5: ( 'l' )
+					// Hql.g:801:5: ( 'l' )
 					{
-					DebugLocation(790, 5);
-					// Hql.g:790:5: ( 'l' )
+					DebugLocation(801, 5);
+					// Hql.g:801:5: ( 'l' )
 					DebugEnterAlt(1);
-					// Hql.g:790:6: 'l'
+					// Hql.g:801:6: 'l'
 					{
-					DebugLocation(790, 6);
+					DebugLocation(801, 6);
 					Match('l'); if (state.failed) return;
 
 					}
 
-					DebugLocation(790, 11);
+					DebugLocation(801, 11);
 					if (state.backtracking == 0)
 					{
 						 _type = NUM_LONG; 
@@ -4452,16 +4452,16 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:793:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
+					// Hql.g:804:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
 					{
-					DebugLocation(793, 5);
+					DebugLocation(804, 5);
 					if (!((isDecimal)))
 					{
 						if (state.backtracking>0) {state.failed=true; return;}
 						throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
 					}
-					DebugLocation(794, 4);
-					// Hql.g:794:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
+					DebugLocation(805, 4);
+					// Hql.g:805:4: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? |f4= FLOAT_SUFFIX )
 					int alt18=3;
 					try { DebugEnterSubRule(18);
 					try { DebugEnterDecision(18, false);
@@ -4498,12 +4498,12 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:794:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+						// Hql.g:805:8: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
 						{
-						DebugLocation(794, 8);
+						DebugLocation(805, 8);
 						Match('.'); if (state.failed) return;
-						DebugLocation(794, 12);
-						// Hql.g:794:12: ( '0' .. '9' )*
+						DebugLocation(805, 12);
+						// Hql.g:805:12: ( '0' .. '9' )*
 						try { DebugEnterSubRule(14);
 						while (true)
 						{
@@ -4524,7 +4524,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 								DebugEnterAlt(1);
 								// Hql.g:
 								{
-								DebugLocation(794, 12);
+								DebugLocation(805, 12);
 								input.Consume();
 								state.failed=false;
 
@@ -4541,8 +4541,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 
 						} finally { DebugExitSubRule(14); }
 
-						DebugLocation(794, 24);
-						// Hql.g:794:24: ( EXPONENT )?
+						DebugLocation(805, 24);
+						// Hql.g:805:24: ( EXPONENT )?
 						int alt15=2;
 						try { DebugEnterSubRule(15);
 						try { DebugEnterDecision(15, false);
@@ -4557,9 +4557,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:794:25: EXPONENT
+							// Hql.g:805:25: EXPONENT
 							{
-							DebugLocation(794, 25);
+							DebugLocation(805, 25);
 							mEXPONENT(); if (state.failed) return;
 
 							}
@@ -4568,8 +4568,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						}
 						} finally { DebugExitSubRule(15); }
 
-						DebugLocation(794, 36);
-						// Hql.g:794:36: (f2= FLOAT_SUFFIX )?
+						DebugLocation(805, 36);
+						// Hql.g:805:36: (f2= FLOAT_SUFFIX )?
 						int alt16=2;
 						try { DebugEnterSubRule(16);
 						try { DebugEnterDecision(16, false);
@@ -4584,9 +4584,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:794:37: f2= FLOAT_SUFFIX
+							// Hql.g:805:37: f2= FLOAT_SUFFIX
 							{
-							DebugLocation(794, 39);
+							DebugLocation(805, 39);
 							int f2Start1194 = CharIndex;
 							int f2StartLine1194 = Line;
 							int f2StartCharPos1194 = CharPositionInLine;
@@ -4594,7 +4594,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 							f2 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f2Start1194, CharIndex-1);
 							f2.Line = f2StartLine1194;
 							f2.CharPositionInLine = f2StartCharPos1194;
-							DebugLocation(794, 53);
+							DebugLocation(805, 53);
 							if (state.backtracking == 0)
 							{
 								t=f2;
@@ -4611,12 +4611,12 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// Hql.g:795:8: EXPONENT (f3= FLOAT_SUFFIX )?
+						// Hql.g:806:8: EXPONENT (f3= FLOAT_SUFFIX )?
 						{
-						DebugLocation(795, 8);
+						DebugLocation(806, 8);
 						mEXPONENT(); if (state.failed) return;
-						DebugLocation(795, 17);
-						// Hql.g:795:17: (f3= FLOAT_SUFFIX )?
+						DebugLocation(806, 17);
+						// Hql.g:806:17: (f3= FLOAT_SUFFIX )?
 						int alt17=2;
 						try { DebugEnterSubRule(17);
 						try { DebugEnterDecision(17, false);
@@ -4631,9 +4631,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:795:18: f3= FLOAT_SUFFIX
+							// Hql.g:806:18: f3= FLOAT_SUFFIX
 							{
-							DebugLocation(795, 20);
+							DebugLocation(806, 20);
 							int f3Start1212 = CharIndex;
 							int f3StartLine1212 = Line;
 							int f3StartCharPos1212 = CharPositionInLine;
@@ -4641,7 +4641,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 							f3 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f3Start1212, CharIndex-1);
 							f3.Line = f3StartLine1212;
 							f3.CharPositionInLine = f3StartCharPos1212;
-							DebugLocation(795, 34);
+							DebugLocation(806, 34);
 							if (state.backtracking == 0)
 							{
 								t=f3;
@@ -4658,9 +4658,9 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						break;
 					case 3:
 						DebugEnterAlt(3);
-						// Hql.g:796:8: f4= FLOAT_SUFFIX
+						// Hql.g:807:8: f4= FLOAT_SUFFIX
 						{
-						DebugLocation(796, 10);
+						DebugLocation(807, 10);
 						int f4Start1227 = CharIndex;
 						int f4StartLine1227 = Line;
 						int f4StartCharPos1227 = CharPositionInLine;
@@ -4668,7 +4668,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 						f4 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, f4Start1227, CharIndex-1);
 						f4.Line = f4StartLine1227;
 						f4.CharPositionInLine = f4StartCharPos1227;
-						DebugLocation(796, 24);
+						DebugLocation(807, 24);
 						if (state.backtracking == 0)
 						{
 							t=f4;
@@ -4680,7 +4680,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					}
 					} finally { DebugExitSubRule(18); }
 
-					DebugLocation(798, 4);
+					DebugLocation(809, 4);
 					if (state.backtracking == 0)
 					{
 
@@ -4734,11 +4734,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("HEX_DIGIT", 99);
 		try
 		{
-			// Hql.g:819:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
+			// Hql.g:830:2: ( ( '0' .. '9' | 'a' .. 'f' ) )
 			DebugEnterAlt(1);
 			// Hql.g:
 			{
-			DebugLocation(819, 2);
+			DebugLocation(830, 2);
 			if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='a' && input.LA(1)<='f'))
 			{
 				input.Consume();
@@ -4778,22 +4778,22 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("EXPONENT", 100);
 		try
 		{
-			// Hql.g:825:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+			// Hql.g:836:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
 			DebugEnterAlt(1);
-			// Hql.g:825:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+			// Hql.g:836:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
 			{
-			DebugLocation(825, 4);
-			// Hql.g:825:4: ( 'e' )
+			DebugLocation(836, 4);
+			// Hql.g:836:4: ( 'e' )
 			DebugEnterAlt(1);
-			// Hql.g:825:5: 'e'
+			// Hql.g:836:5: 'e'
 			{
-			DebugLocation(825, 5);
+			DebugLocation(836, 5);
 			Match('e'); if (state.failed) return;
 
 			}
 
-			DebugLocation(825, 10);
-			// Hql.g:825:10: ( '+' | '-' )?
+			DebugLocation(836, 10);
+			// Hql.g:836:10: ( '+' | '-' )?
 			int alt21=2;
 			try { DebugEnterSubRule(21);
 			try { DebugEnterDecision(21, false);
@@ -4810,7 +4810,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 				DebugEnterAlt(1);
 				// Hql.g:
 				{
-				DebugLocation(825, 10);
+				DebugLocation(836, 10);
 				input.Consume();
 				state.failed=false;
 
@@ -4820,8 +4820,8 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(21); }
 
-			DebugLocation(825, 21);
-			// Hql.g:825:21: ( '0' .. '9' )+
+			DebugLocation(836, 21);
+			// Hql.g:836:21: ( '0' .. '9' )+
 			int cnt22=0;
 			try { DebugEnterSubRule(22);
 			while (true)
@@ -4843,7 +4843,7 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// Hql.g:
 					{
-					DebugLocation(825, 21);
+					DebugLocation(836, 21);
 					input.Consume();
 					state.failed=false;
 
@@ -4891,11 +4891,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("FLOAT_SUFFIX", 101);
 		try
 		{
-			// Hql.g:830:2: ( 'f' | 'd' | 'm' )
+			// Hql.g:841:2: ( 'f' | 'd' | 'm' )
 			DebugEnterAlt(1);
 			// Hql.g:
 			{
-			DebugLocation(830, 2);
+			DebugLocation(841, 2);
 			if (input.LA(1)=='d'||input.LA(1)=='f'||input.LA(1)=='m')
 			{
 				input.Consume();
@@ -5811,11 +5811,11 @@ public partial class HqlLexer : Antlr.Runtime.Lexer
 		TraceIn("synpred1_Hql_fragment", 103);
 		try
 		{
-			// Hql.g:736:13: ( ESCqs )
+			// Hql.g:747:13: ( ESCqs )
 			DebugEnterAlt(1);
-			// Hql.g:736:14: ESCqs
+			// Hql.g:747:14: ESCqs
 			{
-			DebugLocation(736, 14);
+			DebugLocation(747, 14);
 			mESCqs(); if (state.failed) return;
 
 			}

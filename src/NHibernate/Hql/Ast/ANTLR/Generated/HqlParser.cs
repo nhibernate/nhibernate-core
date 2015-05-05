@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.5.0.2 Hql.g 2015-02-24 17:27:14
+// $ANTLR 3.5.0.2 Hql.g 2015-05-03 23:15:27
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -215,7 +215,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_statement();
 	partial void LeaveRule_statement();
 	// $ANTLR start "statement"
-	// Hql.g:129:8: public statement : ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF !;
+	// Hql.g:129:8: public statement : ({...}? ( updateStatement | deleteStatement | insertStatement ) | selectStatement ) EOF !;
 	[GrammarRule("statement")]
 	public AstParserRuleReturnScope<IASTNode, IToken> statement()
 	{
@@ -230,126 +230,151 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IToken EOF5 = default(IToken);
 		AstParserRuleReturnScope<IASTNode, IToken> updateStatement1 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 		AstParserRuleReturnScope<IASTNode, IToken> deleteStatement2 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> selectStatement3 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> insertStatement4 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> insertStatement3 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> selectStatement4 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		IASTNode EOF5_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "statement");
 		DebugLocation(129, 1);
 		try
 		{
-			// Hql.g:130:2: ( ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF !)
+			// Hql.g:130:2: ( ({...}? ( updateStatement | deleteStatement | insertStatement ) | selectStatement ) EOF !)
 			DebugEnterAlt(1);
-			// Hql.g:130:4: ( updateStatement | deleteStatement | selectStatement | insertStatement ) EOF !
+			// Hql.g:131:2: ({...}? ( updateStatement | deleteStatement | insertStatement ) | selectStatement ) EOF !
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(130, 4);
-			// Hql.g:130:4: ( updateStatement | deleteStatement | selectStatement | insertStatement )
-			int alt1=4;
-			try { DebugEnterSubRule(1);
-			try { DebugEnterDecision(1, false);
-			switch (input.LA(1))
-			{
-			case UPDATE:
-				{
-				alt1 = 1;
-				}
-				break;
-			case DELETE:
-				{
-				alt1 = 2;
-				}
-				break;
-			case EOF:
-			case CLOSE:
-			case FROM:
-			case GROUP:
-			case HAVING:
-			case ORDER:
-			case SELECT:
-			case SKIP:
-			case TAKE:
-			case UNION:
-			case WHERE:
-				{
-				alt1 = 3;
-				}
-				break;
-			case INSERT:
-				{
-				alt1 = 4;
-				}
-				break;
-			default:
-				{
-					NoViableAltException nvae = new NoViableAltException("", 1, 0, input, 1);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
-			}
+			DebugLocation(131, 2);
+			// Hql.g:131:2: ({...}? ( updateStatement | deleteStatement | insertStatement ) | selectStatement )
+			int alt2=2;
+			try { DebugEnterSubRule(2);
+			try { DebugEnterDecision(2, false);
+			int LA2_1 = input.LA(1);
 
-			} finally { DebugExitDecision(1); }
-			switch (alt1)
+			if ((LA2_1==DELETE||LA2_1==INSERT||LA2_1==UPDATE))
+			{
+				alt2 = 1;
+			}
+			else if ((LA2_1==EOF||LA2_1==FROM||LA2_1==GROUP||LA2_1==HAVING||LA2_1==ORDER||LA2_1==SELECT||LA2_1==SKIP||LA2_1==TAKE||LA2_1==WHERE))
+			{
+				alt2 = 2;
+			}
+			else
+			{
+				NoViableAltException nvae = new NoViableAltException("", 2, 0, input, 1);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(2); }
+			switch (alt2)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:130:6: updateStatement
+				// Hql.g:132:3: {...}? ( updateStatement | deleteStatement | insertStatement )
 				{
-				DebugLocation(130, 6);
-				PushFollow(Follow._updateStatement_in_statement613);
-				updateStatement1=updateStatement();
-				PopFollow();
+				DebugLocation(132, 3);
+				if (!(( !filter )))
+				{
+					throw new FailedPredicateException(input, "statement", " !filter ");
+				}
+				DebugLocation(132, 16);
+				// Hql.g:132:16: ( updateStatement | deleteStatement | insertStatement )
+				int alt1=3;
+				try { DebugEnterSubRule(1);
+				try { DebugEnterDecision(1, false);
+				switch (input.LA(1))
+				{
+				case UPDATE:
+					{
+					alt1 = 1;
+					}
+					break;
+				case DELETE:
+					{
+					alt1 = 2;
+					}
+					break;
+				case INSERT:
+					{
+					alt1 = 3;
+					}
+					break;
+				default:
+					{
+						NoViableAltException nvae = new NoViableAltException("", 1, 0, input, 1);
+						DebugRecognitionException(nvae);
+						throw nvae;
+					}
+				}
 
-				adaptor.AddChild(root_0, updateStatement1.Tree);
+				} finally { DebugExitDecision(1); }
+				switch (alt1)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:132:18: updateStatement
+					{
+					DebugLocation(132, 18);
+					PushFollow(Follow._updateStatement_in_statement620);
+					updateStatement1=updateStatement();
+					PopFollow();
+
+					adaptor.AddChild(root_0, updateStatement1.Tree);
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// Hql.g:132:36: deleteStatement
+					{
+					DebugLocation(132, 36);
+					PushFollow(Follow._deleteStatement_in_statement624);
+					deleteStatement2=deleteStatement();
+					PopFollow();
+
+					adaptor.AddChild(root_0, deleteStatement2.Tree);
+
+					}
+					break;
+				case 3:
+					DebugEnterAlt(3);
+					// Hql.g:132:54: insertStatement
+					{
+					DebugLocation(132, 54);
+					PushFollow(Follow._insertStatement_in_statement628);
+					insertStatement3=insertStatement();
+					PopFollow();
+
+					adaptor.AddChild(root_0, insertStatement3.Tree);
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(1); }
+
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:130:24: deleteStatement
+				// Hql.g:133:5: selectStatement
 				{
-				DebugLocation(130, 24);
-				PushFollow(Follow._deleteStatement_in_statement617);
-				deleteStatement2=deleteStatement();
+				DebugLocation(133, 5);
+				PushFollow(Follow._selectStatement_in_statement637);
+				selectStatement4=selectStatement();
 				PopFollow();
 
-				adaptor.AddChild(root_0, deleteStatement2.Tree);
-
-				}
-				break;
-			case 3:
-				DebugEnterAlt(3);
-				// Hql.g:130:42: selectStatement
-				{
-				DebugLocation(130, 42);
-				PushFollow(Follow._selectStatement_in_statement621);
-				selectStatement3=selectStatement();
-				PopFollow();
-
-				adaptor.AddChild(root_0, selectStatement3.Tree);
-
-				}
-				break;
-			case 4:
-				DebugEnterAlt(4);
-				// Hql.g:130:60: insertStatement
-				{
-				DebugLocation(130, 60);
-				PushFollow(Follow._insertStatement_in_statement625);
-				insertStatement4=insertStatement();
-				PopFollow();
-
-				adaptor.AddChild(root_0, insertStatement4.Tree);
+				adaptor.AddChild(root_0, selectStatement4.Tree);
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(1); }
+			} finally { DebugExitSubRule(2); }
 
-			DebugLocation(130, 81);
-			EOF5=(IToken)Match(input,EOF,Follow._EOF_in_statement629); 
+			DebugLocation(134, 7);
+			EOF5=(IToken)Match(input,EOF,Follow._EOF_in_statement642); 
 
 			}
 
@@ -372,7 +397,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("statement", 1);
 			LeaveRule_statement();
 		}
-		DebugLocation(131, 1);
+		DebugLocation(135, 1);
 		} finally { DebugExitRule(GrammarFileName, "statement"); }
 		return retval;
 
@@ -382,7 +407,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_updateStatement();
 	partial void LeaveRule_updateStatement();
 	// $ANTLR start "updateStatement"
-	// Hql.g:133:1: updateStatement : UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
+	// Hql.g:137:1: updateStatement : UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? ;
 	[GrammarRule("updateStatement")]
 	private AstParserRuleReturnScope<IASTNode, IToken> updateStatement()
 	{
@@ -403,68 +428,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode UPDATE6_tree = default(IASTNode);
 		IASTNode VERSIONED7_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "updateStatement");
-		DebugLocation(133, 1);
+		DebugLocation(137, 1);
 		try
 		{
-			// Hql.g:134:2: ( UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
+			// Hql.g:138:2: ( UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )? )
 			DebugEnterAlt(1);
-			// Hql.g:134:4: UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
+			// Hql.g:138:4: UPDATE ^ ( VERSIONED )? optionalFromTokenFromClause setClause ( whereClause )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(134, 10);
-			UPDATE6=(IToken)Match(input,UPDATE,Follow._UPDATE_in_updateStatement641); 
+			DebugLocation(138, 10);
+			UPDATE6=(IToken)Match(input,UPDATE,Follow._UPDATE_in_updateStatement654); 
 			UPDATE6_tree = (IASTNode)adaptor.Create(UPDATE6);
 			root_0 = (IASTNode)adaptor.BecomeRoot(UPDATE6_tree, root_0);
-			DebugLocation(134, 12);
-			// Hql.g:134:12: ( VERSIONED )?
-			int alt2=2;
-			try { DebugEnterSubRule(2);
-			try { DebugEnterDecision(2, false);
-			int LA2_1 = input.LA(1);
-
-			if ((LA2_1==VERSIONED))
-			{
-				alt2 = 1;
-			}
-			} finally { DebugExitDecision(2); }
-			switch (alt2)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// Hql.g:134:13: VERSIONED
-				{
-				DebugLocation(134, 13);
-				VERSIONED7=(IToken)Match(input,VERSIONED,Follow._VERSIONED_in_updateStatement645); 
-				VERSIONED7_tree = (IASTNode)adaptor.Create(VERSIONED7);
-				adaptor.AddChild(root_0, VERSIONED7_tree);
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(2); }
-
-			DebugLocation(135, 3);
-			PushFollow(Follow._optionalFromTokenFromClause_in_updateStatement651);
-			optionalFromTokenFromClause8=optionalFromTokenFromClause();
-			PopFollow();
-
-			adaptor.AddChild(root_0, optionalFromTokenFromClause8.Tree);
-			DebugLocation(136, 3);
-			PushFollow(Follow._setClause_in_updateStatement655);
-			setClause9=setClause();
-			PopFollow();
-
-			adaptor.AddChild(root_0, setClause9.Tree);
-			DebugLocation(137, 3);
-			// Hql.g:137:3: ( whereClause )?
+			DebugLocation(138, 12);
+			// Hql.g:138:12: ( VERSIONED )?
 			int alt3=2;
 			try { DebugEnterSubRule(3);
 			try { DebugEnterDecision(3, false);
 			int LA3_1 = input.LA(1);
 
-			if ((LA3_1==WHERE))
+			if ((LA3_1==VERSIONED))
 			{
 				alt3 = 1;
 			}
@@ -473,10 +457,51 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:137:4: whereClause
+				// Hql.g:138:13: VERSIONED
 				{
-				DebugLocation(137, 4);
-				PushFollow(Follow._whereClause_in_updateStatement660);
+				DebugLocation(138, 13);
+				VERSIONED7=(IToken)Match(input,VERSIONED,Follow._VERSIONED_in_updateStatement658); 
+				VERSIONED7_tree = (IASTNode)adaptor.Create(VERSIONED7);
+				adaptor.AddChild(root_0, VERSIONED7_tree);
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(3); }
+
+			DebugLocation(139, 3);
+			PushFollow(Follow._optionalFromTokenFromClause_in_updateStatement664);
+			optionalFromTokenFromClause8=optionalFromTokenFromClause();
+			PopFollow();
+
+			adaptor.AddChild(root_0, optionalFromTokenFromClause8.Tree);
+			DebugLocation(140, 3);
+			PushFollow(Follow._setClause_in_updateStatement668);
+			setClause9=setClause();
+			PopFollow();
+
+			adaptor.AddChild(root_0, setClause9.Tree);
+			DebugLocation(141, 3);
+			// Hql.g:141:3: ( whereClause )?
+			int alt4=2;
+			try { DebugEnterSubRule(4);
+			try { DebugEnterDecision(4, false);
+			int LA4_1 = input.LA(1);
+
+			if ((LA4_1==WHERE))
+			{
+				alt4 = 1;
+			}
+			} finally { DebugExitDecision(4); }
+			switch (alt4)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:141:4: whereClause
+				{
+				DebugLocation(141, 4);
+				PushFollow(Follow._whereClause_in_updateStatement673);
 				whereClause10=whereClause();
 				PopFollow();
 
@@ -486,7 +511,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(3); }
+			} finally { DebugExitSubRule(4); }
 
 
 			}
@@ -510,7 +535,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("updateStatement", 2);
 			LeaveRule_updateStatement();
 		}
-		DebugLocation(138, 1);
+		DebugLocation(142, 1);
 		} finally { DebugExitRule(GrammarFileName, "updateStatement"); }
 		return retval;
 
@@ -520,7 +545,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_setClause();
 	partial void LeaveRule_setClause();
 	// $ANTLR start "setClause"
-	// Hql.g:140:1: setClause : ( SET ^ assignment ( COMMA ! assignment )* ) ;
+	// Hql.g:144:1: setClause : ( SET ^ assignment ( COMMA ! assignment )* ) ;
 	[GrammarRule("setClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> setClause()
 	{
@@ -540,56 +565,56 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode SET11_tree = default(IASTNode);
 		IASTNode COMMA13_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "setClause");
-		DebugLocation(140, 1);
+		DebugLocation(144, 1);
 		try
 		{
-			// Hql.g:141:2: ( ( SET ^ assignment ( COMMA ! assignment )* ) )
+			// Hql.g:145:2: ( ( SET ^ assignment ( COMMA ! assignment )* ) )
 			DebugEnterAlt(1);
-			// Hql.g:141:4: ( SET ^ assignment ( COMMA ! assignment )* )
+			// Hql.g:145:4: ( SET ^ assignment ( COMMA ! assignment )* )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(141, 4);
-			// Hql.g:141:4: ( SET ^ assignment ( COMMA ! assignment )* )
+			DebugLocation(145, 4);
+			// Hql.g:145:4: ( SET ^ assignment ( COMMA ! assignment )* )
 			DebugEnterAlt(1);
-			// Hql.g:141:5: SET ^ assignment ( COMMA ! assignment )*
+			// Hql.g:145:5: SET ^ assignment ( COMMA ! assignment )*
 			{
-			DebugLocation(141, 8);
-			SET11=(IToken)Match(input,SET,Follow._SET_in_setClause674); 
+			DebugLocation(145, 8);
+			SET11=(IToken)Match(input,SET,Follow._SET_in_setClause687); 
 			SET11_tree = (IASTNode)adaptor.Create(SET11);
 			root_0 = (IASTNode)adaptor.BecomeRoot(SET11_tree, root_0);
-			DebugLocation(141, 10);
-			PushFollow(Follow._assignment_in_setClause677);
+			DebugLocation(145, 10);
+			PushFollow(Follow._assignment_in_setClause690);
 			assignment12=assignment();
 			PopFollow();
 
 			adaptor.AddChild(root_0, assignment12.Tree);
-			DebugLocation(141, 21);
-			// Hql.g:141:21: ( COMMA ! assignment )*
-			try { DebugEnterSubRule(4);
+			DebugLocation(145, 21);
+			// Hql.g:145:21: ( COMMA ! assignment )*
+			try { DebugEnterSubRule(5);
 			while (true)
 			{
-				int alt4=2;
-				try { DebugEnterDecision(4, false);
-				int LA4_1 = input.LA(1);
+				int alt5=2;
+				try { DebugEnterDecision(5, false);
+				int LA5_1 = input.LA(1);
 
-				if ((LA4_1==COMMA))
+				if ((LA5_1==COMMA))
 				{
-					alt4 = 1;
+					alt5 = 1;
 				}
 
 
-				} finally { DebugExitDecision(4); }
-				switch ( alt4 )
+				} finally { DebugExitDecision(5); }
+				switch ( alt5 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:141:22: COMMA ! assignment
+					// Hql.g:145:22: COMMA ! assignment
 					{
-					DebugLocation(141, 27);
-					COMMA13=(IToken)Match(input,COMMA,Follow._COMMA_in_setClause680); 
-					DebugLocation(141, 29);
-					PushFollow(Follow._assignment_in_setClause683);
+					DebugLocation(145, 27);
+					COMMA13=(IToken)Match(input,COMMA,Follow._COMMA_in_setClause693); 
+					DebugLocation(145, 29);
+					PushFollow(Follow._assignment_in_setClause696);
 					assignment14=assignment();
 					PopFollow();
 
@@ -599,14 +624,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop4;
+					goto loop5;
 				}
 			}
 
-			loop4:
+			loop5:
 				;
 
-			} finally { DebugExitSubRule(4); }
+			} finally { DebugExitSubRule(5); }
 
 
 			}
@@ -633,7 +658,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("setClause", 3);
 			LeaveRule_setClause();
 		}
-		DebugLocation(142, 1);
+		DebugLocation(146, 1);
 		} finally { DebugExitRule(GrammarFileName, "setClause"); }
 		return retval;
 
@@ -643,7 +668,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_assignment();
 	partial void LeaveRule_assignment();
 	// $ANTLR start "assignment"
-	// Hql.g:144:1: assignment : stateField EQ ^ newValue ;
+	// Hql.g:148:1: assignment : stateField EQ ^ newValue ;
 	[GrammarRule("assignment")]
 	private AstParserRuleReturnScope<IASTNode, IToken> assignment()
 	{
@@ -661,27 +686,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode EQ16_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "assignment");
-		DebugLocation(144, 1);
+		DebugLocation(148, 1);
 		try
 		{
-			// Hql.g:145:2: ( stateField EQ ^ newValue )
+			// Hql.g:149:2: ( stateField EQ ^ newValue )
 			DebugEnterAlt(1);
-			// Hql.g:145:4: stateField EQ ^ newValue
+			// Hql.g:149:4: stateField EQ ^ newValue
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(145, 4);
-			PushFollow(Follow._stateField_in_assignment697);
+			DebugLocation(149, 4);
+			PushFollow(Follow._stateField_in_assignment710);
 			stateField15=stateField();
 			PopFollow();
 
 			adaptor.AddChild(root_0, stateField15.Tree);
-			DebugLocation(145, 17);
-			EQ16=(IToken)Match(input,EQ,Follow._EQ_in_assignment699); 
+			DebugLocation(149, 17);
+			EQ16=(IToken)Match(input,EQ,Follow._EQ_in_assignment712); 
 			EQ16_tree = (IASTNode)adaptor.Create(EQ16);
 			root_0 = (IASTNode)adaptor.BecomeRoot(EQ16_tree, root_0);
-			DebugLocation(145, 19);
-			PushFollow(Follow._newValue_in_assignment702);
+			DebugLocation(149, 19);
+			PushFollow(Follow._newValue_in_assignment715);
 			newValue17=newValue();
 			PopFollow();
 
@@ -708,7 +733,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("assignment", 4);
 			LeaveRule_assignment();
 		}
-		DebugLocation(146, 1);
+		DebugLocation(150, 1);
 		} finally { DebugExitRule(GrammarFileName, "assignment"); }
 		return retval;
 
@@ -718,7 +743,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_stateField();
 	partial void LeaveRule_stateField();
 	// $ANTLR start "stateField"
-	// Hql.g:150:1: stateField : path ;
+	// Hql.g:154:1: stateField : path ;
 	[GrammarRule("stateField")]
 	private AstParserRuleReturnScope<IASTNode, IToken> stateField()
 	{
@@ -733,17 +758,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> path18 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "stateField");
-		DebugLocation(150, 1);
+		DebugLocation(154, 1);
 		try
 		{
-			// Hql.g:151:2: ( path )
+			// Hql.g:155:2: ( path )
 			DebugEnterAlt(1);
-			// Hql.g:151:4: path
+			// Hql.g:155:4: path
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(151, 4);
-			PushFollow(Follow._path_in_stateField715);
+			DebugLocation(155, 4);
+			PushFollow(Follow._path_in_stateField728);
 			path18=path();
 			PopFollow();
 
@@ -770,7 +795,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("stateField", 5);
 			LeaveRule_stateField();
 		}
-		DebugLocation(152, 1);
+		DebugLocation(156, 1);
 		} finally { DebugExitRule(GrammarFileName, "stateField"); }
 		return retval;
 
@@ -780,7 +805,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_newValue();
 	partial void LeaveRule_newValue();
 	// $ANTLR start "newValue"
-	// Hql.g:156:1: newValue : concatenation ;
+	// Hql.g:160:1: newValue : concatenation ;
 	[GrammarRule("newValue")]
 	private AstParserRuleReturnScope<IASTNode, IToken> newValue()
 	{
@@ -795,17 +820,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> concatenation19 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "newValue");
-		DebugLocation(156, 1);
+		DebugLocation(160, 1);
 		try
 		{
-			// Hql.g:157:2: ( concatenation )
+			// Hql.g:161:2: ( concatenation )
 			DebugEnterAlt(1);
-			// Hql.g:157:4: concatenation
+			// Hql.g:161:4: concatenation
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(157, 4);
-			PushFollow(Follow._concatenation_in_newValue728);
+			DebugLocation(161, 4);
+			PushFollow(Follow._concatenation_in_newValue741);
 			concatenation19=concatenation();
 			PopFollow();
 
@@ -832,7 +857,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("newValue", 6);
 			LeaveRule_newValue();
 		}
-		DebugLocation(158, 1);
+		DebugLocation(162, 1);
 		} finally { DebugExitRule(GrammarFileName, "newValue"); }
 		return retval;
 
@@ -842,7 +867,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_deleteStatement();
 	partial void LeaveRule_deleteStatement();
 	// $ANTLR start "deleteStatement"
-	// Hql.g:160:1: deleteStatement : DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )? ;
+	// Hql.g:164:1: deleteStatement : DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )? ;
 	[GrammarRule("deleteStatement")]
 	private AstParserRuleReturnScope<IASTNode, IToken> deleteStatement()
 	{
@@ -860,26 +885,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode DELETE20_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "deleteStatement");
-		DebugLocation(160, 1);
+		DebugLocation(164, 1);
 		try
 		{
-			// Hql.g:161:2: ( DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )? )
+			// Hql.g:165:2: ( DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )? )
 			DebugEnterAlt(1);
-			// Hql.g:161:4: DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )?
+			// Hql.g:165:4: DELETE ^ ( optionalFromTokenFromClause ) ( whereClause )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(161, 10);
-			DELETE20=(IToken)Match(input,DELETE,Follow._DELETE_in_deleteStatement739); 
+			DebugLocation(165, 10);
+			DELETE20=(IToken)Match(input,DELETE,Follow._DELETE_in_deleteStatement752); 
 			DELETE20_tree = (IASTNode)adaptor.Create(DELETE20);
 			root_0 = (IASTNode)adaptor.BecomeRoot(DELETE20_tree, root_0);
-			DebugLocation(162, 3);
-			// Hql.g:162:3: ( optionalFromTokenFromClause )
+			DebugLocation(166, 3);
+			// Hql.g:166:3: ( optionalFromTokenFromClause )
 			DebugEnterAlt(1);
-			// Hql.g:162:4: optionalFromTokenFromClause
+			// Hql.g:166:4: optionalFromTokenFromClause
 			{
-			DebugLocation(162, 4);
-			PushFollow(Follow._optionalFromTokenFromClause_in_deleteStatement745);
+			DebugLocation(166, 4);
+			PushFollow(Follow._optionalFromTokenFromClause_in_deleteStatement758);
 			optionalFromTokenFromClause21=optionalFromTokenFromClause();
 			PopFollow();
 
@@ -887,26 +912,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 			}
 
-			DebugLocation(163, 3);
-			// Hql.g:163:3: ( whereClause )?
-			int alt5=2;
-			try { DebugEnterSubRule(5);
-			try { DebugEnterDecision(5, false);
-			int LA5_1 = input.LA(1);
+			DebugLocation(167, 3);
+			// Hql.g:167:3: ( whereClause )?
+			int alt6=2;
+			try { DebugEnterSubRule(6);
+			try { DebugEnterDecision(6, false);
+			int LA6_1 = input.LA(1);
 
-			if ((LA5_1==WHERE))
+			if ((LA6_1==WHERE))
 			{
-				alt5 = 1;
+				alt6 = 1;
 			}
-			} finally { DebugExitDecision(5); }
-			switch (alt5)
+			} finally { DebugExitDecision(6); }
+			switch (alt6)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:163:4: whereClause
+				// Hql.g:167:4: whereClause
 				{
-				DebugLocation(163, 4);
-				PushFollow(Follow._whereClause_in_deleteStatement751);
+				DebugLocation(167, 4);
+				PushFollow(Follow._whereClause_in_deleteStatement764);
 				whereClause22=whereClause();
 				PopFollow();
 
@@ -916,7 +941,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(5); }
+			} finally { DebugExitSubRule(6); }
 
 
 			}
@@ -940,7 +965,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("deleteStatement", 7);
 			LeaveRule_deleteStatement();
 		}
-		DebugLocation(164, 1);
+		DebugLocation(168, 1);
 		} finally { DebugExitRule(GrammarFileName, "deleteStatement"); }
 		return retval;
 
@@ -950,7 +975,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_optionalFromTokenFromClause();
 	partial void LeaveRule_optionalFromTokenFromClause();
 	// $ANTLR start "optionalFromTokenFromClause"
-	// Hql.g:168:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
+	// Hql.g:172:1: optionalFromTokenFromClause : optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) ;
 	[GrammarRule("optionalFromTokenFromClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause()
 	{
@@ -970,45 +995,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
 		try { DebugEnterRule(GrammarFileName, "optionalFromTokenFromClause");
-		DebugLocation(168, 1);
+		DebugLocation(172, 1);
 		try
 		{
-			// Hql.g:169:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
+			// Hql.g:173:2: ( optionalFromTokenFromClause2 path ( asAlias )? -> ^( FROM ^( RANGE path ( asAlias )? ) ) )
 			DebugEnterAlt(1);
-			// Hql.g:169:4: optionalFromTokenFromClause2 path ( asAlias )?
+			// Hql.g:173:4: optionalFromTokenFromClause2 path ( asAlias )?
 			{
-			DebugLocation(169, 4);
-			PushFollow(Follow._optionalFromTokenFromClause2_in_optionalFromTokenFromClause766);
+			DebugLocation(173, 4);
+			PushFollow(Follow._optionalFromTokenFromClause2_in_optionalFromTokenFromClause779);
 			optionalFromTokenFromClause223=optionalFromTokenFromClause2();
 			PopFollow();
 
 			stream_optionalFromTokenFromClause2.Add(optionalFromTokenFromClause223.Tree);
-			DebugLocation(169, 33);
-			PushFollow(Follow._path_in_optionalFromTokenFromClause768);
+			DebugLocation(173, 33);
+			PushFollow(Follow._path_in_optionalFromTokenFromClause781);
 			path24=path();
 			PopFollow();
 
 			stream_path.Add(path24.Tree);
-			DebugLocation(169, 38);
-			// Hql.g:169:38: ( asAlias )?
-			int alt6=2;
-			try { DebugEnterSubRule(6);
-			try { DebugEnterDecision(6, false);
-			int LA6_1 = input.LA(1);
+			DebugLocation(173, 38);
+			// Hql.g:173:38: ( asAlias )?
+			int alt7=2;
+			try { DebugEnterSubRule(7);
+			try { DebugEnterDecision(7, false);
+			int LA7_1 = input.LA(1);
 
-			if ((LA6_1==AS||LA6_1==IDENT))
+			if ((LA7_1==AS||LA7_1==IDENT))
 			{
-				alt6 = 1;
+				alt7 = 1;
 			}
-			} finally { DebugExitDecision(6); }
-			switch (alt6)
+			} finally { DebugExitDecision(7); }
+			switch (alt7)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:169:39: asAlias
+				// Hql.g:173:39: asAlias
 				{
-				DebugLocation(169, 39);
-				PushFollow(Follow._asAlias_in_optionalFromTokenFromClause771);
+				DebugLocation(173, 39);
+				PushFollow(Follow._asAlias_in_optionalFromTokenFromClause784);
 				asAlias25=asAlias();
 				PopFollow();
 
@@ -1018,7 +1043,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(6); }
+			} finally { DebugExitSubRule(7); }
 
 
 
@@ -1034,29 +1059,29 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 170:3: -> ^( FROM ^( RANGE path ( asAlias )? ) )
+			// 174:3: -> ^( FROM ^( RANGE path ( asAlias )? ) )
 			{
-				DebugLocation(170, 6);
-				// Hql.g:170:6: ^( FROM ^( RANGE path ( asAlias )? ) )
+				DebugLocation(174, 6);
+				// Hql.g:174:6: ^( FROM ^( RANGE path ( asAlias )? ) )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(170, 8);
+				DebugLocation(174, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(FROM, "FROM"), root_1);
 
-				DebugLocation(170, 13);
-				// Hql.g:170:13: ^( RANGE path ( asAlias )? )
+				DebugLocation(174, 13);
+				// Hql.g:174:13: ^( RANGE path ( asAlias )? )
 				{
 				IASTNode root_2 = (IASTNode)adaptor.Nil();
-				DebugLocation(170, 15);
+				DebugLocation(174, 15);
 				root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_2);
 
-				DebugLocation(170, 21);
+				DebugLocation(174, 21);
 				adaptor.AddChild(root_2, stream_path.NextTree());
-				DebugLocation(170, 26);
-				// Hql.g:170:26: ( asAlias )?
+				DebugLocation(174, 26);
+				// Hql.g:174:26: ( asAlias )?
 				if (stream_asAlias.HasNext)
 				{
-					DebugLocation(170, 26);
+					DebugLocation(174, 26);
 					adaptor.AddChild(root_2, stream_asAlias.NextTree());
 
 				}
@@ -1094,7 +1119,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("optionalFromTokenFromClause", 8);
 			LeaveRule_optionalFromTokenFromClause();
 		}
-		DebugLocation(171, 1);
+		DebugLocation(175, 1);
 		} finally { DebugExitRule(GrammarFileName, "optionalFromTokenFromClause"); }
 		return retval;
 
@@ -1104,7 +1129,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_optionalFromTokenFromClause2();
 	partial void LeaveRule_optionalFromTokenFromClause2();
 	// $ANTLR start "optionalFromTokenFromClause2"
-	// Hql.g:173:1: optionalFromTokenFromClause2 : ( FROM )? ;
+	// Hql.g:177:1: optionalFromTokenFromClause2 : ( FROM )? ;
 	[GrammarRule("optionalFromTokenFromClause2")]
 	private AstParserRuleReturnScope<IASTNode, IToken> optionalFromTokenFromClause2()
 	{
@@ -1120,35 +1145,35 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode FROM26_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "optionalFromTokenFromClause2");
-		DebugLocation(173, 1);
+		DebugLocation(177, 1);
 		try
 		{
-			// Hql.g:174:2: ( ( FROM )? )
+			// Hql.g:178:2: ( ( FROM )? )
 			DebugEnterAlt(1);
-			// Hql.g:174:4: ( FROM )?
+			// Hql.g:178:4: ( FROM )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(174, 4);
-			// Hql.g:174:4: ( FROM )?
-			int alt7=2;
-			try { DebugEnterSubRule(7);
-			try { DebugEnterDecision(7, false);
-			int LA7_1 = input.LA(1);
+			DebugLocation(178, 4);
+			// Hql.g:178:4: ( FROM )?
+			int alt8=2;
+			try { DebugEnterSubRule(8);
+			try { DebugEnterDecision(8, false);
+			int LA8_1 = input.LA(1);
 
-			if ((LA7_1==FROM))
+			if ((LA8_1==FROM))
 			{
-				alt7 = 1;
+				alt8 = 1;
 			}
-			} finally { DebugExitDecision(7); }
-			switch (alt7)
+			} finally { DebugExitDecision(8); }
+			switch (alt8)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:174:4: FROM
+				// Hql.g:178:4: FROM
 				{
-				DebugLocation(174, 4);
-				FROM26=(IToken)Match(input,FROM,Follow._FROM_in_optionalFromTokenFromClause2802); 
+				DebugLocation(178, 4);
+				FROM26=(IToken)Match(input,FROM,Follow._FROM_in_optionalFromTokenFromClause2815); 
 				FROM26_tree = (IASTNode)adaptor.Create(FROM26);
 				adaptor.AddChild(root_0, FROM26_tree);
 
@@ -1156,7 +1181,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(7); }
+			} finally { DebugExitSubRule(8); }
 
 
 			}
@@ -1180,7 +1205,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("optionalFromTokenFromClause2", 9);
 			LeaveRule_optionalFromTokenFromClause2();
 		}
-		DebugLocation(175, 1);
+		DebugLocation(179, 1);
 		} finally { DebugExitRule(GrammarFileName, "optionalFromTokenFromClause2"); }
 		return retval;
 
@@ -1190,7 +1215,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_selectStatement();
 	partial void LeaveRule_selectStatement();
 	// $ANTLR start "selectStatement"
-	// Hql.g:177:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
+	// Hql.g:181:1: selectStatement : q= queryRule -> ^( QUERY[\"query\"] $q) ;
 	[GrammarRule("selectStatement")]
 	private AstParserRuleReturnScope<IASTNode, IToken> selectStatement()
 	{
@@ -1206,15 +1231,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
 		try { DebugEnterRule(GrammarFileName, "selectStatement");
-		DebugLocation(177, 1);
+		DebugLocation(181, 1);
 		try
 		{
-			// Hql.g:178:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
+			// Hql.g:183:2: (q= queryRule -> ^( QUERY[\"query\"] $q) )
 			DebugEnterAlt(1);
-			// Hql.g:178:4: q= queryRule
+			// Hql.g:183:4: q= queryRule
 			{
-			DebugLocation(178, 5);
-			PushFollow(Follow._queryRule_in_selectStatement816);
+			DebugLocation(183, 5);
+			PushFollow(Follow._queryRule_in_selectStatement830);
 			q=queryRule();
 			PopFollow();
 
@@ -1234,16 +1259,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 179:2: -> ^( QUERY[\"query\"] $q)
+			// 184:2: -> ^( QUERY[\"query\"] $q)
 			{
-				DebugLocation(179, 5);
-				// Hql.g:179:5: ^( QUERY[\"query\"] $q)
+				DebugLocation(184, 5);
+				// Hql.g:184:5: ^( QUERY[\"query\"] $q)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(179, 7);
+				DebugLocation(184, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
 
-				DebugLocation(179, 23);
+				DebugLocation(184, 23);
 				adaptor.AddChild(root_1, stream_q.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -1275,7 +1300,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("selectStatement", 10);
 			LeaveRule_selectStatement();
 		}
-		DebugLocation(180, 1);
+		DebugLocation(185, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectStatement"); }
 		return retval;
 
@@ -1285,7 +1310,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_insertStatement();
 	partial void LeaveRule_insertStatement();
 	// $ANTLR start "insertStatement"
-	// Hql.g:182:1: insertStatement : INSERT ^ intoClause selectStatement ;
+	// Hql.g:187:1: insertStatement : INSERT ^ intoClause selectStatement ;
 	[GrammarRule("insertStatement")]
 	private AstParserRuleReturnScope<IASTNode, IToken> insertStatement()
 	{
@@ -1303,27 +1328,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode INSERT27_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "insertStatement");
-		DebugLocation(182, 1);
+		DebugLocation(187, 1);
 		try
 		{
-			// Hql.g:186:2: ( INSERT ^ intoClause selectStatement )
+			// Hql.g:191:2: ( INSERT ^ intoClause selectStatement )
 			DebugEnterAlt(1);
-			// Hql.g:186:4: INSERT ^ intoClause selectStatement
+			// Hql.g:191:4: INSERT ^ intoClause selectStatement
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(186, 10);
-			INSERT27=(IToken)Match(input,INSERT,Follow._INSERT_in_insertStatement845); 
+			DebugLocation(191, 10);
+			INSERT27=(IToken)Match(input,INSERT,Follow._INSERT_in_insertStatement859); 
 			INSERT27_tree = (IASTNode)adaptor.Create(INSERT27);
 			root_0 = (IASTNode)adaptor.BecomeRoot(INSERT27_tree, root_0);
-			DebugLocation(186, 12);
-			PushFollow(Follow._intoClause_in_insertStatement848);
+			DebugLocation(191, 12);
+			PushFollow(Follow._intoClause_in_insertStatement862);
 			intoClause28=intoClause();
 			PopFollow();
 
 			adaptor.AddChild(root_0, intoClause28.Tree);
-			DebugLocation(186, 23);
-			PushFollow(Follow._selectStatement_in_insertStatement850);
+			DebugLocation(191, 23);
+			PushFollow(Follow._selectStatement_in_insertStatement864);
 			selectStatement29=selectStatement();
 			PopFollow();
 
@@ -1350,7 +1375,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("insertStatement", 11);
 			LeaveRule_insertStatement();
 		}
-		DebugLocation(187, 1);
+		DebugLocation(192, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertStatement"); }
 		return retval;
 
@@ -1360,7 +1385,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_intoClause();
 	partial void LeaveRule_intoClause();
 	// $ANTLR start "intoClause"
-	// Hql.g:189:1: intoClause : INTO ^ path insertablePropertySpec ;
+	// Hql.g:194:1: intoClause : INTO ^ path insertablePropertySpec ;
 	[GrammarRule("intoClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> intoClause()
 	{
@@ -1378,29 +1403,29 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode INTO30_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "intoClause");
-		DebugLocation(189, 1);
+		DebugLocation(194, 1);
 		try
 		{
-			// Hql.g:190:2: ( INTO ^ path insertablePropertySpec )
+			// Hql.g:195:2: ( INTO ^ path insertablePropertySpec )
 			DebugEnterAlt(1);
-			// Hql.g:190:4: INTO ^ path insertablePropertySpec
+			// Hql.g:195:4: INTO ^ path insertablePropertySpec
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(190, 8);
-			INTO30=(IToken)Match(input,INTO,Follow._INTO_in_intoClause861); 
+			DebugLocation(195, 8);
+			INTO30=(IToken)Match(input,INTO,Follow._INTO_in_intoClause875); 
 			INTO30_tree = (IASTNode)adaptor.Create(INTO30);
 			root_0 = (IASTNode)adaptor.BecomeRoot(INTO30_tree, root_0);
-			DebugLocation(190, 10);
-			PushFollow(Follow._path_in_intoClause864);
+			DebugLocation(195, 10);
+			PushFollow(Follow._path_in_intoClause878);
 			path31=path();
 			PopFollow();
 
 			adaptor.AddChild(root_0, path31.Tree);
-			DebugLocation(190, 15);
+			DebugLocation(195, 15);
 			 WeakKeywords(); 
-			DebugLocation(190, 35);
-			PushFollow(Follow._insertablePropertySpec_in_intoClause868);
+			DebugLocation(195, 35);
+			PushFollow(Follow._insertablePropertySpec_in_intoClause882);
 			insertablePropertySpec32=insertablePropertySpec();
 			PopFollow();
 
@@ -1427,7 +1452,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("intoClause", 12);
 			LeaveRule_intoClause();
 		}
-		DebugLocation(191, 1);
+		DebugLocation(196, 1);
 		} finally { DebugExitRule(GrammarFileName, "intoClause"); }
 		return retval;
 
@@ -1437,7 +1462,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_insertablePropertySpec();
 	partial void LeaveRule_insertablePropertySpec();
 	// $ANTLR start "insertablePropertySpec"
-	// Hql.g:193:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
+	// Hql.g:198:1: insertablePropertySpec : OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) ;
 	[GrammarRule("insertablePropertySpec")]
 	private AstParserRuleReturnScope<IASTNode, IToken> insertablePropertySpec()
 	{
@@ -1463,51 +1488,51 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleITokenStream stream_CLOSE=new RewriteRuleITokenStream(adaptor,"token CLOSE");
 		RewriteRuleSubtreeStream stream_primaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
 		try { DebugEnterRule(GrammarFileName, "insertablePropertySpec");
-		DebugLocation(193, 1);
+		DebugLocation(198, 1);
 		try
 		{
-			// Hql.g:194:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
+			// Hql.g:199:2: ( OPEN primaryExpression ( COMMA primaryExpression )* CLOSE -> ^( RANGE[\"column-spec\"] ( primaryExpression )* ) )
 			DebugEnterAlt(1);
-			// Hql.g:194:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
+			// Hql.g:199:4: OPEN primaryExpression ( COMMA primaryExpression )* CLOSE
 			{
-			DebugLocation(194, 4);
-			OPEN33=(IToken)Match(input,OPEN,Follow._OPEN_in_insertablePropertySpec879);  
+			DebugLocation(199, 4);
+			OPEN33=(IToken)Match(input,OPEN,Follow._OPEN_in_insertablePropertySpec893);  
 			stream_OPEN.Add(OPEN33);
 
-			DebugLocation(194, 9);
-			PushFollow(Follow._primaryExpression_in_insertablePropertySpec881);
+			DebugLocation(199, 9);
+			PushFollow(Follow._primaryExpression_in_insertablePropertySpec895);
 			primaryExpression34=primaryExpression();
 			PopFollow();
 
 			stream_primaryExpression.Add(primaryExpression34.Tree);
-			DebugLocation(194, 27);
-			// Hql.g:194:27: ( COMMA primaryExpression )*
-			try { DebugEnterSubRule(8);
+			DebugLocation(199, 27);
+			// Hql.g:199:27: ( COMMA primaryExpression )*
+			try { DebugEnterSubRule(9);
 			while (true)
 			{
-				int alt8=2;
-				try { DebugEnterDecision(8, false);
-				int LA8_1 = input.LA(1);
+				int alt9=2;
+				try { DebugEnterDecision(9, false);
+				int LA9_1 = input.LA(1);
 
-				if ((LA8_1==COMMA))
+				if ((LA9_1==COMMA))
 				{
-					alt8 = 1;
+					alt9 = 1;
 				}
 
 
-				} finally { DebugExitDecision(8); }
-				switch ( alt8 )
+				} finally { DebugExitDecision(9); }
+				switch ( alt9 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:194:29: COMMA primaryExpression
+					// Hql.g:199:29: COMMA primaryExpression
 					{
-					DebugLocation(194, 29);
-					COMMA35=(IToken)Match(input,COMMA,Follow._COMMA_in_insertablePropertySpec885);  
+					DebugLocation(199, 29);
+					COMMA35=(IToken)Match(input,COMMA,Follow._COMMA_in_insertablePropertySpec899);  
 					stream_COMMA.Add(COMMA35);
 
-					DebugLocation(194, 35);
-					PushFollow(Follow._primaryExpression_in_insertablePropertySpec887);
+					DebugLocation(199, 35);
+					PushFollow(Follow._primaryExpression_in_insertablePropertySpec901);
 					primaryExpression36=primaryExpression();
 					PopFollow();
 
@@ -1517,17 +1542,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop8;
+					goto loop9;
 				}
 			}
 
-			loop8:
+			loop9:
 				;
 
-			} finally { DebugExitSubRule(8); }
+			} finally { DebugExitSubRule(9); }
 
-			DebugLocation(194, 56);
-			CLOSE37=(IToken)Match(input,CLOSE,Follow._CLOSE_in_insertablePropertySpec892);  
+			DebugLocation(199, 56);
+			CLOSE37=(IToken)Match(input,CLOSE,Follow._CLOSE_in_insertablePropertySpec906);  
 			stream_CLOSE.Add(CLOSE37);
 
 
@@ -1544,20 +1569,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 195:3: -> ^( RANGE[\"column-spec\"] ( primaryExpression )* )
+			// 200:3: -> ^( RANGE[\"column-spec\"] ( primaryExpression )* )
 			{
-				DebugLocation(195, 6);
-				// Hql.g:195:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
+				DebugLocation(200, 6);
+				// Hql.g:200:6: ^( RANGE[\"column-spec\"] ( primaryExpression )* )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(195, 8);
+				DebugLocation(200, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "column-spec"), root_1);
 
-				DebugLocation(195, 29);
-				// Hql.g:195:29: ( primaryExpression )*
+				DebugLocation(200, 29);
+				// Hql.g:200:29: ( primaryExpression )*
 				while ( stream_primaryExpression.HasNext )
 				{
-					DebugLocation(195, 29);
+					DebugLocation(200, 29);
 					adaptor.AddChild(root_1, stream_primaryExpression.NextTree());
 
 				}
@@ -1592,7 +1617,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("insertablePropertySpec", 13);
 			LeaveRule_insertablePropertySpec();
 		}
-		DebugLocation(196, 1);
+		DebugLocation(201, 1);
 		} finally { DebugExitRule(GrammarFileName, "insertablePropertySpec"); }
 		return retval;
 
@@ -1602,7 +1627,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_queryRule();
 	partial void LeaveRule_queryRule();
 	// $ANTLR start "queryRule"
-	// Hql.g:201:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? ;
+	// Hql.g:206:1: queryRule : selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? ;
 	[GrammarRule("queryRule")]
 	private AstParserRuleReturnScope<IASTNode, IToken> queryRule()
 	{
@@ -1622,42 +1647,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> skipClause43 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 		AstParserRuleReturnScope<IASTNode, IToken> takeClause44 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
+
+				++queryDepth;
+			
 		try { DebugEnterRule(GrammarFileName, "queryRule");
-		DebugLocation(201, 2);
+		DebugLocation(206, 2);
 		try
 		{
-			// Hql.g:202:2: ( selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? )
+			// Hql.g:213:2: ( selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )? )
 			DebugEnterAlt(1);
-			// Hql.g:202:4: selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )?
+			// Hql.g:213:4: selectFrom ( whereClause )? ( groupByClause )? ( havingClause )? ( orderByClause )? ( skipClause )? ( takeClause )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(202, 4);
-			PushFollow(Follow._selectFrom_in_queryRule918);
+			DebugLocation(213, 4);
+			PushFollow(Follow._selectFrom_in_queryRule944);
 			selectFrom38=selectFrom();
 			PopFollow();
 
 			adaptor.AddChild(root_0, selectFrom38.Tree);
-			DebugLocation(203, 3);
-			// Hql.g:203:3: ( whereClause )?
-			int alt9=2;
-			try { DebugEnterSubRule(9);
-			try { DebugEnterDecision(9, false);
-			int LA9_1 = input.LA(1);
+			DebugLocation(214, 3);
+			// Hql.g:214:3: ( whereClause )?
+			int alt10=2;
+			try { DebugEnterSubRule(10);
+			try { DebugEnterDecision(10, false);
+			int LA10_1 = input.LA(1);
 
-			if ((LA9_1==WHERE))
+			if ((LA10_1==WHERE))
 			{
-				alt9 = 1;
+				alt10 = 1;
 			}
-			} finally { DebugExitDecision(9); }
-			switch (alt9)
+			} finally { DebugExitDecision(10); }
+			switch (alt10)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:203:4: whereClause
+				// Hql.g:214:4: whereClause
 				{
-				DebugLocation(203, 4);
-				PushFollow(Follow._whereClause_in_queryRule923);
+				DebugLocation(214, 4);
+				PushFollow(Follow._whereClause_in_queryRule949);
 				whereClause39=whereClause();
 				PopFollow();
 
@@ -1667,28 +1695,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(9); }
+			} finally { DebugExitSubRule(10); }
 
-			DebugLocation(204, 3);
-			// Hql.g:204:3: ( groupByClause )?
-			int alt10=2;
-			try { DebugEnterSubRule(10);
-			try { DebugEnterDecision(10, false);
-			int LA10_1 = input.LA(1);
+			DebugLocation(215, 3);
+			// Hql.g:215:3: ( groupByClause )?
+			int alt11=2;
+			try { DebugEnterSubRule(11);
+			try { DebugEnterDecision(11, false);
+			int LA11_1 = input.LA(1);
 
-			if ((LA10_1==GROUP))
+			if ((LA11_1==GROUP))
 			{
-				alt10 = 1;
+				alt11 = 1;
 			}
-			} finally { DebugExitDecision(10); }
-			switch (alt10)
+			} finally { DebugExitDecision(11); }
+			switch (alt11)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:204:4: groupByClause
+				// Hql.g:215:4: groupByClause
 				{
-				DebugLocation(204, 4);
-				PushFollow(Follow._groupByClause_in_queryRule930);
+				DebugLocation(215, 4);
+				PushFollow(Follow._groupByClause_in_queryRule956);
 				groupByClause40=groupByClause();
 				PopFollow();
 
@@ -1698,28 +1726,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(10); }
+			} finally { DebugExitSubRule(11); }
 
-			DebugLocation(205, 3);
-			// Hql.g:205:3: ( havingClause )?
-			int alt11=2;
-			try { DebugEnterSubRule(11);
-			try { DebugEnterDecision(11, false);
-			int LA11_1 = input.LA(1);
+			DebugLocation(216, 3);
+			// Hql.g:216:3: ( havingClause )?
+			int alt12=2;
+			try { DebugEnterSubRule(12);
+			try { DebugEnterDecision(12, false);
+			int LA12_1 = input.LA(1);
 
-			if ((LA11_1==HAVING))
+			if ((LA12_1==HAVING))
 			{
-				alt11 = 1;
+				alt12 = 1;
 			}
-			} finally { DebugExitDecision(11); }
-			switch (alt11)
+			} finally { DebugExitDecision(12); }
+			switch (alt12)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:205:4: havingClause
+				// Hql.g:216:4: havingClause
 				{
-				DebugLocation(205, 4);
-				PushFollow(Follow._havingClause_in_queryRule937);
+				DebugLocation(216, 4);
+				PushFollow(Follow._havingClause_in_queryRule963);
 				havingClause41=havingClause();
 				PopFollow();
 
@@ -1729,28 +1757,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(11); }
+			} finally { DebugExitSubRule(12); }
 
-			DebugLocation(206, 3);
-			// Hql.g:206:3: ( orderByClause )?
-			int alt12=2;
-			try { DebugEnterSubRule(12);
-			try { DebugEnterDecision(12, false);
-			int LA12_1 = input.LA(1);
+			DebugLocation(217, 3);
+			// Hql.g:217:3: ( orderByClause )?
+			int alt13=2;
+			try { DebugEnterSubRule(13);
+			try { DebugEnterDecision(13, false);
+			int LA13_1 = input.LA(1);
 
-			if ((LA12_1==ORDER))
+			if ((LA13_1==ORDER))
 			{
-				alt12 = 1;
+				alt13 = 1;
 			}
-			} finally { DebugExitDecision(12); }
-			switch (alt12)
+			} finally { DebugExitDecision(13); }
+			switch (alt13)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:206:4: orderByClause
+				// Hql.g:217:4: orderByClause
 				{
-				DebugLocation(206, 4);
-				PushFollow(Follow._orderByClause_in_queryRule944);
+				DebugLocation(217, 4);
+				PushFollow(Follow._orderByClause_in_queryRule970);
 				orderByClause42=orderByClause();
 				PopFollow();
 
@@ -1760,28 +1788,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(12); }
+			} finally { DebugExitSubRule(13); }
 
-			DebugLocation(207, 3);
-			// Hql.g:207:3: ( skipClause )?
-			int alt13=2;
-			try { DebugEnterSubRule(13);
-			try { DebugEnterDecision(13, false);
-			int LA13_1 = input.LA(1);
+			DebugLocation(218, 3);
+			// Hql.g:218:3: ( skipClause )?
+			int alt14=2;
+			try { DebugEnterSubRule(14);
+			try { DebugEnterDecision(14, false);
+			int LA14_1 = input.LA(1);
 
-			if ((LA13_1==SKIP))
+			if ((LA14_1==SKIP))
 			{
-				alt13 = 1;
+				alt14 = 1;
 			}
-			} finally { DebugExitDecision(13); }
-			switch (alt13)
+			} finally { DebugExitDecision(14); }
+			switch (alt14)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:207:4: skipClause
+				// Hql.g:218:4: skipClause
 				{
-				DebugLocation(207, 4);
-				PushFollow(Follow._skipClause_in_queryRule951);
+				DebugLocation(218, 4);
+				PushFollow(Follow._skipClause_in_queryRule977);
 				skipClause43=skipClause();
 				PopFollow();
 
@@ -1791,28 +1819,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(13); }
+			} finally { DebugExitSubRule(14); }
 
-			DebugLocation(208, 3);
-			// Hql.g:208:3: ( takeClause )?
-			int alt14=2;
-			try { DebugEnterSubRule(14);
-			try { DebugEnterDecision(14, false);
-			int LA14_1 = input.LA(1);
+			DebugLocation(219, 3);
+			// Hql.g:219:3: ( takeClause )?
+			int alt15=2;
+			try { DebugEnterSubRule(15);
+			try { DebugEnterDecision(15, false);
+			int LA15_1 = input.LA(1);
 
-			if ((LA14_1==TAKE))
+			if ((LA15_1==TAKE))
 			{
-				alt14 = 1;
+				alt15 = 1;
 			}
-			} finally { DebugExitDecision(14); }
-			switch (alt14)
+			} finally { DebugExitDecision(15); }
+			switch (alt15)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:208:4: takeClause
+				// Hql.g:219:4: takeClause
 				{
-				DebugLocation(208, 4);
-				PushFollow(Follow._takeClause_in_queryRule958);
+				DebugLocation(219, 4);
+				PushFollow(Follow._takeClause_in_queryRule984);
 				takeClause44=takeClause();
 				PopFollow();
 
@@ -1822,7 +1850,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(14); }
+			} finally { DebugExitSubRule(15); }
 
 
 			}
@@ -1832,6 +1860,9 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
 			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
 
+
+					--queryDepth;
+				
 		}
 		catch (RecognitionException re)
 		{
@@ -1846,7 +1877,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("queryRule", 14);
 			LeaveRule_queryRule();
 		}
-		DebugLocation(209, 2);
+		DebugLocation(220, 2);
 		} finally { DebugExitRule(GrammarFileName, "queryRule"); }
 		return retval;
 
@@ -1856,7 +1887,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_selectFrom();
 	partial void LeaveRule_selectFrom();
 	// $ANTLR start "selectFrom"
-	// Hql.g:211:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
+	// Hql.g:222:1: selectFrom : (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) ;
 	[GrammarRule("selectFrom")]
 	private AstParserRuleReturnScope<IASTNode, IToken> selectFrom()
 	{
@@ -1874,33 +1905,33 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_selectClause=new RewriteRuleSubtreeStream(adaptor,"rule selectClause");
 		RewriteRuleSubtreeStream stream_fromClause=new RewriteRuleSubtreeStream(adaptor,"rule fromClause");
 		try { DebugEnterRule(GrammarFileName, "selectFrom");
-		DebugLocation(211, 1);
+		DebugLocation(222, 1);
 		try
 		{
-			// Hql.g:212:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
+			// Hql.g:223:2: ( (s= selectClause )? (f= fromClause )? -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? ) -> ^( SELECT_FROM ( fromClause )? ( selectClause )? ) )
 			DebugEnterAlt(1);
-			// Hql.g:212:5: (s= selectClause )? (f= fromClause )?
+			// Hql.g:223:5: (s= selectClause )? (f= fromClause )?
 			{
-			DebugLocation(212, 5);
-			// Hql.g:212:5: (s= selectClause )?
-			int alt15=2;
-			try { DebugEnterSubRule(15);
-			try { DebugEnterDecision(15, false);
-			int LA15_1 = input.LA(1);
+			DebugLocation(223, 5);
+			// Hql.g:223:5: (s= selectClause )?
+			int alt16=2;
+			try { DebugEnterSubRule(16);
+			try { DebugEnterDecision(16, false);
+			int LA16_1 = input.LA(1);
 
-			if ((LA15_1==SELECT))
+			if ((LA16_1==SELECT))
 			{
-				alt15 = 1;
+				alt16 = 1;
 			}
-			} finally { DebugExitDecision(15); }
-			switch (alt15)
+			} finally { DebugExitDecision(16); }
+			switch (alt16)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:212:6: s= selectClause
+				// Hql.g:223:6: s= selectClause
 				{
-				DebugLocation(212, 7);
-				PushFollow(Follow._selectClause_in_selectFrom976);
+				DebugLocation(223, 7);
+				PushFollow(Follow._selectClause_in_selectFrom1002);
 				s=selectClause();
 				PopFollow();
 
@@ -1910,28 +1941,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(15); }
+			} finally { DebugExitSubRule(16); }
 
-			DebugLocation(212, 23);
-			// Hql.g:212:23: (f= fromClause )?
-			int alt16=2;
-			try { DebugEnterSubRule(16);
-			try { DebugEnterDecision(16, false);
-			int LA16_1 = input.LA(1);
+			DebugLocation(223, 23);
+			// Hql.g:223:23: (f= fromClause )?
+			int alt17=2;
+			try { DebugEnterSubRule(17);
+			try { DebugEnterDecision(17, false);
+			int LA17_1 = input.LA(1);
 
-			if ((LA16_1==FROM))
+			if ((LA17_1==FROM))
 			{
-				alt16 = 1;
+				alt17 = 1;
 			}
-			} finally { DebugExitDecision(16); }
-			switch (alt16)
+			} finally { DebugExitDecision(17); }
+			switch (alt17)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:212:24: f= fromClause
+				// Hql.g:223:24: f= fromClause
 				{
-				DebugLocation(212, 25);
-				PushFollow(Follow._fromClause_in_selectFrom983);
+				DebugLocation(223, 25);
+				PushFollow(Follow._fromClause_in_selectFrom1009);
 				f=fromClause();
 				PopFollow();
 
@@ -1941,11 +1972,11 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(16); }
+			} finally { DebugExitSubRule(17); }
 
-			DebugLocation(213, 3);
+			DebugLocation(224, 3);
 
-						if ((f!=null?((IASTNode)f.Tree):default(IASTNode)) == null && !filter) 
+						if ((f!=null?((IASTNode)f.Tree):default(IASTNode)) == null && !(filter && queryDepth == 1)) 
 							throw new RecognitionException("FROM expected (non-filter queries must contain a FROM clause)");
 					
 
@@ -1962,23 +1993,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 217:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+			// 228:3: -> {$f.tree == null && filter}? ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
 			if ((f!=null?((IASTNode)f.Tree):default(IASTNode)) == null && filter)
 			{
-				DebugLocation(217, 35);
-				// Hql.g:217:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
+				DebugLocation(228, 35);
+				// Hql.g:228:35: ^( SELECT_FROM FROM[\"{filter-implied FROM}\"] ( selectClause )? )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(217, 37);
+				DebugLocation(228, 37);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
-				DebugLocation(217, 49);
+				DebugLocation(228, 49);
 				adaptor.AddChild(root_1, (IASTNode)adaptor.Create(FROM, "{filter-implied FROM}"));
-				DebugLocation(217, 79);
-				// Hql.g:217:79: ( selectClause )?
+				DebugLocation(228, 79);
+				// Hql.g:228:79: ( selectClause )?
 				if (stream_selectClause.HasNext)
 				{
-					DebugLocation(217, 79);
+					DebugLocation(228, 79);
 					adaptor.AddChild(root_1, stream_selectClause.NextTree());
 
 				}
@@ -1988,29 +2019,29 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				}
 
 			}
-			else // 218:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+			else // 229:3: -> ^( SELECT_FROM ( fromClause )? ( selectClause )? )
 			{
-				DebugLocation(218, 6);
-				// Hql.g:218:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
+				DebugLocation(229, 6);
+				// Hql.g:229:6: ^( SELECT_FROM ( fromClause )? ( selectClause )? )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(218, 8);
+				DebugLocation(229, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(SELECT_FROM, "SELECT_FROM"), root_1);
 
-				DebugLocation(218, 20);
-				// Hql.g:218:20: ( fromClause )?
+				DebugLocation(229, 20);
+				// Hql.g:229:20: ( fromClause )?
 				if (stream_fromClause.HasNext)
 				{
-					DebugLocation(218, 20);
+					DebugLocation(229, 20);
 					adaptor.AddChild(root_1, stream_fromClause.NextTree());
 
 				}
 				stream_fromClause.Reset();
-				DebugLocation(218, 32);
-				// Hql.g:218:32: ( selectClause )?
+				DebugLocation(229, 32);
+				// Hql.g:229:32: ( selectClause )?
 				if (stream_selectClause.HasNext)
 				{
-					DebugLocation(218, 32);
+					DebugLocation(229, 32);
 					adaptor.AddChild(root_1, stream_selectClause.NextTree());
 
 				}
@@ -2045,7 +2076,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("selectFrom", 15);
 			LeaveRule_selectFrom();
 		}
-		DebugLocation(219, 1);
+		DebugLocation(230, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectFrom"); }
 		return retval;
 
@@ -2055,7 +2086,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_selectClause();
 	partial void LeaveRule_selectClause();
 	// $ANTLR start "selectClause"
-	// Hql.g:222:1: selectClause : SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
+	// Hql.g:233:1: selectClause : SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) ;
 	[GrammarRule("selectClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> selectClause()
 	{
@@ -2076,41 +2107,41 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode SELECT45_tree = default(IASTNode);
 		IASTNode DISTINCT46_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectClause");
-		DebugLocation(222, 1);
+		DebugLocation(233, 1);
 		try
 		{
-			// Hql.g:223:2: ( SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
+			// Hql.g:234:2: ( SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject ) )
 			DebugEnterAlt(1);
-			// Hql.g:223:4: SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
+			// Hql.g:234:4: SELECT ^ ( DISTINCT )? ( selectedPropertiesList | newExpression | selectObject )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(223, 10);
-			SELECT45=(IToken)Match(input,SELECT,Follow._SELECT_in_selectClause1032); 
+			DebugLocation(234, 10);
+			SELECT45=(IToken)Match(input,SELECT,Follow._SELECT_in_selectClause1058); 
 			SELECT45_tree = (IASTNode)adaptor.Create(SELECT45);
 			root_0 = (IASTNode)adaptor.BecomeRoot(SELECT45_tree, root_0);
-			DebugLocation(224, 3);
+			DebugLocation(235, 3);
 			 WeakKeywords(); 
-			DebugLocation(225, 3);
-			// Hql.g:225:3: ( DISTINCT )?
-			int alt17=2;
-			try { DebugEnterSubRule(17);
-			try { DebugEnterDecision(17, false);
-			int LA17_1 = input.LA(1);
+			DebugLocation(236, 3);
+			// Hql.g:236:3: ( DISTINCT )?
+			int alt18=2;
+			try { DebugEnterSubRule(18);
+			try { DebugEnterDecision(18, false);
+			int LA18_1 = input.LA(1);
 
-			if ((LA17_1==DISTINCT))
+			if ((LA18_1==DISTINCT))
 			{
-				alt17 = 1;
+				alt18 = 1;
 			}
-			} finally { DebugExitDecision(17); }
-			switch (alt17)
+			} finally { DebugExitDecision(18); }
+			switch (alt18)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:225:4: DISTINCT
+				// Hql.g:236:4: DISTINCT
 				{
-				DebugLocation(225, 4);
-				DISTINCT46=(IToken)Match(input,DISTINCT,Follow._DISTINCT_in_selectClause1044); 
+				DebugLocation(236, 4);
+				DISTINCT46=(IToken)Match(input,DISTINCT,Follow._DISTINCT_in_selectClause1070); 
 				DISTINCT46_tree = (IASTNode)adaptor.Create(DISTINCT46);
 				adaptor.AddChild(root_0, DISTINCT46_tree);
 
@@ -2118,13 +2149,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(17); }
+			} finally { DebugExitSubRule(18); }
 
-			DebugLocation(225, 15);
-			// Hql.g:225:15: ( selectedPropertiesList | newExpression | selectObject )
-			int alt18=3;
-			try { DebugEnterSubRule(18);
-			try { DebugEnterDecision(18, false);
+			DebugLocation(236, 15);
+			// Hql.g:236:15: ( selectedPropertiesList | newExpression | selectObject )
+			int alt19=3;
+			try { DebugEnterSubRule(19);
+			try { DebugEnterDecision(19, false);
 			switch (input.LA(1))
 			{
 			case ALL:
@@ -2158,36 +2189,36 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case SUM:
 			case TRUE:
 				{
-				alt18 = 1;
+				alt19 = 1;
 				}
 				break;
 			case NEW:
 				{
-				alt18 = 2;
+				alt19 = 2;
 				}
 				break;
 			case OBJECT:
 				{
-				alt18 = 3;
+				alt19 = 3;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 18, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 19, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(18); }
-			switch (alt18)
+			} finally { DebugExitDecision(19); }
+			switch (alt19)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:225:17: selectedPropertiesList
+				// Hql.g:236:17: selectedPropertiesList
 				{
-				DebugLocation(225, 17);
-				PushFollow(Follow._selectedPropertiesList_in_selectClause1050);
+				DebugLocation(236, 17);
+				PushFollow(Follow._selectedPropertiesList_in_selectClause1076);
 				selectedPropertiesList47=selectedPropertiesList();
 				PopFollow();
 
@@ -2197,10 +2228,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:225:42: newExpression
+				// Hql.g:236:42: newExpression
 				{
-				DebugLocation(225, 42);
-				PushFollow(Follow._newExpression_in_selectClause1054);
+				DebugLocation(236, 42);
+				PushFollow(Follow._newExpression_in_selectClause1080);
 				newExpression48=newExpression();
 				PopFollow();
 
@@ -2210,10 +2241,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:225:58: selectObject
+				// Hql.g:236:58: selectObject
 				{
-				DebugLocation(225, 58);
-				PushFollow(Follow._selectObject_in_selectClause1058);
+				DebugLocation(236, 58);
+				PushFollow(Follow._selectObject_in_selectClause1084);
 				selectObject49=selectObject();
 				PopFollow();
 
@@ -2223,7 +2254,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(18); }
+			} finally { DebugExitSubRule(19); }
 
 
 			}
@@ -2247,7 +2278,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("selectClause", 16);
 			LeaveRule_selectClause();
 		}
-		DebugLocation(226, 1);
+		DebugLocation(237, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectClause"); }
 		return retval;
 
@@ -2257,7 +2288,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_newExpression();
 	partial void LeaveRule_newExpression();
 	// $ANTLR start "newExpression"
-	// Hql.g:228:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
+	// Hql.g:239:1: newExpression : ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) ;
 	[GrammarRule("newExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> newExpression()
 	{
@@ -2284,24 +2315,24 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		RewriteRuleSubtreeStream stream_selectedPropertiesList=new RewriteRuleSubtreeStream(adaptor,"rule selectedPropertiesList");
 		try { DebugEnterRule(GrammarFileName, "newExpression");
-		DebugLocation(228, 1);
+		DebugLocation(239, 1);
 		try
 		{
-			// Hql.g:229:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
+			// Hql.g:240:2: ( ( NEW path ) op= OPEN selectedPropertiesList CLOSE -> ^( CONSTRUCTOR[$op] path selectedPropertiesList ) )
 			DebugEnterAlt(1);
-			// Hql.g:229:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
+			// Hql.g:240:4: ( NEW path ) op= OPEN selectedPropertiesList CLOSE
 			{
-			DebugLocation(229, 4);
-			// Hql.g:229:4: ( NEW path )
+			DebugLocation(240, 4);
+			// Hql.g:240:4: ( NEW path )
 			DebugEnterAlt(1);
-			// Hql.g:229:5: NEW path
+			// Hql.g:240:5: NEW path
 			{
-			DebugLocation(229, 5);
-			NEW50=(IToken)Match(input,NEW,Follow._NEW_in_newExpression1072);  
+			DebugLocation(240, 5);
+			NEW50=(IToken)Match(input,NEW,Follow._NEW_in_newExpression1098);  
 			stream_NEW.Add(NEW50);
 
-			DebugLocation(229, 9);
-			PushFollow(Follow._path_in_newExpression1074);
+			DebugLocation(240, 9);
+			PushFollow(Follow._path_in_newExpression1100);
 			path51=path();
 			PopFollow();
 
@@ -2309,18 +2340,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 			}
 
-			DebugLocation(229, 17);
-			op=(IToken)Match(input,OPEN,Follow._OPEN_in_newExpression1079);  
+			DebugLocation(240, 17);
+			op=(IToken)Match(input,OPEN,Follow._OPEN_in_newExpression1105);  
 			stream_OPEN.Add(op);
 
-			DebugLocation(229, 23);
-			PushFollow(Follow._selectedPropertiesList_in_newExpression1081);
+			DebugLocation(240, 23);
+			PushFollow(Follow._selectedPropertiesList_in_newExpression1107);
 			selectedPropertiesList52=selectedPropertiesList();
 			PopFollow();
 
 			stream_selectedPropertiesList.Add(selectedPropertiesList52.Tree);
-			DebugLocation(229, 46);
-			CLOSE53=(IToken)Match(input,CLOSE,Follow._CLOSE_in_newExpression1083);  
+			DebugLocation(240, 46);
+			CLOSE53=(IToken)Match(input,CLOSE,Follow._CLOSE_in_newExpression1109);  
 			stream_CLOSE.Add(CLOSE53);
 
 
@@ -2337,18 +2368,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 230:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+			// 241:3: -> ^( CONSTRUCTOR[$op] path selectedPropertiesList )
 			{
-				DebugLocation(230, 6);
-				// Hql.g:230:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
+				DebugLocation(241, 6);
+				// Hql.g:241:6: ^( CONSTRUCTOR[$op] path selectedPropertiesList )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(230, 8);
+				DebugLocation(241, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CONSTRUCTOR, op), root_1);
 
-				DebugLocation(230, 25);
+				DebugLocation(241, 25);
 				adaptor.AddChild(root_1, stream_path.NextTree());
-				DebugLocation(230, 30);
+				DebugLocation(241, 30);
 				adaptor.AddChild(root_1, stream_selectedPropertiesList.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -2380,7 +2411,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("newExpression", 17);
 			LeaveRule_newExpression();
 		}
-		DebugLocation(231, 1);
+		DebugLocation(242, 1);
 		} finally { DebugExitRule(GrammarFileName, "newExpression"); }
 		return retval;
 
@@ -2390,7 +2421,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_selectObject();
 	partial void LeaveRule_selectObject();
 	// $ANTLR start "selectObject"
-	// Hql.g:233:1: selectObject : OBJECT ^ OPEN ! identifier CLOSE !;
+	// Hql.g:244:1: selectObject : OBJECT ^ OPEN ! identifier CLOSE !;
 	[GrammarRule("selectObject")]
 	private AstParserRuleReturnScope<IASTNode, IToken> selectObject()
 	{
@@ -2411,29 +2442,29 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode OPEN55_tree = default(IASTNode);
 		IASTNode CLOSE57_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectObject");
-		DebugLocation(233, 3);
+		DebugLocation(244, 3);
 		try
 		{
-			// Hql.g:234:4: ( OBJECT ^ OPEN ! identifier CLOSE !)
+			// Hql.g:245:4: ( OBJECT ^ OPEN ! identifier CLOSE !)
 			DebugEnterAlt(1);
-			// Hql.g:234:6: OBJECT ^ OPEN ! identifier CLOSE !
+			// Hql.g:245:6: OBJECT ^ OPEN ! identifier CLOSE !
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(234, 12);
-			OBJECT54=(IToken)Match(input,OBJECT,Follow._OBJECT_in_selectObject1109); 
+			DebugLocation(245, 12);
+			OBJECT54=(IToken)Match(input,OBJECT,Follow._OBJECT_in_selectObject1135); 
 			OBJECT54_tree = (IASTNode)adaptor.Create(OBJECT54);
 			root_0 = (IASTNode)adaptor.BecomeRoot(OBJECT54_tree, root_0);
-			DebugLocation(234, 18);
-			OPEN55=(IToken)Match(input,OPEN,Follow._OPEN_in_selectObject1112); 
-			DebugLocation(234, 20);
-			PushFollow(Follow._identifier_in_selectObject1115);
+			DebugLocation(245, 18);
+			OPEN55=(IToken)Match(input,OPEN,Follow._OPEN_in_selectObject1138); 
+			DebugLocation(245, 20);
+			PushFollow(Follow._identifier_in_selectObject1141);
 			identifier56=identifier();
 			PopFollow();
 
 			adaptor.AddChild(root_0, identifier56.Tree);
-			DebugLocation(234, 36);
-			CLOSE57=(IToken)Match(input,CLOSE,Follow._CLOSE_in_selectObject1117); 
+			DebugLocation(245, 36);
+			CLOSE57=(IToken)Match(input,CLOSE,Follow._CLOSE_in_selectObject1143); 
 
 			}
 
@@ -2456,7 +2487,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("selectObject", 18);
 			LeaveRule_selectObject();
 		}
-		DebugLocation(235, 3);
+		DebugLocation(246, 3);
 		} finally { DebugExitRule(GrammarFileName, "selectObject"); }
 		return retval;
 
@@ -2466,7 +2497,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_fromClause();
 	partial void LeaveRule_fromClause();
 	// $ANTLR start "fromClause"
-	// Hql.g:241:1: fromClause : FROM ^ fromRange ( fromJoin | COMMA ! fromRange )* ;
+	// Hql.g:252:1: fromClause : FROM ^ fromRange ( fromJoin | COMMA ! fromRange )* ;
 	[GrammarRule("fromClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> fromClause()
 	{
@@ -2487,55 +2518,55 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode FROM58_tree = default(IASTNode);
 		IASTNode COMMA61_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "fromClause");
-		DebugLocation(241, 1);
+		DebugLocation(252, 1);
 		try
 		{
-			// Hql.g:242:2: ( FROM ^ fromRange ( fromJoin | COMMA ! fromRange )* )
+			// Hql.g:253:2: ( FROM ^ fromRange ( fromJoin | COMMA ! fromRange )* )
 			DebugEnterAlt(1);
-			// Hql.g:242:4: FROM ^ fromRange ( fromJoin | COMMA ! fromRange )*
+			// Hql.g:253:4: FROM ^ fromRange ( fromJoin | COMMA ! fromRange )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(242, 8);
-			FROM58=(IToken)Match(input,FROM,Follow._FROM_in_fromClause1135); 
+			DebugLocation(253, 8);
+			FROM58=(IToken)Match(input,FROM,Follow._FROM_in_fromClause1161); 
 			FROM58_tree = (IASTNode)adaptor.Create(FROM58);
 			root_0 = (IASTNode)adaptor.BecomeRoot(FROM58_tree, root_0);
-			DebugLocation(242, 10);
+			DebugLocation(253, 10);
 			 WeakKeywords(); 
-			DebugLocation(242, 30);
-			PushFollow(Follow._fromRange_in_fromClause1140);
+			DebugLocation(253, 30);
+			PushFollow(Follow._fromRange_in_fromClause1166);
 			fromRange59=fromRange();
 			PopFollow();
 
 			adaptor.AddChild(root_0, fromRange59.Tree);
-			DebugLocation(242, 40);
-			// Hql.g:242:40: ( fromJoin | COMMA ! fromRange )*
-			try { DebugEnterSubRule(19);
+			DebugLocation(253, 40);
+			// Hql.g:253:40: ( fromJoin | COMMA ! fromRange )*
+			try { DebugEnterSubRule(20);
 			while (true)
 			{
-				int alt19=3;
-				try { DebugEnterDecision(19, false);
-				int LA19_1 = input.LA(1);
+				int alt20=3;
+				try { DebugEnterDecision(20, false);
+				int LA20_1 = input.LA(1);
 
-				if ((LA19_1==FULL||LA19_1==INNER||LA19_1==JOIN||LA19_1==LEFT||LA19_1==RIGHT))
+				if ((LA20_1==FULL||LA20_1==INNER||LA20_1==JOIN||LA20_1==LEFT||LA20_1==RIGHT))
 				{
-					alt19 = 1;
+					alt20 = 1;
 				}
-				else if ((LA19_1==COMMA))
+				else if ((LA20_1==COMMA))
 				{
-					alt19 = 2;
+					alt20 = 2;
 				}
 
 
-				} finally { DebugExitDecision(19); }
-				switch ( alt19 )
+				} finally { DebugExitDecision(20); }
+				switch ( alt20 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:242:42: fromJoin
+					// Hql.g:253:42: fromJoin
 					{
-					DebugLocation(242, 42);
-					PushFollow(Follow._fromJoin_in_fromClause1144);
+					DebugLocation(253, 42);
+					PushFollow(Follow._fromJoin_in_fromClause1170);
 					fromJoin60=fromJoin();
 					PopFollow();
 
@@ -2545,14 +2576,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:242:53: COMMA ! fromRange
+					// Hql.g:253:53: COMMA ! fromRange
 					{
-					DebugLocation(242, 58);
-					COMMA61=(IToken)Match(input,COMMA,Follow._COMMA_in_fromClause1148); 
-					DebugLocation(242, 60);
+					DebugLocation(253, 58);
+					COMMA61=(IToken)Match(input,COMMA,Follow._COMMA_in_fromClause1174); 
+					DebugLocation(253, 60);
 					 WeakKeywords(); 
-					DebugLocation(242, 80);
-					PushFollow(Follow._fromRange_in_fromClause1153);
+					DebugLocation(253, 80);
+					PushFollow(Follow._fromRange_in_fromClause1179);
 					fromRange62=fromRange();
 					PopFollow();
 
@@ -2562,14 +2593,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop19;
+					goto loop20;
 				}
 			}
 
-			loop19:
+			loop20:
 				;
 
-			} finally { DebugExitSubRule(19); }
+			} finally { DebugExitSubRule(20); }
 
 
 			}
@@ -2593,7 +2624,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("fromClause", 19);
 			LeaveRule_fromClause();
 		}
-		DebugLocation(243, 1);
+		DebugLocation(254, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClause"); }
 		return retval;
 
@@ -2603,7 +2634,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_fromJoin();
 	partial void LeaveRule_fromJoin();
 	// $ANTLR start "fromJoin"
-	// Hql.g:245:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? );
+	// Hql.g:256:1: fromJoin : ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? );
 	[GrammarRule("fromJoin")]
 	private AstParserRuleReturnScope<IASTNode, IToken> fromJoin()
 	{
@@ -2655,42 +2686,42 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode OPEN80_tree = default(IASTNode);
 		IASTNode CLOSE82_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "fromJoin");
-		DebugLocation(245, 1);
+		DebugLocation(256, 1);
 		try
 		{
-			// Hql.g:246:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? )
-			int alt32=2;
-			try { DebugEnterDecision(32, false);
+			// Hql.g:257:2: ( ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )? | ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )? )
+			int alt33=2;
+			try { DebugEnterDecision(33, false);
 			switch (input.LA(1))
 			{
 			case LEFT:
 			case RIGHT:
 				{
-				int LA32_2 = input.LA(2);
+				int LA33_2 = input.LA(2);
 
-				if ((LA32_2==OUTER))
+				if ((LA33_2==OUTER))
 				{
-					int LA32_3 = input.LA(3);
+					int LA33_3 = input.LA(3);
 
-					if ((LA32_3==JOIN))
+					if ((LA33_3==JOIN))
 					{
 						switch (input.LA(4))
 						{
 						case FETCH:
 							{
-							int LA32_5 = input.LA(5);
+							int LA33_5 = input.LA(5);
 
-							if ((LA32_5==IDENT))
+							if ((LA33_5==IDENT))
 							{
-								alt32 = 1;
+								alt33 = 1;
 							}
-							else if ((LA32_5==ELEMENTS))
+							else if ((LA33_5==ELEMENTS))
 							{
-								alt32 = 2;
+								alt33 = 2;
 							}
 							else
 							{
-								NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 5);
+								NoViableAltException nvae = new NoViableAltException("", 33, 6, input, 5);
 								DebugRecognitionException(nvae);
 								throw nvae;
 							}
@@ -2698,17 +2729,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 						case IDENT:
 							{
-							alt32 = 1;
+							alt33 = 1;
 							}
 							break;
 						case ELEMENTS:
 							{
-							alt32 = 2;
+							alt33 = 2;
 							}
 							break;
 						default:
 							{
-								NoViableAltException nvae = new NoViableAltException("", 32, 4, input, 4);
+								NoViableAltException nvae = new NoViableAltException("", 33, 4, input, 4);
 								DebugRecognitionException(nvae);
 								throw nvae;
 							}
@@ -2717,30 +2748,30 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 32, 5, input, 3);
+						NoViableAltException nvae = new NoViableAltException("", 33, 5, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
 				}
-				else if ((LA32_2==JOIN))
+				else if ((LA33_2==JOIN))
 				{
 					switch (input.LA(3))
 					{
 					case FETCH:
 						{
-						int LA32_4 = input.LA(4);
+						int LA33_4 = input.LA(4);
 
-						if ((LA32_4==IDENT))
+						if ((LA33_4==IDENT))
 						{
-							alt32 = 1;
+							alt33 = 1;
 						}
-						else if ((LA32_4==ELEMENTS))
+						else if ((LA33_4==ELEMENTS))
 						{
-							alt32 = 2;
+							alt33 = 2;
 						}
 						else
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
+							NoViableAltException nvae = new NoViableAltException("", 33, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2748,17 +2779,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case IDENT:
 						{
-						alt32 = 1;
+						alt33 = 1;
 						}
 						break;
 					case ELEMENTS:
 						{
-						alt32 = 2;
+						alt33 = 2;
 						}
 						break;
 					default:
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 4, input, 3);
+							NoViableAltException nvae = new NoViableAltException("", 33, 4, input, 3);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2767,7 +2798,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 32, 1, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 33, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -2775,27 +2806,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case FULL:
 				{
-				int LA32_2 = input.LA(2);
+				int LA33_2 = input.LA(2);
 
-				if ((LA32_2==JOIN))
+				if ((LA33_2==JOIN))
 				{
 					switch (input.LA(3))
 					{
 					case FETCH:
 						{
-						int LA32_4 = input.LA(4);
+						int LA33_4 = input.LA(4);
 
-						if ((LA32_4==IDENT))
+						if ((LA33_4==IDENT))
 						{
-							alt32 = 1;
+							alt33 = 1;
 						}
-						else if ((LA32_4==ELEMENTS))
+						else if ((LA33_4==ELEMENTS))
 						{
-							alt32 = 2;
+							alt33 = 2;
 						}
 						else
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
+							NoViableAltException nvae = new NoViableAltException("", 33, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2803,17 +2834,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case IDENT:
 						{
-						alt32 = 1;
+						alt33 = 1;
 						}
 						break;
 					case ELEMENTS:
 						{
-						alt32 = 2;
+						alt33 = 2;
 						}
 						break;
 					default:
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 4, input, 3);
+							NoViableAltException nvae = new NoViableAltException("", 33, 4, input, 3);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2822,7 +2853,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 32, 2, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 33, 2, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -2830,27 +2861,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case INNER:
 				{
-				int LA32_2 = input.LA(2);
+				int LA33_2 = input.LA(2);
 
-				if ((LA32_2==JOIN))
+				if ((LA33_2==JOIN))
 				{
 					switch (input.LA(3))
 					{
 					case FETCH:
 						{
-						int LA32_4 = input.LA(4);
+						int LA33_4 = input.LA(4);
 
-						if ((LA32_4==IDENT))
+						if ((LA33_4==IDENT))
 						{
-							alt32 = 1;
+							alt33 = 1;
 						}
-						else if ((LA32_4==ELEMENTS))
+						else if ((LA33_4==ELEMENTS))
 						{
-							alt32 = 2;
+							alt33 = 2;
 						}
 						else
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 4);
+							NoViableAltException nvae = new NoViableAltException("", 33, 6, input, 4);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2858,17 +2889,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case IDENT:
 						{
-						alt32 = 1;
+						alt33 = 1;
 						}
 						break;
 					case ELEMENTS:
 						{
-						alt32 = 2;
+						alt33 = 2;
 						}
 						break;
 					default:
 						{
-							NoViableAltException nvae = new NoViableAltException("", 32, 4, input, 3);
+							NoViableAltException nvae = new NoViableAltException("", 33, 4, input, 3);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
@@ -2877,7 +2908,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 32, 3, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 33, 3, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -2889,19 +2920,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case FETCH:
 					{
-					int LA32_3 = input.LA(3);
+					int LA33_3 = input.LA(3);
 
-					if ((LA32_3==IDENT))
+					if ((LA33_3==IDENT))
 					{
-						alt32 = 1;
+						alt33 = 1;
 					}
-					else if ((LA32_3==ELEMENTS))
+					else if ((LA33_3==ELEMENTS))
 					{
-						alt32 = 2;
+						alt33 = 2;
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 32, 6, input, 3);
+						NoViableAltException nvae = new NoViableAltException("", 33, 6, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
@@ -2909,17 +2940,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case IDENT:
 					{
-					alt32 = 1;
+					alt33 = 1;
 					}
 					break;
 				case ELEMENTS:
 					{
-					alt32 = 2;
+					alt33 = 2;
 					}
 					break;
 				default:
 					{
-						NoViableAltException nvae = new NoViableAltException("", 32, 4, input, 2);
+						NoViableAltException nvae = new NoViableAltException("", 33, 4, input, 2);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
@@ -2929,59 +2960,59 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 32, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 33, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(32); }
-			switch (alt32)
+			} finally { DebugExitDecision(33); }
+			switch (alt33)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:246:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
+				// Hql.g:257:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? path ( asAlias )? ( propertyFetch )? ( withClause )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(246, 4);
-				// Hql.g:246:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
-				int alt21=4;
-				try { DebugEnterSubRule(21);
-				try { DebugEnterDecision(21, false);
+				DebugLocation(257, 4);
+				// Hql.g:257:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+				int alt22=4;
+				try { DebugEnterSubRule(22);
+				try { DebugEnterDecision(22, false);
 				switch (input.LA(1))
 				{
 				case LEFT:
 				case RIGHT:
 					{
-					alt21 = 1;
+					alt22 = 1;
 					}
 					break;
 				case FULL:
 					{
-					alt21 = 2;
+					alt22 = 2;
 					}
 					break;
 				case INNER:
 					{
-					alt21 = 3;
+					alt22 = 3;
 					}
 					break;
 				}
 
-				} finally { DebugExitDecision(21); }
-				switch (alt21)
+				} finally { DebugExitDecision(22); }
+				switch (alt22)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:246:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+					// Hql.g:257:6: ( ( LEFT | RIGHT ) ( OUTER )? )
 					{
-					DebugLocation(246, 6);
-					// Hql.g:246:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+					DebugLocation(257, 6);
+					// Hql.g:257:6: ( ( LEFT | RIGHT ) ( OUTER )? )
 					DebugEnterAlt(1);
-					// Hql.g:246:8: ( LEFT | RIGHT ) ( OUTER )?
+					// Hql.g:257:8: ( LEFT | RIGHT ) ( OUTER )?
 					{
-					DebugLocation(246, 8);
+					DebugLocation(257, 8);
 
 					set63=(IToken)input.LT(1);
 					if (input.LA(1)==LEFT||input.LA(1)==RIGHT)
@@ -2997,26 +3028,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						throw mse;
 					}
 
-					DebugLocation(246, 25);
-					// Hql.g:246:25: ( OUTER )?
-					int alt20=2;
-					try { DebugEnterSubRule(20);
-					try { DebugEnterDecision(20, false);
-					int LA20_1 = input.LA(1);
+					DebugLocation(257, 25);
+					// Hql.g:257:25: ( OUTER )?
+					int alt21=2;
+					try { DebugEnterSubRule(21);
+					try { DebugEnterDecision(21, false);
+					int LA21_1 = input.LA(1);
 
-					if ((LA20_1==OUTER))
+					if ((LA21_1==OUTER))
 					{
-						alt20 = 1;
+						alt21 = 1;
 					}
-					} finally { DebugExitDecision(20); }
-					switch (alt20)
+					} finally { DebugExitDecision(21); }
+					switch (alt21)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:246:26: OUTER
+						// Hql.g:257:26: OUTER
 						{
-						DebugLocation(246, 26);
-						OUTER64=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1182); 
+						DebugLocation(257, 26);
+						OUTER64=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1208); 
 						OUTER64_tree = (IASTNode)adaptor.Create(OUTER64);
 						adaptor.AddChild(root_0, OUTER64_tree);
 
@@ -3024,7 +3055,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					}
-					} finally { DebugExitSubRule(20); }
+					} finally { DebugExitSubRule(21); }
 
 
 					}
@@ -3034,10 +3065,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:246:38: FULL
+					// Hql.g:257:38: FULL
 					{
-					DebugLocation(246, 38);
-					FULL65=(IToken)Match(input,FULL,Follow._FULL_in_fromJoin1190); 
+					DebugLocation(257, 38);
+					FULL65=(IToken)Match(input,FULL,Follow._FULL_in_fromJoin1216); 
 					FULL65_tree = (IASTNode)adaptor.Create(FULL65);
 					adaptor.AddChild(root_0, FULL65_tree);
 
@@ -3045,10 +3076,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 3:
 					DebugEnterAlt(3);
-					// Hql.g:246:45: INNER
+					// Hql.g:257:45: INNER
 					{
-					DebugLocation(246, 45);
-					INNER66=(IToken)Match(input,INNER,Follow._INNER_in_fromJoin1194); 
+					DebugLocation(257, 45);
+					INNER66=(IToken)Match(input,INNER,Follow._INNER_in_fromJoin1220); 
 					INNER66_tree = (IASTNode)adaptor.Create(INNER66);
 					adaptor.AddChild(root_0, INNER66_tree);
 
@@ -3056,55 +3087,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(21); }
-
-				DebugLocation(246, 58);
-				JOIN67=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1199); 
-				JOIN67_tree = (IASTNode)adaptor.Create(JOIN67);
-				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN67_tree, root_0);
-				DebugLocation(246, 60);
-				// Hql.g:246:60: ( FETCH )?
-				int alt22=2;
-				try { DebugEnterSubRule(22);
-				try { DebugEnterDecision(22, false);
-				int LA22_1 = input.LA(1);
-
-				if ((LA22_1==FETCH))
-				{
-					alt22 = 1;
-				}
-				} finally { DebugExitDecision(22); }
-				switch (alt22)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:246:61: FETCH
-					{
-					DebugLocation(246, 61);
-					FETCH68=(IToken)Match(input,FETCH,Follow._FETCH_in_fromJoin1203); 
-					FETCH68_tree = (IASTNode)adaptor.Create(FETCH68);
-					adaptor.AddChild(root_0, FETCH68_tree);
-
-					}
-					break;
-
-				}
 				} finally { DebugExitSubRule(22); }
 
-				DebugLocation(246, 69);
-				PushFollow(Follow._path_in_fromJoin1207);
-				path69=path();
-				PopFollow();
-
-				adaptor.AddChild(root_0, path69.Tree);
-				DebugLocation(246, 74);
-				// Hql.g:246:74: ( asAlias )?
+				DebugLocation(257, 58);
+				JOIN67=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1225); 
+				JOIN67_tree = (IASTNode)adaptor.Create(JOIN67);
+				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN67_tree, root_0);
+				DebugLocation(257, 60);
+				// Hql.g:257:60: ( FETCH )?
 				int alt23=2;
 				try { DebugEnterSubRule(23);
 				try { DebugEnterDecision(23, false);
 				int LA23_1 = input.LA(1);
 
-				if ((LA23_1==AS||LA23_1==IDENT))
+				if ((LA23_1==FETCH))
 				{
 					alt23 = 1;
 				}
@@ -3113,10 +3109,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:246:75: asAlias
+					// Hql.g:257:61: FETCH
 					{
-					DebugLocation(246, 75);
-					PushFollow(Follow._asAlias_in_fromJoin1210);
+					DebugLocation(257, 61);
+					FETCH68=(IToken)Match(input,FETCH,Follow._FETCH_in_fromJoin1229); 
+					FETCH68_tree = (IASTNode)adaptor.Create(FETCH68);
+					adaptor.AddChild(root_0, FETCH68_tree);
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(23); }
+
+				DebugLocation(257, 69);
+				PushFollow(Follow._path_in_fromJoin1233);
+				path69=path();
+				PopFollow();
+
+				adaptor.AddChild(root_0, path69.Tree);
+				DebugLocation(257, 74);
+				// Hql.g:257:74: ( asAlias )?
+				int alt24=2;
+				try { DebugEnterSubRule(24);
+				try { DebugEnterDecision(24, false);
+				int LA24_1 = input.LA(1);
+
+				if ((LA24_1==AS||LA24_1==IDENT))
+				{
+					alt24 = 1;
+				}
+				} finally { DebugExitDecision(24); }
+				switch (alt24)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:257:75: asAlias
+					{
+					DebugLocation(257, 75);
+					PushFollow(Follow._asAlias_in_fromJoin1236);
 					asAlias70=asAlias();
 					PopFollow();
 
@@ -3126,28 +3157,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(23); }
+				} finally { DebugExitSubRule(24); }
 
-				DebugLocation(246, 85);
-				// Hql.g:246:85: ( propertyFetch )?
-				int alt24=2;
-				try { DebugEnterSubRule(24);
-				try { DebugEnterDecision(24, false);
-				int LA24_1 = input.LA(1);
+				DebugLocation(257, 85);
+				// Hql.g:257:85: ( propertyFetch )?
+				int alt25=2;
+				try { DebugEnterSubRule(25);
+				try { DebugEnterDecision(25, false);
+				int LA25_1 = input.LA(1);
 
-				if ((LA24_1==FETCH))
+				if ((LA25_1==FETCH))
 				{
-					alt24 = 1;
+					alt25 = 1;
 				}
-				} finally { DebugExitDecision(24); }
-				switch (alt24)
+				} finally { DebugExitDecision(25); }
+				switch (alt25)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:246:86: propertyFetch
+					// Hql.g:257:86: propertyFetch
 					{
-					DebugLocation(246, 86);
-					PushFollow(Follow._propertyFetch_in_fromJoin1215);
+					DebugLocation(257, 86);
+					PushFollow(Follow._propertyFetch_in_fromJoin1241);
 					propertyFetch71=propertyFetch();
 					PopFollow();
 
@@ -3157,28 +3188,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(24); }
+				} finally { DebugExitSubRule(25); }
 
-				DebugLocation(246, 102);
-				// Hql.g:246:102: ( withClause )?
-				int alt25=2;
-				try { DebugEnterSubRule(25);
-				try { DebugEnterDecision(25, false);
-				int LA25_1 = input.LA(1);
+				DebugLocation(257, 102);
+				// Hql.g:257:102: ( withClause )?
+				int alt26=2;
+				try { DebugEnterSubRule(26);
+				try { DebugEnterDecision(26, false);
+				int LA26_1 = input.LA(1);
 
-				if ((LA25_1==WITH))
+				if ((LA26_1==WITH))
 				{
-					alt25 = 1;
+					alt26 = 1;
 				}
-				} finally { DebugExitDecision(25); }
-				switch (alt25)
+				} finally { DebugExitDecision(26); }
+				switch (alt26)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:246:103: withClause
+					// Hql.g:257:103: withClause
 					{
-					DebugLocation(246, 103);
-					PushFollow(Follow._withClause_in_fromJoin1220);
+					DebugLocation(257, 103);
+					PushFollow(Follow._withClause_in_fromJoin1246);
 					withClause72=withClause();
 					PopFollow();
 
@@ -3188,55 +3219,55 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(25); }
+				} finally { DebugExitSubRule(26); }
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:247:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )?
+				// Hql.g:258:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )? JOIN ^ ( FETCH )? ELEMENTS ! OPEN ! path CLOSE ! ( asAlias )? ( propertyFetch )? ( withClause )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(247, 4);
-				// Hql.g:247:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
-				int alt27=4;
-				try { DebugEnterSubRule(27);
-				try { DebugEnterDecision(27, false);
+				DebugLocation(258, 4);
+				// Hql.g:258:4: ( ( ( LEFT | RIGHT ) ( OUTER )? ) | FULL | INNER )?
+				int alt28=4;
+				try { DebugEnterSubRule(28);
+				try { DebugEnterDecision(28, false);
 				switch (input.LA(1))
 				{
 				case LEFT:
 				case RIGHT:
 					{
-					alt27 = 1;
+					alt28 = 1;
 					}
 					break;
 				case FULL:
 					{
-					alt27 = 2;
+					alt28 = 2;
 					}
 					break;
 				case INNER:
 					{
-					alt27 = 3;
+					alt28 = 3;
 					}
 					break;
 				}
 
-				} finally { DebugExitDecision(27); }
-				switch (alt27)
+				} finally { DebugExitDecision(28); }
+				switch (alt28)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:247:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+					// Hql.g:258:6: ( ( LEFT | RIGHT ) ( OUTER )? )
 					{
-					DebugLocation(247, 6);
-					// Hql.g:247:6: ( ( LEFT | RIGHT ) ( OUTER )? )
+					DebugLocation(258, 6);
+					// Hql.g:258:6: ( ( LEFT | RIGHT ) ( OUTER )? )
 					DebugEnterAlt(1);
-					// Hql.g:247:8: ( LEFT | RIGHT ) ( OUTER )?
+					// Hql.g:258:8: ( LEFT | RIGHT ) ( OUTER )?
 					{
-					DebugLocation(247, 8);
+					DebugLocation(258, 8);
 
 					set73=(IToken)input.LT(1);
 					if (input.LA(1)==LEFT||input.LA(1)==RIGHT)
@@ -3252,26 +3283,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						throw mse;
 					}
 
-					DebugLocation(247, 25);
-					// Hql.g:247:25: ( OUTER )?
-					int alt26=2;
-					try { DebugEnterSubRule(26);
-					try { DebugEnterDecision(26, false);
-					int LA26_1 = input.LA(1);
+					DebugLocation(258, 25);
+					// Hql.g:258:25: ( OUTER )?
+					int alt27=2;
+					try { DebugEnterSubRule(27);
+					try { DebugEnterDecision(27, false);
+					int LA27_1 = input.LA(1);
 
-					if ((LA26_1==OUTER))
+					if ((LA27_1==OUTER))
 					{
-						alt26 = 1;
+						alt27 = 1;
 					}
-					} finally { DebugExitDecision(26); }
-					switch (alt26)
+					} finally { DebugExitDecision(27); }
+					switch (alt27)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:247:26: OUTER
+						// Hql.g:258:26: OUTER
 						{
-						DebugLocation(247, 26);
-						OUTER74=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1242); 
+						DebugLocation(258, 26);
+						OUTER74=(IToken)Match(input,OUTER,Follow._OUTER_in_fromJoin1268); 
 						OUTER74_tree = (IASTNode)adaptor.Create(OUTER74);
 						adaptor.AddChild(root_0, OUTER74_tree);
 
@@ -3279,7 +3310,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					}
-					} finally { DebugExitSubRule(26); }
+					} finally { DebugExitSubRule(27); }
 
 
 					}
@@ -3289,10 +3320,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:247:38: FULL
+					// Hql.g:258:38: FULL
 					{
-					DebugLocation(247, 38);
-					FULL75=(IToken)Match(input,FULL,Follow._FULL_in_fromJoin1250); 
+					DebugLocation(258, 38);
+					FULL75=(IToken)Match(input,FULL,Follow._FULL_in_fromJoin1276); 
 					FULL75_tree = (IASTNode)adaptor.Create(FULL75);
 					adaptor.AddChild(root_0, FULL75_tree);
 
@@ -3300,10 +3331,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 3:
 					DebugEnterAlt(3);
-					// Hql.g:247:45: INNER
+					// Hql.g:258:45: INNER
 					{
-					DebugLocation(247, 45);
-					INNER76=(IToken)Match(input,INNER,Follow._INNER_in_fromJoin1254); 
+					DebugLocation(258, 45);
+					INNER76=(IToken)Match(input,INNER,Follow._INNER_in_fromJoin1280); 
 					INNER76_tree = (IASTNode)adaptor.Create(INNER76);
 					adaptor.AddChild(root_0, INNER76_tree);
 
@@ -3311,61 +3342,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(27); }
-
-				DebugLocation(247, 58);
-				JOIN77=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1259); 
-				JOIN77_tree = (IASTNode)adaptor.Create(JOIN77);
-				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN77_tree, root_0);
-				DebugLocation(247, 60);
-				// Hql.g:247:60: ( FETCH )?
-				int alt28=2;
-				try { DebugEnterSubRule(28);
-				try { DebugEnterDecision(28, false);
-				int LA28_1 = input.LA(1);
-
-				if ((LA28_1==FETCH))
-				{
-					alt28 = 1;
-				}
-				} finally { DebugExitDecision(28); }
-				switch (alt28)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:247:61: FETCH
-					{
-					DebugLocation(247, 61);
-					FETCH78=(IToken)Match(input,FETCH,Follow._FETCH_in_fromJoin1263); 
-					FETCH78_tree = (IASTNode)adaptor.Create(FETCH78);
-					adaptor.AddChild(root_0, FETCH78_tree);
-
-					}
-					break;
-
-				}
 				} finally { DebugExitSubRule(28); }
 
-				DebugLocation(247, 77);
-				ELEMENTS79=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_fromJoin1267); 
-				DebugLocation(247, 83);
-				OPEN80=(IToken)Match(input,OPEN,Follow._OPEN_in_fromJoin1270); 
-				DebugLocation(247, 85);
-				PushFollow(Follow._path_in_fromJoin1273);
-				path81=path();
-				PopFollow();
-
-				adaptor.AddChild(root_0, path81.Tree);
-				DebugLocation(247, 95);
-				CLOSE82=(IToken)Match(input,CLOSE,Follow._CLOSE_in_fromJoin1275); 
-				DebugLocation(247, 97);
-				// Hql.g:247:97: ( asAlias )?
+				DebugLocation(258, 58);
+				JOIN77=(IToken)Match(input,JOIN,Follow._JOIN_in_fromJoin1285); 
+				JOIN77_tree = (IASTNode)adaptor.Create(JOIN77);
+				root_0 = (IASTNode)adaptor.BecomeRoot(JOIN77_tree, root_0);
+				DebugLocation(258, 60);
+				// Hql.g:258:60: ( FETCH )?
 				int alt29=2;
 				try { DebugEnterSubRule(29);
 				try { DebugEnterDecision(29, false);
 				int LA29_1 = input.LA(1);
 
-				if ((LA29_1==AS||LA29_1==IDENT))
+				if ((LA29_1==FETCH))
 				{
 					alt29 = 1;
 				}
@@ -3374,10 +3364,51 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:247:98: asAlias
+					// Hql.g:258:61: FETCH
 					{
-					DebugLocation(247, 98);
-					PushFollow(Follow._asAlias_in_fromJoin1279);
+					DebugLocation(258, 61);
+					FETCH78=(IToken)Match(input,FETCH,Follow._FETCH_in_fromJoin1289); 
+					FETCH78_tree = (IASTNode)adaptor.Create(FETCH78);
+					adaptor.AddChild(root_0, FETCH78_tree);
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(29); }
+
+				DebugLocation(258, 77);
+				ELEMENTS79=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_fromJoin1293); 
+				DebugLocation(258, 83);
+				OPEN80=(IToken)Match(input,OPEN,Follow._OPEN_in_fromJoin1296); 
+				DebugLocation(258, 85);
+				PushFollow(Follow._path_in_fromJoin1299);
+				path81=path();
+				PopFollow();
+
+				adaptor.AddChild(root_0, path81.Tree);
+				DebugLocation(258, 95);
+				CLOSE82=(IToken)Match(input,CLOSE,Follow._CLOSE_in_fromJoin1301); 
+				DebugLocation(258, 97);
+				// Hql.g:258:97: ( asAlias )?
+				int alt30=2;
+				try { DebugEnterSubRule(30);
+				try { DebugEnterDecision(30, false);
+				int LA30_1 = input.LA(1);
+
+				if ((LA30_1==AS||LA30_1==IDENT))
+				{
+					alt30 = 1;
+				}
+				} finally { DebugExitDecision(30); }
+				switch (alt30)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:258:98: asAlias
+					{
+					DebugLocation(258, 98);
+					PushFollow(Follow._asAlias_in_fromJoin1305);
 					asAlias83=asAlias();
 					PopFollow();
 
@@ -3387,28 +3418,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(29); }
+				} finally { DebugExitSubRule(30); }
 
-				DebugLocation(247, 108);
-				// Hql.g:247:108: ( propertyFetch )?
-				int alt30=2;
-				try { DebugEnterSubRule(30);
-				try { DebugEnterDecision(30, false);
-				int LA30_1 = input.LA(1);
+				DebugLocation(258, 108);
+				// Hql.g:258:108: ( propertyFetch )?
+				int alt31=2;
+				try { DebugEnterSubRule(31);
+				try { DebugEnterDecision(31, false);
+				int LA31_1 = input.LA(1);
 
-				if ((LA30_1==FETCH))
+				if ((LA31_1==FETCH))
 				{
-					alt30 = 1;
+					alt31 = 1;
 				}
-				} finally { DebugExitDecision(30); }
-				switch (alt30)
+				} finally { DebugExitDecision(31); }
+				switch (alt31)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:247:109: propertyFetch
+					// Hql.g:258:109: propertyFetch
 					{
-					DebugLocation(247, 109);
-					PushFollow(Follow._propertyFetch_in_fromJoin1284);
+					DebugLocation(258, 109);
+					PushFollow(Follow._propertyFetch_in_fromJoin1310);
 					propertyFetch84=propertyFetch();
 					PopFollow();
 
@@ -3418,28 +3449,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(30); }
+				} finally { DebugExitSubRule(31); }
 
-				DebugLocation(247, 125);
-				// Hql.g:247:125: ( withClause )?
-				int alt31=2;
-				try { DebugEnterSubRule(31);
-				try { DebugEnterDecision(31, false);
-				int LA31_1 = input.LA(1);
+				DebugLocation(258, 125);
+				// Hql.g:258:125: ( withClause )?
+				int alt32=2;
+				try { DebugEnterSubRule(32);
+				try { DebugEnterDecision(32, false);
+				int LA32_1 = input.LA(1);
 
-				if ((LA31_1==WITH))
+				if ((LA32_1==WITH))
 				{
-					alt31 = 1;
+					alt32 = 1;
 				}
-				} finally { DebugExitDecision(31); }
-				switch (alt31)
+				} finally { DebugExitDecision(32); }
+				switch (alt32)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:247:126: withClause
+					// Hql.g:258:126: withClause
 					{
-					DebugLocation(247, 126);
-					PushFollow(Follow._withClause_in_fromJoin1289);
+					DebugLocation(258, 126);
+					PushFollow(Follow._withClause_in_fromJoin1315);
 					withClause85=withClause();
 					PopFollow();
 
@@ -3449,7 +3480,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(31); }
+				} finally { DebugExitSubRule(32); }
 
 
 				}
@@ -3475,7 +3506,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("fromJoin", 20);
 			LeaveRule_fromJoin();
 		}
-		DebugLocation(248, 1);
+		DebugLocation(259, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromJoin"); }
 		return retval;
 
@@ -3485,7 +3516,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_withClause();
 	partial void LeaveRule_withClause();
 	// $ANTLR start "withClause"
-	// Hql.g:250:1: withClause : WITH ^ logicalExpression ;
+	// Hql.g:261:1: withClause : WITH ^ logicalExpression ;
 	[GrammarRule("withClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> withClause()
 	{
@@ -3502,21 +3533,21 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode WITH86_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "withClause");
-		DebugLocation(250, 1);
+		DebugLocation(261, 1);
 		try
 		{
-			// Hql.g:251:2: ( WITH ^ logicalExpression )
+			// Hql.g:262:2: ( WITH ^ logicalExpression )
 			DebugEnterAlt(1);
-			// Hql.g:251:4: WITH ^ logicalExpression
+			// Hql.g:262:4: WITH ^ logicalExpression
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(251, 8);
-			WITH86=(IToken)Match(input,WITH,Follow._WITH_in_withClause1302); 
+			DebugLocation(262, 8);
+			WITH86=(IToken)Match(input,WITH,Follow._WITH_in_withClause1328); 
 			WITH86_tree = (IASTNode)adaptor.Create(WITH86);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WITH86_tree, root_0);
-			DebugLocation(251, 10);
-			PushFollow(Follow._logicalExpression_in_withClause1305);
+			DebugLocation(262, 10);
+			PushFollow(Follow._logicalExpression_in_withClause1331);
 			logicalExpression87=logicalExpression();
 			PopFollow();
 
@@ -3543,7 +3574,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("withClause", 21);
 			LeaveRule_withClause();
 		}
-		DebugLocation(252, 1);
+		DebugLocation(263, 1);
 		} finally { DebugExitRule(GrammarFileName, "withClause"); }
 		return retval;
 
@@ -3553,7 +3584,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_fromRange();
 	partial void LeaveRule_fromRange();
 	// $ANTLR start "fromRange"
-	// Hql.g:254:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
+	// Hql.g:265:1: fromRange : ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration );
 	[GrammarRule("fromRange")]
 	private AstParserRuleReturnScope<IASTNode, IToken> fromRange()
 	{
@@ -3571,44 +3602,44 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> inCollectionElementsDeclaration91 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "fromRange");
-		DebugLocation(254, 1);
+		DebugLocation(265, 1);
 		try
 		{
-			// Hql.g:255:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
-			int alt33=4;
-			try { DebugEnterDecision(33, false);
+			// Hql.g:266:2: ( fromClassOrOuterQueryPath | inClassDeclaration | inCollectionDeclaration | inCollectionElementsDeclaration )
+			int alt34=4;
+			try { DebugEnterDecision(34, false);
 			switch (input.LA(1))
 			{
 			case IDENT:
 				{
-				int LA33_2 = input.LA(2);
+				int LA34_2 = input.LA(2);
 
-				if ((LA33_2==EOF||LA33_2==AS||LA33_2==CLOSE||LA33_2==COMMA||LA33_2==DOT||LA33_2==FETCH||LA33_2==FULL||LA33_2==GROUP||LA33_2==HAVING||LA33_2==IDENT||LA33_2==INNER||LA33_2==JOIN||LA33_2==LEFT||LA33_2==ORDER||LA33_2==RIGHT||LA33_2==SKIP||LA33_2==TAKE||LA33_2==UNION||LA33_2==WHERE))
+				if ((LA34_2==EOF||LA34_2==AS||LA34_2==CLOSE||LA34_2==COMMA||LA34_2==DOT||LA34_2==FETCH||LA34_2==FULL||LA34_2==GROUP||LA34_2==HAVING||LA34_2==IDENT||LA34_2==INNER||LA34_2==JOIN||LA34_2==LEFT||LA34_2==ORDER||LA34_2==RIGHT||LA34_2==SKIP||LA34_2==TAKE||LA34_2==UNION||LA34_2==WHERE))
 				{
-					alt33 = 1;
+					alt34 = 1;
 				}
-				else if ((LA33_2==IN))
+				else if ((LA34_2==IN))
 				{
-					int LA33_3 = input.LA(3);
+					int LA34_3 = input.LA(3);
 
-					if ((LA33_3==ELEMENTS))
+					if ((LA34_3==ELEMENTS))
 					{
-						alt33 = 4;
+						alt34 = 4;
 					}
-					else if ((LA33_3==CLASS||LA33_3==IDENT))
+					else if ((LA34_3==CLASS||LA34_3==IDENT))
 					{
-						alt33 = 2;
+						alt34 = 2;
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 33, 5, input, 3);
+						NoViableAltException nvae = new NoViableAltException("", 34, 5, input, 3);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 33, 1, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 34, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -3616,33 +3647,33 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case IN:
 				{
-				alt33 = 3;
+				alt34 = 3;
 				}
 				break;
 			case ELEMENTS:
 				{
-				alt33 = 4;
+				alt34 = 4;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 33, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 34, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(33); }
-			switch (alt33)
+			} finally { DebugExitDecision(34); }
+			switch (alt34)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:255:4: fromClassOrOuterQueryPath
+				// Hql.g:266:4: fromClassOrOuterQueryPath
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(255, 4);
-				PushFollow(Follow._fromClassOrOuterQueryPath_in_fromRange1316);
+				DebugLocation(266, 4);
+				PushFollow(Follow._fromClassOrOuterQueryPath_in_fromRange1342);
 				fromClassOrOuterQueryPath88=fromClassOrOuterQueryPath();
 				PopFollow();
 
@@ -3652,12 +3683,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:256:4: inClassDeclaration
+				// Hql.g:267:4: inClassDeclaration
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(256, 4);
-				PushFollow(Follow._inClassDeclaration_in_fromRange1321);
+				DebugLocation(267, 4);
+				PushFollow(Follow._inClassDeclaration_in_fromRange1347);
 				inClassDeclaration89=inClassDeclaration();
 				PopFollow();
 
@@ -3667,12 +3698,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:257:4: inCollectionDeclaration
+				// Hql.g:268:4: inCollectionDeclaration
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(257, 4);
-				PushFollow(Follow._inCollectionDeclaration_in_fromRange1326);
+				DebugLocation(268, 4);
+				PushFollow(Follow._inCollectionDeclaration_in_fromRange1352);
 				inCollectionDeclaration90=inCollectionDeclaration();
 				PopFollow();
 
@@ -3682,12 +3713,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// Hql.g:258:4: inCollectionElementsDeclaration
+				// Hql.g:269:4: inCollectionElementsDeclaration
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(258, 4);
-				PushFollow(Follow._inCollectionElementsDeclaration_in_fromRange1331);
+				DebugLocation(269, 4);
+				PushFollow(Follow._inCollectionElementsDeclaration_in_fromRange1357);
 				inCollectionElementsDeclaration91=inCollectionElementsDeclaration();
 				PopFollow();
 
@@ -3716,7 +3747,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("fromRange", 22);
 			LeaveRule_fromRange();
 		}
-		DebugLocation(259, 1);
+		DebugLocation(270, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromRange"); }
 		return retval;
 
@@ -3726,7 +3757,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_fromClassOrOuterQueryPath();
 	partial void LeaveRule_fromClassOrOuterQueryPath();
 	// $ANTLR start "fromClassOrOuterQueryPath"
-	// Hql.g:261:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
+	// Hql.g:272:1: fromClassOrOuterQueryPath : path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) ;
 	[GrammarRule("fromClassOrOuterQueryPath")]
 	private AstParserRuleReturnScope<IASTNode, IToken> fromClassOrOuterQueryPath()
 	{
@@ -3746,41 +3777,41 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_asAlias=new RewriteRuleSubtreeStream(adaptor,"rule asAlias");
 		RewriteRuleSubtreeStream stream_propertyFetch=new RewriteRuleSubtreeStream(adaptor,"rule propertyFetch");
 		try { DebugEnterRule(GrammarFileName, "fromClassOrOuterQueryPath");
-		DebugLocation(261, 1);
+		DebugLocation(272, 1);
 		try
 		{
-			// Hql.g:262:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
+			// Hql.g:273:2: ( path ( asAlias )? ( propertyFetch )? -> ^( RANGE path ( asAlias )? ( propertyFetch )? ) )
 			DebugEnterAlt(1);
-			// Hql.g:262:4: path ( asAlias )? ( propertyFetch )?
+			// Hql.g:273:4: path ( asAlias )? ( propertyFetch )?
 			{
-			DebugLocation(262, 4);
-			PushFollow(Follow._path_in_fromClassOrOuterQueryPath1343);
+			DebugLocation(273, 4);
+			PushFollow(Follow._path_in_fromClassOrOuterQueryPath1369);
 			path92=path();
 			PopFollow();
 
 			stream_path.Add(path92.Tree);
-			DebugLocation(262, 9);
+			DebugLocation(273, 9);
 			 WeakKeywords(); 
-			DebugLocation(262, 29);
-			// Hql.g:262:29: ( asAlias )?
-			int alt34=2;
-			try { DebugEnterSubRule(34);
-			try { DebugEnterDecision(34, false);
-			int LA34_1 = input.LA(1);
+			DebugLocation(273, 29);
+			// Hql.g:273:29: ( asAlias )?
+			int alt35=2;
+			try { DebugEnterSubRule(35);
+			try { DebugEnterDecision(35, false);
+			int LA35_1 = input.LA(1);
 
-			if ((LA34_1==AS||LA34_1==IDENT))
+			if ((LA35_1==AS||LA35_1==IDENT))
 			{
-				alt34 = 1;
+				alt35 = 1;
 			}
-			} finally { DebugExitDecision(34); }
-			switch (alt34)
+			} finally { DebugExitDecision(35); }
+			switch (alt35)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:262:30: asAlias
+				// Hql.g:273:30: asAlias
 				{
-				DebugLocation(262, 30);
-				PushFollow(Follow._asAlias_in_fromClassOrOuterQueryPath1348);
+				DebugLocation(273, 30);
+				PushFollow(Follow._asAlias_in_fromClassOrOuterQueryPath1374);
 				asAlias93=asAlias();
 				PopFollow();
 
@@ -3790,28 +3821,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(34); }
+			} finally { DebugExitSubRule(35); }
 
-			DebugLocation(262, 40);
-			// Hql.g:262:40: ( propertyFetch )?
-			int alt35=2;
-			try { DebugEnterSubRule(35);
-			try { DebugEnterDecision(35, false);
-			int LA35_1 = input.LA(1);
+			DebugLocation(273, 40);
+			// Hql.g:273:40: ( propertyFetch )?
+			int alt36=2;
+			try { DebugEnterSubRule(36);
+			try { DebugEnterDecision(36, false);
+			int LA36_1 = input.LA(1);
 
-			if ((LA35_1==FETCH))
+			if ((LA36_1==FETCH))
 			{
-				alt35 = 1;
+				alt36 = 1;
 			}
-			} finally { DebugExitDecision(35); }
-			switch (alt35)
+			} finally { DebugExitDecision(36); }
+			switch (alt36)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:262:41: propertyFetch
+				// Hql.g:273:41: propertyFetch
 				{
-				DebugLocation(262, 41);
-				PushFollow(Follow._propertyFetch_in_fromClassOrOuterQueryPath1353);
+				DebugLocation(273, 41);
+				PushFollow(Follow._propertyFetch_in_fromClassOrOuterQueryPath1379);
 				propertyFetch94=propertyFetch();
 				PopFollow();
 
@@ -3821,7 +3852,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(35); }
+			} finally { DebugExitSubRule(36); }
 
 
 
@@ -3837,31 +3868,31 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 263:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
+			// 274:3: -> ^( RANGE path ( asAlias )? ( propertyFetch )? )
 			{
-				DebugLocation(263, 6);
-				// Hql.g:263:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
+				DebugLocation(274, 6);
+				// Hql.g:274:6: ^( RANGE path ( asAlias )? ( propertyFetch )? )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(263, 8);
+				DebugLocation(274, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
 
-				DebugLocation(263, 14);
+				DebugLocation(274, 14);
 				adaptor.AddChild(root_1, stream_path.NextTree());
-				DebugLocation(263, 19);
-				// Hql.g:263:19: ( asAlias )?
+				DebugLocation(274, 19);
+				// Hql.g:274:19: ( asAlias )?
 				if (stream_asAlias.HasNext)
 				{
-					DebugLocation(263, 19);
+					DebugLocation(274, 19);
 					adaptor.AddChild(root_1, stream_asAlias.NextTree());
 
 				}
 				stream_asAlias.Reset();
-				DebugLocation(263, 28);
-				// Hql.g:263:28: ( propertyFetch )?
+				DebugLocation(274, 28);
+				// Hql.g:274:28: ( propertyFetch )?
 				if (stream_propertyFetch.HasNext)
 				{
-					DebugLocation(263, 28);
+					DebugLocation(274, 28);
 					adaptor.AddChild(root_1, stream_propertyFetch.NextTree());
 
 				}
@@ -3896,7 +3927,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("fromClassOrOuterQueryPath", 23);
 			LeaveRule_fromClassOrOuterQueryPath();
 		}
-		DebugLocation(264, 1);
+		DebugLocation(275, 1);
 		} finally { DebugExitRule(GrammarFileName, "fromClassOrOuterQueryPath"); }
 		return retval;
 
@@ -3906,7 +3937,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_inClassDeclaration();
 	partial void LeaveRule_inClassDeclaration();
 	// $ANTLR start "inClassDeclaration"
-	// Hql.g:266:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
+	// Hql.g:277:1: inClassDeclaration : alias IN ( CLASS )? path -> ^( RANGE path alias ) ;
 	[GrammarRule("inClassDeclaration")]
 	private AstParserRuleReturnScope<IASTNode, IToken> inClassDeclaration()
 	{
@@ -3930,43 +3961,43 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "inClassDeclaration");
-		DebugLocation(266, 1);
+		DebugLocation(277, 1);
 		try
 		{
-			// Hql.g:267:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
+			// Hql.g:278:2: ( alias IN ( CLASS )? path -> ^( RANGE path alias ) )
 			DebugEnterAlt(1);
-			// Hql.g:267:4: alias IN ( CLASS )? path
+			// Hql.g:278:4: alias IN ( CLASS )? path
 			{
-			DebugLocation(267, 4);
-			PushFollow(Follow._alias_in_inClassDeclaration1383);
+			DebugLocation(278, 4);
+			PushFollow(Follow._alias_in_inClassDeclaration1409);
 			alias95=alias();
 			PopFollow();
 
 			stream_alias.Add(alias95.Tree);
-			DebugLocation(267, 10);
-			IN96=(IToken)Match(input,IN,Follow._IN_in_inClassDeclaration1385);  
+			DebugLocation(278, 10);
+			IN96=(IToken)Match(input,IN,Follow._IN_in_inClassDeclaration1411);  
 			stream_IN.Add(IN96);
 
-			DebugLocation(267, 13);
-			// Hql.g:267:13: ( CLASS )?
-			int alt36=2;
-			try { DebugEnterSubRule(36);
-			try { DebugEnterDecision(36, false);
-			int LA36_1 = input.LA(1);
+			DebugLocation(278, 13);
+			// Hql.g:278:13: ( CLASS )?
+			int alt37=2;
+			try { DebugEnterSubRule(37);
+			try { DebugEnterDecision(37, false);
+			int LA37_1 = input.LA(1);
 
-			if ((LA36_1==CLASS))
+			if ((LA37_1==CLASS))
 			{
-				alt36 = 1;
+				alt37 = 1;
 			}
-			} finally { DebugExitDecision(36); }
-			switch (alt36)
+			} finally { DebugExitDecision(37); }
+			switch (alt37)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:267:13: CLASS
+				// Hql.g:278:13: CLASS
 				{
-				DebugLocation(267, 13);
-				CLASS97=(IToken)Match(input,CLASS,Follow._CLASS_in_inClassDeclaration1387);  
+				DebugLocation(278, 13);
+				CLASS97=(IToken)Match(input,CLASS,Follow._CLASS_in_inClassDeclaration1413);  
 				stream_CLASS.Add(CLASS97);
 
 
@@ -3974,10 +4005,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(36); }
+			} finally { DebugExitSubRule(37); }
 
-			DebugLocation(267, 20);
-			PushFollow(Follow._path_in_inClassDeclaration1390);
+			DebugLocation(278, 20);
+			PushFollow(Follow._path_in_inClassDeclaration1416);
 			path98=path();
 			PopFollow();
 
@@ -3996,18 +4027,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 268:3: -> ^( RANGE path alias )
+			// 279:3: -> ^( RANGE path alias )
 			{
-				DebugLocation(268, 6);
-				// Hql.g:268:6: ^( RANGE path alias )
+				DebugLocation(279, 6);
+				// Hql.g:279:6: ^( RANGE path alias )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(268, 8);
+				DebugLocation(279, 8);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(RANGE, "RANGE"), root_1);
 
-				DebugLocation(268, 14);
+				DebugLocation(279, 14);
 				adaptor.AddChild(root_1, stream_path.NextTree());
-				DebugLocation(268, 19);
+				DebugLocation(279, 19);
 				adaptor.AddChild(root_1, stream_alias.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -4039,7 +4070,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("inClassDeclaration", 24);
 			LeaveRule_inClassDeclaration();
 		}
-		DebugLocation(269, 1);
+		DebugLocation(280, 1);
 		} finally { DebugExitRule(GrammarFileName, "inClassDeclaration"); }
 		return retval;
 
@@ -4049,7 +4080,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_inCollectionDeclaration();
 	partial void LeaveRule_inCollectionDeclaration();
 	// $ANTLR start "inCollectionDeclaration"
-	// Hql.g:271:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
+	// Hql.g:282:1: inCollectionDeclaration : IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) ;
 	[GrammarRule("inCollectionDeclaration")]
 	private AstParserRuleReturnScope<IASTNode, IToken> inCollectionDeclaration()
 	{
@@ -4076,33 +4107,33 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
 		try { DebugEnterRule(GrammarFileName, "inCollectionDeclaration");
-		DebugLocation(271, 4);
+		DebugLocation(282, 4);
 		try
 		{
-			// Hql.g:272:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+			// Hql.g:283:5: ( IN OPEN path CLOSE alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
 			DebugEnterAlt(1);
-			// Hql.g:272:7: IN OPEN path CLOSE alias
+			// Hql.g:283:7: IN OPEN path CLOSE alias
 			{
-			DebugLocation(272, 7);
-			IN99=(IToken)Match(input,IN,Follow._IN_in_inCollectionDeclaration1418);  
+			DebugLocation(283, 7);
+			IN99=(IToken)Match(input,IN,Follow._IN_in_inCollectionDeclaration1444);  
 			stream_IN.Add(IN99);
 
-			DebugLocation(272, 10);
-			OPEN100=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionDeclaration1420);  
+			DebugLocation(283, 10);
+			OPEN100=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionDeclaration1446);  
 			stream_OPEN.Add(OPEN100);
 
-			DebugLocation(272, 15);
-			PushFollow(Follow._path_in_inCollectionDeclaration1422);
+			DebugLocation(283, 15);
+			PushFollow(Follow._path_in_inCollectionDeclaration1448);
 			path101=path();
 			PopFollow();
 
 			stream_path.Add(path101.Tree);
-			DebugLocation(272, 20);
-			CLOSE102=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionDeclaration1424);  
+			DebugLocation(283, 20);
+			CLOSE102=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionDeclaration1450);  
 			stream_CLOSE.Add(CLOSE102);
 
-			DebugLocation(272, 26);
-			PushFollow(Follow._alias_in_inCollectionDeclaration1426);
+			DebugLocation(283, 26);
+			PushFollow(Follow._alias_in_inCollectionDeclaration1452);
 			alias103=alias();
 			PopFollow();
 
@@ -4121,20 +4152,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 273:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+			// 284:6: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 			{
-				DebugLocation(273, 9);
-				// Hql.g:273:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+				DebugLocation(284, 9);
+				// Hql.g:284:9: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(273, 11);
+				DebugLocation(284, 11);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
 
-				DebugLocation(273, 24);
+				DebugLocation(284, 24);
 				adaptor.AddChild(root_1, (IASTNode)adaptor.Create(INNER, "inner"));
-				DebugLocation(273, 39);
+				DebugLocation(284, 39);
 				adaptor.AddChild(root_1, stream_path.NextTree());
-				DebugLocation(273, 44);
+				DebugLocation(284, 44);
 				adaptor.AddChild(root_1, stream_alias.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -4166,7 +4197,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("inCollectionDeclaration", 25);
 			LeaveRule_inCollectionDeclaration();
 		}
-		DebugLocation(274, 4);
+		DebugLocation(285, 4);
 		} finally { DebugExitRule(GrammarFileName, "inCollectionDeclaration"); }
 		return retval;
 
@@ -4176,7 +4207,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_inCollectionElementsDeclaration();
 	partial void LeaveRule_inCollectionElementsDeclaration();
 	// $ANTLR start "inCollectionElementsDeclaration"
-	// Hql.g:276:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
+	// Hql.g:287:1: inCollectionElementsDeclaration : ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) );
 	[GrammarRule("inCollectionElementsDeclaration")]
 	private AstParserRuleReturnScope<IASTNode, IToken> inCollectionElementsDeclaration()
 	{
@@ -4217,61 +4248,61 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_alias=new RewriteRuleSubtreeStream(adaptor,"rule alias");
 		RewriteRuleSubtreeStream stream_path=new RewriteRuleSubtreeStream(adaptor,"rule path");
 		try { DebugEnterRule(GrammarFileName, "inCollectionElementsDeclaration");
-		DebugLocation(276, 4);
+		DebugLocation(287, 4);
 		try
 		{
-			// Hql.g:277:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
-			int alt37=2;
-			try { DebugEnterDecision(37, false);
-			int LA37_1 = input.LA(1);
+			// Hql.g:288:2: ( alias IN ELEMENTS OPEN path CLOSE -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) | ELEMENTS OPEN path CLOSE AS alias -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias ) )
+			int alt38=2;
+			try { DebugEnterDecision(38, false);
+			int LA38_1 = input.LA(1);
 
-			if ((LA37_1==IDENT))
+			if ((LA38_1==IDENT))
 			{
-				alt37 = 1;
+				alt38 = 1;
 			}
-			else if ((LA37_1==ELEMENTS))
+			else if ((LA38_1==ELEMENTS))
 			{
-				alt37 = 2;
+				alt38 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 37, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 38, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(37); }
-			switch (alt37)
+			} finally { DebugExitDecision(38); }
+			switch (alt38)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:277:4: alias IN ELEMENTS OPEN path CLOSE
+				// Hql.g:288:4: alias IN ELEMENTS OPEN path CLOSE
 				{
-				DebugLocation(277, 4);
-				PushFollow(Follow._alias_in_inCollectionElementsDeclaration1460);
+				DebugLocation(288, 4);
+				PushFollow(Follow._alias_in_inCollectionElementsDeclaration1486);
 				alias104=alias();
 				PopFollow();
 
 				stream_alias.Add(alias104.Tree);
-				DebugLocation(277, 10);
-				IN105=(IToken)Match(input,IN,Follow._IN_in_inCollectionElementsDeclaration1462);  
+				DebugLocation(288, 10);
+				IN105=(IToken)Match(input,IN,Follow._IN_in_inCollectionElementsDeclaration1488);  
 				stream_IN.Add(IN105);
 
-				DebugLocation(277, 13);
-				ELEMENTS106=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_inCollectionElementsDeclaration1464);  
+				DebugLocation(288, 13);
+				ELEMENTS106=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_inCollectionElementsDeclaration1490);  
 				stream_ELEMENTS.Add(ELEMENTS106);
 
-				DebugLocation(277, 22);
-				OPEN107=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionElementsDeclaration1466);  
+				DebugLocation(288, 22);
+				OPEN107=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionElementsDeclaration1492);  
 				stream_OPEN.Add(OPEN107);
 
-				DebugLocation(277, 27);
-				PushFollow(Follow._path_in_inCollectionElementsDeclaration1468);
+				DebugLocation(288, 27);
+				PushFollow(Follow._path_in_inCollectionElementsDeclaration1494);
 				path108=path();
 				PopFollow();
 
 				stream_path.Add(path108.Tree);
-				DebugLocation(277, 32);
-				CLOSE109=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionElementsDeclaration1470);  
+				DebugLocation(288, 32);
+				CLOSE109=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionElementsDeclaration1496);  
 				stream_CLOSE.Add(CLOSE109);
 
 
@@ -4288,20 +4319,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 278:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+				// 289:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 				{
-					DebugLocation(278, 6);
-					// Hql.g:278:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+					DebugLocation(289, 6);
+					// Hql.g:289:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(278, 8);
+					DebugLocation(289, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
 
-					DebugLocation(278, 21);
+					DebugLocation(289, 21);
 					adaptor.AddChild(root_1, (IASTNode)adaptor.Create(INNER, "inner"));
-					DebugLocation(278, 36);
+					DebugLocation(289, 36);
 					adaptor.AddChild(root_1, stream_path.NextTree());
-					DebugLocation(278, 41);
+					DebugLocation(289, 41);
 					adaptor.AddChild(root_1, stream_alias.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
@@ -4316,32 +4347,32 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:279:4: ELEMENTS OPEN path CLOSE AS alias
+				// Hql.g:290:4: ELEMENTS OPEN path CLOSE AS alias
 				{
-				DebugLocation(279, 4);
-				ELEMENTS110=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_inCollectionElementsDeclaration1492);  
+				DebugLocation(290, 4);
+				ELEMENTS110=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_inCollectionElementsDeclaration1518);  
 				stream_ELEMENTS.Add(ELEMENTS110);
 
-				DebugLocation(279, 13);
-				OPEN111=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionElementsDeclaration1494);  
+				DebugLocation(290, 13);
+				OPEN111=(IToken)Match(input,OPEN,Follow._OPEN_in_inCollectionElementsDeclaration1520);  
 				stream_OPEN.Add(OPEN111);
 
-				DebugLocation(279, 18);
-				PushFollow(Follow._path_in_inCollectionElementsDeclaration1496);
+				DebugLocation(290, 18);
+				PushFollow(Follow._path_in_inCollectionElementsDeclaration1522);
 				path112=path();
 				PopFollow();
 
 				stream_path.Add(path112.Tree);
-				DebugLocation(279, 23);
-				CLOSE113=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionElementsDeclaration1498);  
+				DebugLocation(290, 23);
+				CLOSE113=(IToken)Match(input,CLOSE,Follow._CLOSE_in_inCollectionElementsDeclaration1524);  
 				stream_CLOSE.Add(CLOSE113);
 
-				DebugLocation(279, 29);
-				AS114=(IToken)Match(input,AS,Follow._AS_in_inCollectionElementsDeclaration1500);  
+				DebugLocation(290, 29);
+				AS114=(IToken)Match(input,AS,Follow._AS_in_inCollectionElementsDeclaration1526);  
 				stream_AS.Add(AS114);
 
-				DebugLocation(279, 32);
-				PushFollow(Follow._alias_in_inCollectionElementsDeclaration1502);
+				DebugLocation(290, 32);
+				PushFollow(Follow._alias_in_inCollectionElementsDeclaration1528);
 				alias115=alias();
 				PopFollow();
 
@@ -4360,20 +4391,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 280:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+				// 291:3: -> ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 				{
-					DebugLocation(280, 6);
-					// Hql.g:280:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
+					DebugLocation(291, 6);
+					// Hql.g:291:6: ^( JOIN[\"join\"] INNER[\"inner\"] path alias )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(280, 8);
+					DebugLocation(291, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(JOIN, "join"), root_1);
 
-					DebugLocation(280, 21);
+					DebugLocation(291, 21);
 					adaptor.AddChild(root_1, (IASTNode)adaptor.Create(INNER, "inner"));
-					DebugLocation(280, 36);
+					DebugLocation(291, 36);
 					adaptor.AddChild(root_1, stream_path.NextTree());
-					DebugLocation(280, 41);
+					DebugLocation(291, 41);
 					adaptor.AddChild(root_1, stream_alias.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
@@ -4407,7 +4438,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("inCollectionElementsDeclaration", 26);
 			LeaveRule_inCollectionElementsDeclaration();
 		}
-		DebugLocation(281, 4);
+		DebugLocation(292, 4);
 		} finally { DebugExitRule(GrammarFileName, "inCollectionElementsDeclaration"); }
 		return retval;
 
@@ -4417,7 +4448,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_asAlias();
 	partial void LeaveRule_asAlias();
 	// $ANTLR start "asAlias"
-	// Hql.g:284:1: asAlias : ( AS !)? alias ;
+	// Hql.g:295:1: asAlias : ( AS !)? alias ;
 	[GrammarRule("asAlias")]
 	private AstParserRuleReturnScope<IASTNode, IToken> asAlias()
 	{
@@ -4434,44 +4465,44 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode AS116_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "asAlias");
-		DebugLocation(284, 1);
+		DebugLocation(295, 1);
 		try
 		{
-			// Hql.g:285:2: ( ( AS !)? alias )
+			// Hql.g:296:2: ( ( AS !)? alias )
 			DebugEnterAlt(1);
-			// Hql.g:285:4: ( AS !)? alias
+			// Hql.g:296:4: ( AS !)? alias
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(285, 4);
-			// Hql.g:285:4: ( AS !)?
-			int alt38=2;
-			try { DebugEnterSubRule(38);
-			try { DebugEnterDecision(38, false);
-			int LA38_1 = input.LA(1);
+			DebugLocation(296, 4);
+			// Hql.g:296:4: ( AS !)?
+			int alt39=2;
+			try { DebugEnterSubRule(39);
+			try { DebugEnterDecision(39, false);
+			int LA39_1 = input.LA(1);
 
-			if ((LA38_1==AS))
+			if ((LA39_1==AS))
 			{
-				alt38 = 1;
+				alt39 = 1;
 			}
-			} finally { DebugExitDecision(38); }
-			switch (alt38)
+			} finally { DebugExitDecision(39); }
+			switch (alt39)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:285:5: AS !
+				// Hql.g:296:5: AS !
 				{
-				DebugLocation(285, 7);
-				AS116=(IToken)Match(input,AS,Follow._AS_in_asAlias1534); 
+				DebugLocation(296, 7);
+				AS116=(IToken)Match(input,AS,Follow._AS_in_asAlias1560); 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(38); }
+			} finally { DebugExitSubRule(39); }
 
-			DebugLocation(285, 11);
-			PushFollow(Follow._alias_in_asAlias1539);
+			DebugLocation(296, 11);
+			PushFollow(Follow._alias_in_asAlias1565);
 			alias117=alias();
 			PopFollow();
 
@@ -4498,7 +4529,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("asAlias", 27);
 			LeaveRule_asAlias();
 		}
-		DebugLocation(286, 1);
+		DebugLocation(297, 1);
 		} finally { DebugExitRule(GrammarFileName, "asAlias"); }
 		return retval;
 
@@ -4508,7 +4539,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_alias();
 	partial void LeaveRule_alias();
 	// $ANTLR start "alias"
-	// Hql.g:287:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
+	// Hql.g:298:1: alias : i= identifier -> ^( ALIAS[$i.start] ) ;
 	[GrammarRule("alias")]
 	private AstParserRuleReturnScope<IASTNode, IToken> alias()
 	{
@@ -4524,15 +4555,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		RewriteRuleSubtreeStream stream_identifier=new RewriteRuleSubtreeStream(adaptor,"rule identifier");
 		try { DebugEnterRule(GrammarFileName, "alias");
-		DebugLocation(287, 1);
+		DebugLocation(298, 1);
 		try
 		{
-			// Hql.g:288:2: (i= identifier -> ^( ALIAS[$i.start] ) )
+			// Hql.g:299:2: (i= identifier -> ^( ALIAS[$i.start] ) )
 			DebugEnterAlt(1);
-			// Hql.g:288:4: i= identifier
+			// Hql.g:299:4: i= identifier
 			{
-			DebugLocation(288, 5);
-			PushFollow(Follow._identifier_in_alias1551);
+			DebugLocation(299, 5);
+			PushFollow(Follow._identifier_in_alias1577);
 			i=identifier();
 			PopFollow();
 
@@ -4551,13 +4582,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 289:2: -> ^( ALIAS[$i.start] )
+			// 300:2: -> ^( ALIAS[$i.start] )
 			{
-				DebugLocation(289, 5);
-				// Hql.g:289:5: ^( ALIAS[$i.start] )
+				DebugLocation(300, 5);
+				// Hql.g:300:5: ^( ALIAS[$i.start] )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(289, 7);
+				DebugLocation(300, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ALIAS, (i!=null?((IToken)i.Start):default(IToken))), root_1);
 
 				adaptor.AddChild(root_0, root_1);
@@ -4589,7 +4620,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("alias", 28);
 			LeaveRule_alias();
 		}
-		DebugLocation(290, 1);
+		DebugLocation(301, 1);
 		} finally { DebugExitRule(GrammarFileName, "alias"); }
 		return retval;
 
@@ -4599,7 +4630,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_propertyFetch();
 	partial void LeaveRule_propertyFetch();
 	// $ANTLR start "propertyFetch"
-	// Hql.g:292:1: propertyFetch : FETCH ALL ! PROPERTIES !;
+	// Hql.g:303:1: propertyFetch : FETCH ALL ! PROPERTIES !;
 	[GrammarRule("propertyFetch")]
 	private AstParserRuleReturnScope<IASTNode, IToken> propertyFetch()
 	{
@@ -4619,23 +4650,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode ALL119_tree = default(IASTNode);
 		IASTNode PROPERTIES120_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "propertyFetch");
-		DebugLocation(292, 1);
+		DebugLocation(303, 1);
 		try
 		{
-			// Hql.g:293:2: ( FETCH ALL ! PROPERTIES !)
+			// Hql.g:304:2: ( FETCH ALL ! PROPERTIES !)
 			DebugEnterAlt(1);
-			// Hql.g:293:4: FETCH ALL ! PROPERTIES !
+			// Hql.g:304:4: FETCH ALL ! PROPERTIES !
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(293, 4);
-			FETCH118=(IToken)Match(input,FETCH,Follow._FETCH_in_propertyFetch1570); 
+			DebugLocation(304, 4);
+			FETCH118=(IToken)Match(input,FETCH,Follow._FETCH_in_propertyFetch1596); 
 			FETCH118_tree = (IASTNode)adaptor.Create(FETCH118);
 			adaptor.AddChild(root_0, FETCH118_tree);
-			DebugLocation(293, 13);
-			ALL119=(IToken)Match(input,ALL,Follow._ALL_in_propertyFetch1572); 
-			DebugLocation(293, 25);
-			PROPERTIES120=(IToken)Match(input,PROPERTIES,Follow._PROPERTIES_in_propertyFetch1575); 
+			DebugLocation(304, 13);
+			ALL119=(IToken)Match(input,ALL,Follow._ALL_in_propertyFetch1598); 
+			DebugLocation(304, 25);
+			PROPERTIES120=(IToken)Match(input,PROPERTIES,Follow._PROPERTIES_in_propertyFetch1601); 
 
 			}
 
@@ -4658,7 +4689,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("propertyFetch", 29);
 			LeaveRule_propertyFetch();
 		}
-		DebugLocation(294, 1);
+		DebugLocation(305, 1);
 		} finally { DebugExitRule(GrammarFileName, "propertyFetch"); }
 		return retval;
 
@@ -4668,7 +4699,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_groupByClause();
 	partial void LeaveRule_groupByClause();
 	// $ANTLR start "groupByClause"
-	// Hql.g:296:1: groupByClause : GROUP ^ 'by' ! expression ( COMMA ! expression )* ;
+	// Hql.g:307:1: groupByClause : GROUP ^ 'by' ! expression ( COMMA ! expression )* ;
 	[GrammarRule("groupByClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> groupByClause()
 	{
@@ -4690,148 +4721,29 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode string_literal122_tree = default(IASTNode);
 		IASTNode COMMA124_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "groupByClause");
-		DebugLocation(296, 1);
+		DebugLocation(307, 1);
 		try
 		{
-			// Hql.g:297:2: ( GROUP ^ 'by' ! expression ( COMMA ! expression )* )
+			// Hql.g:308:2: ( GROUP ^ 'by' ! expression ( COMMA ! expression )* )
 			DebugEnterAlt(1);
-			// Hql.g:297:4: GROUP ^ 'by' ! expression ( COMMA ! expression )*
+			// Hql.g:308:4: GROUP ^ 'by' ! expression ( COMMA ! expression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(297, 9);
-			GROUP121=(IToken)Match(input,GROUP,Follow._GROUP_in_groupByClause1587); 
+			DebugLocation(308, 9);
+			GROUP121=(IToken)Match(input,GROUP,Follow._GROUP_in_groupByClause1613); 
 			GROUP121_tree = (IASTNode)adaptor.Create(GROUP121);
 			root_0 = (IASTNode)adaptor.BecomeRoot(GROUP121_tree, root_0);
-			DebugLocation(298, 7);
-			string_literal122=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_groupByClause1593); 
-			DebugLocation(298, 9);
-			PushFollow(Follow._expression_in_groupByClause1596);
+			DebugLocation(309, 7);
+			string_literal122=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_groupByClause1619); 
+			DebugLocation(309, 9);
+			PushFollow(Follow._expression_in_groupByClause1622);
 			expression123=expression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, expression123.Tree);
-			DebugLocation(298, 20);
-			// Hql.g:298:20: ( COMMA ! expression )*
-			try { DebugEnterSubRule(39);
-			while (true)
-			{
-				int alt39=2;
-				try { DebugEnterDecision(39, false);
-				int LA39_1 = input.LA(1);
-
-				if ((LA39_1==COMMA))
-				{
-					alt39 = 1;
-				}
-
-
-				} finally { DebugExitDecision(39); }
-				switch ( alt39 )
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:298:22: COMMA ! expression
-					{
-					DebugLocation(298, 27);
-					COMMA124=(IToken)Match(input,COMMA,Follow._COMMA_in_groupByClause1600); 
-					DebugLocation(298, 29);
-					PushFollow(Follow._expression_in_groupByClause1603);
-					expression125=expression();
-					PopFollow();
-
-					adaptor.AddChild(root_0, expression125.Tree);
-
-					}
-					break;
-
-				default:
-					goto loop39;
-				}
-			}
-
-			loop39:
-				;
-
-			} finally { DebugExitSubRule(39); }
-
-
-			}
-
-			retval.Stop = (IToken)input.LT(-1);
-
-			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
-			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
-
-		}
-		catch (RecognitionException re)
-		{
-			ReportError(re);
-			Recover(input,re);
-			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
-
-		}
-		finally
-		{
-			TraceOut("groupByClause", 30);
-			LeaveRule("groupByClause", 30);
-			LeaveRule_groupByClause();
-		}
-		DebugLocation(299, 1);
-		} finally { DebugExitRule(GrammarFileName, "groupByClause"); }
-		return retval;
-
-	}
-	// $ANTLR end "groupByClause"
-
-	partial void EnterRule_orderByClause();
-	partial void LeaveRule_orderByClause();
-	// $ANTLR start "orderByClause"
-	// Hql.g:301:1: orderByClause : ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )* ;
-	[GrammarRule("orderByClause")]
-	private AstParserRuleReturnScope<IASTNode, IToken> orderByClause()
-	{
-		EnterRule_orderByClause();
-		EnterRule("orderByClause", 31);
-		TraceIn("orderByClause", 31);
-		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-		retval.Start = (IToken)input.LT(1);
-
-		IASTNode root_0 = default(IASTNode);
-
-		IToken ORDER126 = default(IToken);
-		IToken string_literal127 = default(IToken);
-		IToken COMMA129 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> orderElement128 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> orderElement130 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
-		IASTNode ORDER126_tree = default(IASTNode);
-		IASTNode string_literal127_tree = default(IASTNode);
-		IASTNode COMMA129_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "orderByClause");
-		DebugLocation(301, 1);
-		try
-		{
-			// Hql.g:302:2: ( ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )* )
-			DebugEnterAlt(1);
-			// Hql.g:302:4: ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )*
-			{
-			root_0 = (IASTNode)adaptor.Nil();
-
-			DebugLocation(302, 9);
-			ORDER126=(IToken)Match(input,ORDER,Follow._ORDER_in_orderByClause1617); 
-			ORDER126_tree = (IASTNode)adaptor.Create(ORDER126);
-			root_0 = (IASTNode)adaptor.BecomeRoot(ORDER126_tree, root_0);
-			DebugLocation(302, 15);
-			string_literal127=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_orderByClause1620); 
-			DebugLocation(302, 17);
-			PushFollow(Follow._orderElement_in_orderByClause1623);
-			orderElement128=orderElement();
-			PopFollow();
-
-			adaptor.AddChild(root_0, orderElement128.Tree);
-			DebugLocation(302, 30);
-			// Hql.g:302:30: ( COMMA ! orderElement )*
+			DebugLocation(309, 20);
+			// Hql.g:309:20: ( COMMA ! expression )*
 			try { DebugEnterSubRule(40);
 			while (true)
 			{
@@ -4850,16 +4762,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:302:32: COMMA ! orderElement
+					// Hql.g:309:22: COMMA ! expression
 					{
-					DebugLocation(302, 37);
-					COMMA129=(IToken)Match(input,COMMA,Follow._COMMA_in_orderByClause1627); 
-					DebugLocation(302, 39);
-					PushFollow(Follow._orderElement_in_orderByClause1630);
-					orderElement130=orderElement();
+					DebugLocation(309, 27);
+					COMMA124=(IToken)Match(input,COMMA,Follow._COMMA_in_groupByClause1626); 
+					DebugLocation(309, 29);
+					PushFollow(Follow._expression_in_groupByClause1629);
+					expression125=expression();
 					PopFollow();
 
-					adaptor.AddChild(root_0, orderElement130.Tree);
+					adaptor.AddChild(root_0, expression125.Tree);
 
 					}
 					break;
@@ -4892,102 +4804,105 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("orderByClause", 31);
-			LeaveRule("orderByClause", 31);
-			LeaveRule_orderByClause();
+			TraceOut("groupByClause", 30);
+			LeaveRule("groupByClause", 30);
+			LeaveRule_groupByClause();
 		}
-		DebugLocation(303, 1);
-		} finally { DebugExitRule(GrammarFileName, "orderByClause"); }
+		DebugLocation(310, 1);
+		} finally { DebugExitRule(GrammarFileName, "groupByClause"); }
 		return retval;
 
 	}
-	// $ANTLR end "orderByClause"
+	// $ANTLR end "groupByClause"
 
-	partial void EnterRule_skipClause();
-	partial void LeaveRule_skipClause();
-	// $ANTLR start "skipClause"
-	// Hql.g:305:1: skipClause : SKIP ^ ( NUM_INT | parameter ) ;
-	[GrammarRule("skipClause")]
-	private AstParserRuleReturnScope<IASTNode, IToken> skipClause()
+	partial void EnterRule_orderByClause();
+	partial void LeaveRule_orderByClause();
+	// $ANTLR start "orderByClause"
+	// Hql.g:312:1: orderByClause : ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )* ;
+	[GrammarRule("orderByClause")]
+	private AstParserRuleReturnScope<IASTNode, IToken> orderByClause()
 	{
-		EnterRule_skipClause();
-		EnterRule("skipClause", 32);
-		TraceIn("skipClause", 32);
+		EnterRule_orderByClause();
+		EnterRule("orderByClause", 31);
+		TraceIn("orderByClause", 31);
 		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
 		retval.Start = (IToken)input.LT(1);
 
 		IASTNode root_0 = default(IASTNode);
 
-		IToken SKIP131 = default(IToken);
-		IToken NUM_INT132 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> parameter133 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken ORDER126 = default(IToken);
+		IToken string_literal127 = default(IToken);
+		IToken COMMA129 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> orderElement128 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> orderElement130 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-		IASTNode SKIP131_tree = default(IASTNode);
-		IASTNode NUM_INT132_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "skipClause");
-		DebugLocation(305, 1);
+		IASTNode ORDER126_tree = default(IASTNode);
+		IASTNode string_literal127_tree = default(IASTNode);
+		IASTNode COMMA129_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "orderByClause");
+		DebugLocation(312, 1);
 		try
 		{
-			// Hql.g:306:2: ( SKIP ^ ( NUM_INT | parameter ) )
+			// Hql.g:313:2: ( ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )* )
 			DebugEnterAlt(1);
-			// Hql.g:306:4: SKIP ^ ( NUM_INT | parameter )
+			// Hql.g:313:4: ORDER ^ 'by' ! orderElement ( COMMA ! orderElement )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(306, 8);
-			SKIP131=(IToken)Match(input,SKIP,Follow._SKIP_in_skipClause1644); 
-			SKIP131_tree = (IASTNode)adaptor.Create(SKIP131);
-			root_0 = (IASTNode)adaptor.BecomeRoot(SKIP131_tree, root_0);
-			DebugLocation(306, 10);
-			// Hql.g:306:10: ( NUM_INT | parameter )
-			int alt41=2;
+			DebugLocation(313, 9);
+			ORDER126=(IToken)Match(input,ORDER,Follow._ORDER_in_orderByClause1643); 
+			ORDER126_tree = (IASTNode)adaptor.Create(ORDER126);
+			root_0 = (IASTNode)adaptor.BecomeRoot(ORDER126_tree, root_0);
+			DebugLocation(313, 15);
+			string_literal127=(IToken)Match(input,LITERAL_by,Follow._LITERAL_by_in_orderByClause1646); 
+			DebugLocation(313, 17);
+			PushFollow(Follow._orderElement_in_orderByClause1649);
+			orderElement128=orderElement();
+			PopFollow();
+
+			adaptor.AddChild(root_0, orderElement128.Tree);
+			DebugLocation(313, 30);
+			// Hql.g:313:30: ( COMMA ! orderElement )*
 			try { DebugEnterSubRule(41);
-			try { DebugEnterDecision(41, false);
-			int LA41_1 = input.LA(1);
+			while (true)
+			{
+				int alt41=2;
+				try { DebugEnterDecision(41, false);
+				int LA41_1 = input.LA(1);
 
-			if ((LA41_1==NUM_INT))
-			{
-				alt41 = 1;
-			}
-			else if ((LA41_1==COLON||LA41_1==PARAM))
-			{
-				alt41 = 2;
-			}
-			else
-			{
-				NoViableAltException nvae = new NoViableAltException("", 41, 0, input, 1);
-				DebugRecognitionException(nvae);
-				throw nvae;
-			}
-			} finally { DebugExitDecision(41); }
-			switch (alt41)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// Hql.g:306:11: NUM_INT
+				if ((LA41_1==COMMA))
 				{
-				DebugLocation(306, 11);
-				NUM_INT132=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_skipClause1648); 
-				NUM_INT132_tree = (IASTNode)adaptor.Create(NUM_INT132);
-				adaptor.AddChild(root_0, NUM_INT132_tree);
-
+					alt41 = 1;
 				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// Hql.g:306:21: parameter
+
+
+				} finally { DebugExitDecision(41); }
+				switch ( alt41 )
 				{
-				DebugLocation(306, 21);
-				PushFollow(Follow._parameter_in_skipClause1652);
-				parameter133=parameter();
-				PopFollow();
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:313:32: COMMA ! orderElement
+					{
+					DebugLocation(313, 37);
+					COMMA129=(IToken)Match(input,COMMA,Follow._COMMA_in_orderByClause1653); 
+					DebugLocation(313, 39);
+					PushFollow(Follow._orderElement_in_orderByClause1656);
+					orderElement130=orderElement();
+					PopFollow();
 
-				adaptor.AddChild(root_0, parameter133.Tree);
+					adaptor.AddChild(root_0, orderElement130.Tree);
 
+					}
+					break;
+
+				default:
+					goto loop41;
 				}
-				break;
-
 			}
+
+			loop41:
+				;
+
 			} finally { DebugExitSubRule(41); }
 
 
@@ -5008,54 +4923,54 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("skipClause", 32);
-			LeaveRule("skipClause", 32);
-			LeaveRule_skipClause();
+			TraceOut("orderByClause", 31);
+			LeaveRule("orderByClause", 31);
+			LeaveRule_orderByClause();
 		}
-		DebugLocation(307, 1);
-		} finally { DebugExitRule(GrammarFileName, "skipClause"); }
+		DebugLocation(314, 1);
+		} finally { DebugExitRule(GrammarFileName, "orderByClause"); }
 		return retval;
 
 	}
-	// $ANTLR end "skipClause"
+	// $ANTLR end "orderByClause"
 
-	partial void EnterRule_takeClause();
-	partial void LeaveRule_takeClause();
-	// $ANTLR start "takeClause"
-	// Hql.g:309:1: takeClause : TAKE ^ ( NUM_INT | parameter ) ;
-	[GrammarRule("takeClause")]
-	private AstParserRuleReturnScope<IASTNode, IToken> takeClause()
+	partial void EnterRule_skipClause();
+	partial void LeaveRule_skipClause();
+	// $ANTLR start "skipClause"
+	// Hql.g:316:1: skipClause : SKIP ^ ( NUM_INT | parameter ) ;
+	[GrammarRule("skipClause")]
+	private AstParserRuleReturnScope<IASTNode, IToken> skipClause()
 	{
-		EnterRule_takeClause();
-		EnterRule("takeClause", 33);
-		TraceIn("takeClause", 33);
+		EnterRule_skipClause();
+		EnterRule("skipClause", 32);
+		TraceIn("skipClause", 32);
 		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
 		retval.Start = (IToken)input.LT(1);
 
 		IASTNode root_0 = default(IASTNode);
 
-		IToken TAKE134 = default(IToken);
-		IToken NUM_INT135 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> parameter136 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken SKIP131 = default(IToken);
+		IToken NUM_INT132 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> parameter133 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-		IASTNode TAKE134_tree = default(IASTNode);
-		IASTNode NUM_INT135_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "takeClause");
-		DebugLocation(309, 1);
+		IASTNode SKIP131_tree = default(IASTNode);
+		IASTNode NUM_INT132_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "skipClause");
+		DebugLocation(316, 1);
 		try
 		{
-			// Hql.g:310:2: ( TAKE ^ ( NUM_INT | parameter ) )
+			// Hql.g:317:2: ( SKIP ^ ( NUM_INT | parameter ) )
 			DebugEnterAlt(1);
-			// Hql.g:310:4: TAKE ^ ( NUM_INT | parameter )
+			// Hql.g:317:4: SKIP ^ ( NUM_INT | parameter )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(310, 8);
-			TAKE134=(IToken)Match(input,TAKE,Follow._TAKE_in_takeClause1664); 
-			TAKE134_tree = (IASTNode)adaptor.Create(TAKE134);
-			root_0 = (IASTNode)adaptor.BecomeRoot(TAKE134_tree, root_0);
-			DebugLocation(310, 10);
-			// Hql.g:310:10: ( NUM_INT | parameter )
+			DebugLocation(317, 8);
+			SKIP131=(IToken)Match(input,SKIP,Follow._SKIP_in_skipClause1670); 
+			SKIP131_tree = (IASTNode)adaptor.Create(SKIP131);
+			root_0 = (IASTNode)adaptor.BecomeRoot(SKIP131_tree, root_0);
+			DebugLocation(317, 10);
+			// Hql.g:317:10: ( NUM_INT | parameter )
 			int alt42=2;
 			try { DebugEnterSubRule(42);
 			try { DebugEnterDecision(42, false);
@@ -5080,25 +4995,25 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:310:11: NUM_INT
+				// Hql.g:317:11: NUM_INT
 				{
-				DebugLocation(310, 11);
-				NUM_INT135=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_takeClause1668); 
-				NUM_INT135_tree = (IASTNode)adaptor.Create(NUM_INT135);
-				adaptor.AddChild(root_0, NUM_INT135_tree);
+				DebugLocation(317, 11);
+				NUM_INT132=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_skipClause1674); 
+				NUM_INT132_tree = (IASTNode)adaptor.Create(NUM_INT132);
+				adaptor.AddChild(root_0, NUM_INT132_tree);
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:310:21: parameter
+				// Hql.g:317:21: parameter
 				{
-				DebugLocation(310, 21);
-				PushFollow(Follow._parameter_in_takeClause1672);
-				parameter136=parameter();
+				DebugLocation(317, 21);
+				PushFollow(Follow._parameter_in_skipClause1678);
+				parameter133=parameter();
 				PopFollow();
 
-				adaptor.AddChild(root_0, parameter136.Tree);
+				adaptor.AddChild(root_0, parameter133.Tree);
 
 				}
 				break;
@@ -5124,11 +5039,127 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
+			TraceOut("skipClause", 32);
+			LeaveRule("skipClause", 32);
+			LeaveRule_skipClause();
+		}
+		DebugLocation(318, 1);
+		} finally { DebugExitRule(GrammarFileName, "skipClause"); }
+		return retval;
+
+	}
+	// $ANTLR end "skipClause"
+
+	partial void EnterRule_takeClause();
+	partial void LeaveRule_takeClause();
+	// $ANTLR start "takeClause"
+	// Hql.g:320:1: takeClause : TAKE ^ ( NUM_INT | parameter ) ;
+	[GrammarRule("takeClause")]
+	private AstParserRuleReturnScope<IASTNode, IToken> takeClause()
+	{
+		EnterRule_takeClause();
+		EnterRule("takeClause", 33);
+		TraceIn("takeClause", 33);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
+
+		IASTNode root_0 = default(IASTNode);
+
+		IToken TAKE134 = default(IToken);
+		IToken NUM_INT135 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> parameter136 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+
+		IASTNode TAKE134_tree = default(IASTNode);
+		IASTNode NUM_INT135_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "takeClause");
+		DebugLocation(320, 1);
+		try
+		{
+			// Hql.g:321:2: ( TAKE ^ ( NUM_INT | parameter ) )
+			DebugEnterAlt(1);
+			// Hql.g:321:4: TAKE ^ ( NUM_INT | parameter )
+			{
+			root_0 = (IASTNode)adaptor.Nil();
+
+			DebugLocation(321, 8);
+			TAKE134=(IToken)Match(input,TAKE,Follow._TAKE_in_takeClause1690); 
+			TAKE134_tree = (IASTNode)adaptor.Create(TAKE134);
+			root_0 = (IASTNode)adaptor.BecomeRoot(TAKE134_tree, root_0);
+			DebugLocation(321, 10);
+			// Hql.g:321:10: ( NUM_INT | parameter )
+			int alt43=2;
+			try { DebugEnterSubRule(43);
+			try { DebugEnterDecision(43, false);
+			int LA43_1 = input.LA(1);
+
+			if ((LA43_1==NUM_INT))
+			{
+				alt43 = 1;
+			}
+			else if ((LA43_1==COLON||LA43_1==PARAM))
+			{
+				alt43 = 2;
+			}
+			else
+			{
+				NoViableAltException nvae = new NoViableAltException("", 43, 0, input, 1);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(43); }
+			switch (alt43)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:321:11: NUM_INT
+				{
+				DebugLocation(321, 11);
+				NUM_INT135=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_takeClause1694); 
+				NUM_INT135_tree = (IASTNode)adaptor.Create(NUM_INT135);
+				adaptor.AddChild(root_0, NUM_INT135_tree);
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:321:21: parameter
+				{
+				DebugLocation(321, 21);
+				PushFollow(Follow._parameter_in_takeClause1698);
+				parameter136=parameter();
+				PopFollow();
+
+				adaptor.AddChild(root_0, parameter136.Tree);
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(43); }
+
+
+			}
+
+			retval.Stop = (IToken)input.LT(-1);
+
+			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
+
+		}
+		catch (RecognitionException re)
+		{
+			ReportError(re);
+			Recover(input,re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+
+		}
+		finally
+		{
 			TraceOut("takeClause", 33);
 			LeaveRule("takeClause", 33);
 			LeaveRule_takeClause();
 		}
-		DebugLocation(311, 1);
+		DebugLocation(322, 1);
 		} finally { DebugExitRule(GrammarFileName, "takeClause"); }
 		return retval;
 
@@ -5138,7 +5169,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_parameter();
 	partial void LeaveRule_parameter();
 	// $ANTLR start "parameter"
-	// Hql.g:313:1: parameter : ( COLON ^ identifier | PARAM ^ ( NUM_INT )? );
+	// Hql.g:324:1: parameter : ( COLON ^ identifier | PARAM ^ ( NUM_INT )? );
 	[GrammarRule("parameter")]
 	private AstParserRuleReturnScope<IASTNode, IToken> parameter()
 	{
@@ -5159,43 +5190,43 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode PARAM139_tree = default(IASTNode);
 		IASTNode NUM_INT140_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "parameter");
-		DebugLocation(313, 1);
+		DebugLocation(324, 1);
 		try
 		{
-			// Hql.g:314:2: ( COLON ^ identifier | PARAM ^ ( NUM_INT )? )
-			int alt44=2;
-			try { DebugEnterDecision(44, false);
-			int LA44_1 = input.LA(1);
+			// Hql.g:325:2: ( COLON ^ identifier | PARAM ^ ( NUM_INT )? )
+			int alt45=2;
+			try { DebugEnterDecision(45, false);
+			int LA45_1 = input.LA(1);
 
-			if ((LA44_1==COLON))
+			if ((LA45_1==COLON))
 			{
-				alt44 = 1;
+				alt45 = 1;
 			}
-			else if ((LA44_1==PARAM))
+			else if ((LA45_1==PARAM))
 			{
-				alt44 = 2;
+				alt45 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 44, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 45, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(44); }
-			switch (alt44)
+			} finally { DebugExitDecision(45); }
+			switch (alt45)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:314:4: COLON ^ identifier
+				// Hql.g:325:4: COLON ^ identifier
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(314, 9);
-				COLON137=(IToken)Match(input,COLON,Follow._COLON_in_parameter1684); 
+				DebugLocation(325, 9);
+				COLON137=(IToken)Match(input,COLON,Follow._COLON_in_parameter1710); 
 				COLON137_tree = (IASTNode)adaptor.Create(COLON137);
 				root_0 = (IASTNode)adaptor.BecomeRoot(COLON137_tree, root_0);
-				DebugLocation(314, 11);
-				PushFollow(Follow._identifier_in_parameter1687);
+				DebugLocation(325, 11);
+				PushFollow(Follow._identifier_in_parameter1713);
 				identifier138=identifier();
 				PopFollow();
 
@@ -5205,34 +5236,34 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:315:4: PARAM ^ ( NUM_INT )?
+				// Hql.g:326:4: PARAM ^ ( NUM_INT )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(315, 9);
-				PARAM139=(IToken)Match(input,PARAM,Follow._PARAM_in_parameter1692); 
+				DebugLocation(326, 9);
+				PARAM139=(IToken)Match(input,PARAM,Follow._PARAM_in_parameter1718); 
 				PARAM139_tree = (IASTNode)adaptor.Create(PARAM139);
 				root_0 = (IASTNode)adaptor.BecomeRoot(PARAM139_tree, root_0);
-				DebugLocation(315, 11);
-				// Hql.g:315:11: ( NUM_INT )?
-				int alt43=2;
-				try { DebugEnterSubRule(43);
-				try { DebugEnterDecision(43, false);
-				int LA43_1 = input.LA(1);
+				DebugLocation(326, 11);
+				// Hql.g:326:11: ( NUM_INT )?
+				int alt44=2;
+				try { DebugEnterSubRule(44);
+				try { DebugEnterDecision(44, false);
+				int LA44_1 = input.LA(1);
 
-				if ((LA43_1==NUM_INT))
+				if ((LA44_1==NUM_INT))
 				{
-					alt43 = 1;
+					alt44 = 1;
 				}
-				} finally { DebugExitDecision(43); }
-				switch (alt43)
+				} finally { DebugExitDecision(44); }
+				switch (alt44)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:315:12: NUM_INT
+					// Hql.g:326:12: NUM_INT
 					{
-					DebugLocation(315, 12);
-					NUM_INT140=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_parameter1696); 
+					DebugLocation(326, 12);
+					NUM_INT140=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_parameter1722); 
 					NUM_INT140_tree = (IASTNode)adaptor.Create(NUM_INT140);
 					adaptor.AddChild(root_0, NUM_INT140_tree);
 
@@ -5240,7 +5271,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(43); }
+				} finally { DebugExitSubRule(44); }
 
 
 				}
@@ -5266,7 +5297,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("parameter", 34);
 			LeaveRule_parameter();
 		}
-		DebugLocation(316, 1);
+		DebugLocation(327, 1);
 		} finally { DebugExitRule(GrammarFileName, "parameter"); }
 		return retval;
 
@@ -5276,7 +5307,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_orderElement();
 	partial void LeaveRule_orderElement();
 	// $ANTLR start "orderElement"
-	// Hql.g:318:1: orderElement : expression ( ascendingOrDescending )? ;
+	// Hql.g:329:1: orderElement : expression ( ascendingOrDescending )? ;
 	[GrammarRule("orderElement")]
 	private AstParserRuleReturnScope<IASTNode, IToken> orderElement()
 	{
@@ -5292,41 +5323,41 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> ascendingOrDescending142 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "orderElement");
-		DebugLocation(318, 1);
+		DebugLocation(329, 1);
 		try
 		{
-			// Hql.g:319:2: ( expression ( ascendingOrDescending )? )
+			// Hql.g:330:2: ( expression ( ascendingOrDescending )? )
 			DebugEnterAlt(1);
-			// Hql.g:319:4: expression ( ascendingOrDescending )?
+			// Hql.g:330:4: expression ( ascendingOrDescending )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(319, 4);
-			PushFollow(Follow._expression_in_orderElement1709);
+			DebugLocation(330, 4);
+			PushFollow(Follow._expression_in_orderElement1735);
 			expression141=expression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, expression141.Tree);
-			DebugLocation(319, 15);
-			// Hql.g:319:15: ( ascendingOrDescending )?
-			int alt45=2;
-			try { DebugEnterSubRule(45);
-			try { DebugEnterDecision(45, false);
-			int LA45_1 = input.LA(1);
+			DebugLocation(330, 15);
+			// Hql.g:330:15: ( ascendingOrDescending )?
+			int alt46=2;
+			try { DebugEnterSubRule(46);
+			try { DebugEnterDecision(46, false);
+			int LA46_1 = input.LA(1);
 
-			if ((LA45_1==ASCENDING||LA45_1==DESCENDING||(LA45_1>=133 && LA45_1<=134)))
+			if ((LA46_1==ASCENDING||LA46_1==DESCENDING||(LA46_1>=133 && LA46_1<=134)))
 			{
-				alt45 = 1;
+				alt46 = 1;
 			}
-			} finally { DebugExitDecision(45); }
-			switch (alt45)
+			} finally { DebugExitDecision(46); }
+			switch (alt46)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:319:17: ascendingOrDescending
+				// Hql.g:330:17: ascendingOrDescending
 				{
-				DebugLocation(319, 17);
-				PushFollow(Follow._ascendingOrDescending_in_orderElement1713);
+				DebugLocation(330, 17);
+				PushFollow(Follow._ascendingOrDescending_in_orderElement1739);
 				ascendingOrDescending142=ascendingOrDescending();
 				PopFollow();
 
@@ -5336,7 +5367,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(45); }
+			} finally { DebugExitSubRule(46); }
 
 
 			}
@@ -5360,7 +5391,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("orderElement", 35);
 			LeaveRule_orderElement();
 		}
-		DebugLocation(320, 1);
+		DebugLocation(331, 1);
 		} finally { DebugExitRule(GrammarFileName, "orderElement"); }
 		return retval;
 
@@ -5370,7 +5401,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_ascendingOrDescending();
 	partial void LeaveRule_ascendingOrDescending();
 	// $ANTLR start "ascendingOrDescending"
-	// Hql.g:322:1: ascendingOrDescending : ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
+	// Hql.g:333:1: ascendingOrDescending : ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) );
 	[GrammarRule("ascendingOrDescending")]
 	private AstParserRuleReturnScope<IASTNode, IToken> ascendingOrDescending()
 	{
@@ -5392,134 +5423,47 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleITokenStream stream_DESCENDING=new RewriteRuleITokenStream(adaptor,"token DESCENDING");
 		RewriteRuleITokenStream stream_134=new RewriteRuleITokenStream(adaptor,"token 134");
 		try { DebugEnterRule(GrammarFileName, "ascendingOrDescending");
-		DebugLocation(322, 1);
+		DebugLocation(333, 1);
 		try
 		{
-			// Hql.g:323:2: ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
-			int alt48=2;
-			try { DebugEnterDecision(48, false);
-			int LA48_1 = input.LA(1);
+			// Hql.g:334:2: ( (a= 'asc' |a= 'ascending' ) -> ^( ASCENDING[$a.Text] ) | (d= 'desc' |d= 'descending' ) -> ^( DESCENDING[$d.Text] ) )
+			int alt49=2;
+			try { DebugEnterDecision(49, false);
+			int LA49_1 = input.LA(1);
 
-			if ((LA48_1==ASCENDING||LA48_1==133))
+			if ((LA49_1==ASCENDING||LA49_1==133))
 			{
-				alt48 = 1;
+				alt49 = 1;
 			}
-			else if ((LA48_1==DESCENDING||LA48_1==134))
+			else if ((LA49_1==DESCENDING||LA49_1==134))
 			{
-				alt48 = 2;
+				alt49 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 48, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 49, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(48); }
-			switch (alt48)
+			} finally { DebugExitDecision(49); }
+			switch (alt49)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:323:4: (a= 'asc' |a= 'ascending' )
+				// Hql.g:334:4: (a= 'asc' |a= 'ascending' )
 				{
-				DebugLocation(323, 4);
-				// Hql.g:323:4: (a= 'asc' |a= 'ascending' )
-				int alt46=2;
-				try { DebugEnterSubRule(46);
-				try { DebugEnterDecision(46, false);
-				int LA46_1 = input.LA(1);
-
-				if ((LA46_1==ASCENDING))
-				{
-					alt46 = 1;
-				}
-				else if ((LA46_1==133))
-				{
-					alt46 = 2;
-				}
-				else
-				{
-					NoViableAltException nvae = new NoViableAltException("", 46, 0, input, 1);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
-				} finally { DebugExitDecision(46); }
-				switch (alt46)
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:323:6: a= 'asc'
-					{
-					DebugLocation(323, 7);
-					a=(IToken)Match(input,ASCENDING,Follow._ASCENDING_in_ascendingOrDescending1731);  
-					stream_ASCENDING.Add(a);
-
-
-					}
-					break;
-				case 2:
-					DebugEnterAlt(2);
-					// Hql.g:323:16: a= 'ascending'
-					{
-					DebugLocation(323, 17);
-					a=(IToken)Match(input,133,Follow._133_in_ascendingOrDescending1737);  
-					stream_133.Add(a);
-
-
-					}
-					break;
-
-				}
-				} finally { DebugExitSubRule(46); }
-
-
-
-				{
-				// AST REWRITE
-				// elements: 
-				// token labels: 
-				// rule labels: retval
-				// token list labels: 
-				// rule list labels: 
-				// wildcard labels: 
-				retval.Tree = root_0;
-				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
-
-				root_0 = (IASTNode)adaptor.Nil();
-				// 324:3: -> ^( ASCENDING[$a.Text] )
-				{
-					DebugLocation(324, 6);
-					// Hql.g:324:6: ^( ASCENDING[$a.Text] )
-					{
-					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(324, 8);
-					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ASCENDING, a.Text), root_1);
-
-					adaptor.AddChild(root_0, root_1);
-					}
-
-				}
-
-				retval.Tree = root_0;
-				}
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// Hql.g:325:4: (d= 'desc' |d= 'descending' )
-				{
-				DebugLocation(325, 4);
-				// Hql.g:325:4: (d= 'desc' |d= 'descending' )
+				DebugLocation(334, 4);
+				// Hql.g:334:4: (a= 'asc' |a= 'ascending' )
 				int alt47=2;
 				try { DebugEnterSubRule(47);
 				try { DebugEnterDecision(47, false);
 				int LA47_1 = input.LA(1);
 
-				if ((LA47_1==DESCENDING))
+				if ((LA47_1==ASCENDING))
 				{
 					alt47 = 1;
 				}
-				else if ((LA47_1==134))
+				else if ((LA47_1==133))
 				{
 					alt47 = 2;
 				}
@@ -5534,22 +5478,22 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:325:6: d= 'desc'
+					// Hql.g:334:6: a= 'asc'
 					{
-					DebugLocation(325, 7);
-					d=(IToken)Match(input,DESCENDING,Follow._DESCENDING_in_ascendingOrDescending1757);  
-					stream_DESCENDING.Add(d);
+					DebugLocation(334, 7);
+					a=(IToken)Match(input,ASCENDING,Follow._ASCENDING_in_ascendingOrDescending1757);  
+					stream_ASCENDING.Add(a);
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:325:17: d= 'descending'
+					// Hql.g:334:16: a= 'ascending'
 					{
-					DebugLocation(325, 18);
-					d=(IToken)Match(input,134,Follow._134_in_ascendingOrDescending1763);  
-					stream_134.Add(d);
+					DebugLocation(334, 17);
+					a=(IToken)Match(input,133,Follow._133_in_ascendingOrDescending1763);  
+					stream_133.Add(a);
 
 
 					}
@@ -5572,13 +5516,100 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 326:3: -> ^( DESCENDING[$d.Text] )
+				// 335:3: -> ^( ASCENDING[$a.Text] )
 				{
-					DebugLocation(326, 6);
-					// Hql.g:326:6: ^( DESCENDING[$d.Text] )
+					DebugLocation(335, 6);
+					// Hql.g:335:6: ^( ASCENDING[$a.Text] )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(326, 8);
+					DebugLocation(335, 8);
+					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ASCENDING, a.Text), root_1);
+
+					adaptor.AddChild(root_0, root_1);
+					}
+
+				}
+
+				retval.Tree = root_0;
+				}
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:336:4: (d= 'desc' |d= 'descending' )
+				{
+				DebugLocation(336, 4);
+				// Hql.g:336:4: (d= 'desc' |d= 'descending' )
+				int alt48=2;
+				try { DebugEnterSubRule(48);
+				try { DebugEnterDecision(48, false);
+				int LA48_1 = input.LA(1);
+
+				if ((LA48_1==DESCENDING))
+				{
+					alt48 = 1;
+				}
+				else if ((LA48_1==134))
+				{
+					alt48 = 2;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 48, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				} finally { DebugExitDecision(48); }
+				switch (alt48)
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:336:6: d= 'desc'
+					{
+					DebugLocation(336, 7);
+					d=(IToken)Match(input,DESCENDING,Follow._DESCENDING_in_ascendingOrDescending1783);  
+					stream_DESCENDING.Add(d);
+
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// Hql.g:336:17: d= 'descending'
+					{
+					DebugLocation(336, 18);
+					d=(IToken)Match(input,134,Follow._134_in_ascendingOrDescending1789);  
+					stream_134.Add(d);
+
+
+					}
+					break;
+
+				}
+				} finally { DebugExitSubRule(48); }
+
+
+
+				{
+				// AST REWRITE
+				// elements: 
+				// token labels: 
+				// rule labels: retval
+				// token list labels: 
+				// rule list labels: 
+				// wildcard labels: 
+				retval.Tree = root_0;
+				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
+
+				root_0 = (IASTNode)adaptor.Nil();
+				// 337:3: -> ^( DESCENDING[$d.Text] )
+				{
+					DebugLocation(337, 6);
+					// Hql.g:337:6: ^( DESCENDING[$d.Text] )
+					{
+					IASTNode root_1 = (IASTNode)adaptor.Nil();
+					DebugLocation(337, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(DESCENDING, d.Text), root_1);
 
 					adaptor.AddChild(root_0, root_1);
@@ -5612,7 +5643,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("ascendingOrDescending", 36);
 			LeaveRule_ascendingOrDescending();
 		}
-		DebugLocation(327, 1);
+		DebugLocation(338, 1);
 		} finally { DebugExitRule(GrammarFileName, "ascendingOrDescending"); }
 		return retval;
 
@@ -5622,7 +5653,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_havingClause();
 	partial void LeaveRule_havingClause();
 	// $ANTLR start "havingClause"
-	// Hql.g:329:1: havingClause : HAVING ^ logicalExpression ;
+	// Hql.g:340:1: havingClause : HAVING ^ logicalExpression ;
 	[GrammarRule("havingClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> havingClause()
 	{
@@ -5639,21 +5670,21 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode HAVING143_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "havingClause");
-		DebugLocation(329, 1);
+		DebugLocation(340, 1);
 		try
 		{
-			// Hql.g:330:2: ( HAVING ^ logicalExpression )
+			// Hql.g:341:2: ( HAVING ^ logicalExpression )
 			DebugEnterAlt(1);
-			// Hql.g:330:4: HAVING ^ logicalExpression
+			// Hql.g:341:4: HAVING ^ logicalExpression
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(330, 10);
-			HAVING143=(IToken)Match(input,HAVING,Follow._HAVING_in_havingClause1784); 
+			DebugLocation(341, 10);
+			HAVING143=(IToken)Match(input,HAVING,Follow._HAVING_in_havingClause1810); 
 			HAVING143_tree = (IASTNode)adaptor.Create(HAVING143);
 			root_0 = (IASTNode)adaptor.BecomeRoot(HAVING143_tree, root_0);
-			DebugLocation(330, 12);
-			PushFollow(Follow._logicalExpression_in_havingClause1787);
+			DebugLocation(341, 12);
+			PushFollow(Follow._logicalExpression_in_havingClause1813);
 			logicalExpression144=logicalExpression();
 			PopFollow();
 
@@ -5680,7 +5711,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("havingClause", 37);
 			LeaveRule_havingClause();
 		}
-		DebugLocation(331, 1);
+		DebugLocation(342, 1);
 		} finally { DebugExitRule(GrammarFileName, "havingClause"); }
 		return retval;
 
@@ -5690,7 +5721,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_whereClause();
 	partial void LeaveRule_whereClause();
 	// $ANTLR start "whereClause"
-	// Hql.g:333:1: whereClause : WHERE ^ logicalExpression ;
+	// Hql.g:344:1: whereClause : WHERE ^ logicalExpression ;
 	[GrammarRule("whereClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> whereClause()
 	{
@@ -5707,21 +5738,21 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode WHERE145_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "whereClause");
-		DebugLocation(333, 1);
+		DebugLocation(344, 1);
 		try
 		{
-			// Hql.g:334:2: ( WHERE ^ logicalExpression )
+			// Hql.g:345:2: ( WHERE ^ logicalExpression )
 			DebugEnterAlt(1);
-			// Hql.g:334:4: WHERE ^ logicalExpression
+			// Hql.g:345:4: WHERE ^ logicalExpression
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(334, 9);
-			WHERE145=(IToken)Match(input,WHERE,Follow._WHERE_in_whereClause1798); 
+			DebugLocation(345, 9);
+			WHERE145=(IToken)Match(input,WHERE,Follow._WHERE_in_whereClause1824); 
 			WHERE145_tree = (IASTNode)adaptor.Create(WHERE145);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHERE145_tree, root_0);
-			DebugLocation(334, 11);
-			PushFollow(Follow._logicalExpression_in_whereClause1801);
+			DebugLocation(345, 11);
+			PushFollow(Follow._logicalExpression_in_whereClause1827);
 			logicalExpression146=logicalExpression();
 			PopFollow();
 
@@ -5748,7 +5779,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("whereClause", 38);
 			LeaveRule_whereClause();
 		}
-		DebugLocation(335, 1);
+		DebugLocation(346, 1);
 		} finally { DebugExitRule(GrammarFileName, "whereClause"); }
 		return retval;
 
@@ -5758,7 +5789,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_selectedPropertiesList();
 	partial void LeaveRule_selectedPropertiesList();
 	// $ANTLR start "selectedPropertiesList"
-	// Hql.g:337:1: selectedPropertiesList : aliasedExpression ( COMMA ! aliasedExpression )* ;
+	// Hql.g:348:1: selectedPropertiesList : aliasedExpression ( COMMA ! aliasedExpression )* ;
 	[GrammarRule("selectedPropertiesList")]
 	private AstParserRuleReturnScope<IASTNode, IToken> selectedPropertiesList()
 	{
@@ -5776,47 +5807,47 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode COMMA148_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "selectedPropertiesList");
-		DebugLocation(337, 1);
+		DebugLocation(348, 1);
 		try
 		{
-			// Hql.g:338:2: ( aliasedExpression ( COMMA ! aliasedExpression )* )
+			// Hql.g:349:2: ( aliasedExpression ( COMMA ! aliasedExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:338:4: aliasedExpression ( COMMA ! aliasedExpression )*
+			// Hql.g:349:4: aliasedExpression ( COMMA ! aliasedExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(338, 4);
-			PushFollow(Follow._aliasedExpression_in_selectedPropertiesList1812);
+			DebugLocation(349, 4);
+			PushFollow(Follow._aliasedExpression_in_selectedPropertiesList1838);
 			aliasedExpression147=aliasedExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, aliasedExpression147.Tree);
-			DebugLocation(338, 22);
-			// Hql.g:338:22: ( COMMA ! aliasedExpression )*
-			try { DebugEnterSubRule(49);
+			DebugLocation(349, 22);
+			// Hql.g:349:22: ( COMMA ! aliasedExpression )*
+			try { DebugEnterSubRule(50);
 			while (true)
 			{
-				int alt49=2;
-				try { DebugEnterDecision(49, false);
-				int LA49_1 = input.LA(1);
+				int alt50=2;
+				try { DebugEnterDecision(50, false);
+				int LA50_1 = input.LA(1);
 
-				if ((LA49_1==COMMA))
+				if ((LA50_1==COMMA))
 				{
-					alt49 = 1;
+					alt50 = 1;
 				}
 
 
-				} finally { DebugExitDecision(49); }
-				switch ( alt49 )
+				} finally { DebugExitDecision(50); }
+				switch ( alt50 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:338:24: COMMA ! aliasedExpression
+					// Hql.g:349:24: COMMA ! aliasedExpression
 					{
-					DebugLocation(338, 29);
-					COMMA148=(IToken)Match(input,COMMA,Follow._COMMA_in_selectedPropertiesList1816); 
-					DebugLocation(338, 31);
-					PushFollow(Follow._aliasedExpression_in_selectedPropertiesList1819);
+					DebugLocation(349, 29);
+					COMMA148=(IToken)Match(input,COMMA,Follow._COMMA_in_selectedPropertiesList1842); 
+					DebugLocation(349, 31);
+					PushFollow(Follow._aliasedExpression_in_selectedPropertiesList1845);
 					aliasedExpression149=aliasedExpression();
 					PopFollow();
 
@@ -5826,14 +5857,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop49;
+					goto loop50;
 				}
 			}
 
-			loop49:
+			loop50:
 				;
 
-			} finally { DebugExitSubRule(49); }
+			} finally { DebugExitSubRule(50); }
 
 
 			}
@@ -5857,7 +5888,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("selectedPropertiesList", 39);
 			LeaveRule_selectedPropertiesList();
 		}
-		DebugLocation(339, 1);
+		DebugLocation(350, 1);
 		} finally { DebugExitRule(GrammarFileName, "selectedPropertiesList"); }
 		return retval;
 
@@ -5867,7 +5898,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_aliasedExpression();
 	partial void LeaveRule_aliasedExpression();
 	// $ANTLR start "aliasedExpression"
-	// Hql.g:341:1: aliasedExpression : expression ( AS ^ identifier )? ;
+	// Hql.g:352:1: aliasedExpression : expression ( AS ^ identifier )? ;
 	[GrammarRule("aliasedExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> aliasedExpression()
 	{
@@ -5885,45 +5916,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode AS151_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aliasedExpression");
-		DebugLocation(341, 1);
+		DebugLocation(352, 1);
 		try
 		{
-			// Hql.g:342:2: ( expression ( AS ^ identifier )? )
+			// Hql.g:353:2: ( expression ( AS ^ identifier )? )
 			DebugEnterAlt(1);
-			// Hql.g:342:4: expression ( AS ^ identifier )?
+			// Hql.g:353:4: expression ( AS ^ identifier )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(342, 4);
-			PushFollow(Follow._expression_in_aliasedExpression1834);
+			DebugLocation(353, 4);
+			PushFollow(Follow._expression_in_aliasedExpression1860);
 			expression150=expression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, expression150.Tree);
-			DebugLocation(342, 15);
-			// Hql.g:342:15: ( AS ^ identifier )?
-			int alt50=2;
-			try { DebugEnterSubRule(50);
-			try { DebugEnterDecision(50, false);
-			int LA50_1 = input.LA(1);
+			DebugLocation(353, 15);
+			// Hql.g:353:15: ( AS ^ identifier )?
+			int alt51=2;
+			try { DebugEnterSubRule(51);
+			try { DebugEnterDecision(51, false);
+			int LA51_1 = input.LA(1);
 
-			if ((LA50_1==AS))
+			if ((LA51_1==AS))
 			{
-				alt50 = 1;
+				alt51 = 1;
 			}
-			} finally { DebugExitDecision(50); }
-			switch (alt50)
+			} finally { DebugExitDecision(51); }
+			switch (alt51)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:342:17: AS ^ identifier
+				// Hql.g:353:17: AS ^ identifier
 				{
-				DebugLocation(342, 19);
-				AS151=(IToken)Match(input,AS,Follow._AS_in_aliasedExpression1838); 
+				DebugLocation(353, 19);
+				AS151=(IToken)Match(input,AS,Follow._AS_in_aliasedExpression1864); 
 				AS151_tree = (IASTNode)adaptor.Create(AS151);
 				root_0 = (IASTNode)adaptor.BecomeRoot(AS151_tree, root_0);
-				DebugLocation(342, 21);
-				PushFollow(Follow._identifier_in_aliasedExpression1841);
+				DebugLocation(353, 21);
+				PushFollow(Follow._identifier_in_aliasedExpression1867);
 				identifier152=identifier();
 				PopFollow();
 
@@ -5933,7 +5964,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(50); }
+			} finally { DebugExitSubRule(51); }
 
 
 			}
@@ -5957,7 +5988,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("aliasedExpression", 40);
 			LeaveRule_aliasedExpression();
 		}
-		DebugLocation(343, 1);
+		DebugLocation(354, 1);
 		} finally { DebugExitRule(GrammarFileName, "aliasedExpression"); }
 		return retval;
 
@@ -5967,7 +5998,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_logicalExpression();
 	partial void LeaveRule_logicalExpression();
 	// $ANTLR start "logicalExpression"
-	// Hql.g:370:1: logicalExpression : expression ;
+	// Hql.g:381:1: logicalExpression : expression ;
 	[GrammarRule("logicalExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> logicalExpression()
 	{
@@ -5982,17 +6013,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> expression153 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "logicalExpression");
-		DebugLocation(370, 1);
+		DebugLocation(381, 1);
 		try
 		{
-			// Hql.g:371:2: ( expression )
+			// Hql.g:382:2: ( expression )
 			DebugEnterAlt(1);
-			// Hql.g:371:4: expression
+			// Hql.g:382:4: expression
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(371, 4);
-			PushFollow(Follow._expression_in_logicalExpression1880);
+			DebugLocation(382, 4);
+			PushFollow(Follow._expression_in_logicalExpression1906);
 			expression153=expression();
 			PopFollow();
 
@@ -6019,7 +6050,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("logicalExpression", 41);
 			LeaveRule_logicalExpression();
 		}
-		DebugLocation(372, 1);
+		DebugLocation(383, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalExpression"); }
 		return retval;
 
@@ -6029,7 +6060,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_expression();
 	partial void LeaveRule_expression();
 	// $ANTLR start "expression"
-	// Hql.g:375:1: expression : logicalOrExpression ;
+	// Hql.g:386:1: expression : logicalOrExpression ;
 	[GrammarRule("expression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> expression()
 	{
@@ -6044,17 +6075,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		AstParserRuleReturnScope<IASTNode, IToken> logicalOrExpression154 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
 		try { DebugEnterRule(GrammarFileName, "expression");
-		DebugLocation(375, 1);
+		DebugLocation(386, 1);
 		try
 		{
-			// Hql.g:376:2: ( logicalOrExpression )
+			// Hql.g:387:2: ( logicalOrExpression )
 			DebugEnterAlt(1);
-			// Hql.g:376:4: logicalOrExpression
+			// Hql.g:387:4: logicalOrExpression
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(376, 4);
-			PushFollow(Follow._logicalOrExpression_in_expression1892);
+			DebugLocation(387, 4);
+			PushFollow(Follow._logicalOrExpression_in_expression1918);
 			logicalOrExpression154=logicalOrExpression();
 			PopFollow();
 
@@ -6081,7 +6112,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("expression", 42);
 			LeaveRule_expression();
 		}
-		DebugLocation(377, 1);
+		DebugLocation(388, 1);
 		} finally { DebugExitRule(GrammarFileName, "expression"); }
 		return retval;
 
@@ -6091,7 +6122,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_logicalOrExpression();
 	partial void LeaveRule_logicalOrExpression();
 	// $ANTLR start "logicalOrExpression"
-	// Hql.g:380:1: logicalOrExpression : logicalAndExpression ( OR ^ logicalAndExpression )* ;
+	// Hql.g:391:1: logicalOrExpression : logicalAndExpression ( OR ^ logicalAndExpression )* ;
 	[GrammarRule("logicalOrExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> logicalOrExpression()
 	{
@@ -6109,134 +6140,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode OR156_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "logicalOrExpression");
-		DebugLocation(380, 1);
+		DebugLocation(391, 1);
 		try
 		{
-			// Hql.g:381:2: ( logicalAndExpression ( OR ^ logicalAndExpression )* )
+			// Hql.g:392:2: ( logicalAndExpression ( OR ^ logicalAndExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:381:4: logicalAndExpression ( OR ^ logicalAndExpression )*
+			// Hql.g:392:4: logicalAndExpression ( OR ^ logicalAndExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(381, 4);
-			PushFollow(Follow._logicalAndExpression_in_logicalOrExpression1904);
+			DebugLocation(392, 4);
+			PushFollow(Follow._logicalAndExpression_in_logicalOrExpression1930);
 			logicalAndExpression155=logicalAndExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, logicalAndExpression155.Tree);
-			DebugLocation(381, 25);
-			// Hql.g:381:25: ( OR ^ logicalAndExpression )*
-			try { DebugEnterSubRule(51);
-			while (true)
-			{
-				int alt51=2;
-				try { DebugEnterDecision(51, false);
-				int LA51_1 = input.LA(1);
-
-				if ((LA51_1==OR))
-				{
-					alt51 = 1;
-				}
-
-
-				} finally { DebugExitDecision(51); }
-				switch ( alt51 )
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:381:27: OR ^ logicalAndExpression
-					{
-					DebugLocation(381, 29);
-					OR156=(IToken)Match(input,OR,Follow._OR_in_logicalOrExpression1908); 
-					OR156_tree = (IASTNode)adaptor.Create(OR156);
-					root_0 = (IASTNode)adaptor.BecomeRoot(OR156_tree, root_0);
-					DebugLocation(381, 31);
-					PushFollow(Follow._logicalAndExpression_in_logicalOrExpression1911);
-					logicalAndExpression157=logicalAndExpression();
-					PopFollow();
-
-					adaptor.AddChild(root_0, logicalAndExpression157.Tree);
-
-					}
-					break;
-
-				default:
-					goto loop51;
-				}
-			}
-
-			loop51:
-				;
-
-			} finally { DebugExitSubRule(51); }
-
-
-			}
-
-			retval.Stop = (IToken)input.LT(-1);
-
-			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
-			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
-
-		}
-		catch (RecognitionException re)
-		{
-			ReportError(re);
-			Recover(input,re);
-			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
-
-		}
-		finally
-		{
-			TraceOut("logicalOrExpression", 43);
-			LeaveRule("logicalOrExpression", 43);
-			LeaveRule_logicalOrExpression();
-		}
-		DebugLocation(382, 1);
-		} finally { DebugExitRule(GrammarFileName, "logicalOrExpression"); }
-		return retval;
-
-	}
-	// $ANTLR end "logicalOrExpression"
-
-	partial void EnterRule_logicalAndExpression();
-	partial void LeaveRule_logicalAndExpression();
-	// $ANTLR start "logicalAndExpression"
-	// Hql.g:385:1: logicalAndExpression : negatedExpression ( AND ^ negatedExpression )* ;
-	[GrammarRule("logicalAndExpression")]
-	private AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression()
-	{
-		EnterRule_logicalAndExpression();
-		EnterRule("logicalAndExpression", 44);
-		TraceIn("logicalAndExpression", 44);
-		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-		retval.Start = (IToken)input.LT(1);
-
-		IASTNode root_0 = default(IASTNode);
-
-		IToken AND159 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression158 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression160 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
-		IASTNode AND159_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "logicalAndExpression");
-		DebugLocation(385, 1);
-		try
-		{
-			// Hql.g:386:2: ( negatedExpression ( AND ^ negatedExpression )* )
-			DebugEnterAlt(1);
-			// Hql.g:386:4: negatedExpression ( AND ^ negatedExpression )*
-			{
-			root_0 = (IASTNode)adaptor.Nil();
-
-			DebugLocation(386, 4);
-			PushFollow(Follow._negatedExpression_in_logicalAndExpression1926);
-			negatedExpression158=negatedExpression();
-			PopFollow();
-
-			adaptor.AddChild(root_0, negatedExpression158.Tree);
-			DebugLocation(386, 22);
-			// Hql.g:386:22: ( AND ^ negatedExpression )*
+			DebugLocation(392, 25);
+			// Hql.g:392:25: ( OR ^ logicalAndExpression )*
 			try { DebugEnterSubRule(52);
 			while (true)
 			{
@@ -6244,7 +6164,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(52, false);
 				int LA52_1 = input.LA(1);
 
-				if ((LA52_1==AND))
+				if ((LA52_1==OR))
 				{
 					alt52 = 1;
 				}
@@ -6255,18 +6175,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:386:24: AND ^ negatedExpression
+					// Hql.g:392:27: OR ^ logicalAndExpression
 					{
-					DebugLocation(386, 27);
-					AND159=(IToken)Match(input,AND,Follow._AND_in_logicalAndExpression1930); 
-					AND159_tree = (IASTNode)adaptor.Create(AND159);
-					root_0 = (IASTNode)adaptor.BecomeRoot(AND159_tree, root_0);
-					DebugLocation(386, 29);
-					PushFollow(Follow._negatedExpression_in_logicalAndExpression1933);
-					negatedExpression160=negatedExpression();
+					DebugLocation(392, 29);
+					OR156=(IToken)Match(input,OR,Follow._OR_in_logicalOrExpression1934); 
+					OR156_tree = (IASTNode)adaptor.Create(OR156);
+					root_0 = (IASTNode)adaptor.BecomeRoot(OR156_tree, root_0);
+					DebugLocation(392, 31);
+					PushFollow(Follow._logicalAndExpression_in_logicalOrExpression1937);
+					logicalAndExpression157=logicalAndExpression();
 					PopFollow();
 
-					adaptor.AddChild(root_0, negatedExpression160.Tree);
+					adaptor.AddChild(root_0, logicalAndExpression157.Tree);
 
 					}
 					break;
@@ -6299,11 +6219,122 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
+			TraceOut("logicalOrExpression", 43);
+			LeaveRule("logicalOrExpression", 43);
+			LeaveRule_logicalOrExpression();
+		}
+		DebugLocation(393, 1);
+		} finally { DebugExitRule(GrammarFileName, "logicalOrExpression"); }
+		return retval;
+
+	}
+	// $ANTLR end "logicalOrExpression"
+
+	partial void EnterRule_logicalAndExpression();
+	partial void LeaveRule_logicalAndExpression();
+	// $ANTLR start "logicalAndExpression"
+	// Hql.g:396:1: logicalAndExpression : negatedExpression ( AND ^ negatedExpression )* ;
+	[GrammarRule("logicalAndExpression")]
+	private AstParserRuleReturnScope<IASTNode, IToken> logicalAndExpression()
+	{
+		EnterRule_logicalAndExpression();
+		EnterRule("logicalAndExpression", 44);
+		TraceIn("logicalAndExpression", 44);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
+
+		IASTNode root_0 = default(IASTNode);
+
+		IToken AND159 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression158 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> negatedExpression160 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+
+		IASTNode AND159_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "logicalAndExpression");
+		DebugLocation(396, 1);
+		try
+		{
+			// Hql.g:397:2: ( negatedExpression ( AND ^ negatedExpression )* )
+			DebugEnterAlt(1);
+			// Hql.g:397:4: negatedExpression ( AND ^ negatedExpression )*
+			{
+			root_0 = (IASTNode)adaptor.Nil();
+
+			DebugLocation(397, 4);
+			PushFollow(Follow._negatedExpression_in_logicalAndExpression1952);
+			negatedExpression158=negatedExpression();
+			PopFollow();
+
+			adaptor.AddChild(root_0, negatedExpression158.Tree);
+			DebugLocation(397, 22);
+			// Hql.g:397:22: ( AND ^ negatedExpression )*
+			try { DebugEnterSubRule(53);
+			while (true)
+			{
+				int alt53=2;
+				try { DebugEnterDecision(53, false);
+				int LA53_1 = input.LA(1);
+
+				if ((LA53_1==AND))
+				{
+					alt53 = 1;
+				}
+
+
+				} finally { DebugExitDecision(53); }
+				switch ( alt53 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:397:24: AND ^ negatedExpression
+					{
+					DebugLocation(397, 27);
+					AND159=(IToken)Match(input,AND,Follow._AND_in_logicalAndExpression1956); 
+					AND159_tree = (IASTNode)adaptor.Create(AND159);
+					root_0 = (IASTNode)adaptor.BecomeRoot(AND159_tree, root_0);
+					DebugLocation(397, 29);
+					PushFollow(Follow._negatedExpression_in_logicalAndExpression1959);
+					negatedExpression160=negatedExpression();
+					PopFollow();
+
+					adaptor.AddChild(root_0, negatedExpression160.Tree);
+
+					}
+					break;
+
+				default:
+					goto loop53;
+				}
+			}
+
+			loop53:
+				;
+
+			} finally { DebugExitSubRule(53); }
+
+
+			}
+
+			retval.Stop = (IToken)input.LT(-1);
+
+			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
+
+		}
+		catch (RecognitionException re)
+		{
+			ReportError(re);
+			Recover(input,re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+
+		}
+		finally
+		{
 			TraceOut("logicalAndExpression", 44);
 			LeaveRule("logicalAndExpression", 44);
 			LeaveRule_logicalAndExpression();
 		}
-		DebugLocation(387, 1);
+		DebugLocation(398, 1);
 		} finally { DebugExitRule(GrammarFileName, "logicalAndExpression"); }
 		return retval;
 
@@ -6313,7 +6344,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_negatedExpression();
 	partial void LeaveRule_negatedExpression();
 	// $ANTLR start "negatedExpression"
-	// Hql.g:391:1: negatedExpression : ( NOT x= negatedExpression -> ^() | equalityExpression );
+	// Hql.g:402:1: negatedExpression : ( NOT x= negatedExpression -> ^() | equalityExpression );
 	[GrammarRule("negatedExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> negatedExpression()
 	{
@@ -6334,41 +6365,41 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_negatedExpression=new RewriteRuleSubtreeStream(adaptor,"rule negatedExpression");
 		 WeakKeywords(); 
 		try { DebugEnterRule(GrammarFileName, "negatedExpression");
-		DebugLocation(391, 1);
+		DebugLocation(402, 1);
 		try
 		{
-			// Hql.g:393:2: ( NOT x= negatedExpression -> ^() | equalityExpression )
-			int alt53=2;
-			try { DebugEnterDecision(53, false);
-			int LA53_1 = input.LA(1);
+			// Hql.g:404:2: ( NOT x= negatedExpression -> ^() | equalityExpression )
+			int alt54=2;
+			try { DebugEnterDecision(54, false);
+			int LA54_1 = input.LA(1);
 
-			if ((LA53_1==NOT))
+			if ((LA54_1==NOT))
 			{
-				alt53 = 1;
+				alt54 = 1;
 			}
-			else if ((LA53_1==ALL||LA53_1==ANY||LA53_1==AVG||LA53_1==BNOT||LA53_1==CASE||LA53_1==COLON||LA53_1==COUNT||LA53_1==ELEMENTS||LA53_1==EMPTY||LA53_1==EXISTS||LA53_1==FALSE||LA53_1==IDENT||LA53_1==INDICES||LA53_1==MAX||(LA53_1>=MIN && LA53_1<=MINUS)||(LA53_1>=NULL && LA53_1<=NUM_LONG)||LA53_1==OPEN||(LA53_1>=PARAM && LA53_1<=PLUS)||LA53_1==QUOTED_String||LA53_1==SOME||LA53_1==SUM||LA53_1==TRUE))
+			else if ((LA54_1==ALL||LA54_1==ANY||LA54_1==AVG||LA54_1==BNOT||LA54_1==CASE||LA54_1==COLON||LA54_1==COUNT||LA54_1==ELEMENTS||LA54_1==EMPTY||LA54_1==EXISTS||LA54_1==FALSE||LA54_1==IDENT||LA54_1==INDICES||LA54_1==MAX||(LA54_1>=MIN && LA54_1<=MINUS)||(LA54_1>=NULL && LA54_1<=NUM_LONG)||LA54_1==OPEN||(LA54_1>=PARAM && LA54_1<=PLUS)||LA54_1==QUOTED_String||LA54_1==SOME||LA54_1==SUM||LA54_1==TRUE))
 			{
-				alt53 = 2;
+				alt54 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 53, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 54, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(53); }
-			switch (alt53)
+			} finally { DebugExitDecision(54); }
+			switch (alt54)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:393:4: NOT x= negatedExpression
+				// Hql.g:404:4: NOT x= negatedExpression
 				{
-				DebugLocation(393, 4);
-				NOT161=(IToken)Match(input,NOT,Follow._NOT_in_negatedExpression1954);  
+				DebugLocation(404, 4);
+				NOT161=(IToken)Match(input,NOT,Follow._NOT_in_negatedExpression1980);  
 				stream_NOT.Add(NOT161);
 
-				DebugLocation(393, 9);
-				PushFollow(Follow._negatedExpression_in_negatedExpression1958);
+				DebugLocation(404, 9);
+				PushFollow(Follow._negatedExpression_in_negatedExpression1984);
 				x=negatedExpression();
 				PopFollow();
 
@@ -6387,13 +6418,13 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 394:3: -> ^()
+				// 405:3: -> ^()
 				{
-					DebugLocation(394, 6);
-					// Hql.g:394:6: ^()
+					DebugLocation(405, 6);
+					// Hql.g:405:6: ^()
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(394, 8);
+					DebugLocation(405, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(NegateNode((x!=null?((IASTNode)x.Tree):default(IASTNode))), root_1);
 
 					adaptor.AddChild(root_0, root_1);
@@ -6408,12 +6439,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:395:4: equalityExpression
+				// Hql.g:406:4: equalityExpression
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(395, 4);
-				PushFollow(Follow._equalityExpression_in_negatedExpression1971);
+				DebugLocation(406, 4);
+				PushFollow(Follow._equalityExpression_in_negatedExpression1997);
 				equalityExpression162=equalityExpression();
 				PopFollow();
 
@@ -6442,7 +6473,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("negatedExpression", 45);
 			LeaveRule_negatedExpression();
 		}
-		DebugLocation(396, 1);
+		DebugLocation(407, 1);
 		} finally { DebugExitRule(GrammarFileName, "negatedExpression"); }
 		return retval;
 
@@ -6452,7 +6483,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_equalityExpression();
 	partial void LeaveRule_equalityExpression();
 	// $ANTLR start "equalityExpression"
-	// Hql.g:401:1: equalityExpression : x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )* ;
+	// Hql.g:412:1: equalityExpression : x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )* ;
 	[GrammarRule("equalityExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> equalityExpression()
 	{
@@ -6478,87 +6509,87 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode NOT164_tree = default(IASTNode);
 		IASTNode NE165_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "equalityExpression");
-		DebugLocation(401, 1);
+		DebugLocation(412, 1);
 		try
 		{
-			// Hql.g:406:2: (x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )* )
+			// Hql.g:417:2: (x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:406:4: x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )*
+			// Hql.g:417:4: x= relationalExpression ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(406, 5);
-			PushFollow(Follow._relationalExpression_in_equalityExpression1993);
+			DebugLocation(417, 5);
+			PushFollow(Follow._relationalExpression_in_equalityExpression2019);
 			x=relationalExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, x.Tree);
-			DebugLocation(406, 27);
-			// Hql.g:406:27: ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )*
-			try { DebugEnterSubRule(56);
+			DebugLocation(417, 27);
+			// Hql.g:417:27: ( ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression )*
+			try { DebugEnterSubRule(57);
 			while (true)
 			{
-				int alt56=2;
-				try { DebugEnterDecision(56, false);
-				int LA56_1 = input.LA(1);
+				int alt57=2;
+				try { DebugEnterDecision(57, false);
+				int LA57_1 = input.LA(1);
 
-				if ((LA56_1==EQ||LA56_1==IS||LA56_1==NE||LA56_1==SQL_NE))
+				if ((LA57_1==EQ||LA57_1==IS||LA57_1==NE||LA57_1==SQL_NE))
 				{
-					alt56 = 1;
+					alt57 = 1;
 				}
 
 
-				} finally { DebugExitDecision(56); }
-				switch ( alt56 )
+				} finally { DebugExitDecision(57); }
+				switch ( alt57 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:407:3: ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression
+					// Hql.g:418:3: ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^) y= relationalExpression
 					{
-					DebugLocation(407, 3);
-					// Hql.g:407:3: ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^)
-					int alt55=4;
-					try { DebugEnterSubRule(55);
-					try { DebugEnterDecision(55, false);
+					DebugLocation(418, 3);
+					// Hql.g:418:3: ( EQ ^|isx= IS ^ ( NOT !)? | NE ^|ne= SQL_NE ^)
+					int alt56=4;
+					try { DebugEnterSubRule(56);
+					try { DebugEnterDecision(56, false);
 					switch (input.LA(1))
 					{
 					case EQ:
 						{
-						alt55 = 1;
+						alt56 = 1;
 						}
 						break;
 					case IS:
 						{
-						alt55 = 2;
+						alt56 = 2;
 						}
 						break;
 					case NE:
 						{
-						alt55 = 3;
+						alt56 = 3;
 						}
 						break;
 					case SQL_NE:
 						{
-						alt55 = 4;
+						alt56 = 4;
 						}
 						break;
 					default:
 						{
-							NoViableAltException nvae = new NoViableAltException("", 55, 0, input, 1);
+							NoViableAltException nvae = new NoViableAltException("", 56, 0, input, 1);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
 					}
 
-					} finally { DebugExitDecision(55); }
-					switch (alt55)
+					} finally { DebugExitDecision(56); }
+					switch (alt56)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:407:5: EQ ^
+						// Hql.g:418:5: EQ ^
 						{
-						DebugLocation(407, 7);
-						EQ163=(IToken)Match(input,EQ,Follow._EQ_in_equalityExpression2001); 
+						DebugLocation(418, 7);
+						EQ163=(IToken)Match(input,EQ,Follow._EQ_in_equalityExpression2027); 
 						EQ163_tree = (IASTNode)adaptor.Create(EQ163);
 						root_0 = (IASTNode)adaptor.BecomeRoot(EQ163_tree, root_0);
 
@@ -6566,52 +6597,52 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// Hql.g:408:5: isx= IS ^ ( NOT !)?
+						// Hql.g:419:5: isx= IS ^ ( NOT !)?
 						{
-						DebugLocation(408, 8);
-						isx=(IToken)Match(input,IS,Follow._IS_in_equalityExpression2010); 
+						DebugLocation(419, 8);
+						isx=(IToken)Match(input,IS,Follow._IS_in_equalityExpression2036); 
 						isx_tree = (IASTNode)adaptor.Create(isx);
 						root_0 = (IASTNode)adaptor.BecomeRoot(isx_tree, root_0);
-						DebugLocation(408, 13);
+						DebugLocation(419, 13);
 						 isx.Type = EQ; 
-						DebugLocation(408, 33);
-						// Hql.g:408:33: ( NOT !)?
-						int alt54=2;
-						try { DebugEnterSubRule(54);
-						try { DebugEnterDecision(54, false);
-						int LA54_1 = input.LA(1);
+						DebugLocation(419, 33);
+						// Hql.g:419:33: ( NOT !)?
+						int alt55=2;
+						try { DebugEnterSubRule(55);
+						try { DebugEnterDecision(55, false);
+						int LA55_1 = input.LA(1);
 
-						if ((LA54_1==NOT))
+						if ((LA55_1==NOT))
 						{
-							alt54 = 1;
+							alt55 = 1;
 						}
-						} finally { DebugExitDecision(54); }
-						switch (alt54)
+						} finally { DebugExitDecision(55); }
+						switch (alt55)
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:408:34: NOT !
+							// Hql.g:419:34: NOT !
 							{
-							DebugLocation(408, 37);
-							NOT164=(IToken)Match(input,NOT,Follow._NOT_in_equalityExpression2016); 
-							DebugLocation(408, 39);
+							DebugLocation(419, 37);
+							NOT164=(IToken)Match(input,NOT,Follow._NOT_in_equalityExpression2042); 
+							DebugLocation(419, 39);
 							 isx.Type =NE; 
 
 							}
 							break;
 
 						}
-						} finally { DebugExitSubRule(54); }
+						} finally { DebugExitSubRule(55); }
 
 
 						}
 						break;
 					case 3:
 						DebugEnterAlt(3);
-						// Hql.g:409:5: NE ^
+						// Hql.g:420:5: NE ^
 						{
-						DebugLocation(409, 7);
-						NE165=(IToken)Match(input,NE,Follow._NE_in_equalityExpression2028); 
+						DebugLocation(420, 7);
+						NE165=(IToken)Match(input,NE,Follow._NE_in_equalityExpression2054); 
 						NE165_tree = (IASTNode)adaptor.Create(NE165);
 						root_0 = (IASTNode)adaptor.BecomeRoot(NE165_tree, root_0);
 
@@ -6619,23 +6650,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case 4:
 						DebugEnterAlt(4);
-						// Hql.g:410:5: ne= SQL_NE ^
+						// Hql.g:421:5: ne= SQL_NE ^
 						{
-						DebugLocation(410, 7);
-						ne=(IToken)Match(input,SQL_NE,Follow._SQL_NE_in_equalityExpression2037); 
+						DebugLocation(421, 7);
+						ne=(IToken)Match(input,SQL_NE,Follow._SQL_NE_in_equalityExpression2063); 
 						ne_tree = (IASTNode)adaptor.Create(ne);
 						root_0 = (IASTNode)adaptor.BecomeRoot(ne_tree, root_0);
-						DebugLocation(410, 16);
+						DebugLocation(421, 16);
 						 ne.Type = NE; 
 
 						}
 						break;
 
 					}
-					} finally { DebugExitSubRule(55); }
+					} finally { DebugExitSubRule(56); }
 
-					DebugLocation(411, 6);
-					PushFollow(Follow._relationalExpression_in_equalityExpression2048);
+					DebugLocation(422, 6);
+					PushFollow(Follow._relationalExpression_in_equalityExpression2074);
 					y=relationalExpression();
 					PopFollow();
 
@@ -6645,14 +6676,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop56;
+					goto loop57;
 				}
 			}
 
-			loop56:
+			loop57:
 				;
 
-			} finally { DebugExitSubRule(56); }
+			} finally { DebugExitSubRule(57); }
 
 
 			}
@@ -6680,7 +6711,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("equalityExpression", 46);
 			LeaveRule_equalityExpression();
 		}
-		DebugLocation(412, 1);
+		DebugLocation(423, 1);
 		} finally { DebugExitRule(GrammarFileName, "equalityExpression"); }
 		return retval;
 
@@ -6690,7 +6721,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_relationalExpression();
 	partial void LeaveRule_relationalExpression();
 	// $ANTLR start "relationalExpression"
-	// Hql.g:418:1: relationalExpression : concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) ) ;
+	// Hql.g:429:1: relationalExpression : concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) ) ;
 	[GrammarRule("relationalExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> relationalExpression()
 	{
@@ -6731,120 +6762,120 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode MEMBER176_tree = default(IASTNode);
 		IASTNode OF177_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "relationalExpression");
-		DebugLocation(418, 1);
+		DebugLocation(429, 1);
 		try
 		{
-			// Hql.g:419:2: ( concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) ) )
+			// Hql.g:430:2: ( concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) ) )
 			DebugEnterAlt(1);
-			// Hql.g:419:4: concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) )
+			// Hql.g:430:4: concatenation ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(419, 4);
-			PushFollow(Follow._concatenation_in_relationalExpression2065);
+			DebugLocation(430, 4);
+			PushFollow(Follow._concatenation_in_relationalExpression2091);
 			concatenation166=concatenation();
 			PopFollow();
 
 			adaptor.AddChild(root_0, concatenation166.Tree);
-			DebugLocation(419, 18);
-			// Hql.g:419:18: ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) )
-			int alt62=2;
-			try { DebugEnterSubRule(62);
-			try { DebugEnterDecision(62, false);
-			int LA62_1 = input.LA(1);
+			DebugLocation(430, 18);
+			// Hql.g:430:18: ( ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* ) | (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) ) )
+			int alt63=2;
+			try { DebugEnterSubRule(63);
+			try { DebugEnterDecision(63, false);
+			int LA63_1 = input.LA(1);
 
-			if ((LA62_1==EOF||LA62_1==AND||(LA62_1>=AS && LA62_1<=ASCENDING)||(LA62_1>=CLOSE && LA62_1<=CLOSE_BRACKET)||LA62_1==COMMA||LA62_1==DESCENDING||LA62_1==ELSE||(LA62_1>=END && LA62_1<=EQ)||(LA62_1>=FROM && LA62_1<=HAVING)||LA62_1==INNER||LA62_1==IS||(LA62_1>=JOIN && LA62_1<=LE)||LA62_1==LEFT||LA62_1==LT||LA62_1==NE||(LA62_1>=OR && LA62_1<=ORDER)||LA62_1==RIGHT||LA62_1==SKIP||LA62_1==SQL_NE||(LA62_1>=TAKE && LA62_1<=THEN)||LA62_1==UNION||(LA62_1>=WHEN && LA62_1<=WHERE)||(LA62_1>=133 && LA62_1<=134)))
+			if ((LA63_1==EOF||LA63_1==AND||(LA63_1>=AS && LA63_1<=ASCENDING)||(LA63_1>=CLOSE && LA63_1<=CLOSE_BRACKET)||LA63_1==COMMA||LA63_1==DESCENDING||LA63_1==ELSE||(LA63_1>=END && LA63_1<=EQ)||(LA63_1>=FROM && LA63_1<=HAVING)||LA63_1==INNER||LA63_1==IS||(LA63_1>=JOIN && LA63_1<=LE)||LA63_1==LEFT||LA63_1==LT||LA63_1==NE||(LA63_1>=OR && LA63_1<=ORDER)||LA63_1==RIGHT||LA63_1==SKIP||LA63_1==SQL_NE||(LA63_1>=TAKE && LA63_1<=THEN)||LA63_1==UNION||(LA63_1>=WHEN && LA63_1<=WHERE)||(LA63_1>=133 && LA63_1<=134)))
 			{
-				alt62 = 1;
+				alt63 = 1;
 			}
-			else if ((LA62_1==BETWEEN||LA62_1==IN||LA62_1==LIKE||LA62_1==MEMBER||LA62_1==NOT))
+			else if ((LA63_1==BETWEEN||LA63_1==IN||LA63_1==LIKE||LA63_1==MEMBER||LA63_1==NOT))
 			{
-				alt62 = 2;
+				alt63 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 62, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 63, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(62); }
-			switch (alt62)
+			} finally { DebugExitDecision(63); }
+			switch (alt63)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:420:3: ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* )
+				// Hql.g:431:3: ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* )
 				{
-				DebugLocation(420, 3);
-				// Hql.g:420:3: ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* )
+				DebugLocation(431, 3);
+				// Hql.g:431:3: ( ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )* )
 				DebugEnterAlt(1);
-				// Hql.g:420:5: ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )*
+				// Hql.g:431:5: ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )*
 				{
-				DebugLocation(420, 5);
-				// Hql.g:420:5: ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )*
-				try { DebugEnterSubRule(58);
+				DebugLocation(431, 5);
+				// Hql.g:431:5: ( ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression )*
+				try { DebugEnterSubRule(59);
 				while (true)
 				{
-					int alt58=2;
-					try { DebugEnterDecision(58, false);
-					int LA58_1 = input.LA(1);
+					int alt59=2;
+					try { DebugEnterDecision(59, false);
+					int LA59_1 = input.LA(1);
 
-					if ((LA58_1==GE||LA58_1==GT||LA58_1==LE||LA58_1==LT))
+					if ((LA59_1==GE||LA59_1==GT||LA59_1==LE||LA59_1==LT))
 					{
-						alt58 = 1;
+						alt59 = 1;
 					}
 
 
-					} finally { DebugExitDecision(58); }
-					switch ( alt58 )
+					} finally { DebugExitDecision(59); }
+					switch ( alt59 )
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:420:7: ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression
+						// Hql.g:431:7: ( LT ^| GT ^| LE ^| GE ^) bitwiseNotExpression
 						{
-						DebugLocation(420, 7);
-						// Hql.g:420:7: ( LT ^| GT ^| LE ^| GE ^)
-						int alt57=4;
-						try { DebugEnterSubRule(57);
-						try { DebugEnterDecision(57, false);
+						DebugLocation(431, 7);
+						// Hql.g:431:7: ( LT ^| GT ^| LE ^| GE ^)
+						int alt58=4;
+						try { DebugEnterSubRule(58);
+						try { DebugEnterDecision(58, false);
 						switch (input.LA(1))
 						{
 						case LT:
 							{
-							alt57 = 1;
+							alt58 = 1;
 							}
 							break;
 						case GT:
 							{
-							alt57 = 2;
+							alt58 = 2;
 							}
 							break;
 						case LE:
 							{
-							alt57 = 3;
+							alt58 = 3;
 							}
 							break;
 						case GE:
 							{
-							alt57 = 4;
+							alt58 = 4;
 							}
 							break;
 						default:
 							{
-								NoViableAltException nvae = new NoViableAltException("", 57, 0, input, 1);
+								NoViableAltException nvae = new NoViableAltException("", 58, 0, input, 1);
 								DebugRecognitionException(nvae);
 								throw nvae;
 							}
 						}
 
-						} finally { DebugExitDecision(57); }
-						switch (alt57)
+						} finally { DebugExitDecision(58); }
+						switch (alt58)
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:420:9: LT ^
+							// Hql.g:431:9: LT ^
 							{
-							DebugLocation(420, 11);
-							LT167=(IToken)Match(input,LT,Follow._LT_in_relationalExpression2077); 
+							DebugLocation(431, 11);
+							LT167=(IToken)Match(input,LT,Follow._LT_in_relationalExpression2103); 
 							LT167_tree = (IASTNode)adaptor.Create(LT167);
 							root_0 = (IASTNode)adaptor.BecomeRoot(LT167_tree, root_0);
 
@@ -6852,10 +6883,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 						case 2:
 							DebugEnterAlt(2);
-							// Hql.g:420:15: GT ^
+							// Hql.g:431:15: GT ^
 							{
-							DebugLocation(420, 17);
-							GT168=(IToken)Match(input,GT,Follow._GT_in_relationalExpression2082); 
+							DebugLocation(431, 17);
+							GT168=(IToken)Match(input,GT,Follow._GT_in_relationalExpression2108); 
 							GT168_tree = (IASTNode)adaptor.Create(GT168);
 							root_0 = (IASTNode)adaptor.BecomeRoot(GT168_tree, root_0);
 
@@ -6863,10 +6894,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 						case 3:
 							DebugEnterAlt(3);
-							// Hql.g:420:21: LE ^
+							// Hql.g:431:21: LE ^
 							{
-							DebugLocation(420, 23);
-							LE169=(IToken)Match(input,LE,Follow._LE_in_relationalExpression2087); 
+							DebugLocation(431, 23);
+							LE169=(IToken)Match(input,LE,Follow._LE_in_relationalExpression2113); 
 							LE169_tree = (IASTNode)adaptor.Create(LE169);
 							root_0 = (IASTNode)adaptor.BecomeRoot(LE169_tree, root_0);
 
@@ -6874,10 +6905,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 						case 4:
 							DebugEnterAlt(4);
-							// Hql.g:420:27: GE ^
+							// Hql.g:431:27: GE ^
 							{
-							DebugLocation(420, 29);
-							GE170=(IToken)Match(input,GE,Follow._GE_in_relationalExpression2092); 
+							DebugLocation(431, 29);
+							GE170=(IToken)Match(input,GE,Follow._GE_in_relationalExpression2118); 
 							GE170_tree = (IASTNode)adaptor.Create(GE170);
 							root_0 = (IASTNode)adaptor.BecomeRoot(GE170_tree, root_0);
 
@@ -6885,10 +6916,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 
 						}
-						} finally { DebugExitSubRule(57); }
+						} finally { DebugExitSubRule(58); }
 
-						DebugLocation(420, 33);
-						PushFollow(Follow._bitwiseNotExpression_in_relationalExpression2097);
+						DebugLocation(431, 33);
+						PushFollow(Follow._bitwiseNotExpression_in_relationalExpression2123);
 						bitwiseNotExpression171=bitwiseNotExpression();
 						PopFollow();
 
@@ -6898,14 +6929,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					default:
-						goto loop58;
+						goto loop59;
 					}
 				}
 
-				loop58:
+				loop59:
 					;
 
-				} finally { DebugExitSubRule(58); }
+				} finally { DebugExitSubRule(59); }
 
 
 				}
@@ -6915,93 +6946,93 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:422:5: (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) )
+				// Hql.g:433:5: (n= NOT !)? ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) )
 				{
-				DebugLocation(422, 5);
-				// Hql.g:422:5: (n= NOT !)?
-				int alt59=2;
-				try { DebugEnterSubRule(59);
-				try { DebugEnterDecision(59, false);
-				int LA59_1 = input.LA(1);
+				DebugLocation(433, 5);
+				// Hql.g:433:5: (n= NOT !)?
+				int alt60=2;
+				try { DebugEnterSubRule(60);
+				try { DebugEnterDecision(60, false);
+				int LA60_1 = input.LA(1);
 
-				if ((LA59_1==NOT))
+				if ((LA60_1==NOT))
 				{
-					alt59 = 1;
+					alt60 = 1;
 				}
-				} finally { DebugExitDecision(59); }
-				switch (alt59)
+				} finally { DebugExitDecision(60); }
+				switch (alt60)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:422:6: n= NOT !
+					// Hql.g:433:6: n= NOT !
 					{
-					DebugLocation(422, 7);
-					n=(IToken)Match(input,NOT,Follow._NOT_in_relationalExpression2114); 
+					DebugLocation(433, 7);
+					n=(IToken)Match(input,NOT,Follow._NOT_in_relationalExpression2140); 
 
 					}
 					break;
 
 				}
-				} finally { DebugExitSubRule(59); }
+				} finally { DebugExitSubRule(60); }
 
-				DebugLocation(422, 15);
-				// Hql.g:422:15: ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) )
-				int alt61=4;
-				try { DebugEnterSubRule(61);
-				try { DebugEnterDecision(61, false);
+				DebugLocation(433, 15);
+				// Hql.g:433:15: ( (i= IN ^ inList ) | (b= BETWEEN ^ betweenList ) | (l= LIKE ^ concatenation likeEscape ) | ( MEMBER ! ( OF !)? p= path !) )
+				int alt62=4;
+				try { DebugEnterSubRule(62);
+				try { DebugEnterDecision(62, false);
 				switch (input.LA(1))
 				{
 				case IN:
 					{
-					alt61 = 1;
+					alt62 = 1;
 					}
 					break;
 				case BETWEEN:
 					{
-					alt61 = 2;
+					alt62 = 2;
 					}
 					break;
 				case LIKE:
 					{
-					alt61 = 3;
+					alt62 = 3;
 					}
 					break;
 				case MEMBER:
 					{
-					alt61 = 4;
+					alt62 = 4;
 					}
 					break;
 				default:
 					{
-						NoViableAltException nvae = new NoViableAltException("", 61, 0, input, 1);
+						NoViableAltException nvae = new NoViableAltException("", 62, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
 				}
 
-				} finally { DebugExitDecision(61); }
-				switch (alt61)
+				} finally { DebugExitDecision(62); }
+				switch (alt62)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:425:4: (i= IN ^ inList )
+					// Hql.g:436:4: (i= IN ^ inList )
 					{
-					DebugLocation(425, 4);
-					// Hql.g:425:4: (i= IN ^ inList )
+					DebugLocation(436, 4);
+					// Hql.g:436:4: (i= IN ^ inList )
 					DebugEnterAlt(1);
-					// Hql.g:425:5: i= IN ^ inList
+					// Hql.g:436:5: i= IN ^ inList
 					{
-					DebugLocation(425, 6);
-					i=(IToken)Match(input,IN,Follow._IN_in_relationalExpression2135); 
+					DebugLocation(436, 6);
+					i=(IToken)Match(input,IN,Follow._IN_in_relationalExpression2161); 
 					i_tree = (IASTNode)adaptor.Create(i);
 					root_0 = (IASTNode)adaptor.BecomeRoot(i_tree, root_0);
-					DebugLocation(425, 11);
+					DebugLocation(436, 11);
 
 										i.Type = (n == null) ? IN : NOT_IN;
 										i.Text = (n == null) ? "in" : "not in";
 									
-					DebugLocation(429, 5);
-					PushFollow(Follow._inList_in_relationalExpression2144);
+					DebugLocation(440, 5);
+					PushFollow(Follow._inList_in_relationalExpression2170);
 					inList172=inList();
 					PopFollow();
 
@@ -7014,24 +7045,24 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:430:6: (b= BETWEEN ^ betweenList )
+					// Hql.g:441:6: (b= BETWEEN ^ betweenList )
 					{
-					DebugLocation(430, 6);
-					// Hql.g:430:6: (b= BETWEEN ^ betweenList )
+					DebugLocation(441, 6);
+					// Hql.g:441:6: (b= BETWEEN ^ betweenList )
 					DebugEnterAlt(1);
-					// Hql.g:430:7: b= BETWEEN ^ betweenList
+					// Hql.g:441:7: b= BETWEEN ^ betweenList
 					{
-					DebugLocation(430, 8);
-					b=(IToken)Match(input,BETWEEN,Follow._BETWEEN_in_relationalExpression2155); 
+					DebugLocation(441, 8);
+					b=(IToken)Match(input,BETWEEN,Follow._BETWEEN_in_relationalExpression2181); 
 					b_tree = (IASTNode)adaptor.Create(b);
 					root_0 = (IASTNode)adaptor.BecomeRoot(b_tree, root_0);
-					DebugLocation(430, 18);
+					DebugLocation(441, 18);
 
 										b.Type = (n == null) ? BETWEEN : NOT_BETWEEN;
 										b.Text = (n == null) ? "between" : "not between";
 									
-					DebugLocation(434, 5);
-					PushFollow(Follow._betweenList_in_relationalExpression2164);
+					DebugLocation(445, 5);
+					PushFollow(Follow._betweenList_in_relationalExpression2190);
 					betweenList173=betweenList();
 					PopFollow();
 
@@ -7044,30 +7075,30 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 3:
 					DebugEnterAlt(3);
-					// Hql.g:435:6: (l= LIKE ^ concatenation likeEscape )
+					// Hql.g:446:6: (l= LIKE ^ concatenation likeEscape )
 					{
-					DebugLocation(435, 6);
-					// Hql.g:435:6: (l= LIKE ^ concatenation likeEscape )
+					DebugLocation(446, 6);
+					// Hql.g:446:6: (l= LIKE ^ concatenation likeEscape )
 					DebugEnterAlt(1);
-					// Hql.g:435:7: l= LIKE ^ concatenation likeEscape
+					// Hql.g:446:7: l= LIKE ^ concatenation likeEscape
 					{
-					DebugLocation(435, 8);
-					l=(IToken)Match(input,LIKE,Follow._LIKE_in_relationalExpression2176); 
+					DebugLocation(446, 8);
+					l=(IToken)Match(input,LIKE,Follow._LIKE_in_relationalExpression2202); 
 					l_tree = (IASTNode)adaptor.Create(l);
 					root_0 = (IASTNode)adaptor.BecomeRoot(l_tree, root_0);
-					DebugLocation(435, 15);
+					DebugLocation(446, 15);
 
 										l.Type = (n == null) ? LIKE : NOT_LIKE;
 										l.Text = (n == null) ? "like" : "not like";
 									
-					DebugLocation(439, 5);
-					PushFollow(Follow._concatenation_in_relationalExpression2185);
+					DebugLocation(450, 5);
+					PushFollow(Follow._concatenation_in_relationalExpression2211);
 					concatenation174=concatenation();
 					PopFollow();
 
 					adaptor.AddChild(root_0, concatenation174.Tree);
-					DebugLocation(439, 19);
-					PushFollow(Follow._likeEscape_in_relationalExpression2187);
+					DebugLocation(450, 19);
+					PushFollow(Follow._likeEscape_in_relationalExpression2213);
 					likeEscape175=likeEscape();
 					PopFollow();
 
@@ -7080,48 +7111,48 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 4:
 					DebugEnterAlt(4);
-					// Hql.g:440:6: ( MEMBER ! ( OF !)? p= path !)
+					// Hql.g:451:6: ( MEMBER ! ( OF !)? p= path !)
 					{
-					DebugLocation(440, 6);
-					// Hql.g:440:6: ( MEMBER ! ( OF !)? p= path !)
+					DebugLocation(451, 6);
+					// Hql.g:451:6: ( MEMBER ! ( OF !)? p= path !)
 					DebugEnterAlt(1);
-					// Hql.g:440:7: MEMBER ! ( OF !)? p= path !
+					// Hql.g:451:7: MEMBER ! ( OF !)? p= path !
 					{
-					DebugLocation(440, 13);
-					MEMBER176=(IToken)Match(input,MEMBER,Follow._MEMBER_in_relationalExpression2196); 
-					DebugLocation(440, 15);
-					// Hql.g:440:15: ( OF !)?
-					int alt60=2;
-					try { DebugEnterSubRule(60);
-					try { DebugEnterDecision(60, false);
-					int LA60_1 = input.LA(1);
+					DebugLocation(451, 13);
+					MEMBER176=(IToken)Match(input,MEMBER,Follow._MEMBER_in_relationalExpression2222); 
+					DebugLocation(451, 15);
+					// Hql.g:451:15: ( OF !)?
+					int alt61=2;
+					try { DebugEnterSubRule(61);
+					try { DebugEnterDecision(61, false);
+					int LA61_1 = input.LA(1);
 
-					if ((LA60_1==OF))
+					if ((LA61_1==OF))
 					{
-						alt60 = 1;
+						alt61 = 1;
 					}
-					} finally { DebugExitDecision(60); }
-					switch (alt60)
+					} finally { DebugExitDecision(61); }
+					switch (alt61)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:440:16: OF !
+						// Hql.g:451:16: OF !
 						{
-						DebugLocation(440, 18);
-						OF177=(IToken)Match(input,OF,Follow._OF_in_relationalExpression2200); 
+						DebugLocation(451, 18);
+						OF177=(IToken)Match(input,OF,Follow._OF_in_relationalExpression2226); 
 
 						}
 						break;
 
 					}
-					} finally { DebugExitSubRule(60); }
+					} finally { DebugExitSubRule(61); }
 
-					DebugLocation(440, 23);
-					PushFollow(Follow._path_in_relationalExpression2207);
+					DebugLocation(451, 23);
+					PushFollow(Follow._path_in_relationalExpression2233);
 					p=path();
 					PopFollow();
 
-					DebugLocation(440, 30);
+					DebugLocation(451, 30);
 
 									root_0 = ProcessMemberOf(n,(p!=null?((IASTNode)p.Tree):default(IASTNode)), root_0);
 								  
@@ -7133,101 +7164,8 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(61); }
+				} finally { DebugExitSubRule(62); }
 
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(62); }
-
-
-			}
-
-			retval.Stop = (IToken)input.LT(-1);
-
-			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
-			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
-
-		}
-		catch (RecognitionException re)
-		{
-			ReportError(re);
-			Recover(input,re);
-			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
-
-		}
-		finally
-		{
-			TraceOut("relationalExpression", 47);
-			LeaveRule("relationalExpression", 47);
-			LeaveRule_relationalExpression();
-		}
-		DebugLocation(445, 1);
-		} finally { DebugExitRule(GrammarFileName, "relationalExpression"); }
-		return retval;
-
-	}
-	// $ANTLR end "relationalExpression"
-
-	partial void EnterRule_likeEscape();
-	partial void LeaveRule_likeEscape();
-	// $ANTLR start "likeEscape"
-	// Hql.g:447:1: likeEscape : ( ESCAPE ^ concatenation )? ;
-	[GrammarRule("likeEscape")]
-	private AstParserRuleReturnScope<IASTNode, IToken> likeEscape()
-	{
-		EnterRule_likeEscape();
-		EnterRule("likeEscape", 48);
-		TraceIn("likeEscape", 48);
-		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-		retval.Start = (IToken)input.LT(1);
-
-		IASTNode root_0 = default(IASTNode);
-
-		IToken ESCAPE178 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> concatenation179 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
-		IASTNode ESCAPE178_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "likeEscape");
-		DebugLocation(447, 1);
-		try
-		{
-			// Hql.g:448:2: ( ( ESCAPE ^ concatenation )? )
-			DebugEnterAlt(1);
-			// Hql.g:448:4: ( ESCAPE ^ concatenation )?
-			{
-			root_0 = (IASTNode)adaptor.Nil();
-
-			DebugLocation(448, 4);
-			// Hql.g:448:4: ( ESCAPE ^ concatenation )?
-			int alt63=2;
-			try { DebugEnterSubRule(63);
-			try { DebugEnterDecision(63, false);
-			int LA63_1 = input.LA(1);
-
-			if ((LA63_1==ESCAPE))
-			{
-				alt63 = 1;
-			}
-			} finally { DebugExitDecision(63); }
-			switch (alt63)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// Hql.g:448:5: ESCAPE ^ concatenation
-				{
-				DebugLocation(448, 11);
-				ESCAPE178=(IToken)Match(input,ESCAPE,Follow._ESCAPE_in_likeEscape2234); 
-				ESCAPE178_tree = (IASTNode)adaptor.Create(ESCAPE178);
-				root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE178_tree, root_0);
-				DebugLocation(448, 13);
-				PushFollow(Follow._concatenation_in_likeEscape2237);
-				concatenation179=concatenation();
-				PopFollow();
-
-				adaptor.AddChild(root_0, concatenation179.Tree);
 
 				}
 				break;
@@ -7253,11 +7191,104 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
+			TraceOut("relationalExpression", 47);
+			LeaveRule("relationalExpression", 47);
+			LeaveRule_relationalExpression();
+		}
+		DebugLocation(456, 1);
+		} finally { DebugExitRule(GrammarFileName, "relationalExpression"); }
+		return retval;
+
+	}
+	// $ANTLR end "relationalExpression"
+
+	partial void EnterRule_likeEscape();
+	partial void LeaveRule_likeEscape();
+	// $ANTLR start "likeEscape"
+	// Hql.g:458:1: likeEscape : ( ESCAPE ^ concatenation )? ;
+	[GrammarRule("likeEscape")]
+	private AstParserRuleReturnScope<IASTNode, IToken> likeEscape()
+	{
+		EnterRule_likeEscape();
+		EnterRule("likeEscape", 48);
+		TraceIn("likeEscape", 48);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
+
+		IASTNode root_0 = default(IASTNode);
+
+		IToken ESCAPE178 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> concatenation179 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+
+		IASTNode ESCAPE178_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "likeEscape");
+		DebugLocation(458, 1);
+		try
+		{
+			// Hql.g:459:2: ( ( ESCAPE ^ concatenation )? )
+			DebugEnterAlt(1);
+			// Hql.g:459:4: ( ESCAPE ^ concatenation )?
+			{
+			root_0 = (IASTNode)adaptor.Nil();
+
+			DebugLocation(459, 4);
+			// Hql.g:459:4: ( ESCAPE ^ concatenation )?
+			int alt64=2;
+			try { DebugEnterSubRule(64);
+			try { DebugEnterDecision(64, false);
+			int LA64_1 = input.LA(1);
+
+			if ((LA64_1==ESCAPE))
+			{
+				alt64 = 1;
+			}
+			} finally { DebugExitDecision(64); }
+			switch (alt64)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:459:5: ESCAPE ^ concatenation
+				{
+				DebugLocation(459, 11);
+				ESCAPE178=(IToken)Match(input,ESCAPE,Follow._ESCAPE_in_likeEscape2260); 
+				ESCAPE178_tree = (IASTNode)adaptor.Create(ESCAPE178);
+				root_0 = (IASTNode)adaptor.BecomeRoot(ESCAPE178_tree, root_0);
+				DebugLocation(459, 13);
+				PushFollow(Follow._concatenation_in_likeEscape2263);
+				concatenation179=concatenation();
+				PopFollow();
+
+				adaptor.AddChild(root_0, concatenation179.Tree);
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(64); }
+
+
+			}
+
+			retval.Stop = (IToken)input.LT(-1);
+
+			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
+
+		}
+		catch (RecognitionException re)
+		{
+			ReportError(re);
+			Recover(input,re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+
+		}
+		finally
+		{
 			TraceOut("likeEscape", 48);
 			LeaveRule("likeEscape", 48);
 			LeaveRule_likeEscape();
 		}
-		DebugLocation(449, 1);
+		DebugLocation(460, 1);
 		} finally { DebugExitRule(GrammarFileName, "likeEscape"); }
 		return retval;
 
@@ -7267,7 +7298,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_inList();
 	partial void LeaveRule_inList();
 	// $ANTLR start "inList"
-	// Hql.g:451:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
+	// Hql.g:462:1: inList : compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) ;
 	[GrammarRule("inList")]
 	private AstParserRuleReturnScope<IASTNode, IToken> inList()
 	{
@@ -7283,15 +7314,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		RewriteRuleSubtreeStream stream_compoundExpr=new RewriteRuleSubtreeStream(adaptor,"rule compoundExpr");
 		try { DebugEnterRule(GrammarFileName, "inList");
-		DebugLocation(451, 1);
+		DebugLocation(462, 1);
 		try
 		{
-			// Hql.g:452:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
+			// Hql.g:463:2: ( compoundExpr -> ^( IN_LIST[\"inList\"] compoundExpr ) )
 			DebugEnterAlt(1);
-			// Hql.g:452:4: compoundExpr
+			// Hql.g:463:4: compoundExpr
 			{
-			DebugLocation(452, 4);
-			PushFollow(Follow._compoundExpr_in_inList2250);
+			DebugLocation(463, 4);
+			PushFollow(Follow._compoundExpr_in_inList2276);
 			compoundExpr180=compoundExpr();
 			PopFollow();
 
@@ -7310,16 +7341,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 453:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
+			// 464:2: -> ^( IN_LIST[\"inList\"] compoundExpr )
 			{
-				DebugLocation(453, 5);
-				// Hql.g:453:5: ^( IN_LIST[\"inList\"] compoundExpr )
+				DebugLocation(464, 5);
+				// Hql.g:464:5: ^( IN_LIST[\"inList\"] compoundExpr )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(453, 7);
+				DebugLocation(464, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(IN_LIST, "inList"), root_1);
 
-				DebugLocation(453, 25);
+				DebugLocation(464, 25);
 				adaptor.AddChild(root_1, stream_compoundExpr.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -7351,7 +7382,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("inList", 49);
 			LeaveRule_inList();
 		}
-		DebugLocation(454, 1);
+		DebugLocation(465, 1);
 		} finally { DebugExitRule(GrammarFileName, "inList"); }
 		return retval;
 
@@ -7361,7 +7392,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_betweenList();
 	partial void LeaveRule_betweenList();
 	// $ANTLR start "betweenList"
-	// Hql.g:456:1: betweenList : concatenation AND ! concatenation ;
+	// Hql.g:467:1: betweenList : concatenation AND ! concatenation ;
 	[GrammarRule("betweenList")]
 	private AstParserRuleReturnScope<IASTNode, IToken> betweenList()
 	{
@@ -7379,25 +7410,25 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode AND182_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "betweenList");
-		DebugLocation(456, 1);
+		DebugLocation(467, 1);
 		try
 		{
-			// Hql.g:457:2: ( concatenation AND ! concatenation )
+			// Hql.g:468:2: ( concatenation AND ! concatenation )
 			DebugEnterAlt(1);
-			// Hql.g:457:4: concatenation AND ! concatenation
+			// Hql.g:468:4: concatenation AND ! concatenation
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(457, 4);
-			PushFollow(Follow._concatenation_in_betweenList2271);
+			DebugLocation(468, 4);
+			PushFollow(Follow._concatenation_in_betweenList2297);
 			concatenation181=concatenation();
 			PopFollow();
 
 			adaptor.AddChild(root_0, concatenation181.Tree);
-			DebugLocation(457, 21);
-			AND182=(IToken)Match(input,AND,Follow._AND_in_betweenList2273); 
-			DebugLocation(457, 23);
-			PushFollow(Follow._concatenation_in_betweenList2276);
+			DebugLocation(468, 21);
+			AND182=(IToken)Match(input,AND,Follow._AND_in_betweenList2299); 
+			DebugLocation(468, 23);
+			PushFollow(Follow._concatenation_in_betweenList2302);
 			concatenation183=concatenation();
 			PopFollow();
 
@@ -7424,7 +7455,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("betweenList", 50);
 			LeaveRule_betweenList();
 		}
-		DebugLocation(458, 1);
+		DebugLocation(469, 1);
 		} finally { DebugExitRule(GrammarFileName, "betweenList"); }
 		return retval;
 
@@ -7434,7 +7465,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_concatenation();
 	partial void LeaveRule_concatenation();
 	// $ANTLR start "concatenation"
-	// Hql.g:461:1: concatenation : a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )? ;
+	// Hql.g:472:1: concatenation : a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )? ;
 	[GrammarRule("concatenation")]
 	private AstParserRuleReturnScope<IASTNode, IToken> concatenation()
 	{
@@ -7455,77 +7486,77 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode c_tree = default(IASTNode);
 		IASTNode CONCAT185_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "concatenation");
-		DebugLocation(461, 1);
+		DebugLocation(472, 1);
 		try
 		{
-			// Hql.g:472:2: (a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )? )
+			// Hql.g:483:2: (a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )? )
 			DebugEnterAlt(1);
-			// Hql.g:472:4: a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )?
+			// Hql.g:483:4: a= bitwiseNotExpression (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(472, 5);
-			PushFollow(Follow._bitwiseNotExpression_in_concatenation2295);
+			DebugLocation(483, 5);
+			PushFollow(Follow._bitwiseNotExpression_in_concatenation2321);
 			a=bitwiseNotExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, a.Tree);
-			DebugLocation(473, 2);
-			// Hql.g:473:2: (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )?
-			int alt65=2;
-			try { DebugEnterSubRule(65);
-			try { DebugEnterDecision(65, false);
-			int LA65_1 = input.LA(1);
+			DebugLocation(484, 2);
+			// Hql.g:484:2: (c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )* )?
+			int alt66=2;
+			try { DebugEnterSubRule(66);
+			try { DebugEnterDecision(66, false);
+			int LA66_1 = input.LA(1);
 
-			if ((LA65_1==CONCAT))
+			if ((LA66_1==CONCAT))
 			{
-				alt65 = 1;
+				alt66 = 1;
 			}
-			} finally { DebugExitDecision(65); }
-			switch (alt65)
+			} finally { DebugExitDecision(66); }
+			switch (alt66)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:473:4: c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )*
+				// Hql.g:484:4: c= CONCAT ^ bitwiseNotExpression ( CONCAT ! bitwiseNotExpression )*
 				{
-				DebugLocation(473, 5);
-				c=(IToken)Match(input,CONCAT,Follow._CONCAT_in_concatenation2303); 
+				DebugLocation(484, 5);
+				c=(IToken)Match(input,CONCAT,Follow._CONCAT_in_concatenation2329); 
 				c_tree = (IASTNode)adaptor.Create(c);
 				root_0 = (IASTNode)adaptor.BecomeRoot(c_tree, root_0);
-				DebugLocation(473, 14);
+				DebugLocation(484, 14);
 				 c.Type = EXPR_LIST; c.Text = "concatList"; 
-				DebugLocation(474, 4);
-				PushFollow(Follow._bitwiseNotExpression_in_concatenation2312);
+				DebugLocation(485, 4);
+				PushFollow(Follow._bitwiseNotExpression_in_concatenation2338);
 				bitwiseNotExpression184=bitwiseNotExpression();
 				PopFollow();
 
 				adaptor.AddChild(root_0, bitwiseNotExpression184.Tree);
-				DebugLocation(475, 4);
-				// Hql.g:475:4: ( CONCAT ! bitwiseNotExpression )*
-				try { DebugEnterSubRule(64);
+				DebugLocation(486, 4);
+				// Hql.g:486:4: ( CONCAT ! bitwiseNotExpression )*
+				try { DebugEnterSubRule(65);
 				while (true)
 				{
-					int alt64=2;
-					try { DebugEnterDecision(64, false);
-					int LA64_1 = input.LA(1);
+					int alt65=2;
+					try { DebugEnterDecision(65, false);
+					int LA65_1 = input.LA(1);
 
-					if ((LA64_1==CONCAT))
+					if ((LA65_1==CONCAT))
 					{
-						alt64 = 1;
+						alt65 = 1;
 					}
 
 
-					} finally { DebugExitDecision(64); }
-					switch ( alt64 )
+					} finally { DebugExitDecision(65); }
+					switch ( alt65 )
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:475:6: CONCAT ! bitwiseNotExpression
+						// Hql.g:486:6: CONCAT ! bitwiseNotExpression
 						{
-						DebugLocation(475, 12);
-						CONCAT185=(IToken)Match(input,CONCAT,Follow._CONCAT_in_concatenation2319); 
-						DebugLocation(475, 14);
-						PushFollow(Follow._bitwiseNotExpression_in_concatenation2322);
+						DebugLocation(486, 12);
+						CONCAT185=(IToken)Match(input,CONCAT,Follow._CONCAT_in_concatenation2345); 
+						DebugLocation(486, 14);
+						PushFollow(Follow._bitwiseNotExpression_in_concatenation2348);
 						bitwiseNotExpression186=bitwiseNotExpression();
 						PopFollow();
 
@@ -7535,21 +7566,21 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					default:
-						goto loop64;
+						goto loop65;
 					}
 				}
 
-				loop64:
+				loop65:
 					;
 
-				} finally { DebugExitSubRule(64); }
+				} finally { DebugExitSubRule(65); }
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(65); }
+			} finally { DebugExitSubRule(66); }
 
 
 			}
@@ -7583,7 +7614,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("concatenation", 51);
 			LeaveRule_concatenation();
 		}
-		DebugLocation(477, 1);
+		DebugLocation(488, 1);
 		} finally { DebugExitRule(GrammarFileName, "concatenation"); }
 		return retval;
 
@@ -7593,7 +7624,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_bitwiseNotExpression();
 	partial void LeaveRule_bitwiseNotExpression();
 	// $ANTLR start "bitwiseNotExpression"
-	// Hql.g:480:1: bitwiseNotExpression : ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression );
+	// Hql.g:491:1: bitwiseNotExpression : ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression );
 	[GrammarRule("bitwiseNotExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseNotExpression()
 	{
@@ -7611,48 +7642,48 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode BNOT187_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseNotExpression");
-		DebugLocation(480, 1);
+		DebugLocation(491, 1);
 		try
 		{
-			// Hql.g:481:2: ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression )
-			int alt66=2;
-			try { DebugEnterDecision(66, false);
-			int LA66_1 = input.LA(1);
+			// Hql.g:492:2: ( ( BNOT ^ bitwiseOrExpression ) | bitwiseOrExpression )
+			int alt67=2;
+			try { DebugEnterDecision(67, false);
+			int LA67_1 = input.LA(1);
 
-			if ((LA66_1==BNOT))
+			if ((LA67_1==BNOT))
 			{
-				alt66 = 1;
+				alt67 = 1;
 			}
-			else if ((LA66_1==ALL||LA66_1==ANY||LA66_1==AVG||LA66_1==CASE||LA66_1==COLON||LA66_1==COUNT||LA66_1==ELEMENTS||LA66_1==EMPTY||LA66_1==EXISTS||LA66_1==FALSE||LA66_1==IDENT||LA66_1==INDICES||LA66_1==MAX||(LA66_1>=MIN && LA66_1<=MINUS)||(LA66_1>=NULL && LA66_1<=NUM_LONG)||LA66_1==OPEN||(LA66_1>=PARAM && LA66_1<=PLUS)||LA66_1==QUOTED_String||LA66_1==SOME||LA66_1==SUM||LA66_1==TRUE))
+			else if ((LA67_1==ALL||LA67_1==ANY||LA67_1==AVG||LA67_1==CASE||LA67_1==COLON||LA67_1==COUNT||LA67_1==ELEMENTS||LA67_1==EMPTY||LA67_1==EXISTS||LA67_1==FALSE||LA67_1==IDENT||LA67_1==INDICES||LA67_1==MAX||(LA67_1>=MIN && LA67_1<=MINUS)||(LA67_1>=NULL && LA67_1<=NUM_LONG)||LA67_1==OPEN||(LA67_1>=PARAM && LA67_1<=PLUS)||LA67_1==QUOTED_String||LA67_1==SOME||LA67_1==SUM||LA67_1==TRUE))
 			{
-				alt66 = 2;
+				alt67 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 66, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 67, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(66); }
-			switch (alt66)
+			} finally { DebugExitDecision(67); }
+			switch (alt67)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:481:4: ( BNOT ^ bitwiseOrExpression )
+				// Hql.g:492:4: ( BNOT ^ bitwiseOrExpression )
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(481, 4);
-				// Hql.g:481:4: ( BNOT ^ bitwiseOrExpression )
+				DebugLocation(492, 4);
+				// Hql.g:492:4: ( BNOT ^ bitwiseOrExpression )
 				DebugEnterAlt(1);
-				// Hql.g:481:5: BNOT ^ bitwiseOrExpression
+				// Hql.g:492:5: BNOT ^ bitwiseOrExpression
 				{
-				DebugLocation(481, 9);
-				BNOT187=(IToken)Match(input,BNOT,Follow._BNOT_in_bitwiseNotExpression2346); 
+				DebugLocation(492, 9);
+				BNOT187=(IToken)Match(input,BNOT,Follow._BNOT_in_bitwiseNotExpression2372); 
 				BNOT187_tree = (IASTNode)adaptor.Create(BNOT187);
 				root_0 = (IASTNode)adaptor.BecomeRoot(BNOT187_tree, root_0);
-				DebugLocation(481, 11);
-				PushFollow(Follow._bitwiseOrExpression_in_bitwiseNotExpression2349);
+				DebugLocation(492, 11);
+				PushFollow(Follow._bitwiseOrExpression_in_bitwiseNotExpression2375);
 				bitwiseOrExpression188=bitwiseOrExpression();
 				PopFollow();
 
@@ -7665,12 +7696,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:482:4: bitwiseOrExpression
+				// Hql.g:493:4: bitwiseOrExpression
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(482, 4);
-				PushFollow(Follow._bitwiseOrExpression_in_bitwiseNotExpression2355);
+				DebugLocation(493, 4);
+				PushFollow(Follow._bitwiseOrExpression_in_bitwiseNotExpression2381);
 				bitwiseOrExpression189=bitwiseOrExpression();
 				PopFollow();
 
@@ -7699,7 +7730,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("bitwiseNotExpression", 52);
 			LeaveRule_bitwiseNotExpression();
 		}
-		DebugLocation(483, 1);
+		DebugLocation(494, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseNotExpression"); }
 		return retval;
 
@@ -7709,7 +7740,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_bitwiseOrExpression();
 	partial void LeaveRule_bitwiseOrExpression();
 	// $ANTLR start "bitwiseOrExpression"
-	// Hql.g:485:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )* ;
+	// Hql.g:496:1: bitwiseOrExpression : bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )* ;
 	[GrammarRule("bitwiseOrExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseOrExpression()
 	{
@@ -7727,134 +7758,23 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode BOR191_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "bitwiseOrExpression");
-		DebugLocation(485, 1);
+		DebugLocation(496, 1);
 		try
 		{
-			// Hql.g:486:2: ( bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )* )
+			// Hql.g:497:2: ( bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:486:4: bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )*
+			// Hql.g:497:4: bitwiseXOrExpression ( BOR ^ bitwiseXOrExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(486, 4);
-			PushFollow(Follow._bitwiseXOrExpression_in_bitwiseOrExpression2367);
+			DebugLocation(497, 4);
+			PushFollow(Follow._bitwiseXOrExpression_in_bitwiseOrExpression2393);
 			bitwiseXOrExpression190=bitwiseXOrExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, bitwiseXOrExpression190.Tree);
-			DebugLocation(486, 25);
-			// Hql.g:486:25: ( BOR ^ bitwiseXOrExpression )*
-			try { DebugEnterSubRule(67);
-			while (true)
-			{
-				int alt67=2;
-				try { DebugEnterDecision(67, false);
-				int LA67_1 = input.LA(1);
-
-				if ((LA67_1==BOR))
-				{
-					alt67 = 1;
-				}
-
-
-				} finally { DebugExitDecision(67); }
-				switch ( alt67 )
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// Hql.g:486:26: BOR ^ bitwiseXOrExpression
-					{
-					DebugLocation(486, 29);
-					BOR191=(IToken)Match(input,BOR,Follow._BOR_in_bitwiseOrExpression2370); 
-					BOR191_tree = (IASTNode)adaptor.Create(BOR191);
-					root_0 = (IASTNode)adaptor.BecomeRoot(BOR191_tree, root_0);
-					DebugLocation(486, 31);
-					PushFollow(Follow._bitwiseXOrExpression_in_bitwiseOrExpression2373);
-					bitwiseXOrExpression192=bitwiseXOrExpression();
-					PopFollow();
-
-					adaptor.AddChild(root_0, bitwiseXOrExpression192.Tree);
-
-					}
-					break;
-
-				default:
-					goto loop67;
-				}
-			}
-
-			loop67:
-				;
-
-			} finally { DebugExitSubRule(67); }
-
-
-			}
-
-			retval.Stop = (IToken)input.LT(-1);
-
-			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
-			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
-
-		}
-		catch (RecognitionException re)
-		{
-			ReportError(re);
-			Recover(input,re);
-			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
-
-		}
-		finally
-		{
-			TraceOut("bitwiseOrExpression", 53);
-			LeaveRule("bitwiseOrExpression", 53);
-			LeaveRule_bitwiseOrExpression();
-		}
-		DebugLocation(487, 1);
-		} finally { DebugExitRule(GrammarFileName, "bitwiseOrExpression"); }
-		return retval;
-
-	}
-	// $ANTLR end "bitwiseOrExpression"
-
-	partial void EnterRule_bitwiseXOrExpression();
-	partial void LeaveRule_bitwiseXOrExpression();
-	// $ANTLR start "bitwiseXOrExpression"
-	// Hql.g:489:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )* ;
-	[GrammarRule("bitwiseXOrExpression")]
-	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression()
-	{
-		EnterRule_bitwiseXOrExpression();
-		EnterRule("bitwiseXOrExpression", 54);
-		TraceIn("bitwiseXOrExpression", 54);
-		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
-		retval.Start = (IToken)input.LT(1);
-
-		IASTNode root_0 = default(IASTNode);
-
-		IToken BXOR194 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression193 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression195 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-
-		IASTNode BXOR194_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "bitwiseXOrExpression");
-		DebugLocation(489, 1);
-		try
-		{
-			// Hql.g:490:2: ( bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )* )
-			DebugEnterAlt(1);
-			// Hql.g:490:4: bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )*
-			{
-			root_0 = (IASTNode)adaptor.Nil();
-
-			DebugLocation(490, 4);
-			PushFollow(Follow._bitwiseAndExpression_in_bitwiseXOrExpression2387);
-			bitwiseAndExpression193=bitwiseAndExpression();
-			PopFollow();
-
-			adaptor.AddChild(root_0, bitwiseAndExpression193.Tree);
-			DebugLocation(490, 25);
-			// Hql.g:490:25: ( BXOR ^ bitwiseAndExpression )*
+			DebugLocation(497, 25);
+			// Hql.g:497:25: ( BOR ^ bitwiseXOrExpression )*
 			try { DebugEnterSubRule(68);
 			while (true)
 			{
@@ -7862,7 +7782,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(68, false);
 				int LA68_1 = input.LA(1);
 
-				if ((LA68_1==BXOR))
+				if ((LA68_1==BOR))
 				{
 					alt68 = 1;
 				}
@@ -7873,18 +7793,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:490:26: BXOR ^ bitwiseAndExpression
+					// Hql.g:497:26: BOR ^ bitwiseXOrExpression
 					{
-					DebugLocation(490, 30);
-					BXOR194=(IToken)Match(input,BXOR,Follow._BXOR_in_bitwiseXOrExpression2390); 
-					BXOR194_tree = (IASTNode)adaptor.Create(BXOR194);
-					root_0 = (IASTNode)adaptor.BecomeRoot(BXOR194_tree, root_0);
-					DebugLocation(490, 32);
-					PushFollow(Follow._bitwiseAndExpression_in_bitwiseXOrExpression2393);
-					bitwiseAndExpression195=bitwiseAndExpression();
+					DebugLocation(497, 29);
+					BOR191=(IToken)Match(input,BOR,Follow._BOR_in_bitwiseOrExpression2396); 
+					BOR191_tree = (IASTNode)adaptor.Create(BOR191);
+					root_0 = (IASTNode)adaptor.BecomeRoot(BOR191_tree, root_0);
+					DebugLocation(497, 31);
+					PushFollow(Follow._bitwiseXOrExpression_in_bitwiseOrExpression2399);
+					bitwiseXOrExpression192=bitwiseXOrExpression();
 					PopFollow();
 
-					adaptor.AddChild(root_0, bitwiseAndExpression195.Tree);
+					adaptor.AddChild(root_0, bitwiseXOrExpression192.Tree);
 
 					}
 					break;
@@ -7917,55 +7837,55 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("bitwiseXOrExpression", 54);
-			LeaveRule("bitwiseXOrExpression", 54);
-			LeaveRule_bitwiseXOrExpression();
+			TraceOut("bitwiseOrExpression", 53);
+			LeaveRule("bitwiseOrExpression", 53);
+			LeaveRule_bitwiseOrExpression();
 		}
-		DebugLocation(491, 1);
-		} finally { DebugExitRule(GrammarFileName, "bitwiseXOrExpression"); }
+		DebugLocation(498, 1);
+		} finally { DebugExitRule(GrammarFileName, "bitwiseOrExpression"); }
 		return retval;
 
 	}
-	// $ANTLR end "bitwiseXOrExpression"
+	// $ANTLR end "bitwiseOrExpression"
 
-	partial void EnterRule_bitwiseAndExpression();
-	partial void LeaveRule_bitwiseAndExpression();
-	// $ANTLR start "bitwiseAndExpression"
-	// Hql.g:493:1: bitwiseAndExpression : additiveExpression ( BAND ^ additiveExpression )* ;
-	[GrammarRule("bitwiseAndExpression")]
-	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression()
+	partial void EnterRule_bitwiseXOrExpression();
+	partial void LeaveRule_bitwiseXOrExpression();
+	// $ANTLR start "bitwiseXOrExpression"
+	// Hql.g:500:1: bitwiseXOrExpression : bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )* ;
+	[GrammarRule("bitwiseXOrExpression")]
+	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseXOrExpression()
 	{
-		EnterRule_bitwiseAndExpression();
-		EnterRule("bitwiseAndExpression", 55);
-		TraceIn("bitwiseAndExpression", 55);
+		EnterRule_bitwiseXOrExpression();
+		EnterRule("bitwiseXOrExpression", 54);
+		TraceIn("bitwiseXOrExpression", 54);
 		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
 		retval.Start = (IToken)input.LT(1);
 
 		IASTNode root_0 = default(IASTNode);
 
-		IToken BAND197 = default(IToken);
-		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression196 = default(AstParserRuleReturnScope<IASTNode, IToken>);
-		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression198 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		IToken BXOR194 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression193 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression195 = default(AstParserRuleReturnScope<IASTNode, IToken>);
 
-		IASTNode BAND197_tree = default(IASTNode);
-		try { DebugEnterRule(GrammarFileName, "bitwiseAndExpression");
-		DebugLocation(493, 1);
+		IASTNode BXOR194_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "bitwiseXOrExpression");
+		DebugLocation(500, 1);
 		try
 		{
-			// Hql.g:494:2: ( additiveExpression ( BAND ^ additiveExpression )* )
+			// Hql.g:501:2: ( bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:494:4: additiveExpression ( BAND ^ additiveExpression )*
+			// Hql.g:501:4: bitwiseAndExpression ( BXOR ^ bitwiseAndExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(494, 4);
-			PushFollow(Follow._additiveExpression_in_bitwiseAndExpression2407);
-			additiveExpression196=additiveExpression();
+			DebugLocation(501, 4);
+			PushFollow(Follow._bitwiseAndExpression_in_bitwiseXOrExpression2413);
+			bitwiseAndExpression193=bitwiseAndExpression();
 			PopFollow();
 
-			adaptor.AddChild(root_0, additiveExpression196.Tree);
-			DebugLocation(494, 23);
-			// Hql.g:494:23: ( BAND ^ additiveExpression )*
+			adaptor.AddChild(root_0, bitwiseAndExpression193.Tree);
+			DebugLocation(501, 25);
+			// Hql.g:501:25: ( BXOR ^ bitwiseAndExpression )*
 			try { DebugEnterSubRule(69);
 			while (true)
 			{
@@ -7973,7 +7893,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(69, false);
 				int LA69_1 = input.LA(1);
 
-				if ((LA69_1==BAND))
+				if ((LA69_1==BXOR))
 				{
 					alt69 = 1;
 				}
@@ -7984,18 +7904,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:494:24: BAND ^ additiveExpression
+					// Hql.g:501:26: BXOR ^ bitwiseAndExpression
 					{
-					DebugLocation(494, 28);
-					BAND197=(IToken)Match(input,BAND,Follow._BAND_in_bitwiseAndExpression2410); 
-					BAND197_tree = (IASTNode)adaptor.Create(BAND197);
-					root_0 = (IASTNode)adaptor.BecomeRoot(BAND197_tree, root_0);
-					DebugLocation(494, 30);
-					PushFollow(Follow._additiveExpression_in_bitwiseAndExpression2413);
-					additiveExpression198=additiveExpression();
+					DebugLocation(501, 30);
+					BXOR194=(IToken)Match(input,BXOR,Follow._BXOR_in_bitwiseXOrExpression2416); 
+					BXOR194_tree = (IASTNode)adaptor.Create(BXOR194);
+					root_0 = (IASTNode)adaptor.BecomeRoot(BXOR194_tree, root_0);
+					DebugLocation(501, 32);
+					PushFollow(Follow._bitwiseAndExpression_in_bitwiseXOrExpression2419);
+					bitwiseAndExpression195=bitwiseAndExpression();
 					PopFollow();
 
-					adaptor.AddChild(root_0, additiveExpression198.Tree);
+					adaptor.AddChild(root_0, bitwiseAndExpression195.Tree);
 
 					}
 					break;
@@ -8028,11 +7948,122 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
+			TraceOut("bitwiseXOrExpression", 54);
+			LeaveRule("bitwiseXOrExpression", 54);
+			LeaveRule_bitwiseXOrExpression();
+		}
+		DebugLocation(502, 1);
+		} finally { DebugExitRule(GrammarFileName, "bitwiseXOrExpression"); }
+		return retval;
+
+	}
+	// $ANTLR end "bitwiseXOrExpression"
+
+	partial void EnterRule_bitwiseAndExpression();
+	partial void LeaveRule_bitwiseAndExpression();
+	// $ANTLR start "bitwiseAndExpression"
+	// Hql.g:504:1: bitwiseAndExpression : additiveExpression ( BAND ^ additiveExpression )* ;
+	[GrammarRule("bitwiseAndExpression")]
+	private AstParserRuleReturnScope<IASTNode, IToken> bitwiseAndExpression()
+	{
+		EnterRule_bitwiseAndExpression();
+		EnterRule("bitwiseAndExpression", 55);
+		TraceIn("bitwiseAndExpression", 55);
+		AstParserRuleReturnScope<IASTNode, IToken> retval = new AstParserRuleReturnScope<IASTNode, IToken>();
+		retval.Start = (IToken)input.LT(1);
+
+		IASTNode root_0 = default(IASTNode);
+
+		IToken BAND197 = default(IToken);
+		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression196 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+		AstParserRuleReturnScope<IASTNode, IToken> additiveExpression198 = default(AstParserRuleReturnScope<IASTNode, IToken>);
+
+		IASTNode BAND197_tree = default(IASTNode);
+		try { DebugEnterRule(GrammarFileName, "bitwiseAndExpression");
+		DebugLocation(504, 1);
+		try
+		{
+			// Hql.g:505:2: ( additiveExpression ( BAND ^ additiveExpression )* )
+			DebugEnterAlt(1);
+			// Hql.g:505:4: additiveExpression ( BAND ^ additiveExpression )*
+			{
+			root_0 = (IASTNode)adaptor.Nil();
+
+			DebugLocation(505, 4);
+			PushFollow(Follow._additiveExpression_in_bitwiseAndExpression2433);
+			additiveExpression196=additiveExpression();
+			PopFollow();
+
+			adaptor.AddChild(root_0, additiveExpression196.Tree);
+			DebugLocation(505, 23);
+			// Hql.g:505:23: ( BAND ^ additiveExpression )*
+			try { DebugEnterSubRule(70);
+			while (true)
+			{
+				int alt70=2;
+				try { DebugEnterDecision(70, false);
+				int LA70_1 = input.LA(1);
+
+				if ((LA70_1==BAND))
+				{
+					alt70 = 1;
+				}
+
+
+				} finally { DebugExitDecision(70); }
+				switch ( alt70 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// Hql.g:505:24: BAND ^ additiveExpression
+					{
+					DebugLocation(505, 28);
+					BAND197=(IToken)Match(input,BAND,Follow._BAND_in_bitwiseAndExpression2436); 
+					BAND197_tree = (IASTNode)adaptor.Create(BAND197);
+					root_0 = (IASTNode)adaptor.BecomeRoot(BAND197_tree, root_0);
+					DebugLocation(505, 30);
+					PushFollow(Follow._additiveExpression_in_bitwiseAndExpression2439);
+					additiveExpression198=additiveExpression();
+					PopFollow();
+
+					adaptor.AddChild(root_0, additiveExpression198.Tree);
+
+					}
+					break;
+
+				default:
+					goto loop70;
+				}
+			}
+
+			loop70:
+				;
+
+			} finally { DebugExitSubRule(70); }
+
+
+			}
+
+			retval.Stop = (IToken)input.LT(-1);
+
+			retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+			adaptor.SetTokenBoundaries(retval.Tree, retval.Start, retval.Stop);
+
+		}
+		catch (RecognitionException re)
+		{
+			ReportError(re);
+			Recover(input,re);
+			retval.Tree = (IASTNode)adaptor.ErrorNode(input, retval.Start, input.LT(-1), re);
+
+		}
+		finally
+		{
 			TraceOut("bitwiseAndExpression", 55);
 			LeaveRule("bitwiseAndExpression", 55);
 			LeaveRule_bitwiseAndExpression();
 		}
-		DebugLocation(495, 1);
+		DebugLocation(506, 1);
 		} finally { DebugExitRule(GrammarFileName, "bitwiseAndExpression"); }
 		return retval;
 
@@ -8042,7 +8073,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_additiveExpression();
 	partial void LeaveRule_additiveExpression();
 	// $ANTLR start "additiveExpression"
-	// Hql.g:498:1: additiveExpression : multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )* ;
+	// Hql.g:509:1: additiveExpression : multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )* ;
 	[GrammarRule("additiveExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> additiveExpression()
 	{
@@ -8062,73 +8093,73 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode PLUS200_tree = default(IASTNode);
 		IASTNode MINUS201_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "additiveExpression");
-		DebugLocation(498, 1);
+		DebugLocation(509, 1);
 		try
 		{
-			// Hql.g:499:2: ( multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )* )
+			// Hql.g:510:2: ( multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:499:4: multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )*
+			// Hql.g:510:4: multiplyExpression ( ( PLUS ^| MINUS ^) multiplyExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(499, 4);
-			PushFollow(Follow._multiplyExpression_in_additiveExpression2427);
+			DebugLocation(510, 4);
+			PushFollow(Follow._multiplyExpression_in_additiveExpression2453);
 			multiplyExpression199=multiplyExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, multiplyExpression199.Tree);
-			DebugLocation(499, 23);
-			// Hql.g:499:23: ( ( PLUS ^| MINUS ^) multiplyExpression )*
-			try { DebugEnterSubRule(71);
+			DebugLocation(510, 23);
+			// Hql.g:510:23: ( ( PLUS ^| MINUS ^) multiplyExpression )*
+			try { DebugEnterSubRule(72);
 			while (true)
 			{
-				int alt71=2;
-				try { DebugEnterDecision(71, false);
-				int LA71_1 = input.LA(1);
+				int alt72=2;
+				try { DebugEnterDecision(72, false);
+				int LA72_1 = input.LA(1);
 
-				if ((LA71_1==MINUS||LA71_1==PLUS))
+				if ((LA72_1==MINUS||LA72_1==PLUS))
 				{
-					alt71 = 1;
+					alt72 = 1;
 				}
 
 
-				} finally { DebugExitDecision(71); }
-				switch ( alt71 )
+				} finally { DebugExitDecision(72); }
+				switch ( alt72 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:499:25: ( PLUS ^| MINUS ^) multiplyExpression
+					// Hql.g:510:25: ( PLUS ^| MINUS ^) multiplyExpression
 					{
-					DebugLocation(499, 25);
-					// Hql.g:499:25: ( PLUS ^| MINUS ^)
-					int alt70=2;
-					try { DebugEnterSubRule(70);
-					try { DebugEnterDecision(70, false);
-					int LA70_1 = input.LA(1);
+					DebugLocation(510, 25);
+					// Hql.g:510:25: ( PLUS ^| MINUS ^)
+					int alt71=2;
+					try { DebugEnterSubRule(71);
+					try { DebugEnterDecision(71, false);
+					int LA71_1 = input.LA(1);
 
-					if ((LA70_1==PLUS))
+					if ((LA71_1==PLUS))
 					{
-						alt70 = 1;
+						alt71 = 1;
 					}
-					else if ((LA70_1==MINUS))
+					else if ((LA71_1==MINUS))
 					{
-						alt70 = 2;
+						alt71 = 2;
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 70, 0, input, 1);
+						NoViableAltException nvae = new NoViableAltException("", 71, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-					} finally { DebugExitDecision(70); }
-					switch (alt70)
+					} finally { DebugExitDecision(71); }
+					switch (alt71)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:499:27: PLUS ^
+						// Hql.g:510:27: PLUS ^
 						{
-						DebugLocation(499, 31);
-						PLUS200=(IToken)Match(input,PLUS,Follow._PLUS_in_additiveExpression2433); 
+						DebugLocation(510, 31);
+						PLUS200=(IToken)Match(input,PLUS,Follow._PLUS_in_additiveExpression2459); 
 						PLUS200_tree = (IASTNode)adaptor.Create(PLUS200);
 						root_0 = (IASTNode)adaptor.BecomeRoot(PLUS200_tree, root_0);
 
@@ -8136,10 +8167,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// Hql.g:499:35: MINUS ^
+						// Hql.g:510:35: MINUS ^
 						{
-						DebugLocation(499, 40);
-						MINUS201=(IToken)Match(input,MINUS,Follow._MINUS_in_additiveExpression2438); 
+						DebugLocation(510, 40);
+						MINUS201=(IToken)Match(input,MINUS,Follow._MINUS_in_additiveExpression2464); 
 						MINUS201_tree = (IASTNode)adaptor.Create(MINUS201);
 						root_0 = (IASTNode)adaptor.BecomeRoot(MINUS201_tree, root_0);
 
@@ -8147,10 +8178,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					}
-					} finally { DebugExitSubRule(70); }
+					} finally { DebugExitSubRule(71); }
 
-					DebugLocation(499, 44);
-					PushFollow(Follow._multiplyExpression_in_additiveExpression2443);
+					DebugLocation(510, 44);
+					PushFollow(Follow._multiplyExpression_in_additiveExpression2469);
 					multiplyExpression202=multiplyExpression();
 					PopFollow();
 
@@ -8160,14 +8191,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop71;
+					goto loop72;
 				}
 			}
 
-			loop71:
+			loop72:
 				;
 
-			} finally { DebugExitSubRule(71); }
+			} finally { DebugExitSubRule(72); }
 
 
 			}
@@ -8191,7 +8222,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("additiveExpression", 56);
 			LeaveRule_additiveExpression();
 		}
-		DebugLocation(500, 1);
+		DebugLocation(511, 1);
 		} finally { DebugExitRule(GrammarFileName, "additiveExpression"); }
 		return retval;
 
@@ -8201,7 +8232,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_multiplyExpression();
 	partial void LeaveRule_multiplyExpression();
 	// $ANTLR start "multiplyExpression"
-	// Hql.g:503:1: multiplyExpression : unaryExpression ( ( STAR ^| DIV ^) unaryExpression )* ;
+	// Hql.g:514:1: multiplyExpression : unaryExpression ( ( STAR ^| DIV ^) unaryExpression )* ;
 	[GrammarRule("multiplyExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> multiplyExpression()
 	{
@@ -8221,73 +8252,73 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode STAR204_tree = default(IASTNode);
 		IASTNode DIV205_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "multiplyExpression");
-		DebugLocation(503, 1);
+		DebugLocation(514, 1);
 		try
 		{
-			// Hql.g:504:2: ( unaryExpression ( ( STAR ^| DIV ^) unaryExpression )* )
+			// Hql.g:515:2: ( unaryExpression ( ( STAR ^| DIV ^) unaryExpression )* )
 			DebugEnterAlt(1);
-			// Hql.g:504:4: unaryExpression ( ( STAR ^| DIV ^) unaryExpression )*
+			// Hql.g:515:4: unaryExpression ( ( STAR ^| DIV ^) unaryExpression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(504, 4);
-			PushFollow(Follow._unaryExpression_in_multiplyExpression2458);
+			DebugLocation(515, 4);
+			PushFollow(Follow._unaryExpression_in_multiplyExpression2484);
 			unaryExpression203=unaryExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, unaryExpression203.Tree);
-			DebugLocation(504, 20);
-			// Hql.g:504:20: ( ( STAR ^| DIV ^) unaryExpression )*
-			try { DebugEnterSubRule(73);
+			DebugLocation(515, 20);
+			// Hql.g:515:20: ( ( STAR ^| DIV ^) unaryExpression )*
+			try { DebugEnterSubRule(74);
 			while (true)
 			{
-				int alt73=2;
-				try { DebugEnterDecision(73, false);
-				int LA73_1 = input.LA(1);
+				int alt74=2;
+				try { DebugEnterDecision(74, false);
+				int LA74_1 = input.LA(1);
 
-				if ((LA73_1==DIV||LA73_1==STAR))
+				if ((LA74_1==DIV||LA74_1==STAR))
 				{
-					alt73 = 1;
+					alt74 = 1;
 				}
 
 
-				} finally { DebugExitDecision(73); }
-				switch ( alt73 )
+				} finally { DebugExitDecision(74); }
+				switch ( alt74 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:504:22: ( STAR ^| DIV ^) unaryExpression
+					// Hql.g:515:22: ( STAR ^| DIV ^) unaryExpression
 					{
-					DebugLocation(504, 22);
-					// Hql.g:504:22: ( STAR ^| DIV ^)
-					int alt72=2;
-					try { DebugEnterSubRule(72);
-					try { DebugEnterDecision(72, false);
-					int LA72_1 = input.LA(1);
+					DebugLocation(515, 22);
+					// Hql.g:515:22: ( STAR ^| DIV ^)
+					int alt73=2;
+					try { DebugEnterSubRule(73);
+					try { DebugEnterDecision(73, false);
+					int LA73_1 = input.LA(1);
 
-					if ((LA72_1==STAR))
+					if ((LA73_1==STAR))
 					{
-						alt72 = 1;
+						alt73 = 1;
 					}
-					else if ((LA72_1==DIV))
+					else if ((LA73_1==DIV))
 					{
-						alt72 = 2;
+						alt73 = 2;
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 72, 0, input, 1);
+						NoViableAltException nvae = new NoViableAltException("", 73, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
-					} finally { DebugExitDecision(72); }
-					switch (alt72)
+					} finally { DebugExitDecision(73); }
+					switch (alt73)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:504:24: STAR ^
+						// Hql.g:515:24: STAR ^
 						{
-						DebugLocation(504, 28);
-						STAR204=(IToken)Match(input,STAR,Follow._STAR_in_multiplyExpression2464); 
+						DebugLocation(515, 28);
+						STAR204=(IToken)Match(input,STAR,Follow._STAR_in_multiplyExpression2490); 
 						STAR204_tree = (IASTNode)adaptor.Create(STAR204);
 						root_0 = (IASTNode)adaptor.BecomeRoot(STAR204_tree, root_0);
 
@@ -8295,10 +8326,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// Hql.g:504:32: DIV ^
+						// Hql.g:515:32: DIV ^
 						{
-						DebugLocation(504, 35);
-						DIV205=(IToken)Match(input,DIV,Follow._DIV_in_multiplyExpression2469); 
+						DebugLocation(515, 35);
+						DIV205=(IToken)Match(input,DIV,Follow._DIV_in_multiplyExpression2495); 
 						DIV205_tree = (IASTNode)adaptor.Create(DIV205);
 						root_0 = (IASTNode)adaptor.BecomeRoot(DIV205_tree, root_0);
 
@@ -8306,10 +8337,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					}
-					} finally { DebugExitSubRule(72); }
+					} finally { DebugExitSubRule(73); }
 
-					DebugLocation(504, 39);
-					PushFollow(Follow._unaryExpression_in_multiplyExpression2474);
+					DebugLocation(515, 39);
+					PushFollow(Follow._unaryExpression_in_multiplyExpression2500);
 					unaryExpression206=unaryExpression();
 					PopFollow();
 
@@ -8319,14 +8350,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop73;
+					goto loop74;
 				}
 			}
 
-			loop73:
+			loop74:
 				;
 
-			} finally { DebugExitSubRule(73); }
+			} finally { DebugExitSubRule(74); }
 
 
 			}
@@ -8350,7 +8381,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("multiplyExpression", 57);
 			LeaveRule_multiplyExpression();
 		}
-		DebugLocation(505, 1);
+		DebugLocation(516, 1);
 		} finally { DebugExitRule(GrammarFileName, "multiplyExpression"); }
 		return retval;
 
@@ -8360,7 +8391,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_unaryExpression();
 	partial void LeaveRule_unaryExpression();
 	// $ANTLR start "unaryExpression"
-	// Hql.g:508:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom );
+	// Hql.g:519:1: unaryExpression : (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom );
 	[GrammarRule("unaryExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> unaryExpression()
 	{
@@ -8386,27 +8417,27 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleITokenStream stream_PLUS=new RewriteRuleITokenStream(adaptor,"token PLUS");
 		RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
 		try { DebugEnterRule(GrammarFileName, "unaryExpression");
-		DebugLocation(508, 1);
+		DebugLocation(519, 1);
 		try
 		{
-			// Hql.g:509:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom )
-			int alt74=5;
-			try { DebugEnterDecision(74, false);
+			// Hql.g:520:2: (m= MINUS mu= unaryExpression -> ^( UNARY_MINUS[$m] $mu) |p= PLUS pu= unaryExpression -> ^( UNARY_PLUS[$p] $pu) | caseExpression | quantifiedExpression | atom )
+			int alt75=5;
+			try { DebugEnterDecision(75, false);
 			switch (input.LA(1))
 			{
 			case MINUS:
 				{
-				alt74 = 1;
+				alt75 = 1;
 				}
 				break;
 			case PLUS:
 				{
-				alt74 = 2;
+				alt75 = 2;
 				}
 				break;
 			case CASE:
 				{
-				alt74 = 3;
+				alt75 = 3;
 				}
 				break;
 			case ALL:
@@ -8414,7 +8445,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case EXISTS:
 			case SOME:
 				{
-				alt74 = 4;
+				alt75 = 4;
 				}
 				break;
 			case AVG:
@@ -8439,30 +8470,30 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case SUM:
 			case TRUE:
 				{
-				alt74 = 5;
+				alt75 = 5;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 74, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 75, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(74); }
-			switch (alt74)
+			} finally { DebugExitDecision(75); }
+			switch (alt75)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:509:4: m= MINUS mu= unaryExpression
+				// Hql.g:520:4: m= MINUS mu= unaryExpression
 				{
-				DebugLocation(509, 5);
-				m=(IToken)Match(input,MINUS,Follow._MINUS_in_unaryExpression2492);  
+				DebugLocation(520, 5);
+				m=(IToken)Match(input,MINUS,Follow._MINUS_in_unaryExpression2518);  
 				stream_MINUS.Add(m);
 
-				DebugLocation(509, 14);
-				PushFollow(Follow._unaryExpression_in_unaryExpression2496);
+				DebugLocation(520, 14);
+				PushFollow(Follow._unaryExpression_in_unaryExpression2522);
 				mu=unaryExpression();
 				PopFollow();
 
@@ -8482,16 +8513,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 509:31: -> ^( UNARY_MINUS[$m] $mu)
+				// 520:31: -> ^( UNARY_MINUS[$m] $mu)
 				{
-					DebugLocation(509, 34);
-					// Hql.g:509:34: ^( UNARY_MINUS[$m] $mu)
+					DebugLocation(520, 34);
+					// Hql.g:520:34: ^( UNARY_MINUS[$m] $mu)
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(509, 36);
+					DebugLocation(520, 36);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_MINUS, m), root_1);
 
-					DebugLocation(509, 53);
+					DebugLocation(520, 53);
 					adaptor.AddChild(root_1, stream_mu.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
@@ -8506,14 +8537,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:510:4: p= PLUS pu= unaryExpression
+				// Hql.g:521:4: p= PLUS pu= unaryExpression
 				{
-				DebugLocation(510, 5);
-				p=(IToken)Match(input,PLUS,Follow._PLUS_in_unaryExpression2513);  
+				DebugLocation(521, 5);
+				p=(IToken)Match(input,PLUS,Follow._PLUS_in_unaryExpression2539);  
 				stream_PLUS.Add(p);
 
-				DebugLocation(510, 13);
-				PushFollow(Follow._unaryExpression_in_unaryExpression2517);
+				DebugLocation(521, 13);
+				PushFollow(Follow._unaryExpression_in_unaryExpression2543);
 				pu=unaryExpression();
 				PopFollow();
 
@@ -8533,16 +8564,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 510:30: -> ^( UNARY_PLUS[$p] $pu)
+				// 521:30: -> ^( UNARY_PLUS[$p] $pu)
 				{
-					DebugLocation(510, 33);
-					// Hql.g:510:33: ^( UNARY_PLUS[$p] $pu)
+					DebugLocation(521, 33);
+					// Hql.g:521:33: ^( UNARY_PLUS[$p] $pu)
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(510, 35);
+					DebugLocation(521, 35);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(UNARY_PLUS, p), root_1);
 
-					DebugLocation(510, 51);
+					DebugLocation(521, 51);
 					adaptor.AddChild(root_1, stream_pu.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
@@ -8557,12 +8588,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:511:4: caseExpression
+				// Hql.g:522:4: caseExpression
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(511, 4);
-				PushFollow(Follow._caseExpression_in_unaryExpression2532);
+				DebugLocation(522, 4);
+				PushFollow(Follow._caseExpression_in_unaryExpression2558);
 				caseExpression207=caseExpression();
 				PopFollow();
 
@@ -8572,12 +8603,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// Hql.g:512:4: quantifiedExpression
+				// Hql.g:523:4: quantifiedExpression
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(512, 4);
-				PushFollow(Follow._quantifiedExpression_in_unaryExpression2537);
+				DebugLocation(523, 4);
+				PushFollow(Follow._quantifiedExpression_in_unaryExpression2563);
 				quantifiedExpression208=quantifiedExpression();
 				PopFollow();
 
@@ -8587,12 +8618,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// Hql.g:513:4: atom
+				// Hql.g:524:4: atom
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(513, 4);
-				PushFollow(Follow._atom_in_unaryExpression2542);
+				DebugLocation(524, 4);
+				PushFollow(Follow._atom_in_unaryExpression2568);
 				atom209=atom();
 				PopFollow();
 
@@ -8621,7 +8652,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("unaryExpression", 58);
 			LeaveRule_unaryExpression();
 		}
-		DebugLocation(514, 1);
+		DebugLocation(525, 1);
 		} finally { DebugExitRule(GrammarFileName, "unaryExpression"); }
 		return retval;
 
@@ -8631,7 +8662,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_caseExpression();
 	partial void LeaveRule_caseExpression();
 	// $ANTLR start "caseExpression"
-	// Hql.g:516:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
+	// Hql.g:527:1: caseExpression : ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) );
 	[GrammarRule("caseExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> caseExpression()
 	{
@@ -8664,75 +8695,75 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
 		RewriteRuleSubtreeStream stream_altWhenClause=new RewriteRuleSubtreeStream(adaptor,"rule altWhenClause");
 		try { DebugEnterRule(GrammarFileName, "caseExpression");
-		DebugLocation(516, 1);
+		DebugLocation(527, 1);
 		try
 		{
-			// Hql.g:517:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
-			int alt79=2;
-			try { DebugEnterDecision(79, false);
-			int LA79_1 = input.LA(1);
+			// Hql.g:528:2: ( CASE ( whenClause )+ ( elseClause )? END -> ^( CASE ( whenClause )+ ( elseClause )? ) | CASE unaryExpression ( altWhenClause )+ ( elseClause )? END -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? ) )
+			int alt80=2;
+			try { DebugEnterDecision(80, false);
+			int LA80_1 = input.LA(1);
 
-			if ((LA79_1==CASE))
+			if ((LA80_1==CASE))
 			{
-				int LA79_2 = input.LA(2);
+				int LA80_2 = input.LA(2);
 
-				if ((LA79_2==WHEN))
+				if ((LA80_2==WHEN))
 				{
-					alt79 = 1;
+					alt80 = 1;
 				}
-				else if ((LA79_2==ALL||LA79_2==ANY||LA79_2==AVG||LA79_2==CASE||LA79_2==COLON||LA79_2==COUNT||LA79_2==ELEMENTS||LA79_2==EMPTY||LA79_2==EXISTS||LA79_2==FALSE||LA79_2==IDENT||LA79_2==INDICES||LA79_2==MAX||(LA79_2>=MIN && LA79_2<=MINUS)||(LA79_2>=NULL && LA79_2<=NUM_LONG)||LA79_2==OPEN||(LA79_2>=PARAM && LA79_2<=PLUS)||LA79_2==QUOTED_String||LA79_2==SOME||LA79_2==SUM||LA79_2==TRUE))
+				else if ((LA80_2==ALL||LA80_2==ANY||LA80_2==AVG||LA80_2==CASE||LA80_2==COLON||LA80_2==COUNT||LA80_2==ELEMENTS||LA80_2==EMPTY||LA80_2==EXISTS||LA80_2==FALSE||LA80_2==IDENT||LA80_2==INDICES||LA80_2==MAX||(LA80_2>=MIN && LA80_2<=MINUS)||(LA80_2>=NULL && LA80_2<=NUM_LONG)||LA80_2==OPEN||(LA80_2>=PARAM && LA80_2<=PLUS)||LA80_2==QUOTED_String||LA80_2==SOME||LA80_2==SUM||LA80_2==TRUE))
 				{
-					alt79 = 2;
+					alt80 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 79, 1, input, 2);
+					NoViableAltException nvae = new NoViableAltException("", 80, 1, input, 2);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 79, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 80, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(79); }
-			switch (alt79)
+			} finally { DebugExitDecision(80); }
+			switch (alt80)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:517:4: CASE ( whenClause )+ ( elseClause )? END
+				// Hql.g:528:4: CASE ( whenClause )+ ( elseClause )? END
 				{
-				DebugLocation(517, 4);
-				CASE210=(IToken)Match(input,CASE,Follow._CASE_in_caseExpression2554);  
+				DebugLocation(528, 4);
+				CASE210=(IToken)Match(input,CASE,Follow._CASE_in_caseExpression2580);  
 				stream_CASE.Add(CASE210);
 
-				DebugLocation(517, 9);
-				// Hql.g:517:9: ( whenClause )+
-				int cnt75=0;
-				try { DebugEnterSubRule(75);
+				DebugLocation(528, 9);
+				// Hql.g:528:9: ( whenClause )+
+				int cnt76=0;
+				try { DebugEnterSubRule(76);
 				while (true)
 				{
-					int alt75=2;
-					try { DebugEnterDecision(75, false);
-					int LA75_1 = input.LA(1);
+					int alt76=2;
+					try { DebugEnterDecision(76, false);
+					int LA76_1 = input.LA(1);
 
-					if ((LA75_1==WHEN))
+					if ((LA76_1==WHEN))
 					{
-						alt75 = 1;
+						alt76 = 1;
 					}
 
 
-					} finally { DebugExitDecision(75); }
-					switch (alt75)
+					} finally { DebugExitDecision(76); }
+					switch (alt76)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:517:10: whenClause
+						// Hql.g:528:10: whenClause
 						{
-						DebugLocation(517, 10);
-						PushFollow(Follow._whenClause_in_caseExpression2557);
+						DebugLocation(528, 10);
+						PushFollow(Follow._whenClause_in_caseExpression2583);
 						whenClause211=whenClause();
 						PopFollow();
 
@@ -8742,40 +8773,40 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					default:
-						if (cnt75 >= 1)
-							goto loop75;
+						if (cnt76 >= 1)
+							goto loop76;
 
-						EarlyExitException eee75 = new EarlyExitException( 75, input );
-						DebugRecognitionException(eee75);
-						throw eee75;
+						EarlyExitException eee76 = new EarlyExitException( 76, input );
+						DebugRecognitionException(eee76);
+						throw eee76;
 					}
-					cnt75++;
+					cnt76++;
 				}
-				loop75:
+				loop76:
 					;
 
-				} finally { DebugExitSubRule(75); }
+				} finally { DebugExitSubRule(76); }
 
-				DebugLocation(517, 23);
-				// Hql.g:517:23: ( elseClause )?
-				int alt76=2;
-				try { DebugEnterSubRule(76);
-				try { DebugEnterDecision(76, false);
-				int LA76_1 = input.LA(1);
+				DebugLocation(528, 23);
+				// Hql.g:528:23: ( elseClause )?
+				int alt77=2;
+				try { DebugEnterSubRule(77);
+				try { DebugEnterDecision(77, false);
+				int LA77_1 = input.LA(1);
 
-				if ((LA76_1==ELSE))
+				if ((LA77_1==ELSE))
 				{
-					alt76 = 1;
+					alt77 = 1;
 				}
-				} finally { DebugExitDecision(76); }
-				switch (alt76)
+				} finally { DebugExitDecision(77); }
+				switch (alt77)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:517:24: elseClause
+					// Hql.g:528:24: elseClause
 					{
-					DebugLocation(517, 24);
-					PushFollow(Follow._elseClause_in_caseExpression2562);
+					DebugLocation(528, 24);
+					PushFollow(Follow._elseClause_in_caseExpression2588);
 					elseClause212=elseClause();
 					PopFollow();
 
@@ -8785,10 +8816,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(76); }
+				} finally { DebugExitSubRule(77); }
 
-				DebugLocation(517, 37);
-				END213=(IToken)Match(input,END,Follow._END_in_caseExpression2566);  
+				DebugLocation(528, 37);
+				END213=(IToken)Match(input,END,Follow._END_in_caseExpression2592);  
 				stream_END.Add(END213);
 
 
@@ -8805,32 +8836,32 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 518:3: -> ^( CASE ( whenClause )+ ( elseClause )? )
+				// 529:3: -> ^( CASE ( whenClause )+ ( elseClause )? )
 				{
-					DebugLocation(518, 6);
-					// Hql.g:518:6: ^( CASE ( whenClause )+ ( elseClause )? )
+					DebugLocation(529, 6);
+					// Hql.g:529:6: ^( CASE ( whenClause )+ ( elseClause )? )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(518, 8);
+					DebugLocation(529, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(stream_CASE.NextNode(), root_1);
 
-					DebugLocation(518, 13);
+					DebugLocation(529, 13);
 					if (!(stream_whenClause.HasNext))
 					{
 						throw new RewriteEarlyExitException();
 					}
 					while ( stream_whenClause.HasNext )
 					{
-						DebugLocation(518, 13);
+						DebugLocation(529, 13);
 						adaptor.AddChild(root_1, stream_whenClause.NextTree());
 
 					}
 					stream_whenClause.Reset();
-					DebugLocation(518, 25);
-					// Hql.g:518:25: ( elseClause )?
+					DebugLocation(529, 25);
+					// Hql.g:529:25: ( elseClause )?
 					if (stream_elseClause.HasNext)
 					{
-						DebugLocation(518, 25);
+						DebugLocation(529, 25);
 						adaptor.AddChild(root_1, stream_elseClause.NextTree());
 
 					}
@@ -8848,43 +8879,43 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:519:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
+				// Hql.g:530:4: CASE unaryExpression ( altWhenClause )+ ( elseClause )? END
 				{
-				DebugLocation(519, 4);
-				CASE214=(IToken)Match(input,CASE,Follow._CASE_in_caseExpression2586);  
+				DebugLocation(530, 4);
+				CASE214=(IToken)Match(input,CASE,Follow._CASE_in_caseExpression2612);  
 				stream_CASE.Add(CASE214);
 
-				DebugLocation(519, 9);
-				PushFollow(Follow._unaryExpression_in_caseExpression2588);
+				DebugLocation(530, 9);
+				PushFollow(Follow._unaryExpression_in_caseExpression2614);
 				unaryExpression215=unaryExpression();
 				PopFollow();
 
 				stream_unaryExpression.Add(unaryExpression215.Tree);
-				DebugLocation(519, 25);
-				// Hql.g:519:25: ( altWhenClause )+
-				int cnt77=0;
-				try { DebugEnterSubRule(77);
+				DebugLocation(530, 25);
+				// Hql.g:530:25: ( altWhenClause )+
+				int cnt78=0;
+				try { DebugEnterSubRule(78);
 				while (true)
 				{
-					int alt77=2;
-					try { DebugEnterDecision(77, false);
-					int LA77_1 = input.LA(1);
+					int alt78=2;
+					try { DebugEnterDecision(78, false);
+					int LA78_1 = input.LA(1);
 
-					if ((LA77_1==WHEN))
+					if ((LA78_1==WHEN))
 					{
-						alt77 = 1;
+						alt78 = 1;
 					}
 
 
-					} finally { DebugExitDecision(77); }
-					switch (alt77)
+					} finally { DebugExitDecision(78); }
+					switch (alt78)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:519:26: altWhenClause
+						// Hql.g:530:26: altWhenClause
 						{
-						DebugLocation(519, 26);
-						PushFollow(Follow._altWhenClause_in_caseExpression2591);
+						DebugLocation(530, 26);
+						PushFollow(Follow._altWhenClause_in_caseExpression2617);
 						altWhenClause216=altWhenClause();
 						PopFollow();
 
@@ -8894,40 +8925,40 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					default:
-						if (cnt77 >= 1)
-							goto loop77;
+						if (cnt78 >= 1)
+							goto loop78;
 
-						EarlyExitException eee77 = new EarlyExitException( 77, input );
-						DebugRecognitionException(eee77);
-						throw eee77;
+						EarlyExitException eee78 = new EarlyExitException( 78, input );
+						DebugRecognitionException(eee78);
+						throw eee78;
 					}
-					cnt77++;
+					cnt78++;
 				}
-				loop77:
+				loop78:
 					;
 
-				} finally { DebugExitSubRule(77); }
+				} finally { DebugExitSubRule(78); }
 
-				DebugLocation(519, 42);
-				// Hql.g:519:42: ( elseClause )?
-				int alt78=2;
-				try { DebugEnterSubRule(78);
-				try { DebugEnterDecision(78, false);
-				int LA78_1 = input.LA(1);
+				DebugLocation(530, 42);
+				// Hql.g:530:42: ( elseClause )?
+				int alt79=2;
+				try { DebugEnterSubRule(79);
+				try { DebugEnterDecision(79, false);
+				int LA79_1 = input.LA(1);
 
-				if ((LA78_1==ELSE))
+				if ((LA79_1==ELSE))
 				{
-					alt78 = 1;
+					alt79 = 1;
 				}
-				} finally { DebugExitDecision(78); }
-				switch (alt78)
+				} finally { DebugExitDecision(79); }
+				switch (alt79)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:519:43: elseClause
+					// Hql.g:530:43: elseClause
 					{
-					DebugLocation(519, 43);
-					PushFollow(Follow._elseClause_in_caseExpression2596);
+					DebugLocation(530, 43);
+					PushFollow(Follow._elseClause_in_caseExpression2622);
 					elseClause217=elseClause();
 					PopFollow();
 
@@ -8937,10 +8968,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(78); }
+				} finally { DebugExitSubRule(79); }
 
-				DebugLocation(519, 56);
-				END218=(IToken)Match(input,END,Follow._END_in_caseExpression2600);  
+				DebugLocation(530, 56);
+				END218=(IToken)Match(input,END,Follow._END_in_caseExpression2626);  
 				stream_END.Add(END218);
 
 
@@ -8957,34 +8988,34 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 520:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+				// 531:3: -> ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
 				{
-					DebugLocation(520, 6);
-					// Hql.g:520:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
+					DebugLocation(531, 6);
+					// Hql.g:531:6: ^( CASE2 unaryExpression ( altWhenClause )+ ( elseClause )? )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(520, 8);
+					DebugLocation(531, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(CASE2, "CASE2"), root_1);
 
-					DebugLocation(520, 14);
+					DebugLocation(531, 14);
 					adaptor.AddChild(root_1, stream_unaryExpression.NextTree());
-					DebugLocation(520, 30);
+					DebugLocation(531, 30);
 					if (!(stream_altWhenClause.HasNext))
 					{
 						throw new RewriteEarlyExitException();
 					}
 					while ( stream_altWhenClause.HasNext )
 					{
-						DebugLocation(520, 30);
+						DebugLocation(531, 30);
 						adaptor.AddChild(root_1, stream_altWhenClause.NextTree());
 
 					}
 					stream_altWhenClause.Reset();
-					DebugLocation(520, 45);
-					// Hql.g:520:45: ( elseClause )?
+					DebugLocation(531, 45);
+					// Hql.g:531:45: ( elseClause )?
 					if (stream_elseClause.HasNext)
 					{
-						DebugLocation(520, 45);
+						DebugLocation(531, 45);
 						adaptor.AddChild(root_1, stream_elseClause.NextTree());
 
 					}
@@ -9021,7 +9052,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("caseExpression", 59);
 			LeaveRule_caseExpression();
 		}
-		DebugLocation(521, 1);
+		DebugLocation(532, 1);
 		} finally { DebugExitRule(GrammarFileName, "caseExpression"); }
 		return retval;
 
@@ -9031,7 +9062,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_whenClause();
 	partial void LeaveRule_whenClause();
 	// $ANTLR start "whenClause"
-	// Hql.g:523:1: whenClause : ( WHEN ^ logicalExpression THEN ! expression ) ;
+	// Hql.g:534:1: whenClause : ( WHEN ^ logicalExpression THEN ! expression ) ;
 	[GrammarRule("whenClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> whenClause()
 	{
@@ -9051,34 +9082,34 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode WHEN219_tree = default(IASTNode);
 		IASTNode THEN221_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "whenClause");
-		DebugLocation(523, 1);
+		DebugLocation(534, 1);
 		try
 		{
-			// Hql.g:524:2: ( ( WHEN ^ logicalExpression THEN ! expression ) )
+			// Hql.g:535:2: ( ( WHEN ^ logicalExpression THEN ! expression ) )
 			DebugEnterAlt(1);
-			// Hql.g:524:4: ( WHEN ^ logicalExpression THEN ! expression )
+			// Hql.g:535:4: ( WHEN ^ logicalExpression THEN ! expression )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(524, 4);
-			// Hql.g:524:4: ( WHEN ^ logicalExpression THEN ! expression )
+			DebugLocation(535, 4);
+			// Hql.g:535:4: ( WHEN ^ logicalExpression THEN ! expression )
 			DebugEnterAlt(1);
-			// Hql.g:524:5: WHEN ^ logicalExpression THEN ! expression
+			// Hql.g:535:5: WHEN ^ logicalExpression THEN ! expression
 			{
-			DebugLocation(524, 9);
-			WHEN219=(IToken)Match(input,WHEN,Follow._WHEN_in_whenClause2629); 
+			DebugLocation(535, 9);
+			WHEN219=(IToken)Match(input,WHEN,Follow._WHEN_in_whenClause2655); 
 			WHEN219_tree = (IASTNode)adaptor.Create(WHEN219);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN219_tree, root_0);
-			DebugLocation(524, 11);
-			PushFollow(Follow._logicalExpression_in_whenClause2632);
+			DebugLocation(535, 11);
+			PushFollow(Follow._logicalExpression_in_whenClause2658);
 			logicalExpression220=logicalExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, logicalExpression220.Tree);
-			DebugLocation(524, 33);
-			THEN221=(IToken)Match(input,THEN,Follow._THEN_in_whenClause2634); 
-			DebugLocation(524, 35);
-			PushFollow(Follow._expression_in_whenClause2637);
+			DebugLocation(535, 33);
+			THEN221=(IToken)Match(input,THEN,Follow._THEN_in_whenClause2660); 
+			DebugLocation(535, 35);
+			PushFollow(Follow._expression_in_whenClause2663);
 			expression222=expression();
 			PopFollow();
 
@@ -9108,7 +9139,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("whenClause", 60);
 			LeaveRule_whenClause();
 		}
-		DebugLocation(525, 1);
+		DebugLocation(536, 1);
 		} finally { DebugExitRule(GrammarFileName, "whenClause"); }
 		return retval;
 
@@ -9118,7 +9149,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_altWhenClause();
 	partial void LeaveRule_altWhenClause();
 	// $ANTLR start "altWhenClause"
-	// Hql.g:527:1: altWhenClause : ( WHEN ^ unaryExpression THEN ! expression ) ;
+	// Hql.g:538:1: altWhenClause : ( WHEN ^ unaryExpression THEN ! expression ) ;
 	[GrammarRule("altWhenClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> altWhenClause()
 	{
@@ -9138,34 +9169,34 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode WHEN223_tree = default(IASTNode);
 		IASTNode THEN225_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "altWhenClause");
-		DebugLocation(527, 1);
+		DebugLocation(538, 1);
 		try
 		{
-			// Hql.g:528:2: ( ( WHEN ^ unaryExpression THEN ! expression ) )
+			// Hql.g:539:2: ( ( WHEN ^ unaryExpression THEN ! expression ) )
 			DebugEnterAlt(1);
-			// Hql.g:528:4: ( WHEN ^ unaryExpression THEN ! expression )
+			// Hql.g:539:4: ( WHEN ^ unaryExpression THEN ! expression )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(528, 4);
-			// Hql.g:528:4: ( WHEN ^ unaryExpression THEN ! expression )
+			DebugLocation(539, 4);
+			// Hql.g:539:4: ( WHEN ^ unaryExpression THEN ! expression )
 			DebugEnterAlt(1);
-			// Hql.g:528:5: WHEN ^ unaryExpression THEN ! expression
+			// Hql.g:539:5: WHEN ^ unaryExpression THEN ! expression
 			{
-			DebugLocation(528, 9);
-			WHEN223=(IToken)Match(input,WHEN,Follow._WHEN_in_altWhenClause2651); 
+			DebugLocation(539, 9);
+			WHEN223=(IToken)Match(input,WHEN,Follow._WHEN_in_altWhenClause2677); 
 			WHEN223_tree = (IASTNode)adaptor.Create(WHEN223);
 			root_0 = (IASTNode)adaptor.BecomeRoot(WHEN223_tree, root_0);
-			DebugLocation(528, 11);
-			PushFollow(Follow._unaryExpression_in_altWhenClause2654);
+			DebugLocation(539, 11);
+			PushFollow(Follow._unaryExpression_in_altWhenClause2680);
 			unaryExpression224=unaryExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, unaryExpression224.Tree);
-			DebugLocation(528, 31);
-			THEN225=(IToken)Match(input,THEN,Follow._THEN_in_altWhenClause2656); 
-			DebugLocation(528, 33);
-			PushFollow(Follow._expression_in_altWhenClause2659);
+			DebugLocation(539, 31);
+			THEN225=(IToken)Match(input,THEN,Follow._THEN_in_altWhenClause2682); 
+			DebugLocation(539, 33);
+			PushFollow(Follow._expression_in_altWhenClause2685);
 			expression226=expression();
 			PopFollow();
 
@@ -9195,7 +9226,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("altWhenClause", 61);
 			LeaveRule_altWhenClause();
 		}
-		DebugLocation(529, 1);
+		DebugLocation(540, 1);
 		} finally { DebugExitRule(GrammarFileName, "altWhenClause"); }
 		return retval;
 
@@ -9205,7 +9236,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_elseClause();
 	partial void LeaveRule_elseClause();
 	// $ANTLR start "elseClause"
-	// Hql.g:531:1: elseClause : ( ELSE ^ expression ) ;
+	// Hql.g:542:1: elseClause : ( ELSE ^ expression ) ;
 	[GrammarRule("elseClause")]
 	private AstParserRuleReturnScope<IASTNode, IToken> elseClause()
 	{
@@ -9222,26 +9253,26 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode ELSE227_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "elseClause");
-		DebugLocation(531, 1);
+		DebugLocation(542, 1);
 		try
 		{
-			// Hql.g:532:2: ( ( ELSE ^ expression ) )
+			// Hql.g:543:2: ( ( ELSE ^ expression ) )
 			DebugEnterAlt(1);
-			// Hql.g:532:4: ( ELSE ^ expression )
+			// Hql.g:543:4: ( ELSE ^ expression )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(532, 4);
-			// Hql.g:532:4: ( ELSE ^ expression )
+			DebugLocation(543, 4);
+			// Hql.g:543:4: ( ELSE ^ expression )
 			DebugEnterAlt(1);
-			// Hql.g:532:5: ELSE ^ expression
+			// Hql.g:543:5: ELSE ^ expression
 			{
-			DebugLocation(532, 9);
-			ELSE227=(IToken)Match(input,ELSE,Follow._ELSE_in_elseClause2673); 
+			DebugLocation(543, 9);
+			ELSE227=(IToken)Match(input,ELSE,Follow._ELSE_in_elseClause2699); 
 			ELSE227_tree = (IASTNode)adaptor.Create(ELSE227);
 			root_0 = (IASTNode)adaptor.BecomeRoot(ELSE227_tree, root_0);
-			DebugLocation(532, 11);
-			PushFollow(Follow._expression_in_elseClause2676);
+			DebugLocation(543, 11);
+			PushFollow(Follow._expression_in_elseClause2702);
 			expression228=expression();
 			PopFollow();
 
@@ -9271,7 +9302,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("elseClause", 62);
 			LeaveRule_elseClause();
 		}
-		DebugLocation(533, 1);
+		DebugLocation(544, 1);
 		} finally { DebugExitRule(GrammarFileName, "elseClause"); }
 		return retval;
 
@@ -9281,7 +9312,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_quantifiedExpression();
 	partial void LeaveRule_quantifiedExpression();
 	// $ANTLR start "quantifiedExpression"
-	// Hql.g:535:1: quantifiedExpression : ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) ) ;
+	// Hql.g:546:1: quantifiedExpression : ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) ) ;
 	[GrammarRule("quantifiedExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> quantifiedExpression()
 	{
@@ -9310,122 +9341,40 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode OPEN235_tree = default(IASTNode);
 		IASTNode CLOSE237_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "quantifiedExpression");
-		DebugLocation(535, 1);
+		DebugLocation(546, 1);
 		try
 		{
-			// Hql.g:536:2: ( ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) ) )
+			// Hql.g:547:2: ( ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) ) )
 			DebugEnterAlt(1);
-			// Hql.g:536:4: ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) )
+			// Hql.g:547:4: ( SOME ^| EXISTS ^| ALL ^| ANY ^) ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(536, 4);
-			// Hql.g:536:4: ( SOME ^| EXISTS ^| ALL ^| ANY ^)
-			int alt80=4;
-			try { DebugEnterSubRule(80);
-			try { DebugEnterDecision(80, false);
-			switch (input.LA(1))
-			{
-			case SOME:
-				{
-				alt80 = 1;
-				}
-				break;
-			case EXISTS:
-				{
-				alt80 = 2;
-				}
-				break;
-			case ALL:
-				{
-				alt80 = 3;
-				}
-				break;
-			case ANY:
-				{
-				alt80 = 4;
-				}
-				break;
-			default:
-				{
-					NoViableAltException nvae = new NoViableAltException("", 80, 0, input, 1);
-					DebugRecognitionException(nvae);
-					throw nvae;
-				}
-			}
-
-			} finally { DebugExitDecision(80); }
-			switch (alt80)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// Hql.g:536:6: SOME ^
-				{
-				DebugLocation(536, 10);
-				SOME229=(IToken)Match(input,SOME,Follow._SOME_in_quantifiedExpression2691); 
-				SOME229_tree = (IASTNode)adaptor.Create(SOME229);
-				root_0 = (IASTNode)adaptor.BecomeRoot(SOME229_tree, root_0);
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// Hql.g:536:14: EXISTS ^
-				{
-				DebugLocation(536, 20);
-				EXISTS230=(IToken)Match(input,EXISTS,Follow._EXISTS_in_quantifiedExpression2696); 
-				EXISTS230_tree = (IASTNode)adaptor.Create(EXISTS230);
-				root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS230_tree, root_0);
-
-				}
-				break;
-			case 3:
-				DebugEnterAlt(3);
-				// Hql.g:536:24: ALL ^
-				{
-				DebugLocation(536, 27);
-				ALL231=(IToken)Match(input,ALL,Follow._ALL_in_quantifiedExpression2701); 
-				ALL231_tree = (IASTNode)adaptor.Create(ALL231);
-				root_0 = (IASTNode)adaptor.BecomeRoot(ALL231_tree, root_0);
-
-				}
-				break;
-			case 4:
-				DebugEnterAlt(4);
-				// Hql.g:536:31: ANY ^
-				{
-				DebugLocation(536, 34);
-				ANY232=(IToken)Match(input,ANY,Follow._ANY_in_quantifiedExpression2706); 
-				ANY232_tree = (IASTNode)adaptor.Create(ANY232);
-				root_0 = (IASTNode)adaptor.BecomeRoot(ANY232_tree, root_0);
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(80); }
-
-			DebugLocation(537, 2);
-			// Hql.g:537:2: ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) )
-			int alt81=3;
+			DebugLocation(547, 4);
+			// Hql.g:547:4: ( SOME ^| EXISTS ^| ALL ^| ANY ^)
+			int alt81=4;
 			try { DebugEnterSubRule(81);
 			try { DebugEnterDecision(81, false);
 			switch (input.LA(1))
 			{
-			case IDENT:
+			case SOME:
 				{
 				alt81 = 1;
 				}
 				break;
-			case ELEMENTS:
-			case INDICES:
+			case EXISTS:
 				{
 				alt81 = 2;
 				}
 				break;
-			case OPEN:
+			case ALL:
 				{
 				alt81 = 3;
+				}
+				break;
+			case ANY:
+				{
+				alt81 = 4;
 				}
 				break;
 			default:
@@ -9441,10 +9390,92 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:537:4: identifier
+				// Hql.g:547:6: SOME ^
 				{
-				DebugLocation(537, 4);
-				PushFollow(Follow._identifier_in_quantifiedExpression2715);
+				DebugLocation(547, 10);
+				SOME229=(IToken)Match(input,SOME,Follow._SOME_in_quantifiedExpression2717); 
+				SOME229_tree = (IASTNode)adaptor.Create(SOME229);
+				root_0 = (IASTNode)adaptor.BecomeRoot(SOME229_tree, root_0);
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// Hql.g:547:14: EXISTS ^
+				{
+				DebugLocation(547, 20);
+				EXISTS230=(IToken)Match(input,EXISTS,Follow._EXISTS_in_quantifiedExpression2722); 
+				EXISTS230_tree = (IASTNode)adaptor.Create(EXISTS230);
+				root_0 = (IASTNode)adaptor.BecomeRoot(EXISTS230_tree, root_0);
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// Hql.g:547:24: ALL ^
+				{
+				DebugLocation(547, 27);
+				ALL231=(IToken)Match(input,ALL,Follow._ALL_in_quantifiedExpression2727); 
+				ALL231_tree = (IASTNode)adaptor.Create(ALL231);
+				root_0 = (IASTNode)adaptor.BecomeRoot(ALL231_tree, root_0);
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// Hql.g:547:31: ANY ^
+				{
+				DebugLocation(547, 34);
+				ANY232=(IToken)Match(input,ANY,Follow._ANY_in_quantifiedExpression2732); 
+				ANY232_tree = (IASTNode)adaptor.Create(ANY232);
+				root_0 = (IASTNode)adaptor.BecomeRoot(ANY232_tree, root_0);
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(81); }
+
+			DebugLocation(548, 2);
+			// Hql.g:548:2: ( identifier | collectionExpr | ( OPEN ! ( subQuery ) CLOSE !) )
+			int alt82=3;
+			try { DebugEnterSubRule(82);
+			try { DebugEnterDecision(82, false);
+			switch (input.LA(1))
+			{
+			case IDENT:
+				{
+				alt82 = 1;
+				}
+				break;
+			case ELEMENTS:
+			case INDICES:
+				{
+				alt82 = 2;
+				}
+				break;
+			case OPEN:
+				{
+				alt82 = 3;
+				}
+				break;
+			default:
+				{
+					NoViableAltException nvae = new NoViableAltException("", 82, 0, input, 1);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+			}
+
+			} finally { DebugExitDecision(82); }
+			switch (alt82)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// Hql.g:548:4: identifier
+				{
+				DebugLocation(548, 4);
+				PushFollow(Follow._identifier_in_quantifiedExpression2741);
 				identifier233=identifier();
 				PopFollow();
 
@@ -9454,10 +9485,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:537:17: collectionExpr
+				// Hql.g:548:17: collectionExpr
 				{
-				DebugLocation(537, 17);
-				PushFollow(Follow._collectionExpr_in_quantifiedExpression2719);
+				DebugLocation(548, 17);
+				PushFollow(Follow._collectionExpr_in_quantifiedExpression2745);
 				collectionExpr234=collectionExpr();
 				PopFollow();
 
@@ -9467,22 +9498,22 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:537:34: ( OPEN ! ( subQuery ) CLOSE !)
+				// Hql.g:548:34: ( OPEN ! ( subQuery ) CLOSE !)
 				{
-				DebugLocation(537, 34);
-				// Hql.g:537:34: ( OPEN ! ( subQuery ) CLOSE !)
+				DebugLocation(548, 34);
+				// Hql.g:548:34: ( OPEN ! ( subQuery ) CLOSE !)
 				DebugEnterAlt(1);
-				// Hql.g:537:35: OPEN ! ( subQuery ) CLOSE !
+				// Hql.g:548:35: OPEN ! ( subQuery ) CLOSE !
 				{
-				DebugLocation(537, 39);
-				OPEN235=(IToken)Match(input,OPEN,Follow._OPEN_in_quantifiedExpression2724); 
-				DebugLocation(537, 41);
-				// Hql.g:537:41: ( subQuery )
+				DebugLocation(548, 39);
+				OPEN235=(IToken)Match(input,OPEN,Follow._OPEN_in_quantifiedExpression2750); 
+				DebugLocation(548, 41);
+				// Hql.g:548:41: ( subQuery )
 				DebugEnterAlt(1);
-				// Hql.g:537:43: subQuery
+				// Hql.g:548:43: subQuery
 				{
-				DebugLocation(537, 43);
-				PushFollow(Follow._subQuery_in_quantifiedExpression2729);
+				DebugLocation(548, 43);
+				PushFollow(Follow._subQuery_in_quantifiedExpression2755);
 				subQuery236=subQuery();
 				PopFollow();
 
@@ -9490,8 +9521,8 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 				}
 
-				DebugLocation(537, 59);
-				CLOSE237=(IToken)Match(input,CLOSE,Follow._CLOSE_in_quantifiedExpression2733); 
+				DebugLocation(548, 59);
+				CLOSE237=(IToken)Match(input,CLOSE,Follow._CLOSE_in_quantifiedExpression2759); 
 
 				}
 
@@ -9500,7 +9531,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(81); }
+			} finally { DebugExitSubRule(82); }
 
 
 			}
@@ -9524,7 +9555,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("quantifiedExpression", 63);
 			LeaveRule_quantifiedExpression();
 		}
-		DebugLocation(538, 1);
+		DebugLocation(549, 1);
 		} finally { DebugExitRule(GrammarFileName, "quantifiedExpression"); }
 		return retval;
 
@@ -9534,7 +9565,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_atom();
 	partial void LeaveRule_atom();
 	// $ANTLR start "atom"
-	// Hql.g:543:1: atom : primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)* ;
+	// Hql.g:554:1: atom : primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)* ;
 	[GrammarRule("atom")]
 	private AstParserRuleReturnScope<IASTNode, IToken> atom()
 	{
@@ -9562,94 +9593,94 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode CLOSE242_tree = default(IASTNode);
 		IASTNode CLOSE_BRACKET244_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "atom");
-		DebugLocation(543, 1);
+		DebugLocation(554, 1);
 		try
 		{
-			// Hql.g:544:3: ( primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)* )
+			// Hql.g:555:3: ( primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)* )
 			DebugEnterAlt(1);
-			// Hql.g:544:5: primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)*
+			// Hql.g:555:5: primaryExpression ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(544, 5);
-			PushFollow(Follow._primaryExpression_in_atom2752);
+			DebugLocation(555, 5);
+			PushFollow(Follow._primaryExpression_in_atom2778);
 			primaryExpression238=primaryExpression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, primaryExpression238.Tree);
-			DebugLocation(545, 3);
-			// Hql.g:545:3: ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)*
-			try { DebugEnterSubRule(83);
+			DebugLocation(556, 3);
+			// Hql.g:556:3: ( DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )? |lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !)*
+			try { DebugEnterSubRule(84);
 			while (true)
 			{
-				int alt83=3;
-				try { DebugEnterDecision(83, false);
-				int LA83_1 = input.LA(1);
+				int alt84=3;
+				try { DebugEnterDecision(84, false);
+				int LA84_1 = input.LA(1);
 
-				if ((LA83_1==DOT))
+				if ((LA84_1==DOT))
 				{
-					alt83 = 1;
+					alt84 = 1;
 				}
-				else if ((LA83_1==OPEN_BRACKET))
+				else if ((LA84_1==OPEN_BRACKET))
 				{
-					alt83 = 2;
+					alt84 = 2;
 				}
 
 
-				} finally { DebugExitDecision(83); }
-				switch ( alt83 )
+				} finally { DebugExitDecision(84); }
+				switch ( alt84 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:546:4: DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )?
+					// Hql.g:557:4: DOT ^ identifier ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )?
 					{
-					DebugLocation(546, 7);
-					DOT239=(IToken)Match(input,DOT,Follow._DOT_in_atom2761); 
+					DebugLocation(557, 7);
+					DOT239=(IToken)Match(input,DOT,Follow._DOT_in_atom2787); 
 					DOT239_tree = (IASTNode)adaptor.Create(DOT239);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT239_tree, root_0);
-					DebugLocation(546, 9);
-					PushFollow(Follow._identifier_in_atom2764);
+					DebugLocation(557, 9);
+					PushFollow(Follow._identifier_in_atom2790);
 					identifier240=identifier();
 					PopFollow();
 
 					adaptor.AddChild(root_0, identifier240.Tree);
-					DebugLocation(547, 5);
-					// Hql.g:547:5: ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )?
-					int alt82=2;
-					try { DebugEnterSubRule(82);
-					try { DebugEnterDecision(82, false);
-					int LA82_1 = input.LA(1);
+					DebugLocation(558, 5);
+					// Hql.g:558:5: ( options {greedy=true; } : (op= OPEN ^ exprList CLOSE !) )?
+					int alt83=2;
+					try { DebugEnterSubRule(83);
+					try { DebugEnterDecision(83, false);
+					int LA83_1 = input.LA(1);
 
-					if ((LA82_1==OPEN))
+					if ((LA83_1==OPEN))
 					{
-						alt82 = 1;
+						alt83 = 1;
 					}
-					} finally { DebugExitDecision(82); }
-					switch (alt82)
+					} finally { DebugExitDecision(83); }
+					switch (alt83)
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:548:6: (op= OPEN ^ exprList CLOSE !)
+						// Hql.g:559:6: (op= OPEN ^ exprList CLOSE !)
 						{
-						DebugLocation(548, 6);
-						// Hql.g:548:6: (op= OPEN ^ exprList CLOSE !)
+						DebugLocation(559, 6);
+						// Hql.g:559:6: (op= OPEN ^ exprList CLOSE !)
 						DebugEnterAlt(1);
-						// Hql.g:548:8: op= OPEN ^ exprList CLOSE !
+						// Hql.g:559:8: op= OPEN ^ exprList CLOSE !
 						{
-						DebugLocation(548, 10);
-						op=(IToken)Match(input,OPEN,Follow._OPEN_in_atom2792); 
+						DebugLocation(559, 10);
+						op=(IToken)Match(input,OPEN,Follow._OPEN_in_atom2818); 
 						op_tree = (IASTNode)adaptor.Create(op);
 						root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
-						DebugLocation(548, 17);
+						DebugLocation(559, 17);
 						op.Type = METHOD_CALL; 
-						DebugLocation(548, 44);
-						PushFollow(Follow._exprList_in_atom2797);
+						DebugLocation(559, 44);
+						PushFollow(Follow._exprList_in_atom2823);
 						exprList241=exprList();
 						PopFollow();
 
 						adaptor.AddChild(root_0, exprList241.Tree);
-						DebugLocation(548, 58);
-						CLOSE242=(IToken)Match(input,CLOSE,Follow._CLOSE_in_atom2799); 
+						DebugLocation(559, 58);
+						CLOSE242=(IToken)Match(input,CLOSE,Follow._CLOSE_in_atom2825); 
 
 						}
 
@@ -9658,42 +9689,42 @@ public partial class HqlParser : Antlr.Runtime.Parser
 						break;
 
 					}
-					} finally { DebugExitSubRule(82); }
+					} finally { DebugExitSubRule(83); }
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:549:5: lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !
+					// Hql.g:560:5: lb= OPEN_BRACKET ^ expression CLOSE_BRACKET !
 					{
-					DebugLocation(549, 7);
-					lb=(IToken)Match(input,OPEN_BRACKET,Follow._OPEN_BRACKET_in_atom2813); 
+					DebugLocation(560, 7);
+					lb=(IToken)Match(input,OPEN_BRACKET,Follow._OPEN_BRACKET_in_atom2839); 
 					lb_tree = (IASTNode)adaptor.Create(lb);
 					root_0 = (IASTNode)adaptor.BecomeRoot(lb_tree, root_0);
-					DebugLocation(549, 22);
+					DebugLocation(560, 22);
 					lb.Type = INDEX_OP; 
-					DebugLocation(549, 46);
-					PushFollow(Follow._expression_in_atom2818);
+					DebugLocation(560, 46);
+					PushFollow(Follow._expression_in_atom2844);
 					expression243=expression();
 					PopFollow();
 
 					adaptor.AddChild(root_0, expression243.Tree);
-					DebugLocation(549, 70);
-					CLOSE_BRACKET244=(IToken)Match(input,CLOSE_BRACKET,Follow._CLOSE_BRACKET_in_atom2820); 
+					DebugLocation(560, 70);
+					CLOSE_BRACKET244=(IToken)Match(input,CLOSE_BRACKET,Follow._CLOSE_BRACKET_in_atom2846); 
 
 					}
 					break;
 
 				default:
-					goto loop83;
+					goto loop84;
 				}
 			}
 
-			loop83:
+			loop84:
 				;
 
-			} finally { DebugExitSubRule(83); }
+			} finally { DebugExitSubRule(84); }
 
 
 			}
@@ -9717,7 +9748,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("atom", 64);
 			LeaveRule_atom();
 		}
-		DebugLocation(551, 1);
+		DebugLocation(562, 1);
 		} finally { DebugExitRule(GrammarFileName, "atom"); }
 		return retval;
 
@@ -9727,7 +9758,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_primaryExpression();
 	partial void LeaveRule_primaryExpression();
 	// $ANTLR start "primaryExpression"
-	// Hql.g:554:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? );
+	// Hql.g:565:1: primaryExpression : ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? );
 	[GrammarRule("primaryExpression")]
 	private AstParserRuleReturnScope<IASTNode, IToken> primaryExpression()
 	{
@@ -9760,12 +9791,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode PARAM255_tree = default(IASTNode);
 		IASTNode NUM_INT256_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "primaryExpression");
-		DebugLocation(554, 1);
+		DebugLocation(565, 1);
 		try
 		{
-			// Hql.g:555:2: ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? )
-			int alt87=5;
-			try { DebugEnterDecision(87, false);
+			// Hql.g:566:2: ( identPrimary ( options {greedy=true; } : DOT ^ 'class' )? | constant | COLON ^ identifier | OPEN ! ( expressionOrVector | subQuery ) CLOSE !| PARAM ^ ( NUM_INT )? )
+			int alt88=5;
+			try { DebugEnterDecision(88, false);
 			switch (input.LA(1))
 			{
 			case AVG:
@@ -9777,7 +9808,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case MIN:
 			case SUM:
 				{
-				alt87 = 1;
+				alt88 = 1;
 				}
 				break;
 			case EMPTY:
@@ -9791,76 +9822,76 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case QUOTED_String:
 			case TRUE:
 				{
-				alt87 = 2;
+				alt88 = 2;
 				}
 				break;
 			case COLON:
 				{
-				alt87 = 3;
+				alt88 = 3;
 				}
 				break;
 			case OPEN:
 				{
-				alt87 = 4;
+				alt88 = 4;
 				}
 				break;
 			case PARAM:
 				{
-				alt87 = 5;
+				alt88 = 5;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 87, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 88, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(87); }
-			switch (alt87)
+			} finally { DebugExitDecision(88); }
+			switch (alt88)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:555:6: identPrimary ( options {greedy=true; } : DOT ^ 'class' )?
+				// Hql.g:566:6: identPrimary ( options {greedy=true; } : DOT ^ 'class' )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(555, 6);
-				PushFollow(Follow._identPrimary_in_primaryExpression2840);
+				DebugLocation(566, 6);
+				PushFollow(Follow._identPrimary_in_primaryExpression2866);
 				identPrimary245=identPrimary();
 				PopFollow();
 
 				adaptor.AddChild(root_0, identPrimary245.Tree);
-				DebugLocation(555, 19);
-				// Hql.g:555:19: ( options {greedy=true; } : DOT ^ 'class' )?
-				int alt84=2;
-				try { DebugEnterSubRule(84);
-				try { DebugEnterDecision(84, false);
-				int LA84_1 = input.LA(1);
+				DebugLocation(566, 19);
+				// Hql.g:566:19: ( options {greedy=true; } : DOT ^ 'class' )?
+				int alt85=2;
+				try { DebugEnterSubRule(85);
+				try { DebugEnterDecision(85, false);
+				int LA85_1 = input.LA(1);
 
-				if ((LA84_1==DOT))
+				if ((LA85_1==DOT))
 				{
-					int LA84_2 = input.LA(2);
+					int LA85_2 = input.LA(2);
 
-					if ((LA84_2==CLASS))
+					if ((LA85_2==CLASS))
 					{
-						alt84 = 1;
+						alt85 = 1;
 					}
 				}
-				} finally { DebugExitDecision(84); }
-				switch (alt84)
+				} finally { DebugExitDecision(85); }
+				switch (alt85)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:555:46: DOT ^ 'class'
+					// Hql.g:566:46: DOT ^ 'class'
 					{
-					DebugLocation(555, 49);
-					DOT246=(IToken)Match(input,DOT,Follow._DOT_in_primaryExpression2853); 
+					DebugLocation(566, 49);
+					DOT246=(IToken)Match(input,DOT,Follow._DOT_in_primaryExpression2879); 
 					DOT246_tree = (IASTNode)adaptor.Create(DOT246);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT246_tree, root_0);
-					DebugLocation(555, 51);
-					string_literal247=(IToken)Match(input,CLASS,Follow._CLASS_in_primaryExpression2856); 
+					DebugLocation(566, 51);
+					string_literal247=(IToken)Match(input,CLASS,Follow._CLASS_in_primaryExpression2882); 
 					string_literal247_tree = (IASTNode)adaptor.Create(string_literal247);
 					adaptor.AddChild(root_0, string_literal247_tree);
 
@@ -9868,19 +9899,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(84); }
+				} finally { DebugExitSubRule(85); }
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:556:6: constant
+				// Hql.g:567:6: constant
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(556, 6);
-				PushFollow(Follow._constant_in_primaryExpression2866);
+				DebugLocation(567, 6);
+				PushFollow(Follow._constant_in_primaryExpression2892);
 				constant248=constant();
 				PopFollow();
 
@@ -9890,16 +9921,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:557:6: COLON ^ identifier
+				// Hql.g:568:6: COLON ^ identifier
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(557, 11);
-				COLON249=(IToken)Match(input,COLON,Follow._COLON_in_primaryExpression2873); 
+				DebugLocation(568, 11);
+				COLON249=(IToken)Match(input,COLON,Follow._COLON_in_primaryExpression2899); 
 				COLON249_tree = (IASTNode)adaptor.Create(COLON249);
 				root_0 = (IASTNode)adaptor.BecomeRoot(COLON249_tree, root_0);
-				DebugLocation(557, 13);
-				PushFollow(Follow._identifier_in_primaryExpression2876);
+				DebugLocation(568, 13);
+				PushFollow(Follow._identifier_in_primaryExpression2902);
 				identifier250=identifier();
 				PopFollow();
 
@@ -9909,42 +9940,42 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// Hql.g:559:6: OPEN ! ( expressionOrVector | subQuery ) CLOSE !
+				// Hql.g:570:6: OPEN ! ( expressionOrVector | subQuery ) CLOSE !
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(559, 10);
-				OPEN251=(IToken)Match(input,OPEN,Follow._OPEN_in_primaryExpression2885); 
-				DebugLocation(559, 12);
-				// Hql.g:559:12: ( expressionOrVector | subQuery )
-				int alt85=2;
-				try { DebugEnterSubRule(85);
-				try { DebugEnterDecision(85, false);
-				int LA85_1 = input.LA(1);
+				DebugLocation(570, 10);
+				OPEN251=(IToken)Match(input,OPEN,Follow._OPEN_in_primaryExpression2911); 
+				DebugLocation(570, 12);
+				// Hql.g:570:12: ( expressionOrVector | subQuery )
+				int alt86=2;
+				try { DebugEnterSubRule(86);
+				try { DebugEnterDecision(86, false);
+				int LA86_1 = input.LA(1);
 
-				if ((LA85_1==ALL||LA85_1==ANY||LA85_1==AVG||LA85_1==BNOT||LA85_1==CASE||LA85_1==COLON||LA85_1==COUNT||LA85_1==ELEMENTS||LA85_1==EMPTY||LA85_1==EXISTS||LA85_1==FALSE||LA85_1==IDENT||LA85_1==INDICES||LA85_1==MAX||(LA85_1>=MIN && LA85_1<=MINUS)||LA85_1==NOT||(LA85_1>=NULL && LA85_1<=NUM_LONG)||LA85_1==OPEN||(LA85_1>=PARAM && LA85_1<=PLUS)||LA85_1==QUOTED_String||LA85_1==SOME||LA85_1==SUM||LA85_1==TRUE))
+				if ((LA86_1==ALL||LA86_1==ANY||LA86_1==AVG||LA86_1==BNOT||LA86_1==CASE||LA86_1==COLON||LA86_1==COUNT||LA86_1==ELEMENTS||LA86_1==EMPTY||LA86_1==EXISTS||LA86_1==FALSE||LA86_1==IDENT||LA86_1==INDICES||LA86_1==MAX||(LA86_1>=MIN && LA86_1<=MINUS)||LA86_1==NOT||(LA86_1>=NULL && LA86_1<=NUM_LONG)||LA86_1==OPEN||(LA86_1>=PARAM && LA86_1<=PLUS)||LA86_1==QUOTED_String||LA86_1==SOME||LA86_1==SUM||LA86_1==TRUE))
 				{
-					alt85 = 1;
+					alt86 = 1;
 				}
-				else if ((LA85_1==EOF||LA85_1==CLOSE||LA85_1==FROM||LA85_1==GROUP||LA85_1==HAVING||LA85_1==ORDER||LA85_1==SELECT||LA85_1==SKIP||LA85_1==TAKE||LA85_1==UNION||LA85_1==WHERE))
+				else if ((LA86_1==EOF||LA86_1==CLOSE||LA86_1==FROM||LA86_1==GROUP||LA86_1==HAVING||LA86_1==ORDER||LA86_1==SELECT||LA86_1==SKIP||LA86_1==TAKE||LA86_1==UNION||LA86_1==WHERE))
 				{
-					alt85 = 2;
+					alt86 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 85, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 86, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-				} finally { DebugExitDecision(85); }
-				switch (alt85)
+				} finally { DebugExitDecision(86); }
+				switch (alt86)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:559:13: expressionOrVector
+					// Hql.g:570:13: expressionOrVector
 					{
-					DebugLocation(559, 13);
-					PushFollow(Follow._expressionOrVector_in_primaryExpression2889);
+					DebugLocation(570, 13);
+					PushFollow(Follow._expressionOrVector_in_primaryExpression2915);
 					expressionOrVector252=expressionOrVector();
 					PopFollow();
 
@@ -9954,10 +9985,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:559:34: subQuery
+					// Hql.g:570:34: subQuery
 					{
-					DebugLocation(559, 34);
-					PushFollow(Follow._subQuery_in_primaryExpression2893);
+					DebugLocation(570, 34);
+					PushFollow(Follow._subQuery_in_primaryExpression2919);
 					subQuery253=subQuery();
 					PopFollow();
 
@@ -9967,43 +9998,43 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(85); }
+				} finally { DebugExitSubRule(86); }
 
-				DebugLocation(559, 49);
-				CLOSE254=(IToken)Match(input,CLOSE,Follow._CLOSE_in_primaryExpression2896); 
+				DebugLocation(570, 49);
+				CLOSE254=(IToken)Match(input,CLOSE,Follow._CLOSE_in_primaryExpression2922); 
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// Hql.g:560:6: PARAM ^ ( NUM_INT )?
+				// Hql.g:571:6: PARAM ^ ( NUM_INT )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(560, 11);
-				PARAM255=(IToken)Match(input,PARAM,Follow._PARAM_in_primaryExpression2904); 
+				DebugLocation(571, 11);
+				PARAM255=(IToken)Match(input,PARAM,Follow._PARAM_in_primaryExpression2930); 
 				PARAM255_tree = (IASTNode)adaptor.Create(PARAM255);
 				root_0 = (IASTNode)adaptor.BecomeRoot(PARAM255_tree, root_0);
-				DebugLocation(560, 13);
-				// Hql.g:560:13: ( NUM_INT )?
-				int alt86=2;
-				try { DebugEnterSubRule(86);
-				try { DebugEnterDecision(86, false);
-				int LA86_1 = input.LA(1);
+				DebugLocation(571, 13);
+				// Hql.g:571:13: ( NUM_INT )?
+				int alt87=2;
+				try { DebugEnterSubRule(87);
+				try { DebugEnterDecision(87, false);
+				int LA87_1 = input.LA(1);
 
-				if ((LA86_1==NUM_INT))
+				if ((LA87_1==NUM_INT))
 				{
-					alt86 = 1;
+					alt87 = 1;
 				}
-				} finally { DebugExitDecision(86); }
-				switch (alt86)
+				} finally { DebugExitDecision(87); }
+				switch (alt87)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:560:14: NUM_INT
+					// Hql.g:571:14: NUM_INT
 					{
-					DebugLocation(560, 14);
-					NUM_INT256=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_primaryExpression2908); 
+					DebugLocation(571, 14);
+					NUM_INT256=(IToken)Match(input,NUM_INT,Follow._NUM_INT_in_primaryExpression2934); 
 					NUM_INT256_tree = (IASTNode)adaptor.Create(NUM_INT256);
 					adaptor.AddChild(root_0, NUM_INT256_tree);
 
@@ -10011,7 +10042,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(86); }
+				} finally { DebugExitSubRule(87); }
 
 
 				}
@@ -10037,7 +10068,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("primaryExpression", 65);
 			LeaveRule_primaryExpression();
 		}
-		DebugLocation(561, 1);
+		DebugLocation(572, 1);
 		} finally { DebugExitRule(GrammarFileName, "primaryExpression"); }
 		return retval;
 
@@ -10047,7 +10078,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_expressionOrVector();
 	partial void LeaveRule_expressionOrVector();
 	// $ANTLR start "expressionOrVector"
-	// Hql.g:565:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e;
+	// Hql.g:576:1: expressionOrVector : e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e;
 	[GrammarRule("expressionOrVector")]
 	private AstParserRuleReturnScope<IASTNode, IToken> expressionOrVector()
 	{
@@ -10065,39 +10096,39 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
 		RewriteRuleSubtreeStream stream_vectorExpr=new RewriteRuleSubtreeStream(adaptor,"rule vectorExpr");
 		try { DebugEnterRule(GrammarFileName, "expressionOrVector");
-		DebugLocation(565, 1);
+		DebugLocation(576, 1);
 		try
 		{
-			// Hql.g:566:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e)
+			// Hql.g:577:2: (e= expression (v= vectorExpr )? -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v) -> $e)
 			DebugEnterAlt(1);
-			// Hql.g:566:4: e= expression (v= vectorExpr )?
+			// Hql.g:577:4: e= expression (v= vectorExpr )?
 			{
-			DebugLocation(566, 5);
-			PushFollow(Follow._expression_in_expressionOrVector2926);
+			DebugLocation(577, 5);
+			PushFollow(Follow._expression_in_expressionOrVector2952);
 			e=expression();
 			PopFollow();
 
 			stream_expression.Add(e.Tree);
-			DebugLocation(566, 17);
-			// Hql.g:566:17: (v= vectorExpr )?
-			int alt88=2;
-			try { DebugEnterSubRule(88);
-			try { DebugEnterDecision(88, false);
-			int LA88_1 = input.LA(1);
+			DebugLocation(577, 17);
+			// Hql.g:577:17: (v= vectorExpr )?
+			int alt89=2;
+			try { DebugEnterSubRule(89);
+			try { DebugEnterDecision(89, false);
+			int LA89_1 = input.LA(1);
 
-			if ((LA88_1==COMMA))
+			if ((LA89_1==COMMA))
 			{
-				alt88 = 1;
+				alt89 = 1;
 			}
-			} finally { DebugExitDecision(88); }
-			switch (alt88)
+			} finally { DebugExitDecision(89); }
+			switch (alt89)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:566:19: v= vectorExpr
+				// Hql.g:577:19: v= vectorExpr
 				{
-				DebugLocation(566, 20);
-				PushFollow(Follow._vectorExpr_in_expressionOrVector2932);
+				DebugLocation(577, 20);
+				PushFollow(Follow._vectorExpr_in_expressionOrVector2958);
 				v=vectorExpr();
 				PopFollow();
 
@@ -10107,7 +10138,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(88); }
+			} finally { DebugExitSubRule(89); }
 
 
 
@@ -10125,28 +10156,28 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 567:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+			// 578:2: -> {v != null}? ^( VECTOR_EXPR[\"{vector}\"] $e $v)
 			if (v != null)
 			{
-				DebugLocation(567, 18);
-				// Hql.g:567:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
+				DebugLocation(578, 18);
+				// Hql.g:578:18: ^( VECTOR_EXPR[\"{vector}\"] $e $v)
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(567, 20);
+				DebugLocation(578, 20);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(VECTOR_EXPR, "{vector}"), root_1);
 
-				DebugLocation(567, 45);
+				DebugLocation(578, 45);
 				adaptor.AddChild(root_1, stream_e.NextTree());
-				DebugLocation(567, 48);
+				DebugLocation(578, 48);
 				adaptor.AddChild(root_1, stream_v.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
 				}
 
 			}
-			else // 568:2: -> $e
+			else // 579:2: -> $e
 			{
-				DebugLocation(568, 6);
+				DebugLocation(579, 6);
 				adaptor.AddChild(root_0, stream_e.NextTree());
 
 			}
@@ -10175,7 +10206,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("expressionOrVector", 66);
 			LeaveRule_expressionOrVector();
 		}
-		DebugLocation(569, 1);
+		DebugLocation(580, 1);
 		} finally { DebugExitRule(GrammarFileName, "expressionOrVector"); }
 		return retval;
 
@@ -10185,7 +10216,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_vectorExpr();
 	partial void LeaveRule_vectorExpr();
 	// $ANTLR start "vectorExpr"
-	// Hql.g:571:1: vectorExpr : COMMA ! expression ( COMMA ! expression )* ;
+	// Hql.g:582:1: vectorExpr : COMMA ! expression ( COMMA ! expression )* ;
 	[GrammarRule("vectorExpr")]
 	private AstParserRuleReturnScope<IASTNode, IToken> vectorExpr()
 	{
@@ -10205,49 +10236,49 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode COMMA257_tree = default(IASTNode);
 		IASTNode COMMA259_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "vectorExpr");
-		DebugLocation(571, 1);
+		DebugLocation(582, 1);
 		try
 		{
-			// Hql.g:572:2: ( COMMA ! expression ( COMMA ! expression )* )
+			// Hql.g:583:2: ( COMMA ! expression ( COMMA ! expression )* )
 			DebugEnterAlt(1);
-			// Hql.g:572:4: COMMA ! expression ( COMMA ! expression )*
+			// Hql.g:583:4: COMMA ! expression ( COMMA ! expression )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(572, 9);
-			COMMA257=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2969); 
-			DebugLocation(572, 11);
-			PushFollow(Follow._expression_in_vectorExpr2972);
+			DebugLocation(583, 9);
+			COMMA257=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2995); 
+			DebugLocation(583, 11);
+			PushFollow(Follow._expression_in_vectorExpr2998);
 			expression258=expression();
 			PopFollow();
 
 			adaptor.AddChild(root_0, expression258.Tree);
-			DebugLocation(572, 22);
-			// Hql.g:572:22: ( COMMA ! expression )*
-			try { DebugEnterSubRule(89);
+			DebugLocation(583, 22);
+			// Hql.g:583:22: ( COMMA ! expression )*
+			try { DebugEnterSubRule(90);
 			while (true)
 			{
-				int alt89=2;
-				try { DebugEnterDecision(89, false);
-				int LA89_1 = input.LA(1);
+				int alt90=2;
+				try { DebugEnterDecision(90, false);
+				int LA90_1 = input.LA(1);
 
-				if ((LA89_1==COMMA))
+				if ((LA90_1==COMMA))
 				{
-					alt89 = 1;
+					alt90 = 1;
 				}
 
 
-				} finally { DebugExitDecision(89); }
-				switch ( alt89 )
+				} finally { DebugExitDecision(90); }
+				switch ( alt90 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:572:23: COMMA ! expression
+					// Hql.g:583:23: COMMA ! expression
 					{
-					DebugLocation(572, 28);
-					COMMA259=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr2975); 
-					DebugLocation(572, 30);
-					PushFollow(Follow._expression_in_vectorExpr2978);
+					DebugLocation(583, 28);
+					COMMA259=(IToken)Match(input,COMMA,Follow._COMMA_in_vectorExpr3001); 
+					DebugLocation(583, 30);
+					PushFollow(Follow._expression_in_vectorExpr3004);
 					expression260=expression();
 					PopFollow();
 
@@ -10257,14 +10288,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop89;
+					goto loop90;
 				}
 			}
 
-			loop89:
+			loop90:
 				;
 
-			} finally { DebugExitSubRule(89); }
+			} finally { DebugExitSubRule(90); }
 
 
 			}
@@ -10288,7 +10319,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("vectorExpr", 67);
 			LeaveRule_vectorExpr();
 		}
-		DebugLocation(573, 1);
+		DebugLocation(584, 1);
 		} finally { DebugExitRule(GrammarFileName, "vectorExpr"); }
 		return retval;
 
@@ -10298,7 +10329,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_identPrimary();
 	partial void LeaveRule_identPrimary();
 	// $ANTLR start "identPrimary"
-	// Hql.g:578:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate );
+	// Hql.g:589:1: identPrimary : ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate );
 	[GrammarRule("identPrimary")]
 	private AstParserRuleReturnScope<IASTNode, IToken> identPrimary()
 	{
@@ -10324,108 +10355,108 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode DOT262_tree = default(IASTNode);
 		IASTNode CLOSE265_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identPrimary");
-		DebugLocation(578, 1);
+		DebugLocation(589, 1);
 		try
 		{
-			// Hql.g:579:2: ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate )
-			int alt93=2;
-			try { DebugEnterDecision(93, false);
-			int LA93_1 = input.LA(1);
+			// Hql.g:590:2: ( identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )? | aggregate )
+			int alt94=2;
+			try { DebugEnterDecision(94, false);
+			int LA94_1 = input.LA(1);
 
-			if ((LA93_1==IDENT))
+			if ((LA94_1==IDENT))
 			{
-				alt93 = 1;
+				alt94 = 1;
 			}
-			else if ((LA93_1==AVG||LA93_1==COUNT||LA93_1==ELEMENTS||LA93_1==INDICES||LA93_1==MAX||LA93_1==MIN||LA93_1==SUM))
+			else if ((LA94_1==AVG||LA94_1==COUNT||LA94_1==ELEMENTS||LA94_1==INDICES||LA94_1==MAX||LA94_1==MIN||LA94_1==SUM))
 			{
-				alt93 = 2;
+				alt94 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 93, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 94, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(93); }
-			switch (alt93)
+			} finally { DebugExitDecision(94); }
+			switch (alt94)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:579:4: identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )?
+				// Hql.g:590:4: identifier ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )* ( (op= OPEN ^ exprList CLOSE !) )?
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(579, 4);
-				PushFollow(Follow._identifier_in_identPrimary2994);
+				DebugLocation(590, 4);
+				PushFollow(Follow._identifier_in_identPrimary3020);
 				identifier261=identifier();
 				PopFollow();
 
 				adaptor.AddChild(root_0, identifier261.Tree);
-				DebugLocation(579, 15);
+				DebugLocation(590, 15);
 				 HandleDotIdent(); 
-				DebugLocation(580, 4);
-				// Hql.g:580:4: ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )*
-				try { DebugEnterSubRule(91);
+				DebugLocation(591, 4);
+				// Hql.g:591:4: ( options {greedy=true; } : DOT ^ ( identifier |o= OBJECT ) )*
+				try { DebugEnterSubRule(92);
 				while (true)
 				{
-					int alt91=2;
-					try { DebugEnterDecision(91, false);
-					int LA91_1 = input.LA(1);
+					int alt92=2;
+					try { DebugEnterDecision(92, false);
+					int LA92_1 = input.LA(1);
 
-					if ((LA91_1==DOT))
+					if ((LA92_1==DOT))
 					{
-						int LA91_2 = input.LA(2);
+						int LA92_2 = input.LA(2);
 
-						if ((LA91_2==IDENT||LA91_2==OBJECT))
+						if ((LA92_2==IDENT||LA92_2==OBJECT))
 						{
-							alt91 = 1;
+							alt92 = 1;
 						}
 
 
 					}
 
 
-					} finally { DebugExitDecision(91); }
-					switch ( alt91 )
+					} finally { DebugExitDecision(92); }
+					switch ( alt92 )
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// Hql.g:580:31: DOT ^ ( identifier |o= OBJECT )
+						// Hql.g:591:31: DOT ^ ( identifier |o= OBJECT )
 						{
-						DebugLocation(580, 34);
-						DOT262=(IToken)Match(input,DOT,Follow._DOT_in_identPrimary3012); 
+						DebugLocation(591, 34);
+						DOT262=(IToken)Match(input,DOT,Follow._DOT_in_identPrimary3038); 
 						DOT262_tree = (IASTNode)adaptor.Create(DOT262);
 						root_0 = (IASTNode)adaptor.BecomeRoot(DOT262_tree, root_0);
-						DebugLocation(580, 36);
-						// Hql.g:580:36: ( identifier |o= OBJECT )
-						int alt90=2;
-						try { DebugEnterSubRule(90);
-						try { DebugEnterDecision(90, false);
-						int LA90_1 = input.LA(1);
+						DebugLocation(591, 36);
+						// Hql.g:591:36: ( identifier |o= OBJECT )
+						int alt91=2;
+						try { DebugEnterSubRule(91);
+						try { DebugEnterDecision(91, false);
+						int LA91_1 = input.LA(1);
 
-						if ((LA90_1==IDENT))
+						if ((LA91_1==IDENT))
 						{
-							alt90 = 1;
+							alt91 = 1;
 						}
-						else if ((LA90_1==OBJECT))
+						else if ((LA91_1==OBJECT))
 						{
-							alt90 = 2;
+							alt91 = 2;
 						}
 						else
 						{
-							NoViableAltException nvae = new NoViableAltException("", 90, 0, input, 1);
+							NoViableAltException nvae = new NoViableAltException("", 91, 0, input, 1);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
-						} finally { DebugExitDecision(90); }
-						switch (alt90)
+						} finally { DebugExitDecision(91); }
+						switch (alt91)
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:580:38: identifier
+							// Hql.g:591:38: identifier
 							{
-							DebugLocation(580, 38);
-							PushFollow(Follow._identifier_in_identPrimary3017);
+							DebugLocation(591, 38);
+							PushFollow(Follow._identifier_in_identPrimary3043);
 							identifier263=identifier();
 							PopFollow();
 
@@ -10435,72 +10466,72 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 						case 2:
 							DebugEnterAlt(2);
-							// Hql.g:580:51: o= OBJECT
+							// Hql.g:591:51: o= OBJECT
 							{
-							DebugLocation(580, 52);
-							o=(IToken)Match(input,OBJECT,Follow._OBJECT_in_identPrimary3023); 
+							DebugLocation(591, 52);
+							o=(IToken)Match(input,OBJECT,Follow._OBJECT_in_identPrimary3049); 
 							o_tree = (IASTNode)adaptor.Create(o);
 							adaptor.AddChild(root_0, o_tree);
-							DebugLocation(580, 60);
+							DebugLocation(591, 60);
 							 o.Type = IDENT; 
 
 							}
 							break;
 
 						}
-						} finally { DebugExitSubRule(90); }
+						} finally { DebugExitSubRule(91); }
 
 
 						}
 						break;
 
 					default:
-						goto loop91;
+						goto loop92;
 					}
 				}
 
-				loop91:
+				loop92:
 					;
 
-				} finally { DebugExitSubRule(91); }
+				} finally { DebugExitSubRule(92); }
 
-				DebugLocation(581, 4);
-				// Hql.g:581:4: ( (op= OPEN ^ exprList CLOSE !) )?
-				int alt92=2;
-				try { DebugEnterSubRule(92);
-				try { DebugEnterDecision(92, false);
-				int LA92_1 = input.LA(1);
+				DebugLocation(592, 4);
+				// Hql.g:592:4: ( (op= OPEN ^ exprList CLOSE !) )?
+				int alt93=2;
+				try { DebugEnterSubRule(93);
+				try { DebugEnterDecision(93, false);
+				int LA93_1 = input.LA(1);
 
-				if ((LA92_1==OPEN))
+				if ((LA93_1==OPEN))
 				{
-					alt92 = 1;
+					alt93 = 1;
 				}
-				} finally { DebugExitDecision(92); }
-				switch (alt92)
+				} finally { DebugExitDecision(93); }
+				switch (alt93)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:581:6: (op= OPEN ^ exprList CLOSE !)
+					// Hql.g:592:6: (op= OPEN ^ exprList CLOSE !)
 					{
-					DebugLocation(581, 6);
-					// Hql.g:581:6: (op= OPEN ^ exprList CLOSE !)
+					DebugLocation(592, 6);
+					// Hql.g:592:6: (op= OPEN ^ exprList CLOSE !)
 					DebugEnterAlt(1);
-					// Hql.g:581:8: op= OPEN ^ exprList CLOSE !
+					// Hql.g:592:8: op= OPEN ^ exprList CLOSE !
 					{
-					DebugLocation(581, 10);
-					op=(IToken)Match(input,OPEN,Follow._OPEN_in_identPrimary3041); 
+					DebugLocation(592, 10);
+					op=(IToken)Match(input,OPEN,Follow._OPEN_in_identPrimary3067); 
 					op_tree = (IASTNode)adaptor.Create(op);
 					root_0 = (IASTNode)adaptor.BecomeRoot(op_tree, root_0);
-					DebugLocation(581, 17);
+					DebugLocation(592, 17);
 					 op.Type = METHOD_CALL;
-					DebugLocation(581, 44);
-					PushFollow(Follow._exprList_in_identPrimary3046);
+					DebugLocation(592, 44);
+					PushFollow(Follow._exprList_in_identPrimary3072);
 					exprList264=exprList();
 					PopFollow();
 
 					adaptor.AddChild(root_0, exprList264.Tree);
-					DebugLocation(581, 58);
-					CLOSE265=(IToken)Match(input,CLOSE,Follow._CLOSE_in_identPrimary3048); 
+					DebugLocation(592, 58);
+					CLOSE265=(IToken)Match(input,CLOSE,Follow._CLOSE_in_identPrimary3074); 
 
 					}
 
@@ -10509,19 +10540,19 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(92); }
+				} finally { DebugExitSubRule(93); }
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:584:4: aggregate
+				// Hql.g:595:4: aggregate
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(584, 4);
-				PushFollow(Follow._aggregate_in_identPrimary3064);
+				DebugLocation(595, 4);
+				PushFollow(Follow._aggregate_in_identPrimary3090);
 				aggregate266=aggregate();
 				PopFollow();
 
@@ -10550,7 +10581,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("identPrimary", 68);
 			LeaveRule_identPrimary();
 		}
-		DebugLocation(585, 1);
+		DebugLocation(596, 1);
 		} finally { DebugExitRule(GrammarFileName, "identPrimary"); }
 		return retval;
 
@@ -10560,7 +10591,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_aggregate();
 	partial void LeaveRule_aggregate();
 	// $ANTLR start "aggregate"
-	// Hql.g:592:1: aggregate : ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
+	// Hql.g:603:1: aggregate : ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr );
 	[GrammarRule("aggregate")]
 	private AstParserRuleReturnScope<IASTNode, IToken> aggregate()
 	{
@@ -10601,12 +10632,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		RewriteRuleSubtreeStream stream_additiveExpression=new RewriteRuleSubtreeStream(adaptor,"rule additiveExpression");
 		RewriteRuleSubtreeStream stream_aggregateDistinctAll=new RewriteRuleSubtreeStream(adaptor,"rule aggregateDistinctAll");
 		try { DebugEnterRule(GrammarFileName, "aggregate");
-		DebugLocation(592, 1);
+		DebugLocation(603, 1);
 		try
 		{
-			// Hql.g:593:2: ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
-			int alt96=3;
-			try { DebugEnterDecision(96, false);
+			// Hql.g:604:2: ( (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE -> ^( AGGREGATE[$op] additiveExpression ) | COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE -> {s == null}? ^( COUNT $p) -> ^( COUNT ^( ROW_STAR[\"*\"] ) ) | collectionExpr )
+			int alt97=3;
+			try { DebugEnterDecision(97, false);
 			switch (input.LA(1))
 			{
 			case AVG:
@@ -10614,79 +10645,79 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			case MIN:
 			case SUM:
 				{
-				alt96 = 1;
+				alt97 = 1;
 				}
 				break;
 			case COUNT:
 				{
-				alt96 = 2;
+				alt97 = 2;
 				}
 				break;
 			case ELEMENTS:
 			case INDICES:
 				{
-				alt96 = 3;
+				alt97 = 3;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 96, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 97, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(96); }
-			switch (alt96)
+			} finally { DebugExitDecision(97); }
+			switch (alt97)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:593:4: (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE
+				// Hql.g:604:4: (op= SUM |op= AVG |op= MAX |op= MIN ) OPEN additiveExpression CLOSE
 				{
-				DebugLocation(593, 4);
-				// Hql.g:593:4: (op= SUM |op= AVG |op= MAX |op= MIN )
-				int alt94=4;
-				try { DebugEnterSubRule(94);
-				try { DebugEnterDecision(94, false);
+				DebugLocation(604, 4);
+				// Hql.g:604:4: (op= SUM |op= AVG |op= MAX |op= MIN )
+				int alt95=4;
+				try { DebugEnterSubRule(95);
+				try { DebugEnterDecision(95, false);
 				switch (input.LA(1))
 				{
 				case SUM:
 					{
-					alt94 = 1;
+					alt95 = 1;
 					}
 					break;
 				case AVG:
 					{
-					alt94 = 2;
+					alt95 = 2;
 					}
 					break;
 				case MAX:
 					{
-					alt94 = 3;
+					alt95 = 3;
 					}
 					break;
 				case MIN:
 					{
-					alt94 = 4;
+					alt95 = 4;
 					}
 					break;
 				default:
 					{
-						NoViableAltException nvae = new NoViableAltException("", 94, 0, input, 1);
+						NoViableAltException nvae = new NoViableAltException("", 95, 0, input, 1);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
 				}
 
-				} finally { DebugExitDecision(94); }
-				switch (alt94)
+				} finally { DebugExitDecision(95); }
+				switch (alt95)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:593:6: op= SUM
+					// Hql.g:604:6: op= SUM
 					{
-					DebugLocation(593, 8);
-					op=(IToken)Match(input,SUM,Follow._SUM_in_aggregate3085);  
+					DebugLocation(604, 8);
+					op=(IToken)Match(input,SUM,Follow._SUM_in_aggregate3111);  
 					stream_SUM.Add(op);
 
 
@@ -10694,10 +10725,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:593:15: op= AVG
+					// Hql.g:604:15: op= AVG
 					{
-					DebugLocation(593, 17);
-					op=(IToken)Match(input,AVG,Follow._AVG_in_aggregate3091);  
+					DebugLocation(604, 17);
+					op=(IToken)Match(input,AVG,Follow._AVG_in_aggregate3117);  
 					stream_AVG.Add(op);
 
 
@@ -10705,10 +10736,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 3:
 					DebugEnterAlt(3);
-					// Hql.g:593:24: op= MAX
+					// Hql.g:604:24: op= MAX
 					{
-					DebugLocation(593, 26);
-					op=(IToken)Match(input,MAX,Follow._MAX_in_aggregate3097);  
+					DebugLocation(604, 26);
+					op=(IToken)Match(input,MAX,Follow._MAX_in_aggregate3123);  
 					stream_MAX.Add(op);
 
 
@@ -10716,10 +10747,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 4:
 					DebugEnterAlt(4);
-					// Hql.g:593:33: op= MIN
+					// Hql.g:604:33: op= MIN
 					{
-					DebugLocation(593, 35);
-					op=(IToken)Match(input,MIN,Follow._MIN_in_aggregate3103);  
+					DebugLocation(604, 35);
+					op=(IToken)Match(input,MIN,Follow._MIN_in_aggregate3129);  
 					stream_MIN.Add(op);
 
 
@@ -10727,20 +10758,20 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(94); }
+				} finally { DebugExitSubRule(95); }
 
-				DebugLocation(593, 42);
-				OPEN267=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3107);  
+				DebugLocation(604, 42);
+				OPEN267=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3133);  
 				stream_OPEN.Add(OPEN267);
 
-				DebugLocation(593, 47);
-				PushFollow(Follow._additiveExpression_in_aggregate3109);
+				DebugLocation(604, 47);
+				PushFollow(Follow._additiveExpression_in_aggregate3135);
 				additiveExpression268=additiveExpression();
 				PopFollow();
 
 				stream_additiveExpression.Add(additiveExpression268.Tree);
-				DebugLocation(593, 66);
-				CLOSE269=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3111);  
+				DebugLocation(604, 66);
+				CLOSE269=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3137);  
 				stream_CLOSE.Add(CLOSE269);
 
 
@@ -10757,16 +10788,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 594:3: -> ^( AGGREGATE[$op] additiveExpression )
+				// 605:3: -> ^( AGGREGATE[$op] additiveExpression )
 				{
-					DebugLocation(594, 6);
-					// Hql.g:594:6: ^( AGGREGATE[$op] additiveExpression )
+					DebugLocation(605, 6);
+					// Hql.g:605:6: ^( AGGREGATE[$op] additiveExpression )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(594, 8);
+					DebugLocation(605, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(AGGREGATE, op), root_1);
 
-					DebugLocation(594, 23);
+					DebugLocation(605, 23);
 					adaptor.AddChild(root_1, stream_additiveExpression.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
@@ -10781,46 +10812,46 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:596:5: COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE
+				// Hql.g:607:5: COUNT OPEN (s= STAR |p= aggregateDistinctAll ) CLOSE
 				{
-				DebugLocation(596, 5);
-				COUNT270=(IToken)Match(input,COUNT,Follow._COUNT_in_aggregate3130);  
+				DebugLocation(607, 5);
+				COUNT270=(IToken)Match(input,COUNT,Follow._COUNT_in_aggregate3156);  
 				stream_COUNT.Add(COUNT270);
 
-				DebugLocation(596, 11);
-				OPEN271=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3132);  
+				DebugLocation(607, 11);
+				OPEN271=(IToken)Match(input,OPEN,Follow._OPEN_in_aggregate3158);  
 				stream_OPEN.Add(OPEN271);
 
-				DebugLocation(596, 16);
-				// Hql.g:596:16: (s= STAR |p= aggregateDistinctAll )
-				int alt95=2;
-				try { DebugEnterSubRule(95);
-				try { DebugEnterDecision(95, false);
-				int LA95_1 = input.LA(1);
+				DebugLocation(607, 16);
+				// Hql.g:607:16: (s= STAR |p= aggregateDistinctAll )
+				int alt96=2;
+				try { DebugEnterSubRule(96);
+				try { DebugEnterDecision(96, false);
+				int LA96_1 = input.LA(1);
 
-				if ((LA95_1==STAR))
+				if ((LA96_1==STAR))
 				{
-					alt95 = 1;
+					alt96 = 1;
 				}
-				else if ((LA95_1==ALL||LA95_1==DISTINCT||LA95_1==ELEMENTS||LA95_1==IDENT||LA95_1==INDICES))
+				else if ((LA96_1==ALL||LA96_1==DISTINCT||LA96_1==ELEMENTS||LA96_1==IDENT||LA96_1==INDICES))
 				{
-					alt95 = 2;
+					alt96 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 95, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 96, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-				} finally { DebugExitDecision(95); }
-				switch (alt95)
+				} finally { DebugExitDecision(96); }
+				switch (alt96)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:596:18: s= STAR
+					// Hql.g:607:18: s= STAR
 					{
-					DebugLocation(596, 19);
-					s=(IToken)Match(input,STAR,Follow._STAR_in_aggregate3138);  
+					DebugLocation(607, 19);
+					s=(IToken)Match(input,STAR,Follow._STAR_in_aggregate3164);  
 					stream_STAR.Add(s);
 
 
@@ -10828,10 +10859,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:596:27: p= aggregateDistinctAll
+					// Hql.g:607:27: p= aggregateDistinctAll
 					{
-					DebugLocation(596, 28);
-					PushFollow(Follow._aggregateDistinctAll_in_aggregate3144);
+					DebugLocation(607, 28);
+					PushFollow(Follow._aggregateDistinctAll_in_aggregate3170);
 					p=aggregateDistinctAll();
 					PopFollow();
 
@@ -10841,10 +10872,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(95); }
+				} finally { DebugExitSubRule(96); }
 
-				DebugLocation(596, 52);
-				CLOSE272=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3148);  
+				DebugLocation(607, 52);
+				CLOSE272=(IToken)Match(input,CLOSE,Follow._CLOSE_in_aggregate3174);  
 				stream_CLOSE.Add(CLOSE272);
 
 
@@ -10862,37 +10893,37 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 				root_0 = (IASTNode)adaptor.Nil();
-				// 597:3: -> {s == null}? ^( COUNT $p)
+				// 608:3: -> {s == null}? ^( COUNT $p)
 				if (s == null)
 				{
-					DebugLocation(597, 19);
-					// Hql.g:597:19: ^( COUNT $p)
+					DebugLocation(608, 19);
+					// Hql.g:608:19: ^( COUNT $p)
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(597, 21);
+					DebugLocation(608, 21);
 					root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
 
-					DebugLocation(597, 28);
+					DebugLocation(608, 28);
 					adaptor.AddChild(root_1, stream_p.NextTree());
 
 					adaptor.AddChild(root_0, root_1);
 					}
 
 				}
-				else // 598:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
+				else // 609:3: -> ^( COUNT ^( ROW_STAR[\"*\"] ) )
 				{
-					DebugLocation(598, 6);
-					// Hql.g:598:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
+					DebugLocation(609, 6);
+					// Hql.g:609:6: ^( COUNT ^( ROW_STAR[\"*\"] ) )
 					{
 					IASTNode root_1 = (IASTNode)adaptor.Nil();
-					DebugLocation(598, 8);
+					DebugLocation(609, 8);
 					root_1 = (IASTNode)adaptor.BecomeRoot(stream_COUNT.NextNode(), root_1);
 
-					DebugLocation(598, 14);
-					// Hql.g:598:14: ^( ROW_STAR[\"*\"] )
+					DebugLocation(609, 14);
+					// Hql.g:609:14: ^( ROW_STAR[\"*\"] )
 					{
 					IASTNode root_2 = (IASTNode)adaptor.Nil();
-					DebugLocation(598, 16);
+					DebugLocation(609, 16);
 					root_2 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(ROW_STAR, "*"), root_2);
 
 					adaptor.AddChild(root_1, root_2);
@@ -10910,12 +10941,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:599:5: collectionExpr
+				// Hql.g:610:5: collectionExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(599, 5);
-				PushFollow(Follow._collectionExpr_in_aggregate3180);
+				DebugLocation(610, 5);
+				PushFollow(Follow._collectionExpr_in_aggregate3206);
 				collectionExpr273=collectionExpr();
 				PopFollow();
 
@@ -10944,7 +10975,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("aggregate", 69);
 			LeaveRule_aggregate();
 		}
-		DebugLocation(600, 1);
+		DebugLocation(611, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregate"); }
 		return retval;
 
@@ -10954,7 +10985,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_aggregateDistinctAll();
 	partial void LeaveRule_aggregateDistinctAll();
 	// $ANTLR start "aggregateDistinctAll"
-	// Hql.g:602:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
+	// Hql.g:613:1: aggregateDistinctAll : ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) ;
 	[GrammarRule("aggregateDistinctAll")]
 	private AstParserRuleReturnScope<IASTNode, IToken> aggregateDistinctAll()
 	{
@@ -10972,39 +11003,39 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode set274_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "aggregateDistinctAll");
-		DebugLocation(602, 1);
+		DebugLocation(613, 1);
 		try
 		{
-			// Hql.g:603:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
+			// Hql.g:614:2: ( ( ( DISTINCT | ALL )? ( path | collectionExpr ) ) )
 			DebugEnterAlt(1);
-			// Hql.g:603:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+			// Hql.g:614:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(603, 4);
-			// Hql.g:603:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+			DebugLocation(614, 4);
+			// Hql.g:614:4: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
 			DebugEnterAlt(1);
-			// Hql.g:603:6: ( DISTINCT | ALL )? ( path | collectionExpr )
+			// Hql.g:614:6: ( DISTINCT | ALL )? ( path | collectionExpr )
 			{
-			DebugLocation(603, 6);
-			// Hql.g:603:6: ( DISTINCT | ALL )?
-			int alt97=2;
-			try { DebugEnterSubRule(97);
-			try { DebugEnterDecision(97, false);
-			int LA97_1 = input.LA(1);
+			DebugLocation(614, 6);
+			// Hql.g:614:6: ( DISTINCT | ALL )?
+			int alt98=2;
+			try { DebugEnterSubRule(98);
+			try { DebugEnterDecision(98, false);
+			int LA98_1 = input.LA(1);
 
-			if ((LA97_1==ALL||LA97_1==DISTINCT))
+			if ((LA98_1==ALL||LA98_1==DISTINCT))
 			{
-				alt97 = 1;
+				alt98 = 1;
 			}
-			} finally { DebugExitDecision(97); }
-			switch (alt97)
+			} finally { DebugExitDecision(98); }
+			switch (alt98)
 			{
 			case 1:
 				DebugEnterAlt(1);
 				// Hql.g:
 				{
-				DebugLocation(603, 6);
+				DebugLocation(614, 6);
 
 				set274=(IToken)input.LT(1);
 				if (input.LA(1)==ALL||input.LA(1)==DISTINCT)
@@ -11025,38 +11056,38 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(97); }
+			} finally { DebugExitSubRule(98); }
 
-			DebugLocation(603, 26);
-			// Hql.g:603:26: ( path | collectionExpr )
-			int alt98=2;
-			try { DebugEnterSubRule(98);
-			try { DebugEnterDecision(98, false);
-			int LA98_1 = input.LA(1);
+			DebugLocation(614, 26);
+			// Hql.g:614:26: ( path | collectionExpr )
+			int alt99=2;
+			try { DebugEnterSubRule(99);
+			try { DebugEnterDecision(99, false);
+			int LA99_1 = input.LA(1);
 
-			if ((LA98_1==IDENT))
+			if ((LA99_1==IDENT))
 			{
-				alt98 = 1;
+				alt99 = 1;
 			}
-			else if ((LA98_1==ELEMENTS||LA98_1==INDICES))
+			else if ((LA99_1==ELEMENTS||LA99_1==INDICES))
 			{
-				alt98 = 2;
+				alt99 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 98, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 99, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(98); }
-			switch (alt98)
+			} finally { DebugExitDecision(99); }
+			switch (alt99)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:603:28: path
+				// Hql.g:614:28: path
 				{
-				DebugLocation(603, 28);
-				PushFollow(Follow._path_in_aggregateDistinctAll3206);
+				DebugLocation(614, 28);
+				PushFollow(Follow._path_in_aggregateDistinctAll3232);
 				path275=path();
 				PopFollow();
 
@@ -11066,10 +11097,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:603:35: collectionExpr
+				// Hql.g:614:35: collectionExpr
 				{
-				DebugLocation(603, 35);
-				PushFollow(Follow._collectionExpr_in_aggregateDistinctAll3210);
+				DebugLocation(614, 35);
+				PushFollow(Follow._collectionExpr_in_aggregateDistinctAll3236);
 				collectionExpr276=collectionExpr();
 				PopFollow();
 
@@ -11079,7 +11110,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(98); }
+			} finally { DebugExitSubRule(99); }
 
 
 			}
@@ -11106,7 +11137,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("aggregateDistinctAll", 70);
 			LeaveRule_aggregateDistinctAll();
 		}
-		DebugLocation(604, 1);
+		DebugLocation(615, 1);
 		} finally { DebugExitRule(GrammarFileName, "aggregateDistinctAll"); }
 		return retval;
 
@@ -11116,7 +11147,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_collectionExpr();
 	partial void LeaveRule_collectionExpr();
 	// $ANTLR start "collectionExpr"
-	// Hql.g:608:1: collectionExpr : ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !;
+	// Hql.g:619:1: collectionExpr : ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !;
 	[GrammarRule("collectionExpr")]
 	private AstParserRuleReturnScope<IASTNode, IToken> collectionExpr()
 	{
@@ -11139,45 +11170,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode OPEN279_tree = default(IASTNode);
 		IASTNode CLOSE281_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "collectionExpr");
-		DebugLocation(608, 1);
+		DebugLocation(619, 1);
 		try
 		{
-			// Hql.g:609:2: ( ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !)
+			// Hql.g:620:2: ( ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !)
 			DebugEnterAlt(1);
-			// Hql.g:609:4: ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !
+			// Hql.g:620:4: ( ELEMENTS ^| INDICES ^) OPEN ! path CLOSE !
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(609, 4);
-			// Hql.g:609:4: ( ELEMENTS ^| INDICES ^)
-			int alt99=2;
-			try { DebugEnterSubRule(99);
-			try { DebugEnterDecision(99, false);
-			int LA99_1 = input.LA(1);
+			DebugLocation(620, 4);
+			// Hql.g:620:4: ( ELEMENTS ^| INDICES ^)
+			int alt100=2;
+			try { DebugEnterSubRule(100);
+			try { DebugEnterDecision(100, false);
+			int LA100_1 = input.LA(1);
 
-			if ((LA99_1==ELEMENTS))
+			if ((LA100_1==ELEMENTS))
 			{
-				alt99 = 1;
+				alt100 = 1;
 			}
-			else if ((LA99_1==INDICES))
+			else if ((LA100_1==INDICES))
 			{
-				alt99 = 2;
+				alt100 = 2;
 			}
 			else
 			{
-				NoViableAltException nvae = new NoViableAltException("", 99, 0, input, 1);
+				NoViableAltException nvae = new NoViableAltException("", 100, 0, input, 1);
 				DebugRecognitionException(nvae);
 				throw nvae;
 			}
-			} finally { DebugExitDecision(99); }
-			switch (alt99)
+			} finally { DebugExitDecision(100); }
+			switch (alt100)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:609:5: ELEMENTS ^
+				// Hql.g:620:5: ELEMENTS ^
 				{
-				DebugLocation(609, 13);
-				ELEMENTS277=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionExpr3229); 
+				DebugLocation(620, 13);
+				ELEMENTS277=(IToken)Match(input,ELEMENTS,Follow._ELEMENTS_in_collectionExpr3255); 
 				ELEMENTS277_tree = (IASTNode)adaptor.Create(ELEMENTS277);
 				root_0 = (IASTNode)adaptor.BecomeRoot(ELEMENTS277_tree, root_0);
 
@@ -11185,10 +11216,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:609:17: INDICES ^
+				// Hql.g:620:17: INDICES ^
 				{
-				DebugLocation(609, 24);
-				INDICES278=(IToken)Match(input,INDICES,Follow._INDICES_in_collectionExpr3234); 
+				DebugLocation(620, 24);
+				INDICES278=(IToken)Match(input,INDICES,Follow._INDICES_in_collectionExpr3260); 
 				INDICES278_tree = (IASTNode)adaptor.Create(INDICES278);
 				root_0 = (IASTNode)adaptor.BecomeRoot(INDICES278_tree, root_0);
 
@@ -11196,18 +11227,18 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(99); }
+			} finally { DebugExitSubRule(100); }
 
-			DebugLocation(609, 31);
-			OPEN279=(IToken)Match(input,OPEN,Follow._OPEN_in_collectionExpr3238); 
-			DebugLocation(609, 33);
-			PushFollow(Follow._path_in_collectionExpr3241);
+			DebugLocation(620, 31);
+			OPEN279=(IToken)Match(input,OPEN,Follow._OPEN_in_collectionExpr3264); 
+			DebugLocation(620, 33);
+			PushFollow(Follow._path_in_collectionExpr3267);
 			path280=path();
 			PopFollow();
 
 			adaptor.AddChild(root_0, path280.Tree);
-			DebugLocation(609, 43);
-			CLOSE281=(IToken)Match(input,CLOSE,Follow._CLOSE_in_collectionExpr3243); 
+			DebugLocation(620, 43);
+			CLOSE281=(IToken)Match(input,CLOSE,Follow._CLOSE_in_collectionExpr3269); 
 
 			}
 
@@ -11230,7 +11261,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("collectionExpr", 71);
 			LeaveRule_collectionExpr();
 		}
-		DebugLocation(610, 1);
+		DebugLocation(621, 1);
 		} finally { DebugExitRule(GrammarFileName, "collectionExpr"); }
 		return retval;
 
@@ -11240,7 +11271,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_compoundExpr();
 	partial void LeaveRule_compoundExpr();
 	// $ANTLR start "compoundExpr"
-	// Hql.g:612:1: compoundExpr : ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) );
+	// Hql.g:623:1: compoundExpr : ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) );
 	[GrammarRule("compoundExpr")]
 	private AstParserRuleReturnScope<IASTNode, IToken> compoundExpr()
 	{
@@ -11265,49 +11296,49 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode COMMA287_tree = default(IASTNode);
 		IASTNode CLOSE289_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "compoundExpr");
-		DebugLocation(612, 1);
+		DebugLocation(623, 1);
 		try
 		{
-			// Hql.g:613:2: ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) )
-			int alt102=3;
-			try { DebugEnterDecision(102, false);
+			// Hql.g:624:2: ( collectionExpr | path | ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !) )
+			int alt103=3;
+			try { DebugEnterDecision(103, false);
 			switch (input.LA(1))
 			{
 			case ELEMENTS:
 			case INDICES:
 				{
-				alt102 = 1;
+				alt103 = 1;
 				}
 				break;
 			case IDENT:
 				{
-				alt102 = 2;
+				alt103 = 2;
 				}
 				break;
 			case OPEN:
 				{
-				alt102 = 3;
+				alt103 = 3;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 102, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 103, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(102); }
-			switch (alt102)
+			} finally { DebugExitDecision(103); }
+			switch (alt103)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:613:4: collectionExpr
+				// Hql.g:624:4: collectionExpr
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(613, 4);
-				PushFollow(Follow._collectionExpr_in_compoundExpr3298);
+				DebugLocation(624, 4);
+				PushFollow(Follow._collectionExpr_in_compoundExpr3324);
 				collectionExpr282=collectionExpr();
 				PopFollow();
 
@@ -11317,12 +11348,12 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:614:4: path
+				// Hql.g:625:4: path
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(614, 4);
-				PushFollow(Follow._path_in_compoundExpr3303);
+				DebugLocation(625, 4);
+				PushFollow(Follow._path_in_compoundExpr3329);
 				path283=path();
 				PopFollow();
 
@@ -11332,47 +11363,47 @@ public partial class HqlParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:615:4: ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !)
+				// Hql.g:626:4: ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !)
 				{
 				root_0 = (IASTNode)adaptor.Nil();
 
-				DebugLocation(615, 4);
-				// Hql.g:615:4: ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !)
+				DebugLocation(626, 4);
+				// Hql.g:626:4: ( OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !)
 				DebugEnterAlt(1);
-				// Hql.g:615:5: OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !
+				// Hql.g:626:5: OPEN ! ( subQuery | ( expression ( COMMA ! expression )* ) ) CLOSE !
 				{
-				DebugLocation(615, 9);
-				OPEN284=(IToken)Match(input,OPEN,Follow._OPEN_in_compoundExpr3309); 
-				DebugLocation(615, 11);
-				// Hql.g:615:11: ( subQuery | ( expression ( COMMA ! expression )* ) )
-				int alt101=2;
-				try { DebugEnterSubRule(101);
-				try { DebugEnterDecision(101, false);
-				int LA101_1 = input.LA(1);
+				DebugLocation(626, 9);
+				OPEN284=(IToken)Match(input,OPEN,Follow._OPEN_in_compoundExpr3335); 
+				DebugLocation(626, 11);
+				// Hql.g:626:11: ( subQuery | ( expression ( COMMA ! expression )* ) )
+				int alt102=2;
+				try { DebugEnterSubRule(102);
+				try { DebugEnterDecision(102, false);
+				int LA102_1 = input.LA(1);
 
-				if ((LA101_1==EOF||LA101_1==CLOSE||LA101_1==FROM||LA101_1==GROUP||LA101_1==HAVING||LA101_1==ORDER||LA101_1==SELECT||LA101_1==SKIP||LA101_1==TAKE||LA101_1==UNION||LA101_1==WHERE))
+				if ((LA102_1==EOF||LA102_1==CLOSE||LA102_1==FROM||LA102_1==GROUP||LA102_1==HAVING||LA102_1==ORDER||LA102_1==SELECT||LA102_1==SKIP||LA102_1==TAKE||LA102_1==UNION||LA102_1==WHERE))
 				{
-					alt101 = 1;
+					alt102 = 1;
 				}
-				else if ((LA101_1==ALL||LA101_1==ANY||LA101_1==AVG||LA101_1==BNOT||LA101_1==CASE||LA101_1==COLON||LA101_1==COUNT||LA101_1==ELEMENTS||LA101_1==EMPTY||LA101_1==EXISTS||LA101_1==FALSE||LA101_1==IDENT||LA101_1==INDICES||LA101_1==MAX||(LA101_1>=MIN && LA101_1<=MINUS)||LA101_1==NOT||(LA101_1>=NULL && LA101_1<=NUM_LONG)||LA101_1==OPEN||(LA101_1>=PARAM && LA101_1<=PLUS)||LA101_1==QUOTED_String||LA101_1==SOME||LA101_1==SUM||LA101_1==TRUE))
+				else if ((LA102_1==ALL||LA102_1==ANY||LA102_1==AVG||LA102_1==BNOT||LA102_1==CASE||LA102_1==COLON||LA102_1==COUNT||LA102_1==ELEMENTS||LA102_1==EMPTY||LA102_1==EXISTS||LA102_1==FALSE||LA102_1==IDENT||LA102_1==INDICES||LA102_1==MAX||(LA102_1>=MIN && LA102_1<=MINUS)||LA102_1==NOT||(LA102_1>=NULL && LA102_1<=NUM_LONG)||LA102_1==OPEN||(LA102_1>=PARAM && LA102_1<=PLUS)||LA102_1==QUOTED_String||LA102_1==SOME||LA102_1==SUM||LA102_1==TRUE))
 				{
-					alt101 = 2;
+					alt102 = 2;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 101, 0, input, 1);
+					NoViableAltException nvae = new NoViableAltException("", 102, 0, input, 1);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
-				} finally { DebugExitDecision(101); }
-				switch (alt101)
+				} finally { DebugExitDecision(102); }
+				switch (alt102)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:615:13: subQuery
+					// Hql.g:626:13: subQuery
 					{
-					DebugLocation(615, 13);
-					PushFollow(Follow._subQuery_in_compoundExpr3314);
+					DebugLocation(626, 13);
+					PushFollow(Follow._subQuery_in_compoundExpr3340);
 					subQuery285=subQuery();
 					PopFollow();
 
@@ -11382,45 +11413,45 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:615:24: ( expression ( COMMA ! expression )* )
+					// Hql.g:626:24: ( expression ( COMMA ! expression )* )
 					{
-					DebugLocation(615, 24);
-					// Hql.g:615:24: ( expression ( COMMA ! expression )* )
+					DebugLocation(626, 24);
+					// Hql.g:626:24: ( expression ( COMMA ! expression )* )
 					DebugEnterAlt(1);
-					// Hql.g:615:25: expression ( COMMA ! expression )*
+					// Hql.g:626:25: expression ( COMMA ! expression )*
 					{
-					DebugLocation(615, 25);
-					PushFollow(Follow._expression_in_compoundExpr3319);
+					DebugLocation(626, 25);
+					PushFollow(Follow._expression_in_compoundExpr3345);
 					expression286=expression();
 					PopFollow();
 
 					adaptor.AddChild(root_0, expression286.Tree);
-					DebugLocation(615, 36);
-					// Hql.g:615:36: ( COMMA ! expression )*
-					try { DebugEnterSubRule(100);
+					DebugLocation(626, 36);
+					// Hql.g:626:36: ( COMMA ! expression )*
+					try { DebugEnterSubRule(101);
 					while (true)
 					{
-						int alt100=2;
-						try { DebugEnterDecision(100, false);
-						int LA100_1 = input.LA(1);
+						int alt101=2;
+						try { DebugEnterDecision(101, false);
+						int LA101_1 = input.LA(1);
 
-						if ((LA100_1==COMMA))
+						if ((LA101_1==COMMA))
 						{
-							alt100 = 1;
+							alt101 = 1;
 						}
 
 
-						} finally { DebugExitDecision(100); }
-						switch ( alt100 )
+						} finally { DebugExitDecision(101); }
+						switch ( alt101 )
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:615:37: COMMA ! expression
+							// Hql.g:626:37: COMMA ! expression
 							{
-							DebugLocation(615, 42);
-							COMMA287=(IToken)Match(input,COMMA,Follow._COMMA_in_compoundExpr3322); 
-							DebugLocation(615, 44);
-							PushFollow(Follow._expression_in_compoundExpr3325);
+							DebugLocation(626, 42);
+							COMMA287=(IToken)Match(input,COMMA,Follow._COMMA_in_compoundExpr3348); 
+							DebugLocation(626, 44);
+							PushFollow(Follow._expression_in_compoundExpr3351);
 							expression288=expression();
 							PopFollow();
 
@@ -11430,14 +11461,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 
 						default:
-							goto loop100;
+							goto loop101;
 						}
 					}
 
-					loop100:
+					loop101:
 						;
 
-					} finally { DebugExitSubRule(100); }
+					} finally { DebugExitSubRule(101); }
 
 
 					}
@@ -11447,10 +11478,10 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(101); }
+				} finally { DebugExitSubRule(102); }
 
-				DebugLocation(615, 65);
-				CLOSE289=(IToken)Match(input,CLOSE,Follow._CLOSE_in_compoundExpr3332); 
+				DebugLocation(626, 65);
+				CLOSE289=(IToken)Match(input,CLOSE,Follow._CLOSE_in_compoundExpr3358); 
 
 				}
 
@@ -11478,7 +11509,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("compoundExpr", 72);
 			LeaveRule_compoundExpr();
 		}
-		DebugLocation(616, 1);
+		DebugLocation(627, 1);
 		} finally { DebugExitRule(GrammarFileName, "compoundExpr"); }
 		return retval;
 
@@ -11488,7 +11519,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_exprList();
 	partial void LeaveRule_exprList();
 	// $ANTLR start "exprList"
-	// Hql.g:618:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )? ;
+	// Hql.g:629:1: exprList : ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )? ;
 	[GrammarRule("exprList")]
 	private AstParserRuleReturnScope<IASTNode, IToken> exprList()
 	{
@@ -11521,171 +11552,171 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		IASTNode COMMA294_tree = default(IASTNode);
 		IASTNode AS297_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "exprList");
-		DebugLocation(618, 1);
+		DebugLocation(629, 1);
 		try
 		{
-			// Hql.g:624:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )? )
+			// Hql.g:635:2: ( ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )? )
 			DebugEnterAlt(1);
-			// Hql.g:624:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )?
+			// Hql.g:635:4: ( TRAILING | LEADING | BOTH )? ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )?
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(624, 4);
-			// Hql.g:624:4: ( TRAILING | LEADING | BOTH )?
-			int alt103=4;
-			try { DebugEnterSubRule(103);
-			try { DebugEnterDecision(103, false);
+			DebugLocation(635, 4);
+			// Hql.g:635:4: ( TRAILING | LEADING | BOTH )?
+			int alt104=4;
+			try { DebugEnterSubRule(104);
+			try { DebugEnterDecision(104, false);
 			switch (input.LA(1))
 			{
 			case TRAILING:
 				{
-				alt103 = 1;
+				alt104 = 1;
 				}
 				break;
 			case LEADING:
 				{
-				alt103 = 2;
+				alt104 = 2;
 				}
 				break;
 			case BOTH:
 				{
-				alt103 = 3;
+				alt104 = 3;
 				}
 				break;
 			}
 
-			} finally { DebugExitDecision(103); }
-			switch (alt103)
+			} finally { DebugExitDecision(104); }
+			switch (alt104)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:624:5: TRAILING
+				// Hql.g:635:5: TRAILING
 				{
-				DebugLocation(624, 5);
-				TRAILING290=(IToken)Match(input,TRAILING,Follow._TRAILING_in_exprList3351); 
+				DebugLocation(635, 5);
+				TRAILING290=(IToken)Match(input,TRAILING,Follow._TRAILING_in_exprList3377); 
 				TRAILING290_tree = (IASTNode)adaptor.Create(TRAILING290);
 				adaptor.AddChild(root_0, TRAILING290_tree);
-				DebugLocation(624, 14);
+				DebugLocation(635, 14);
 				TRAILING290.Type = IDENT;
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:625:10: LEADING
+				// Hql.g:636:10: LEADING
 				{
-				DebugLocation(625, 10);
-				LEADING291=(IToken)Match(input,LEADING,Follow._LEADING_in_exprList3364); 
+				DebugLocation(636, 10);
+				LEADING291=(IToken)Match(input,LEADING,Follow._LEADING_in_exprList3390); 
 				LEADING291_tree = (IASTNode)adaptor.Create(LEADING291);
 				adaptor.AddChild(root_0, LEADING291_tree);
-				DebugLocation(625, 18);
+				DebugLocation(636, 18);
 				LEADING291.Type = IDENT;
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// Hql.g:626:10: BOTH
+				// Hql.g:637:10: BOTH
 				{
-				DebugLocation(626, 10);
-				BOTH292=(IToken)Match(input,BOTH,Follow._BOTH_in_exprList3377); 
+				DebugLocation(637, 10);
+				BOTH292=(IToken)Match(input,BOTH,Follow._BOTH_in_exprList3403); 
 				BOTH292_tree = (IASTNode)adaptor.Create(BOTH292);
 				adaptor.AddChild(root_0, BOTH292_tree);
-				DebugLocation(626, 15);
+				DebugLocation(637, 15);
 				BOTH292.Type = IDENT;
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(103); }
+			} finally { DebugExitSubRule(104); }
 
-			DebugLocation(628, 4);
-			// Hql.g:628:4: ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )?
-			int alt106=3;
-			try { DebugEnterSubRule(106);
-			try { DebugEnterDecision(106, false);
-			int LA106_1 = input.LA(1);
+			DebugLocation(639, 4);
+			// Hql.g:639:4: ( expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )? |f2= FROM expression )?
+			int alt107=3;
+			try { DebugEnterSubRule(107);
+			try { DebugEnterDecision(107, false);
+			int LA107_1 = input.LA(1);
 
-			if ((LA106_1==ALL||LA106_1==ANY||LA106_1==AVG||LA106_1==BNOT||LA106_1==CASE||LA106_1==COLON||LA106_1==COUNT||LA106_1==ELEMENTS||LA106_1==EMPTY||LA106_1==EXISTS||LA106_1==FALSE||LA106_1==IDENT||LA106_1==INDICES||LA106_1==MAX||(LA106_1>=MIN && LA106_1<=MINUS)||LA106_1==NOT||(LA106_1>=NULL && LA106_1<=NUM_LONG)||LA106_1==OPEN||(LA106_1>=PARAM && LA106_1<=PLUS)||LA106_1==QUOTED_String||LA106_1==SOME||LA106_1==SUM||LA106_1==TRUE))
+			if ((LA107_1==ALL||LA107_1==ANY||LA107_1==AVG||LA107_1==BNOT||LA107_1==CASE||LA107_1==COLON||LA107_1==COUNT||LA107_1==ELEMENTS||LA107_1==EMPTY||LA107_1==EXISTS||LA107_1==FALSE||LA107_1==IDENT||LA107_1==INDICES||LA107_1==MAX||(LA107_1>=MIN && LA107_1<=MINUS)||LA107_1==NOT||(LA107_1>=NULL && LA107_1<=NUM_LONG)||LA107_1==OPEN||(LA107_1>=PARAM && LA107_1<=PLUS)||LA107_1==QUOTED_String||LA107_1==SOME||LA107_1==SUM||LA107_1==TRUE))
 			{
-				alt106 = 1;
+				alt107 = 1;
 			}
-			else if ((LA106_1==FROM))
+			else if ((LA107_1==FROM))
 			{
-				alt106 = 2;
+				alt107 = 2;
 			}
-			} finally { DebugExitDecision(106); }
-			switch (alt106)
+			} finally { DebugExitDecision(107); }
+			switch (alt107)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// Hql.g:629:5: expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
+				// Hql.g:640:5: expression ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
 				{
-				DebugLocation(629, 5);
-				PushFollow(Follow._expression_in_exprList3401);
+				DebugLocation(640, 5);
+				PushFollow(Follow._expression_in_exprList3427);
 				expression293=expression();
 				PopFollow();
 
 				adaptor.AddChild(root_0, expression293.Tree);
-				DebugLocation(629, 16);
-				// Hql.g:629:16: ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
-				int alt105=4;
-				try { DebugEnterSubRule(105);
-				try { DebugEnterDecision(105, false);
+				DebugLocation(640, 16);
+				// Hql.g:640:16: ( ( COMMA ! expression )+ |f= FROM expression | AS ! identifier )?
+				int alt106=4;
+				try { DebugEnterSubRule(106);
+				try { DebugEnterDecision(106, false);
 				switch (input.LA(1))
 				{
 				case COMMA:
 					{
-					alt105 = 1;
+					alt106 = 1;
 					}
 					break;
 				case FROM:
 					{
-					alt105 = 2;
+					alt106 = 2;
 					}
 					break;
 				case AS:
 					{
-					alt105 = 3;
+					alt106 = 3;
 					}
 					break;
 				}
 
-				} finally { DebugExitDecision(105); }
-				switch (alt105)
+				} finally { DebugExitDecision(106); }
+				switch (alt106)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:629:18: ( COMMA ! expression )+
+					// Hql.g:640:18: ( COMMA ! expression )+
 					{
-					DebugLocation(629, 18);
-					// Hql.g:629:18: ( COMMA ! expression )+
-					int cnt104=0;
-					try { DebugEnterSubRule(104);
+					DebugLocation(640, 18);
+					// Hql.g:640:18: ( COMMA ! expression )+
+					int cnt105=0;
+					try { DebugEnterSubRule(105);
 					while (true)
 					{
-						int alt104=2;
-						try { DebugEnterDecision(104, false);
-						int LA104_1 = input.LA(1);
+						int alt105=2;
+						try { DebugEnterDecision(105, false);
+						int LA105_1 = input.LA(1);
 
-						if ((LA104_1==COMMA))
+						if ((LA105_1==COMMA))
 						{
-							alt104 = 1;
+							alt105 = 1;
 						}
 
 
-						} finally { DebugExitDecision(104); }
-						switch (alt104)
+						} finally { DebugExitDecision(105); }
+						switch (alt105)
 						{
 						case 1:
 							DebugEnterAlt(1);
-							// Hql.g:629:19: COMMA ! expression
+							// Hql.g:640:19: COMMA ! expression
 							{
-							DebugLocation(629, 24);
-							COMMA294=(IToken)Match(input,COMMA,Follow._COMMA_in_exprList3406); 
-							DebugLocation(629, 26);
-							PushFollow(Follow._expression_in_exprList3409);
+							DebugLocation(640, 24);
+							COMMA294=(IToken)Match(input,COMMA,Follow._COMMA_in_exprList3432); 
+							DebugLocation(640, 26);
+							PushFollow(Follow._expression_in_exprList3435);
 							expression295=expression();
 							PopFollow();
 
@@ -11695,50 +11726,50 @@ public partial class HqlParser : Antlr.Runtime.Parser
 							break;
 
 						default:
-							if (cnt104 >= 1)
-								goto loop104;
+							if (cnt105 >= 1)
+								goto loop105;
 
-							EarlyExitException eee104 = new EarlyExitException( 104, input );
-							DebugRecognitionException(eee104);
-							throw eee104;
+							EarlyExitException eee105 = new EarlyExitException( 105, input );
+							DebugRecognitionException(eee105);
+							throw eee105;
 						}
-						cnt104++;
+						cnt105++;
 					}
-					loop104:
+					loop105:
 						;
 
-					} finally { DebugExitSubRule(104); }
+					} finally { DebugExitSubRule(105); }
 
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// Hql.g:630:9: f= FROM expression
+					// Hql.g:641:9: f= FROM expression
 					{
-					DebugLocation(630, 10);
-					f=(IToken)Match(input,FROM,Follow._FROM_in_exprList3424); 
+					DebugLocation(641, 10);
+					f=(IToken)Match(input,FROM,Follow._FROM_in_exprList3450); 
 					f_tree = (IASTNode)adaptor.Create(f);
 					adaptor.AddChild(root_0, f_tree);
-					DebugLocation(630, 16);
-					PushFollow(Follow._expression_in_exprList3426);
+					DebugLocation(641, 16);
+					PushFollow(Follow._expression_in_exprList3452);
 					expression296=expression();
 					PopFollow();
 
 					adaptor.AddChild(root_0, expression296.Tree);
-					DebugLocation(630, 27);
+					DebugLocation(641, 27);
 					f.Type = IDENT;
 
 					}
 					break;
 				case 3:
 					DebugEnterAlt(3);
-					// Hql.g:631:9: AS ! identifier
+					// Hql.g:642:9: AS ! identifier
 					{
-					DebugLocation(631, 11);
-					AS297=(IToken)Match(input,AS,Follow._AS_in_exprList3438); 
-					DebugLocation(631, 13);
-					PushFollow(Follow._identifier_in_exprList3441);
+					DebugLocation(642, 11);
+					AS297=(IToken)Match(input,AS,Follow._AS_in_exprList3464); 
+					DebugLocation(642, 13);
+					PushFollow(Follow._identifier_in_exprList3467);
 					identifier298=identifier();
 					PopFollow();
 
@@ -11748,33 +11779,33 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				}
-				} finally { DebugExitSubRule(105); }
+				} finally { DebugExitSubRule(106); }
 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// Hql.g:632:7: f2= FROM expression
+				// Hql.g:643:7: f2= FROM expression
 				{
-				DebugLocation(632, 9);
-				f2=(IToken)Match(input,FROM,Follow._FROM_in_exprList3455); 
+				DebugLocation(643, 9);
+				f2=(IToken)Match(input,FROM,Follow._FROM_in_exprList3481); 
 				f2_tree = (IASTNode)adaptor.Create(f2);
 				adaptor.AddChild(root_0, f2_tree);
-				DebugLocation(632, 15);
-				PushFollow(Follow._expression_in_exprList3457);
+				DebugLocation(643, 15);
+				PushFollow(Follow._expression_in_exprList3483);
 				expression299=expression();
 				PopFollow();
 
 				adaptor.AddChild(root_0, expression299.Tree);
-				DebugLocation(632, 26);
+				DebugLocation(643, 26);
 				f2.Type = IDENT;
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(106); }
+			} finally { DebugExitSubRule(107); }
 
 
 			}
@@ -11803,7 +11834,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("exprList", 73);
 			LeaveRule_exprList();
 		}
-		DebugLocation(634, 1);
+		DebugLocation(645, 1);
 		} finally { DebugExitRule(GrammarFileName, "exprList"); }
 		return retval;
 
@@ -11813,7 +11844,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_subQuery();
 	partial void LeaveRule_subQuery();
 	// $ANTLR start "subQuery"
-	// Hql.g:636:1: subQuery : innerSubQuery ( UNION ^ innerSubQuery )* ;
+	// Hql.g:647:1: subQuery : innerSubQuery ( UNION ^ innerSubQuery )* ;
 	[GrammarRule("subQuery")]
 	private AstParserRuleReturnScope<IASTNode, IToken> subQuery()
 	{
@@ -11831,49 +11862,49 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode UNION301_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "subQuery");
-		DebugLocation(636, 1);
+		DebugLocation(647, 1);
 		try
 		{
-			// Hql.g:637:2: ( innerSubQuery ( UNION ^ innerSubQuery )* )
+			// Hql.g:648:2: ( innerSubQuery ( UNION ^ innerSubQuery )* )
 			DebugEnterAlt(1);
-			// Hql.g:637:4: innerSubQuery ( UNION ^ innerSubQuery )*
+			// Hql.g:648:4: innerSubQuery ( UNION ^ innerSubQuery )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(637, 4);
-			PushFollow(Follow._innerSubQuery_in_subQuery3477);
+			DebugLocation(648, 4);
+			PushFollow(Follow._innerSubQuery_in_subQuery3503);
 			innerSubQuery300=innerSubQuery();
 			PopFollow();
 
 			adaptor.AddChild(root_0, innerSubQuery300.Tree);
-			DebugLocation(637, 18);
-			// Hql.g:637:18: ( UNION ^ innerSubQuery )*
-			try { DebugEnterSubRule(107);
+			DebugLocation(648, 18);
+			// Hql.g:648:18: ( UNION ^ innerSubQuery )*
+			try { DebugEnterSubRule(108);
 			while (true)
 			{
-				int alt107=2;
-				try { DebugEnterDecision(107, false);
-				int LA107_1 = input.LA(1);
+				int alt108=2;
+				try { DebugEnterDecision(108, false);
+				int LA108_1 = input.LA(1);
 
-				if ((LA107_1==UNION))
+				if ((LA108_1==UNION))
 				{
-					alt107 = 1;
+					alt108 = 1;
 				}
 
 
-				} finally { DebugExitDecision(107); }
-				switch ( alt107 )
+				} finally { DebugExitDecision(108); }
+				switch ( alt108 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:637:19: UNION ^ innerSubQuery
+					// Hql.g:648:19: UNION ^ innerSubQuery
 					{
-					DebugLocation(637, 24);
-					UNION301=(IToken)Match(input,UNION,Follow._UNION_in_subQuery3480); 
+					DebugLocation(648, 24);
+					UNION301=(IToken)Match(input,UNION,Follow._UNION_in_subQuery3506); 
 					UNION301_tree = (IASTNode)adaptor.Create(UNION301);
 					root_0 = (IASTNode)adaptor.BecomeRoot(UNION301_tree, root_0);
-					DebugLocation(637, 26);
-					PushFollow(Follow._innerSubQuery_in_subQuery3483);
+					DebugLocation(648, 26);
+					PushFollow(Follow._innerSubQuery_in_subQuery3509);
 					innerSubQuery302=innerSubQuery();
 					PopFollow();
 
@@ -11883,14 +11914,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop107;
+					goto loop108;
 				}
 			}
 
-			loop107:
+			loop108:
 				;
 
-			} finally { DebugExitSubRule(107); }
+			} finally { DebugExitSubRule(108); }
 
 
 			}
@@ -11914,7 +11945,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("subQuery", 74);
 			LeaveRule_subQuery();
 		}
-		DebugLocation(638, 1);
+		DebugLocation(649, 1);
 		} finally { DebugExitRule(GrammarFileName, "subQuery"); }
 		return retval;
 
@@ -11924,7 +11955,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_innerSubQuery();
 	partial void LeaveRule_innerSubQuery();
 	// $ANTLR start "innerSubQuery"
-	// Hql.g:640:1: innerSubQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
+	// Hql.g:651:1: innerSubQuery : queryRule -> ^( QUERY[\"query\"] queryRule ) ;
 	[GrammarRule("innerSubQuery")]
 	private AstParserRuleReturnScope<IASTNode, IToken> innerSubQuery()
 	{
@@ -11940,15 +11971,15 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		RewriteRuleSubtreeStream stream_queryRule=new RewriteRuleSubtreeStream(adaptor,"rule queryRule");
 		try { DebugEnterRule(GrammarFileName, "innerSubQuery");
-		DebugLocation(640, 1);
+		DebugLocation(651, 1);
 		try
 		{
-			// Hql.g:641:2: ( queryRule -> ^( QUERY[\"query\"] queryRule ) )
+			// Hql.g:652:2: ( queryRule -> ^( QUERY[\"query\"] queryRule ) )
 			DebugEnterAlt(1);
-			// Hql.g:641:4: queryRule
+			// Hql.g:652:4: queryRule
 			{
-			DebugLocation(641, 4);
-			PushFollow(Follow._queryRule_in_innerSubQuery3497);
+			DebugLocation(652, 4);
+			PushFollow(Follow._queryRule_in_innerSubQuery3523);
 			queryRule303=queryRule();
 			PopFollow();
 
@@ -11967,16 +11998,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.Tree:null);
 
 			root_0 = (IASTNode)adaptor.Nil();
-			// 642:2: -> ^( QUERY[\"query\"] queryRule )
+			// 653:2: -> ^( QUERY[\"query\"] queryRule )
 			{
-				DebugLocation(642, 5);
-				// Hql.g:642:5: ^( QUERY[\"query\"] queryRule )
+				DebugLocation(653, 5);
+				// Hql.g:653:5: ^( QUERY[\"query\"] queryRule )
 				{
 				IASTNode root_1 = (IASTNode)adaptor.Nil();
-				DebugLocation(642, 7);
+				DebugLocation(653, 7);
 				root_1 = (IASTNode)adaptor.BecomeRoot((IASTNode)adaptor.Create(QUERY, "query"), root_1);
 
-				DebugLocation(642, 22);
+				DebugLocation(653, 22);
 				adaptor.AddChild(root_1, stream_queryRule.NextTree());
 
 				adaptor.AddChild(root_0, root_1);
@@ -12008,7 +12039,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("innerSubQuery", 75);
 			LeaveRule_innerSubQuery();
 		}
-		DebugLocation(643, 1);
+		DebugLocation(654, 1);
 		} finally { DebugExitRule(GrammarFileName, "innerSubQuery"); }
 		return retval;
 
@@ -12018,7 +12049,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_constant();
 	partial void LeaveRule_constant();
 	// $ANTLR start "constant"
-	// Hql.g:645:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
+	// Hql.g:656:1: constant : ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY );
 	[GrammarRule("constant")]
 	private AstParserRuleReturnScope<IASTNode, IToken> constant()
 	{
@@ -12034,16 +12065,16 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode set304_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "constant");
-		DebugLocation(645, 1);
+		DebugLocation(656, 1);
 		try
 		{
-			// Hql.g:646:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
+			// Hql.g:657:2: ( NUM_INT | NUM_FLOAT | NUM_LONG | NUM_DOUBLE | NUM_DECIMAL | QUOTED_String | NULL | TRUE | FALSE | EMPTY )
 			DebugEnterAlt(1);
 			// Hql.g:
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(646, 2);
+			DebugLocation(657, 2);
 
 			set304=(IToken)input.LT(1);
 			if (input.LA(1)==EMPTY||input.LA(1)==FALSE||(input.LA(1)>=NULL && input.LA(1)<=NUM_LONG)||input.LA(1)==QUOTED_String||input.LA(1)==TRUE)
@@ -12081,7 +12112,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("constant", 76);
 			LeaveRule_constant();
 		}
-		DebugLocation(656, 1);
+		DebugLocation(667, 1);
 		} finally { DebugExitRule(GrammarFileName, "constant"); }
 		return retval;
 
@@ -12091,7 +12122,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_path();
 	partial void LeaveRule_path();
 	// $ANTLR start "path"
-	// Hql.g:664:1: path : identifier ( DOT ^ identifier )* ;
+	// Hql.g:675:1: path : identifier ( DOT ^ identifier )* ;
 	[GrammarRule("path")]
 	private AstParserRuleReturnScope<IASTNode, IToken> path()
 	{
@@ -12113,51 +12144,51 @@ public partial class HqlParser : Antlr.Runtime.Parser
 		//HandleDotIdent2();
 
 		try { DebugEnterRule(GrammarFileName, "path");
-		DebugLocation(664, 1);
+		DebugLocation(675, 1);
 		try
 		{
-			// Hql.g:669:2: ( identifier ( DOT ^ identifier )* )
+			// Hql.g:680:2: ( identifier ( DOT ^ identifier )* )
 			DebugEnterAlt(1);
-			// Hql.g:669:4: identifier ( DOT ^ identifier )*
+			// Hql.g:680:4: identifier ( DOT ^ identifier )*
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(669, 4);
-			PushFollow(Follow._identifier_in_path3585);
+			DebugLocation(680, 4);
+			PushFollow(Follow._identifier_in_path3611);
 			identifier305=identifier();
 			PopFollow();
 
 			adaptor.AddChild(root_0, identifier305.Tree);
-			DebugLocation(669, 15);
-			// Hql.g:669:15: ( DOT ^ identifier )*
-			try { DebugEnterSubRule(108);
+			DebugLocation(680, 15);
+			// Hql.g:680:15: ( DOT ^ identifier )*
+			try { DebugEnterSubRule(109);
 			while (true)
 			{
-				int alt108=2;
-				try { DebugEnterDecision(108, false);
-				int LA108_1 = input.LA(1);
+				int alt109=2;
+				try { DebugEnterDecision(109, false);
+				int LA109_1 = input.LA(1);
 
-				if ((LA108_1==DOT))
+				if ((LA109_1==DOT))
 				{
-					alt108 = 1;
+					alt109 = 1;
 				}
 
 
-				} finally { DebugExitDecision(108); }
-				switch ( alt108 )
+				} finally { DebugExitDecision(109); }
+				switch ( alt109 )
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// Hql.g:669:17: DOT ^ identifier
+					// Hql.g:680:17: DOT ^ identifier
 					{
-					DebugLocation(669, 20);
-					DOT306=(IToken)Match(input,DOT,Follow._DOT_in_path3589); 
+					DebugLocation(680, 20);
+					DOT306=(IToken)Match(input,DOT,Follow._DOT_in_path3615); 
 					DOT306_tree = (IASTNode)adaptor.Create(DOT306);
 					root_0 = (IASTNode)adaptor.BecomeRoot(DOT306_tree, root_0);
-					DebugLocation(669, 22);
+					DebugLocation(680, 22);
 					 WeakKeywords(); 
-					DebugLocation(669, 42);
-					PushFollow(Follow._identifier_in_path3594);
+					DebugLocation(680, 42);
+					PushFollow(Follow._identifier_in_path3620);
 					identifier307=identifier();
 					PopFollow();
 
@@ -12167,14 +12198,14 @@ public partial class HqlParser : Antlr.Runtime.Parser
 					break;
 
 				default:
-					goto loop108;
+					goto loop109;
 				}
 			}
 
-			loop108:
+			loop109:
 				;
 
-			} finally { DebugExitSubRule(108); }
+			} finally { DebugExitSubRule(109); }
 
 
 			}
@@ -12198,7 +12229,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("path", 77);
 			LeaveRule_path();
 		}
-		DebugLocation(670, 1);
+		DebugLocation(681, 1);
 		} finally { DebugExitRule(GrammarFileName, "path"); }
 		return retval;
 
@@ -12208,7 +12239,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	partial void EnterRule_identifier();
 	partial void LeaveRule_identifier();
 	// $ANTLR start "identifier"
-	// Hql.g:674:1: identifier : IDENT ;
+	// Hql.g:685:1: identifier : IDENT ;
 	[GrammarRule("identifier")]
 	private AstParserRuleReturnScope<IASTNode, IToken> identifier()
 	{
@@ -12224,17 +12255,17 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 		IASTNode IDENT308_tree = default(IASTNode);
 		try { DebugEnterRule(GrammarFileName, "identifier");
-		DebugLocation(674, 1);
+		DebugLocation(685, 1);
 		try
 		{
-			// Hql.g:675:2: ( IDENT )
+			// Hql.g:686:2: ( IDENT )
 			DebugEnterAlt(1);
-			// Hql.g:675:4: IDENT
+			// Hql.g:686:4: IDENT
 			{
 			root_0 = (IASTNode)adaptor.Nil();
 
-			DebugLocation(675, 4);
-			IDENT308=(IToken)Match(input,IDENT,Follow._IDENT_in_identifier3610); 
+			DebugLocation(686, 4);
+			IDENT308=(IToken)Match(input,IDENT,Follow._IDENT_in_identifier3636); 
 			IDENT308_tree = (IASTNode)adaptor.Create(IDENT308);
 			adaptor.AddChild(root_0, IDENT308_tree);
 
@@ -12259,7 +12290,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 			LeaveRule("identifier", 78);
 			LeaveRule_identifier();
 		}
-		DebugLocation(676, 1);
+		DebugLocation(687, 1);
 		} finally { DebugExitRule(GrammarFileName, "identifier"); }
 		return retval;
 
@@ -12271,351 +12302,351 @@ public partial class HqlParser : Antlr.Runtime.Parser
 	#region Follow sets
 	private static class Follow
 	{
-		public static readonly BitSet _updateStatement_in_statement613 = new BitSet(new ulong[]{0x0UL});
-		public static readonly BitSet _deleteStatement_in_statement617 = new BitSet(new ulong[]{0x0UL});
-		public static readonly BitSet _selectStatement_in_statement621 = new BitSet(new ulong[]{0x0UL});
-		public static readonly BitSet _insertStatement_in_statement625 = new BitSet(new ulong[]{0x0UL});
-		public static readonly BitSet _EOF_in_statement629 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _UPDATE_in_updateStatement641 = new BitSet(new ulong[]{0x81000000000000UL,0x8000000000000000UL});
-		public static readonly BitSet _VERSIONED_in_updateStatement645 = new BitSet(new ulong[]{0x81000000000000UL});
-		public static readonly BitSet _optionalFromTokenFromClause_in_updateStatement651 = new BitSet(new ulong[]{0x0UL,0x1000000000000UL});
-		public static readonly BitSet _setClause_in_updateStatement655 = new BitSet(new ulong[]{0x2UL,0x0UL,0x4UL});
-		public static readonly BitSet _whereClause_in_updateStatement660 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SET_in_setClause674 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _assignment_in_setClause677 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_setClause680 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _assignment_in_setClause683 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _stateField_in_assignment697 = new BitSet(new ulong[]{0x4000000000UL});
-		public static readonly BitSet _EQ_in_assignment699 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _newValue_in_assignment702 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_stateField715 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _concatenation_in_newValue728 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DELETE_in_deleteStatement739 = new BitSet(new ulong[]{0x81000000000000UL});
-		public static readonly BitSet _optionalFromTokenFromClause_in_deleteStatement745 = new BitSet(new ulong[]{0x2UL,0x0UL,0x4UL});
-		public static readonly BitSet _whereClause_in_deleteStatement751 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _optionalFromTokenFromClause2_in_optionalFromTokenFromClause766 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_optionalFromTokenFromClause768 = new BitSet(new ulong[]{0x80000000000202UL});
-		public static readonly BitSet _asAlias_in_optionalFromTokenFromClause771 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FROM_in_optionalFromTokenFromClause2802 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _queryRule_in_selectStatement816 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INSERT_in_insertStatement845 = new BitSet(new ulong[]{0x8000000000000000UL});
-		public static readonly BitSet _intoClause_in_insertStatement848 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
-		public static readonly BitSet _selectStatement_in_insertStatement850 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INTO_in_intoClause861 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_intoClause864 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _insertablePropertySpec_in_intoClause868 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OPEN_in_insertablePropertySpec879 = new BitSet(new ulong[]{0x1080101410800800UL,0x22004411F809000UL});
-		public static readonly BitSet _primaryExpression_in_insertablePropertySpec881 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _COMMA_in_insertablePropertySpec885 = new BitSet(new ulong[]{0x1080101410800800UL,0x22004411F809000UL});
-		public static readonly BitSet _primaryExpression_in_insertablePropertySpec887 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _CLOSE_in_insertablePropertySpec892 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _selectFrom_in_queryRule918 = new BitSet(new ulong[]{0x28000000000002UL,0x42000800000000UL,0x4UL});
-		public static readonly BitSet _whereClause_in_queryRule923 = new BitSet(new ulong[]{0x28000000000002UL,0x42000800000000UL});
-		public static readonly BitSet _groupByClause_in_queryRule930 = new BitSet(new ulong[]{0x20000000000002UL,0x42000800000000UL});
-		public static readonly BitSet _havingClause_in_queryRule937 = new BitSet(new ulong[]{0x2UL,0x42000800000000UL});
-		public static readonly BitSet _orderByClause_in_queryRule944 = new BitSet(new ulong[]{0x2UL,0x42000000000000UL});
-		public static readonly BitSet _skipClause_in_queryRule951 = new BitSet(new ulong[]{0x2UL,0x40000000000000UL});
-		public static readonly BitSet _takeClause_in_queryRule958 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _selectClause_in_selectFrom976 = new BitSet(new ulong[]{0x1000000000002UL});
-		public static readonly BitSet _fromClause_in_selectFrom983 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SELECT_in_selectClause1032 = new BitSet(new ulong[]{0x1080121490844940UL,0x22404C13F8D9000UL});
-		public static readonly BitSet _DISTINCT_in_selectClause1044 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C13F8D9000UL});
-		public static readonly BitSet _selectedPropertiesList_in_selectClause1050 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _newExpression_in_selectClause1054 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _selectObject_in_selectClause1058 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _NEW_in_newExpression1072 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_newExpression1074 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_newExpression1079 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _selectedPropertiesList_in_newExpression1081 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_newExpression1083 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OBJECT_in_selectObject1109 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_selectObject1112 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_selectObject1115 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_selectObject1117 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FROM_in_fromClause1135 = new BitSet(new ulong[]{0x480000400000000UL});
-		public static readonly BitSet _fromRange_in_fromClause1140 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
-		public static readonly BitSet _fromJoin_in_fromClause1144 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
-		public static readonly BitSet _COMMA_in_fromClause1148 = new BitSet(new ulong[]{0x480000400000000UL});
-		public static readonly BitSet _fromRange_in_fromClause1153 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
-		public static readonly BitSet _set_in_fromJoin1171 = new BitSet(new ulong[]{0x0UL,0x2000000020UL});
-		public static readonly BitSet _OUTER_in_fromJoin1182 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _FULL_in_fromJoin1190 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _INNER_in_fromJoin1194 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _JOIN_in_fromJoin1199 = new BitSet(new ulong[]{0x80200000000000UL});
-		public static readonly BitSet _FETCH_in_fromJoin1203 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_fromJoin1207 = new BitSet(new ulong[]{0x80200000000202UL,0x0UL,0x8UL});
-		public static readonly BitSet _asAlias_in_fromJoin1210 = new BitSet(new ulong[]{0x200000000002UL,0x0UL,0x8UL});
-		public static readonly BitSet _propertyFetch_in_fromJoin1215 = new BitSet(new ulong[]{0x2UL,0x0UL,0x8UL});
-		public static readonly BitSet _withClause_in_fromJoin1220 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _set_in_fromJoin1231 = new BitSet(new ulong[]{0x0UL,0x2000000020UL});
-		public static readonly BitSet _OUTER_in_fromJoin1242 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _FULL_in_fromJoin1250 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _INNER_in_fromJoin1254 = new BitSet(new ulong[]{0x0UL,0x20UL});
-		public static readonly BitSet _JOIN_in_fromJoin1259 = new BitSet(new ulong[]{0x200400000000UL});
-		public static readonly BitSet _FETCH_in_fromJoin1263 = new BitSet(new ulong[]{0x400000000UL});
-		public static readonly BitSet _ELEMENTS_in_fromJoin1267 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_fromJoin1270 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_fromJoin1273 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_fromJoin1275 = new BitSet(new ulong[]{0x80200000000202UL,0x0UL,0x8UL});
-		public static readonly BitSet _asAlias_in_fromJoin1279 = new BitSet(new ulong[]{0x200000000002UL,0x0UL,0x8UL});
-		public static readonly BitSet _propertyFetch_in_fromJoin1284 = new BitSet(new ulong[]{0x2UL,0x0UL,0x8UL});
-		public static readonly BitSet _withClause_in_fromJoin1289 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _WITH_in_withClause1302 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _logicalExpression_in_withClause1305 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _fromClassOrOuterQueryPath_in_fromRange1316 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _inClassDeclaration_in_fromRange1321 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _inCollectionDeclaration_in_fromRange1326 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _inCollectionElementsDeclaration_in_fromRange1331 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_fromClassOrOuterQueryPath1343 = new BitSet(new ulong[]{0x80200000000202UL});
-		public static readonly BitSet _asAlias_in_fromClassOrOuterQueryPath1348 = new BitSet(new ulong[]{0x200000000002UL});
-		public static readonly BitSet _propertyFetch_in_fromClassOrOuterQueryPath1353 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _alias_in_inClassDeclaration1383 = new BitSet(new ulong[]{0x400000000000000UL});
-		public static readonly BitSet _IN_in_inClassDeclaration1385 = new BitSet(new ulong[]{0x80000000100000UL});
-		public static readonly BitSet _CLASS_in_inClassDeclaration1387 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_inClassDeclaration1390 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _IN_in_inCollectionDeclaration1418 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_inCollectionDeclaration1420 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_inCollectionDeclaration1422 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_inCollectionDeclaration1424 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _alias_in_inCollectionDeclaration1426 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _alias_in_inCollectionElementsDeclaration1460 = new BitSet(new ulong[]{0x400000000000000UL});
-		public static readonly BitSet _IN_in_inCollectionElementsDeclaration1462 = new BitSet(new ulong[]{0x400000000UL});
-		public static readonly BitSet _ELEMENTS_in_inCollectionElementsDeclaration1464 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_inCollectionElementsDeclaration1466 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_inCollectionElementsDeclaration1468 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_inCollectionElementsDeclaration1470 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ELEMENTS_in_inCollectionElementsDeclaration1492 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_inCollectionElementsDeclaration1494 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_inCollectionElementsDeclaration1496 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_inCollectionElementsDeclaration1498 = new BitSet(new ulong[]{0x200UL});
-		public static readonly BitSet _AS_in_inCollectionElementsDeclaration1500 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _alias_in_inCollectionElementsDeclaration1502 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _AS_in_asAlias1534 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _alias_in_asAlias1539 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_alias1551 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FETCH_in_propertyFetch1570 = new BitSet(new ulong[]{0x40UL});
-		public static readonly BitSet _ALL_in_propertyFetch1572 = new BitSet(new ulong[]{0x0UL,0x10000000000UL});
-		public static readonly BitSet _PROPERTIES_in_propertyFetch1575 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _GROUP_in_groupByClause1587 = new BitSet(new ulong[]{0x0UL,0x400UL});
-		public static readonly BitSet _LITERAL_by_in_groupByClause1593 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_groupByClause1596 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_groupByClause1600 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_groupByClause1603 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _ORDER_in_orderByClause1617 = new BitSet(new ulong[]{0x0UL,0x400UL});
-		public static readonly BitSet _LITERAL_by_in_orderByClause1620 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _orderElement_in_orderByClause1623 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_orderByClause1627 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _orderElement_in_orderByClause1630 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _SKIP_in_skipClause1644 = new BitSet(new ulong[]{0x800000UL,0x4008000000UL});
-		public static readonly BitSet _NUM_INT_in_skipClause1648 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _parameter_in_skipClause1652 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _TAKE_in_takeClause1664 = new BitSet(new ulong[]{0x800000UL,0x4008000000UL});
-		public static readonly BitSet _NUM_INT_in_takeClause1668 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _parameter_in_takeClause1672 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COLON_in_parameter1684 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_parameter1687 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _PARAM_in_parameter1692 = new BitSet(new ulong[]{0x2UL,0x8000000UL});
-		public static readonly BitSet _NUM_INT_in_parameter1696 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expression_in_orderElement1709 = new BitSet(new ulong[]{0x40000402UL,0x0UL,0x60UL});
-		public static readonly BitSet _ascendingOrDescending_in_orderElement1713 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ASCENDING_in_ascendingOrDescending1731 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _133_in_ascendingOrDescending1737 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DESCENDING_in_ascendingOrDescending1757 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _134_in_ascendingOrDescending1763 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _HAVING_in_havingClause1784 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _logicalExpression_in_havingClause1787 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _WHERE_in_whereClause1798 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _logicalExpression_in_whereClause1801 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _aliasedExpression_in_selectedPropertiesList1812 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_selectedPropertiesList1816 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _aliasedExpression_in_selectedPropertiesList1819 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _expression_in_aliasedExpression1834 = new BitSet(new ulong[]{0x202UL});
-		public static readonly BitSet _AS_in_aliasedExpression1838 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_aliasedExpression1841 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expression_in_logicalExpression1880 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _logicalOrExpression_in_expression1892 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _logicalAndExpression_in_logicalOrExpression1904 = new BitSet(new ulong[]{0x2UL,0x400000000UL});
-		public static readonly BitSet _OR_in_logicalOrExpression1908 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _logicalAndExpression_in_logicalOrExpression1911 = new BitSet(new ulong[]{0x2UL,0x400000000UL});
-		public static readonly BitSet _negatedExpression_in_logicalAndExpression1926 = new BitSet(new ulong[]{0x82UL});
-		public static readonly BitSet _AND_in_logicalAndExpression1930 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _negatedExpression_in_logicalAndExpression1933 = new BitSet(new ulong[]{0x82UL});
-		public static readonly BitSet _NOT_in_negatedExpression1954 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _negatedExpression_in_negatedExpression1958 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _equalityExpression_in_negatedExpression1971 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _relationalExpression_in_equalityExpression1993 = new BitSet(new ulong[]{0x4000000002UL,0x8000000020002UL});
-		public static readonly BitSet _EQ_in_equalityExpression2001 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _IS_in_equalityExpression2010 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _NOT_in_equalityExpression2016 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _NE_in_equalityExpression2028 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _SQL_NE_in_equalityExpression2037 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _relationalExpression_in_equalityExpression2048 = new BitSet(new ulong[]{0x4000000002UL,0x8000000020002UL});
-		public static readonly BitSet _concatenation_in_relationalExpression2065 = new BitSet(new ulong[]{0x414000000002002UL,0x82A40UL});
-		public static readonly BitSet _LT_in_relationalExpression2077 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _GT_in_relationalExpression2082 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _LE_in_relationalExpression2087 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _GE_in_relationalExpression2092 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseNotExpression_in_relationalExpression2097 = new BitSet(new ulong[]{0x14000000000002UL,0x840UL});
-		public static readonly BitSet _NOT_in_relationalExpression2114 = new BitSet(new ulong[]{0x400000000002000UL,0x2200UL});
-		public static readonly BitSet _IN_in_relationalExpression2135 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
-		public static readonly BitSet _inList_in_relationalExpression2144 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _BETWEEN_in_relationalExpression2155 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _betweenList_in_relationalExpression2164 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _LIKE_in_relationalExpression2176 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _concatenation_in_relationalExpression2185 = new BitSet(new ulong[]{0x8000000000UL});
-		public static readonly BitSet _likeEscape_in_relationalExpression2187 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _MEMBER_in_relationalExpression2196 = new BitSet(new ulong[]{0x80000000000000UL,0x40000000UL});
-		public static readonly BitSet _OF_in_relationalExpression2200 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_relationalExpression2207 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ESCAPE_in_likeEscape2234 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _concatenation_in_likeEscape2237 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _compoundExpr_in_inList2250 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _concatenation_in_betweenList2271 = new BitSet(new ulong[]{0x80UL});
-		public static readonly BitSet _AND_in_betweenList2273 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _concatenation_in_betweenList2276 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _bitwiseNotExpression_in_concatenation2295 = new BitSet(new ulong[]{0x2000002UL});
-		public static readonly BitSet _CONCAT_in_concatenation2303 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseNotExpression_in_concatenation2312 = new BitSet(new ulong[]{0x2000002UL});
-		public static readonly BitSet _CONCAT_in_concatenation2319 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseNotExpression_in_concatenation2322 = new BitSet(new ulong[]{0x2000002UL});
-		public static readonly BitSet _BNOT_in_bitwiseNotExpression2346 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseOrExpression_in_bitwiseNotExpression2349 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _bitwiseOrExpression_in_bitwiseNotExpression2355 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _bitwiseXOrExpression_in_bitwiseOrExpression2367 = new BitSet(new ulong[]{0x8002UL});
-		public static readonly BitSet _BOR_in_bitwiseOrExpression2370 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseXOrExpression_in_bitwiseOrExpression2373 = new BitSet(new ulong[]{0x8002UL});
-		public static readonly BitSet _bitwiseAndExpression_in_bitwiseXOrExpression2387 = new BitSet(new ulong[]{0x20002UL});
-		public static readonly BitSet _BXOR_in_bitwiseXOrExpression2390 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _bitwiseAndExpression_in_bitwiseXOrExpression2393 = new BitSet(new ulong[]{0x20002UL});
-		public static readonly BitSet _additiveExpression_in_bitwiseAndExpression2407 = new BitSet(new ulong[]{0x1002UL});
-		public static readonly BitSet _BAND_in_bitwiseAndExpression2410 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _additiveExpression_in_bitwiseAndExpression2413 = new BitSet(new ulong[]{0x1002UL});
-		public static readonly BitSet _multiplyExpression_in_additiveExpression2427 = new BitSet(new ulong[]{0x2UL,0x8000010000UL});
-		public static readonly BitSet _PLUS_in_additiveExpression2433 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _MINUS_in_additiveExpression2438 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _multiplyExpression_in_additiveExpression2443 = new BitSet(new ulong[]{0x2UL,0x8000010000UL});
-		public static readonly BitSet _unaryExpression_in_multiplyExpression2458 = new BitSet(new ulong[]{0x100000002UL,0x10000000000000UL});
-		public static readonly BitSet _STAR_in_multiplyExpression2464 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _DIV_in_multiplyExpression2469 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _unaryExpression_in_multiplyExpression2474 = new BitSet(new ulong[]{0x100000002UL,0x10000000000000UL});
-		public static readonly BitSet _MINUS_in_unaryExpression2492 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _unaryExpression_in_unaryExpression2496 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _PLUS_in_unaryExpression2513 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _unaryExpression_in_unaryExpression2517 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _caseExpression_in_unaryExpression2532 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _quantifiedExpression_in_unaryExpression2537 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _atom_in_unaryExpression2542 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CASE_in_caseExpression2554 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
-		public static readonly BitSet _whenClause_in_caseExpression2557 = new BitSet(new ulong[]{0x2800000000UL,0x0UL,0x2UL});
-		public static readonly BitSet _elseClause_in_caseExpression2562 = new BitSet(new ulong[]{0x2000000000UL});
-		public static readonly BitSet _END_in_caseExpression2566 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CASE_in_caseExpression2586 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _unaryExpression_in_caseExpression2588 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
-		public static readonly BitSet _altWhenClause_in_caseExpression2591 = new BitSet(new ulong[]{0x2800000000UL,0x0UL,0x2UL});
-		public static readonly BitSet _elseClause_in_caseExpression2596 = new BitSet(new ulong[]{0x2000000000UL});
-		public static readonly BitSet _END_in_caseExpression2600 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _WHEN_in_whenClause2629 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _logicalExpression_in_whenClause2632 = new BitSet(new ulong[]{0x0UL,0x80000000000000UL});
-		public static readonly BitSet _THEN_in_whenClause2634 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_whenClause2637 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _WHEN_in_altWhenClause2651 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _unaryExpression_in_altWhenClause2654 = new BitSet(new ulong[]{0x0UL,0x80000000000000UL});
-		public static readonly BitSet _THEN_in_altWhenClause2656 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_altWhenClause2659 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ELSE_in_elseClause2673 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_elseClause2676 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SOME_in_quantifiedExpression2691 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
-		public static readonly BitSet _EXISTS_in_quantifiedExpression2696 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
-		public static readonly BitSet _ALL_in_quantifiedExpression2701 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
-		public static readonly BitSet _ANY_in_quantifiedExpression2706 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
-		public static readonly BitSet _identifier_in_quantifiedExpression2715 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_quantifiedExpression2719 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OPEN_in_quantifiedExpression2724 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
-		public static readonly BitSet _subQuery_in_quantifiedExpression2729 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_quantifiedExpression2733 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _primaryExpression_in_atom2752 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
-		public static readonly BitSet _DOT_in_atom2761 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_atom2764 = new BitSet(new ulong[]{0x200000002UL,0x300000000UL});
-		public static readonly BitSet _OPEN_in_atom2792 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
-		public static readonly BitSet _exprList_in_atom2797 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_atom2799 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
-		public static readonly BitSet _OPEN_BRACKET_in_atom2813 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_atom2818 = new BitSet(new ulong[]{0x400000UL});
-		public static readonly BitSet _CLOSE_BRACKET_in_atom2820 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
-		public static readonly BitSet _identPrimary_in_primaryExpression2840 = new BitSet(new ulong[]{0x200000002UL});
-		public static readonly BitSet _DOT_in_primaryExpression2853 = new BitSet(new ulong[]{0x100000UL});
-		public static readonly BitSet _CLASS_in_primaryExpression2856 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _constant_in_primaryExpression2866 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COLON_in_primaryExpression2873 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_primaryExpression2876 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OPEN_in_primaryExpression2885 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
-		public static readonly BitSet _expressionOrVector_in_primaryExpression2889 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _subQuery_in_primaryExpression2893 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_primaryExpression2896 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _PARAM_in_primaryExpression2904 = new BitSet(new ulong[]{0x2UL,0x8000000UL});
-		public static readonly BitSet _NUM_INT_in_primaryExpression2908 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expression_in_expressionOrVector2926 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _vectorExpr_in_expressionOrVector2932 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COMMA_in_vectorExpr2969 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_vectorExpr2972 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _COMMA_in_vectorExpr2975 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_vectorExpr2978 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _identifier_in_identPrimary2994 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _DOT_in_identPrimary3012 = new BitSet(new ulong[]{0x80000000000000UL,0x20000000UL});
-		public static readonly BitSet _identifier_in_identPrimary3017 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _OBJECT_in_identPrimary3023 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_identPrimary3041 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
-		public static readonly BitSet _exprList_in_identPrimary3046 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_identPrimary3048 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _aggregate_in_identPrimary3064 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _SUM_in_aggregate3085 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _AVG_in_aggregate3091 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _MAX_in_aggregate3097 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _MIN_in_aggregate3103 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_aggregate3107 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
-		public static readonly BitSet _additiveExpression_in_aggregate3109 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_aggregate3111 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _COUNT_in_aggregate3130 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_aggregate3132 = new BitSet(new ulong[]{0x1080000480000040UL,0x10000000000000UL});
-		public static readonly BitSet _STAR_in_aggregate3138 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _aggregateDistinctAll_in_aggregate3144 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_aggregate3148 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_aggregate3180 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_aggregateDistinctAll3206 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_aggregateDistinctAll3210 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ELEMENTS_in_collectionExpr3229 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _INDICES_in_collectionExpr3234 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
-		public static readonly BitSet _OPEN_in_collectionExpr3238 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _path_in_collectionExpr3241 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _CLOSE_in_collectionExpr3243 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _collectionExpr_in_compoundExpr3298 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _path_in_compoundExpr3303 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _OPEN_in_compoundExpr3309 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
-		public static readonly BitSet _subQuery_in_compoundExpr3314 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _expression_in_compoundExpr3319 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _COMMA_in_compoundExpr3322 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_compoundExpr3325 = new BitSet(new ulong[]{0x1200000UL});
-		public static readonly BitSet _CLOSE_in_compoundExpr3332 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _TRAILING_in_exprList3351 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _LEADING_in_exprList3364 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _BOTH_in_exprList3377 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3401 = new BitSet(new ulong[]{0x1000001000202UL});
-		public static readonly BitSet _COMMA_in_exprList3406 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3409 = new BitSet(new ulong[]{0x1000002UL});
-		public static readonly BitSet _FROM_in_exprList3424 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3426 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _AS_in_exprList3438 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_exprList3441 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FROM_in_exprList3455 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
-		public static readonly BitSet _expression_in_exprList3457 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _innerSubQuery_in_subQuery3477 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
-		public static readonly BitSet _UNION_in_subQuery3480 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
-		public static readonly BitSet _innerSubQuery_in_subQuery3483 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
-		public static readonly BitSet _queryRule_in_innerSubQuery3497 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _identifier_in_path3585 = new BitSet(new ulong[]{0x200000002UL});
-		public static readonly BitSet _DOT_in_path3589 = new BitSet(new ulong[]{0x80000000000000UL});
-		public static readonly BitSet _identifier_in_path3594 = new BitSet(new ulong[]{0x200000002UL});
-		public static readonly BitSet _IDENT_in_identifier3610 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _updateStatement_in_statement620 = new BitSet(new ulong[]{0x0UL});
+		public static readonly BitSet _deleteStatement_in_statement624 = new BitSet(new ulong[]{0x0UL});
+		public static readonly BitSet _insertStatement_in_statement628 = new BitSet(new ulong[]{0x0UL});
+		public static readonly BitSet _selectStatement_in_statement637 = new BitSet(new ulong[]{0x0UL});
+		public static readonly BitSet _EOF_in_statement642 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _UPDATE_in_updateStatement654 = new BitSet(new ulong[]{0x81000000000000UL,0x8000000000000000UL});
+		public static readonly BitSet _VERSIONED_in_updateStatement658 = new BitSet(new ulong[]{0x81000000000000UL});
+		public static readonly BitSet _optionalFromTokenFromClause_in_updateStatement664 = new BitSet(new ulong[]{0x0UL,0x1000000000000UL});
+		public static readonly BitSet _setClause_in_updateStatement668 = new BitSet(new ulong[]{0x2UL,0x0UL,0x4UL});
+		public static readonly BitSet _whereClause_in_updateStatement673 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SET_in_setClause687 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _assignment_in_setClause690 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_setClause693 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _assignment_in_setClause696 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _stateField_in_assignment710 = new BitSet(new ulong[]{0x4000000000UL});
+		public static readonly BitSet _EQ_in_assignment712 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _newValue_in_assignment715 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_stateField728 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _concatenation_in_newValue741 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DELETE_in_deleteStatement752 = new BitSet(new ulong[]{0x81000000000000UL});
+		public static readonly BitSet _optionalFromTokenFromClause_in_deleteStatement758 = new BitSet(new ulong[]{0x2UL,0x0UL,0x4UL});
+		public static readonly BitSet _whereClause_in_deleteStatement764 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _optionalFromTokenFromClause2_in_optionalFromTokenFromClause779 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_optionalFromTokenFromClause781 = new BitSet(new ulong[]{0x80000000000202UL});
+		public static readonly BitSet _asAlias_in_optionalFromTokenFromClause784 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FROM_in_optionalFromTokenFromClause2815 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _queryRule_in_selectStatement830 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INSERT_in_insertStatement859 = new BitSet(new ulong[]{0x8000000000000000UL});
+		public static readonly BitSet _intoClause_in_insertStatement862 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
+		public static readonly BitSet _selectStatement_in_insertStatement864 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INTO_in_intoClause875 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_intoClause878 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _insertablePropertySpec_in_intoClause882 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OPEN_in_insertablePropertySpec893 = new BitSet(new ulong[]{0x1080101410800800UL,0x22004411F809000UL});
+		public static readonly BitSet _primaryExpression_in_insertablePropertySpec895 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _COMMA_in_insertablePropertySpec899 = new BitSet(new ulong[]{0x1080101410800800UL,0x22004411F809000UL});
+		public static readonly BitSet _primaryExpression_in_insertablePropertySpec901 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _CLOSE_in_insertablePropertySpec906 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _selectFrom_in_queryRule944 = new BitSet(new ulong[]{0x28000000000002UL,0x42000800000000UL,0x4UL});
+		public static readonly BitSet _whereClause_in_queryRule949 = new BitSet(new ulong[]{0x28000000000002UL,0x42000800000000UL});
+		public static readonly BitSet _groupByClause_in_queryRule956 = new BitSet(new ulong[]{0x20000000000002UL,0x42000800000000UL});
+		public static readonly BitSet _havingClause_in_queryRule963 = new BitSet(new ulong[]{0x2UL,0x42000800000000UL});
+		public static readonly BitSet _orderByClause_in_queryRule970 = new BitSet(new ulong[]{0x2UL,0x42000000000000UL});
+		public static readonly BitSet _skipClause_in_queryRule977 = new BitSet(new ulong[]{0x2UL,0x40000000000000UL});
+		public static readonly BitSet _takeClause_in_queryRule984 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _selectClause_in_selectFrom1002 = new BitSet(new ulong[]{0x1000000000002UL});
+		public static readonly BitSet _fromClause_in_selectFrom1009 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SELECT_in_selectClause1058 = new BitSet(new ulong[]{0x1080121490844940UL,0x22404C13F8D9000UL});
+		public static readonly BitSet _DISTINCT_in_selectClause1070 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C13F8D9000UL});
+		public static readonly BitSet _selectedPropertiesList_in_selectClause1076 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _newExpression_in_selectClause1080 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _selectObject_in_selectClause1084 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _NEW_in_newExpression1098 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_newExpression1100 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_newExpression1105 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _selectedPropertiesList_in_newExpression1107 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_newExpression1109 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OBJECT_in_selectObject1135 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_selectObject1138 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_selectObject1141 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_selectObject1143 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FROM_in_fromClause1161 = new BitSet(new ulong[]{0x480000400000000UL});
+		public static readonly BitSet _fromRange_in_fromClause1166 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
+		public static readonly BitSet _fromJoin_in_fromClause1170 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
+		public static readonly BitSet _COMMA_in_fromClause1174 = new BitSet(new ulong[]{0x480000400000000UL});
+		public static readonly BitSet _fromRange_in_fromClause1179 = new BitSet(new ulong[]{0x2002000001000002UL,0x100000000120UL});
+		public static readonly BitSet _set_in_fromJoin1197 = new BitSet(new ulong[]{0x0UL,0x2000000020UL});
+		public static readonly BitSet _OUTER_in_fromJoin1208 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _FULL_in_fromJoin1216 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _INNER_in_fromJoin1220 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _JOIN_in_fromJoin1225 = new BitSet(new ulong[]{0x80200000000000UL});
+		public static readonly BitSet _FETCH_in_fromJoin1229 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_fromJoin1233 = new BitSet(new ulong[]{0x80200000000202UL,0x0UL,0x8UL});
+		public static readonly BitSet _asAlias_in_fromJoin1236 = new BitSet(new ulong[]{0x200000000002UL,0x0UL,0x8UL});
+		public static readonly BitSet _propertyFetch_in_fromJoin1241 = new BitSet(new ulong[]{0x2UL,0x0UL,0x8UL});
+		public static readonly BitSet _withClause_in_fromJoin1246 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _set_in_fromJoin1257 = new BitSet(new ulong[]{0x0UL,0x2000000020UL});
+		public static readonly BitSet _OUTER_in_fromJoin1268 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _FULL_in_fromJoin1276 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _INNER_in_fromJoin1280 = new BitSet(new ulong[]{0x0UL,0x20UL});
+		public static readonly BitSet _JOIN_in_fromJoin1285 = new BitSet(new ulong[]{0x200400000000UL});
+		public static readonly BitSet _FETCH_in_fromJoin1289 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _ELEMENTS_in_fromJoin1293 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_fromJoin1296 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_fromJoin1299 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_fromJoin1301 = new BitSet(new ulong[]{0x80200000000202UL,0x0UL,0x8UL});
+		public static readonly BitSet _asAlias_in_fromJoin1305 = new BitSet(new ulong[]{0x200000000002UL,0x0UL,0x8UL});
+		public static readonly BitSet _propertyFetch_in_fromJoin1310 = new BitSet(new ulong[]{0x2UL,0x0UL,0x8UL});
+		public static readonly BitSet _withClause_in_fromJoin1315 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _WITH_in_withClause1328 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _logicalExpression_in_withClause1331 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _fromClassOrOuterQueryPath_in_fromRange1342 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _inClassDeclaration_in_fromRange1347 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _inCollectionDeclaration_in_fromRange1352 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _inCollectionElementsDeclaration_in_fromRange1357 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_fromClassOrOuterQueryPath1369 = new BitSet(new ulong[]{0x80200000000202UL});
+		public static readonly BitSet _asAlias_in_fromClassOrOuterQueryPath1374 = new BitSet(new ulong[]{0x200000000002UL});
+		public static readonly BitSet _propertyFetch_in_fromClassOrOuterQueryPath1379 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _alias_in_inClassDeclaration1409 = new BitSet(new ulong[]{0x400000000000000UL});
+		public static readonly BitSet _IN_in_inClassDeclaration1411 = new BitSet(new ulong[]{0x80000000100000UL});
+		public static readonly BitSet _CLASS_in_inClassDeclaration1413 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_inClassDeclaration1416 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _IN_in_inCollectionDeclaration1444 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_inCollectionDeclaration1446 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_inCollectionDeclaration1448 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_inCollectionDeclaration1450 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _alias_in_inCollectionDeclaration1452 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _alias_in_inCollectionElementsDeclaration1486 = new BitSet(new ulong[]{0x400000000000000UL});
+		public static readonly BitSet _IN_in_inCollectionElementsDeclaration1488 = new BitSet(new ulong[]{0x400000000UL});
+		public static readonly BitSet _ELEMENTS_in_inCollectionElementsDeclaration1490 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_inCollectionElementsDeclaration1492 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_inCollectionElementsDeclaration1494 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_inCollectionElementsDeclaration1496 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELEMENTS_in_inCollectionElementsDeclaration1518 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_inCollectionElementsDeclaration1520 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_inCollectionElementsDeclaration1522 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_inCollectionElementsDeclaration1524 = new BitSet(new ulong[]{0x200UL});
+		public static readonly BitSet _AS_in_inCollectionElementsDeclaration1526 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _alias_in_inCollectionElementsDeclaration1528 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _AS_in_asAlias1560 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _alias_in_asAlias1565 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_alias1577 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FETCH_in_propertyFetch1596 = new BitSet(new ulong[]{0x40UL});
+		public static readonly BitSet _ALL_in_propertyFetch1598 = new BitSet(new ulong[]{0x0UL,0x10000000000UL});
+		public static readonly BitSet _PROPERTIES_in_propertyFetch1601 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _GROUP_in_groupByClause1613 = new BitSet(new ulong[]{0x0UL,0x400UL});
+		public static readonly BitSet _LITERAL_by_in_groupByClause1619 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_groupByClause1622 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_groupByClause1626 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_groupByClause1629 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _ORDER_in_orderByClause1643 = new BitSet(new ulong[]{0x0UL,0x400UL});
+		public static readonly BitSet _LITERAL_by_in_orderByClause1646 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _orderElement_in_orderByClause1649 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_orderByClause1653 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _orderElement_in_orderByClause1656 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _SKIP_in_skipClause1670 = new BitSet(new ulong[]{0x800000UL,0x4008000000UL});
+		public static readonly BitSet _NUM_INT_in_skipClause1674 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _parameter_in_skipClause1678 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _TAKE_in_takeClause1690 = new BitSet(new ulong[]{0x800000UL,0x4008000000UL});
+		public static readonly BitSet _NUM_INT_in_takeClause1694 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _parameter_in_takeClause1698 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COLON_in_parameter1710 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_parameter1713 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _PARAM_in_parameter1718 = new BitSet(new ulong[]{0x2UL,0x8000000UL});
+		public static readonly BitSet _NUM_INT_in_parameter1722 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expression_in_orderElement1735 = new BitSet(new ulong[]{0x40000402UL,0x0UL,0x60UL});
+		public static readonly BitSet _ascendingOrDescending_in_orderElement1739 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ASCENDING_in_ascendingOrDescending1757 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _133_in_ascendingOrDescending1763 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DESCENDING_in_ascendingOrDescending1783 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _134_in_ascendingOrDescending1789 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _HAVING_in_havingClause1810 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _logicalExpression_in_havingClause1813 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _WHERE_in_whereClause1824 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _logicalExpression_in_whereClause1827 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _aliasedExpression_in_selectedPropertiesList1838 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_selectedPropertiesList1842 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _aliasedExpression_in_selectedPropertiesList1845 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _expression_in_aliasedExpression1860 = new BitSet(new ulong[]{0x202UL});
+		public static readonly BitSet _AS_in_aliasedExpression1864 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_aliasedExpression1867 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expression_in_logicalExpression1906 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _logicalOrExpression_in_expression1918 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _logicalAndExpression_in_logicalOrExpression1930 = new BitSet(new ulong[]{0x2UL,0x400000000UL});
+		public static readonly BitSet _OR_in_logicalOrExpression1934 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _logicalAndExpression_in_logicalOrExpression1937 = new BitSet(new ulong[]{0x2UL,0x400000000UL});
+		public static readonly BitSet _negatedExpression_in_logicalAndExpression1952 = new BitSet(new ulong[]{0x82UL});
+		public static readonly BitSet _AND_in_logicalAndExpression1956 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _negatedExpression_in_logicalAndExpression1959 = new BitSet(new ulong[]{0x82UL});
+		public static readonly BitSet _NOT_in_negatedExpression1980 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _negatedExpression_in_negatedExpression1984 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _equalityExpression_in_negatedExpression1997 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _relationalExpression_in_equalityExpression2019 = new BitSet(new ulong[]{0x4000000002UL,0x8000000020002UL});
+		public static readonly BitSet _EQ_in_equalityExpression2027 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _IS_in_equalityExpression2036 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _NOT_in_equalityExpression2042 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _NE_in_equalityExpression2054 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _SQL_NE_in_equalityExpression2063 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _relationalExpression_in_equalityExpression2074 = new BitSet(new ulong[]{0x4000000002UL,0x8000000020002UL});
+		public static readonly BitSet _concatenation_in_relationalExpression2091 = new BitSet(new ulong[]{0x414000000002002UL,0x82A40UL});
+		public static readonly BitSet _LT_in_relationalExpression2103 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _GT_in_relationalExpression2108 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _LE_in_relationalExpression2113 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _GE_in_relationalExpression2118 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseNotExpression_in_relationalExpression2123 = new BitSet(new ulong[]{0x14000000000002UL,0x840UL});
+		public static readonly BitSet _NOT_in_relationalExpression2140 = new BitSet(new ulong[]{0x400000000002000UL,0x2200UL});
+		public static readonly BitSet _IN_in_relationalExpression2161 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
+		public static readonly BitSet _inList_in_relationalExpression2170 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _BETWEEN_in_relationalExpression2181 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _betweenList_in_relationalExpression2190 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _LIKE_in_relationalExpression2202 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _concatenation_in_relationalExpression2211 = new BitSet(new ulong[]{0x8000000000UL});
+		public static readonly BitSet _likeEscape_in_relationalExpression2213 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _MEMBER_in_relationalExpression2222 = new BitSet(new ulong[]{0x80000000000000UL,0x40000000UL});
+		public static readonly BitSet _OF_in_relationalExpression2226 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_relationalExpression2233 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ESCAPE_in_likeEscape2260 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _concatenation_in_likeEscape2263 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _compoundExpr_in_inList2276 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _concatenation_in_betweenList2297 = new BitSet(new ulong[]{0x80UL});
+		public static readonly BitSet _AND_in_betweenList2299 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _concatenation_in_betweenList2302 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _bitwiseNotExpression_in_concatenation2321 = new BitSet(new ulong[]{0x2000002UL});
+		public static readonly BitSet _CONCAT_in_concatenation2329 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseNotExpression_in_concatenation2338 = new BitSet(new ulong[]{0x2000002UL});
+		public static readonly BitSet _CONCAT_in_concatenation2345 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseNotExpression_in_concatenation2348 = new BitSet(new ulong[]{0x2000002UL});
+		public static readonly BitSet _BNOT_in_bitwiseNotExpression2372 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseOrExpression_in_bitwiseNotExpression2375 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _bitwiseOrExpression_in_bitwiseNotExpression2381 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _bitwiseXOrExpression_in_bitwiseOrExpression2393 = new BitSet(new ulong[]{0x8002UL});
+		public static readonly BitSet _BOR_in_bitwiseOrExpression2396 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseXOrExpression_in_bitwiseOrExpression2399 = new BitSet(new ulong[]{0x8002UL});
+		public static readonly BitSet _bitwiseAndExpression_in_bitwiseXOrExpression2413 = new BitSet(new ulong[]{0x20002UL});
+		public static readonly BitSet _BXOR_in_bitwiseXOrExpression2416 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _bitwiseAndExpression_in_bitwiseXOrExpression2419 = new BitSet(new ulong[]{0x20002UL});
+		public static readonly BitSet _additiveExpression_in_bitwiseAndExpression2433 = new BitSet(new ulong[]{0x1002UL});
+		public static readonly BitSet _BAND_in_bitwiseAndExpression2436 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _additiveExpression_in_bitwiseAndExpression2439 = new BitSet(new ulong[]{0x1002UL});
+		public static readonly BitSet _multiplyExpression_in_additiveExpression2453 = new BitSet(new ulong[]{0x2UL,0x8000010000UL});
+		public static readonly BitSet _PLUS_in_additiveExpression2459 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _MINUS_in_additiveExpression2464 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _multiplyExpression_in_additiveExpression2469 = new BitSet(new ulong[]{0x2UL,0x8000010000UL});
+		public static readonly BitSet _unaryExpression_in_multiplyExpression2484 = new BitSet(new ulong[]{0x100000002UL,0x10000000000000UL});
+		public static readonly BitSet _STAR_in_multiplyExpression2490 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _DIV_in_multiplyExpression2495 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _unaryExpression_in_multiplyExpression2500 = new BitSet(new ulong[]{0x100000002UL,0x10000000000000UL});
+		public static readonly BitSet _MINUS_in_unaryExpression2518 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _unaryExpression_in_unaryExpression2522 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _PLUS_in_unaryExpression2539 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _unaryExpression_in_unaryExpression2543 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _caseExpression_in_unaryExpression2558 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _quantifiedExpression_in_unaryExpression2563 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _atom_in_unaryExpression2568 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CASE_in_caseExpression2580 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
+		public static readonly BitSet _whenClause_in_caseExpression2583 = new BitSet(new ulong[]{0x2800000000UL,0x0UL,0x2UL});
+		public static readonly BitSet _elseClause_in_caseExpression2588 = new BitSet(new ulong[]{0x2000000000UL});
+		public static readonly BitSet _END_in_caseExpression2592 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CASE_in_caseExpression2612 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _unaryExpression_in_caseExpression2614 = new BitSet(new ulong[]{0x0UL,0x0UL,0x2UL});
+		public static readonly BitSet _altWhenClause_in_caseExpression2617 = new BitSet(new ulong[]{0x2800000000UL,0x0UL,0x2UL});
+		public static readonly BitSet _elseClause_in_caseExpression2622 = new BitSet(new ulong[]{0x2000000000UL});
+		public static readonly BitSet _END_in_caseExpression2626 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _WHEN_in_whenClause2655 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _logicalExpression_in_whenClause2658 = new BitSet(new ulong[]{0x0UL,0x80000000000000UL});
+		public static readonly BitSet _THEN_in_whenClause2660 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_whenClause2663 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _WHEN_in_altWhenClause2677 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _unaryExpression_in_altWhenClause2680 = new BitSet(new ulong[]{0x0UL,0x80000000000000UL});
+		public static readonly BitSet _THEN_in_altWhenClause2682 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_altWhenClause2685 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELSE_in_elseClause2699 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_elseClause2702 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SOME_in_quantifiedExpression2717 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
+		public static readonly BitSet _EXISTS_in_quantifiedExpression2722 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
+		public static readonly BitSet _ALL_in_quantifiedExpression2727 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
+		public static readonly BitSet _ANY_in_quantifiedExpression2732 = new BitSet(new ulong[]{0x1080000400000000UL,0x100000000UL});
+		public static readonly BitSet _identifier_in_quantifiedExpression2741 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_quantifiedExpression2745 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OPEN_in_quantifiedExpression2750 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
+		public static readonly BitSet _subQuery_in_quantifiedExpression2755 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_quantifiedExpression2759 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _primaryExpression_in_atom2778 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
+		public static readonly BitSet _DOT_in_atom2787 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_atom2790 = new BitSet(new ulong[]{0x200000002UL,0x300000000UL});
+		public static readonly BitSet _OPEN_in_atom2818 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
+		public static readonly BitSet _exprList_in_atom2823 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_atom2825 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
+		public static readonly BitSet _OPEN_BRACKET_in_atom2839 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_atom2844 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _CLOSE_BRACKET_in_atom2846 = new BitSet(new ulong[]{0x200000002UL,0x200000000UL});
+		public static readonly BitSet _identPrimary_in_primaryExpression2866 = new BitSet(new ulong[]{0x200000002UL});
+		public static readonly BitSet _DOT_in_primaryExpression2879 = new BitSet(new ulong[]{0x100000UL});
+		public static readonly BitSet _CLASS_in_primaryExpression2882 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _constant_in_primaryExpression2892 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COLON_in_primaryExpression2899 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_primaryExpression2902 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OPEN_in_primaryExpression2911 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
+		public static readonly BitSet _expressionOrVector_in_primaryExpression2915 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _subQuery_in_primaryExpression2919 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_primaryExpression2922 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _PARAM_in_primaryExpression2930 = new BitSet(new ulong[]{0x2UL,0x8000000UL});
+		public static readonly BitSet _NUM_INT_in_primaryExpression2934 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _expression_in_expressionOrVector2952 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _vectorExpr_in_expressionOrVector2958 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COMMA_in_vectorExpr2995 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_vectorExpr2998 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _COMMA_in_vectorExpr3001 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_vectorExpr3004 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _identifier_in_identPrimary3020 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _DOT_in_identPrimary3038 = new BitSet(new ulong[]{0x80000000000000UL,0x20000000UL});
+		public static readonly BitSet _identifier_in_identPrimary3043 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _OBJECT_in_identPrimary3049 = new BitSet(new ulong[]{0x200000002UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_identPrimary3067 = new BitSet(new ulong[]{0x1081121410A54940UL,0x32404C11F899080UL});
+		public static readonly BitSet _exprList_in_identPrimary3072 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_identPrimary3074 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _aggregate_in_identPrimary3090 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _SUM_in_aggregate3111 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _AVG_in_aggregate3117 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _MAX_in_aggregate3123 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _MIN_in_aggregate3129 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_aggregate3133 = new BitSet(new ulong[]{0x1080121410840940UL,0x22404C11F819000UL});
+		public static readonly BitSet _additiveExpression_in_aggregate3135 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_aggregate3137 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _COUNT_in_aggregate3156 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_aggregate3158 = new BitSet(new ulong[]{0x1080000480000040UL,0x10000000000000UL});
+		public static readonly BitSet _STAR_in_aggregate3164 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _aggregateDistinctAll_in_aggregate3170 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_aggregate3174 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_aggregate3206 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_aggregateDistinctAll3232 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_aggregateDistinctAll3236 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ELEMENTS_in_collectionExpr3255 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _INDICES_in_collectionExpr3260 = new BitSet(new ulong[]{0x0UL,0x100000000UL});
+		public static readonly BitSet _OPEN_in_collectionExpr3264 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _path_in_collectionExpr3267 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _CLOSE_in_collectionExpr3269 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _collectionExpr_in_compoundExpr3324 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _path_in_compoundExpr3329 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _OPEN_in_compoundExpr3335 = new BitSet(new ulong[]{0x10A9121410844940UL,0x26644C91F899000UL,0x4UL});
+		public static readonly BitSet _subQuery_in_compoundExpr3340 = new BitSet(new ulong[]{0x200000UL});
+		public static readonly BitSet _expression_in_compoundExpr3345 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _COMMA_in_compoundExpr3348 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_compoundExpr3351 = new BitSet(new ulong[]{0x1200000UL});
+		public static readonly BitSet _CLOSE_in_compoundExpr3358 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _TRAILING_in_exprList3377 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _LEADING_in_exprList3390 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _BOTH_in_exprList3403 = new BitSet(new ulong[]{0x1081121410844942UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3427 = new BitSet(new ulong[]{0x1000001000202UL});
+		public static readonly BitSet _COMMA_in_exprList3432 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3435 = new BitSet(new ulong[]{0x1000002UL});
+		public static readonly BitSet _FROM_in_exprList3450 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3452 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _AS_in_exprList3464 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_exprList3467 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FROM_in_exprList3481 = new BitSet(new ulong[]{0x1080121410844940UL,0x22404C11F899000UL});
+		public static readonly BitSet _expression_in_exprList3483 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _innerSubQuery_in_subQuery3503 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
+		public static readonly BitSet _UNION_in_subQuery3506 = new BitSet(new ulong[]{0x29000000000000UL,0x42400800000000UL,0x4UL});
+		public static readonly BitSet _innerSubQuery_in_subQuery3509 = new BitSet(new ulong[]{0x2UL,0x1000000000000000UL});
+		public static readonly BitSet _queryRule_in_innerSubQuery3523 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _identifier_in_path3611 = new BitSet(new ulong[]{0x200000002UL});
+		public static readonly BitSet _DOT_in_path3615 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _identifier_in_path3620 = new BitSet(new ulong[]{0x200000002UL});
+		public static readonly BitSet _IDENT_in_identifier3636 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }
