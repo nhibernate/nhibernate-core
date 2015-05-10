@@ -22,7 +22,12 @@ namespace NHibernate.Linq
 			_map.Add(querySource, CreateUniqueName(querySource.ItemName));
 		}
 
-		public string GetName(IQuerySource querySource)
+        public void AddFromFilter(IQuerySource querySource)
+	    {
+	        _map.Add(querySource, "this");
+	    }
+
+	    public string GetName(IQuerySource querySource)
 		{
 			string result;
 			if (!_map.TryGetValue(querySource, out result))
@@ -37,7 +42,7 @@ namespace NHibernate.Linq
 			return result;
 		}
 
-		private string CreateUniqueName(string proposedName)
+	    private string CreateUniqueName(string proposedName)
 		{
 			string uniqueName = proposedName;
 

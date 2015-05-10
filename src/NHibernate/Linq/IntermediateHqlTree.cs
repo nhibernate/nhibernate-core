@@ -44,11 +44,21 @@ namespace NHibernate.Linq
 
 		public HqlTreeBuilder TreeBuilder { get; private set; }
 
-		public IntermediateHqlTree(bool root)
+		public IntermediateHqlTree(bool root, bool filter)
 		{
 			_isRoot = root;
 			TreeBuilder = new HqlTreeBuilder();
-			_root = TreeBuilder.Query(TreeBuilder.SelectFrom(TreeBuilder.From()));
+		    HqlSelectFrom selectFrom;
+		    if (filter)
+		    {
+		        selectFrom = TreeBuilder.SelectFrom();
+		        selectFrom.AddChild(TreeBuilder.FilterImpliedFrom());
+		    }
+		    else
+		    {
+		        selectFrom = TreeBuilder.SelectFrom(TreeBuilder.From());
+		    }
+		    _root = TreeBuilder.Query(selectFrom);
 		}
 
 		public ExpressionToHqlTranslationResults GetTranslation()

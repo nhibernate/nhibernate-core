@@ -450,7 +450,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitSubQueryExpression(SubQueryExpression expression)
 		{
-			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false);
+			ExpressionToHqlTranslationResults query = QueryModelVisitor.GenerateHqlQuery(expression.QueryModel, _parameters, false, false);
 			return query.Statement;
 		}
 
