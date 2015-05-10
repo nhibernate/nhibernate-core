@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using NHibernate.Collection;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
 using Remotion.Linq;
@@ -20,6 +23,18 @@ namespace NHibernate.Linq
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
 		}
+
+	    public static IQueryable<T> QueryCollection<T>(this ISession session, IEnumerable<T> collection)
+	    {
+            var persistentCollection = collection as AbstractPersistentCollection;
+
+            if (persistentCollection != null)
+            {
+                return new CollectionFilterQueryable<T>(new CollectionFilterQueryProvider(session.GetSessionImplementation(), persistentCollection), Expression.Constant(null, typeof(IQueryable<T>)));
+            }
+
+            return collection.AsQueryable();
+	    }
 
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
 		{
