@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -105,7 +106,7 @@ namespace NHibernate.SqlCommand
 			}
 
 			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
-			// this mean that found the first location of a parameter for the IType span, the others are in secuence
+			// this mean that found the first location of a parameter for the IType span, the others are in sequence
 			foreach (IParameterSpecification specification in Specifications)
 			{
 				string firstParameterId = specification.GetIdsForBackTrack(factory).First();
@@ -115,7 +116,7 @@ namespace NHibernate.SqlCommand
 					int firstParamNameIndex = effectiveParameterLocations[0] + singleSqlParametersOffset;
 					foreach (int location in effectiveParameterLocations)
 					{
-						int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);
+						int parameterSpan = Math.Min(specification.ExpectedType.GetColumnSpan(factory), SqlQueryParametersList.Count);
 						for (int j = 0; j < parameterSpan; j++)
 						{
 							sqlQueryParametersList[location + j].ParameterPosition = firstParamNameIndex + j;

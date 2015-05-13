@@ -109,7 +109,7 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			throw new NotSupportedException();
+			return baseType.ToColumnNullness(value, mapping);
 		}
 
 		public string ToXMLString(object value, ISessionFactoryImplementor factory)
