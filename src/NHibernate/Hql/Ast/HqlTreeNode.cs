@@ -899,4 +899,12 @@ namespace NHibernate.Hql.Ast
 		{
 		}
 	}
+
+    public class HqlFilterImpliedFrom : HqlTreeNode
+    {
+        internal HqlFilterImpliedFrom(IASTFactory factory, params HqlTreeNode[] children) 
+            : base(48, "{filter-implied FROM}", factory)
+        {
+        }
+    }
 }

@@ -64,6 +64,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlFrom(_factory);
 		}
 
+	    public HqlFilterImpliedFrom FilterImpliedFrom()
+	    {
+	        return new HqlFilterImpliedFrom(_factory);
+	    }
+
 		public HqlRange Range(HqlIdent ident)
 		{
 			return new HqlRange(_factory, ident);

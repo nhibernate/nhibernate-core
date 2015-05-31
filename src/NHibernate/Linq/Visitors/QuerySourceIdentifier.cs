@@ -16,23 +16,34 @@ namespace NHibernate.Linq.Visitors
 	public class QuerySourceIdentifier : QueryModelVisitorBase
 	{
 		private readonly QuerySourceNamer _namer;
+	    private readonly bool _root;
+	    private readonly bool _filter;
 
-		private QuerySourceIdentifier(QuerySourceNamer namer)
+	    private QuerySourceIdentifier(QuerySourceNamer namer, bool root, bool filter)
 		{
 			_namer = namer;
+		    _root = root;
+	        _filter = filter;
 		}
 
-		public static void Visit(QuerySourceNamer namer, QueryModel queryModel)
+		public static void Visit(QuerySourceNamer namer, QueryModel queryModel, bool root, bool filter)
 		{
-			new QuerySourceIdentifier(namer).VisitQueryModel(queryModel);
+			new QuerySourceIdentifier(namer, root, filter).VisitQueryModel(queryModel);
 		}
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			_namer.Add(fromClause);
+		    if (_filter)
+		    {
+		        this._namer.AddFromFilter(fromClause);
+		    }
+		    else
+		    {
+		        this._namer.Add(fromClause);
+		    }
 		}
 
-		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
+	    public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
 			_namer.Add(fromClause);
 		}

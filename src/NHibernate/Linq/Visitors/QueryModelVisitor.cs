@@ -18,7 +18,7 @@ namespace NHibernate.Linq.Visitors
 {
 	public class QueryModelVisitor : QueryModelVisitorBase
 	{
-		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
+		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root, bool filter)
 		{
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
 
@@ -72,9 +72,9 @@ namespace NHibernate.Linq.Visitors
 			var result = ResultOperatorRewriter.Rewrite(queryModel);
 
 			// Identify and name query sources
-			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
+			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel, root, filter);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
+			var visitor = new QueryModelVisitor(parameters, root, filter, queryModel) { RewrittenOperatorResult = result };
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();
@@ -83,8 +83,10 @@ namespace NHibernate.Linq.Visitors
 		private readonly IntermediateHqlTree _hqlTree;
 		private static readonly ResultOperatorMap ResultOperatorMap;
 		private bool _serverSide = true;
+	    private bool _root;
+	    private bool _filter;
 
-		public VisitorParameters VisitorParameters { get; private set; }
+	    public VisitorParameters VisitorParameters { get; private set; }
 
 		public IStreamedDataInfo CurrentEvaluationType { get; private set; }
 
@@ -120,11 +122,13 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 		}
 
-		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel)
+		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, bool filter, QueryModel queryModel)
 		{
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
-			_hqlTree = new IntermediateHqlTree(root);
+		    _root = root;
+		    _filter = filter;
+			_hqlTree = new IntermediateHqlTree(root, filter);
 		}
 
 		private void Visit()
@@ -134,25 +138,28 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
 		{
-			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
-			var hqlExpressionTree = HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters);
+		    if (!this._filter)
+		    {
+		        var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
+		        var hqlExpressionTree = HqlGeneratorExpressionTreeVisitor.Visit(fromClause.FromExpression, VisitorParameters);
 
-			_hqlTree.AddFromClause(_hqlTree.TreeBuilder.Range(hqlExpressionTree, _hqlTree.TreeBuilder.Alias(querySourceName)));
+		        this._hqlTree.AddFromClause(this._hqlTree.TreeBuilder.Range(hqlExpressionTree, this._hqlTree.TreeBuilder.Alias(querySourceName)));
 
-			// apply any result operators that were rewritten
-			if (RewrittenOperatorResult != null)
-			{
-				CurrentEvaluationType = RewrittenOperatorResult.EvaluationType;
-				foreach (ResultOperatorBase rewrittenOperator in RewrittenOperatorResult.RewrittenOperators)
-				{
-					VisitResultOperator(rewrittenOperator, queryModel, -1);
-				}
-			}
+		        // apply any result operators that were rewritten
+		        if (RewrittenOperatorResult != null)
+		        {
+		            CurrentEvaluationType = RewrittenOperatorResult.EvaluationType;
+		            foreach (ResultOperatorBase rewrittenOperator in RewrittenOperatorResult.RewrittenOperators)
+		            {
+		                VisitResultOperator(rewrittenOperator, queryModel, -1);
+		            }
+		        }
+		    }		   
 
-			base.VisitMainFromClause(fromClause, queryModel);
+		    base.VisitMainFromClause(fromClause, queryModel);
 		}
 
-		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
+	    public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
 
