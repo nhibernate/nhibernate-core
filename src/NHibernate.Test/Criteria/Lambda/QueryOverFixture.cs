@@ -248,6 +248,126 @@ namespace NHibernate.Test.Criteria.Lambda
 			AssertCriteriaAreEqual(expected, actual);
 		}
 
+		public Person personAliasField = null;
+
+		[Test]
+		public void SimpleCriterion_AliasReferenceSyntaxField()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAliasField")
+					.Add(Restrictions.Eq("personAliasField.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq(("personAliasField.Name"), "not test name")))
+					.Add(Restrictions.Gt("personAliasField.Age", 10))
+					.Add(Restrictions.Ge("personAliasField.Age", 11))
+					.Add(Restrictions.Lt("personAliasField.Age", 50))
+					.Add(Restrictions.Le("personAliasField.Age", 49))
+					.Add(Restrictions.Eq("personAliasField.class", typeof(Person)))
+					.Add(Restrictions.Eq("personAliasField.class", typeof(Person).FullName));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAliasField)
+					.Where(() => personAliasField.Name == "test name")
+					.And(() => personAliasField.Name != "not test name")
+					.And(() => personAliasField.Age > 10)
+					.And(() => personAliasField.Age >= 11)
+					.And(() => personAliasField.Age < 50)
+					.And(() => personAliasField.Age <= 49)
+					.And(() => personAliasField.GetType() == typeof(Person))
+					.And(() => personAliasField is Person);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		public Person personAliasProperty { get; set; }
+
+		[Test]
+		public void SimpleCriterion_AliasReferenceSyntaxProperty()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAliasProperty")
+					.Add(Restrictions.Eq("personAliasProperty.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("personAliasProperty.Name", "not test name")))
+					.Add(Restrictions.Gt("personAliasProperty.Age", 10))
+					.Add(Restrictions.Ge("personAliasProperty.Age", 11))
+					.Add(Restrictions.Lt("personAliasProperty.Age", 50))
+					.Add(Restrictions.Le("personAliasProperty.Age", 49))
+					.Add(Restrictions.Eq("personAliasProperty.class", typeof(Person)))
+					.Add(Restrictions.Eq("personAliasProperty.class", typeof(Person).FullName));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAliasProperty)
+					.Where(() => personAliasProperty.Name == "test name")
+					.And(() => personAliasProperty.Name != "not test name")
+					.And(() => personAliasProperty.Age > 10)
+					.And(() => personAliasProperty.Age >= 11)
+					.And(() => personAliasProperty.Age < 50)
+					.And(() => personAliasProperty.Age <= 49)
+					.And(() => personAliasProperty.GetType() == typeof(Person))
+					.And(() => personAliasProperty is Person);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		public static Person personAliasStaticField = null;
+
+		[Test]
+		public void SimpleCriterion_AliasReferenceSyntaxStaticField()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAliasStaticField")
+					.Add(Restrictions.Eq("personAliasStaticField.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq(("personAliasStaticField.Name"), "not test name")))
+					.Add(Restrictions.Gt("personAliasStaticField.Age", 10))
+					.Add(Restrictions.Ge("personAliasStaticField.Age", 11))
+					.Add(Restrictions.Lt("personAliasStaticField.Age", 50))
+					.Add(Restrictions.Le("personAliasStaticField.Age", 49))
+					.Add(Restrictions.Eq("personAliasStaticField.class", typeof(Person)))
+					.Add(Restrictions.Eq("personAliasStaticField.class", typeof(Person).FullName));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAliasStaticField)
+					.Where(() => personAliasStaticField.Name == "test name")
+					.And(() => personAliasStaticField.Name != "not test name")
+					.And(() => personAliasStaticField.Age > 10)
+					.And(() => personAliasStaticField.Age >= 11)
+					.And(() => personAliasStaticField.Age < 50)
+					.And(() => personAliasStaticField.Age <= 49)
+					.And(() => personAliasStaticField.GetType() == typeof(Person))
+					.And(() => personAliasStaticField is Person);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
+		public static Person personAliasStaticProperty { get; set; }
+
+		[Test]
+		public void SimpleCriterion_AliasReferenceSyntaxStaticProperty()
+		{
+			ICriteria expected =
+				CreateTestCriteria(typeof(Person), "personAliasStaticProperty")
+					.Add(Restrictions.Eq("personAliasStaticProperty.Name", "test name"))
+					.Add(Restrictions.Not(Restrictions.Eq("personAliasStaticProperty.Name", "not test name")))
+					.Add(Restrictions.Gt("personAliasStaticProperty.Age", 10))
+					.Add(Restrictions.Ge("personAliasStaticProperty.Age", 11))
+					.Add(Restrictions.Lt("personAliasStaticProperty.Age", 50))
+					.Add(Restrictions.Le("personAliasStaticProperty.Age", 49))
+					.Add(Restrictions.Eq("personAliasStaticProperty.class", typeof(Person)))
+					.Add(Restrictions.Eq("personAliasStaticProperty.class", typeof(Person).FullName));
+
+			IQueryOver<Person> actual =
+				CreateTestQueryOver<Person>(() => personAliasStaticProperty)
+					.Where(() => personAliasStaticProperty.Name == "test name")
+					.And(() => personAliasStaticProperty.Name != "not test name")
+					.And(() => personAliasStaticProperty.Age > 10)
+					.And(() => personAliasStaticProperty.Age >= 11)
+					.And(() => personAliasStaticProperty.Age < 50)
+					.And(() => personAliasStaticProperty.Age <= 49)
+					.And(() => personAliasStaticProperty.GetType() == typeof(Person))
+					.And(() => personAliasStaticProperty is Person);
+
+			AssertCriteriaAreEqual(expected, actual);
+		}
+
 		[Test]
 		public void SubCriteria_JoinQueryOver_ToOne()
 		{

@@ -301,23 +301,27 @@ namespace NHibernate.Impl
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null)
 			{
-				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
-					|| memberExpression.Expression.NodeType == ExpressionType.Call)
+				var parentExpression = memberExpression.Expression;
+				if (parentExpression != null)
 				{
-					if (memberExpression.Member.DeclaringType.IsNullable())
+					if (parentExpression.NodeType == ExpressionType.MemberAccess
+						|| parentExpression.NodeType == ExpressionType.Call)
 					{
-						// it's a Nullable<T>, so ignore any .Value
-						if (memberExpression.Member.Name == "Value")
-							return FindMemberExpression(memberExpression.Expression);
-					}
+						if (memberExpression.Member.DeclaringType.IsNullable())
+						{
+							// it's a Nullable<T>, so ignore any .Value
+							if (memberExpression.Member.Name == "Value")
+								return FindMemberExpression(parentExpression);
+						}
 
-					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
+						return FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name;
+					}
+					if (IsConversion(parentExpression.NodeType))
+					{
+						return (FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name).TrimStart('.');
+					}
 				}
-				if (IsConversion(memberExpression.Expression.NodeType))
-				{
-					return (FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name).TrimStart('.');
-				}
-				
+
 				return memberExpression.Member.Name;
 			}
 
