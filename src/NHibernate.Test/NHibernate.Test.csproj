@@ -718,6 +718,8 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3793\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3793\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2839\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3564\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3583\Entity.cs" />
@@ -3142,6 +3144,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3793\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -3379,7 +3384,9 @@
     <EmbeddedResource Include="TypesTest\UriClass.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\EntityNameWithFullName\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2361\Mappings.hbm.xml" />
-    <EmbeddedResource Include="NHSpecificTest\EntityNameAndCompositeId\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\EntityNameAndCompositeId\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="PolymorphicGetAndLoad\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2331\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2324\Mappings.hbm.xml" />

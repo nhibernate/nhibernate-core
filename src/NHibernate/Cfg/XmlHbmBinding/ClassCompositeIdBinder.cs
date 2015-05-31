@@ -174,7 +174,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			                   	: keyManyToOneSchema.lazy == HbmRestrictedLaziness.Proxy;
 
 			string typeNode = keyManyToOneSchema.@class;
-			if (typeNode != null)
+			if (keyManyToOneSchema.EntityName != null)
+			{
+				manyToOne.ReferencedEntityName = keyManyToOneSchema.EntityName;
+			}
+			else if (typeNode != null)
 			{
 				manyToOne.ReferencedEntityName = GetClassName(typeNode, mappings);
 			}
