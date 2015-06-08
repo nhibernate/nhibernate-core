@@ -520,6 +520,27 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Count, Is.EqualTo(77));
 		}
 
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValue()
+		{
+			var orderGroups = db.Orders.GroupBy(o => o.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValueInAnonymousType()
+		{
+			var orderGroups = db.Orders.GroupBy(o => new { Key = o.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValueInObjectArray()
+		{
+			var orderGroups = db.Orders.GroupBy(o => new[] { o.Customer.CustomerId == null ? 0 : 1, }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
