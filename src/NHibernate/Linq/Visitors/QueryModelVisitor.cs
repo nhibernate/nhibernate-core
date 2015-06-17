@@ -51,6 +51,9 @@ namespace NHibernate.Linq.Visitors
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
 
+			// Flatten array index access to query references
+			ArrayIndexExpressionFlattener.ReWrite(queryModel);
+
 			// Add joins for references
 			AddJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
 
