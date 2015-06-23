@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
@@ -32,7 +34,7 @@ namespace NHibernate.Linq.Visitors
 			NonAggregatingGroupByRewriter.ReWrite(queryModel);
 
 			// Rewrite aggregate group-by statements
-			AggregatingGroupByRewriter.ReWrite(queryModel);
+			AggregatingGroupByRewriter.ReWrite(queryModel, parameters.GroupByKeys);
 
 			// Rewrite aggregating group-joins
 			AggregatingGroupJoinRewriter.ReWrite(queryModel);
@@ -77,7 +79,10 @@ namespace NHibernate.Linq.Visitors
 			// Identify and name query sources
 			QuerySourceIdentifier.Visit(parameters.QuerySourceNamer, queryModel);
 
-			var visitor = new QueryModelVisitor(parameters, root, queryModel) { RewrittenOperatorResult = result };
+			var visitor = new QueryModelVisitor(parameters, root, queryModel)
+			{
+				RewrittenOperatorResult = result,
+			};
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();
@@ -233,7 +238,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			CurrentEvaluationType = selectClause.GetOutputDataInfo();
 
-			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters, VisitorParameters.GroupByKeys);
 
 			visitor.Visit(selectClause.Selector);
 

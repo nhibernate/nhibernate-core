@@ -18,11 +18,12 @@ namespace NHibernate.Linq.Visitors
 		private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
 		private readonly HqlGeneratorExpressionTreeVisitor _hqlVisitor;
 
-		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
+		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters, IEnumerable<Expression> groupByKeys)
 		{
 			_inputParameter = Expression.Parameter(inputType, "input");
 			_parameters = parameters;
 			_hqlVisitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
+			_hqlNodes = new HashSet<Expression>(groupByKeys);
 		}
 
 		public LambdaExpression ProjectionExpression { get; private set; }
@@ -43,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 			// Find the sub trees that can be expressed purely in HQL
 			var nominator = new SelectClauseHqlNominator(_parameters);
 			nominator.Visit(expression);
-			_hqlNodes = nominator.HqlCandidates;
+			_hqlNodes.UnionWith(nominator.HqlCandidates);
 
 			// Linq2SQL ignores calls to local methods. Linq2EF seems to not support
 			// calls to local methods at all. For NHibernate we support local methods,
