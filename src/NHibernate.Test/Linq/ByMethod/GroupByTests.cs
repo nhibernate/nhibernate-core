@@ -507,14 +507,22 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
 		}
 
-		[Test(Description = "NH-3681"), KnownBug("NH-3681 not yet fixed", "NHibernate.HibernateException")]
+		[Test(Description = "NH-3681")]
 		public void SelectManyGroupByAggregateProjection()
 		{
 			var result = (from o in db.Orders
-			              from ol in o.OrderLines
-			              group ol by ol.Product.ProductId
-			              into grp
-			              select new {ProductId = grp.Key, Sum = grp.Sum(x => x.UnitPrice)}
+						  from ol in o.OrderLines
+						  group ol by ol.Product.ProductId
+							  into grp
+							  select new
+							  {
+								  ProductId = grp.Key,
+								  Sum = grp.Sum(x => x.UnitPrice),
+								  Count = grp.Count(),
+								  Avg = grp.Average(x => x.UnitPrice),
+								  Min = grp.Min(x => x.UnitPrice),
+								  Max = grp.Max(x => x.UnitPrice),
+							  }
 				).ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));

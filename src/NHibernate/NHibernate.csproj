@@ -303,6 +303,7 @@
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
+    <Compile Include="Linq\ReWriters\ArrayIndexExpressionFlattener.cs" />
     <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
     <Compile Include="Linq\QueryProviderFactory.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />

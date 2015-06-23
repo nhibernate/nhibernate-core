@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -30,6 +31,26 @@ namespace NHibernate.Linq
 			var query = fromClause.FromExpression as SubQueryExpression;
 			if (query == null) return false;
 	
+			return query.QueryModel.ResultOperators.Contains(groupBy);
+		}
+
+		public static bool IsGroupingElementOf(this QuerySourceReferenceExpression expression, GroupResultOperator groupBy)
+		{
+			var fromClause = expression.ReferencedQuerySource as MainFromClause;
+			if (fromClause == null) return false;
+
+			var innerQuerySource = fromClause.FromExpression as QuerySourceReferenceExpression;
+			if (innerQuerySource == null) return false;
+
+			if (innerQuerySource.ReferencedQuerySource.ItemName != groupBy.ItemName
+				|| innerQuerySource.ReferencedQuerySource.ItemType != groupBy.ItemType) return false;
+
+			var innerFromClause = innerQuerySource.ReferencedQuerySource as MainFromClause;
+			if (innerFromClause == null) return false;
+
+			var query = innerFromClause.FromExpression as SubQueryExpression;
+			if (query == null) return false;
+
 			return query.QueryModel.ResultOperators.Contains(groupBy);
 		}
 	}

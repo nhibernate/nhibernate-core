@@ -31,7 +31,12 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
 		{
-			if (expression.ReferencedQuerySource == _groupBy)
+			if (!IsMemberOfModel(expression))
+			{
+				return base.VisitQuerySourceReferenceExpression(expression);
+			}
+
+			if (expression.IsGroupingElementOf(_groupBy))
 			{
 				return _groupBy.ElementSelector;
 			}
@@ -59,7 +64,8 @@ namespace NHibernate.Linq.GroupBy
 				return base.VisitMemberExpression(expression);
 			}
 
-			if (elementSelector is NewExpression && elementSelector.Type == expression.Expression.Type)
+			if ((elementSelector is NewExpression || elementSelector.NodeType == ExpressionType.Convert)
+				&& elementSelector.Type == expression.Expression.Type)
 			{
 				//TODO: probably we should check this with a visitor
 				return Expression.MakeMemberAccess(elementSelector, expression.Member);
@@ -78,7 +84,12 @@ namespace NHibernate.Linq.GroupBy
 				return false;
 			}
 
-			var fromClause = querySourceRef.ReferencedQuerySource as FromClauseBase;
+			return IsMemberOfModel(querySourceRef);
+		}
+		
+		private bool IsMemberOfModel(QuerySourceReferenceExpression expression)
+		{
+			var fromClause = expression.ReferencedQuerySource as FromClauseBase;
 
 			if (fromClause == null)
 			{
