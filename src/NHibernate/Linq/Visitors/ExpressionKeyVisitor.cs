@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,9 +93,22 @@ namespace NHibernate.Linq.Visitors
 			else
 			{
 				if (expression.Value == null)
+				{
 					_string.Append("NULL");
-				else
+				}
+				else if (expression.Type.IsArray)
+				{
+					// Const arrays all look the same (they just display the type of array and not the initializer contents
+					// Since the contents might be different, we need to include those as well so we don't use a cached query plan by mistake
 					_string.Append(expression.Value);
+					_string.Append(" {");
+					_string.Append(String.Join(",", (object[]) expression.Value));
+					_string.Append("}");
+				}
+				else
+				{
+					_string.Append(expression.Value);
+				}
 			}
 
 			return base.VisitConstantExpression(expression);
@@ -142,6 +156,7 @@ namespace NHibernate.Linq.Visitors
 				case "Single":
 				case "SingleOrDefault":
 				case "Select":
+				case "GroupBy":
 					insideSelectClause = true;
 					break;
 				default:
