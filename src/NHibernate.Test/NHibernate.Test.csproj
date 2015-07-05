@@ -721,6 +721,8 @@
     <Compile Include="NHSpecificTest\NH3609\MappingEntity.cs" />
     <Compile Include="NHSpecificTest\NH3609\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3609\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2167\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH2167\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2839\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3564\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3583\Entity.cs" />
@@ -3722,7 +3724,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cascade\OneToOneCascadeDelete\Pk\Unidirectional\Hbm\" />
-    <Folder Include="NHSpecificTest\NH3615\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
