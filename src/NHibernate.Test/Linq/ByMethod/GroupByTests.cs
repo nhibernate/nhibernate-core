@@ -549,6 +549,55 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
 		}
 
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => o.Order.Customer == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => o.Order.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInAnonymousTypeWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new { Key = o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInAnonymousTypeWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new { Key = o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinInRightSideOfCase()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
