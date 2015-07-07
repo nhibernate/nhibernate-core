@@ -64,6 +64,12 @@ namespace NHibernate.Linq.Visitors
 					ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
 				}
 
+				// Attempt to project conditionals to the DB to prevent inner joins, or more projection work on result than is needed
+				if (expression != null && expression.NodeType == ExpressionType.Conditional)
+				{
+					projectConstantsInHql = true;
+				}
+
 				_stateStack.Push(projectConstantsInHql);
 
 				if (expression == null)

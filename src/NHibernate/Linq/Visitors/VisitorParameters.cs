@@ -16,8 +16,6 @@ namespace NHibernate.Linq.Visitors
 
 		public QuerySourceNamer QuerySourceNamer { get; set; }
 
-		public IList<Expression> GroupByKeys { get; private set; }
-
 		public VisitorParameters(
 			ISessionFactoryImplementor sessionFactory, 
 			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap, 
@@ -28,7 +26,6 @@ namespace NHibernate.Linq.Visitors
 			ConstantToParameterMap = constantToParameterMap;
 			RequiredHqlParameters = requiredHqlParameters;
 			QuerySourceNamer = querySourceNamer;
-			GroupByKeys = new List<Expression>();
 		}
 	}
 }

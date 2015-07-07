@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors;
-using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -44,7 +42,7 @@ namespace NHibernate.Linq.GroupBy
 				typeof (CacheableResultOperator)
 			};
 
-		public static void ReWrite(QueryModel queryModel, IList<Expression> groupByKeys)
+		public static void ReWrite(QueryModel queryModel)
 		{
 			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
@@ -59,7 +57,6 @@ namespace NHibernate.Linq.GroupBy
 					var groupBy = operators[0] as GroupResultOperator;
 					if (groupBy != null)
 					{
-						groupBy.ExtractKeyExpressions(groupByKeys);
 						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
 					}
 				}
