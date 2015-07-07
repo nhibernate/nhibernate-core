@@ -299,7 +299,6 @@
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
     <Compile Include="Linq\GroupBy\KeySelectorVisitor.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
-    <Compile Include="Linq\GroupResultOperatorExtensions.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectDetector.cs" />
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
@@ -323,11 +322,10 @@
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
     <Compile Include="Linq\Visitors\QueryExpressionSourceIdentifer.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
-    <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
-    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />

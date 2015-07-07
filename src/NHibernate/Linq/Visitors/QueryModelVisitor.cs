@@ -34,7 +34,7 @@ namespace NHibernate.Linq.Visitors
 			NonAggregatingGroupByRewriter.ReWrite(queryModel);
 
 			// Rewrite aggregate group-by statements
-			AggregatingGroupByRewriter.ReWrite(queryModel, parameters.GroupByKeys);
+			AggregatingGroupByRewriter.ReWrite(queryModel);
 
 			// Rewrite aggregating group-joins
 			AggregatingGroupJoinRewriter.ReWrite(queryModel);
@@ -57,7 +57,7 @@ namespace NHibernate.Linq.Visitors
 			ArrayIndexExpressionFlattener.ReWrite(queryModel);
 
 			// Add joins for references
-			AddJoinsReWriter.ReWrite(queryModel, parameters.SessionFactory);
+			AddJoinsReWriter.ReWrite(queryModel, parameters);
 
 			// Move OrderBy clauses to end
 			MoveOrderByToEndRewriter.ReWrite(queryModel);
@@ -238,7 +238,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			CurrentEvaluationType = selectClause.GetOutputDataInfo();
 
-			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters, VisitorParameters.GroupByKeys);
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
 			visitor.Visit(selectClause.Selector);
 

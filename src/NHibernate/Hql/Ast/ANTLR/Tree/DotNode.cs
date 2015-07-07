@@ -407,7 +407,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-				joinIsNeeded = generateJoin || ( Walker.IsInSelect || Walker.IsInFrom );
+				joinIsNeeded = generateJoin || ( (Walker.IsInSelect && !Walker.IsInCase ) || Walker.IsInFrom );
 			}
 
 			if ( joinIsNeeded ) 
