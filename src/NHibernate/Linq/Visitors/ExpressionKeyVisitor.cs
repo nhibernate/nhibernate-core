@@ -84,11 +84,21 @@ namespace NHibernate.Linq.Visitors
 			{
 				// Nulls generate different query plans.  X = variable generates a different query depending on if variable is null or not.
 				if (param.Value == null)
+				{
 					_string.Append("NULL");
-				if (param.Value is IEnumerable && !((IEnumerable)param.Value).Cast<object>().Any())
-					_string.Append("EmptyList");
+				}
 				else
-					_string.Append(param.Name);
+				{
+					var value = param.Value as IEnumerable;
+					if (value != null && !(value is string) && !value.Cast<object>().Any())
+					{
+						_string.Append("EmptyList");
+					}
+					else
+					{
+						_string.Append(param.Name);
+					}
+				}
 			}
 			else
 			{
@@ -96,18 +106,19 @@ namespace NHibernate.Linq.Visitors
 				{
 					_string.Append("NULL");
 				}
-				else if (expression.Type.IsArray)
-				{
-					// Const arrays all look the same (they just display the type of array and not the initializer contents
-					// Since the contents might be different, we need to include those as well so we don't use a cached query plan by mistake
-					_string.Append(expression.Value);
-					_string.Append(" {");
-					_string.Append(String.Join(",", (object[]) expression.Value));
-					_string.Append("}");
-				}
 				else
 				{
-					_string.Append(expression.Value);
+					var value = expression.Value as IEnumerable;
+					if (value != null  && !(value is string) && !(value is IQueryable))
+					{
+						_string.Append("{");
+						_string.Append(String.Join(",", value.Cast<object>()));
+						_string.Append("}");
+					}
+					else
+					{
+						_string.Append(expression.Value);
+					}
 				}
 			}
 
