@@ -210,35 +210,34 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
+			if (expression.NodeType == ExpressionType.Equal)
+			{
+				return TranslateEqualityComparison(expression);
+			}
+			if (expression.NodeType == ExpressionType.NotEqual)
+			{
+				return TranslateInequalityComparison(expression);
+			}
+
 			var lhs = VisitExpression(expression.Left).AsExpression();
 			var rhs = VisitExpression(expression.Right).AsExpression();
 
 			switch (expression.NodeType)
 			{
-				case ExpressionType.Equal:
-					return TranslateEqualityComparison(expression, lhs, rhs,
-													   expr => _hqlTreeBuilder.IsNull(expr),
-													   (l, r) => _hqlTreeBuilder.Equality(l, r));
-
-				case ExpressionType.NotEqual:
-					return TranslateEqualityComparison(expression, lhs, rhs,
-													   expr => _hqlTreeBuilder.IsNotNull(expr),
-													   (l, r) => _hqlTreeBuilder.Inequality(l, r));
-
 				case ExpressionType.And:
 					return _hqlTreeBuilder.BitwiseAnd(lhs, rhs);
 
 				case ExpressionType.AndAlso:
-					return _hqlTreeBuilder.BooleanAnd(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
+					return _hqlTreeBuilder.BooleanAnd(lhs.ToBooleanExpression(), rhs.ToBooleanExpression());
 
 				case ExpressionType.Or:
 					return _hqlTreeBuilder.BitwiseOr(lhs, rhs);
 
 				case ExpressionType.OrElse:
-					return _hqlTreeBuilder.BooleanOr(lhs.AsBooleanExpression(), rhs.AsBooleanExpression());
+					return _hqlTreeBuilder.BooleanOr(lhs.ToBooleanExpression(), rhs.ToBooleanExpression());
 
 				case ExpressionType.Add:
-					if (expression.Left.Type == typeof (string) && expression.Right.Type == typeof (string))
+					if (expression.Left.Type == typeof (string) && expression.Right.Type == typeof(string))
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
 					}
@@ -275,71 +274,119 @@ namespace NHibernate.Linq.Visitors
 			throw new InvalidOperationException();
 		}
 
-
-		private HqlTreeNode TranslateEqualityComparison(BinaryExpression expression, HqlExpression lhs, HqlExpression rhs, Func<HqlExpression, HqlTreeNode> applyNullComparison, Func<HqlExpression, HqlExpression, HqlTreeNode> applyRegularComparison)
+		private HqlTreeNode TranslateInequalityComparison(BinaryExpression expression)
 		{
+			var lhs = VisitExpression(expression.Left).ToArithmeticExpression();
+			var rhs = VisitExpression(expression.Right).ToArithmeticExpression();
+
 			// Check for nulls on left or right.
 			if (VisitorUtil.IsNullConstant(expression.Right))
 				rhs = null;
 			if (VisitorUtil.IsNullConstant(expression.Left))
 				lhs = null;
 
-			// Need to check for boolean equality
-			if (lhs is HqlBooleanExpression || rhs is HqlBooleanExpression)
+			if (lhs == null && rhs == null)
 			{
-				if (lhs != null)
-					lhs = GetExpressionForBooleanEquality(expression.Left, lhs);
-				if (rhs != null)
-					rhs = GetExpressionForBooleanEquality(expression.Right, rhs);
+				return _hqlTreeBuilder.False();
 			}
 
 			if (lhs == null)
-				return applyNullComparison(rhs);
-			if (rhs == null)
-				return applyNullComparison(lhs);
+			{
+				return _hqlTreeBuilder.IsNotNull(rhs);
+			}
 
-			return applyRegularComparison(lhs, rhs);
+			if (rhs == null)
+			{
+				return _hqlTreeBuilder.IsNotNull(lhs);
+			}
+
+			var lhsNullable = IsNullable(lhs);
+			var rhsNullable = IsNullable(rhs);
+
+			var inequality = _hqlTreeBuilder.Inequality(lhs, rhs);
+
+			if (!lhsNullable && !rhsNullable)
+			{
+				return inequality;
+			}
+
+			var lhs2 = VisitExpression(expression.Left).ToArithmeticExpression();
+			var rhs2 = VisitExpression(expression.Right).ToArithmeticExpression();
+
+			HqlBooleanExpression booleanExpression;
+			if (lhsNullable && rhsNullable)
+			{
+				booleanExpression = _hqlTreeBuilder.Inequality(
+					_hqlTreeBuilder.IsNull(lhs2).ToArithmeticExpression(),
+					_hqlTreeBuilder.IsNull(rhs2).ToArithmeticExpression());
+			}
+			else if (lhsNullable)
+			{
+				booleanExpression = _hqlTreeBuilder.IsNull(lhs2);
+			}
+			else
+			{
+				booleanExpression = _hqlTreeBuilder.IsNull(rhs2);
+			}
+
+			return _hqlTreeBuilder.BooleanOr(inequality, booleanExpression);
 		}
 
-		private HqlExpression GetExpressionForBooleanEquality(Expression @operator, HqlExpression original)
+		private HqlTreeNode TranslateEqualityComparison(BinaryExpression expression)
 		{
-			//When the expression is a constant then use the constant
-			var operandEx = @operator as ConstantExpression;
-			if (operandEx != null)
-			{
-				NamedParameter namedParameter;
-				if (_parameters.ConstantToParameterMap.TryGetValue(operandEx, out namedParameter))
-				{
-					_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
-					return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
-				}
+			var lhs = VisitExpression(expression.Left).ToArithmeticExpression();
+			var rhs = VisitExpression(expression.Right).ToArithmeticExpression();
 
-				return _hqlTreeBuilder.Constant(operandEx.Value);
+			// Check for nulls on left or right.
+			if (VisitorUtil.IsNullConstant(expression.Right))
+			{
+				rhs = null;
 			}
 
-			//When the expression is a member-access not nullable then use the HbmDot
-			var memberAccessExpression = @operator as MemberExpression;
-			if (ExpressionType.MemberAccess.Equals(@operator.NodeType) && memberAccessExpression != null && typeof (bool) == memberAccessExpression.Type)
+			if (VisitorUtil.IsNullConstant(expression.Left))
 			{
-				// this case make the difference when the property "Value" of a nullable type is used (ignore the null since the user is explicity checking the Value)
-				return original;
+				lhs = null;
 			}
 
-			var subQueryExpression = @operator as SubQueryExpression;
-			if (subQueryExpression != null)
+			if (lhs == null && rhs == null)
 			{
-				var resultOperators = subQueryExpression.QueryModel.ResultOperators;
-				if (resultOperators.Count == 1 &&
-					(resultOperators[0] is FirstResultOperator ||
-					 resultOperators[0] is SingleResultOperator))
-				{
-					return original;
-				}
+				return _hqlTreeBuilder.True();
 			}
 
-			//When the expression is a member-access nullable then use the "case" clause to transform it to boolean (to use always .NET meaning instead leave the DB the behavior for null)
-			//When the expression is a complex-expression then use the "case" clause to transform it to boolean
-			return _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(original, _hqlTreeBuilder.True())}, _hqlTreeBuilder.False());
+			if (lhs == null)
+			{
+				return _hqlTreeBuilder.IsNull(rhs);
+			}
+
+			if (rhs == null)
+			{
+				return _hqlTreeBuilder.IsNull((lhs));
+			}
+
+			var lhsNullable = IsNullable(lhs);
+			var rhsNullable = IsNullable(rhs);
+
+			var equality = _hqlTreeBuilder.Equality(lhs, rhs);
+
+			if (!lhsNullable || !rhsNullable)
+			{
+				return equality;
+			}
+
+			var lhs2 = VisitExpression(expression.Left).ToArithmeticExpression();
+			var rhs2 = VisitExpression(expression.Right).ToArithmeticExpression();
+
+			return _hqlTreeBuilder.BooleanOr(
+				equality,
+				_hqlTreeBuilder.BooleanAnd(
+					_hqlTreeBuilder.IsNull(lhs2),
+					_hqlTreeBuilder.IsNull(rhs2)));
+		}
+
+		static bool IsNullable(HqlExpression original)
+		{
+			var hqlDot = original as HqlDot;
+			return hqlDot != null && hqlDot.Children.Last() is HqlIdent;
 		}
 
 		protected HqlTreeNode VisitUnaryExpression(UnaryExpression expression)
@@ -347,7 +394,7 @@ namespace NHibernate.Linq.Visitors
 			switch (expression.NodeType)
 			{
 				case ExpressionType.Not:
-					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).AsBooleanExpression());
+					return _hqlTreeBuilder.BooleanNot(VisitExpression(expression.Operand).ToBooleanExpression());
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
@@ -400,11 +447,6 @@ namespace NHibernate.Linq.Visitors
 			{
 				_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
 
-				if (namedParameter.Value is bool)
-				{
-					return _hqlTreeBuilder.Equality(_hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression(), _hqlTreeBuilder.Constant(true));
-				}
-
 				return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 			}
 
@@ -436,16 +478,16 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitConditionalExpression(ConditionalExpression expression)
 		{
-			var test = VisitExpression(expression.Test).AsExpression();
-			var ifTrue = BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfTrue).AsExpression());
+			var test = VisitExpression(expression.Test).ToBooleanExpression();
+			var ifTrue = VisitExpression(expression.IfTrue).ToArithmeticExpression();
 			var ifFalse = (expression.IfFalse != null
-							   ? BooleanToCaseConvertor.ConvertBooleanToCase(VisitExpression(expression.IfFalse).AsExpression())
+							   ? VisitExpression(expression.IfFalse).ToArithmeticExpression()
 							   : null);
 
-			var @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
+			HqlExpression @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
 
 			return (expression.Type == typeof (bool) || expression.Type == (typeof (bool?)))
-					   ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
+					   ? @case
 					   : _hqlTreeBuilder.Cast(@case, expression.Type);
 		}
 
@@ -457,8 +499,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected HqlTreeNode VisitNewArrayExpression(NewArrayExpression expression)
 		{
-			var visitor = new HqlGeneratorExpressionTreeVisitor(_parameters);
-			var expressionSubTree = expression.Expressions.Select(exp => visitor.Visit(exp));
+			var expressionSubTree = expression.Expressions.Select(exp => VisitExpression(exp)).ToArray();
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 	}

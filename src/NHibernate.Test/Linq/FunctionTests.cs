@@ -293,6 +293,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void WhereBoolConditionEquals()
+		{
+			var query = from item in db.Role
+						where item.IsActive.Equals(item.Name != null)
+						select item;
+			
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
 		public void WhereBoolParameterEqual()
 		{
 			var query = from item in db.Role

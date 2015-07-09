@@ -379,18 +379,21 @@ namespace NHibernate.Test.Linq
 			var nullAsNullableBool = Expression.Constant(null, typeof(bool?));
 			var valueProperty = typeof (bool?).GetProperty("Value");
 
-			var quantityIsNull = ((Expression<Func<Product, bool>>)(x => x.QuantityPerUnit == null));
-			var nameIsNull = ((Expression<Func<Product, bool>>)(x => x.Name == null));
+			Expression<Func<Product, bool>> quantityIsNull = x => x.QuantityPerUnit == null;
+			Expression<Func<Product, bool>> nameIsNull = x => x.Name == null;
 
-			var quantityContains23 = ((Expression<Func<Product, bool?>>)(x => x.QuantityPerUnit.Contains("box")));
-			var nameContains2 = ((Expression<Func<Product, bool?>>)(x => x.Name.Contains("Cha")));
+			Expression<Func<Product, bool?>> quantityContains23 = x => x.QuantityPerUnit.Contains("box");
+			Expression<Func<Product, bool?>> nameContains2 = x => x.Name.Contains("Cha");
 
-			var conjunction = Expression.AndAlso(Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
-												 Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body));
+			var conjunction = Expression.AndAlso(
+				Expression.Condition(quantityIsNull.Body, nullAsNullableBool, quantityContains23.Body),
+				Expression.Condition(nameIsNull.Body, nullAsNullableBool, nameContains2.Body)
+			);
 
-			var condition = Expression.Condition(Expression.Equal(conjunction, Expression.Constant(null)),
-												 Expression.Constant(false),
-												 Expression.MakeMemberAccess(conjunction, valueProperty));
+			var condition = Expression.Condition(
+				Expression.Equal(conjunction, Expression.Constant(null)),
+				Expression.Constant(false),
+				Expression.MakeMemberAccess(conjunction, valueProperty));
 
 			var expr = Expression.Lambda<Func<Product, bool>>(condition, quantityIsNull.Parameters);
 
