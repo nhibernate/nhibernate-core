@@ -620,9 +620,9 @@ namespace NHibernate.Persister.Entity
 		{
 			get
 			{
-				return
-					OptimisticLockMode == Versioning.OptimisticLock.None
-					|| (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version);
+                return true;
+				//	OptimisticLockMode == Versioning.OptimisticLock.None
+				//	|| (!IsVersioned && OptimisticLockMode == Versioning.OptimisticLock.Version);
 				//|| Factory.Settings.IsJdbcBatchVersionedData();
 			}
 		}
